@@ -1,0 +1,261 @@
+/*
+ * Semantic Color System
+ * These variables define our color palette for light and dark modes.
+ * They provide semantic names that describe their purpose rather than appearance.
+ * The variables are referenced in the Color Bindings section below to connect
+ * with Tailwind's theming layer.
+ */
+
+@layer base {
+
+  /* Light mode color scheme */
+  :root {
+    /* Main background color and its contrasting text color */
+    --kumo-surface: #fff;
+    --kumo-surface-foreground: #000;
+
+    --kumo-surface-secondary: var(--color-neutral-50);
+    --kumo-surface-active: var(--color-neutral-100);
+
+    /* Primary interactive elements like buttons, links, and focus states */
+    --kumo-primary: #056dff;
+    --kumo-primary-foreground: var(--color-white);
+
+    /* Secondary interactive elements, alternative to primary */
+    --kumo-secondary: var(--color-white);
+    --kumo-secondary-foreground: var(--color-neutral-900);
+    --kumo-secondary-hover: var(--color-neutral-50);
+
+    --kumo-accent: var(--color-neutral-150);
+
+    /* Destructive actions like delete, remove, or error states */
+    --kumo-destructive: var(--color-red-600);
+    --kumo-destructive-foreground: var(--color-neutral-50);
+
+    /* Less prominent elements like disabled states or placeholders */
+    --kumo-muted: var(--color-neutral-100);
+    --kumo-muted-foreground: var(--color-neutral-500);
+
+    --kumo-input: var(--color-neutral-50);
+
+    /* Border color for UI elements like inputs, cards, and dividers */
+    --kumo-border: var(--color-neutral-200);
+    --kumo-border-hover: var(--color-neutral-300);
+    --kumo-border-active: var(--color-neutral-400);
+
+    /* Other text color */
+    --kumo-text-error: var(--color-red-600);
+  }
+
+  /* Dark mode color scheme */
+  .dark-mode {
+    /* Dark mode background and text colors */
+    --kumo-surface: var(--color-black);
+    --kumo-surface-foreground: var(--color-neutral-50);
+
+    --kumo-surface-secondary: var(--kumo-surface);
+    --kumo-surface-active: var(--color-neutral-800);
+
+    /* Primary elements in dark mode with appropriate contrast */
+    --kumo-primary: #056dff;
+    --kumo-primary-foreground: var(--color-white);
+
+    /* Secondary elements in dark mode */
+    --kumo-secondary: var(--color-neutral-900);
+    --kumo-secondary-foreground: var(--color-neutral-50);
+    --kumo-secondary-hover: var(--color-neutral-800);
+
+    --kumo-accent: var(--color-neutral-850);
+
+    /* Destructive actions in dark mode with adjusted visibility */
+    --kumo-destructive: var(--color-red-600);
+    --kumo-destructive-foreground: var(--color-neutral-50);
+
+    /* Muted elements in dark mode with proper contrast */
+    --kumo-muted: var(--color-neutral-500);
+    --kumo-muted-foreground: var(--color-neutral-50);
+
+    --kumo-input: var(--color-neutral-900);
+
+    /* Border color adjusted for dark mode visibility */
+    --kumo-border: var(--color-neutral-800);
+    --kumo-border-hover: var(--color-neutral-750);
+    --kumo-border-active: var(--color-neutral-600);
+
+    /* Other text color */
+    --kumo-text-error: var(--color-red-600);
+  }
+}
+
+/*
+ * Color Bindings
+ * These variables connect our custom color system to Tailwind's theming layer.
+ * This allows us to use our semantic color variables throughout the application
+ * while maintaining compatibility with Tailwind's utility classes.
+ */
+@theme {
+  --color-surface: var(--kumo-surface);
+  --color-surface-secondary: var(--kumo-surface-secondary);
+  --color-surface-active: var(--kumo-surface-active);
+  --color-primary: var(--kumo-primary);
+  --color-secondary: var(--kumo-secondary);
+  --color-secondary-hover: var(--kumo-secondary-hover);
+  --color-accent: var(--kumo-accent);
+  --color-destructive: var(--kumo-destructive);
+  --color-muted: var(--kumo-muted);
+  --color-input: var(--kumo-input);
+
+  --color-active: var(--kumo-border-active);
+  --color-border-hover: var(--kumo-border-hover);
+  --color-color: var(--kumo-border);
+
+  --text-color-surface: var(--kumo-surface-foreground);
+  --text-color-primary: var(--kumo-primary-foreground);
+  --text-color-secondary: var(--kumo-secondary-foreground);
+  --text-color-destructive: var(--kumo-destructive-foreground);
+  --text-color-muted: var(--kumo-muted-foreground);
+  --text-color-error: var(--kumo-text-error);
+
+  --color-neutral-150: oklch(0.96 0 0) /*new */;
+  --color-neutral-250: oklch(0.9 0 0) /* new */;
+  --color-neutral-450: oklch(0.62 0 0) /* new */;
+  --color-neutral-750: oklch(0.31 0 0) /* new */;
+  --color-neutral-850: oklch(0.23 0 0) /* new */;
+  --color-neutral-925: oklch(0.175 0 0) /* new */;
+}
+
+/* Tailwind config */
+@theme {
+  /* Type */
+  --text-xs: 12px;
+  --text-xs--line-height: calc(1 / 0.75);
+
+  --text-sm: 13px;
+  --text-sm--line-height: calc(1 / 0.85);
+
+  --text-base: 14px;
+  --text-base--line-height: calc(1.25 / 0.875);
+
+  --text-lg: 16px;
+  --text-lg--line-height: calc(1.25 / 1);
+
+  /* Easings & transitions */
+  --ease-bounce: cubic-bezier(0.2, 0, 0, 1.5);
+  --default-transition-duration: 100ms;
+
+  /* Animation */
+  --animate-refresh: refresh 0.5s ease-in-out infinite;
+  --animate-right: right 15s linear infinite;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* "spinner" = up and down arrows on number inputs */
+  .no-input-spinner {
+    appearance: textfield;
+
+    ::-webkit-outer-spin-button,
+    ::-webkit-inner-spin-button {
+      appearance: none;
+    }
+  }
+}
+
+.z-modal {
+  z-index: 9999;
+}
+
+@keyframes right {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.float {
+  animation: float 5s linear infinite alternate;
+}
+
+@keyframes float {
+  to {
+    transform: translate(5px, 15px);
+  }
+}
+
+@keyframes refresh {
+  to {
+    transform: rotate(360deg) scale(0.9);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  height: var(--skeleton-height, 0.5rem);
+  width: var(--skeleton-width);
+  background-color: #f3f4f6;
+  /* neutral-100 for light mode */
+}
+
+.skeleton-line::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  animation: shimmer var(--shimmer-duration, 1.5s) var(--shimmer-delay, 0s) infinite ease-in-out;
+  content: '';
+  background: linear-gradient(90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0) 100%);
+}
+
+.dark-mode .skeleton-line {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark-mode .skeleton-line::after {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0) 100%);
+}
