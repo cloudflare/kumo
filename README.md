@@ -56,4 +56,4 @@ The components follow WAI-ARIA guidelines and work with keyboard navigation. The
 
 ## Styling
 
-The library uses Tailwind CSS. You can use a different CSS framework if you prefer.
+The library uses Tailwind CSS.
