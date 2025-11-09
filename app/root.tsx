@@ -72,19 +72,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Update active indicator position when route changes
     if (!navRef.current) return;
-    
+
     const updateIndicator = () => {
-      const activeLink = navRef.current?.querySelector(`[href="${location.pathname}"]`);
-      if (activeLink && navRef.current) {
-        const navRect = navRef.current.getBoundingClientRect();
+      const navEl = navRef.current;
+      const activeLink = navEl?.querySelector(
+        `[href="${location.pathname}"]`
+      ) as HTMLElement | null;
+
+      if (navEl && activeLink) {
+        const navRect = navEl.getBoundingClientRect();
         const linkRect = activeLink.getBoundingClientRect();
-        
+        const navStyles = getComputedStyle(navEl);
+        const paddingTop = parseFloat(navStyles.paddingTop || "0");
+        const offsetAdjustment = navEl.clientTop + paddingTop;
+
         setActiveIndicator({
-          top: linkRect.top - navRect.top,
+          top: linkRect.top - navRect.top + navEl.scrollTop - offsetAdjustment,
           height: linkRect.height,
         });
+      } else {
+        setActiveIndicator(null);
       }
     };
 
@@ -170,21 +178,24 @@ export default function App() {
         <div className={cn("h-[49px] px-4 flex items-center font-medium flex-none", "border-b border-neutral-200 dark:border-neutral-800")}>        
           {/* Sidebar */}
         </div>
-        <div ref={navRef} className="p-4 text-sm text-neutral-600 overflow-y-auto overscroll-contain grow min-h-0 relative">
-          {/* Animated background indicator */}
-          {activeIndicator && (
-            <div
-              className={cn(
-                "absolute left-4 right-4 bg-neutral-200/50 dark:bg-neutral-800 rounded-lg pointer-events-none",
-                !isInitialLoad && "transition-all duration-300 ease-out"
-              )}
-              style={{
-                top: `${activeIndicator.top}px`,
-                height: `${activeIndicator.height}px`,
-              }}
-            />
-          )}
+        <div
+          ref={navRef}
+          className="p-4 text-sm text-neutral-600 overflow-y-auto overscroll-contain grow min-h-0 relative"
+        >
           <div className="relative">
+            {/* Animated background indicator */}
+            {activeIndicator && (
+              <div
+                className={cn(
+                  "absolute left-0 right-4 bg-neutral-200/50 dark:bg-neutral-800 rounded-lg pointer-events-none",
+                  !isInitialLoad && "transition-all duration-300 ease-out"
+                )}
+                style={{
+                  top: `${activeIndicator.top}px`,
+                  height: `${activeIndicator.height}px`,
+                }}
+              />
+            )}
             <ul className="flex flex-col">
               <li>
                 <Link 

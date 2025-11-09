@@ -73,6 +73,7 @@ function ToastTriggerButton() {
 export default function Home() {
   const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [switchToggled, setSwitchToggled] = useState(true)
+  const [checked, setChecked] = useState(true)
 
   const components = [
   {
@@ -201,7 +202,7 @@ export default function Home() {
   },
   {
     name: "Checkbox",
-    Component: <Checkbox label="Max bandwidth" />,
+    Component: <Checkbox label="Max bandwidth" checked={checked} onValueChange={(checked) => { setChecked(checked) }} />,
   },
   {
     name: "LayerCard",
