@@ -57,7 +57,7 @@ export const MenuBar = ({
   return (
     <nav
       className={cn(
-        "pl-[1px] bg-neutral-200 dark:bg-neutral-800 border border-color flex rounded-lg shadow-xs transition-colors",
+        "pl-px bg-neutral-200 dark:bg-neutral-800 border border-color flex rounded-lg shadow-xs transition-colors",
         className
       )}
       ref={menuRef}

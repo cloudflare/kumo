@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { Link } from "react-router";
 import { Surface } from "../surface/surface";
 import { cn } from "../utils";
+import { useLinkComponent } from "../link-provider";
 
 export function LayerCard({
   className,
@@ -17,6 +17,7 @@ export function LayerCard({
   href?: string;
   badge?: ReactNode;
 }) {
+  const LinkComponent = useLinkComponent();
   return (
     <Surface
       className={cn(
@@ -25,7 +26,7 @@ export function LayerCard({
       )}
     >
       {href ? (
-        <Link to={href} className="!no-underline">
+        <LinkComponent href={href} to={href} className="no-underline!">
           <header className="px-4 py-2.5 font-medium text-neutral-500 flex items-center justify-between text-base hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer transition-colors">
             <div className="flex items-center gap-2">
               {title}
@@ -33,7 +34,7 @@ export function LayerCard({
             </div>
             <ArrowRightIcon />
           </header>
-        </Link>
+        </LinkComponent>
       ) : (
         <header className="px-4 py-2.5 font-medium text-neutral-500 flex items-center justify-between text-base">
           <div className="flex items-center gap-2">

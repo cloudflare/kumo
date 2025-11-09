@@ -31,7 +31,7 @@ import { ClipboardText } from "~/components/clipboard-text/clipboard-text";
 import { Expandable } from "~/components/expandable/expandable";
 import { Combobox } from "~/components/combobox/combobox";
 import { MenuBar } from "~/components/menubar/menubar";
-import { Toggle } from "~/components/toggle/toggle";
+import { Switch } from "~/components/switch/switch";
 import { CodeBlock } from "~/components/code/code-lazy";
 import { LayerCard } from "~/components/layer-card/layer-card";
 import { Loader } from "~/components/loader/loader";
@@ -50,6 +50,8 @@ import { PageHeader } from "~/blocks/page-header";
 import { ResourceListPage } from "~/layouts/resource-list";
 import { Pagination } from "~/components/pagination/pagination";
 import { InputArea } from "~/components/input/input-area";
+import { Link } from "react-router";
+import Meter from "~/components/meter/meter";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -137,8 +139,8 @@ export default function Home() {
     ),
   },
   {
-    name: "Toggle",
-    Component: <Toggle toggled onClick={() => {}} />,
+    name: "Switch",
+    Component: <Switch toggled onClick={() => {}} />,
   },
   {
     name: "Field",
@@ -292,14 +294,12 @@ export default function Home() {
   {
     name: "Tabs",
     Component: (
-      <Tabs 
-        links={[
-        { label: "Home", href: "/" },
-        { label: "About", href: "/?id=2" },
-        { label: "Contact", href: "/?id=3" },
-      ]}
-        matchQuery={true}
-        matchQueryKeys={["id"]}
+      <Tabs
+        tabs={[
+          { value: "home", label: "Home" },
+          { value: "about", label: "About" },
+          { value: "contact", label: "Contact" },
+        ]}
       />
     ),
   },
@@ -360,6 +360,14 @@ export default function Home() {
     Component: (
       <InputArea placeholder="Enter your name" />
     )
+  },
+  {
+    name: "Meter",
+    Component: (
+        <div className="w-full px-4">
+            <Meter value={75} label="My meter" />
+        </div>
+    )
   }
 ];
 
@@ -395,72 +403,9 @@ export default function Home() {
           </ul>
         </div>
 
-        {/* <div className="flex flex-col gap-4 p-12">
-          <div>
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Empty
-            </span>
-            <Empty 
-              icon={<SquaresFourIcon size={48} />}
-              title="Create a Queue" 
-              description="Build event-driven systems by creating a Queue above, or use Wrangler CLI to create a Queue." 
-              commandLine="npx wrangler queues create BINDING_NAME" 
-              contents={<div className="flex items-center gap-2">
-                <Button icon={<CodeIcon />}>See examples</Button>
-                <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
-              </div>}
-            />
-          </div>
+        <div className="flex flex-col gap-4 p-12">
 
-          <div>
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Breadcrumbs
-            </span>
-            <Breadcrumbs
-              items={[
-                {
-                  icon: <HouseIcon />,
-                  label: "Workers & Pages",
-                  to: "/",
-                },
-                {
-                  label: "cloudflare-dev-platform",
-                  to: "/about",
-                }
-              ]}
-            />
-          </div>
-
-          <div className="bg-surface-secondary">
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Page Header
-            </span>
-            <PageHeader
-              breadcrumbs={[
-                {
-                  icon: <HouseIcon />,
-                  label: "Workers & Pages",
-                  to: "/",
-                },
-                {
-                  label: "cloudflare-dev-platform",
-                  to: "/about",
-                }
-              ]}
-              tabs={[
-                { label: "Overview", href: "/" },
-                { label: "Metrics", href: "/?id=metrics" },
-                { label: "Deployments", href: "/?id=deployments" },
-                { label: "Bindings", href: "/?id=bindings" },
-                { label: "Observability", href: "/?id=observability" },
-                { label: "Settings", href: "/?id=settings" },
-            ]}
-            >
-              <Button icon={<CodeIcon />}>Edit code</Button>
-              <Button icon={<GlobeIcon />} variant="primary">Visit</Button>
-            </PageHeader>
-          </div>
-
+          
           <div className="bg-surface-secondary">
             <span className="text-neutral-500 font-medium top-4 left-4 text-base">
               Resource List Page
@@ -492,7 +437,7 @@ export default function Home() {
             </ResourceListPage>
           </div>
 
-        </div> */}
+        </div>
       </main>
     </div>
   );

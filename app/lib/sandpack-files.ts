@@ -228,16 +228,16 @@ export function Badge({ children, variant = "primary", className }: BadgeProps) 
   );
 }`,
 
-  "/components/toggle.tsx": `import React from "react";
+  "/components/switch.tsx": `import React from "react";
 import { cn } from "./utils";
 
-interface ToggleProps {
+interface SwitchProps {
   toggled?: boolean;
   onClick?: () => void;
   className?: string;
 }
 
-export function Toggle({ toggled, onClick, className }: ToggleProps) {
+export function Switch({ toggled, onClick, className }: SwitchProps) {
   return (
     <button
       type="button"

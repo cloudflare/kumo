@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowsClockwiseIcon, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
 import { cn } from "../utils";
-import { Link } from "react-router";
+import { useLinkComponent } from "../link-provider";
 
 interface KumoButtonVariantsProps {
   shape?: "base" | "square" | "circle";
@@ -101,6 +101,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const { type, ...restProps } = props;
     return (
       <button
         ref={ref}
@@ -111,7 +112,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className
         )}
         disabled={loading || disabled}
-        {...props}
+        type={type ?? "button"}
+        {...restProps}
       >
         {loading && <Loader size={size === "lg" ? 16 : 14} />}
         {!loading && renderIconNode(IconComponent)}
@@ -157,42 +159,27 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     },
     ref
   ) => {
+    const LinkComponent = useLinkComponent();
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
       : {};
 
-    if (!external) {
-      return (
-        <Link
-          className={cn(
-            buttonVariants({ variant, size, shape }),
-            "flex items-center !no-underline",
-            className
-          )}
-          to={String(href)}
-          {...props}
-        >
-          {renderIconNode(IconComponent)}
-          {children}
-        </Link>
-      );
-    }
-
     return (
-      <a
+      <LinkComponent
         ref={ref}
-        href={href}
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "flex items-center !no-underline",
+          "flex items-center no-underline!",
           className
         )}
+        href={href}
+        to={typeof href === "string" ? href : undefined}
         {...externalProps}
         {...props}
       >
         {renderIconNode(IconComponent)}
         {children}
-      </a>
+      </LinkComponent>
     );
   }
 );

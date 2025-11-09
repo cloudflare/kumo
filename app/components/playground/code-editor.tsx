@@ -5,7 +5,7 @@
  */
 
 import React from "react";
-import { cn } from "~/components/utils";
+import { cn } from "../utils";
 
 interface CodeEditorProps {
   value: string;

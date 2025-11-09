@@ -98,17 +98,17 @@ export const COMPONENT_REGISTRY: Record<string, ComponentMetadata> = {
       '<Checkbox checked={true} label="Enabled" />',
     ],
   },
-  Toggle: {
-    name: "Toggle",
-    importPath: "~/components/toggle/toggle",
-    description: "Toggle switch component.",
+  Switch: {
+    name: "Switch",
+    importPath: "~/components/switch/switch",
+    description: "Switch component for toggling boolean state.",
     category: "Form",
     props: [
       { name: "toggled", type: "boolean" },
       { name: "onClick", type: "() => void" },
     ],
     examples: [
-      '<Toggle toggled={true} onClick={() => {}} />',
+      '<Switch toggled={true} onClick={() => {}} />',
     ],
   },
   Dialog: {

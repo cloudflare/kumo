@@ -77,7 +77,7 @@ export default function PlaygroundSandpack() {
         if (data.code.includes("<Banner")) imports.push('import { Banner } from "./components/banner";');
         if (data.code.includes("<LayerCard")) imports.push('import { LayerCard } from "./components/layer-card";');
         if (data.code.includes("<Loader")) imports.push('import { Loader } from "./components/loader";');
-        if (data.code.includes("<Toggle")) imports.push('import { Toggle } from "./components/toggle";');
+        if (data.code.includes("<Switch")) imports.push('import { Switch } from "./components/switch";');
         if (data.code.includes("<Select") || data.code.includes("<Option")) {
           imports.push('import { Select, Option } from "./components/select";');
         }

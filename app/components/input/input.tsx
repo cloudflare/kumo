@@ -1,5 +1,5 @@
 import { cn } from "../utils";
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import { forwardRef, type ComponentPropsWithoutRef, useId } from "react";
 import { Input as BaseInput } from "@base-ui-components/react/input";
 
 interface KumoInputVariantsProps {
@@ -47,27 +47,44 @@ export function inputVariants({
 
 export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const {
-    children,
     className,
-    onValueChange,
     size = "base",
     variant = "default",
-    onChange,
+    label,
+    hideLabel = true,
+    id,
     ...inputProps
   } = props;
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+
   return (
-    <BaseInput
-      ref={ref}
-      className={cn(
-        inputVariants({ size, variant, focusIndicator: true }),
-        className
+    <>
+      {label && (
+        <label
+          htmlFor={inputId}
+          className={hideLabel ? "sr-only" : "block text-sm font-medium text-surface"}
+        >
+          {label}
+        </label>
       )}
-      {...inputProps}
-    />
+      <BaseInput
+        ref={ref}
+        id={inputId}
+        className={cn(
+          inputVariants({ size, variant, focusIndicator: true }),
+          className
+        )}
+        {...inputProps}
+      />
+    </>
   );
 });
 
 Input.displayName = "Input";
 
 export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
-  BaseInputProps;
+  BaseInputProps & {
+    label?: string;
+    hideLabel?: boolean;
+  };

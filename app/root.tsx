@@ -279,11 +279,11 @@ export default function App() {
               </li>
               <li>
                 <Link 
-                  to="/components/toggle" 
+                  to="/components/switch" 
                   prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/toggle" && LI_ACTIVE_STYLE)}
+                  className={cn(LI_STYLE, location.pathname === "/components/switch" && LI_ACTIVE_STYLE)}
                 >
-                  Toggle
+                  Switch
                 </Link>
               </li>
               <li>

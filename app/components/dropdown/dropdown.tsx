@@ -7,7 +7,7 @@ import {
   CheckIcon as Check,
   type Icon,
 } from "@phosphor-icons/react";
-import { Link } from "react-router";
+import { useLinkComponent } from "../link-provider";
 
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubmenuTrigger>,
@@ -53,7 +53,7 @@ const DropdownMenuContent = React.forwardRef<
         className={cn(
           "z-50 bg-surface dark:bg-neutral-900 text-surface overflow-hidden", // background
           "ring ring-neutral-950/10 dark:ring-neutral-800 shadow-lg rounded-lg", // border part
-          "min-w-[9rem] p-1.5", // spacing
+          "min-w-36 p-1.5", // spacing
           "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
           "data-[side=bottom]:slide-in-from-top-2", // bottom side animation
           "data-[side=left]:slide-in-from-right-2", // left side animation
@@ -100,6 +100,7 @@ const DropdownMenuItem = React.forwardRef<
     },
     ref
   ) => {
+    const LinkComponent = useLinkComponent();
     const content = React.useMemo(() => {
       const innerContent = (
         <>
@@ -119,12 +120,12 @@ const DropdownMenuItem = React.forwardRef<
       const styles = cn(
         "flex items-center",
         variant === "danger" &&
-          "text-error data-[highlighted]:text-error data-[highlighted]:bg-red-100 data-[highlighted]:dark:bg-red-950"
+          "text-error data-highlighted:text-error data-highlighted:bg-red-100 data-highlighted:dark:bg-red-950"
       );
       if (isExternal) {
         return (
           <a
-            className={cn(styles, "w-full !no-underline !text-inherit")}
+            className={cn(styles, "w-full no-underline! text-inherit!")}
             href={href}
             target="_blank"
             rel="noreferrer"
@@ -140,8 +141,9 @@ const DropdownMenuItem = React.forwardRef<
         );
       }
       return (
-        <Link
-          className={cn(styles, "w-full !no-underline !text-inherit")}
+        <LinkComponent
+          className={cn(styles, "w-full no-underline! text-inherit!")}
+          href={href}
           to={href}
           /**
            * For some reason we need this here to prevent the outer link
@@ -151,15 +153,15 @@ const DropdownMenuItem = React.forwardRef<
           onClick={(e) => e.stopPropagation()}
         >
           {innerContent}
-        </Link>
+        </LinkComponent>
       );
-    }, [href, IconComponent, children, selected, variant]);
+    }, [href, IconComponent, children, selected, variant, LinkComponent]);
 
     return (
       <DropdownMenuPrimitive.Item
         ref={ref}
         className={cn(
-          "data-[highlighted]:bg-neutral-100 dark:data-[highlighted]:bg-neutral-800 focus:text-secondary relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50",
+          "data-highlighted:bg-neutral-100 dark:data-highlighted:bg-neutral-800 focus:text-secondary relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50",
           inset && "pl-8",
           className
         )}

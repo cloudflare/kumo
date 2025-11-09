@@ -27,7 +27,7 @@ export function Callout({ children, variant = "info", icon, className }: Callout
       )}
     >
       <div className="flex gap-3">
-        {icon && <div className="flex-shrink-0 mt-0.5">{icon}</div>}
+        {icon && <div className="shrink-0 mt-0.5">{icon}</div>}
         <div className="flex-1 text-sm leading-relaxed [&>p]:my-1.5 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0">
           {children}
         </div>

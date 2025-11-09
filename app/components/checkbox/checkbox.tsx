@@ -23,43 +23,64 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   onValueChange?: (checked: boolean) => void;
 };
 
-export const Checkbox = ({
-  className,
-  checked,
-  onValueChange,
-  size,
-  label,
-  ...props
-}: InputProps) => {
-  return (
-    <label className="!inline-flex !m-0 items-center gap-2 cursor-pointer">
-      <input
-        type="checkbox"
-        className="hidden"
-        checked={checked}
-        onChange={(e) => {
-          onValueChange?.(e.target.checked);
-        }}
-      />
-
-      <div
+export const Checkbox = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      className,
+      checked,
+      onValueChange,
+      label,
+      onChange,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <label
         className={cn(
-          inputClasses,
-          checked ? selectedInputClasses : "",
-          className
+          "inline-flex! m-0! items-center gap-2 cursor-pointer",
+          disabled && "cursor-not-allowed opacity-60"
         )}
       >
-        {checked && (
-          <CheckIcon
-            size={12}
-            weight="bold"
-            className="m-auto text-neutral-100 dark:text-neutral-900"
-          />
+        <input
+          ref={ref}
+          type="checkbox"
+          className="sr-only"
+          checked={checked}
+          disabled={disabled}
+          onChange={(e) => {
+            onValueChange?.(e.target.checked);
+            onChange?.(e);
+          }}
+          {...props}
+        />
+
+        <div
+          aria-hidden
+          className={cn(
+            inputClasses,
+            checked ? selectedInputClasses : "",
+            disabled && "opacity-75 cursor-not-allowed",
+            className
+          )}
+        >
+          {checked && (
+            <CheckIcon
+              size={12}
+              weight="bold"
+              className="m-auto text-neutral-100 dark:text-neutral-900"
+            />
+          )}
+        </div>
+        {label && (
+          <span className="select-none" aria-hidden={false}>
+            {label}
+          </span>
         )}
-      </div>
-      {label && <span className="select-none">{label}</span>}
-    </label>
-  );
-};
+      </label>
+    );
+  }
+);
 
 Checkbox.displayName = "Checkbox";

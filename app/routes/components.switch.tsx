@@ -1,21 +1,21 @@
-import { Toggle } from "~/components/toggle/toggle";
+import { Switch } from "~/components/switch/switch";
 import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
 import { CodeBlock } from "~/components/code/code-lazy";
 
-export default function ToggleDoc() {
+export default function SwitchDoc() {
   return (
     <DocLayout
-      title="Toggle"
+      title="Switch"
       description="A two-state button that can be either on or off."
     >
       {/* Demo */}
       <ComponentSection>
         <ComponentExample
-          code={`<Toggle toggled={false} onClick={() => {}} />`}
+          code={`<Switch toggled={false} onClick={() => {}} />`}
         >
-          <Toggle toggled={false} onClick={() => {}} />
+          <Switch toggled={false} onClick={() => {}} />
         </ComponentExample>
       </ComponentSection>
 
@@ -24,7 +24,7 @@ export default function ToggleDoc() {
         <h2 className="text-2xl font-bold mb-4">Installation</h2>
         <CodeBlock
           lang="tsx"
-          code={`import { Toggle } from "~/components/toggle/toggle";`}
+          code={`import { Switch } from "~/components/switch/switch";`}
         />
       </ComponentSection>
 
@@ -33,14 +33,14 @@ export default function ToggleDoc() {
         <h2 className="text-2xl font-bold mb-4">Usage</h2>
         <CodeBlock
           lang="tsx"
-          code={`import { Toggle } from "~/components/toggle/toggle";
+          code={`import { Switch } from "~/components/switch/switch";
 import { useState } from "react";
 
 export default function Example() {
   const [toggled, setToggled] = useState(false);
   
   return (
-    <Toggle 
+    <Switch 
       toggled={toggled} 
       onClick={() => setToggled(!toggled)} 
     />
@@ -57,18 +57,18 @@ export default function Example() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Off State</h3>
             <ComponentExample
-              code={`<Toggle toggled={false} onClick={() => {}} />`}
+              code={`<Switch toggled={false} onClick={() => {}} />`}
             >
-              <Toggle toggled={false} onClick={() => {}} />
+              <Switch toggled={false} onClick={() => {}} />
             </ComponentExample>
           </div>
 
           <div>
             <h3 className="text-xl font-semibold mb-4">On State</h3>
             <ComponentExample
-              code={`<Toggle toggled={true} onClick={() => {}} />`}
+              code={`<Switch toggled={true} onClick={() => {}} />`}
             >
-              <Toggle toggled={true} onClick={() => {}} />
+              <Switch toggled={true} onClick={() => {}} />
             </ComponentExample>
           </div>
         </div>

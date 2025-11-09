@@ -7,7 +7,7 @@ import {
   PlusIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useMemo, useState, type ComponentPropsWithoutRef } from "react";
+import { useId, useMemo, useState, type ComponentPropsWithoutRef } from "react";
 
 interface LabelItem {
   creatable?: string;
@@ -19,7 +19,11 @@ type RootProps = ComponentPropsWithoutRef<typeof ComboboxBase.Root>;
 
 type ComboboxProps = Omit<
   RootProps,
-  "multiple" | "items" | "inputValue" | "onInputValueChange" | "onValueChange"
+  | "multiple"
+  | "items"
+  | "inputValue"
+  | "onInputValueChange"
+  | "onValueChange"
 > & {
   onCreate?: (value: string) => void;
   items?: LabelItem[];
@@ -27,26 +31,34 @@ type ComboboxProps = Omit<
   onInputValueChange?: (value: string) => string | undefined;
   onValueChange?: (value: LabelItem | null) => void;
   placeholder?: string;
+  inputId?: string;
+  label?: string;
+  hideLabel?: boolean;
 };
 
 export function Combobox({
   items,
   initialItems,
   onCreate,
-  onOpenChange,
   onInputValueChange,
-  value,
-  onValueChange,
+  value: valueProp,
+  onValueChange: onValueChangeProp,
   placeholder,
+  onOpenChange,
+  inputId,
+  label,
+  hideLabel = true,
   ...props
 }: ComboboxProps) {
-  const isControlled = Boolean(value);
-  const isItemsControlled = Boolean(items);
+  const isValueControlled = valueProp !== undefined;
+  const isItemsControlled = items !== undefined;
 
   const [controlledLabels, setLabels] = useState<LabelItem[]>(
     initialItems ?? items ?? []
   );
-  const [selected, setSelected] = useState<LabelItem | null>(null);
+  const [uncontrolledValue, setUncontrolledValue] = useState<LabelItem | null>(
+    null
+  );
   const [query, setQuery] = useState("");
 
   const labels = (isItemsControlled ? items : controlledLabels) ?? [];
@@ -57,7 +69,17 @@ export function Combobox({
     (l) => l.value.trim().toLocaleLowerCase() === lowered
   );
 
-  const updateSelected = isControlled ? onValueChange : setSelected;
+  const currentValue: LabelItem | null =
+    (valueProp as LabelItem | null | undefined) ?? uncontrolledValue;
+
+  const hasSelectedValue = currentValue !== null;
+
+  const setSelected = (next: LabelItem | null) => {
+    if (!isValueControlled) {
+      setUncontrolledValue(next);
+    }
+    onValueChangeProp?.(next ?? null);
+  };
 
   function handleCreate() {
     const nextItem = { id: lowered, value: trimmed };
@@ -67,7 +89,7 @@ export function Combobox({
         if (exists) return prevLabels;
         return [...prevLabels, nextItem];
       });
-    updateSelected?.(nextItem);
+    setSelected(nextItem);
     onCreate?.(trimmed);
   }
 
@@ -85,9 +107,29 @@ export function Combobox({
   }, [labels, onCreate, trimmed, lowered, exactExists]);
 
   const hasCreatable = itemsForView.at(-1)?.creatable;
+  const generatedInputId = useId();
+  const computedInputId = inputId ?? generatedInputId;
+  const labelId = useId();
+  const propsLookup = props as Record<string, unknown>;
+  const ariaLabelFromProps = propsLookup["aria-label"] as string | undefined;
+  const ariaLabelledbyFromProps = propsLookup["aria-labelledby"] as string | undefined;
+  const inputLabelledBy =
+    ariaLabelledbyFromProps ?? (label ? labelId : undefined);
+  const inputAriaLabel =
+    ariaLabelFromProps ?? (!inputLabelledBy ? label : undefined);
 
   return (
-    <ComboboxBase.Root
+    <>
+      {label && (
+        <label
+          id={labelId}
+          htmlFor={computedInputId}
+          className={hideLabel ? "sr-only" : "block text-sm font-medium text-surface"}
+        >
+          {label}
+        </label>
+      )}
+      <ComboboxBase.Root
       items={itemsForView}
       onValueChange={(nextItem) => {
         const next = nextItem as LabelItem;
@@ -95,10 +137,10 @@ export function Combobox({
           handleCreate();
           return;
         }
-        updateSelected?.(next);
+        setSelected(next);
         setQuery("");
       }}
-      value={selected}
+      value={currentValue}
       inputValue={query}
       onInputValueChange={(v) => {
         const modifiedStr = onInputValueChange?.(v) ?? v;
@@ -126,7 +168,7 @@ export function Combobox({
             (l) => l.value.trim().toLocaleLowerCase() === lowered
           );
           if (existing) {
-            updateSelected?.(existing);
+            setSelected(existing);
             setQuery("");
             return;
           }
@@ -139,16 +181,30 @@ export function Combobox({
     >
       <div className="relative">
         <ComboboxBase.Input
+          id={computedInputId}
           placeholder={placeholder}
+          aria-label={inputAriaLabel}
+          aria-labelledby={inputLabelledBy}
           className={inputVariants()}
         />
-        <div className="absolute top-1/2 -translate-y-1/2 right-2 flex gap-1">
-          <ComboboxBase.Clear className="size-5 flex items-center justify-center cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded">
+        <div className="absolute top-1/2 -translate-y-1/2 right-0 flex">
+          <ComboboxBase.Clear
+            aria-label="Clear selection"
+            className={cn(
+              "size-8 cursor-pointer",
+              hasSelectedValue ? "flex items-center justify-center" : "hidden"
+            )}
+          >
             <XIcon />
           </ComboboxBase.Clear>
-          <ComboboxBase.Trigger className="size-5 flex items-center justify-center cursor-pointer">
-            <CaretDownIcon />
-          </ComboboxBase.Trigger>
+          {!hasSelectedValue && (
+            <ComboboxBase.Trigger
+              aria-label="Toggle options"
+              className="size-8 flex items-center justify-center cursor-pointer"
+            >
+              <CaretDownIcon />
+            </ComboboxBase.Trigger>
+          )}
         </div>
       </div>
       <ComboboxBase.Portal>
@@ -159,7 +215,7 @@ export function Combobox({
         >
           <ComboboxBase.Popup
             className={cn(
-              "min-w-[var(--anchor-width)] max-h-[min(var(--available-height),24rem)] max-w-[var(--available-width)] overflow-y-auto scroll-pt-2 scroll-pb-2 overscroll-contain p-1.5",
+              "min-w-(--anchor-width) max-h-[min(var(--available-height),24rem)] max-w-(--available-width) overflow-y-auto scroll-pt-2 scroll-pb-2 overscroll-contain p-1.5",
               "z-50 bg-surface dark:bg-neutral-900 text-surface overflow-hidden", // background
               "ring ring-neutral-950/10 dark:ring-neutral-800 shadow-lg rounded-lg" // border part
             )}
@@ -172,7 +228,7 @@ export function Combobox({
                 item.creatable ? (
                   <ComboboxBase.Item
                     key={item.id}
-                    className="data-[highlighted]:bg-neutral-100 dark:data-[highlighted]:bg-neutral-800 px-2 rounded py-1.5 text-base grid grid-cols-[16px_1fr] gap-2 group"
+                    className="data-highlighted:bg-neutral-100 dark:data-highlighted:bg-neutral-800 px-2 rounded py-1.5 text-base grid grid-cols-[16px_1fr] gap-2 group"
                     value={item}
                   >
                     <span className="col-start-1 flex items-center">
@@ -187,11 +243,11 @@ export function Combobox({
                         "nth-last-[2]:mb-1.5 nth-last-[2]:pb-1.5 nth-last-[2]:border-b border-neutral-200 dark:border-neutral-800"
                     )}
                   >
-                    <ComboboxBase.Item
-                      key={item.id}
-                      className="data-[highlighted]:bg-neutral-100 dark:data-[highlighted]:bg-neutral-800 px-2 rounded py-1.5 text-base grid grid-cols-[16px_1fr] gap-2 group cursor-pointer"
-                      value={item}
-                    >
+                  <ComboboxBase.Item
+                    key={item.id}
+                    className="data-highlighted:bg-neutral-100 dark:data-highlighted:bg-neutral-800 px-2 rounded py-1.5 text-base grid grid-cols-[16px_1fr] gap-2 group cursor-pointer"
+                    value={item}
+                  >
                       <ComboboxBase.ItemIndicator className="col-start-1 flex items-center">
                         <CheckIcon />
                       </ComboboxBase.ItemIndicator>
@@ -205,5 +261,6 @@ export function Combobox({
         </ComboboxBase.Positioner>
       </ComboboxBase.Portal>
     </ComboboxBase.Root>
+    </>
   );
 }
