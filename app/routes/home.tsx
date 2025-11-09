@@ -16,16 +16,10 @@ import {
 } from "@phosphor-icons/react";
 import { Input } from "~/components/input/input";
 import { Surface } from "~/components/surface/surface";
-import {
-  Dialog,
-  DialogDescription,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/dialog/dialog";
+import { Dialog } from "~/components/dialog/dialog";
 import { Checkbox } from "~/components/checkbox/checkbox";
 import { DropdownMenu } from "~/components/dropdown/dropdown";
-import { Option, Select } from "~/components/select/select";
+import { Select } from "~/components/select/select";
 import { Tooltip, TooltipProvider } from "~/components/tooltip/tooltip";
 import { ClipboardText } from "~/components/clipboard-text/clipboard-text";
 import { Expandable } from "~/components/expandable/expandable";
@@ -78,6 +72,7 @@ function ToastTriggerButton() {
 
 export default function Home() {
   const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [switchToggled, setSwitchToggled] = useState(true)
 
   const components = [
   {
@@ -116,9 +111,9 @@ export default function Home() {
           return labels[v];
         }}
       >
-        <Option value="all">All deployed versions</Option>
-        <Option value="active">Active versions</Option>
-        <Option value="specific">Specific versions</Option>
+        <Select.Option value="all">All deployed versions</Select.Option>
+        <Select.Option value="active">Active versions</Select.Option>
+        <Select.Option value="specific">Specific versions</Select.Option>
       </Select>
     ),
   },
@@ -140,7 +135,7 @@ export default function Home() {
   },
   {
     name: "Switch",
-    Component: <Switch toggled onClick={() => {}} />,
+    Component: <Switch toggled={switchToggled} onClick={() => { setSwitchToggled(!switchToggled) }} />,
   },
   {
     name: "Field",
@@ -160,13 +155,13 @@ export default function Home() {
   {
     name: "Dialog",
     Component: (
-      <DialogRoot>
-        <DialogTrigger render={(p) => <Button {...p}>Click me!</Button>} />
+      <Dialog.Root>
+        <Dialog.Trigger render={(p) => <Button {...p}>Click me!</Button>} />
         <Dialog>
-          <DialogTitle>Hello!</DialogTitle>
-          <DialogDescription>I'm a dialog.</DialogDescription>
+          <Dialog.Title>Hello!</Dialog.Title>
+          <Dialog.Description>I'm a dialog.</Dialog.Description>
         </Dialog>
-      </DialogRoot>
+      </Dialog.Root>
     ),
   },
   {
@@ -211,8 +206,9 @@ export default function Home() {
   {
     name: "LayerCard",
     Component: (
-      <LayerCard className="w-[200px]" title="Next Steps" href="/">
-        <div className="p-4">Hello</div>
+      <LayerCard className="w-[200px]">
+        <LayerCard.Secondary>Next Steps</LayerCard.Secondary>
+        <LayerCard.Primary>Hello</LayerCard.Primary>
       </LayerCard>
     ),
   },
@@ -365,7 +361,7 @@ export default function Home() {
     name: "Meter",
     Component: (
         <div className="w-full px-4">
-            <Meter value={75} label="My meter" />
+            <Meter value={75} label="My meter" customValue="100 / 5,000" />
         </div>
     )
   }
@@ -401,42 +397,6 @@ export default function Home() {
               );
             })}
           </ul>
-        </div>
-
-        <div className="flex flex-col gap-4 p-12">
-
-          
-          <div className="bg-surface-secondary">
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Resource List Page
-            </span>
-            <ResourceListPage
-              title="Resource List Page"
-              description="This is a resource list page."
-              icon={<SquaresFourIcon size={28} />}
-              usage={<>Usage Section</>}
-              additionalContent={<>Additional Content Section</>}
-            >
-              <Empty 
-                icon={<SquaresFourIcon size={48} />}
-                title="Create a Queue" 
-                description="Build event-driven systems by creating a Queue above, or use Wrangler CLI to create a Queue." 
-                commandLine="npx wrangler queues create BINDING_NAME" 
-                contents={<div className="flex items-center gap-2">
-                  <Button icon={<CodeIcon />}>See examples</Button>
-                  <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
-                </div>}
-              />
-
-              <div className="mt-4">
-                <Pagination page={1} perPage={10} totalCount={100} setPage={function (page: number): void {
-                    throw new Error("Function not implemented.");
-                  }}
-                />
-              </div>
-            </ResourceListPage>
-          </div>
-
         </div>
       </main>
     </div>

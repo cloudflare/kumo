@@ -1,7 +1,7 @@
 import { Select as SelectBase } from "@base-ui-components/react/select";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { useId } from "react";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, FC, ReactNode } from "react";
 import { cn } from "../utils";
 import { buttonVariants } from "../button/button";
 
@@ -13,7 +13,11 @@ type SelectProps = ComponentPropsWithoutRef<typeof SelectBase.Root> & {
   placeholder?: string;
 };
 
-export function Select({
+type SelectComponent = FC<SelectProps> & {
+  Option: FC<OptionProps>;
+};
+
+function SelectRoot({
   children,
   className,
   renderValue,
@@ -81,13 +85,15 @@ export function Select({
   );
 }
 
-export function Option({
-  children,
-  value,
-}: {
+type OptionProps = {
   children: ReactNode;
   value: string;
-}) {
+};
+
+function Option({
+  children,
+  value,
+}: OptionProps) {
   return (
     <SelectBase.Item
       value={value}
@@ -100,3 +106,9 @@ export function Option({
     </SelectBase.Item>
   );
 }
+
+const Select = Object.assign(SelectRoot, {
+  Option,
+}) as SelectComponent;
+
+export { Select };

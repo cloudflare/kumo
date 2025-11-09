@@ -78,11 +78,20 @@ export default function PlaygroundSandpack() {
         if (data.code.includes("<LayerCard")) imports.push('import { LayerCard } from "./components/layer-card";');
         if (data.code.includes("<Loader")) imports.push('import { Loader } from "./components/loader";');
         if (data.code.includes("<Switch")) imports.push('import { Switch } from "./components/switch";');
-        if (data.code.includes("<Select") || data.code.includes("<Option")) {
-          imports.push('import { Select, Option } from "./components/select";');
+        if (data.code.includes("<Select")) {
+          imports.push('import { Select } from "./components/select";');
         }
         if (data.code.includes("<Dialog")) {
-          imports.push('import { Dialog, DialogRoot, DialogTrigger, DialogTitle, DialogDescription } from "./components/dialog";');
+          imports.push('import { Dialog } from "./components/dialog";');
+          if (
+            data.code.includes("<DialogRoot") ||
+            data.code.includes("<DialogTrigger") ||
+            data.code.includes("<DialogTitle") ||
+            data.code.includes("<DialogDescription") ||
+            data.code.includes("<DialogClose")
+          ) {
+            imports.push('import { DialogRoot, DialogTrigger, DialogTitle, DialogDescription, DialogClose } from "./components/dialog";');
+          }
         }
         if (data.code.includes("<Tooltip")) {
           imports.push('import { Tooltip, TooltipProvider } from "./components/tooltip";');

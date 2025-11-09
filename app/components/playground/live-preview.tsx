@@ -14,16 +14,10 @@ import { Loader } from "../loader/loader";
 import { Button } from "../button/button";
 import { Input } from "../input/input";
 import { InputArea } from "../input/input-area";
-import { Select, Option } from "../select/select";
+import { Select } from "../select/select";
 import { Checkbox } from "../checkbox/checkbox";
 import { Switch } from "../switch/switch";
-import {
-  Dialog,
-  DialogRoot,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-} from "../dialog/dialog";
+import { Dialog } from "../dialog/dialog";
 import { Tooltip, TooltipProvider } from "../tooltip/tooltip";
 import { DropdownMenu } from "../dropdown/dropdown";
 import { Surface } from "../surface/surface";
@@ -85,14 +79,14 @@ const COMPONENT_SCOPE = {
   Input,
   InputArea,
   Select,
-  Option,
   Checkbox,
   Switch,
   Dialog,
-  DialogRoot,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
+  DialogRoot: Dialog.Root,
+  DialogTrigger: Dialog.Trigger,
+  DialogTitle: Dialog.Title,
+  DialogDescription: Dialog.Description,
+  DialogClose: Dialog.Close,
   Tooltip,
   TooltipProvider,
   DropdownMenu,

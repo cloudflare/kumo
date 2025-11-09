@@ -68,7 +68,7 @@ export const COMPONENT_REGISTRY: Record<string, ComponentMetadata> = {
   Select: {
     name: "Select",
     importPath: "~/components/select/select",
-    description: "Dropdown select component. Use with Option children.",
+    description: "Dropdown select component. Use with Select.Option children.",
     category: "Form",
     props: [
       { name: "className", type: "string" },
@@ -78,8 +78,8 @@ export const COMPONENT_REGISTRY: Record<string, ComponentMetadata> = {
     ],
     examples: [
       `<Select className="w-[200px]">
-  <Option value="1">Option 1</Option>
-  <Option value="2">Option 2</Option>
+  <Select.Option value="1">Option 1</Select.Option>
+  <Select.Option value="2">Option 2</Select.Option>
 </Select>`,
     ],
   },
@@ -114,17 +114,24 @@ export const COMPONENT_REGISTRY: Record<string, ComponentMetadata> = {
   Dialog: {
     name: "Dialog",
     importPath: "~/components/dialog/dialog",
-    description: "Modal dialog. Use DialogRoot, DialogTrigger, Dialog, DialogTitle, DialogDescription.",
+    description: "Modal dialog. Use Dialog.Root, Dialog.Trigger, Dialog.Title, Dialog.Description, Dialog.Close.",
     category: "Overlay",
     props: [],
     examples: [
-      `<DialogRoot>
-  <DialogTrigger render={<Button>Open</Button>} />
+      `<Dialog.Root>
+  <Dialog.Trigger render={<Button>Open</Button>} />
   <Dialog>
-    <DialogTitle>Title</DialogTitle>
-    <DialogDescription>Description</DialogDescription>
+    <Dialog.Title>Title</Dialog.Title>
+    <Dialog.Description>Description</Dialog.Description>
+    <div className="flex justify-end gap-2 mt-4">
+      <Dialog.Close render={(p) => (
+        <Button variant="secondary" {...p}>
+          Cancel
+        </Button>
+      )} />
+    </div>
   </Dialog>
-</DialogRoot>`,
+</Dialog.Root>`,
     ],
   },
   Tooltip: {

@@ -33,20 +33,6 @@ export default function ResourceListDoc() {
 </ResourceListPage>`}
         >
           <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
-            {/* <ResourceListPage
-              title="Components"
-              description="Reusable UI components for building modern applications."
-              icon={<ListIcon size={32} />}
-            >
-              <div className="space-y-4">
-                <div className="p-4 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                  Component 1
-                </div>
-                <div className="p-4 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                  Component 2
-                </div>
-              </div>
-            </ResourceListPage> */}
             <ResourceListPage
               title="Resource List Page"
               description="This is a resource list page."

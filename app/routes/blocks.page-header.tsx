@@ -39,8 +39,8 @@ export default function PageHeaderDoc() {
     defaultTab={'overview'}
     onValueChange={(v) => console.log(v)}
 >
-    <Button icon={<CodeIcon />}>Edit code</Button>
-    <Button icon={<GlobeIcon />} variant="primary">Visit</Button>
+    <Button icon={<CodeIcon />} className="h-8">Edit code</Button>
+    <Button icon={<GlobeIcon />} variant="primary" className="h-8">Visit</Button>
 </PageHeader>`}
         >
           <PageHeader
@@ -67,8 +67,8 @@ export default function PageHeaderDoc() {
               defaultTab={'overview'}
               onValueChange={(v) => console.log(v)}
             >
-              <Button icon={<CodeIcon />}>Edit code</Button>
-              <Button icon={<GlobeIcon />} variant="primary">Visit</Button>
+              <Button icon={<CodeIcon />} className="h-8">Edit code</Button>
+              <Button icon={<GlobeIcon />} variant="primary" className="h-8">Visit</Button>
             </PageHeader>
         </ComponentExample>
       </ComponentSection>

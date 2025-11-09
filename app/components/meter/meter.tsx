@@ -5,6 +5,7 @@ import { cn } from "../utils";
 type RootProps = ComponentPropsWithoutRef<typeof BaseMeter.Root>;
 
 interface MeterProps extends RootProps {
+  customValue?: string;
   label: string;
   showValue?: boolean;
   trackClassName?: string;
@@ -13,6 +14,7 @@ interface MeterProps extends RootProps {
 
 export default function Meter({
   value,
+  customValue,
   label,
   showValue = true,
   className,
@@ -30,9 +32,16 @@ export default function Meter({
         <BaseMeter.Label className="text-xs text-neutral-600 dark:text-neutral-400">
           {label}
         </BaseMeter.Label>
-        {showValue && (
+        { customValue ? (
+            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100 tabular-nums">{customValue}</span>
+        ) : (
+            <>
+                {showValue && (
           <BaseMeter.Value className="text-sm font-medium text-neutral-900 dark:text-neutral-100 tabular-nums" />
         )}
+            </>
+        )
+    }
       </div>
       <BaseMeter.Track
         className={cn(

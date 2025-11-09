@@ -127,7 +127,7 @@ Alternative: Simple list with Surface (for non-card layouts):
 <div className="flex gap-3">
   <Input placeholder="Search..." className="flex-1" />
   <Select className="w-32">
-    <Option value="all">Show all</Option>
+    <Select.Option value="all">Show all</Select.Option>
   </Select>
   <Button variant="secondary" shape="square">↻</Button>
 </div>
@@ -204,7 +204,7 @@ FULL EXAMPLE - Workers page using ResourceListPage + LayerCard:
   description="Build & deploy serverless functions, sites, and full-stack applications."
   usage={
     <>
-      <h2 className="!font-semibold text-xl mb-4">Usage</h2>
+      <h2 className="font-semibold! text-xl mb-4">Usage</h2>
       <div className="grid grid-cols-2 gap-3">
         <Surface className="p-4">
           <div className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Standard requests</div>
@@ -222,7 +222,7 @@ FULL EXAMPLE - Workers page using ResourceListPage + LayerCard:
     {/* Search + Filters */}
     <div className="flex gap-3">
       <Input placeholder="Search workers" className="flex-1" />
-      <Select className="w-32"><Option value="all">Show all</Option></Select>
+      <Select className="w-32"><Select.Option value="all">Show all</Select.Option></Select>
       <Button variant="secondary" shape="square">↻</Button>
     </div>
 
