@@ -59,8 +59,9 @@ export function Pagination({
               aria-label="Previous page"
               disabled={page <= 1}
               onClick={() => {
-                setPage(page - 1);
-                setEditingPage(page ?? 0 - 1);
+                const previousPage = Math.max(page - 1, 1);
+                setPage(previousPage);
+                setEditingPage(previousPage);
               }}
             >
               <CaretLeftIcon size={16} />
@@ -85,8 +86,9 @@ export function Pagination({
               aria-label="Next page"
               disabled={page === maxPage}
               onClick={() => {
-                setPage(page + 1);
-                setEditingPage(page + 1);
+                const nextPage = Math.min(page + 1, maxPage);
+                setPage(nextPage);
+                setEditingPage(nextPage);
               }}
             >
               <CaretRightIcon size={16} />

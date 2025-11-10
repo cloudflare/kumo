@@ -11,7 +11,7 @@ export default [
   route("components/input", "routes/components.input.tsx"),
   route("components/checkbox", "routes/components.checkbox.tsx"),
   route("components/select", "routes/components.select.tsx"),
-  route("components/toggle", "routes/components.toggle.tsx"),
+  route("components/switch", "routes/components.switch.tsx"),
   route("components/field", "routes/components.field.tsx"),
   route("components/dialog", "routes/components.dialog.tsx"),
   route("components/tooltip", "routes/components.tooltip.tsx"),

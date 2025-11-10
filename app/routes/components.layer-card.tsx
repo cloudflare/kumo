@@ -3,6 +3,8 @@ import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
 import { CodeBlock } from "~/components/code/code-lazy";
+import { Button } from "~/components/button/button";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 
 export default function LayerCardDoc() {
   return (
@@ -13,12 +15,25 @@ export default function LayerCardDoc() {
       {/* Demo */}
       <ComponentSection>
         <ComponentExample
-          code={`<LayerCard className="w-[200px]" title="Next Steps" href="/">
-  <div className="p-4">Get started with Kumo</div>
+          code={`<LayerCard className="w-[200px]">
+  <LayerCard.Secondary>Next Steps</LayerCard.Secondary>
+  <LayerCard.Primary>Get started with Kumo</LayerCard.Primary>
 </LayerCard>`}
         >
-          <LayerCard className="w-[200px]" title="Next Steps" href="/">
+          {/* <LayerCard className="w-[200px]" title="Next Steps" href="/">
             <div className="p-4">Get started with Kumo</div>
+          </LayerCard> */}
+          <LayerCard>
+            <LayerCard.Secondary className="flex items-center justify-between">
+                <div>Next Steps</div>
+                <Button variant="ghost" size="sm" shape="square">
+                    <ArrowRightIcon size={16} />
+                </Button>
+            </LayerCard.Secondary>
+
+            <LayerCard.Primary>
+                Get started with Kumo
+            </LayerCard.Primary>
           </LayerCard>
         </ComponentExample>
       </ComponentSection>
@@ -41,10 +56,11 @@ export default function LayerCardDoc() {
 
 export default function Example() {
   return (
-    <LayerCard title="Documentation" href="/docs">
-      <div className="p-4">
+    <LayerCard className="w-[250px]">
+      <LayerCard.Secondary>Documentation</LayerCard.Secondary>
+      <LayerCard.Primary>
         Learn how to use Kumo components
-      </div>
+      </LayerCard.Primary>
     </LayerCard>
   );
 }`}
@@ -59,16 +75,22 @@ export default function Example() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Basic Card</h3>
             <ComponentExample
-              code={`<LayerCard className="w-[250px]" title="Getting Started" href="/start">
-  <div className="p-4 text-sm text-neutral-600 dark:text-neutral-400">
-    Quick start guide for new users
-  </div>
+              code={`<LayerCard className="w-[250px]">
+  <LayerCard.Secondary>Getting Started</LayerCard.Secondary>
+  <LayerCard.Primary>
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      Quick start guide for new users
+    </p>
+  </LayerCard.Primary>
 </LayerCard>`}
             >
-              <LayerCard className="w-[250px]" title="Getting Started" href="/start">
-                <div className="p-4 text-sm text-neutral-600 dark:text-neutral-400">
-                  Quick start guide for new users
-                </div>
+              <LayerCard className="w-[250px]">
+                <LayerCard.Secondary>Getting Started</LayerCard.Secondary>
+                <LayerCard.Primary>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    Quick start guide for new users
+                  </p>
+                </LayerCard.Primary>
               </LayerCard>
             </ComponentExample>
           </div>
@@ -77,20 +99,32 @@ export default function Example() {
             <h3 className="text-xl font-semibold mb-4">Multiple Cards</h3>
             <ComponentExample
               code={`<div className="flex gap-4">
-  <LayerCard className="w-[200px]" title="Components" href="/components">
-    <div className="p-4 text-sm">Browse all components</div>
+  <LayerCard className="w-[200px]">
+    <LayerCard.Secondary>Components</LayerCard.Secondary>
+    <LayerCard.Primary>
+      <p className="text-sm">Browse all components</p>
+    </LayerCard.Primary>
   </LayerCard>
-  <LayerCard className="w-[200px]" title="Examples" href="/examples">
-    <div className="p-4 text-sm">View code examples</div>
+  <LayerCard className="w-[200px]">
+    <LayerCard.Secondary>Examples</LayerCard.Secondary>
+    <LayerCard.Primary>
+      <p className="text-sm">View code examples</p>
+    </LayerCard.Primary>
   </LayerCard>
 </div>`}
             >
               <div className="flex gap-4">
-                <LayerCard className="w-[200px]" title="Components" href="/components">
-                  <div className="p-4 text-sm">Browse all components</div>
+                <LayerCard className="w-[200px]">
+                  <LayerCard.Secondary>Components</LayerCard.Secondary>
+                  <LayerCard.Primary>
+                    <p className="text-sm">Browse all components</p>
+                  </LayerCard.Primary>
                 </LayerCard>
-                <LayerCard className="w-[200px]" title="Examples" href="/examples">
-                  <div className="p-4 text-sm">View code examples</div>
+                <LayerCard className="w-[200px]">
+                  <LayerCard.Secondary>Examples</LayerCard.Secondary>
+                  <LayerCard.Primary>
+                    <p className="text-sm">View code examples</p>
+                  </LayerCard.Primary>
                 </LayerCard>
               </div>
             </ComponentExample>
@@ -112,19 +146,24 @@ export default function Example() {
             </thead>
             <tbody className="text-neutral-600 dark:text-neutral-400">
               <tr className="border-b border-neutral-200 dark:border-neutral-800">
-                <td className="py-3 px-4 font-mono text-xs">title</td>
-                <td className="py-3 px-4 font-mono text-xs">string</td>
-                <td className="py-3 px-4 font-mono text-xs">undefined</td>
-              </tr>
-              <tr className="border-b border-neutral-200 dark:border-neutral-800">
-                <td className="py-3 px-4 font-mono text-xs">href</td>
-                <td className="py-3 px-4 font-mono text-xs">string</td>
+                <td className="py-3 px-4 font-mono text-xs">children</td>
+                <td className="py-3 px-4 font-mono text-xs">ReactNode</td>
                 <td className="py-3 px-4 font-mono text-xs">undefined</td>
               </tr>
               <tr className="border-b border-neutral-200 dark:border-neutral-800">
                 <td className="py-3 px-4 font-mono text-xs">className</td>
                 <td className="py-3 px-4 font-mono text-xs">string</td>
                 <td className="py-3 px-4 font-mono text-xs">undefined</td>
+              </tr>
+              <tr>
+                <td className="py-3 px-4 font-mono text-xs">LayerCard.Primary</td>
+                <td className="py-3 px-4 font-mono text-xs">FC&lt;LayerCardProps&gt;</td>
+                <td className="py-3 px-4 font-mono text-xs">-</td>
+              </tr>
+              <tr>
+                <td className="py-3 px-4 font-mono text-xs">LayerCard.Secondary</td>
+                <td className="py-3 px-4 font-mono text-xs">FC&lt;LayerCardProps&gt;</td>
+                <td className="py-3 px-4 font-mono text-xs">-</td>
               </tr>
             </tbody>
           </table>

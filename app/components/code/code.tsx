@@ -46,7 +46,7 @@ export function CodeBlock({
   code: string;
 }) {
   return (
-    <div className="bg-surface rounded-md border border-neutral-200 dark:border-neutral-800 min-w-0 [&>pre]:!p-2.5">
+    <div className="bg-surface rounded-md border border-neutral-200 dark:border-neutral-800 min-w-0 [&>pre]:p-2.5!">
       <Code lang={lang} code={code} />
     </div>
   );

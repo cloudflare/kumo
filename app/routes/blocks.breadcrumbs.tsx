@@ -24,7 +24,7 @@ export default function BreadcrumbsDoc() {
             { label: "Home", to: "/" },
             { label: "Projects", to: "/projects" },
             { label: "Current Project" }
-          ]} />
+          ]} collapsed />
         </ComponentExample>
       </ComponentSection>
 
@@ -95,7 +95,7 @@ export default function Example() {
               { label: "Home", to: "/", icon: <HouseIcon size={16} /> },
               { label: "Projects", to: "/projects", icon: <FolderIcon size={16} /> },
               { label: "file.tsx", icon: <FileTextIcon size={16} /> }
-            ]} />
+            ]} collapsed />
           </ComponentExample>
         </div>
 
@@ -119,7 +119,7 @@ export default function Example() {
               { label: "Source", to: "/projects/my-project/src" },
               { label: "Components", to: "/projects/my-project/src/components" },
               { label: "Button.tsx" }
-            ]} />
+            ]} collapsed/>
           </ComponentExample>
         </div>
       </ComponentSection>

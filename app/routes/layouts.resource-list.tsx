@@ -1,10 +1,12 @@
-import { ListIcon, CodeIcon } from "@phosphor-icons/react";
+import { ListIcon, CodeIcon, GlobeIcon, SquaresFourIcon } from "@phosphor-icons/react";
 import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
 import { CodeBlock } from "~/components/code/code-lazy";
 import { ResourceListPage } from "~/layouts/resource-list";
 import { Button } from "~/components/button/button";
+import { Pagination } from "~/components/pagination/pagination";
+import { Empty } from "~/blocks/empty";
 
 export default function ResourceListDoc() {
   return (
@@ -32,17 +34,28 @@ export default function ResourceListDoc() {
         >
           <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
             <ResourceListPage
-              title="Components"
-              description="Reusable UI components for building modern applications."
-              icon={<ListIcon size={32} />}
+              title="Resource List Page"
+              description="This is a resource list page."
+              icon={<SquaresFourIcon size={28} />}
+              usage={<>Usage Section</>}
+              additionalContent={<>Additional Content Section</>}
             >
-              <div className="space-y-4">
-                <div className="p-4 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                  Component 1
-                </div>
-                <div className="p-4 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-                  Component 2
-                </div>
+              <Empty
+                icon={<SquaresFourIcon size={48} />}
+                title="Create a Queue" 
+                description="Build event-driven systems by creating a Queue above, or use Wrangler CLI to create a Queue." 
+                commandLine="npx wrangler queues create BINDING_NAME" 
+                contents={<div className="flex items-center gap-2">
+                  <Button icon={<CodeIcon />}>See examples</Button>
+                  <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
+                </div>}
+              />
+
+              <div className="mt-4">
+                <Pagination page={1} perPage={10} totalCount={100} setPage={function (page: number): void {
+                    throw new Error("Function not implemented.");
+                  }}
+                />
               </div>
             </ResourceListPage>
           </div>

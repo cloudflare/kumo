@@ -1,4 +1,4 @@
-import { cn } from "~/components/utils";
+import { cn } from "./utils";
 
 interface ThemeToggleProps {
   isDark: boolean;

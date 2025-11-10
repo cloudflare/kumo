@@ -16,22 +16,16 @@ import {
 } from "@phosphor-icons/react";
 import { Input } from "~/components/input/input";
 import { Surface } from "~/components/surface/surface";
-import {
-  Dialog,
-  DialogDescription,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/dialog/dialog";
+import { Dialog } from "~/components/dialog/dialog";
 import { Checkbox } from "~/components/checkbox/checkbox";
 import { DropdownMenu } from "~/components/dropdown/dropdown";
-import { Option, Select } from "~/components/select/select";
+import { Select } from "~/components/select/select";
 import { Tooltip, TooltipProvider } from "~/components/tooltip/tooltip";
 import { ClipboardText } from "~/components/clipboard-text/clipboard-text";
 import { Expandable } from "~/components/expandable/expandable";
 import { Combobox } from "~/components/combobox/combobox";
 import { MenuBar } from "~/components/menubar/menubar";
-import { Toggle } from "~/components/toggle/toggle";
+import { Switch } from "~/components/switch/switch";
 import { CodeBlock } from "~/components/code/code-lazy";
 import { LayerCard } from "~/components/layer-card/layer-card";
 import { Loader } from "~/components/loader/loader";
@@ -50,6 +44,8 @@ import { PageHeader } from "~/blocks/page-header";
 import { ResourceListPage } from "~/layouts/resource-list";
 import { Pagination } from "~/components/pagination/pagination";
 import { InputArea } from "~/components/input/input-area";
+import { Link } from "react-router";
+import Meter from "~/components/meter/meter";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -76,6 +72,8 @@ function ToastTriggerButton() {
 
 export default function Home() {
   const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [switchToggled, setSwitchToggled] = useState(true)
+  const [checked, setChecked] = useState(true)
 
   const components = [
   {
@@ -114,9 +112,9 @@ export default function Home() {
           return labels[v];
         }}
       >
-        <Option value="all">All deployed versions</Option>
-        <Option value="active">Active versions</Option>
-        <Option value="specific">Specific versions</Option>
+        <Select.Option value="all">All deployed versions</Select.Option>
+        <Select.Option value="active">Active versions</Select.Option>
+        <Select.Option value="specific">Specific versions</Select.Option>
       </Select>
     ),
   },
@@ -137,8 +135,8 @@ export default function Home() {
     ),
   },
   {
-    name: "Toggle",
-    Component: <Toggle toggled onClick={() => {}} />,
+    name: "Switch",
+    Component: <Switch toggled={switchToggled} onClick={() => { setSwitchToggled(!switchToggled) }} />,
   },
   {
     name: "Field",
@@ -158,13 +156,13 @@ export default function Home() {
   {
     name: "Dialog",
     Component: (
-      <DialogRoot>
-        <DialogTrigger render={(p) => <Button {...p}>Click me!</Button>} />
+      <Dialog.Root>
+        <Dialog.Trigger render={(p) => <Button {...p}>Click me!</Button>} />
         <Dialog>
-          <DialogTitle>Hello!</DialogTitle>
-          <DialogDescription>I'm a dialog.</DialogDescription>
+          <Dialog.Title>Hello!</Dialog.Title>
+          <Dialog.Description>I'm a dialog.</Dialog.Description>
         </Dialog>
-      </DialogRoot>
+      </Dialog.Root>
     ),
   },
   {
@@ -204,13 +202,14 @@ export default function Home() {
   },
   {
     name: "Checkbox",
-    Component: <Checkbox label="Max bandwidth" />,
+    Component: <Checkbox label="Max bandwidth" checked={checked} onValueChange={(checked) => { setChecked(checked) }} />,
   },
   {
     name: "LayerCard",
     Component: (
-      <LayerCard className="w-[200px]" title="Next Steps" href="/">
-        <div className="p-4">Hello</div>
+      <LayerCard className="w-[200px]">
+        <LayerCard.Secondary>Next Steps</LayerCard.Secondary>
+        <LayerCard.Primary>Hello</LayerCard.Primary>
       </LayerCard>
     ),
   },
@@ -227,33 +226,6 @@ export default function Home() {
         <SkeletonLine minWidth={50} maxWidth={150}  />
       </div>
     ),
-  },
-  {
-    name: "MenuBar",
-    Component: (
-      <MenuBar
-        isActive="bold"
-        optionIds
-        options={[
-          {
-            icon: <TextBolderIcon />,
-            id: "bold",
-            tooltip: "Bold",
-            onClick: () => {},
-          },
-          {
-            icon: <TextItalicIcon />,
-            id: "italic",
-            tooltip: "Italic",
-            onClick: () => {},
-          },
-        ]}
-      />
-    ),
-  },
-  {
-    name: "Clipboard Text",
-    Component: <ClipboardText text="0c239dd2" />,
   },
   {
     name: "Surface",
@@ -292,14 +264,12 @@ export default function Home() {
   {
     name: "Tabs",
     Component: (
-      <Tabs 
-        links={[
-        { label: "Home", href: "/" },
-        { label: "About", href: "/?id=2" },
-        { label: "Contact", href: "/?id=3" },
-      ]}
-        matchQuery={true}
-        matchQueryKeys={["id"]}
+      <Tabs
+        tabs={[
+          { value: "home", label: "Home" },
+          { value: "about", label: "About" },
+          { value: "contact", label: "Contact" },
+        ]}
       />
     ),
   },
@@ -328,25 +298,6 @@ export default function Home() {
     )
   },
   {
-    name: "Date Picker",
-    Component: (
-      <DropdownMenu open={datePickerOpen} modal={true} onOpenChange={setDatePickerOpen}>
-        <DropdownMenu.Trigger render={<Button icon={CalendarDotIcon}>Calendar</Button>} />
-        <DropdownMenu.Content>
-          <DropdownMenu.Item>
-            <DateRangePicker onStartDateChange={function (date: Date | null): void {
-                throw new Error("Function not implemented.");
-              } } onEndDateChange={function (date: Date | null): void {
-                throw new Error("Function not implemented.");
-              } } 
-            />
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu>
-      
-    )
-  },
-  {
     name: "Pagination",
     Component: (
       <Pagination page={1} perPage={10} totalCount={100} setPage={function (page: number): void {
@@ -359,6 +310,14 @@ export default function Home() {
     name: "Input Area",
     Component: (
       <InputArea placeholder="Enter your name" />
+    )
+  },
+  {
+    name: "Meter",
+    Component: (
+        <div className="w-full px-4">
+            <Meter value={75} label="My meter" customValue="100 / 5,000" />
+        </div>
     )
   }
 ];
@@ -394,105 +353,6 @@ export default function Home() {
             })}
           </ul>
         </div>
-
-        {/* <div className="flex flex-col gap-4 p-12">
-          <div>
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Empty
-            </span>
-            <Empty 
-              icon={<SquaresFourIcon size={48} />}
-              title="Create a Queue" 
-              description="Build event-driven systems by creating a Queue above, or use Wrangler CLI to create a Queue." 
-              commandLine="npx wrangler queues create BINDING_NAME" 
-              contents={<div className="flex items-center gap-2">
-                <Button icon={<CodeIcon />}>See examples</Button>
-                <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
-              </div>}
-            />
-          </div>
-
-          <div>
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Breadcrumbs
-            </span>
-            <Breadcrumbs
-              items={[
-                {
-                  icon: <HouseIcon />,
-                  label: "Workers & Pages",
-                  to: "/",
-                },
-                {
-                  label: "cloudflare-dev-platform",
-                  to: "/about",
-                }
-              ]}
-            />
-          </div>
-
-          <div className="bg-surface-secondary">
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Page Header
-            </span>
-            <PageHeader
-              breadcrumbs={[
-                {
-                  icon: <HouseIcon />,
-                  label: "Workers & Pages",
-                  to: "/",
-                },
-                {
-                  label: "cloudflare-dev-platform",
-                  to: "/about",
-                }
-              ]}
-              tabs={[
-                { label: "Overview", href: "/" },
-                { label: "Metrics", href: "/?id=metrics" },
-                { label: "Deployments", href: "/?id=deployments" },
-                { label: "Bindings", href: "/?id=bindings" },
-                { label: "Observability", href: "/?id=observability" },
-                { label: "Settings", href: "/?id=settings" },
-            ]}
-            >
-              <Button icon={<CodeIcon />}>Edit code</Button>
-              <Button icon={<GlobeIcon />} variant="primary">Visit</Button>
-            </PageHeader>
-          </div>
-
-          <div className="bg-surface-secondary">
-            <span className="text-neutral-500 font-medium top-4 left-4 text-base">
-              Resource List Page
-            </span>
-            <ResourceListPage
-              title="Resource List Page"
-              description="This is a resource list page."
-              icon={<SquaresFourIcon size={28} />}
-              usage={<>Usage Section</>}
-              additionalContent={<>Additional Content Section</>}
-            >
-              <Empty 
-                icon={<SquaresFourIcon size={48} />}
-                title="Create a Queue" 
-                description="Build event-driven systems by creating a Queue above, or use Wrangler CLI to create a Queue." 
-                commandLine="npx wrangler queues create BINDING_NAME" 
-                contents={<div className="flex items-center gap-2">
-                  <Button icon={<CodeIcon />}>See examples</Button>
-                  <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
-                </div>}
-              />
-
-              <div className="mt-4">
-                <Pagination page={1} perPage={10} totalCount={100} setPage={function (page: number): void {
-                    throw new Error("Function not implemented.");
-                  }}
-                />
-              </div>
-            </ResourceListPage>
-          </div>
-
-        </div> */}
       </main>
     </div>
   );

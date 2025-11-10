@@ -116,12 +116,14 @@
   --text-color-muted: var(--kumo-muted-foreground);
   --text-color-error: var(--kumo-text-error);
 
-  --color-neutral-150: oklch(0.96 0 0) /*new */;
-  --color-neutral-250: oklch(0.9 0 0) /* new */;
-  --color-neutral-450: oklch(0.62 0 0) /* new */;
-  --color-neutral-750: oklch(0.31 0 0) /* new */;
-  --color-neutral-850: oklch(0.23 0 0) /* new */;
-  --color-neutral-925: oklch(0.175 0 0) /* new */;
+  --color-neutral-25: oklch(0.99 0 0);
+  --color-neutral-50: oklch(0.985 0 0);
+  --color-neutral-150: oklch(0.96 0 0);
+  --color-neutral-250: oklch(0.9 0 0);
+  --color-neutral-450: oklch(0.62 0 0);
+  --color-neutral-750: oklch(0.31 0 0);
+  --color-neutral-850: oklch(0.23 0 0);
+  --color-neutral-925: oklch(0.175 0 0);
 }
 
 /* Tailwind config */

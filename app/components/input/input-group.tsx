@@ -68,23 +68,28 @@ function Input(props: InputProps) {
       className={cn(
         'border-0 h-full rounded-none flex items-center first:pl-2 last:pr-2 bg-surface font-sans',
         'focus:border-color',
-        'grow-1 px-0',
+        'grow px-0',
         props.className
       )}
     />
   );
 }
 
-function Button({ children, ...props }: PropsWithChildren<ButtonProps>) {
+function Button({
+  children,
+  className,
+  ...props
+}: PropsWithChildren<ButtonProps>) {
   const context = useContext(InputGroupContext);
 
   return (
     <ButtonExternal
       {...props}
       size={context?.size}
-      className={
-        'rounded-none !h-full disabled:bg-surface-secondary disabled:!text-neutral-400'
-      }
+      className={cn(
+        'rounded-none h-full! disabled:bg-surface-secondary disabled:text-neutral-400!',
+        className
+      )}
     >
       {children}
     </ButtonExternal>

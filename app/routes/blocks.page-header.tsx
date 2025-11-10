@@ -1,4 +1,4 @@
-import { HouseIcon, GearIcon } from "@phosphor-icons/react";
+import { HouseIcon, GearIcon, CodeIcon, GlobeIcon } from "@phosphor-icons/react";
 import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
@@ -16,28 +16,60 @@ export default function PageHeaderDoc() {
       <ComponentSection>
         <ComponentExample
           code={`<PageHeader
-  breadcrumbs={[
-    { label: "Home", to: "/" },
-    { label: "Projects", to: "/projects" },
-    { label: "My Project" }
-  ]}
-  tabs={[
-    { label: "Overview", href: "/projects/my-project" },
-    { label: "Settings", href: "/projects/my-project/settings" }
-  ]}
-/>`}
+    className="w-full"
+    breadcrumbs={[
+    {
+        icon: <HouseIcon />,
+        label: "Workers & Pages",
+        to: "/",
+    },
+    {
+        label: "cloudflare-dev-platform",
+        to: "/about",
+    }
+    ]}
+    tabs={[
+        { label: "Overview", value: "overview" },
+        { label: "Metrics", value: "metrics" },
+        { label: "Deployments", value: "deployments" },
+        { label: "Bindings", value: "bindings" },
+        { label: "Observability", value: "observability" },
+        { label: "Settings", value: "settings" },
+    ]}
+    defaultTab={'overview'}
+    onValueChange={(v) => console.log(v)}
+>
+    <Button icon={<CodeIcon />} className="h-8">Edit code</Button>
+    <Button icon={<GlobeIcon />} variant="primary" className="h-8">Visit</Button>
+</PageHeader>`}
         >
           <PageHeader
-            breadcrumbs={[
-              { label: "Home", to: "/" },
-              { label: "Projects", to: "/projects" },
-              { label: "My Project" }
-            ]}
-            tabs={[
-              { label: "Overview", href: "/projects/my-project" },
-              { label: "Settings", href: "/projects/my-project/settings" }
-            ]}
-          />
+              className="w-full"
+              breadcrumbs={[
+                {
+                  icon: <HouseIcon />,
+                  label: "Workers & Pages",
+                  to: "/",
+                },
+                {
+                  label: "cloudflare-dev-platform",
+                  to: "/about",
+                }
+              ]}
+              tabs={[
+                { label: "Overview", value: "overview" },
+                { label: "Metrics", value: "metrics" },
+                { label: "Deployments", value: "deployments" },
+                { label: "Bindings", value: "bindings" },
+                { label: "Observability", value: "observability" },
+                { label: "Settings", value: "settings" },
+              ]}
+              defaultTab={'overview'}
+              onValueChange={(v) => console.log(v)}
+            >
+              <Button icon={<CodeIcon />} className="h-8">Edit code</Button>
+              <Button icon={<GlobeIcon />} variant="primary" className="h-8">Visit</Button>
+            </PageHeader>
         </ComponentExample>
       </ComponentSection>
 
@@ -123,11 +155,11 @@ export default function Example() {
                 { label: "Home", to: "/" },
                 { label: "Settings" }
               ]}
-              tabs={[
-                { label: "General", href: "/settings" },
-                { label: "Security", href: "/settings/security" },
-                { label: "Notifications", href: "/settings/notifications" }
-              ]}
+            //   tabs={[
+            //     { label: "General", href: "/settings" },
+            //     { label: "Security", href: "/settings/security" },
+            //     { label: "Notifications", href: "/settings/notifications" }
+            //   ]}
             />
           </ComponentExample>
         </div>
@@ -152,10 +184,10 @@ export default function Example() {
                 { label: "Home", to: "/", icon: <HouseIcon size={16} /> },
                 { label: "Settings", icon: <GearIcon size={16} /> }
               ]}
-              tabs={[
-                { label: "General", href: "/settings" },
-                { label: "Advanced", href: "/settings/advanced" }
-              ]}
+            //   tabs={[
+            //     { label: "General", href: "/settings" },
+            //     { label: "Advanced", href: "/settings/advanced" }
+            //   ]}
             />
           </ComponentExample>
         </div>
@@ -175,7 +207,7 @@ export default function Example() {
     { label: "Settings", href: "/projects/my-project/settings" }
   ]}
 >
-  <Button variant="primary" size="sm">
+  <Button variant="primary" size="base">
     Deploy
   </Button>
 </PageHeader>`}
@@ -186,12 +218,12 @@ export default function Example() {
                 { label: "Projects", to: "/projects" },
                 { label: "My Project" }
               ]}
-              tabs={[
-                { label: "Overview", href: "/projects/my-project" },
-                { label: "Settings", href: "/projects/my-project/settings" }
-              ]}
+            //   tabs={[
+            //     { label: "Overview", href: "/projects/my-project" },
+            //     { label: "Settings", href: "/projects/my-project/settings" }
+            //   ]}
             >
-              <Button variant="primary" size="sm">
+              <Button variant="primary" size="base">
                 Deploy
               </Button>
             </PageHeader>

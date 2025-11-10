@@ -1,4 +1,4 @@
-import { Select, Option } from "~/components/select/select";
+import { Select } from "~/components/select/select";
 import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
@@ -14,15 +14,15 @@ export default function SelectDoc() {
       <ComponentSection>
         <ComponentExample
           code={`<Select className="w-[200px]">
-  <Option value="option1">Option 1</Option>
-  <Option value="option2">Option 2</Option>
-  <Option value="option3">Option 3</Option>
+  <Select.Option value="option1">Option 1</Select.Option>
+  <Select.Option value="option2">Option 2</Select.Option>
+  <Select.Option value="option3">Option 3</Select.Option>
 </Select>`}
         >
           <Select className="w-[200px]">
-            <Option value="option1">Option 1</Option>
-            <Option value="option2">Option 2</Option>
-            <Option value="option3">Option 3</Option>
+            <Select.Option value="option1">Option 1</Select.Option>
+            <Select.Option value="option2">Option 2</Select.Option>
+            <Select.Option value="option3">Option 3</Select.Option>
           </Select>
         </ComponentExample>
       </ComponentSection>
@@ -32,7 +32,7 @@ export default function SelectDoc() {
         <h2 className="text-2xl font-bold mb-4">Installation</h2>
         <CodeBlock
           lang="tsx"
-          code={`import { Select, Option } from "~/components/select/select";`}
+          code={`import { Select } from "~/components/select/select";`}
         />
       </ComponentSection>
 
@@ -41,13 +41,13 @@ export default function SelectDoc() {
         <h2 className="text-2xl font-bold mb-4">Usage</h2>
         <CodeBlock
           lang="tsx"
-          code={`import { Select, Option } from "~/components/select/select";
+          code={`import { Select } from "~/components/select/select";
 
 export default function Example() {
   return (
     <Select>
-      <Option value="option1">Option 1</Option>
-      <Option value="option2">Option 2</Option>
+      <Select.Option value="option1">Option 1</Select.Option>
+      <Select.Option value="option2">Option 2</Select.Option>
     </Select>
   );
 }`}
@@ -63,15 +63,15 @@ export default function Example() {
             <h3 className="text-xl font-semibold mb-4">Default</h3>
             <ComponentExample
               code={`<Select className="w-[200px]">
-  <Option value="all">All versions</Option>
-  <Option value="active">Active versions</Option>
-  <Option value="specific">Specific versions</Option>
+  <Select.Option value="all">All versions</Select.Option>
+  <Select.Option value="active">Active versions</Select.Option>
+  <Select.Option value="specific">Specific versions</Select.Option>
 </Select>`}
             >
               <Select className="w-[200px]">
-                <Option value="all">All versions</Option>
-                <Option value="active">Active versions</Option>
-                <Option value="specific">Specific versions</Option>
+                <Select.Option value="all">All versions</Select.Option>
+                <Select.Option value="active">Active versions</Select.Option>
+                <Select.Option value="specific">Specific versions</Select.Option>
               </Select>
             </ComponentExample>
           </div>
@@ -90,9 +90,9 @@ export default function Example() {
     return v ? labels[v] : "Select...";
   }}
 >
-  <Option value="all">All deployed versions</Option>
-  <Option value="active">Active versions</Option>
-  <Option value="specific">Specific versions</Option>
+  <Select.Option value="all">All deployed versions</Select.Option>
+  <Select.Option value="active">Active versions</Select.Option>
+  <Select.Option value="specific">Specific versions</Select.Option>
 </Select>`}
             >
               <Select
@@ -106,9 +106,9 @@ export default function Example() {
                   return v ? labels[v] : "Select...";
                 }}
               >
-                <Option value="all">All deployed versions</Option>
-                <Option value="active">Active versions</Option>
-                <Option value="specific">Specific versions</Option>
+                <Select.Option value="all">All deployed versions</Select.Option>
+                <Select.Option value="active">Active versions</Select.Option>
+                <Select.Option value="specific">Specific versions</Select.Option>
               </Select>
             </ComponentExample>
           </div>

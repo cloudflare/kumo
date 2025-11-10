@@ -1,4 +1,4 @@
-import { Dialog, DialogDescription, DialogRoot, DialogTitle, DialogTrigger } from "~/components/dialog/dialog";
+import { Dialog } from "~/components/dialog/dialog";
 import { Button } from "~/components/button/button";
 import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
@@ -14,25 +14,25 @@ export default function DialogDoc() {
       {/* Demo */}
       <ComponentSection>
         <ComponentExample
-          code={`<DialogRoot>
-  <DialogTrigger render={(p) => <Button {...p}>Open Dialog</Button>} />
+          code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Open Dialog</Button>} />
   <Dialog>
-    <DialogTitle>Welcome</DialogTitle>
-    <DialogDescription>
+    <Dialog.Title>Welcome</Dialog.Title>
+    <Dialog.Description>
       This is a dialog component.
-    </DialogDescription>
+    </Dialog.Description>
   </Dialog>
-</DialogRoot>`}
+</Dialog.Root>`}
         >
-          <DialogRoot>
-            <DialogTrigger render={(p) => <Button {...p}>Open Dialog</Button>} />
+          <Dialog.Root>
+            <Dialog.Trigger render={(p) => <Button {...p}>Open Dialog</Button>} />
             <Dialog>
-              <DialogTitle>Welcome</DialogTitle>
-              <DialogDescription>
+              <Dialog.Title>Welcome</Dialog.Title>
+              <Dialog.Description>
                 This is a dialog component.
-              </DialogDescription>
+              </Dialog.Description>
             </Dialog>
-          </DialogRoot>
+          </Dialog.Root>
         </ComponentExample>
       </ComponentSection>
 
@@ -41,13 +41,7 @@ export default function DialogDoc() {
         <h2 className="text-2xl font-bold mb-4">Installation</h2>
         <CodeBlock
           lang="tsx"
-          code={`import { 
-  Dialog, 
-  DialogDescription, 
-  DialogRoot, 
-  DialogTitle, 
-  DialogTrigger 
-} from "~/components/dialog/dialog";`}
+          code={`import { Dialog } from "~/components/dialog/dialog";`}
         />
       </ComponentSection>
 
@@ -56,26 +50,29 @@ export default function DialogDoc() {
         <h2 className="text-2xl font-bold mb-4">Usage</h2>
         <CodeBlock
           lang="tsx"
-          code={`import { 
-  Dialog, 
-  DialogDescription, 
-  DialogRoot, 
-  DialogTitle, 
-  DialogTrigger 
-} from "~/components/dialog/dialog";
+          code={`import { Dialog } from "~/components/dialog/dialog";
 import { Button } from "~/components/button/button";
 
 export default function Example() {
   return (
-    <DialogRoot>
-      <DialogTrigger render={(p) => <Button {...p}>Open</Button>} />
+    <Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
       <Dialog>
-        <DialogTitle>Dialog Title</DialogTitle>
-        <DialogDescription>
+        <Dialog.Title>Dialog Title</Dialog.Title>
+        <Dialog.Description>
           Dialog content goes here.
-        </DialogDescription>
+        </Dialog.Description>
+        <div className="flex justify-end gap-2 mt-4">
+          <Dialog.Close
+            render={(p) => (
+              <Button variant="secondary" {...p}>
+                Close
+              </Button>
+            )}
+          />
+        </div>
       </Dialog>
-    </DialogRoot>
+    </Dialog.Root>
   );
 }`}
         />
@@ -89,54 +86,64 @@ export default function Example() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Basic Dialog</h3>
             <ComponentExample
-              code={`<DialogRoot>
-  <DialogTrigger render={(p) => <Button {...p}>Click me</Button>} />
+              code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />
   <Dialog>
-    <DialogTitle>Hello!</DialogTitle>
-    <DialogDescription>I'm a dialog.</DialogDescription>
+    <Dialog.Title>Hello!</Dialog.Title>
+    <Dialog.Description>I'm a dialog.</Dialog.Description>
   </Dialog>
-</DialogRoot>`}
+</Dialog.Root>`}
             >
-              <DialogRoot>
-                <DialogTrigger render={(p) => <Button {...p}>Click me</Button>} />
+              <Dialog.Root>
+                <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />
                 <Dialog>
-                  <DialogTitle>Hello!</DialogTitle>
-                  <DialogDescription>I'm a dialog.</DialogDescription>
+                  <Dialog.Title>Hello!</Dialog.Title>
+                  <Dialog.Description>I'm a dialog.</Dialog.Description>
                 </Dialog>
-              </DialogRoot>
+              </Dialog.Root>
             </ComponentExample>
           </div>
 
           <div>
             <h3 className="text-xl font-semibold mb-4">With Actions</h3>
             <ComponentExample
-              code={`<DialogRoot>
-  <DialogTrigger render={(p) => <Button {...p}>Delete</Button>} />
+              code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
   <Dialog>
-    <DialogTitle>Are you sure?</DialogTitle>
-    <DialogDescription>
+    <Dialog.Title>Are you sure?</Dialog.Title>
+    <Dialog.Description>
       This action cannot be undone.
-    </DialogDescription>
+    </Dialog.Description>
     <div className="flex gap-2 mt-4">
       <Button variant="destructive">Delete</Button>
-      <Button variant="secondary">Cancel</Button>
+      <Dialog.Close render={(p) => (
+        <Button variant="secondary" {...p}>
+          Cancel
+        </Button>
+      )} />
     </div>
   </Dialog>
-</DialogRoot>`}
+</Dialog.Root>`}
             >
-              <DialogRoot>
-                <DialogTrigger render={(p) => <Button {...p}>Delete</Button>} />
+              <Dialog.Root>
+                <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
                 <Dialog>
-                  <DialogTitle>Are you sure?</DialogTitle>
-                  <DialogDescription>
+                  <Dialog.Title>Are you sure?</Dialog.Title>
+                  <Dialog.Description>
                     This action cannot be undone.
-                  </DialogDescription>
+                  </Dialog.Description>
                   <div className="flex gap-2 mt-4">
                     <Button variant="destructive">Delete</Button>
-                    <Button variant="secondary">Cancel</Button>
+                    <Dialog.Close
+                      render={(p) => (
+                        <Button variant="secondary" {...p}>
+                          Cancel
+                        </Button>
+                      )}
+                    />
                   </div>
                 </Dialog>
-              </DialogRoot>
+              </Dialog.Root>
             </ComponentExample>
           </div>
         </div>

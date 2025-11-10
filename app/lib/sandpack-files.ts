@@ -228,16 +228,16 @@ export function Badge({ children, variant = "primary", className }: BadgeProps) 
   );
 }`,
 
-  "/components/toggle.tsx": `import React from "react";
+  "/components/switch.tsx": `import React from "react";
 import { cn } from "./utils";
 
-interface ToggleProps {
+interface SwitchProps {
   toggled?: boolean;
   onClick?: () => void;
   className?: string;
 }
 
-export function Toggle({ toggled, onClick, className }: ToggleProps) {
+export function Switch({ toggled, onClick, className }: SwitchProps) {
   return (
     <button
       type="button"
@@ -275,11 +275,11 @@ interface OptionProps {
   children: React.ReactNode;
 }
 
-export function Option({ value, children }: OptionProps) {
+function SelectOption({ value, children }: OptionProps) {
   return <option value={value}>{children}</option>;
 }
 
-export function Select({ 
+function SelectRoot({ 
   children, 
   className, 
   defaultValue, 
@@ -313,7 +313,12 @@ export function Select({
       {children}
     </select>
   );
-}`,
+}
+
+export const Select = Object.assign(SelectRoot, {
+  Option: SelectOption,
+});
+`,
 
   "/components/dialog.tsx": `import React, { useState } from "react";
 import { cn } from "./utils";
@@ -334,12 +339,18 @@ interface DialogProps {
   className?: string;
 }
 
+interface DialogCloseProps {
+  children?: React.ReactNode;
+  asChild?: boolean;
+  render?: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => React.ReactElement;
+}
+
 const DialogContext = React.createContext<{
   open: boolean;
   setOpen: (open: boolean) => void;
 }>({ open: false, setOpen: () => {} });
 
-export function DialogRoot({ children, open: controlledOpen, onOpenChange }: DialogRootProps) {
+function DialogRoot({ children, open: controlledOpen, onOpenChange }: DialogRootProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
   
@@ -357,7 +368,7 @@ export function DialogRoot({ children, open: controlledOpen, onOpenChange }: Dia
   );
 }
 
-export function DialogTrigger({ children, render }: DialogTriggerProps) {
+function DialogTrigger({ children, render }: DialogTriggerProps) {
   const { setOpen } = React.useContext(DialogContext);
   
   const handleClick = () => setOpen(true);
@@ -373,7 +384,7 @@ export function DialogTrigger({ children, render }: DialogTriggerProps) {
   );
 }
 
-export function Dialog({ children, className }: DialogProps) {
+function DialogContent({ children, className }: DialogProps) {
   const { open, setOpen } = React.useContext(DialogContext);
   
   if (!open) return null;
@@ -394,13 +405,43 @@ export function Dialog({ children, className }: DialogProps) {
   );
 }
 
-export function DialogTitle({ children, className }: { children: React.ReactNode; className?: string }) {
+function DialogTitle({ children, className }: { children: React.ReactNode; className?: string }) {
   return <h2 className={cn("text-xl font-semibold mb-2", className)}>{children}</h2>;
 }
 
-export function DialogDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+function DialogDescription({ children, className }: { children: React.ReactNode; className?: string }) {
   return <p className={cn("text-gray-600 text-sm", className)}>{children}</p>;
-}`,
+}
+
+function DialogClose({ children, asChild, render }: DialogCloseProps) {
+  const { setOpen } = React.useContext(DialogContext);
+
+  const handleClick = () => setOpen(false);
+
+  if (render) {
+    return render({ onClick: handleClick });
+  }
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, { onClick: handleClick });
+  }
+
+  return (
+    <button onClick={handleClick}>
+      {children ?? "Close"}
+    </button>
+  );
+}
+
+const Dialog = Object.assign(DialogContent, {
+  Root: DialogRoot,
+  Trigger: DialogTrigger,
+  Title: DialogTitle,
+  Description: DialogDescription,
+  Close: DialogClose,
+});
+
+export { Dialog, DialogRoot, DialogTrigger, DialogTitle, DialogDescription, DialogClose };`,
 
   "/components/dropdown.tsx": `import React, { useState, useRef, useEffect } from "react";
 import { cn } from "./utils";

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { cn } from "../utils";
 
 export enum BannerVariant {
@@ -16,7 +17,7 @@ export function Banner({
     variant = BannerVariant.DEFAULT,
     className,
 }: {
-    icon?: React.ReactNode;
+    icon?: ReactNode;
     text: string;
     variant?: BannerVariant;
     className?: string;

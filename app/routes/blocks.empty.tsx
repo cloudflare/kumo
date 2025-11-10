@@ -1,4 +1,4 @@
-import { PackageIcon, RocketIcon } from "@phosphor-icons/react";
+import { CodeIcon, GlobeIcon, PackageIcon, RocketIcon, SquaresFourIcon } from "@phosphor-icons/react";
 import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
@@ -15,19 +15,27 @@ export default function EmptyDoc() {
       {/* Demo */}
       <ComponentSection>
         <ComponentExample
-          code={`<Empty
-  icon={<PackageIcon size={48} />}
-  title="No packages found"
-  description="Get started by installing your first package."
-  commandLine="npm install @kumo/ui"
+          code={`<Empty 
+    icon={<PackageIcon size={48} />}
+    title="No packages found" 
+    description="Get started by installing your first package." 
+    commandLine="npm install @cloudflare/kumo" 
+    contents={<div className="flex items-center gap-2">
+        <Button icon={<CodeIcon />}>See examples</Button>
+        <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
+    </div>}
 />`}
         >
-          <Empty
-            icon={<PackageIcon size={48} className="text-neutral-400" />}
-            title="No packages found"
-            description="Get started by installing your first package."
-            commandLine="npm install @kumo/ui"
-          />
+          <Empty 
+              icon={<PackageIcon size={48} />}
+              title="No packages found" 
+              description="Get started by installing your first package." 
+              commandLine="npm install @cloudflare/kumo" 
+              contents={<div className="flex items-center gap-2">
+                <Button icon={<CodeIcon />}>See examples</Button>
+                <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
+              </div>}
+            />
         </ComponentExample>
       </ComponentSection>
 

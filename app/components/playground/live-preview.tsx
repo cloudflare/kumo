@@ -6,32 +6,32 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { compileAndExecuteJSX, wrapInComponent } from "~/lib/jsx-runtime";
-import { cn } from "~/components/utils";
-import { Loader } from "~/components/loader/loader";
+import { compileAndExecuteJSX, wrapInComponent } from "../../lib/jsx-runtime";
+import { cn } from "../utils";
+import { Loader } from "../loader/loader";
 
 // Import all Kumo components for the preview scope
-import { Button } from "~/components/button/button";
-import { Input } from "~/components/input/input";
-import { InputArea } from "~/components/input/input-area";
-import { Select, Option } from "~/components/select/select";
-import { Checkbox } from "~/components/checkbox/checkbox";
-import { Toggle } from "~/components/toggle/toggle";
-import { Dialog, DialogRoot, DialogTrigger, DialogTitle, DialogDescription } from "~/components/dialog/dialog";
-import { Tooltip, TooltipProvider } from "~/components/tooltip/tooltip";
-import { DropdownMenu } from "~/components/dropdown/dropdown";
-import { Surface } from "~/components/surface/surface";
-import { Field } from "~/components/field/field";
-import { Loader as LoaderComponent } from "~/components/loader/loader";
-import { SkeletonLine } from "~/components/loader/skeleton-line";
-import { Badge } from "~/components/badge/badge";
-import { Banner, BannerVariant } from "~/components/banner/banner";
-import { Expandable } from "~/components/expandable/expandable";
-import { ClipboardText } from "~/components/clipboard-text/clipboard-text";
-import { CodeBlock } from "~/components/code/code";
-import { LayerCard } from "~/components/layer-card/layer-card";
-import { Combobox } from "~/components/combobox/combobox";
-import { MenuBar } from "~/components/menubar/menubar";
+import { Button } from "../button/button";
+import { Input } from "../input/input";
+import { InputArea } from "../input/input-area";
+import { Select } from "../select/select";
+import { Checkbox } from "../checkbox/checkbox";
+import { Switch } from "../switch/switch";
+import { Dialog } from "../dialog/dialog";
+import { Tooltip, TooltipProvider } from "../tooltip/tooltip";
+import { DropdownMenu } from "../dropdown/dropdown";
+import { Surface } from "../surface/surface";
+import { Field } from "../field/field";
+import { Loader as LoaderComponent } from "../loader/loader";
+import { SkeletonLine } from "../loader/skeleton-line";
+import { Badge } from "../badge/badge";
+import { Banner, BannerVariant } from "../banner/banner";
+import { Expandable } from "../expandable/expandable";
+import { ClipboardText } from "../clipboard-text/clipboard-text";
+import { CodeBlock } from "../code/code";
+import { LayerCard } from "../layer-card/layer-card";
+import { Combobox } from "../combobox/combobox";
+import { MenuBar } from "../menubar/menubar";
 
 // Import common icons
 import {
@@ -79,14 +79,14 @@ const COMPONENT_SCOPE = {
   Input,
   InputArea,
   Select,
-  Option,
   Checkbox,
-  Toggle,
+  Switch,
   Dialog,
-  DialogRoot,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
+  DialogRoot: Dialog.Root,
+  DialogTrigger: Dialog.Trigger,
+  DialogTitle: Dialog.Title,
+  DialogDescription: Dialog.Description,
+  DialogClose: Dialog.Close,
   Tooltip,
   TooltipProvider,
   DropdownMenu,
@@ -162,7 +162,7 @@ function CompilationError({ error }: { error: { type: string; message: string; d
   return (
     <div className="flex flex-col items-start justify-center h-full min-h-[200px] p-6 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border-2 border-yellow-200 dark:border-yellow-800">
       <div className="flex items-start gap-3 mb-4">
-        <WarningIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" weight="fill" />
+        <WarningIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" weight="fill" />
         <div>
           <h3 className="text-base font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
             {error.type === "validation" ? "Validation Error" : 

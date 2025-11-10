@@ -3,8 +3,10 @@ import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
 import { CodeBlock } from "~/components/code/code-lazy";
+import { useState } from "react";
 
 export default function ExpandableDoc() {
+    const [isOpen, setIsOpen] = useState(true)
   return (
     <DocLayout
       title="Expandable"
@@ -17,7 +19,9 @@ export default function ExpandableDoc() {
   Kumo is Cloudflare's new design system.
 </Expandable>`}
         >
-          <Expandable title="What is Kumo?">
+          <Expandable title="What is Kumo?" open={isOpen} onOpenChange={(open) => {
+            setIsOpen(open)
+          }}>
             Kumo is Cloudflare's new design system.
           </Expandable>
         </ComponentExample>
