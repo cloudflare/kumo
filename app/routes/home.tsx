@@ -228,33 +228,6 @@ export default function Home() {
     ),
   },
   {
-    name: "MenuBar",
-    Component: (
-      <MenuBar
-        isActive="bold"
-        optionIds
-        options={[
-          {
-            icon: <TextBolderIcon />,
-            id: "bold",
-            tooltip: "Bold",
-            onClick: () => {},
-          },
-          {
-            icon: <TextItalicIcon />,
-            id: "italic",
-            tooltip: "Italic",
-            onClick: () => {},
-          },
-        ]}
-      />
-    ),
-  },
-  {
-    name: "Clipboard Text",
-    Component: <ClipboardText text="0c239dd2" />,
-  },
-  {
     name: "Surface",
     Component: (
       <Surface className="w-40 h-24 rounded-lg bg-surface flex items-center justify-center text-sm text-neutral-500">
@@ -322,25 +295,6 @@ export default function Home() {
       <Toast>
         <ToastTriggerButton />
       </Toast>
-    )
-  },
-  {
-    name: "Date Picker",
-    Component: (
-      <DropdownMenu open={datePickerOpen} modal={true} onOpenChange={setDatePickerOpen}>
-        <DropdownMenu.Trigger render={<Button icon={CalendarDotIcon}>Calendar</Button>} />
-        <DropdownMenu.Content>
-          <DropdownMenu.Item>
-            <DateRangePicker onStartDateChange={function (date: Date | null): void {
-                throw new Error("Function not implemented.");
-              } } onEndDateChange={function (date: Date | null): void {
-                throw new Error("Function not implemented.");
-              } } 
-            />
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu>
-      
     )
   },
   {

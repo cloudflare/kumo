@@ -1,13 +1,5 @@
 import { Link } from "react-router";
-import {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type FocusEvent,
-  type ReactNode,
-} from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 import { cn } from "~/components/utils";
 
 export type BreadcrumbItem = {
@@ -19,96 +11,13 @@ export type BreadcrumbItem = {
 type BreadcrumbsProps = {
   items: BreadcrumbItem[];
   className?: string;
-  collapsed?: boolean;
 };
 
 const getAriaLabel = (label: ReactNode) => (typeof label === "string" ? label : undefined);
 
-type CollapsedLabelProps = {
-  label: ReactNode;
-  needsSrOnly: boolean;
-  expanded: boolean;
-};
-
-const FALLBACK_COLLAPSED_WIDTH = 24; // px, approx width of the ellipsis
-const COLLAPSED_PADDING = 8;
-const EXPANDED_PADDING = 16;
-
-const CollapsedLabel = ({ label, needsSrOnly, expanded }: CollapsedLabelProps) => {
-  const [widths, setWidths] = useState<{ collapsed: number; expanded: number }>({
-    collapsed: 0,
-    expanded: 0,
-  });
-  const ellipsisRef = useRef<HTMLSpanElement | null>(null);
-  const labelRef = useRef<HTMLSpanElement | null>(null);
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      const ellipsisWidth = ellipsisRef.current?.scrollWidth ?? 0;
-      const labelWidth = labelRef.current?.scrollWidth ?? 0;
-      setWidths({
-        collapsed: (ellipsisWidth || FALLBACK_COLLAPSED_WIDTH) + COLLAPSED_PADDING,
-        expanded:
-          Math.max(labelWidth, ellipsisWidth || FALLBACK_COLLAPSED_WIDTH) + EXPANDED_PADDING,
-      });
-    };
-
-    measure();
-
-    if (typeof ResizeObserver !== "undefined") {
-      const observer = new ResizeObserver(measure);
-      if (labelRef.current) observer.observe(labelRef.current);
-      return () => observer.disconnect();
-    }
-
-    return undefined;
-  }, [label]);
-
-  const style = useMemo(() => {
-    if (!widths.collapsed && !widths.expanded) return undefined;
-    const targetWidth = expanded ? widths.expanded : widths.collapsed;
-    return {
-      width: `${targetWidth}px`,
-      maxWidth: `${widths.expanded}px`,
-    };
-  }, [expanded, widths.collapsed, widths.expanded]);
-
-  return (
-    <span
-      className="relative inline-flex min-w-0 items-center overflow-hidden transition-[width] duration-300 ease-out"
-      style={style}
-    >
-      <span
-        ref={ellipsisRef}
-        aria-hidden="true"
-        className={cn(
-          "shrink-0 whitespace-nowrap transition-opacity duration-150 ease-out",
-          expanded ? "opacity-0" : "opacity-100"
-        )}
-      >
-        ..
-      </span>
-      <span
-        ref={labelRef}
-        className={cn(
-          "shrink-0 whitespace-nowrap transition-opacity duration-150 ease-out",
-          expanded ? "opacity-100" : "opacity-0"
-        )}
-        aria-hidden={needsSrOnly}
-      >
-        {label}
-      </span>
-      {needsSrOnly && typeof label === "string" ? (
-        <span className="sr-only">{label}</span>
-      ) : null}
-    </span>
-  );
-};
-
 type BreadcrumbInteractiveProps = {
   item: BreadcrumbItem;
   isLast: boolean;
-  collapsed: boolean;
   index: number;
   setItemRef: (index: number) => (element: HTMLElement | null) => void;
 };
@@ -116,37 +25,10 @@ type BreadcrumbInteractiveProps = {
 const BreadcrumbInteractive = ({
   item,
   isLast,
-  collapsed,
   index,
   setItemRef,
 }: BreadcrumbInteractiveProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const ariaLabel = collapsed ? getAriaLabel(item.label) : undefined;
-  const needsSrOnly = collapsed && !ariaLabel;
-
-  const enable = useCallback(() => {
-    if (!collapsed) return;
-    setExpanded(true);
-  }, [collapsed]);
-
-  const disable = useCallback(() => {
-    if (!collapsed) return;
-    setExpanded(false);
-  }, [collapsed]);
-
-  const eventHandlers = collapsed
-    ? {
-        onMouseEnter: enable,
-        onMouseLeave: disable,
-        onFocus: enable,
-        onBlur: (event: FocusEvent<HTMLElement>) => {
-          if (!collapsed) return;
-          const nextTarget = event.relatedTarget as HTMLElement | null;
-          if (event.currentTarget.contains(nextTarget)) return;
-          setExpanded(false);
-        },
-      }
-    : {};
+  const ariaLabel = getAriaLabel(item.label);
 
   if (isLast) {
     return (
@@ -163,11 +45,7 @@ const BreadcrumbInteractive = ({
   }
 
   const icon = item.icon;
-  const labelContent = collapsed ? (
-    <CollapsedLabel label={item.label} needsSrOnly={needsSrOnly} expanded={expanded} />
-  ) : (
-    <span className="hidden sm:inline">{item.label}</span>
-  );
+  const labelContent = <span className="hidden sm:inline">{item.label}</span>;
 
   if (item.to) {
     return (
@@ -175,11 +53,10 @@ const BreadcrumbInteractive = ({
         to={item.to}
         className={cn(
           "flex items-center gap-1 min-w-0 no-underline text-blue-600 hover:text-neutral-900 dark:text-blue-400 dark:hover:text-neutral-100",
-          collapsed ? "overflow-visible" : "truncate"
+          "truncate"
         )}
         ref={setItemRef(index)}
         aria-label={ariaLabel}
-        {...eventHandlers}
       >
         {icon}
         {labelContent}
@@ -191,12 +68,11 @@ const BreadcrumbInteractive = ({
     <span
       className={cn(
         "flex items-center gap-1 min-w-0 text-neutral-600 dark:text-neutral-400",
-        collapsed ? "overflow-visible" : "truncate"
+        "truncate"
       )}
       tabIndex={-1}
       ref={setItemRef(index)}
       aria-label={ariaLabel}
-      {...eventHandlers}
     >
       {icon}
       {labelContent}
@@ -204,7 +80,7 @@ const BreadcrumbInteractive = ({
   );
 };
 
-export function Breadcrumbs({ items, className, collapsed = false }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   const itemRefs = useRef<Array<HTMLElement | null>>([]);
 
   const setItemRef = useCallback(
@@ -266,7 +142,6 @@ export function Breadcrumbs({ items, className, collapsed = false }: Breadcrumbs
             <BreadcrumbInteractive
               item={item}
               isLast={isLast}
-              collapsed={collapsed}
               index={idx}
               setItemRef={setItemRef}
             />

@@ -65,6 +65,7 @@ export default function App() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const navRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
+  const [shouldHideIndicator, setShouldHideIndicator] = useState(false);
   
   useEffect(() => {
     // Check if dark mode is enabled
@@ -88,12 +89,22 @@ export default function App() {
         const paddingTop = parseFloat(navStyles.paddingTop || "0");
         const offsetAdjustment = navEl.clientTop + paddingTop;
 
+        const isComponentsPath = location.pathname.startsWith("/components/");
+        const isBlocksPath = location.pathname.startsWith("/blocks/");
+        const isLayoutsPath = location.pathname.startsWith("/layouts/");
+        const isCollapsedSection =
+          (isComponentsPath && !componentsOpen) ||
+          (isBlocksPath && !blocksOpen) ||
+          (isLayoutsPath && !layoutsOpen);
+
         setActiveIndicator({
           top: linkRect.top - navRect.top + navEl.scrollTop - offsetAdjustment,
           height: linkRect.height,
         });
+        setShouldHideIndicator(isCollapsedSection);
       } else {
         setActiveIndicator(null);
+        setShouldHideIndicator(false);
       }
     };
 
@@ -195,7 +206,7 @@ export default function App() {
         >
           <div className="relative">
             {/* Animated background indicator */}
-            {activeIndicator && (
+            {activeIndicator && !shouldHideIndicator && (
               <div
                 className={cn(
                   "absolute left-0 right-4 bg-neutral-200/50 dark:bg-neutral-800 rounded-lg pointer-events-none",
@@ -289,7 +300,7 @@ export default function App() {
                   Checkbox
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to="/components/clipboard-text"
                   prefetch="intent"
@@ -301,7 +312,7 @@ export default function App() {
                 >
                   Clipboard Text
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   to="/components/code"
@@ -410,7 +421,7 @@ export default function App() {
                   Loader
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to="/components/menubar"
                   prefetch="intent"
@@ -421,7 +432,7 @@ export default function App() {
                 >
                   MenuBar
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   to="/components/select"
