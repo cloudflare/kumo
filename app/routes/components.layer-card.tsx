@@ -3,6 +3,8 @@ import { DocLayout } from "~/components/docs/doc-layout";
 import { ComponentExample } from "~/components/docs/component-example";
 import { ComponentSection } from "~/components/docs/component-section";
 import { CodeBlock } from "~/components/code/code-lazy";
+import { Button } from "~/components/button/button";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 
 export default function LayerCardDoc() {
   return (
@@ -22,8 +24,11 @@ export default function LayerCardDoc() {
             <div className="p-4">Get started with Kumo</div>
           </LayerCard> */}
           <LayerCard>
-            <LayerCard.Secondary>
-                Next Steps
+            <LayerCard.Secondary className="flex items-center justify-between">
+                <div>Next Steps</div>
+                <Button variant="ghost" size="sm" shape="square">
+                    <ArrowRightIcon size={16} />
+                </Button>
             </LayerCard.Secondary>
 
             <LayerCard.Primary>

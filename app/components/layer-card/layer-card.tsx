@@ -22,7 +22,7 @@ function LayerCardSecondary({
     className
 }: LayerCardProps) {
     return (
-        <div className={cn('p-2 gap-2 flex items-center', className)}>
+        <div className={cn('p-2 gap-2 flex items-center font-medium text-neutral-500 text-base', className)}>
             {children}
         </div>
     )

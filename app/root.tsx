@@ -64,6 +64,7 @@ export default function App() {
   const [activeIndicator, setActiveIndicator] = useState<{ top: number; height: number } | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const navRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     // Check if dark mode is enabled
@@ -106,6 +107,16 @@ export default function App() {
       updateIndicator();
     }
   }, [location.pathname, componentsOpen, blocksOpen, layoutsOpen, isInitialLoad]);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto",
+      });
+    }
+  }, [location.pathname]);
 
   const toggleTheme = () => {
     const newIsDark = !isDark;
@@ -248,170 +259,228 @@ export default function App() {
                 className={cn("transition-transform duration-200", componentsOpen && "rotate-180")} 
               />
             </h4>
-            <ul className={cn(
-              "flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
-              componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-            )}>
+            <ul
+              className={cn(
+                "flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+                componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+              )}
+            >
               <li>
-                <Link 
+                <Link
                   to="/components/button"
                   prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/button" && LI_ACTIVE_STYLE)}
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/button" && LI_ACTIVE_STYLE
+                  )}
                 >
                   Button
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/components/input" 
+                <Link
+                  to="/components/checkbox"
                   prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/input" && LI_ACTIVE_STYLE)}
-                >
-                  Input
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/select" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/select" && LI_ACTIVE_STYLE)}
-                >
-                  Select
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/combobox" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/combobox" && LI_ACTIVE_STYLE)}
-                >
-                  Combobox
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/switch" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/switch" && LI_ACTIVE_STYLE)}
-                >
-                  Switch
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/field" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/field" && LI_ACTIVE_STYLE)}
-                >
-                  Field
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/dialog" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/dialog" && LI_ACTIVE_STYLE)}
-                >
-                  Dialog
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/tooltip" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/tooltip" && LI_ACTIVE_STYLE)}
-                >
-                  Tooltip
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/dropdown" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/dropdown" && LI_ACTIVE_STYLE)}
-                >
-                  Dropdown
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/expandable" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/expandable" && LI_ACTIVE_STYLE)}
-                >
-                  Expandable
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/checkbox" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/checkbox" && LI_ACTIVE_STYLE)}
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/checkbox" && LI_ACTIVE_STYLE
+                  )}
                 >
                   Checkbox
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/components/layer-card" 
+                <Link
+                  to="/components/clipboard-text"
                   prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/layer-card" && LI_ACTIVE_STYLE)}
-                >
-                  Layer Card
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/loader" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/loader" && LI_ACTIVE_STYLE)}
-                >
-                  Loader
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/skeleton-line" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/skeleton-line" && LI_ACTIVE_STYLE)}
-                >
-                  Skeleton Line
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/menubar" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/menubar" && LI_ACTIVE_STYLE)}
-                >
-                  MenuBar
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/components/clipboard-text" 
-                  prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/clipboard-text" && LI_ACTIVE_STYLE)}
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/clipboard-text" &&
+                      LI_ACTIVE_STYLE
+                  )}
                 >
                   Clipboard Text
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/components/surface" 
+                <Link
+                  to="/components/code"
                   prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/surface" && LI_ACTIVE_STYLE)}
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/code" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Code
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/combobox"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/combobox" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Combobox
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/dialog"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/dialog" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Dialog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/dropdown"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/dropdown" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Dropdown
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/expandable"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/expandable" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Expandable
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/field"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/field" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Field
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/input"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/input" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Input
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/layer-card"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/layer-card" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Layer Card
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/loader"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/loader" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Loader
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/menubar"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/menubar" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  MenuBar
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/select"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/select" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Select
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/skeleton-line"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/skeleton-line" &&
+                      LI_ACTIVE_STYLE
+                  )}
+                >
+                  Skeleton Line
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/surface"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/surface" && LI_ACTIVE_STYLE
+                  )}
                 >
                   Surface
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/components/code" 
+                <Link
+                  to="/components/switch"
                   prefetch="intent"
-                  className={cn(LI_STYLE, location.pathname === "/components/code" && LI_ACTIVE_STYLE)}
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/switch" && LI_ACTIVE_STYLE
+                  )}
                 >
-                  Code
+                  Switch
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/components/tooltip"
+                  prefetch="intent"
+                  className={cn(
+                    LI_STYLE,
+                    location.pathname === "/components/tooltip" && LI_ACTIVE_STYLE
+                  )}
+                >
+                  Tooltip
                 </Link>
               </li>
             </ul>
@@ -493,6 +562,7 @@ export default function App() {
           "transition-[margin] duration-300 h-screen overflow-y-auto overscroll-y-none",
           sidebarOpen ? "ml-12 md:ml-[304px]" : "ml-12"
         )}
+        ref={contentRef}
       >
         <Outlet context={{ sidebarOpen, setSidebarOpen, toggleSidebar }} />
       </div>
