@@ -27,7 +27,7 @@
 		"tailwind-merge": "^3.3.1"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.13.5",
+		"@cloudflare/vite-plugin": "^1.21.1",
 		"@react-router/dev": "^7.9.2",
 		"@tailwindcss/vite": "^4.1.16",
 		"@types/node": "^22",
@@ -37,6 +37,6 @@
 		"typescript": "^5.9.2",
 		"vite": "^7.1.7",
 		"vite-tsconfig-paths": "^5.1.4",
-		"wrangler": "^4.45.2"
+		"wrangler": "^4.59.3"
 	}
 }
