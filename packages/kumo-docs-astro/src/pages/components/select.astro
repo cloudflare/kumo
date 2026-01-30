@@ -1,0 +1,388 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  SelectBasicDemo,
+  SelectLabelValueDemo,
+  SelectPlaceholderDemo,
+  SelectCustomRenderingDemo,
+  SelectLoadingDemo,
+  SelectLoadingDataDemo,
+  SelectMultipleDemo,
+  SelectComplexDemo,
+} from "../../components/demos/SelectDemo";
+---
+
+<DocLayout
+  title="Select"
+  description="Displays a list of options for the user to pick from—triggered by a button."
+  sourceFile="components/select"
+  baseUIComponent="select"
+>
+  <!-- Basic Usage -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Basic Usage</span>
+      <span class="text-kumo-strong">
+        A simple select component where the display value matches the option
+        value. Perfect for basic dropdown menus with string-based options.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState("Apple");
+
+  return (
+    <Select className="w-[200px]" value={value} onValueChange={(v) => setValue(v ?? "Apple")}>
+      <Select.Option value="Apple">Apple</Select.Option>
+      <Select.Option value="Banana">Banana</Select.Option>
+      <Select.Option value="Cherry">Cherry</Select.Option>
+    </Select>
+  )
+}`}
+    >
+      <SelectBasicDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Basic Label and Value -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Basic Label and Value</span>
+      <span class="text-kumo-strong">
+        A select component where the internal value differs from the displayed
+        text. Useful when you need to store identifiers while showing
+        user-friendly labels.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select } from "@cloudflare/kumo";
+
+// Option 1: Using object map
+function App() {
+  const [value, setValue] = useState("bug");
+
+  return (
+    <Select
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v ?? "bug")}
+      items={{
+        bug: "Bug",
+        documentation: "Documentation",
+        feature: "Feature",
+      }}
+    >
+      <Select.Option value="bug">Bug</Select.Option>
+      <Select.Option value="documentation">Documentation</Select.Option>
+      <Select.Option value="feature">Feature</Select.Option>
+    </Select>
+  )
+}
+  
+// Option 2: Using array of objects
+function App() {
+  const [value, setValue] = useState("bug");
+
+  return (
+    <Select
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+      items={[
+        {value: "bug", label: "Bug"},
+        {value: "documentation", label: "Documentation"},
+        {value: "feature", label: "Feature"},
+      ]}
+    >
+      <Select.Option value="bug">Bug</Select.Option>
+      <Select.Option value="documentation">Documentation</Select.Option>
+      <Select.Option value="feature">Feature</Select.Option>
+    </Select>
+  )
+}`}
+    >
+      <SelectLabelValueDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Placeholder -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Placeholder</span>
+      <span class="text-kumo-strong">
+        A select component with a placeholder option. The empty value must be <strong
+          >null</strong
+        >, not an empty string or undefined. Using undefined will cause the
+        component to behave as uncontrolled.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+      items={[
+        // Placeholder
+        { value: null, label: "Please select" },
+        { value: "bug", label: "Bug" },
+        { value: "documentation", label: "Documentation" },
+        { value: "feature", label: "Feature" },
+      ]}
+    >
+      <Select.Option value="bug">Bug</Select.Option>
+      <Select.Option value="documentation">Documentation</Select.Option>
+      <Select.Option value="feature">Feature</Select.Option>
+    </Select>
+  )
+}`}
+    >
+      <SelectPlaceholderDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Custom Rendering -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Custom Rendering</span>
+      <span class="text-kumo-strong">
+        A select component that demonstrates custom rendering capabilities for
+        both the trigger button and dropdown options, allowing you to work with
+        complex object data structures instead of simple string values.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`const languages = [
+  { value: "en", label: "English", emoji: "🇬🇧" },
+  { value: "fr", label: "French", emoji: "🇫🇷" },
+  { value: "de", label: "German", emoji: "🇩🇪" },
+  { value: "es", label: "Spanish", emoji: "🇪🇸" },
+  { value: "it", label: "Italian", emoji: "🇮🇹" },
+  { value: "pt", label: "Portuguese", emoji: "🇵🇹" },
+];
+
+function App() {
+  const [value, setValue] = useState(languages[0]);
+
+  return (
+    <Select
+      className="w-[200px]"
+      renderValue={(v) => (
+        <span>
+          {v.emoji} {v.label}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+    >
+      {languages.map((language) => (
+        <Select.Option key={language.value} value={language}>
+          {language.emoji} {language.label}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}`}
+    >
+      <SelectCustomRenderingDemo client:load />
+    </ComponentExample>
+
+    <div class="my-4">
+      <p class="text-kumo-strong">
+        Select compares value with items to find which one is selected. For
+        object items, it will compare if the object is the same reference not by
+        value by default. If you want to compare object items by value, you can
+        use <strong>isItemEqualToValue</strong> prop.
+      </p>
+    </div>
+
+    <CodeBlock
+      code={`function App() {
+  const languages = [
+    { value: "en", label: "English", emoji: "🇬🇧" },
+    { value: "fr", label: "French", emoji: "🇫🇷" },
+    // ...
+  ];
+
+  const [value, setValue] = useState(languages[0]);
+
+  return (
+    <Select
+      className="w-[200px]"
+      renderValue={(v) => (
+        <span>
+          {v.emoji} {v.label}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+      // Provides custom comparison logic
+      isItemEqualToValue={(item, value) => item.value === value.value}
+    >
+      {languages.map((language) => (
+        <Select.Option key={language.value} value={language}>
+          {language.emoji} {language.label}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Loading -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Loading</span>
+      <span class="text-kumo-strong">
+        A select component with loading state. The loading state is passed to
+        the component via the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >loading</code
+        > prop.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`function App() {
+  // NULL is for unselected value
+  const [value, setValue] = useState(null);
+  const { data, isLoading } = useQuery({...});
+
+  return (
+    <Select value={value} onValueChange={(v) => setValue(v as any)} loading={isLoading}>
+      {data?.map((item) => (
+        <Select.Option key={item.id} value={item.id}>
+          {item.name}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}`}
+    >
+      <div class="flex flex-col gap-4">
+        <p class="text-kumo-strong">Loading State</p>
+        <SelectLoadingDemo client:load />
+        <p class="text-kumo-strong">Loading From Server (simulated 2s delay)</p>
+        <SelectLoadingDataDemo client:load />
+      </div>
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Multiple Item -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Multiple Item</span>
+      <span class="text-kumo-strong">
+        A select component with multiple selection enabled. The value is an
+        array of selected items.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`function App() {
+  const [value, setValue] = useState<string[]>(["Name", "Location", "Size"]);
+
+  return (
+    <Select
+      className="w-[250px]"
+      multiple
+      renderValue={(value) => {
+        if (value.length > 3) {
+          return (
+            <span className="line-clamp-1">
+              {value.slice(2).join(", ") + \` and \${value.length - 2} more\`}
+            </span>
+          );
+        }
+        return <span>{value.join(", ")}</span>;
+      }}
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+    >
+      <Select.Option value="Name">Name</Select.Option>
+      <Select.Option value="Location">Location</Select.Option>
+      <Select.Option value="Size">Size</Select.Option>
+      <Select.Option value="Read">Read</Select.Option>
+      <Select.Option value="Write">Write</Select.Option>
+      <Select.Option value="CreatedAt">Created At</Select.Option>
+    </Select>
+  );
+}`}
+    >
+      <SelectMultipleDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- More Example -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">More Example</span>
+    </p>
+
+    <ComponentExample
+      code={`const authors = [
+  { id: 1, name: "John Doe", title: "Programmer" },
+  { id: 2, name: "Alice Smith", title: "Software Engineer" },
+  { id: 3, name: "Michael Chan", title: "UI/UX Designer" },
+  { id: 4, name: "Sok Dara", title: "DevOps Engineer" },
+  { id: 5, name: "Emily Johnson", title: "Product Manager" },
+  { id: 6, name: "Visal In", title: "System Engineer" },
+  { id: 7, name: "Laura Kim", title: "Technical Writer" },
+];
+
+function App() {
+  const [value, setValue] = useState<(typeof authors)[0] | null>(null);
+
+  return (
+    <Select
+      className="w-[200px]"
+      onValueChange={(v) => setValue(v as any)}
+      value={value}
+      isItemEqualToValue={(item, value) => item?.id === value?.id}
+      renderValue={(author) => {
+        return author?.name ?? "Please select author";
+      }}
+    >
+      {authors.map((author) => (
+        <Select.Option key={author.id} value={author}>
+          <div className="flex items-center gap-2 w-[300px] justify-between">
+            <Text>{author.name}</Text>
+            <Text variant="secondary">{author.title}</Text>
+          </div>
+        </Select.Option>
+      ))}
+    </Select>
+  )
+}`}
+    >
+      <SelectComplexDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <Heading level={3} class="mb-3 text-lg">Select</Heading>
+    <PropsTable component="Select" />
+
+    <Heading level={3} class="mb-3 mt-8 text-lg">Select.Option</Heading>
+    <PropsTable component="Select.Option" />
+  </ComponentSection>
+</DocLayout>

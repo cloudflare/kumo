@@ -1,0 +1,110 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import { SkeletonLineDemo, SkeletonLineWidthDemo, SkeletonLineCardDemo } from "../../components/demos/SkeletonLineDemo";
+---
+
+<DocLayout
+  title="Skeleton Line"
+  description="A skeleton loading placeholder for text content."
+  sourceFile="primitives/skeleton-line"
+>
+  <ComponentSection>
+    <ComponentExample code={`<div className="flex flex-col gap-3 w-64">
+  <SkeletonLine />
+  <SkeletonLine />
+  <SkeletonLine />
+</div>`}>
+      <SkeletonLineDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <CodeBlock code={`import { SkeletonLine } from "@cloudflare/kumo";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Custom Widths</Heading>
+    <p class="text-kumo-strong mb-4">Control the randomized width range for more natural-looking skeletons.</p>
+    <ComponentExample code={`<div className="flex flex-col gap-3 w-64">
+  <SkeletonLine minWidth={80} maxWidth={100} />
+  <SkeletonLine minWidth={60} maxWidth={80} />
+  <SkeletonLine minWidth={40} maxWidth={60} />
+</div>`}>
+      <SkeletonLineWidthDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Card Loading State</Heading>
+    <p class="text-kumo-strong mb-4">Use skeleton lines to create loading states for cards and content areas.</p>
+    <ComponentExample code={`<div className="p-4 rounded-lg ring ring-kumo-line w-64">
+  <div className="h-4 mb-4">
+    <SkeletonLine minWidth={40} maxWidth={60} />
+  </div>
+  <div className="flex flex-col gap-2">
+    <SkeletonLine />
+    <SkeletonLine />
+    <SkeletonLine minWidth={50} maxWidth={70} />
+  </div>
+</div>`}>
+      <SkeletonLineCardDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Prop</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Default</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">minWidth</td>
+            <td class="px-4 py-3 font-mono text-xs">number</td>
+            <td class="px-4 py-3 font-mono text-xs">30</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">maxWidth</td>
+            <td class="px-4 py-3 font-mono text-xs">number</td>
+            <td class="px-4 py-3 font-mono text-xs">100</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">minDuration</td>
+            <td class="px-4 py-3 font-mono text-xs">number</td>
+            <td class="px-4 py-3 font-mono text-xs">1.3</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">maxDuration</td>
+            <td class="px-4 py-3 font-mono text-xs">number</td>
+            <td class="px-4 py-3 font-mono text-xs">1.7</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">minDelay</td>
+            <td class="px-4 py-3 font-mono text-xs">number</td>
+            <td class="px-4 py-3 font-mono text-xs">0</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">maxDelay</td>
+            <td class="px-4 py-3 font-mono text-xs">number</td>
+            <td class="px-4 py-3 font-mono text-xs">0.5</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">className</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+</DocLayout>

@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Kumo UI Kit Generator</title>
+    <style>
+      /*
+       * Kumo Design Tokens (inlined for Figma plugin sandbox)
+       * These match the tokens from theme-kumo.css
+       */
+      :root {
+        /* Colors - using light mode values directly since Figma UI is light */
+        --color-surface: #fff;
+        --color-primary: oklch(0.5772 0.2324 260);
+        --color-secondary: #fff;
+        --color-border: oklch(14.5% 0 0 / 0.1);
+        --color-subtle: oklch(98.5% 0 0);
+        --text-color-surface: oklch(21% 0.006 285.885);
+        --text-color-muted: oklch(55.6% 0 0);
+
+        /* Typography */
+        --text-base: 14px;
+        --text-sm: 13px;
+
+        /* Spacing */
+        --spacing-1: 4px;
+        --spacing-2: 8px;
+        --spacing-3: 12px;
+        --spacing-4: 16px;
+        --spacing-6: 24px;
+
+        /* Border radius */
+        --radius-lg: 8px;
+        --radius-md: 6px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        font-size: var(--text-base);
+        line-height: 1.43;
+        color: var(--text-color-surface);
+        background: var(--color-surface);
+        padding: var(--spacing-4);
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 var(--spacing-3) 0;
+        color: var(--text-color-surface);
+      }
+
+      p {
+        font-size: var(--text-sm);
+        margin: 0 0 var(--spacing-4) 0;
+        color: var(--text-color-muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: var(--spacing-2);
+      }
+
+      /*
+       * Kumo Button Styles
+       * Matches: packages/kumo/src/components/button/button.tsx
+       */
+      .kumo-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: inherit;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 100ms ease;
+        flex: 1;
+
+        /* Size: base */
+        height: 36px;
+        gap: 6px;
+        border-radius: var(--radius-lg);
+        padding: 0 var(--spacing-3);
+        font-size: var(--text-base);
+      }
+
+      /* Variant: secondary (default) */
+      .kumo-button--secondary {
+        background: var(--color-secondary);
+        color: var(--text-color-surface);
+        border: none;
+        box-shadow: inset 0 0 0 1px var(--color-border);
+      }
+
+      .kumo-button--secondary:hover {
+        background: var(--color-subtle);
+      }
+
+      .kumo-button--secondary:active {
+        background: oklch(96% 0 0);
+      }
+
+      /* Variant: primary */
+      .kumo-button--primary {
+        background: var(--color-primary);
+        color: #fff;
+        border: none;
+        box-shadow: none;
+      }
+
+      .kumo-button--primary:hover {
+        background: oklch(0.5772 0.2324 260 / 0.85);
+      }
+
+      .kumo-button--primary:active {
+        background: oklch(0.5772 0.2324 260 / 0.7);
+      }
+
+      /* Focus states */
+      .kumo-button:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+      }
+
+      /* Warning banner */
+      .warning {
+        background: oklch(79.5% 0.184 86.047 / 0.2);
+        border: 1px solid oklch(79.5% 0.184 86.047);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-2) var(--spacing-3);
+        margin-bottom: var(--spacing-4);
+        font-size: var(--text-sm);
+        color: oklch(47.6% 0.114 61.907);
+      }
+
+      .warning-icon {
+        display: inline-block;
+        margin-right: var(--spacing-1);
+      }
+
+      .component-list {
+        margin: 0 0 var(--spacing-4) 0;
+        padding-left: var(--spacing-4);
+        color: var(--text-color-muted);
+        font-size: var(--text-sm);
+      }
+
+      .component-list li {
+        margin-bottom: var(--spacing-1);
+      }
+
+      .description {
+        margin-bottom: var(--spacing-2);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kumo UI Kit Generator</h1>
+
+    <div class="warning">
+      <span class="warning-icon">&#9888;</span>
+      <strong>Destructive sync:</strong> All existing generated components on
+      the Components page will be replaced.
+    </div>
+
+    <div class="actions">
+      <button id="cancel" class="kumo-button kumo-button--secondary">
+        Cancel
+      </button>
+      <button id="generate" class="kumo-button kumo-button--primary">
+        Generate UI Kit
+      </button>
+    </div>
+
+    <script>
+      document.getElementById("generate").onclick = () => {
+        parent.postMessage({ pluginMessage: { type: "generate" } }, "*");
+      };
+
+      document.getElementById("cancel").onclick = () => {
+        parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
+      };
+    </script>
+  </body>
+</html>

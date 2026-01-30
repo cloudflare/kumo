@@ -1,0 +1,243 @@
+---
+import DocLayout from "../layouts/DocLayout.astro";
+import ComponentSection from "../components/docs/ComponentSection.astro";
+import CodeBlock from "../components/docs/CodeBlock.astro";
+import Callout from "../components/docs/Callout.astro";
+---
+
+<DocLayout
+  title="Components vs Blocks"
+  description="Understanding how Kumo delivers different types of building blocks: versioned components you import, and copy-paste blocks you own."
+>
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">The Building Block Spectrum</h2>
+    <p class="mb-4 text-kumo-strong">
+      Not everything belongs in a design system library. Kumo distinguishes between <strong>components</strong> 
+      (shared, versioned primitives) and <strong>blocks</strong> (patterns you copy and own). 
+      Understanding this distinction helps you build applications faster while maintaining the right level of ownership.
+    </p>
+    <p class="mb-4 text-kumo-strong">
+      This isn't just organizational preference&mdash;it's about responsibility. Components are primitives we 
+      maintain, test, and version. Blocks are helpful starting points that you extend and adapt to your needs.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Components</h2>
+    <p class="mb-4 text-kumo-strong">
+      Components are the atomic, reusable UI elements that form the foundation of your application. 
+      Button, Input, Dialog, Badge&mdash;these are content-agnostic, context-agnostic building blocks 
+      designed for maximum reuse across any product.
+    </p>
+
+    <div class="mb-6 rounded-lg border border-kumo-line bg-kumo-base p-5">
+      <h3 class="mb-3 text-lg font-semibold">Characteristics</h3>
+      <ul class="list-inside list-disc space-y-2 text-kumo-strong">
+        <li><strong>Versioned &amp; maintained</strong> &mdash; We own the API, fix bugs, and ship updates</li>
+        <li><strong>Tree-shakeable</strong> &mdash; Import only what you use, no bloat</li>
+        <li><strong>Accessible by default</strong> &mdash; Built on Base UI primitives with proper ARIA support</li>
+        <li><strong>Design-system compliant</strong> &mdash; Semantic tokens, consistent variants, predictable APIs</li>
+        <li><strong>Agnostic</strong> &mdash; No business logic, no product-specific assumptions</li>
+      </ul>
+    </div>
+
+    <h3 class="mb-3 text-lg font-semibold">How to Use</h3>
+    <p class="mb-3 text-kumo-strong">Import directly from the package:</p>
+    <CodeBlock
+      code={`import { Button, Input, Dialog, Badge } from "@cloudflare/kumo";
+
+// Or use granular imports for better tree-shaking
+import { Button } from "@cloudflare/kumo/components/button";`}
+      lang="tsx"
+    />
+    <p class="mt-4 text-sm text-kumo-subtle">
+      When Kumo ships a new version, you get bug fixes and improvements automatically. 
+      Your code doesn't change&mdash;just bump the version.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Blocks</h2>
+    <p class="mb-4 text-kumo-strong">
+      Blocks are compositions of components that solve common patterns, but aren't agnostic enough to 
+      live in the core library. <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">PageHeader</code>, 
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">ResourceList</code>&mdash;these are valuable, 
+      reusable patterns, but they may only apply to certain products or need product-specific customization.
+    </p>
+
+    <div class="mb-6 rounded-lg border border-kumo-line bg-kumo-base p-5">
+      <h3 class="mb-3 text-lg font-semibold">Characteristics</h3>
+      <ul class="list-inside list-disc space-y-2 text-kumo-strong">
+        <li><strong>You own it</strong> &mdash; Code lives in your project, you control the implementation</li>
+        <li><strong>Fully customizable</strong> &mdash; Modify anything beyond what props allow</li>
+        <li><strong>Composition-first</strong> &mdash; Built from Kumo components, not raw HTML</li>
+        <li><strong>Starting points</strong> &mdash; Patterns to extend, not constraints to work around</li>
+        <li><strong>Product-aware</strong> &mdash; Can include business logic, layout assumptions, specific compositions</li>
+      </ul>
+    </div>
+
+    <h3 class="mb-3 text-lg font-semibold">How to Use</h3>
+    <p class="mb-3 text-kumo-strong">Install via CLI, then import from your project:</p>
+    <CodeBlock
+      code={`# Initialize config (first time only)
+npx @cloudflare/kumo init
+
+# List available blocks
+npx @cloudflare/kumo blocks
+
+# Install a block to your project
+npx @cloudflare/kumo add PageHeader`}
+      lang="bash"
+    />
+    <p class="mt-4 mb-3 text-kumo-strong">After installation, import from your local path:</p>
+    <CodeBlock
+      code={`// Path depends on your kumo.json blocksDir setting
+// Default: src/components/kumo/
+import { PageHeader } from "./components/kumo/page-header/page-header";`}
+      lang="tsx"
+    />
+    <p class="mt-4 text-sm text-kumo-subtle">
+      The block code is now yours. Customize it, extend it, break it apart&mdash;whatever your product needs.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">A Practical Example</h2>
+    <p class="mb-4 text-kumo-strong">
+      Consider a <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">ProductCard</code>. 
+      It's a specific arrangement of components for a specific use case:
+    </p>
+    <CodeBlock
+      code={`// This is a "block" or "recipe" - a specific composition
+// of design system components for a particular pattern
+
+<Surface className="rounded-lg p-4">
+  <img src={imgSrc} alt={imgAlt} className="rounded-md" />
+  <div className="mt-3">
+    <Text size="lg" weight="semibold">{title}</Text>
+    <Text className="text-kumo-subtle">{description}</Text>
+    <StarRating rating={rating} />
+  </div>
+  <div className="mt-4">
+    <Button variant="primary">Add to cart</Button>
+  </div>
+</Surface>`}
+      lang="tsx"
+    />
+    <p class="mt-4 text-kumo-strong">
+      All those components (<code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Surface</code>, 
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Text</code>, 
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Button</code>) come from 
+      Kumo. But the specific arrangement? That's a pattern you own and customize.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Decision Framework</h2>
+    <p class="mb-4 text-kumo-strong">
+      Asking "is this a component or a block?" really means asking about ownership and reuse:
+    </p>
+    
+    <div class="mb-8 grid gap-6 md:grid-cols-2">
+      <div class="rounded-lg border border-kumo-line bg-kumo-base p-5">
+        <h3 class="mb-3 text-lg font-semibold text-kumo-default">Use a Component when...</h3>
+        <ul class="list-inside list-disc space-y-2 text-kumo-strong">
+          <li>It's content-agnostic (works with any data)</li>
+          <li>It's context-agnostic (works in any layout)</li>
+          <li>Multiple products need the exact same thing</li>
+          <li>Accessibility and consistency matter most</li>
+          <li>You want automatic updates and maintenance</li>
+        </ul>
+      </div>
+      <div class="rounded-lg border border-kumo-line bg-kumo-base p-5">
+        <h3 class="mb-3 text-lg font-semibold text-kumo-default">Use a Block when...</h3>
+        <ul class="list-inside list-disc space-y-2 text-kumo-strong">
+          <li>You need to customize beyond props</li>
+          <li>The pattern is product-specific</li>
+          <li>It includes business logic or layout assumptions</li>
+          <li>You want full control over implementation</li>
+          <li>You prefer copy-paste over package dependency</li>
+        </ul>
+      </div>
+    </div>
+
+    <Callout type="info">
+      <strong>Default to thinking "component first."</strong> Even when building something specific, 
+      ask yourself: "Can I build this from existing components?" The answer is usually yes. 
+      Components compose into blocks, and blocks can always be broken apart again.
+    </Callout>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Movement Between Levels</h2>
+    <p class="mb-4 text-kumo-strong">
+      Things can move between these categories. A pattern that starts as a one-off in your application 
+      might become widely used enough to warrant extraction into a block. A block that proves universally 
+      useful might graduate to a full component.
+    </p>
+    
+    <div class="mb-6 rounded-lg border border-alert-border bg-alert-surface p-4">
+      <p class="text-sm text-kumo-default">
+        <strong>The key principle:</strong> Things should move <em>down</em> into the design system rather 
+        than cluttering it with too-specific patterns that need to be weeded out later. 
+        Wait for reuse to prove itself before promoting something to a shared component.
+      </p>
+    </div>
+
+    <p class="text-kumo-strong">
+      This is why blocks exist as a middle ground. They're patterns worth sharing, but without the 
+      commitment of maintaining a versioned API. You get the starting point; you own the evolution.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Summary</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold"></th>
+            <th class="px-4 py-3 text-left font-semibold">Components</th>
+            <th class="px-4 py-3 text-left font-semibold">Blocks</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-medium text-kumo-default">Delivery</td>
+            <td class="px-4 py-3">NPM package import</td>
+            <td class="px-4 py-3">CLI copy to your project</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-medium text-kumo-default">Ownership</td>
+            <td class="px-4 py-3">Kumo maintains</td>
+            <td class="px-4 py-3">You own &amp; customize</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-medium text-kumo-default">Updates</td>
+            <td class="px-4 py-3">Automatic via version bump</td>
+            <td class="px-4 py-3">Manual (re-install or merge)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-medium text-kumo-default">Customization</td>
+            <td class="px-4 py-3">Props &amp; className only</td>
+            <td class="px-4 py-3">Full source code access</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-medium text-kumo-default">Examples</td>
+            <td class="px-4 py-3">Button, Input, Dialog, Badge</td>
+            <td class="px-4 py-3">PageHeader, ResourceList</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Related</h2>
+    <ul class="list-inside list-disc space-y-2 text-kumo-strong">
+      <li><a href="/installation" class="text-kumo-link hover:underline">Installation</a> &mdash; Get started with Kumo</li>
+      <li><a href="/cli" class="text-kumo-link hover:underline">CLI</a> &mdash; Install blocks and access documentation</li>
+      <li><a href="/contributing" class="text-kumo-link hover:underline">Contributing</a> &mdash; Add new components and blocks</li>
+    </ul>
+  </ComponentSection>
+</DocLayout>

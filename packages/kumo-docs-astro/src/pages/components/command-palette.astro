@@ -1,0 +1,439 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  CommandPaletteBasicDemo,
+  CommandPaletteSimpleDemo,
+  CommandPaletteLoadingDemo,
+  CommandPaletteResultItemDemo,
+} from "../../components/demos/CommandPaletteDemo";
+---
+
+<DocLayout
+  title="CommandPalette"
+  description="A composable command palette component for search and command dialogs."
+  sourceFile="components/command-palette"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<CommandPalette.Root
+  open={open}
+  onOpenChange={setOpen}
+  items={groups}
+  value={search}
+  onValueChange={setSearch}
+>
+  <CommandPalette.Input placeholder="Search..." />
+  <CommandPalette.List>
+    <CommandPalette.Results>
+      {(group) => (
+        <CommandPalette.Group>
+          <CommandPalette.GroupLabel>{group.label}</CommandPalette.GroupLabel>
+          <CommandPalette.Items>
+            {(item) => (
+              <CommandPalette.Item value={item}>
+                {item.title}
+              </CommandPalette.Item>
+            )}
+          </CommandPalette.Items>
+        </CommandPalette.Group>
+      )}
+    </CommandPalette.Results>
+    <CommandPalette.Empty>No results</CommandPalette.Empty>
+  </CommandPalette.List>
+  <CommandPalette.Footer>...</CommandPalette.Footer>
+</CommandPalette.Root>`}
+    >
+      <CommandPaletteBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock
+      code={`import { CommandPalette } from "@cloudflare/kumo";`}
+      lang="tsx"
+    />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { CommandPalette } from "@cloudflare/kumo/components/command-palette";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      CommandPalette is a compound component built on Base UI's Autocomplete
+      primitive. It provides accessible keyboard navigation and customizable
+      styling for command palette interfaces.
+    </p>
+    <CodeBlock
+      code={`import { useState } from "react";
+import { CommandPalette } from "@cloudflare/kumo";
+
+interface Item {
+  id: string;
+  title: string;
+}
+
+const items: Item[] = [
+  { id: "1", title: "Create Project" },
+  { id: "2", title: "Open Settings" },
+];
+
+export default function Example() {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Open</button>
+      <CommandPalette.Root
+        open={open}
+        onOpenChange={setOpen}
+        items={items}
+        value={search}
+        onValueChange={setSearch}
+        itemToStringValue={(item) => item.title}
+        getSelectableItems={(items) => items}
+      >
+        <CommandPalette.Input placeholder="Search..." />
+        <CommandPalette.List>
+          <CommandPalette.Results>
+            {(item) => (
+              <CommandPalette.Item
+                key={item.id}
+                value={item}
+                onClick={() => setOpen(false)}
+              >
+                {item.title}
+              </CommandPalette.Item>
+            )}
+          </CommandPalette.Results>
+          <CommandPalette.Empty>No results</CommandPalette.Empty>
+        </CommandPalette.List>
+      </CommandPalette.Root>
+    </>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Keyboard Navigation -->
+  <ComponentSection>
+    <Heading level={2}>Keyboard Navigation</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      Built-in keyboard navigation is provided automatically:
+    </p>
+    <ul class="mb-4 list-inside list-disc space-y-2 text-kumo-subtle">
+      <li>
+        <kbd
+          class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs"
+          >↑</kbd
+        >
+        <kbd
+          class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs"
+          >↓</kbd
+        > - Move highlight between items
+      </li>
+      <li>
+        <kbd
+          class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs"
+          >Enter</kbd
+        > - Select highlighted item
+      </li>
+      <li>
+        <kbd
+          class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs"
+          >⌘/Ctrl + Enter</kbd
+        > - Select with <code class="text-kumo-default">newTab: true</code>
+      </li>
+      <li>
+        <kbd
+          class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs"
+          >Escape</kbd
+        > - Close the dialog
+      </li>
+    </ul>
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>With Grouped Items</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Group related commands together with labels.
+        </p>
+        <ComponentExample
+          code={`<CommandPalette.Root items={groups} ...>
+  <CommandPalette.Input placeholder="Type a command..." />
+  <CommandPalette.List>
+    <CommandPalette.Results>
+      {(group) => (
+        <CommandPalette.Group>
+          <CommandPalette.GroupLabel>{group.label}</CommandPalette.GroupLabel>
+          <CommandPalette.Items>
+            {(item) => (
+              <CommandPalette.Item value={item}>
+                {item.title}
+              </CommandPalette.Item>
+            )}
+          </CommandPalette.Items>
+        </CommandPalette.Group>
+      )}
+    </CommandPalette.Results>
+  </CommandPalette.List>
+</CommandPalette.Root>`}
+        >
+          <CommandPaletteBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Simple Flat List</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          For simpler use cases, use a flat array of items without grouping.
+        </p>
+        <ComponentExample
+          code={`<CommandPalette.Root
+  items={items}
+  itemToStringValue={(item) => item.title}
+  getSelectableItems={(items) => items}
+>
+  <CommandPalette.Input placeholder="Search actions..." />
+  <CommandPalette.List>
+    <CommandPalette.Results>
+      {(item) => (
+        <CommandPalette.Item value={item}>
+          {item.title}
+        </CommandPalette.Item>
+      )}
+    </CommandPalette.Results>
+  </CommandPalette.List>
+</CommandPalette.Root>`}
+        >
+          <CommandPaletteSimpleDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Loading State</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Show a loading spinner while fetching results.
+        </p>
+        <ComponentExample
+          code={`<CommandPalette.List>
+  {loading ? (
+    <CommandPalette.Loading />
+  ) : (
+    <CommandPalette.Results>
+      {(item) => ...}
+    </CommandPalette.Results>
+  )}
+</CommandPalette.List>`}
+        >
+          <CommandPaletteLoadingDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>ResultItem with Breadcrumbs</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use <code class="text-kumo-default">ResultItem</code> for rich items with
+          breadcrumbs, icons, and optional text highlighting.
+        </p>
+        <ComponentExample
+          code={`<CommandPalette.ResultItem
+  value={item}
+  title={item.title}
+  breadcrumbs={["Components"]}
+  icon={<FileIcon size={16} />}
+  onClick={(e) => handleClick(e)}
+/>`}
+        >
+          <CommandPaletteResultItemDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Component Parts -->
+  <ComponentSection>
+    <Heading level={2}>Component Parts</Heading>
+
+    <div class="space-y-6">
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Root</Heading>
+        <p class="text-kumo-subtle">
+          The main wrapper that combines Dialog + Panel. Manages open state and
+          Autocomplete functionality.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Dialog</Heading>
+        <p class="text-kumo-subtle">
+          Modal dialog wrapper. Use with Panel for swappable content (e.g.,
+          drill-down navigation).
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Panel</Heading>
+        <p class="text-kumo-subtle">
+          Autocomplete panel without dialog. Use inside Dialog for content that
+          can swap without re-mounting.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Input</Heading>
+        <p class="text-kumo-subtle">
+          Search input field with auto-focus and keyboard handling.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.List</Heading>
+        <p class="text-kumo-subtle">
+          Scrollable container for results.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Results</Heading>
+        <p class="text-kumo-subtle">
+          Render prop iterator for items/groups.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Group</Heading>
+        <p class="text-kumo-subtle">
+          Category grouping container.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.GroupLabel</Heading>
+        <p class="text-kumo-subtle">
+          Section header text within a group.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Items</Heading>
+        <p class="text-kumo-subtle">
+          Render prop iterator for items within a group.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Item</Heading>
+        <p class="text-kumo-subtle">
+          Basic selectable item.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.ResultItem</Heading>
+        <p class="text-kumo-subtle">
+          Rich item with breadcrumbs, icons, and text highlighting.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.HighlightedText</Heading>
+        <p class="text-kumo-subtle">
+          Renders text with highlighted portions based on match indices.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Empty</Heading>
+        <p class="text-kumo-subtle">
+          Empty state when no results match.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Loading</Heading>
+        <p class="text-kumo-subtle">
+          Loading spinner state.
+        </p>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">CommandPalette.Footer</Heading>
+        <p class="text-kumo-subtle">
+          Footer for keyboard hints or other content.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+
+    <div class="mb-8">
+      <Heading level={3}>CommandPalette.Root Props</Heading>
+      <CodeBlock
+        code={`interface CommandPaletteRootProps<TGroup, TItem> {
+  // Dialog state
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onBackdropClick?: (e: React.MouseEvent) => void;
+
+  // Autocomplete
+  items: TGroup[];
+  value?: string;
+  onValueChange?: (value: string) => void;
+  itemToStringValue?: (item: TGroup) => string;
+  filter?: (item: TGroup, query: string) => boolean;
+  onItemHighlighted?: (item: TGroup | undefined, details: {...}) => void;
+
+  // Selection
+  onSelect?: (item: TItem, options: { newTab: boolean }) => void;
+  getSelectableItems?: (items: TGroup[]) => TItem[];
+
+  children: React.ReactNode;
+}`}
+        lang="tsx"
+      />
+    </div>
+
+    <div class="mb-8">
+      <Heading level={3}>CommandPalette.ResultItem Props</Heading>
+      <CodeBlock
+        code={`interface CommandPaletteResultItemProps<T> {
+  value: T;
+  title: string;
+  breadcrumbs?: string[];
+  titleHighlights?: [number, number][];
+  breadcrumbHighlights?: [number, number][][];
+  description?: string;
+  icon?: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+  showArrow?: boolean;  // default: true
+  external?: boolean;   // shows external link icon
+  nonInteractive?: boolean;
+}`}
+        lang="tsx"
+      />
+    </div>
+  </ComponentSection>
+</DocLayout>

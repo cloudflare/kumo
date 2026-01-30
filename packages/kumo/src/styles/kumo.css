@@ -1,0 +1,55 @@
+@import "./kumo-binding.css";
+
+/* 
+ * Kumo Component Library Styles - Tailwind Version
+ * 
+ * Note: This file does NOT import Tailwind CSS.
+ * Consumer applications must import Tailwind separately in their own CSS:
+ * 
+ * @import "tailwindcss";
+ * @import "@cloudflare/kumo/styles/tailwind";
+ */
+
+/* Skeleton loading animation */
+@keyframes skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton 1.5s ease-in-out infinite;
+}
+
+[data-mode="dark"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+}
+
+/* Refresh animation for RefreshButton */
+@keyframes refresh {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-refresh {
+  animation: refresh 1s linear infinite;
+}

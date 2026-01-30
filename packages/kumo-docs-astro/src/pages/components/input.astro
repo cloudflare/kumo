@@ -1,0 +1,389 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  InputBasicDemo,
+  InputWithLabelDemo,
+  InputErrorStringDemo,
+  InputErrorObjectDemo,
+  InputSizesDemo,
+  InputDisabledDemo,
+  InputBareDemo,
+  InputTypesDemo,
+  InputOptionalFieldDemo,
+  InputLabelTooltipDemo,
+  InputReactNodeLabelDemo,
+} from "../../components/demos/InputDemo";
+---
+
+<DocLayout
+  title="Input"
+  description="A text input field for user input with built-in label, description, and error support."
+  sourceFile="components/input"
+  baseUIComponent="input"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Input 
+  label="Email" 
+  placeholder="you@example.com"
+  description="We'll never share your email"
+/>`}
+    >
+      <InputBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Input } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Input } from "@cloudflare/kumo/components/input";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <Heading level={3} class="mb-2 text-lg">With Built-in Field (Recommended)</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop
+      to enable the built-in Field wrapper with label, description, and error support.
+    </p>
+    <CodeBlock
+      code={`import { Input } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Input 
+      label="Email" 
+      placeholder="you@example.com"
+      description="We'll never share your email"
+    />
+  );
+}`}
+      lang="tsx"
+    />
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Bare Input (Custom Layouts)</h3>
+    <p class="mb-4 text-sm text-kumo-strong">
+      For custom form layouts, use Input without <code
+        class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code
+      >. Must provide <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+        >aria-label</code
+      > or <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">aria-labelledby</code
+      > for accessibility.
+    </p>
+    <CodeBlock
+      code={`import { Input } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Input placeholder="Search..." aria-label="Search products" />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>With Label and Description</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop
+          enables the built-in Field wrapper with automatic vertical layout (label
+          above input).
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label="Username" 
+  placeholder="Choose a username"
+  description="3-20 characters, alphanumeric only"
+/>`}
+        >
+          <InputWithLabelDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Error (String)</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Pass <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code> as
+          a string for simple error messages. Error replaces description when present.
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label="Email" 
+  placeholder="you@example.com"
+  value="invalid-email"
+  variant="error"
+  error="Please enter a valid email address"
+/>`}
+        >
+          <InputErrorStringDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Error (Validation Object)</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Pass <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code> as
+          an object with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >message</code
+          > and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">match</code> for
+          HTML5 validation. Error shows when field validity matches.
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label="Password"
+  type="password"
+  value="short"
+  variant="error"
+  error={{
+    message: "Password must be at least 8 characters",
+    match: "tooShort"
+  }}
+  minLength={8}
+/>`}
+        >
+          <InputErrorObjectDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Input Sizes</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Four sizes available: <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >xs</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">sm</code>, <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">base</code
+          > (default), <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">lg</code
+          >.
+        </p>
+        <ComponentExample
+          code={`<>
+  <Input size="xs" label="Extra Small" placeholder="Extra small input" />
+  <Input size="sm" label="Small" placeholder="Small input" />
+  <Input label="Base" placeholder="Base input (default)" />
+  <Input size="lg" label="Large" placeholder="Large input" />
+</>`}
+        >
+          <InputSizesDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Disabled</Heading>
+        <ComponentExample
+          code={`<Input 
+  label="Disabled field" 
+  placeholder="Cannot edit" 
+  disabled 
+/>`}
+        >
+          <InputDisabledDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Optional Field</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >required={"{false}"}</code
+          > to show "(optional)" text after the label.
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label="Phone Number" 
+  required={false}
+  placeholder="+1 (555) 000-0000"
+/>`}
+        >
+          <InputOptionalFieldDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Label Tooltip</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >labelTooltip</code
+          > to add an info icon with additional context on hover.
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label="API Key" 
+  labelTooltip="Find this in your dashboard under Settings > API Keys"
+  placeholder="sk_live_..."
+/>`}
+        >
+          <InputLabelTooltipDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>ReactNode Label</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code>
+          prop accepts ReactNode for rich formatting.
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label={<span>Email for <strong>billing</strong></span>}
+  required
+  placeholder="billing@company.com"
+  type="email"
+/>`}
+        >
+          <InputReactNodeLabelDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Bare Input (No Label)</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Input without <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >label</code
+          > renders as a bare input. Must provide <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">aria-label</code
+          > for accessibility.
+        </p>
+        <ComponentExample
+          code={`<Input placeholder="Search..." aria-label="Search products" />`}
+        >
+          <InputBareDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Input Types</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Supports all HTML input types: <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">text</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">email</code>, <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">password</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">number</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">tel</code>, <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">url</code
+          >, etc.
+        </p>
+        <ComponentExample
+          code={`<>
+  <Input type="email" label="Email" placeholder="you@example.com" />
+  <Input type="password" label="Password" placeholder="••••••••" />
+  <Input type="number" label="Age" placeholder="18" />
+  <Input type="tel" label="Phone" placeholder="+1 (555) 000-0000" />
+</>`}
+        >
+          <InputTypesDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      Input accepts all standard HTML input attributes plus the following:
+    </p>
+    <PropsTable component="Input" />
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Validation Error Types</h3>
+    <p class="mb-4 text-sm text-kumo-strong">
+      When using <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code> as
+      an object, the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">match</code>
+      property corresponds to HTML5 ValidityState values:
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Match</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">valueMissing</td>
+            <td class="px-4 py-3 text-xs">Required field is empty</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">typeMismatch</td>
+            <td class="px-4 py-3 text-xs">Value doesn't match type (e.g., invalid email)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">patternMismatch</td>
+            <td class="px-4 py-3 text-xs">Value doesn't match pattern attribute</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">tooShort</td>
+            <td class="px-4 py-3 text-xs">Value shorter than minLength</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">tooLong</td>
+            <td class="px-4 py-3 text-xs">Value longer than maxLength</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">rangeUnderflow</td>
+            <td class="px-4 py-3 text-xs">Value less than min</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">rangeOverflow</td>
+            <td class="px-4 py-3 text-xs">Value greater than max</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">true</td>
+            <td class="px-4 py-3 text-xs">Always show error (for server-side validation)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+
+  <!-- Accessibility -->
+  <ComponentSection>
+    <Heading level={2}>Accessibility</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">Label Requirement</h3>
+        <p class="text-kumo-strong">Inputs require an accessible name via one of:</p>
+        <ul class="mt-2 ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>
+            <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop (recommended)
+          </li>
+          <li>
+            <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> + <code
+              class="rounded bg-kumo-control px-1 py-0.5 text-sm">aria-label</code
+            > for bare inputs
+          </li>
+          <li>
+            <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">aria-labelledby</code> for
+            custom label association
+          </li>
+        </ul>
+        <p class="mt-2 text-kumo-strong">
+          Missing accessible names trigger console warnings in development.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Error Association</h3>
+        <p class="text-kumo-strong">
+          Error messages are automatically associated with the input via ARIA attributes
+          for screen reader announcement.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

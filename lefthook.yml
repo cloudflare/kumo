@@ -1,0 +1,16 @@
+# Lefthook git hooks configuration
+# https://github.com/evilmartians/lefthook
+#
+# Skip hooks: LEFTHOOK=0 git push
+# Skip specific hook: LEFTHOOK_EXCLUDE=validate-changeset git push
+# Git native skip: git push --no-verify
+
+pre-push:
+  skip:
+    - ref: main
+  commands:
+    validate-changeset:
+      run: pnpm tsx ci/scripts/validate-kumo-changeset.ts
+      skip:
+        - merge
+        - rebase

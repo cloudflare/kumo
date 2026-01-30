@@ -1,0 +1,93 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  SwitchBasicDemo,
+  SwitchOffDemo,
+  SwitchOnDemo,
+} from "../../components/demos/SwitchDemo";
+---
+
+<DocLayout
+  title="Switch"
+  description="A two-state button that can be either on or off."
+  sourceFile="components/switch"
+  baseUIComponent="switch"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Switch label="Switch" checked={false} onCheckedChange={() => {}} />`}
+    >
+      <SwitchBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Switch } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Switch } from "@cloudflare/kumo/components/switch";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Switch } from "@cloudflare/kumo";
+import { useState } from "react";
+
+export default function Example() {
+  const [checked, setChecked] = useState(false);
+  
+  return (
+    <Switch 
+      checked={checked} 
+      onCheckedChange={(val) => setChecked(val)} 
+    />
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Off State</Heading>
+        <ComponentExample
+          code={`<Switch label="Switch" checked={false} onCheckedChange={() => {}} />`}
+        >
+          <SwitchOffDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>On State</Heading>
+        <ComponentExample
+          code={`<Switch label="Switch" checked={true} onCheckedChange={() => {}} />`}
+        >
+          <SwitchOnDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Switch" />
+  </ComponentSection>
+</DocLayout>

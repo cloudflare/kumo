@@ -1,0 +1,78 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  LoaderBasicDemo,
+  LoaderSizesDemo,
+  LoaderCustomSizeDemo,
+} from "../../components/demos/LoaderDemo";
+---
+
+<DocLayout
+  title="Loader"
+  description="A loading spinner to indicate loading state."
+  sourceFile="components/loader"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample code={`<Loader />`}>
+      <LoaderBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Loader } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Loader } from "@cloudflare/kumo/components/loader";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Loader } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Loader />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Default Size</Heading>
+        <ComponentExample code={`<Loader />`}>
+          <LoaderBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Size</Heading>
+        <ComponentExample code={`<Loader size={24} />`}>
+          <LoaderCustomSizeDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Loader" />
+  </ComponentSection>
+</DocLayout>

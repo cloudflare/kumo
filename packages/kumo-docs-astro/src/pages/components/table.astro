@@ -1,0 +1,435 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  TableBasicDemo,
+  TableWithCheckboxDemo,
+  TableSelectedRowDemo,
+  TableFixedLayoutDemo,
+  TableFullDemo,
+} from "../../components/demos/TableDemo";
+---
+
+<DocLayout
+  title="Table"
+  description="A table component for displaying tabular data with support for selection, row variants, and column sizing."
+  sourceFile="components/table"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.Head>Subject</Table.Head>
+      <Table.Head>From</Table.Head>
+      <Table.Head>Date</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>Kumo v1.0.0 released</Table.Cell>
+      <Table.Cell>Visal In</Table.Cell>
+      <Table.Cell>5 seconds ago</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`}
+    >
+      <TableBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Table } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Table } from "@cloudflare/kumo/components/table";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Table, LayerCard } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <LayerCard>
+      <LayerCard.Primary className="p-0">
+        <Table>
+          <Table.Header>
+            <Table.Row>
+              <Table.Head>Name</Table.Head>
+              <Table.Head>Email</Table.Head>
+              <Table.Head>Role</Table.Head>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>John Doe</Table.Cell>
+              <Table.Cell>john@example.com</Table.Cell>
+              <Table.Cell>Admin</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>With Checkboxes</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Add row selection with <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">Table.CheckHead</code
+          > and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >Table.CheckCell</code
+          >.
+        </p>
+        <ComponentExample
+          code={`<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.CheckHead />
+      <Table.Head>Subject</Table.Head>
+      <Table.Head>From</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.CheckCell />
+      <Table.Cell>Email subject</Table.Cell>
+      <Table.Cell>Sender name</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`}
+        >
+          <TableWithCheckboxDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Selected Row</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >variant="selected"</code
+          > on <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >Table.Row</code
+          > to highlight selected rows.
+        </p>
+        <ComponentExample
+          code={`<Table.Row variant="selected">
+  <Table.CheckCell checked />
+  <Table.Cell>Selected row</Table.Cell>
+</Table.Row>`}
+        >
+          <TableSelectedRowDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Fixed Layout with Column Sizes</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          For precise control over column widths, set <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">layout="fixed"</code
+          > and use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >colgroup</code
+          > with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">col</code
+          > elements.
+        </p>
+        <ComponentExample
+          code={`<Table layout="fixed">
+  <colgroup>
+    <col />
+    <col className="w-[150px]" />
+    <col className="w-[150px]" />
+  </colgroup>
+  <Table.Header>
+    <Table.Row>
+      <Table.Head>Subject</Table.Head>
+      <Table.Head>From</Table.Head>
+      <Table.Head>Date</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    {data.map((row) => (
+      <Table.Row key={row.id}>
+        <Table.Cell>{row.subject}</Table.Cell>
+        <Table.Cell>{row.from}</Table.Cell>
+        <Table.Cell>{row.date}</Table.Cell>
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table>`}
+        >
+          <TableFixedLayoutDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Full Example</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Complete table with checkboxes, badges, action buttons, and fixed
+          column widths.
+        </p>
+        <ComponentExample
+          code={`<Table layout="fixed">
+  <colgroup>
+    <col style={{ width: "40px" }} />
+    <col />
+    <col style={{ width: "150px" }} />
+    <col style={{ width: "120px" }} />
+    <col style={{ width: "50px" }} />
+  </colgroup>
+  <Table.Header>
+    <Table.Row>
+      <Table.CheckHead />
+      <Table.Head>Subject</Table.Head>
+      <Table.Head>From</Table.Head>
+      <Table.Head>Date</Table.Head>
+      <Table.Head></Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    {data.map((row) => (
+      <Table.Row key={row.id} variant={row.selected ? "selected" : "default"}>
+        <Table.CheckCell checked={row.selected} />
+        <Table.Cell>
+          <div className="flex items-center gap-2">
+            <EnvelopeSimple size={16} />
+            {row.subject}
+            {row.tags?.map((tag) => <Badge key={tag}>{tag}</Badge>)}
+          </div>
+        </Table.Cell>
+        <Table.Cell>{row.from}</Table.Cell>
+        <Table.Cell>{row.date}</Table.Cell>
+        <Table.Cell className="text-right">
+          <Button variant="ghost" size="sm" shape="square">
+            <DotsThree weight="bold" size={16} />
+          </Button>
+        </Table.Cell>
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table>`}
+        >
+          <TableFullDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Root table component. Renders a semantic <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;table&gt;</code
+          > element.
+        </p>
+        <PropsTable component="Table" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.Header</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Table header section. Renders <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;thead&gt;</code
+          >.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.Body</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Table body section. Renders <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;tbody&gt;</code
+          >.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.Row</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Table row. Supports <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >variant="selected"</code
+          > for highlighting.
+        </p>
+        <PropsTable component="Table.Row" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.Head</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Header cell. Renders <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;th&gt;</code
+          >.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.Cell</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Body cell. Renders <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;td&gt;</code
+          >.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.CheckHead</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Header cell with checkbox for "select all" functionality.
+        </p>
+        <PropsTable component="Table.CheckHead" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.CheckCell</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Body cell with checkbox for row selection.
+        </p>
+        <PropsTable component="Table.CheckCell" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Table.ResizeHandle</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Draggable handle for column resizing. Use with TanStack Table or
+          custom resize logic.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- TanStack Table Integration -->
+  <ComponentSection>
+    <Heading level={2}>TanStack Table Integration</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      For advanced features like sorting, filtering, and resizable columns,
+      integrate with <a
+        href="https://tanstack.com/table"
+        class="text-kumo-link hover:underline"
+        target="_blank"
+        rel="noopener noreferrer">TanStack Table</a
+      >. The Table component is designed to work seamlessly with TanStack's
+      headless API.
+    </p>
+    <CodeBlock
+      code={`import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { Table } from "@cloudflare/kumo";
+
+function DataTable({ data, columns }) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: "onChange",
+  });
+
+  return (
+    <Table layout="fixed">
+      <colgroup>
+        {table.getAllColumns().map((column) => (
+          <col key={column.id} style={{ width: column.getSize() }} />
+        ))}
+      </colgroup>
+      <Table.Header>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <Table.Row key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <Table.Head key={header.id}>
+                {flexRender(header.column.columnDef.header, header.getContext())}
+                <Table.ResizeHandle
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
+                />
+              </Table.Head>
+            ))}
+          </Table.Row>
+        ))}
+      </Table.Header>
+      <Table.Body>
+        {table.getRowModel().rows.map((row) => (
+          <Table.Row key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <Table.Cell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Table.Cell>
+            ))}
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Accessibility -->
+  <ComponentSection>
+    <Heading level={2}>Accessibility</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">Semantic HTML</h3>
+        <p class="text-kumo-strong">
+          Table uses semantic <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;table&gt;</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >&lt;thead&gt;</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >&lt;tbody&gt;</code
+          >, <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >&lt;th&gt;</code
+          >, and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >&lt;td&gt;</code
+          > elements for proper screen reader navigation.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Checkbox Labels</h3>
+        <p class="text-kumo-strong">
+          Always provide <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >aria-label</code
+          > for <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >Table.CheckHead</code
+          > and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >Table.CheckCell</code
+          > to describe their purpose.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
+        <p class="text-kumo-strong">
+          <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus through
+          interactive elements. Checkboxes respond to <kbd
+            class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd
+          >.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

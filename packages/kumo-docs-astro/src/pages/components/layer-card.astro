@@ -1,0 +1,93 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { LayerCardDemo, LayerCardBasicDemo, LayerCardMultipleDemo } from "../../components/demos/LayerCardDemo";
+---
+
+<DocLayout
+  title="Layer Card"
+  description="A card component with a layered visual effect, perfect for navigation or feature highlights."
+  sourceFile="components/layer-card"
+>
+  <ComponentSection>
+    <ComponentExample code={`<LayerCard className="w-[200px]">
+  <LayerCard.Secondary>Next Steps</LayerCard.Secondary>
+  <LayerCard.Primary>Get started with Kumo</LayerCard.Primary>
+</LayerCard>`}>
+      <LayerCardDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { LayerCard } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { LayerCard } from "@cloudflare/kumo/components/layer-card";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { LayerCard } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <LayerCard className="w-[250px]">
+      <LayerCard.Secondary>Documentation</LayerCard.Secondary>
+      <LayerCard.Primary>
+        Learn how to use Kumo components
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic Card</Heading>
+        <ComponentExample code={`<LayerCard className="w-[250px]">
+  <LayerCard.Secondary>Getting Started</LayerCard.Secondary>
+  <LayerCard.Primary>
+    <p className="text-sm text-kumo-subtle">
+      Quick start guide for new users
+    </p>
+  </LayerCard.Primary>
+</LayerCard>`}>
+          <LayerCardBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Multiple Cards</Heading>
+        <ComponentExample code={`<div className="flex gap-4">
+  <LayerCard className="w-[200px]">
+    <LayerCard.Secondary>Components</LayerCard.Secondary>
+    <LayerCard.Primary>
+      <p className="text-sm">Browse all components</p>
+    </LayerCard.Primary>
+  </LayerCard>
+  <LayerCard className="w-[200px]">
+    <LayerCard.Secondary>Examples</LayerCard.Secondary>
+    <LayerCard.Primary>
+      <p className="text-sm">View code examples</p>
+    </LayerCard.Primary>
+  </LayerCard>
+</div>`}>
+          <LayerCardMultipleDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="LayerCard" />
+  </ComponentSection>
+</DocLayout>

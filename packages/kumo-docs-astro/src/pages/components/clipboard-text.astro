@@ -1,0 +1,88 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  ClipboardTextBasicDemo,
+  ClipboardTextShortDemo,
+  ClipboardTextApiKeyDemo,
+  ClipboardTextLongDemo,
+} from "../../components/demos/ClipboardTextDemo";
+---
+
+<DocLayout
+  title="Clipboard Text"
+  description="A text component with a copy-to-clipboard button."
+  sourceFile="components/clipboard-text"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample code={`<ClipboardText text="0c239dd2" />`}>
+      <ClipboardTextBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { ClipboardText } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { ClipboardText } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <ClipboardText text="Copy this text" />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Short Text</Heading>
+        <ComponentExample code={`<ClipboardText text="abc123" />`}>
+          <ClipboardTextShortDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>API Key</Heading>
+        <ComponentExample code={`<ClipboardText text="sk_live_51H8..." />`}>
+          <ClipboardTextApiKeyDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Long Text</Heading>
+        <ComponentExample
+          code={`<ClipboardText text="https://example.com/very/long/url/path" />`}
+        >
+          <ClipboardTextLongDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="ClipboardText" />
+  </ComponentSection>
+</DocLayout>

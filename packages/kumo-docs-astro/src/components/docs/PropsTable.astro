@@ -1,0 +1,99 @@
+---
+/**
+ * PropsTable - Renders a props table from the component registry.
+ *
+ * Usage:
+ *   <PropsTable component="Button" />
+ *   <PropsTable component="Dialog.Root" />
+ */
+
+import {
+  getComponentData,
+  formatPropType,
+  formatDefault,
+  type PropSchema,
+} from "~/lib/component-registry";
+
+interface Props {
+  /** Component name, e.g., "Button" or "Dialog.Root" for sub-components */
+  component: string;
+  /** Whether to hide the description column (default: false) */
+  hideDescription?: boolean;
+}
+
+const { component, hideDescription = false } = Astro.props;
+const data = getComponentData(component);
+
+// Filter out props that are typically inherited and not useful to document
+const HIDDEN_PROPS = new Set(["ref", "key"]);
+
+const props = data
+  ? Object.entries(data.props).filter(([name]) => !HIDDEN_PROPS.has(name))
+  : [];
+
+// Check if any props have descriptions to show the column
+const hasDescriptions =
+  !hideDescription &&
+  props.some(
+    ([_, prop]) => prop.description || (prop.type === "enum" && prop.descriptions)
+  );
+---
+
+{
+  data ? (
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Prop</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Default</th>
+            {hasDescriptions && (
+              <th class="px-4 py-3 text-left font-semibold">Description</th>
+            )}
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          {props.map(([propName, prop]) => {
+            const isRequired = prop.required === true || prop.optional === false;
+            const typeDisplay = formatPropType(prop);
+            const defaultDisplay = formatDefault(prop);
+
+            // Build description: use prop.description, or for enums show variant descriptions
+            let description = prop.description || "";
+
+            return (
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono text-xs">
+                  {propName}
+                  {isRequired && <span class="text-kumo-danger ml-0.5">*</span>}
+                </td>
+                <td class="px-4 py-3 font-mono text-xs max-w-xs">
+                  <code class="text-wrap break-words">{typeDisplay}</code>
+                </td>
+                <td class="px-4 py-3 font-mono text-xs">
+                  {defaultDisplay !== "-" ? <code>{defaultDisplay}</code> : "-"}
+                </td>
+                {hasDescriptions && (
+                  <td class="px-4 py-3 text-xs max-w-md">{description || "-"}</td>
+                )}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {props.length === 0 && (
+        <p class="px-4 py-3 text-sm text-kumo-subtle">
+          No component-specific props. Accepts standard HTML attributes.
+        </p>
+      )}
+    </div>
+  ) : (
+    <div class="rounded-lg border border-kumo-danger/20 bg-kumo-danger/5 p-4">
+      <p class="text-sm text-kumo-danger">
+        Component "{component}" not found in registry. Run{" "}
+        <code>pnpm build:ai-metadata</code> to regenerate.
+      </p>
+    </div>
+  )
+}

@@ -1,0 +1,101 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { SensitiveInputDemo, SensitiveInputSizesDemo, SensitiveInputControlledDemo, SensitiveInputStatesDemo } from "../../components/demos/SensitiveInputDemo";
+---
+
+<DocLayout
+  title="Sensitive Input"
+  description="A masked input for sensitive values like API keys and passwords. Click to reveal."
+  sourceFile="components/sensitive-input"
+>
+  <ComponentSection>
+    <ComponentExample code={`<SensitiveInput 
+  label="API Key" 
+  defaultValue="sk_live_abc123xyz789" 
+/>`}>
+      <SensitiveInputDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { SensitiveInput } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { SensitiveInput } from "@cloudflare/kumo/components/sensitive-input";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { SensitiveInput } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <SensitiveInput label="Secret" defaultValue="my-secret-key" />
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Sizes</Heading>
+    <p class="text-kumo-strong mb-4">SensitiveInput supports multiple sizes to fit different contexts.</p>
+    <ComponentExample code={`<SensitiveInput label="xs size" size="xs" defaultValue="secret-key" />
+<SensitiveInput label="sm size" size="sm" defaultValue="secret-key" />
+<SensitiveInput label="base size" size="base" defaultValue="secret-key" />
+<SensitiveInput label="lg size" size="lg" defaultValue="secret-key" />`}>
+      <SensitiveInputSizesDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Controlled</Heading>
+    <p class="text-kumo-strong mb-4">Use controlled mode for full control over the input value.</p>
+    <ComponentExample code={`const [value, setValue] = useState("my-secret-value");
+
+<SensitiveInput
+  label="Controlled Secret"
+  value={value}
+  onValueChange={setValue}
+/>`}>
+      <SensitiveInputControlledDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>States</Heading>
+    <p class="text-kumo-strong mb-4">Various input states including error, disabled, read-only, and with description.</p>
+    <ComponentExample code={`<SensitiveInput
+  label="Error State"
+  variant="error"
+  defaultValue="invalid-key"
+  error="This API key is not valid"
+/>
+<SensitiveInput
+  label="Disabled"
+  defaultValue="cannot-edit"
+  disabled
+/>
+<SensitiveInput
+  label="Read-only"
+  defaultValue="view-only-secret-key"
+  readOnly
+/>
+<SensitiveInput
+  label="With Description"
+  defaultValue="my-secret-value"
+  description="Keep this value secure"
+/>`}>
+      <SensitiveInputStatesDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="SensitiveInput" />
+  </ComponentSection>
+</DocLayout>

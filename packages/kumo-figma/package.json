@@ -1,0 +1,33 @@
+{
+  "name": "@cloudflare/kumo-figma",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Figma plugin for generating Kumo UI Kit components",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm run build:data && pnpm run build:plugin",
+    "build:data": "tsx src/build-theme-data.ts && tsx src/build-loader-data.ts && tsx src/build-phosphor-icons.ts && tsx src/build-figma-variables.ts",
+    "build:plugin": "esbuild src/code.ts --bundle --outfile=src/code.js --format=iife --target=es2017",
+    "dev": "pnpm run build:data && pnpm run build:plugin --watch",
+    "clean": "rm -rf src/generated src/code.js",
+    "test": "vitest run",
+    "typecheck": "pnpm run build:data && tsc --noEmit",
+    "validate": "pnpm --filter @cloudflare/kumo codegen:registry && pnpm run build:data && vitest run src/generators/drift-detection.test.ts",
+    "figma:sync": "tsx scripts/sync-tokens-to-figma.ts"
+  },
+  "dependencies": {
+    "@cloudflare/kumo": "workspace:*",
+    "culori": "^4.0.0"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "1.121.0",
+    "@phosphor-icons/core": "2.1.1",
+    "@types/culori": "4.0.1",
+    "@types/node": "catalog:",
+    "esbuild": "0.27.2",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

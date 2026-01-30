@@ -1,0 +1,44 @@
+{
+  "name": "@cloudflare/kumo-docs-astro",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./demo-metadata.json": "./dist/demo-metadata.json"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "pnpm run codegen:demos && astro build",
+    "codegen:demos": "tsx scripts/extract-demo-examples.ts",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "lint": "oxlint src/ && node ../../lint/lint-astro-colors.js src/",
+    "lint:oxlint": "oxlint src/",
+    "lint:astro": "node ../../lint/lint-astro-colors.js src/"
+  },
+  "dependencies": {
+    "@cloudflare/kumo": "workspace:*",
+    "@phosphor-icons/react": "catalog:",
+    "astro": "^5.16.7",
+    "clsx": "catalog:",
+    "match-sorter": "^8.2.0",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1",
+    "tailwind-merge": "catalog:"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/react": "^4.2.1",
+    "@tailwindcss/vite": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "wrangler": "catalog:",
+    "oxlint": "catalog:"
+  }
+}

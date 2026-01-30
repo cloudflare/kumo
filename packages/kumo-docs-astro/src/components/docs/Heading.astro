@@ -1,0 +1,52 @@
+---
+import { LinkSimple } from "@phosphor-icons/react";
+
+interface Props {
+  level: 2 | 3 | 4;
+  id?: string;
+  class?: string;
+}
+
+const { level, id, class: className } = Astro.props;
+
+// Get the text content from the slot for generating the slug
+const slotContent = await Astro.slots.render("default");
+const textContent = slotContent.replace(/<[^>]*>/g, "").trim();
+
+// Generate slug from text content or use provided id
+const slug =
+  id ||
+  textContent
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+// Define styles for each heading level
+const levelStyles = {
+  2: "mb-4 text-2xl font-bold",
+  3: "mb-4 text-xl font-semibold",
+  4: "mb-3 text-base font-medium",
+};
+
+// Dynamic tag - must be capitalized for Astro
+const Element = `h${level}` as "h2" | "h3" | "h4";
+const baseStyles = levelStyles[level];
+---
+
+<Element
+  id={slug}
+  class:list={["group relative scroll-mt-24", baseStyles, className]}
+>
+  <a
+    href={`#${slug}`}
+    class="no-underline hover:underline"
+  >
+    <span
+      class="absolute -left-6 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
+      aria-hidden="true"
+    >
+      <LinkSimple className="size-4 text-kumo-subtle" />
+    </span>
+    <slot />
+  </a>
+</Element>

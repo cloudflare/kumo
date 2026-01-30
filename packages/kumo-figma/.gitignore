@@ -1,0 +1,9 @@
+# Generated at build time by build scripts
+src/generated/*.json
+
+# Keep the type declarations
+!src/generated/icon-data.json.d.ts
+!src/generated/theme-data.json.d.ts
+
+# Build output
+src/code.js

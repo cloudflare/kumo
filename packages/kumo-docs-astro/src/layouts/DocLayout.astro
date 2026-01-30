@@ -1,0 +1,102 @@
+---
+import MainLayout from "./MainLayout.astro";
+import { StickyDocHeader } from "../components/docs/StickyDocHeader";
+import { BaseUIIcon } from "../components/docs/icons/BaseUIIcon";
+import { GithubLogo } from "@phosphor-icons/react";
+
+interface Props {
+  title: string;
+  description: string;
+  baseUIComponent?: string;
+  /** Path to the source file in the kumo package (e.g., "components/button") - will link to GitHub */
+  sourceFile?: string;
+}
+
+const { title, description, baseUIComponent, sourceFile } =
+  Astro.props;
+
+const baseUIUrl = baseUIComponent
+  ? `https://base-ui.com/react/components/${baseUIComponent}`
+  : null;
+
+// Extract the component name from the path (e.g., "components/button" -> "button")
+// and construct the direct file URL (e.g., "components/button/button.tsx")
+const githubSourceUrl = sourceFile
+  ? (() => {
+      const componentName = sourceFile.split("/").pop();
+      return `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/${sourceFile}/${componentName}.tsx`;
+    })()
+  : null;
+---
+
+<MainLayout title={`${title} - Kumo`} description={description}>
+  <div class="flex min-h-screen flex-col">
+    
+    <StickyDocHeader
+      title={title}
+      githubSourceUrl={githubSourceUrl}
+      baseUIUrl={baseUIUrl}
+      client:load
+    />
+
+    <!-- Page Header -->
+    <div
+      id="page-header"
+      class="border-b border-kumo-line pr-12"
+    >
+      <div
+        class="mx-auto border-r border-kumo-line"
+      >
+        <div class="mx-auto max-w-5xl px-8 py-12">
+          <div class="mb-3 flex items-center gap-3">
+            <h1 class="text-4xl font-bold text-kumo-default">{title}</h1>
+            {
+              githubSourceUrl && (
+                <a
+                  href={githubSourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                  title="View source on GitHub"
+                  aria-label="View source on GitHub"
+                >
+                  <GithubLogo size={28} weight="fill" />
+                </a>
+              )
+            }
+            {
+              baseUIUrl && (
+                <a
+                  href={baseUIUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                  title="View Base UI documentation"
+                  aria-label="View Base UI documentation"
+                >
+                  <BaseUIIcon size={28} />
+                </a>
+              )
+            }
+          </div>
+          <p class="text-lg text-kumo-strong">
+            {description}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <main class="flex grow flex-col pr-12">
+      <div
+        class="mx-auto w-full grow border-r border-kumo-line"
+      >
+        <div class="mx-auto max-w-5xl px-8 py-12">
+          <div class="max-w-none">
+            <slot />
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</MainLayout>

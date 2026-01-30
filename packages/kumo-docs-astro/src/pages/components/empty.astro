@@ -1,0 +1,124 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { EmptyDemo, EmptySizesDemo, EmptyWithCommandDemo, EmptyWithActionsDemo, EmptyMinimalDemo, EmptyBasicDemo } from "../../components/demos/EmptyDemo";
+
+const heroCode = `<Empty 
+    icon={<PackageIcon size={48} />}
+    title="No packages found" 
+    description="Get started by installing your first package." 
+    commandLine="npm install @cloudflare/kumo" 
+    contents={<div className="flex items-center gap-2">
+        <Button icon={<CodeIcon />}>See examples</Button>
+        <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
+    </div>}
+/>`;
+---
+
+<DocLayout
+  title="Empty"
+  description="A component to display when there's no content or data to show, with optional command line and actions."
+  sourceFile="components/empty"
+>
+  <ComponentSection>
+    <ComponentExample code={heroCode}>
+      <EmptyDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <CodeBlock code={`import { Empty } from "@cloudflare/kumo";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Empty } from "@cloudflare/kumo";
+import { PackageIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <Empty
+      icon={<PackageIcon size={48} />}
+      title="No packages found"
+      description="Get started by installing your first package."
+      commandLine="npm install @kumo/ui"
+    />
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic</Heading>
+        <ComponentExample code={`<Empty
+  title="No results found"
+  description="Try adjusting your search or filter to find what you're looking for."
+/>`}>
+          <EmptyBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Sizes</Heading>
+    <p class="text-kumo-strong mb-4">Empty states come in three sizes to fit different container contexts.</p>
+    <ComponentExample code={`<Empty size="sm" icon={...} title="..." description="..." />
+<Empty size="base" icon={...} title="..." description="..." />
+<Empty size="lg" icon={...} title="..." description="..." />`}>
+      <EmptySizesDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>With Command Line</Heading>
+    <p class="text-kumo-strong mb-4">Include a copyable command to help users get started.</p>
+    <ComponentExample code={`<Empty 
+  icon={<FolderOpen size={48} className="text-kumo-inactive" />}
+  title="No projects found"
+  description="Get started by creating your first project using the command below."
+  commandLine="npm create kumo-project"
+/>`}>
+      <EmptyWithCommandDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>With Actions</Heading>
+    <p class="text-kumo-strong mb-4">Add custom action buttons using the contents prop.</p>
+    <ComponentExample code={`<Empty 
+  icon={<CloudSlash size={48} className="text-kumo-inactive" />}
+  title="No connection"
+  description="Unable to connect to the server."
+  contents={
+    <div className="flex gap-2">
+      <Button variant="primary">Retry</Button>
+      <Button variant="secondary">Go Back</Button>
+    </div>
+  }
+/>`}>
+      <EmptyWithActionsDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Minimal</Heading>
+    <p class="text-kumo-strong mb-4">At minimum, only a title is required.</p>
+    <ComponentExample code={`<Empty title="Nothing here" />`}>
+      <EmptyMinimalDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Empty" />
+  </ComponentSection>
+</DocLayout>

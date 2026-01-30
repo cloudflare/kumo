@@ -1,0 +1,59 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "Kumo", description = "Kumo – a modern component library" } =
+  Astro.props;
+
+// Build info is injected via Vite define in astro.config.mjs
+// These are replaced at build time with actual values
+declare const __KUMO_VERSION__: string;
+declare const __DOCS_VERSION__: string;
+declare const __BUILD_COMMIT__: string;
+declare const __BUILD_DATE__: string;
+
+const kumoVersion = typeof __KUMO_VERSION__ !== "undefined" ? __KUMO_VERSION__ : "dev";
+const docsVersion = typeof __DOCS_VERSION__ !== "undefined" ? __DOCS_VERSION__ : "dev";
+const buildCommit = typeof __BUILD_COMMIT__ !== "undefined" ? __BUILD_COMMIT__ : "local";
+const buildDate = typeof __BUILD_DATE__ !== "undefined" ? __BUILD_DATE__ : new Date().toISOString();
+---
+
+<!doctype html>
+<html class="bg-kumo-elevated" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="kumo-version" content={kumoVersion} />
+    <meta name="docs-version" content={docsVersion} />
+    <meta name="build-commit" content={buildCommit} />
+    <meta name="build-date" content={buildDate} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=optional"
+    />
+    <script is:inline>
+      // Initialize theme from localStorage or system preference
+      // This runs immediately (blocking) to prevent flash of unstyled content
+      (function() {
+        const stored = localStorage.getItem("theme");
+        if (stored) {
+          document.documentElement.setAttribute("data-mode", stored);
+        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.setAttribute("data-mode", "dark");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

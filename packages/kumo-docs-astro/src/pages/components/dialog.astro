@@ -1,0 +1,221 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { DialogBasicDemo, DialogWithActionsDemo } from "../../components/demos/DialogDemo";
+---
+
+<DocLayout
+  title="Dialog"
+  description="A window overlaid on either the primary window or another dialog window, rendering the content underneath inert."
+  sourceFile="components/dialog"
+  baseUIComponent="dialog"
+>
+  <ComponentSection>
+    <ComponentExample code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Open Dialog</Button>} />
+  <Dialog className="p-8">
+    <div className="flex items-start justify-between gap-4 mb-4">
+      <Dialog.Title className="text-2xl font-semibold">
+        Modal Title
+      </Dialog.Title>
+      <Dialog.Close
+        aria-label="Close"
+        render={(props) => (
+          <Button
+            {...props}
+            variant="secondary"
+            shape="square"
+            icon={<X />}
+          />
+        )}
+      />
+    </div>
+    <Dialog.Description className="text-kumo-subtle">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </Dialog.Description>
+    <div className="mt-8 flex justify-end gap-2">
+      <Button variant="secondary">Cancel</Button>
+      <Dialog.Close
+        render={(props) => (
+          <Button variant="destructive" {...props}>
+            Delete
+          </Button>
+        )}
+      />
+    </div>
+  </Dialog>
+</Dialog.Root>`}>
+      <DialogWithActionsDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Dialog } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { Dialog } from "@cloudflare/kumo/components/dialog";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Dialog, Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
+      <Dialog>
+        <Dialog.Title>Dialog Title</Dialog.Title>
+        <Dialog.Description>
+          Dialog content goes here.
+        </Dialog.Description>
+        <div className="flex justify-end gap-2 mt-4">
+          <Dialog.Close
+            render={(p) => (
+              <Button variant="secondary" {...p}>
+                Cancel
+              </Button>
+            )}
+          />
+        </div>
+      </Dialog>
+    </Dialog.Root>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic Dialog</Heading>
+        <ComponentExample code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />
+  <Dialog className="p-8">
+    <div className="flex items-start justify-between gap-4 mb-4">
+      <Dialog.Title className="text-2xl font-semibold">
+        Modal Title
+      </Dialog.Title>
+      <Dialog.Close
+        aria-label="Close"
+        render={(props) => (
+          <Button
+            {...props}
+            variant="secondary"
+            shape="square"
+            icon={<X />}
+          />
+        )}
+      />
+    </div>
+    <Dialog.Description className="text-kumo-subtle">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </Dialog.Description>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogBasicDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Actions</Heading>
+        <ComponentExample code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
+  <Dialog className="p-8">
+    <div className="flex items-start justify-between gap-4 mb-4">
+      <Dialog.Title className="text-2xl font-semibold">
+        Modal Title
+      </Dialog.Title>
+      <Dialog.Close
+        aria-label="Close"
+        render={(props) => (
+          <Button
+            {...props}
+            variant="secondary"
+            shape="square"
+            icon={<X />}
+          />
+        )}
+      />
+    </div>
+    <Dialog.Description className="text-kumo-subtle">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </Dialog.Description>
+    <div className="mt-8 flex justify-end gap-2">
+      <Button variant="secondary">Cancel</Button>
+      <Dialog.Close
+        render={(props) => (
+          <Button variant="destructive" {...props}>
+            Delete
+          </Button>
+        )}
+      />
+    </div>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogWithActionsDemo client:load />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Dialog</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          The main dialog container that renders the modal overlay and popup.
+        </p>
+        <PropsTable component="Dialog" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Dialog.Root</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Controls the open state of the dialog. Doesn't render its own HTML element.
+        </p>
+        <PropsTable component="Dialog.Root" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Dialog.Trigger</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A button that opens the dialog when clicked.
+        </p>
+        <PropsTable component="Dialog.Trigger" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Dialog.Title</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A heading that labels the dialog for accessibility.
+        </p>
+        <PropsTable component="Dialog.Title" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Dialog.Description</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A paragraph providing additional context about the dialog.
+        </p>
+        <PropsTable component="Dialog.Description" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Dialog.Close</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A button that closes the dialog when clicked.
+        </p>
+        <PropsTable component="Dialog.Close" />
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

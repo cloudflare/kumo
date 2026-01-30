@@ -1,0 +1,268 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  CheckboxBasicDemo,
+  CheckboxDefaultDemo,
+  CheckboxCheckedDemo,
+  CheckboxIndeterminateDemo,
+  CheckboxLabelFirstDemo,
+  CheckboxDisabledDemo,
+  CheckboxErrorDemo,
+  CheckboxGroupDemo,
+  CheckboxGroupErrorDemo,
+} from "../../components/demos/CheckboxDemo";
+---
+
+<DocLayout
+  title="Checkbox"
+  description="A control that allows the user to toggle between checked and not checked. Features built-in label support with automatic horizontal layout."
+  sourceFile="components/checkbox"
+  baseUIComponent="checkbox"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample code={`const [checked, setChecked] = useState(false);
+
+<Checkbox
+  label="Accept terms and conditions"
+  checked={checked}
+  onCheckedChange={setChecked}
+/>`}>
+      <CheckboxBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Checkbox } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Checkbox } from "@cloudflare/kumo/components/checkbox";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Checkbox } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Checkbox label="Accept terms" />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Default</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Checkbox with built-in label. The label automatically displays in a
+          horizontal layout (checkbox before label).
+        </p>
+        <ComponentExample code={`const [checked, setChecked] = useState(false);
+
+<Checkbox
+  label="Enable notifications"
+  checked={checked}
+  onCheckedChange={setChecked}
+/>`}>
+          <CheckboxDefaultDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Checked</Heading>
+        <ComponentExample code={`const [checked, setChecked] = useState(true);
+
+<Checkbox
+  label="I agree"
+  checked={checked}
+  onCheckedChange={setChecked}
+/>`}>
+          <CheckboxCheckedDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Indeterminate</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Used for "select all" patterns when some but not all items are
+          selected.
+        </p>
+        <ComponentExample code={`const [indeterminate, setIndeterminate] = useState(true);
+
+<Checkbox
+  label="Select all"
+  indeterminate={indeterminate}
+  onCheckedChange={() => setIndeterminate(false)}
+/>`}>
+          <CheckboxIndeterminateDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Label First Layout</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >controlFirst={"{false}"}</code
+          > to place the label before the checkbox.
+        </p>
+        <ComponentExample
+          code={`const [checked, setChecked] = useState(false);
+
+<Checkbox
+  label="Remember me"
+  controlFirst={false}
+  checked={checked}
+  onCheckedChange={setChecked}
+/>`}
+        >
+          <CheckboxLabelFirstDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Disabled</Heading>
+        <ComponentExample code={`<Checkbox label="Disabled option" disabled />`}>
+          <CheckboxDisabledDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Error</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Error variant provides visual styling (red ring). For error messages,
+          use Checkbox.Group.
+        </p>
+        <ComponentExample
+          code={`<Checkbox label="Invalid option" variant="error" />`}
+        >
+          <CheckboxErrorDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Checkbox Group</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Group multiple checkboxes with a legend, description, and shared error
+          messages. Uses Checkbox.Group and Checkbox.Item.
+        </p>
+        <ComponentExample
+          code={`<Checkbox.Group
+  legend="Email preferences"
+  description="Choose how you'd like to receive updates"
+  value={preferences}
+  onValueChange={setPreferences}
+>
+  <Checkbox.Item value="email" label="Email notifications" />
+  <Checkbox.Item value="sms" label="SMS notifications" />
+  <Checkbox.Item value="push" label="Push notifications" />
+</Checkbox.Group>`}
+        >
+          <CheckboxGroupDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Checkbox Group with Error</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Show validation errors at the group level. Error replaces description
+          when present.
+        </p>
+        <ComponentExample
+          code={`<Checkbox.Group
+  legend="Required preferences"
+  error="Please select at least one notification method"
+  value={[]}
+  onValueChange={() => {}}
+>
+  <Checkbox.Item value="email" label="Email" variant="error" />
+  <Checkbox.Item value="sms" label="SMS" variant="error" />
+</Checkbox.Group>`}
+        >
+          <CheckboxGroupErrorDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Checkbox</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Single checkbox component with built-in label and horizontal layout.
+        </p>
+        <PropsTable component="Checkbox" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Checkbox.Group</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Wrapper for multiple checkboxes with legend, description, and error support.
+        </p>
+        <PropsTable component="Checkbox.Group" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Checkbox.Item</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Individual checkbox within Checkbox.Group.
+        </p>
+        <PropsTable component="Checkbox.Item" />
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Accessibility -->
+  <ComponentSection>
+    <Heading level={2}>Accessibility</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">Label Requirement</h3>
+        <p class="text-kumo-strong">
+          Single checkboxes require a <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code
+          > prop or <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >aria-label</code
+          > for accessibility. Missing labels trigger console warnings in development.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
+        <p class="text-kumo-strong">
+          <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd> toggles the
+          checkbox. <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves
+          focus between checkboxes.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Screen Readers</h3>
+        <p class="text-kumo-strong">
+          Checkbox.Group uses semantic <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;fieldset&gt;</code
+          > and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >&lt;legend&gt;</code
+          > elements for proper grouping announcement.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

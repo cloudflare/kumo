@@ -1,0 +1,292 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  PopoverHeroDemo,
+  PopoverBasicDemo,
+  PopoverWithCloseDemo,
+  PopoverPositionDemo,
+  PopoverCustomContentDemo,
+  PopoverOpenOnHoverDemo,
+} from "../../components/demos/PopoverDemo";
+---
+
+<DocLayout
+  title="Popover"
+  description="An accessible popup anchored to a trigger element, used for displaying rich content like menus, forms, or additional information."
+  sourceFile="components/popover"
+  baseUIComponent="popover"
+>
+  <ComponentSection>
+    <ComponentExample code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button shape="square" icon={BellIcon} />
+  </Popover.Trigger>
+  <Popover.Content>
+    <Popover.Title>Notifications</Popover.Title>
+    <Popover.Description>You are all caught up. Good job!</Popover.Description>
+  </Popover.Content>
+</Popover>`}>
+      <PopoverHeroDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Popover } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { Popover } from "@cloudflare/kumo/components/popover";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Popover, Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Popover>
+      <Popover.Trigger asChild>
+        <Button>Open</Button>
+      </Popover.Trigger>
+      <Popover.Content>
+        <Popover.Title>Popover Title</Popover.Title>
+        <Popover.Description>
+          Popover content goes here.
+        </Popover.Description>
+      </Popover.Content>
+    </Popover>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Popover vs Tooltip</Heading>
+    <p class="mb-4 text-sm text-label">
+      While popovers can be triggered on hover (using <code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs">openOnHover</code>), they serve a different purpose than tooltips. Understanding when to use each is important for accessibility and user experience.
+    </p>
+    <div class="overflow-hidden rounded-lg border border-border">
+      <table class="w-full text-sm">
+        <thead class="bg-surface-2">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold"></th>
+            <th class="px-4 py-3 text-left font-semibold">Tooltip</th>
+            <th class="px-4 py-3 text-left font-semibold">Popover</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          <tr>
+            <td class="px-4 py-3 font-medium">Purpose</td>
+            <td class="px-4 py-3 text-muted">Short, non-interactive text labels for identification</td>
+            <td class="px-4 py-3 text-muted">Rich, interactive content containers</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Content</td>
+            <td class="px-4 py-3 text-muted">Plain text only</td>
+            <td class="px-4 py-3 text-muted">Any content: links, buttons, forms, images</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Trigger</td>
+            <td class="px-4 py-3 text-muted">Hover or focus</td>
+            <td class="px-4 py-3 text-muted">Click (default) or hover</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">ARIA Role</td>
+            <td class="px-4 py-3"><code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs">role="tooltip"</code></td>
+            <td class="px-4 py-3"><code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs">aria-haspopup</code></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Keyboard</td>
+            <td class="px-4 py-3 text-muted">Not focusable</td>
+            <td class="px-4 py-3 text-muted">Focus moves inside, traps when open</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-4 text-sm text-label">
+      <strong>Use a Tooltip</strong> when you need to label an icon button or provide a brief explanation. <strong>Use a Popover</strong> when users need to interact with the content inside, such as clicking links, filling out forms, or dismissing with a button.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic Popover</Heading>
+        <ComponentExample code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button>Open Popover</Button>
+  </Popover.Trigger>
+  <Popover.Content>
+    <Popover.Title>Popover Title</Popover.Title>
+    <Popover.Description>
+      This is a basic popover with a title and description.
+    </Popover.Description>
+  </Popover.Content>
+</Popover>`}>
+          <PopoverBasicDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Close Button</Heading>
+        <ComponentExample code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button>Open Settings</Button>
+  </Popover.Trigger>
+  <Popover.Content>
+    <Popover.Title>Settings</Popover.Title>
+    <Popover.Description>Configure your preferences below.</Popover.Description>
+    <div className="mt-3">
+      <Popover.Close asChild>
+        <Button variant="secondary" size="sm">
+          Close
+        </Button>
+      </Popover.Close>
+    </div>
+  </Popover.Content>
+</Popover>`}>
+          <PopoverWithCloseDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Positioning</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use the <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">side</code> prop to control where the popover appears relative to the trigger.
+        </p>
+        <ComponentExample code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button>Top</Button>
+  </Popover.Trigger>
+  <Popover.Content side="top">
+    <Popover.Title>Top</Popover.Title>
+    <Popover.Description>Popover on top.</Popover.Description>
+  </Popover.Content>
+</Popover>`}>
+          <PopoverPositionDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Content</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Popovers can contain any content, including custom layouts with avatars, buttons, and more.
+        </p>
+        <ComponentExample code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button>User Profile</Button>
+  </Popover.Trigger>
+  <Popover.Content className="w-64">
+    <div className="flex items-center gap-3">
+      <div className="size-10 rounded-full bg-kumo-recessed" />
+      <div>
+        <Popover.Title>Jane Doe</Popover.Title>
+        <p className="text-sm text-kumo-subtle">jane@example.com</p>
+      </div>
+    </div>
+    <div className="mt-3 flex gap-2 border-t border-kumo-line pt-3">
+      <Button variant="secondary" size="sm" className="flex-1">
+        Profile
+      </Button>
+      <Popover.Close asChild>
+        <Button variant="ghost" size="sm" className="flex-1">
+          Sign Out
+        </Button>
+      </Popover.Close>
+    </div>
+  </Popover.Content>
+</Popover>`}>
+          <PopoverCustomContentDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Open on Hover</Heading>
+        <p class="mb-4 text-sm text-label">
+          Use <code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs">openOnHover</code> on the trigger to open the popover when the user hovers over it. You can also specify a <code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs">delay</code> in milliseconds before the popover appears.
+        </p>
+        <ComponentExample code={`<Popover>
+  <Popover.Trigger openOnHover delay={200} asChild>
+    <Button variant="secondary">Hover Me</Button>
+  </Popover.Trigger>
+  <Popover.Content>
+    <Popover.Title>Hover Triggered</Popover.Title>
+    <Popover.Description>
+      This popover opens on hover with a 200ms delay. It can still contain
+      interactive content like buttons and links.
+    </Popover.Description>
+    <div className="mt-3">
+      <Popover.Close asChild>
+        <Button variant="secondary" size="sm">
+          Got it
+        </Button>
+      </Popover.Close>
+    </div>
+  </Popover.Content>
+</Popover>`}>
+          <PopoverOpenOnHoverDemo client:load />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Popover</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          The root component that manages the popover's open state.
+        </p>
+        <PropsTable component="Popover" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Popover.Trigger</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A button that opens the popover when clicked. Use <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">asChild</code> to render your own element.
+        </p>
+        <PropsTable component="Popover.Trigger" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Popover.Content</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          The container for popover content. Controls positioning via <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">side</code>, <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">align</code>, <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">sideOffset</code>, and <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">alignOffset</code> props.
+        </p>
+        <PropsTable component="Popover.Content" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Popover.Title</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A heading that labels the popover for accessibility.
+        </p>
+        <PropsTable component="Popover.Title" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Popover.Description</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A paragraph providing additional context about the popover content.
+        </p>
+        <PropsTable component="Popover.Description" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Popover.Close</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          A button that closes the popover when clicked. Use <code class="rounded bg-kumo-elevated px-1.5 py-0.5 font-mono text-xs">asChild</code> to render your own element.
+        </p>
+        <PropsTable component="Popover.Close" />
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

@@ -1,0 +1,190 @@
+@import "./theme-kumo.css";
+@import "./theme-fedramp.css";
+
+@theme {
+  /* Primitive color definitions for Kumo theme */
+  --color-red-650: oklch(0.55 0.238 27.4);
+  --color-red-750: oklch(0.46 0.195 27.2);
+
+  --color-blue-400: oklch(0.707 0.165 254.624);
+  --color-blue-800: oklch(0.424 0.199 265.638);
+
+  --color-neutral-25: oklch(0.99 0 0);
+  --color-neutral-50: oklch(0.985 0 0);
+  --color-neutral-150: oklch(0.96 0 0);
+  --color-neutral-250: oklch(0.9 0 0);
+  --color-neutral-450: oklch(0.62 0 0);
+  --color-neutral-750: oklch(0.31 0 0);
+  --color-neutral-850: oklch(0.23 0 0);
+  --color-neutral-925: oklch(0.175 0 0);
+}
+
+/* Typography is now generated in theme-kumo.css via codegen:themes */
+
+@theme {
+  /* Easings & transitions */
+  --ease-bounce: cubic-bezier(0.2, 0, 0, 1.5);
+  --default-transition-duration: 100ms;
+
+  /* Animation */
+  --animate-refresh: refresh 0.5s ease-in-out infinite;
+  --animate-right: right 15s linear infinite;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  [data-mode="dark"] {
+    color-scheme: dark;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* "spinner" = up and down arrows on number inputs */
+  .no-input-spinner {
+    appearance: textfield;
+
+    ::-webkit-outer-spin-button,
+    ::-webkit-inner-spin-button {
+      appearance: none;
+    }
+  }
+
+  /* Link current variant decoration - different opacities for light/dark */
+  .link-current {
+    text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+  }
+
+  [data-mode="dark"] .link-current {
+    text-decoration-color: color-mix(in oklch, currentColor 65%, transparent);
+  }
+
+  .link-current:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* External link icon stroke width - thicker in dark mode for visibility */
+  .link-external-icon {
+    stroke-width: 1.75;
+  }
+
+  [data-mode="dark"] .link-external-icon {
+    stroke-width: 2;
+  }
+}
+
+.z-modal {
+  z-index: 9999;
+}
+
+@keyframes right {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.float {
+  animation: float 5s linear infinite alternate;
+}
+
+@keyframes float {
+  to {
+    transform: translate(5px, 15px);
+  }
+}
+
+@keyframes refresh {
+  to {
+    transform: rotate(360deg) scale(0.9);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  height: var(--skeleton-height, 0.5rem);
+  width: var(--skeleton-width);
+  background-color: #f3f4f6;
+  /* neutral-100 for light mode */
+}
+
+.skeleton-line::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  animation: shimmer var(--shimmer-duration, 1.5s) var(--shimmer-delay, 0s)
+    infinite ease-in-out;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+[data-mode="dark"] .skeleton-line {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-mode="dark"] .skeleton-line::after {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* Popup outline offset - in dark mode, offset inward to align with inner stroke.
+   This compensates for the different geometry of inner vs outer stroke paths.
+   Used by: Tooltip, Popover
+   See: https://base-ui.com/react/components/tooltip */
+[data-mode="dark"] .kumo-tooltip-popup,
+[data-mode="dark"] .kumo-popover-popup {
+  outline-offset: -1px;
+}

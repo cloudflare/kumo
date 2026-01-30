@@ -1,0 +1,65 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { SurfaceDemo, SurfaceAsDemo, SurfaceNestedDemo } from "../../components/demos/SurfaceDemo";
+---
+
+<DocLayout
+  title="Surface"
+  description="A container component that provides a surface for content with proper styling."
+  sourceFile="components/surface"
+>
+  <ComponentSection>
+    <ComponentExample code={`<Surface className="p-6 rounded-lg">
+  <Text size="lg" weight="semibold">Surface Component</Text>
+  <Text variant="secondary" className="mt-2">
+    A container with consistent elevation and border styling.
+  </Text>
+</Surface>`}>
+      <SurfaceDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <CodeBlock code={`import { Surface } from "@cloudflare/kumo";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Polymorphic "as" prop</Heading>
+    <p class="text-kumo-strong mb-4">Surface can render as different HTML elements using the `as` prop.</p>
+    <ComponentExample code={`<Surface as="section" className="p-4 rounded-lg">
+  <Text weight="medium">As section element</Text>
+</Surface>
+<Surface as="article" className="p-4 rounded-lg">
+  <Text weight="medium">As article element</Text>
+</Surface>
+<Surface as="aside" className="p-4 rounded-lg">
+  <Text weight="medium">As aside element</Text>
+</Surface>`}>
+      <SurfaceAsDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Nested Surfaces</Heading>
+    <p class="text-kumo-strong mb-4">Surfaces can be nested to create layered interfaces.</p>
+    <ComponentExample code={`<Surface className="p-6 rounded-lg">
+  <Text weight="semibold">Outer Surface</Text>
+  <Surface className="mt-4 p-4 rounded-md bg-kumo-elevated">
+    <Text variant="secondary">Nested Surface</Text>
+  </Surface>
+</Surface>`}>
+      <SurfaceNestedDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Surface" />
+  </ComponentSection>
+</DocLayout>

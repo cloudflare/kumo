@@ -1,0 +1,325 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  DateRangePickerBasicDemo,
+  DateRangePickerSizesDemo,
+  DateRangePickerVariantsDemo,
+  DateRangePickerTimezoneDemo,
+  DateRangePickerControlledDemo,
+} from "../../components/demos/DateRangePickerDemo";
+---
+
+<DocLayout
+  title="DateRangePicker"
+  description="A dual-calendar date range picker for selecting start and end dates with timezone display."
+  sourceFile="components/date-range-picker"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<DateRangePicker
+  onStartDateChange={(date) => console.log("Start:", date)}
+  onEndDateChange={(date) => console.log("End:", date)}
+/>`}
+    >
+      <DateRangePickerBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock
+      code={`import { DateRangePicker } from "@cloudflare/kumo";`}
+      lang="tsx"
+    />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { DateRangePicker } from "@cloudflare/kumo/components/date-range-picker";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      DateRangePicker displays two side-by-side calendars for selecting a date
+      range. Click a date to set the start, then click another date to set the
+      end. The component automatically handles hover states to preview the
+      selection.
+    </p>
+    <CodeBlock
+      code={`import { DateRangePicker } from "@cloudflare/kumo";
+import { useState } from "react";
+
+export default function Example() {
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  return (
+    <DateRangePicker
+      onStartDateChange={setStartDate}
+      onEndDateChange={setEndDate}
+    />
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Sizes</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Three sizes available: <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">sm</code
+          > (compact), <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >base</code
+          > (default), <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >lg</code
+          > (large).
+        </p>
+        <ComponentExample
+          code={`<>
+  <DateRangePicker size="sm" onStartDateChange={...} onEndDateChange={...} />
+  <DateRangePicker size="base" onStartDateChange={...} onEndDateChange={...} />
+  <DateRangePicker size="lg" onStartDateChange={...} onEndDateChange={...} />
+</>`}
+        >
+          <DateRangePickerSizesDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Variants</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Two visual variants: <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">default</code
+          > with overlay background and <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">subtle</code
+          > with minimal background.
+        </p>
+        <ComponentExample
+          code={`<>
+  <DateRangePicker variant="default" onStartDateChange={...} onEndDateChange={...} />
+  <DateRangePicker variant="subtle" onStartDateChange={...} onEndDateChange={...} />
+</>`}
+        >
+          <DateRangePickerVariantsDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Timezone</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Display a custom timezone in the footer using the <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">timezone</code
+          > prop. This is display-only and does not affect date calculations.
+        </p>
+        <ComponentExample
+          code={`<DateRangePicker
+  timezone="London, UK (GMT+0)"
+  onStartDateChange={...}
+  onEndDateChange={...}
+/>`}
+        >
+          <DateRangePickerTimezoneDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Controlled with State Display</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Track and display the selected date range using the callback props.
+        </p>
+        <ComponentExample
+          code={`const [startDate, setStartDate] = useState<Date | null>(null);
+const [endDate, setEndDate] = useState<Date | null>(null);
+
+<DateRangePicker
+  onStartDateChange={setStartDate}
+  onEndDateChange={setEndDate}
+/>
+<div>
+  {startDate && endDate 
+    ? \`\${startDate.toLocaleDateString()} - \${endDate.toLocaleDateString()}\`
+    : "Select a date range"}
+</div>`}
+        >
+          <DateRangePickerControlledDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Props</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Prop</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Default</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">onStartDateChange</td>
+            <td class="px-4 py-3 font-mono text-xs"
+              >(date: Date | null) =&gt; void</td
+            >
+            <td class="px-4 py-3 text-xs">Required</td>
+            <td class="px-4 py-3 text-xs"
+              >Callback fired when start date changes</td
+            >
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">onEndDateChange</td>
+            <td class="px-4 py-3 font-mono text-xs"
+              >(date: Date | null) =&gt; void</td
+            >
+            <td class="px-4 py-3 text-xs">Required</td>
+            <td class="px-4 py-3 text-xs"
+              >Callback fired when end date changes</td
+            >
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">size</td>
+            <td class="px-4 py-3 font-mono text-xs">"sm" | "base" | "lg"</td>
+            <td class="px-4 py-3 font-mono text-xs">"base"</td>
+            <td class="px-4 py-3 text-xs">Size of the calendar</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">variant</td>
+            <td class="px-4 py-3 font-mono text-xs">"default" | "subtle"</td>
+            <td class="px-4 py-3 font-mono text-xs">"default"</td>
+            <td class="px-4 py-3 text-xs">Visual style variant</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">timezone</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3 font-mono text-xs"
+              >"New York, NY, USA (GMT-4)"</td
+            >
+            <td class="px-4 py-3 text-xs"
+              >Display timezone (display only, does not affect dates)</td
+            >
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">className</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3 text-xs">-</td>
+            <td class="px-4 py-3 text-xs">Additional CSS classes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Size Variants</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Size</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">sm</td>
+            <td class="px-4 py-3 text-xs">Compact calendar for tight spaces</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">base</td>
+            <td class="px-4 py-3 text-xs">Default calendar size</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">lg</td>
+            <td class="px-4 py-3 text-xs"
+              >Large calendar for prominent date selection</td
+            >
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+
+  <!-- Behavior -->
+  <ComponentSection>
+    <Heading level={2}>Behavior</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">Date Selection</h3>
+        <ul class="mt-2 ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>Click any date to set the start date</li>
+          <li>Click another date after the start to set the end date</li>
+          <li>
+            Clicking a date before the current start date resets the selection
+          </li>
+          <li>Hover shows a preview of the potential range</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Navigation</h3>
+        <ul class="mt-2 ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>Use arrow buttons to navigate between months</li>
+          <li>
+            Edit the month/year header directly by clicking and typing (e.g.,
+            "March 2025")
+          </li>
+          <li>Two calendars show consecutive months for easier range selection</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Reset</h3>
+        <p class="text-kumo-strong">
+          Click "Reset Dates" in the footer to clear both start and end dates.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Accessibility -->
+  <ComponentSection>
+    <Heading level={2}>Accessibility</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
+        <p class="text-kumo-strong">
+          Day cells are focusable buttons with descriptive aria-labels including
+          the full date and selection state.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Screen Reader Support</h3>
+        <ul class="mt-2 ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>Navigation buttons have aria-labels ("Previous month", "Next month")</li>
+          <li>
+            Day cells announce full date format (e.g., "Monday, January 15,
+            2024")
+          </li>
+          <li>
+            Selected dates announce their role (e.g., "selected as start date",
+            "within selected range")
+          </li>
+        </ul>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

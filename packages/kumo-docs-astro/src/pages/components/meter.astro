@@ -1,0 +1,118 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  MeterBasicDemo,
+  MeterCustomValueDemo,
+  MeterHiddenValueDemo,
+  MeterFullDemo,
+  MeterLowDemo,
+} from "../../components/demos/MeterDemo";
+---
+
+<DocLayout
+  title="Meter"
+  description="A progress/percentage meter component for displaying numeric values within a known range."
+  sourceFile="components/meter"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample code={`<Meter label="Storage used" value={65} />`}>
+      <MeterBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Meter } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Meter } from "@cloudflare/kumo/components/meter";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Meter } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Meter label="Storage used" value={65} />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic Meter</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          The default meter displays a label and percentage value.
+        </p>
+        <ComponentExample code={`<Meter label="Storage used" value={65} />`}>
+          <MeterBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Value Display</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use <code class="text-kumo-default">customValue</code> to show a custom
+          string instead of the percentage.
+        </p>
+        <ComponentExample
+          code={`<Meter label="API requests" value={75} customValue="750 / 1,000" />`}
+        >
+          <MeterCustomValueDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Hidden Value</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Set <code class="text-kumo-default">showValue={"{false}"}</code> to hide
+          the value display.
+        </p>
+        <ComponentExample
+          code={`<Meter label="Progress" value={40} showValue={false} />`}
+        >
+          <MeterHiddenValueDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Full Meter</Heading>
+        <p class="mb-4 text-kumo-subtle">A meter at 100% capacity.</p>
+        <ComponentExample code={`<Meter label="Quota reached" value={100} />`}>
+          <MeterFullDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Low Value</Heading>
+        <p class="mb-4 text-kumo-subtle">A meter with a low value.</p>
+        <ComponentExample code={`<Meter label="Memory usage" value={15} />`}>
+          <MeterLowDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Meter" />
+  </ComponentSection>
+</DocLayout>

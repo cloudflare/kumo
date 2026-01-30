@@ -1,0 +1,227 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  ToastBasicDemo,
+  ToastTitleOnlyDemo,
+  ToastDescriptionOnlyDemo,
+  ToastSuccessDemo,
+  ToastMultipleDemo,
+} from "../../components/demos/ToastDemo";
+---
+
+<DocLayout
+  title="Toast"
+  description="A notification system for displaying brief, non-intrusive messages to users."
+  sourceFile="components/toast"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Toasty>
+  <Button onClick={() => toastManager.add({
+    title: "Toast created",
+    description: "This is a toast notification."
+  })}>
+    Show toast
+  </Button>
+</Toasty>`}
+    >
+      <ToastBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock
+      code={`import { Toasty, Toast } from "@cloudflare/kumo";`}
+      lang="tsx"
+    />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Toasty, Toast } from "@cloudflare/kumo/components/toast";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      The toast system consists of two parts: the <code class="text-kumo-default"
+        >Toasty</code
+      > provider component and the <code class="text-kumo-default"
+        >Toast.useToastManager()</code
+      > hook for triggering toasts.
+    </p>
+    <CodeBlock
+      code={`import { Toasty, Toast, Button } from "@cloudflare/kumo";
+
+function ToastTrigger() {
+  const toastManager = Toast.useToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toastManager.add({
+          title: "Success!",
+          description: "Your changes have been saved.",
+        })
+      }
+    >
+      Save changes
+    </Button>
+  );
+}
+
+export default function App() {
+  return (
+    <Toasty>
+      <ToastTrigger />
+      {/* Rest of your app */}
+    </Toasty>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Setup -->
+  <ComponentSection>
+    <Heading level={2}>Setup</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      Wrap your application (or a section of it) with the <code
+        class="text-kumo-default">Toasty</code
+      > provider. This sets up the toast context and renders the toast viewport.
+    </p>
+    <CodeBlock
+      code={`// In your app root or layout
+import { Toasty } from "@cloudflare/kumo";
+
+export function Layout({ children }) {
+  return (
+    <Toasty>
+      {children}
+    </Toasty>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Title and Description</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          A complete toast with both title and description.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "Toast created",
+  description: "This is a toast notification."
+})`}
+        >
+          <ToastBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Title Only</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          A simple toast with just a title for brief messages.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "Settings saved"
+})`}
+        >
+          <ToastTitleOnlyDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Description Only</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          A toast with only a description for more detailed messages.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  description: "Your changes have been saved successfully."
+})`}
+        >
+          <ToastDescriptionOnlyDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Success Action</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Toasts work well for confirming user actions.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "Success!",
+  description: "Your Worker has been deployed."
+})`}
+        >
+          <ToastSuccessDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Multiple Toasts</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Multiple toasts stack and animate smoothly. Hover over the stack to
+          expand them.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({ title: "First toast" });
+toastManager.add({ title: "Second toast" });
+toastManager.add({ title: "Third toast" });`}
+        >
+          <ToastMultipleDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+
+    <div class="mb-8">
+      <Heading level={3}>Toasty</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        The provider component that wraps your app and manages the toast system.
+      </p>
+      <PropsTable component="Toasty" />
+    </div>
+
+    <div>
+      <Heading level={3}>Toast.useToastManager()</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        A hook that returns the toast manager for creating toasts.
+      </p>
+      <CodeBlock
+        code={`const toastManager = Toast.useToastManager();
+
+// Add a toast
+toastManager.add({
+  title: string,       // Toast title
+  description: string, // Toast description
+});`}
+        lang="tsx"
+      />
+    </div>
+  </ComponentSection>
+</DocLayout>

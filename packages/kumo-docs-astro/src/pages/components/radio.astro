@@ -1,0 +1,249 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  RadioBasicDemo,
+  RadioDefaultDemo,
+  RadioHorizontalDemo,
+  RadioDescriptionDemo,
+  RadioErrorDemo,
+  RadioDisabledDemo,
+  RadioControlPositionDemo,
+} from "../../components/demos/RadioDemo";
+---
+
+<DocLayout
+  title="Radio"
+  description="A control that allows the user to select one option from a set. Always used within a Radio.Group."
+  sourceFile="components/radio"
+  baseUIComponent="radio-group"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Radio.Group legend="Notification preference" defaultValue="email">
+  <Radio.Item label="Email" value="email" />
+  <Radio.Item label="SMS" value="sms" />
+  <Radio.Item label="Push notification" value="push" />
+</Radio.Group>`}
+    >
+      <RadioBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Radio } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Radio } from "@cloudflare/kumo/components/radio";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Radio } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Radio.Group legend="Choose an option" defaultValue="a">
+      <Radio.Item label="Option A" value="a" />
+      <Radio.Item label="Option B" value="b" />
+    </Radio.Group>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Default (Vertical)</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Radio groups display vertically by default. Each radio has a label
+          displayed to its right.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group legend="Account type" defaultValue="personal">
+  <Radio.Item label="Personal" value="personal" />
+  <Radio.Item label="Business" value="business" />
+  <Radio.Item label="Enterprise" value="enterprise" />
+</Radio.Group>`}
+        >
+          <RadioDefaultDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Horizontal</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >orientation="horizontal"</code
+          > for inline layouts. Items wrap when there isn't enough space.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group legend="Size" orientation="horizontal" defaultValue="md">
+  <Radio.Item label="Small" value="sm" />
+  <Radio.Item label="Medium" value="md" />
+  <Radio.Item label="Large" value="lg" />
+</Radio.Group>`}
+        >
+          <RadioHorizontalDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Description</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Add helper text below the radio items using the <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">description</code
+          > prop.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group
+  legend="Shipping method"
+  description="Choose how you'd like to receive your order"
+  defaultValue="standard"
+>
+  <Radio.Item label="Standard (5-7 days)" value="standard" />
+  <Radio.Item label="Express (2-3 days)" value="express" />
+  <Radio.Item label="Overnight" value="overnight" />
+</Radio.Group>`}
+        >
+          <RadioDescriptionDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Error</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Show validation errors at the group level using the <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code
+          > prop.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group
+  legend="Payment method"
+  error="Please select a payment method to continue"
+>
+  <Radio.Item label="Credit Card" value="card" variant="error" />
+  <Radio.Item label="PayPal" value="paypal" variant="error" />
+  <Radio.Item label="Bank Transfer" value="bank" variant="error" />
+</Radio.Group>`}
+        >
+          <RadioErrorDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Disabled</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Disable the entire group or individual items.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group legend="Disabled group" disabled defaultValue="a">
+  <Radio.Item label="Option A" value="a" />
+  <Radio.Item label="Option B" value="b" />
+</Radio.Group>
+
+<Radio.Group legend="Individual disabled" defaultValue="available">
+  <Radio.Item label="Available" value="available" />
+  <Radio.Item label="Unavailable" value="unavailable" disabled />
+</Radio.Group>`}
+        >
+          <RadioDisabledDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Control Position</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >controlPosition="end"</code
+          > to place labels before radio buttons.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group legend="Preferences" controlPosition="end" defaultValue="a">
+  <Radio.Item label="Label before radio" value="a" />
+  <Radio.Item label="Another option" value="b" />
+</Radio.Group>`}
+        >
+          <RadioControlPositionDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Radio.Group</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Container for radio buttons with legend, description, and error
+          support.
+        </p>
+        <PropsTable component="Radio.Group" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-mono text-lg font-semibold">Radio.Item</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Individual radio button within Radio.Group.
+        </p>
+        <PropsTable component="Radio.Item" />
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Accessibility -->
+  <ComponentSection>
+    <Heading level={2}>Accessibility</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">Semantic HTML</h3>
+        <p class="text-kumo-strong">
+          Radio.Group uses semantic <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">&lt;fieldset&gt;</code
+          > and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >&lt;legend&gt;</code
+          > elements for proper grouping and screen reader announcement.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
+        <p class="text-kumo-strong">
+          <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Up/Down</kbd> or
+          <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Left/Right</kbd>
+          moves between options. <kbd class="rounded bg-kumo-control px-1.5 py-0.5"
+            >Space</kbd
+          > selects the focused option. <kbd
+            class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd
+          > moves focus to and from the radio group.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Screen Readers</h3>
+        <p class="text-kumo-strong">
+          Each radio is announced with its label and selection state. The group
+          legend provides context for all options.
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

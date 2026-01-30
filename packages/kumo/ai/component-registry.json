@@ -1,0 +1,3753 @@
+{
+  "version": "1.0.0",
+  "components": {
+    "Badge": {
+      "name": "Badge",
+      "type": "component",
+      "description": "Badge component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "primary",
+            "secondary",
+            "destructive",
+            "outline",
+            "beta"
+          ],
+          "descriptions": {
+            "primary": "Default high-emphasis badge for important labels",
+            "secondary": "Subtle badge for secondary information",
+            "destructive": "Error or danger state indicator",
+            "outline": "Bordered badge with transparent background",
+            "beta": "Indicates beta or experimental features"
+          },
+          "classes": {
+            "primary": "bg-kumo-contrast text-kumo-inverse",
+            "secondary": "bg-kumo-fill text-kumo-default",
+            "destructive": "bg-kumo-danger text-white",
+            "outline": "border border-kumo-fill bg-transparent text-kumo-default",
+            "beta": "border border-dashed border-kumo-brand bg-transparent text-kumo-link"
+          },
+          "default": "primary"
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Badge variant=\"primary\">Primary</Badge>\n      <Badge variant=\"secondary\">Secondary</Badge>\n      <Badge variant=\"destructive\">Destructive</Badge>\n      <Badge variant=\"outline\">Outline</Badge>\n      <Badge variant=\"beta\">Beta</Badge>\n    </div>",
+        "<Badge variant=\"primary\">Primary</Badge>",
+        "<Badge variant=\"secondary\">Secondary</Badge>",
+        "<Badge variant=\"destructive\">Destructive</Badge>",
+        "<Badge variant=\"outline\">Outline</Badge>",
+        "<Badge variant=\"beta\">Beta</Badge>",
+        "<p className=\"flex items-center gap-2\">\n      Workers\n      <Badge variant=\"beta\">Beta</Badge>\n    </p>"
+      ],
+      "colors": [
+        "bg-kumo-contrast",
+        "bg-kumo-danger",
+        "bg-kumo-fill",
+        "border-kumo-brand",
+        "border-kumo-fill",
+        "text-kumo-default",
+        "text-kumo-inverse",
+        "text-kumo-link"
+      ],
+      "baseStyles": "inline-flex w-fit flex-none shrink-0 items-center justify-self-start rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
+    },
+    "Banner": {
+      "name": "Banner",
+      "type": "component",
+      "description": "Banner component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Feedback",
+      "props": {
+        "icon": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "text": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "default",
+            "alert",
+            "error"
+          ],
+          "descriptions": {
+            "default": "Informational banner for general messages",
+            "alert": "Warning banner for cautionary messages",
+            "error": "Error banner for critical issues"
+          },
+          "classes": {
+            "default": "bg-kumo-info/20 border-kumo-info text-kumo-link selection:bg-kumo-info-tint",
+            "alert": "bg-kumo-warning/20 border-kumo-warning text-kumo-warning selection:bg-kumo-warning-tint",
+            "error": "bg-kumo-danger/20 border-kumo-danger text-kumo-danger selection:bg-kumo-danger-tint"
+          },
+          "default": "default"
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<div className=\"space-y-3\">\n      <Banner>This is an informational banner.</Banner>\n      <Banner variant=\"alert\">This is an alert banner.</Banner>\n      <Banner variant=\"error\">This is an error banner.</Banner>\n    </div>",
+        "<Banner>This is an informational banner.</Banner>",
+        "<Banner variant=\"alert\">Your session will expire soon.</Banner>",
+        "<Banner variant=\"error\">We couldn't save your changes.</Banner>",
+        "<Banner icon={<WarningCircle />} variant=\"alert\">\n      Review your billing information.\n    </Banner>",
+        "<Banner icon={<Info />}>\n      <Text DANGEROUS_className=\"text-inherit\">\n        This banner supports <strong>custom content</strong> with Text.\n      </Text>\n    </Banner>"
+      ],
+      "colors": [
+        "bg-kumo-danger",
+        "bg-kumo-danger-tint",
+        "bg-kumo-info",
+        "bg-kumo-info-tint",
+        "bg-kumo-warning",
+        "bg-kumo-warning-tint",
+        "border-kumo-danger",
+        "border-kumo-info",
+        "border-kumo-warning",
+        "text-kumo-danger",
+        "text-kumo-link",
+        "text-kumo-warning"
+      ],
+      "baseStyles": "flex w-full items-center gap-2 rounded-lg border px-4 py-1.5 text-base"
+    },
+    "Breadcrumbs": {
+      "name": "Breadcrumbs",
+      "type": "component",
+      "description": "Breadcrumbs component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base"
+          ],
+          "descriptions": {
+            "sm": "Compact breadcrumbs for dense UIs",
+            "base": "Default breadcrumbs size"
+          },
+          "classes": {
+            "sm": "text-sm h-10 gap-0.5",
+            "base": "text-base h-12 gap-1"
+          },
+          "default": "base"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<Breadcrumbs>\n      <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Link href=\"#\">Docs</Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>\n    </Breadcrumbs>",
+        "<Breadcrumbs>\n      <Breadcrumbs.Link href=\"#\" icon={<House size={16} />}>\n        Home\n      </Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Link href=\"#\">Projects</Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Current>Current Project</Breadcrumbs.Current>\n    </Breadcrumbs>",
+        "<Breadcrumbs>\n      <Breadcrumbs.Link href=\"#\" icon={<House size={16} />}>\n        Home\n      </Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Link href=\"#\">Docs</Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Current loading></Breadcrumbs.Current>\n    </Breadcrumbs>",
+        "<Breadcrumbs>\n      <Breadcrumbs.Current icon={<House size={16} />}>\n        Worker Analytics\n      </Breadcrumbs.Current>\n    </Breadcrumbs>",
+        "<Breadcrumbs>\n      <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n      <Breadcrumbs.Separator />\n      <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>\n      <Breadcrumbs.Clipboard text=\"#\" />\n    </Breadcrumbs>"
+      ],
+      "colors": [
+        "text-kumo-inactive",
+        "text-kumo-subtle",
+        "text-kumo-success"
+      ],
+      "subComponents": {
+        "Link": {
+          "name": "Link",
+          "description": "Link sub-component",
+          "props": {
+            "href": {
+              "type": "string",
+              "required": true
+            },
+            "icon": {
+              "type": "React.ReactNode",
+              "optional": true
+            }
+          }
+        },
+        "Current": {
+          "name": "Current",
+          "description": "Current sub-component",
+          "props": {
+            "loading": {
+              "type": "boolean",
+              "optional": true
+            },
+            "icon": {
+              "type": "React.ReactNode",
+              "optional": true
+            }
+          }
+        },
+        "Separator": {
+          "name": "Separator",
+          "description": "Separator sub-component",
+          "props": {}
+        },
+        "Clipboard": {
+          "name": "Clipboard",
+          "description": "Clipboard sub-component",
+          "props": {
+            "text": {
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      }
+    },
+    "Button": {
+      "name": "Button",
+      "type": "component",
+      "description": "Button component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Action",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "icon": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "loading": {
+          "type": "boolean",
+          "optional": true
+        },
+        "shape": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "base",
+            "square",
+            "circle"
+          ],
+          "descriptions": {
+            "base": "Default rectangular button shape",
+            "square": "Square button for icon-only actions",
+            "circle": "Circular button for icon-only actions"
+          },
+          "classes": {
+            "square": "items-center justify-center p-0",
+            "circle": "items-center justify-center p-0 rounded-full"
+          },
+          "default": "base"
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "xs",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "xs": "Extra small button for compact UIs",
+            "sm": "Small button for secondary actions",
+            "base": "Default button size",
+            "lg": "Large button for primary CTAs"
+          },
+          "classes": {
+            "xs": "h-5 gap-1 rounded-sm px-1.5 text-xs",
+            "sm": "h-6.5 gap-1 rounded-md px-2 text-xs",
+            "base": "h-9 gap-1.5 rounded-lg px-3 text-base",
+            "lg": "h-10 gap-2 rounded-lg px-4 text-base"
+          },
+          "default": "base"
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "primary",
+            "secondary",
+            "ghost",
+            "destructive",
+            "secondary-destructive",
+            "outline"
+          ],
+          "descriptions": {
+            "primary": "High-emphasis button for primary actions",
+            "secondary": "Default button style for most actions",
+            "ghost": "Minimal button with no background",
+            "destructive": "Danger button for destructive actions like delete",
+            "secondary-destructive": "Secondary button with destructive text for less prominent dangerous actions",
+            "outline": "Bordered button with transparent background"
+          },
+          "classes": {
+            "primary": "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
+            "secondary": "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+            "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
+            "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
+            "secondary-destructive": "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+            "outline": "bg-kumo-base text-kumo-default ring ring-kumo-line"
+          },
+          "stateClasses": {
+            "primary": {
+              "hover": "hover:bg-kumo-brand-hover",
+              "focus": "focus:bg-kumo-brand-hover",
+              "disabled": "disabled:bg-kumo-brand/50"
+            },
+            "secondary": {
+              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control",
+              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-default/70",
+              "data-state": "data-[state=open]:bg-kumo-control"
+            },
+            "ghost": {
+              "hover": "hover:bg-kumo-tint"
+            },
+            "destructive": {
+              "hover": "hover:bg-kumo-danger/70"
+            },
+            "secondary-destructive": {
+              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control",
+              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70",
+              "data-state": "data-[state=open]:bg-kumo-control"
+            }
+          },
+          "default": "secondary"
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": true
+        },
+        "type": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "submit",
+            "reset",
+            "button"
+          ]
+        },
+        "value": {
+          "type": "string | string[] | number",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Button variant=\"secondary\">Button</Button>\n      <Button variant=\"secondary\" shape=\"square\" icon={PlusIcon} />\n    </div>",
+        "<Button variant=\"primary\">Primary</Button>",
+        "<Button variant=\"secondary\">Secondary</Button>",
+        "<Button variant=\"ghost\">Ghost</Button>",
+        "<Button variant=\"destructive\">Destructive</Button>",
+        "<Button variant=\"outline\">Outline</Button>",
+        "<Button variant=\"secondary-destructive\">Secondary Destructive</Button>",
+        "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button size=\"xs\" variant=\"secondary\">\n        Extra Small\n      </Button>\n      <Button size=\"sm\" variant=\"secondary\">\n        Small\n      </Button>\n      <Button size=\"base\" variant=\"secondary\">\n        Base\n      </Button>\n      <Button size=\"lg\" variant=\"secondary\">\n        Large\n      </Button>\n    </div>",
+        "<Button variant=\"secondary\" icon={PlusIcon}>\n      Create Worker\n    </Button>",
+        "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button variant=\"secondary\" shape=\"square\" icon={PlusIcon} />\n      <Button variant=\"secondary\" shape=\"circle\" icon={PlusIcon} />\n    </div>",
+        "<Button variant=\"primary\" loading>\n      Loading...\n    </Button>",
+        "<Button variant=\"secondary\" disabled>\n      Disabled\n    </Button>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-brand",
+        "bg-kumo-brand-hover",
+        "bg-kumo-control",
+        "bg-kumo-danger",
+        "bg-kumo-tint",
+        "ring-kumo-line",
+        "ring-kumo-ring",
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ]
+    },
+    "Checkbox": {
+      "name": "Checkbox",
+      "type": "component",
+      "description": "Checkbox component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Visual variant: \"default\" or \"error\" for validation failures (visual only, no error text)",
+          "values": [
+            "default",
+            "error"
+          ],
+          "descriptions": {
+            "default": "Default checkbox appearance",
+            "error": "Error state for validation failures"
+          },
+          "classes": {
+            "default": "[&:focus-within>span]:ring-kumo-ring [&:hover>span]:ring-kumo-ring",
+            "error": "[&>span]:ring-kumo-danger"
+          },
+          "stateClasses": {
+            "default": {
+              "focus": "[&:focus-within>span]:ring-kumo-ring",
+              "hover": "[&:hover>span]:ring-kumo-ring"
+            }
+          },
+          "default": "default"
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the checkbox (enables built-in Field wrapper) - can be a string or any React node"
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "controlFirst": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When true (default), checkbox appears before label. When false, label appears before checkbox."
+        },
+        "checked": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the checkbox is checked (controlled)"
+        },
+        "indeterminate": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the checkbox is in indeterminate state"
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the checkbox is disabled"
+        },
+        "name": {
+          "type": "string",
+          "optional": true,
+          "description": "Name for form submission"
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the field is required"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional class name"
+        },
+        "onValueChange": {
+          "type": "(checked: boolean) => void",
+          "description": "Callback when checkbox value changes"
+        }
+      },
+      "examples": [
+        "<Checkbox\n      label=\"Accept terms and conditions\"\n      checked={checked}\n      onCheckedChange={setChecked}\n    />",
+        "<Checkbox\n      label=\"Enable notifications\"\n      checked={checked}\n      onCheckedChange={setChecked}\n    />",
+        "<Checkbox label=\"I agree\" checked={checked} onCheckedChange={setChecked} />",
+        "<Checkbox\n      label=\"Select all\"\n      indeterminate={indeterminate}\n      onCheckedChange={setIndeterminate}\n    />",
+        "<Checkbox\n      label=\"Remember me\"\n      controlFirst={false}\n      checked={checked}\n      onCheckedChange={setChecked}\n    />",
+        "<Checkbox label=\"Disabled option\" disabled />",
+        "<Checkbox label=\"Invalid option\" variant=\"error\" />",
+        "<Checkbox.Group\n      legend=\"Email preferences\"\n      description=\"Choose how you'd like to receive updates\"\n      value={preferences}\n      onValueChange={setPreferences}\n    >\n      <Checkbox.Item value=\"email\" label=\"Email notifications\" />\n      <Checkbox.Item value=\"sms\" label=\"SMS notifications\" />\n      <Checkbox.Item value=\"push\" label=\"Push notifications\" />\n    </Checkbox.Group>",
+        "<Checkbox.Group\n      legend=\"Required preferences\"\n      error=\"Please select at least one notification method\"\n      value={[]}\n      onValueChange={() => {}}\n    >\n      <Checkbox.Item value=\"email\" label=\"Email\" variant=\"error\" />\n      <Checkbox.Item value=\"sms\" label=\"SMS\" variant=\"error\" />\n    </Checkbox.Group>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-contrast",
+        "border-kumo-line",
+        "ring-kumo-danger",
+        "ring-kumo-line",
+        "ring-kumo-ring",
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-inverse",
+        "text-kumo-subtle"
+      ],
+      "subComponents": {
+        "Item": {
+          "name": "Item",
+          "description": "Item sub-component",
+          "props": {}
+        },
+        "Group": {
+          "name": "Group",
+          "description": "Group sub-component",
+          "props": {
+            "legend": {
+              "type": "string",
+              "required": true
+            },
+            "children": {
+              "type": "ReactNode",
+              "required": true
+            },
+            "error": {
+              "type": "string",
+              "optional": true
+            },
+            "description": {
+              "type": "ReactNode",
+              "optional": true
+            },
+            "value": {
+              "type": "string[]",
+              "optional": true
+            },
+            "allValues": {
+              "type": "string[]",
+              "optional": true
+            },
+            "disabled": {
+              "type": "boolean",
+              "optional": true
+            },
+            "controlFirst": {
+              "type": "boolean",
+              "optional": true
+            },
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        }
+      },
+      "styling": {
+        "dimensions": "h-4 w-4",
+        "borderRadius": "rounded-sm",
+        "baseTokens": [
+          "bg-kumo-base",
+          "ring-kumo-line"
+        ],
+        "states": {
+          "checked": [
+            "bg-kumo-contrast",
+            "text-kumo-inverse"
+          ],
+          "indeterminate": [
+            "bg-kumo-contrast",
+            "text-kumo-inverse"
+          ],
+          "error": [
+            "ring-kumo-danger"
+          ],
+          "hover": [
+            "ring-kumo-ring"
+          ],
+          "focus": [
+            "ring-kumo-ring"
+          ],
+          "disabled": [
+            "opacity-50",
+            "cursor-not-allowed"
+          ]
+        },
+        "icons": [
+          {
+            "name": "ph-check",
+            "state": "checked",
+            "size": 12
+          },
+          {
+            "name": "ph-minus",
+            "state": "indeterminate",
+            "size": 12
+          }
+        ]
+      }
+    },
+    "ClipboardText": {
+      "name": "ClipboardText",
+      "type": "component",
+      "description": "ClipboardText component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Action",
+      "props": {
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "sm": "Small clipboard text for compact UIs",
+            "base": "Default clipboard text size",
+            "lg": "Large clipboard text for prominent display"
+          },
+          "classes": {
+            "sm": "text-xs",
+            "base": "text-sm",
+            "lg": "text-sm"
+          },
+          "default": "lg"
+        },
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "The text to display and copy to clipboard"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        }
+      },
+      "examples": [
+        "<ClipboardText text=\"0c239dd2\" />",
+        "<ClipboardText text=\"abc123\" />",
+        "<ClipboardText text=\"sk_live_51H8...\" />",
+        "<ClipboardText text=\"https://example.com/very/long/url/path\" />"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "border-kumo-line"
+      ],
+      "styling": {
+        "baseTokens": [
+          "bg-kumo-base",
+          "text-kumo-default",
+          "ring-kumo-line",
+          "border-kumo-fill"
+        ],
+        "states": {
+          "input": [
+            "bg-kumo-control",
+            "text-kumo-default",
+            "ring-kumo-line"
+          ],
+          "text": [
+            "bg-kumo-base",
+            "font-mono"
+          ],
+          "button": [
+            "border-kumo-fill"
+          ]
+        },
+        "inputStyles": {
+          "base": "bg-kumo-control text-kumo-default ring ring-kumo-line",
+          "sizes": {
+            "xs": "h-5 gap-1 rounded-sm px-1.5 text-xs",
+            "sm": "h-6.5 gap-1 rounded-md px-2 text-xs",
+            "base": "h-9 gap-1.5 rounded-lg px-3 text-base",
+            "lg": "h-10 gap-2 rounded-lg px-4 text-base"
+          }
+        },
+        "sizeVariants": {
+          "sm": {
+            "height": 26,
+            "classes": "text-xs",
+            "buttonSize": "sm",
+            "dimensions": {
+              "paddingX": 8,
+              "gap": 1,
+              "borderRadius": 6,
+              "fontSize": 12
+            }
+          },
+          "base": {
+            "height": 36,
+            "classes": "text-sm",
+            "buttonSize": "base",
+            "dimensions": {
+              "paddingX": 12,
+              "gap": 6,
+              "borderRadius": 8,
+              "fontSize": 14
+            }
+          },
+          "lg": {
+            "height": 40,
+            "classes": "text-sm",
+            "buttonSize": "lg",
+            "dimensions": {
+              "paddingX": 16,
+              "gap": 8,
+              "borderRadius": 8,
+              "fontSize": 14
+            }
+          }
+        },
+        "icons": [
+          {
+            "name": "ph-clipboard",
+            "state": "default",
+            "size": 16
+          },
+          {
+            "name": "ph-check",
+            "state": "copied",
+            "size": 16
+          }
+        ]
+      }
+    },
+    "Code": {
+      "name": "Code",
+      "type": "component",
+      "description": "Code component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "lang": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "ts",
+            "tsx",
+            "jsonc",
+            "bash",
+            "css"
+          ],
+          "descriptions": {
+            "ts": "TypeScript code",
+            "tsx": "TypeScript JSX code",
+            "jsonc": "JSON with comments",
+            "bash": "Shell/Bash commands",
+            "css": "CSS styles"
+          },
+          "default": "ts"
+        },
+        "code": {
+          "type": "string",
+          "required": true,
+          "description": "The code content to display"
+        },
+        "values": {
+          "type": "Record<string, { value: string; highlight?: boolean }>",
+          "optional": true,
+          "description": "Template values for interpolation"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        }
+      },
+      "examples": [
+        "<CodeBlock\n      lang=\"tsx\"\n      code={`const greeting = \"Hello, World!\";\nconsole.log(greeting);`}\n    />",
+        "<CodeBlock\n      lang=\"tsx\"\n      code={`interface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\nconst user: User = {\n  id: \"1\",\n  name: \"John Doe\",\n  email: \"john@example.com\"\n};`}\n    />",
+        "<CodeBlock\n      lang=\"bash\"\n      code={`npm install @cloudflare/kumo\npnpm add @cloudflare/kumo`}\n    />",
+        "<CodeBlock\n      lang=\"jsonc\"\n      code={`{\n  \"name\": \"kumo\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"react\": \"^19.0.0\"\n  }\n}`}\n    />",
+        "<Code\n      lang=\"bash\"\n      code=\"export API_KEY={{apiKey}}\"\n      values={{\n        apiKey: { value: \"sk_live_123\", highlight: true },\n      }}\n    />"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "border-kumo-fill",
+        "text-kumo-strong"
+      ],
+      "subComponents": {
+        "Block": {
+          "name": "Block",
+          "description": "Block sub-component",
+          "props": {
+            "code": {
+              "type": "string",
+              "required": true
+            },
+            "lang": {
+              "type": "CodeLang",
+              "optional": true
+            }
+          }
+        }
+      },
+      "styling": {
+        "baseTokens": [
+          "text-kumo-strong"
+        ],
+        "typography": {
+          "fontFamily": "font-mono",
+          "fontSize": "text-sm",
+          "lineHeight": "leading-[20px]"
+        },
+        "dimensions": {
+          "margin": "m-0",
+          "padding": "p-0",
+          "width": "w-auto"
+        },
+        "appearance": {
+          "borderRadius": "rounded-none",
+          "border": "border-none",
+          "background": "bg-transparent"
+        }
+      }
+    },
+    "Collapsible": {
+      "name": "Collapsible",
+      "type": "component",
+      "description": "Collapsible component for showing/hiding content.  Features: - Animated chevron indicator (rotates 180° when open) - Accessible with aria-expanded and aria-controls - Content panel with left border accent",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "label": {
+          "type": "string",
+          "required": true,
+          "description": "Text label displayed in the trigger button"
+        },
+        "open": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the collapsible content is visible"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes for the content panel"
+        },
+        "onOpenChange": {
+          "type": "(open: boolean) => void",
+          "description": "Callback when collapsed state changes"
+        }
+      },
+      "examples": [
+        "<Collapsible label=\"What is Kumo?\" open={isOpen} onOpenChange={setIsOpen}>\n      Kumo is Cloudflare's new design system.\n    </Collapsible>",
+        "<Collapsible label=\"What is Kumo?\" open={isOpen} onOpenChange={setIsOpen}>\n      Kumo is Cloudflare's new design system.\n    </Collapsible>",
+        "<div className=\"w-full space-y-2\">\n      <Collapsible label=\"What is Kumo?\" open={open1} onOpenChange={setOpen1}>\n        Kumo is Cloudflare's new design system.\n      </Collapsible>\n      <Collapsible\n        label=\"How do I use it?\"\n        open={open2}\n        onOpenChange={setOpen2}\n      >\n        Install the components and import them into your project.\n      </Collapsible>\n      <Collapsible\n        label=\"Is it open source?\"\n        open={open3}\n        onOpenChange={setOpen3}\n      >\n        Check the repository for license information.\n      </Collapsible>\n    </div>"
+      ],
+      "colors": [
+        "border-kumo-fill",
+        "text-kumo-link"
+      ]
+    },
+    "Combobox": {
+      "name": "Combobox",
+      "type": "component",
+      "description": "Combobox component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "inputSide": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "right",
+            "top"
+          ],
+          "descriptions": {
+            "right": "Input positioned inline to the right of chips",
+            "top": "Input positioned above chips"
+          },
+          "default": "right"
+        },
+        "items": {
+          "type": "T[]",
+          "required": true,
+          "description": "Array of items to display in the dropdown"
+        },
+        "value": {
+          "type": "T | T[]",
+          "optional": true,
+          "description": "Currently selected value(s)"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Combobox content (trigger, content, items)"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the combobox (enables Field wrapper) - can be a string or any React node"
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the combobox is required"
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Helper text displayed below the combobox"
+        },
+        "error": {
+          "type": "string | object",
+          "optional": true,
+          "description": "Error message or validation error object"
+        },
+        "onValueChange": {
+          "type": "(value: T | T[]) => void",
+          "description": "Callback when selection changes"
+        },
+        "multiple": {
+          "type": "boolean",
+          "description": "Allow multiple selections"
+        },
+        "isItemEqualToValue": {
+          "type": "(item: T, value: T) => boolean",
+          "description": "Custom equality function for comparing items"
+        }
+      },
+      "examples": [
+        "<Combobox\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={fruits}\n    >\n      <Combobox.TriggerInput placeholder=\"Please select\" />\n      <Combobox.Content>\n        <Combobox.Empty />\n        <Combobox.List>\n          {(item: string) => (\n            <Combobox.Item key={item} value={item}>\n              {item}\n            </Combobox.Item>\n          )}\n        </Combobox.List>\n      </Combobox.Content>\n    </Combobox>",
+        "<Combobox\n      value={value}\n      onValueChange={(v) => setValue(v as Language)}\n      items={languages}\n    >\n      <Combobox.TriggerValue className=\"w-[200px]\" />\n      <Combobox.Content>\n        <Combobox.Input placeholder=\"Search languages\" />\n        <Combobox.Empty />\n        <Combobox.List>\n          {(item: Language) => (\n            <Combobox.Item key={item.value} value={item}>\n              {item.emoji} {item.label}\n            </Combobox.Item>\n          )}\n        </Combobox.List>\n      </Combobox.Content>\n    </Combobox>",
+        "<Combobox\n      value={value}\n      onValueChange={(v) => setValue(v as ServerLocation | null)}\n      items={servers}\n    >\n      <Combobox.TriggerInput\n        className=\"w-[200px]\"\n        placeholder=\"Select server\"\n      />\n      <Combobox.Content>\n        <Combobox.Empty />\n        <Combobox.List>\n          {(group: ServerLocationGroup) => (\n            <Combobox.Group key={group.value} items={group.items}>\n              <Combobox.GroupLabel>{group.value}</Combobox.GroupLabel>\n              <Combobox.Collection>\n                {(item: ServerLocation) => (\n                  <Combobox.Item key={item.value} value={item}>\n                    {item.label}\n                  </Combobox.Item>\n                )}\n              </Combobox.Collection>\n            </Combobox.Group>\n          )}\n        </Combobox.List>\n      </Combobox.Content>\n    </Combobox>",
+        "<div className=\"flex gap-2\">\n      <Combobox\n        value={value}\n        onValueChange={setValue}\n        items={bots}\n        isItemEqualToValue={(bot: BotItem, selected: BotItem) =>\n          bot.value === selected.value\n        }\n        multiple\n      >\n        <Combobox.TriggerMultipleWithInput\n          className=\"w-[400px]\"\n          placeholder=\"Select bots\"\n          renderItem={(selected: BotItem) => (\n            <Combobox.Chip key={selected.value}>{selected.label}</Combobox.Chip>\n          )}\n          inputSide=\"right\"\n        />\n        <Combobox.Content className=\"max-h-[200px] min-w-auto overflow-y-auto\">\n          <Combobox.Empty />\n          <Combobox.List>\n            {(item: BotItem) => (\n              <Combobox.Item key={item.value} value={item}>\n                <div className=\"flex gap-2\">\n                  <Text>{item.label}</Text>\n                  <Text variant=\"secondary\">{item.author}</Text>\n                </div>\n              </Combobox.Item>\n            )}\n          </Combobox.List>\n        </Combobox.Content>\n      </Combobox>\n      <Button variant=\"primary\">Submit</Button>\n    </div>",
+        "<div className=\"w-80\">\n      <Combobox\n        items={databases}\n        value={value}\n        onValueChange={setValue}\n        label=\"Database\"\n        description=\"Select your preferred database\"\n      >\n        <Combobox.TriggerInput placeholder=\"Select database\" />\n        <Combobox.Content>\n          <Combobox.Empty />\n          <Combobox.List>\n            {(item: DatabaseItem) => (\n              <Combobox.Item key={item.value} value={item}>\n                {item.label}\n              </Combobox.Item>\n            )}\n          </Combobox.List>\n        </Combobox.Content>\n      </Combobox>\n    </div>",
+        "<div className=\"w-80\">\n      <Combobox\n        items={databases}\n        value={value}\n        onValueChange={setValue}\n        label=\"Database\"\n        error={{ message: \"Please select a database\", match: true }}\n      >\n        <Combobox.TriggerInput placeholder=\"Select database\" />\n        <Combobox.Content>\n          <Combobox.Empty />\n          <Combobox.List>\n            {(item: DatabaseItem) => (\n              <Combobox.Item key={item.value} value={item}>\n                {item.label}\n              </Combobox.Item>\n            )}\n          </Combobox.List>\n        </Combobox.Content>\n      </Combobox>\n    </div>"
+      ],
+      "colors": [
+        "bg-kumo-control",
+        "bg-kumo-fill-hover",
+        "bg-kumo-overlay",
+        "fill-kumo-ring",
+        "ring-kumo-line",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "subComponents": {
+        "Content": {
+          "name": "Content",
+          "description": "Content sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            },
+            "align": {
+              "type": "ComboboxBase.Positioner.Props[\"align\"]",
+              "optional": true
+            },
+            "alignOffset": {
+              "type": "ComboboxBase.Positioner.Props[\"alignOffset\"]",
+              "optional": true
+            },
+            "side": {
+              "type": "ComboboxBase.Positioner.Props[\"side\"]",
+              "optional": true
+            },
+            "sideOffset": {
+              "type": "ComboboxBase.Positioner.Props[\"sideOffset\"]",
+              "optional": true
+            }
+          }
+        },
+        "TriggerValue": {
+          "name": "TriggerValue",
+          "description": "TriggerValue sub-component",
+          "props": {}
+        },
+        "TriggerInput": {
+          "name": "TriggerInput",
+          "description": "TriggerInput sub-component",
+          "props": {}
+        },
+        "TriggerMultipleWithInput": {
+          "name": "TriggerMultipleWithInput",
+          "description": "TriggerMultipleWithInput sub-component",
+          "props": {}
+        },
+        "Chip": {
+          "name": "Chip",
+          "description": "Chip sub-component",
+          "props": {}
+        },
+        "Item": {
+          "name": "Item",
+          "description": "Item sub-component",
+          "props": {}
+        },
+        "Input": {
+          "name": "Input",
+          "description": "Input sub-component",
+          "props": {}
+        },
+        "Empty": {
+          "name": "Empty",
+          "description": "Empty sub-component",
+          "props": {}
+        },
+        "GroupLabel": {
+          "name": "GroupLabel",
+          "description": "GroupLabel sub-component",
+          "props": {}
+        },
+        "Group": {
+          "name": "Group",
+          "description": "Group sub-component",
+          "props": {}
+        },
+        "List": {
+          "name": "List",
+          "description": "A container for combobox items. Supports render prop for custom item rendering.",
+          "props": {
+            "children": {
+              "type": "ReactNode | ((item: T, index: number) => ReactNode)",
+              "description": "Items to render, or a function that receives each item and returns a node"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "ComboboxBase.List",
+          "usageExamples": [
+            "<Combobox.List>\n  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}\n</Combobox.List>"
+          ],
+          "renderElement": "<div>"
+        },
+        "Collection": {
+          "name": "Collection",
+          "description": "Renders filtered list items. Use when you need more control over item rendering.",
+          "props": {
+            "children": {
+              "type": "(item: T, index: number) => ReactNode",
+              "required": true,
+              "description": "Function that receives each filtered item and returns a node"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "ComboboxBase.Collection",
+          "usageExamples": [
+            "<Combobox.Collection>\n  {(item, index) => (\n    <Combobox.Item key={index} value={item}>\n      {item.label}\n    </Combobox.Item>\n  )}\n</Combobox.Collection>"
+          ]
+        }
+      }
+    },
+    "CommandPalette": {
+      "name": "CommandPalette",
+      "type": "component",
+      "description": "CommandPalette component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Navigation",
+      "props": {
+        "open": {
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Child content - typically one or more Panel components"
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-col items-start gap-4\">\n      <Button onClick={() => setOpen(true)}>Open Command Palette</Button>\n      {selectedItem && (\n        <p className=\"text-sm text-kumo-subtle\">\n          Last selected:{\" \"}\n          <span className=\"text-kumo-default\">{selectedItem}</span>\n        </p>\n      )}\n\n      <CommandPalette.Root\n        open={open}\n        onOpenChange={setOpen}\n        items={sampleGroups}\n        value={search}\n        onValueChange={setSearch}\n        itemToStringValue={(group) => group.label}\n        onSelect={(item, { newTab }) => {\n          console.log(\"Selected:\", item.title, newTab ? \"(new tab)\" : \"\");\n          handleSelect(item);\n        }}\n        getSelectableItems={getSelectableItems}\n      >\n        <CommandPalette.Input placeholder=\"Type a command or search...\" />\n        <CommandPalette.List>\n          <CommandPalette.Results>\n            {(group: CommandGroup) => (\n              <CommandPalette.Group key={group.id}>\n                <CommandPalette.GroupLabel>\n                  {group.label}\n                </CommandPalette.GroupLabel>\n                <CommandPalette.Items>\n                  {(item: CommandItem) => (\n                    <CommandPalette.Item\n                      key={item.id}\n                      value={item}\n                      onClick={() => handleSelect(item)}\n                    >\n                      <span className=\"flex items-center gap-3\">\n                        {item.icon && (\n                          <span className=\"text-kumo-subtle\">{item.icon}</span>\n                        )}\n                        <span>{item.title}</span>\n                      </span>\n                    </CommandPalette.Item>\n                  )}\n                </CommandPalette.Items>\n              </CommandPalette.Group>\n            )}\n          </CommandPalette.Results>\n          <CommandPalette.Empty>No commands found</CommandPalette.Empty>\n        </CommandPalette.List>\n        <CommandPalette.Footer>\n          <span className=\"flex items-center gap-2\">\n            <kbd className=\"rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]\">\n              ↑↓\n            </kbd>\n            <span>Navigate</span>\n          </span>\n          <span className=\"flex items-center gap-2\">\n            <kbd className=\"rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]\">\n              ↵\n            </kbd>\n            <span>Select</span>\n          </span>\n        </CommandPalette.Footer>\n      </CommandPalette.Root>\n    </div>",
+        "<div>\n      <Button onClick={() => setOpen(true)}>Open Simple Palette</Button>\n\n      <CommandPalette.Root\n        open={open}\n        onOpenChange={setOpen}\n        items={simpleItems}\n        value={search}\n        onValueChange={setSearch}\n        itemToStringValue={(item) => item.title}\n        onSelect={(item) => {\n          console.log(\"Selected:\", item.title);\n          setOpen(false);\n        }}\n        getSelectableItems={(items) => items}\n      >\n        <CommandPalette.Input placeholder=\"Search actions...\" />\n        <CommandPalette.List>\n          <CommandPalette.Results>\n            {(item: SimpleItem) => (\n              <CommandPalette.Item\n                key={item.id}\n                value={item}\n                onClick={() => {\n                  console.log(\"Clicked:\", item.title);\n                  setOpen(false);\n                }}\n              >\n                {item.title}\n              </CommandPalette.Item>\n            )}\n          </CommandPalette.Results>\n          <CommandPalette.Empty>No actions found</CommandPalette.Empty>\n        </CommandPalette.List>\n      </CommandPalette.Root>\n    </div>",
+        "<div>\n      <Button onClick={handleOpen}>Open with Loading</Button>\n\n      <CommandPalette.Root\n        open={open}\n        onOpenChange={setOpen}\n        items={loading ? [] : sampleGroups}\n        value={search}\n        onValueChange={setSearch}\n        itemToStringValue={(group) => group.label}\n        getSelectableItems={getSelectableItems}\n      >\n        <CommandPalette.Input placeholder=\"Search...\" />\n        <CommandPalette.List>\n          {loading ? (\n            <CommandPalette.Loading />\n          ) : (\n            <>\n              <CommandPalette.Results>\n                {(group: CommandGroup) => (\n                  <CommandPalette.Group key={group.id}>\n                    <CommandPalette.GroupLabel>\n                      {group.label}\n                    </CommandPalette.GroupLabel>\n                    <CommandPalette.Items>\n                      {(item: CommandItem) => (\n                        <CommandPalette.Item\n                          key={item.id}\n                          value={item}\n                          onClick={() => setOpen(false)}\n                        >\n                          <span className=\"flex items-center gap-3\">\n                            {item.icon && (\n                              <span className=\"text-kumo-subtle\">\n                                {item.icon}\n                              </span>\n                            )}\n                            <span>{item.title}</span>\n                          </span>\n                        </CommandPalette.Item>\n                      )}\n                    </CommandPalette.Items>\n                  </CommandPalette.Group>\n                )}\n              </CommandPalette.Results>\n              <CommandPalette.Empty>No results found</CommandPalette.Empty>\n            </>\n          )}\n        </CommandPalette.List>\n      </CommandPalette.Root>\n    </div>",
+        "<div>\n      <Button onClick={() => setOpen(true)}>Open with ResultItem</Button>\n\n      <CommandPalette.Root\n        open={open}\n        onOpenChange={setOpen}\n        items={searchResults}\n        value={search}\n        onValueChange={setSearch}\n        itemToStringValue={(item) => item.title}\n        getSelectableItems={(items) => items}\n      >\n        <CommandPalette.Input placeholder=\"Search documentation...\" />\n        <CommandPalette.List>\n          <CommandPalette.Results>\n            {(item: SearchResult) => (\n              <CommandPalette.ResultItem\n                key={item.id}\n                value={item}\n                title={item.title}\n                breadcrumbs={item.breadcrumbs}\n                icon={item.icon}\n                onClick={() => {\n                  console.log(\"Navigate to:\", item.title);\n                  setOpen(false);\n                }}\n              />\n            )}\n          </CommandPalette.Results>\n          <CommandPalette.Empty>No pages found</CommandPalette.Empty>\n        </CommandPalette.List>\n        <CommandPalette.Footer>\n          <span className=\"flex items-center gap-2\">\n            <kbd className=\"rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]\">\n              ↑↓\n            </kbd>\n            <span>Navigate</span>\n          </span>\n          <span className=\"flex items-center gap-2\">\n            <kbd className=\"rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]\">\n              ⌘↵\n            </kbd>\n            <span>Open in new tab</span>\n          </span>\n        </CommandPalette.Footer>\n      </CommandPalette.Root>\n    </div>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-elevated",
+        "bg-kumo-overlay",
+        "bg-kumo-warning",
+        "ring-kumo-line",
+        "text-kumo-default",
+        "text-kumo-strong",
+        "text-kumo-subtle"
+      ]
+    },
+    "DateRangePicker": {
+      "name": "DateRangePicker",
+      "type": "component",
+      "description": "DateRangePicker component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "sm": "Compact calendar for tight spaces",
+            "base": "Default calendar size",
+            "lg": "Large calendar for prominent date selection"
+          },
+          "classes": {
+            "sm": "p-3 gap-2",
+            "base": "p-4 gap-2.5",
+            "lg": "p-5 gap-3"
+          },
+          "default": "base"
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "default",
+            "subtle"
+          ],
+          "descriptions": {
+            "default": "Default calendar appearance",
+            "subtle": "Subtle calendar with minimal background"
+          },
+          "classes": {
+            "default": "bg-kumo-overlay",
+            "subtle": "bg-kumo-base"
+          },
+          "default": "default"
+        },
+        "timezone": {
+          "type": "string",
+          "optional": true,
+          "description": "Display timezone (display only)"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        },
+        "onStartDateChange": {
+          "type": "(date: Date | null) => void",
+          "description": "Callback when start date changes"
+        },
+        "onEndDateChange": {
+          "type": "(date: Date | null) => void",
+          "description": "Callback when end date changes"
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-col gap-4\">\n      <DateRangePicker\n        onStartDateChange={setStartDate}\n        onEndDateChange={setEndDate}\n      />\n      <div className=\"text-sm text-kumo-subtle\">\n        {startDate && endDate ? (\n          <span>\n            Selected: {startDate.toLocaleDateString()} -{\" \"}\n            {endDate.toLocaleDateString()}\n          </span>\n        ) : startDate ? (\n          <span>Start: {startDate.toLocaleDateString()} (select end date)</span>\n        ) : (\n          <span>Select a date range</span>\n        )}\n      </div>\n    </div>",
+        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">Small</p>\n        <DateRangePicker\n          size=\"sm\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">\n          Base (default)\n        </p>\n        <DateRangePicker\n          size=\"base\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">Large</p>\n        <DateRangePicker\n          size=\"lg\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n    </div>",
+        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">\n          Default variant\n        </p>\n        <DateRangePicker\n          variant=\"default\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">\n          Subtle variant\n        </p>\n        <DateRangePicker\n          variant=\"subtle\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n    </div>",
+        "<DateRangePicker\n      timezone=\"London, UK (GMT+0)\"\n      onStartDateChange={() => {}}\n      onEndDateChange={() => {}}\n    />",
+        "<div className=\"flex flex-col gap-4\">\n      <DateRangePicker\n        onStartDateChange={setStartDate}\n        onEndDateChange={setEndDate}\n      />\n      <div className=\"rounded-lg bg-kumo-control p-3 text-sm text-kumo-default\">\n        <strong>Selection:</strong> {formatDateRange()}\n      </div>\n    </div>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-contrast",
+        "bg-kumo-fill",
+        "bg-kumo-interact",
+        "bg-kumo-overlay",
+        "text-kumo-default",
+        "text-kumo-inverse",
+        "text-kumo-strong",
+        "text-kumo-subtle"
+      ],
+      "styling": {
+        "sizeVariants": {
+          "sm": {
+            "height": 0,
+            "classes": "p-3 gap-2",
+            "dimensions": {
+              "calendarWidth": 168,
+              "cellHeight": 22,
+              "cellWidth": 24,
+              "textSize": 12,
+              "iconSize": 14,
+              "padding": 12,
+              "gap": 8
+            }
+          },
+          "base": {
+            "height": 0,
+            "classes": "p-4 gap-2.5",
+            "dimensions": {
+              "calendarWidth": 196,
+              "cellHeight": 26,
+              "cellWidth": 28,
+              "textSize": 14,
+              "iconSize": 16,
+              "padding": 16,
+              "gap": 10
+            }
+          },
+          "lg": {
+            "height": 0,
+            "classes": "p-5 gap-3",
+            "dimensions": {
+              "calendarWidth": 252,
+              "cellHeight": 32,
+              "cellWidth": 36,
+              "textSize": 16,
+              "iconSize": 18,
+              "padding": 20,
+              "gap": 12
+            }
+          }
+        }
+      }
+    },
+    "Dialog": {
+      "name": "Dialog",
+      "type": "component",
+      "description": "Dialog component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Overlay",
+      "props": {
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "base",
+            "sm",
+            "lg",
+            "xl"
+          ],
+          "descriptions": {
+            "base": "Default dialog width",
+            "sm": "Small dialog for simple confirmations",
+            "lg": "Large dialog for complex content",
+            "xl": "Extra large dialog for detailed views"
+          },
+          "classes": {
+            "base": "min-w-96",
+            "sm": "min-w-72",
+            "lg": "min-w-[32rem]",
+            "xl": "min-w-[48rem]"
+          },
+          "default": "base"
+        }
+      },
+      "examples": [
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n      </Dialog>\n    </Dialog.Root>",
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Button variant=\"secondary\">Cancel</Button>\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-overlay",
+        "text-kumo-default"
+      ],
+      "subComponents": {
+        "Root": {
+          "name": "Root",
+          "description": "Controls the open state of the dialog. Doesn't render its own HTML element.",
+          "props": {
+            "open": {
+              "type": "boolean",
+              "description": "Whether the dialog is currently open (controlled mode)"
+            },
+            "defaultOpen": {
+              "type": "boolean",
+              "description": "Whether the dialog is initially open (uncontrolled mode)",
+              "default": "false"
+            },
+            "onOpenChange": {
+              "type": "(open: boolean, event: Event) => void",
+              "description": "Callback fired when the dialog opens or closes"
+            },
+            "modal": {
+              "type": "boolean | 'trap-focus'",
+              "description": "Whether the dialog is modal. When true, focus is trapped and page scroll is locked",
+              "default": "true"
+            },
+            "dismissible": {
+              "type": "boolean",
+              "description": "Whether clicking outside closes the dialog",
+              "default": "true"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "DialogBase.Root",
+          "usageExamples": [
+            "<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>",
+            "<Dialog.Root defaultOpen={false}>"
+          ]
+        },
+        "Trigger": {
+          "name": "Trigger",
+          "description": "A button that opens the dialog when clicked.",
+          "props": {
+            "render": {
+              "type": "ReactElement | ((props, state) => ReactElement)",
+              "description": "Custom element to render instead of the default button"
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Whether the trigger is disabled"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "DialogBase.Trigger",
+          "usageExamples": [
+            "<Dialog.Trigger render={<Button>Open</Button>} />",
+            "<Dialog.Trigger>Open Dialog</Dialog.Trigger>"
+          ],
+          "renderElement": "<button>"
+        },
+        "Title": {
+          "name": "Title",
+          "description": "A heading that labels the dialog for accessibility.",
+          "props": {
+            "render": {
+              "type": "ReactElement | ((props, state) => ReactElement)",
+              "description": "Custom element to render instead of the default h2"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "DialogBase.Title",
+          "usageExamples": [
+            "<Dialog.Title>Confirm Action</Dialog.Title>",
+            "<Dialog.Title render={<h3 />}>Custom Heading</Dialog.Title>"
+          ],
+          "renderElement": "<h2>"
+        },
+        "Description": {
+          "name": "Description",
+          "description": "A paragraph providing additional context about the dialog.",
+          "props": {
+            "render": {
+              "type": "ReactElement | ((props, state) => ReactElement)",
+              "description": "Custom element to render instead of the default p"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "DialogBase.Description",
+          "usageExamples": [
+            "<Dialog.Description>Are you sure you want to proceed?</Dialog.Description>"
+          ],
+          "renderElement": "<p>"
+        },
+        "Close": {
+          "name": "Close",
+          "description": "A button that closes the dialog when clicked.",
+          "props": {
+            "render": {
+              "type": "ReactElement | ((props, state) => ReactElement)",
+              "description": "Custom element to render instead of the default button"
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Whether the close button is disabled"
+            }
+          },
+          "isPassThrough": true,
+          "baseComponent": "DialogBase.Close",
+          "usageExamples": [
+            "<Dialog.Close render={<Button>Cancel</Button>} />",
+            "<Dialog.Close>×</Dialog.Close>"
+          ],
+          "renderElement": "<button>"
+        }
+      },
+      "styling": {
+        "dimensions": {
+          "sm": {
+            "width": 350,
+            "titleSize": 20,
+            "descSize": 16,
+            "padding": 16,
+            "gap": 8,
+            "buttonSize": "sm"
+          },
+          "base": {
+            "width": 384,
+            "titleSize": 20,
+            "descSize": 16,
+            "padding": 24,
+            "gap": 16,
+            "buttonSize": "base"
+          },
+          "lg": {
+            "width": 512,
+            "titleSize": 20,
+            "descSize": 16,
+            "padding": 24,
+            "gap": 16,
+            "buttonSize": "base"
+          },
+          "xl": {
+            "width": 768,
+            "titleSize": 20,
+            "descSize": 16,
+            "padding": 24,
+            "gap": 16,
+            "buttonSize": "base"
+          }
+        },
+        "baseTokens": {
+          "background": "color-surface",
+          "text": "text-color-surface",
+          "borderRadius": 12,
+          "shadow": "shadow-m"
+        },
+        "backdrop": {
+          "background": "color-surface-secondary",
+          "opacity": 0.8
+        },
+        "header": {
+          "title": {
+            "fontWeight": 600,
+            "color": "text-color-surface"
+          },
+          "closeIcon": {
+            "name": "ph-x",
+            "size": 20,
+            "color": "text-color-muted"
+          }
+        },
+        "description": {
+          "fontWeight": 400,
+          "color": "text-color-muted"
+        },
+        "buttons": {
+          "primary": {
+            "background": "color-primary",
+            "text": "white"
+          },
+          "secondary": {
+            "ring": "color-border",
+            "text": "text-color-surface"
+          }
+        }
+      }
+    },
+    "DropdownMenu": {
+      "name": "DropdownMenu",
+      "type": "component",
+      "description": "DropdownMenu component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Overlay",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "default",
+            "danger"
+          ],
+          "descriptions": {
+            "default": "Default dropdown item appearance",
+            "danger": "Destructive action item"
+          },
+          "classes": {
+            "danger": "text-kumo-danger data-highlighted:bg-kumo-danger/5 data-highlighted:text-kumo-danger"
+          },
+          "default": "default"
+        }
+      },
+      "examples": [],
+      "colors": [
+        "bg-kumo-control",
+        "bg-kumo-danger",
+        "bg-kumo-line",
+        "bg-kumo-overlay",
+        "bg-kumo-tint",
+        "ring-kumo-line",
+        "text-kumo-danger",
+        "text-kumo-default"
+      ],
+      "subComponents": {
+        "Trigger": {
+          "name": "Trigger",
+          "description": "Trigger sub-component",
+          "props": {}
+        },
+        "Portal": {
+          "name": "Portal",
+          "description": "Portal sub-component (wraps DropdownMenuPrimitive)",
+          "props": {},
+          "isPassThrough": true,
+          "baseComponent": "DropdownMenuPrimitive.Portal"
+        },
+        "Sub": {
+          "name": "Sub",
+          "description": "Sub sub-component (wraps DropdownMenuPrimitive)",
+          "props": {},
+          "isPassThrough": true,
+          "baseComponent": "DropdownMenuPrimitive.SubmenuRoot"
+        },
+        "SubTrigger": {
+          "name": "SubTrigger",
+          "description": "SubTrigger sub-component",
+          "props": {}
+        },
+        "SubContent": {
+          "name": "SubContent",
+          "description": "SubContent sub-component",
+          "props": {}
+        },
+        "Content": {
+          "name": "Content",
+          "description": "Content sub-component",
+          "props": {}
+        },
+        "Item": {
+          "name": "Item",
+          "description": "Item sub-component",
+          "props": {}
+        },
+        "CheckboxItem": {
+          "name": "CheckboxItem",
+          "description": "CheckboxItem sub-component",
+          "props": {}
+        },
+        "RadioGroup": {
+          "name": "RadioGroup",
+          "description": "RadioGroup sub-component (wraps DropdownMenuPrimitive)",
+          "props": {},
+          "isPassThrough": true,
+          "baseComponent": "DropdownMenuPrimitive.RadioGroup"
+        },
+        "RadioItem": {
+          "name": "RadioItem",
+          "description": "RadioItem sub-component",
+          "props": {}
+        },
+        "RadioItemIndicator": {
+          "name": "RadioItemIndicator",
+          "description": "RadioItemIndicator sub-component",
+          "props": {}
+        },
+        "Label": {
+          "name": "Label",
+          "description": "Label sub-component",
+          "props": {}
+        },
+        "Separator": {
+          "name": "Separator",
+          "description": "Separator sub-component",
+          "props": {}
+        },
+        "Shortcut": {
+          "name": "Shortcut",
+          "description": "Shortcut sub-component",
+          "props": {}
+        },
+        "Group": {
+          "name": "Group",
+          "description": "Group sub-component (wraps DropdownMenuPrimitive)",
+          "props": {},
+          "isPassThrough": true,
+          "baseComponent": "DropdownMenuPrimitive.Group"
+        }
+      }
+    },
+    "Empty": {
+      "name": "Empty",
+      "type": "component",
+      "description": "Empty component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "sm": "Compact empty state for smaller containers",
+            "base": "Default empty state size",
+            "lg": "Large empty state for prominent placement"
+          },
+          "classes": {
+            "sm": "px-6 py-8 gap-4",
+            "base": "px-10 py-16 gap-6",
+            "lg": "px-12 py-20 gap-8"
+          },
+          "default": "base"
+        },
+        "icon": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "required": true
+        },
+        "description": {
+          "type": "string",
+          "optional": true
+        },
+        "commandLine": {
+          "type": "string",
+          "optional": true
+        },
+        "contents": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<Empty\n      icon={<PackageIcon size={48} />}\n      title=\"No packages found\"\n      description=\"Get started by installing your first package.\"\n      commandLine=\"npm install @cloudflare/kumo\"\n      contents={\n        <div className=\"flex items-center gap-2\">\n          <Button icon={<CodeIcon />}>See examples</Button>\n          <Button icon={<GlobeIcon />} variant=\"primary\">\n            View documentation\n          </Button>\n        </div>\n      }\n    />",
+        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-sm text-kumo-subtle\">Small</p>\n        <Empty\n          size=\"sm\"\n          icon={<Database size={32} className=\"text-kumo-inactive\" />}\n          title=\"No data available\"\n          description=\"There is no data to display.\"\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm text-kumo-subtle\">Base</p>\n        <Empty\n          size=\"base\"\n          icon={<Database size={48} className=\"text-kumo-inactive\" />}\n          title=\"No data available\"\n          description=\"There is no data to display.\"\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm text-kumo-subtle\">Large</p>\n        <Empty\n          size=\"lg\"\n          icon={<Database size={64} className=\"text-kumo-inactive\" />}\n          title=\"No data available\"\n          description=\"There is no data to display.\"\n        />\n      </div>\n    </div>",
+        "<Empty\n      icon={<FolderOpen size={48} className=\"text-kumo-inactive\" />}\n      title=\"No projects found\"\n      description=\"Get started by creating your first project using the command below.\"\n      commandLine=\"npm create kumo-project\"\n    />",
+        "<Empty\n      icon={<CloudSlash size={48} className=\"text-kumo-inactive\" />}\n      title=\"No connection\"\n      description=\"Unable to connect to the server. Please check your connection and try again.\"\n      contents={\n        <div className=\"flex gap-2\">\n          <Button variant=\"primary\">Retry</Button>\n          <Button variant=\"secondary\">Go Back</Button>\n        </div>\n      }\n    />",
+        "<Empty title=\"Nothing here\" />",
+        "<Empty\n      title=\"No results found\"\n      description=\"Try adjusting your search or filter to find what you're looking for.\"\n    />"
+      ],
+      "colors": [
+        "bg-kumo-control",
+        "bg-kumo-overlay",
+        "border-kumo-fill",
+        "border-kumo-interact",
+        "text-kumo-brand",
+        "text-kumo-default",
+        "text-kumo-inactive",
+        "text-kumo-strong",
+        "text-kumo-success"
+      ]
+    },
+    "Field": {
+      "name": "Field",
+      "type": "component",
+      "description": "Field component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "controlFirst": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When true, places the control (checkbox/switch) before the label visually. When false (default), places the label before the control. Used to support different layout patterns (e.g., iOS-style toggles on the right)."
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "The label content - can be a string or any React node"
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When explicitly false, shows gray \"(optional)\" text after the label. When true or undefined, no indicator is shown."
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "error": {
+          "type": "object",
+          "optional": true
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true
+        }
+      },
+      "examples": [],
+      "colors": [
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ]
+    },
+    "Grid": {
+      "name": "Grid",
+      "type": "component",
+      "description": "Grid component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Layout",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Child node(s) that can be nested inside component"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "CSS class names that can be appended to the component"
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "mobileDivider": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Show dividers between grid items on mobile (only works with 4up variant)"
+        },
+        "gap": {
+          "type": "enum",
+          "optional": true,
+          "description": "Gap size between grid items",
+          "values": [
+            "none",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "none": "No gap between grid items",
+            "sm": "Small gap between grid items",
+            "base": "Default responsive gap between grid items",
+            "lg": "Large gap between grid items"
+          },
+          "classes": {
+            "none": "gap-0",
+            "sm": "gap-3",
+            "base": "gap-2 md:gap-6 lg:gap-8",
+            "lg": "gap-8"
+          },
+          "default": "base"
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Stylistic variations of the Grid layout",
+          "values": [
+            "2up",
+            "side-by-side",
+            "2-1",
+            "1-2",
+            "1-3up",
+            "3up",
+            "4up",
+            "6up",
+            "1-2-4up"
+          ],
+          "descriptions": {
+            "2up": "Grid items stack on small screens, display side-by-side on medium screens and up",
+            "side-by-side": "Grid items always displayed side-by-side",
+            "2-1": "Two-thirds / one-third split (66%/33%) on medium screens and up",
+            "1-2": "One-third / two-thirds split (33%/66%) on medium screens and up",
+            "1-3up": "Grid items stack on small screens, expand to 3 across on large screens",
+            "3up": "Grid items stack on small screens, 2 across on medium, 3 across on large",
+            "4up": "Grid items stack on small screens, progressively increase columns at larger breakpoints",
+            "6up": "Grid items start at 2 across, expand to 6 across on XL",
+            "1-2-4up": "Grid items stack on small screens, 2 across on medium, 4 across on large"
+          },
+          "classes": {
+            "2up": "grid-cols-1 md:grid-cols-2",
+            "side-by-side": "grid-cols-2",
+            "2-1": "grid-cols-1 md:grid-cols-[2fr_1fr]",
+            "1-2": "grid-cols-1 md:grid-cols-[1fr_2fr]",
+            "1-3up": "grid-cols-1 lg:grid-cols-3",
+            "3up": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+            "4up": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+            "6up": "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6",
+            "1-2-4up": "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          }
+        }
+      },
+      "examples": [
+        "<Grid variant=\"2up\" gap=\"base\">\n      <GridItem>\n        <Surface className=\"rounded-lg p-4\">\n          <Text bold>Item 1</Text>\n          <div className=\"mt-1\">\n            <Text variant=\"secondary\">First grid item</Text>\n          </div>\n        </Surface>\n      </GridItem>\n      <GridItem>\n        <Surface className=\"rounded-lg p-4\">\n          <Text bold>Item 2</Text>\n          <div className=\"mt-1\">\n            <Text variant=\"secondary\">Second grid item</Text>\n          </div>\n        </Surface>\n      </GridItem>\n    </Grid>",
+        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">variant=\"2up\"</p>\n        <Grid variant=\"2up\" gap=\"sm\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">variant=\"3up\"</p>\n        <Grid variant=\"3up\" gap=\"sm\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>3</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">variant=\"4up\"</p>\n        <Grid variant=\"4up\" gap=\"sm\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>3</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>4</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n    </div>",
+        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">variant=\"2-1\" (66% / 33%)</p>\n        <Grid variant=\"2-1\" gap=\"sm\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4\">\n              <Text bold>Main Content</Text>\n              <div className=\"mt-1\">\n                <Text variant=\"secondary\">Two-thirds width</Text>\n              </div>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4\">\n              <Text bold>Sidebar</Text>\n              <div className=\"mt-1\">\n                <Text variant=\"secondary\">One-third width</Text>\n              </div>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">variant=\"1-2\" (33% / 66%)</p>\n        <Grid variant=\"1-2\" gap=\"sm\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4\">\n              <Text bold>Sidebar</Text>\n              <div className=\"mt-1\">\n                <Text variant=\"secondary\">One-third width</Text>\n              </div>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4\">\n              <Text bold>Main Content</Text>\n              <div className=\"mt-1\">\n                <Text variant=\"secondary\">Two-thirds width</Text>\n              </div>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n    </div>",
+        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">gap=\"none\"</p>\n        <Grid variant=\"side-by-side\" gap=\"none\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">gap=\"sm\"</p>\n        <Grid variant=\"side-by-side\" gap=\"sm\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">\n          gap=\"base\" (default, responsive)\n        </p>\n        <Grid variant=\"side-by-side\" gap=\"base\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n\n      <div>\n        <p className=\"mb-2 text-kumo-subtle\">gap=\"lg\"</p>\n        <Grid variant=\"side-by-side\" gap=\"lg\">\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>1</Text>\n            </Surface>\n          </GridItem>\n          <GridItem>\n            <Surface className=\"rounded-lg p-4 text-center\">\n              <Text>2</Text>\n            </Surface>\n          </GridItem>\n        </Grid>\n      </div>\n    </div>",
+        "<Grid variant=\"4up\" gap=\"base\" mobileDivider>\n      <GridItem>\n        <Surface className=\"rounded-lg p-4\">\n          <Text bold>Item 1</Text>\n          <div className=\"mt-1\">\n            <Text variant=\"secondary\">Has divider on mobile</Text>\n          </div>\n        </Surface>\n      </GridItem>\n      <GridItem>\n        <Surface className=\"rounded-lg p-4\">\n          <Text bold>Item 2</Text>\n          <div className=\"mt-1\">\n            <Text variant=\"secondary\">Has divider on mobile</Text>\n          </div>\n        </Surface>\n      </GridItem>\n      <GridItem>\n        <Surface className=\"rounded-lg p-4\">\n          <Text bold>Item 3</Text>\n          <div className=\"mt-1\">\n            <Text variant=\"secondary\">Has divider on mobile</Text>\n          </div>\n        </Surface>\n      </GridItem>\n      <GridItem>\n        <Surface className=\"rounded-lg p-4\">\n          <Text bold>Item 4</Text>\n          <div className=\"mt-1\">\n            <Text variant=\"secondary\">Has divider on mobile</Text>\n          </div>\n        </Surface>\n      </GridItem>\n    </Grid>"
+      ],
+      "colors": [
+        "border-kumo-line"
+      ]
+    },
+    "Input": {
+      "name": "Input",
+      "type": "component",
+      "description": "Input component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the input (enables Field wrapper) - can be a string or any React node"
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Helper text displayed below the input"
+        },
+        "error": {
+          "type": "string | object",
+          "optional": true,
+          "description": "Error message or validation error object"
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "xs",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "xs": "Extra small input for compact UIs",
+            "sm": "Small input for secondary fields",
+            "base": "Default input size",
+            "lg": "Large input for prominent fields"
+          },
+          "classes": {
+            "xs": "h-5 gap-1 rounded-sm px-1.5 text-xs",
+            "sm": "h-6.5 gap-1 rounded-md px-2 text-xs",
+            "base": "h-9 gap-1.5 rounded-lg px-3 text-base",
+            "lg": "h-10 gap-2 rounded-lg px-4 text-base"
+          },
+          "default": "base"
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "default",
+            "error"
+          ],
+          "descriptions": {
+            "default": "Default input appearance",
+            "error": "Error state for validation failures"
+          },
+          "classes": {
+            "default": "focus:ring-kumo-ring",
+            "error": "!ring-kumo-danger focus:ring-kumo-danger"
+          },
+          "stateClasses": {
+            "default": {
+              "focus": "focus:ring-kumo-ring"
+            },
+            "error": {
+              "focus": "focus:ring-kumo-danger"
+            }
+          },
+          "default": "default"
+        }
+      },
+      "examples": [
+        "<Input\n      label=\"Email\"\n      placeholder=\"you@example.com\"\n      description=\"We'll never share your email\"\n    />",
+        "<Input\n      label=\"Username\"\n      placeholder=\"Choose a username\"\n      description=\"3-20 characters, alphanumeric only\"\n    />",
+        "<Input\n      label=\"Email\"\n      placeholder=\"you@example.com\"\n      value=\"invalid-email\"\n      variant=\"error\"\n      error=\"Please enter a valid email address\"\n    />",
+        "<Input\n      label=\"Password\"\n      type=\"password\"\n      value=\"short\"\n      variant=\"error\"\n      error={{\n        message: \"Password must be at least 8 characters\",\n        match: \"tooShort\",\n      }}\n      minLength={8}\n    />",
+        "<div className=\"flex flex-col gap-4\">\n      <Input size=\"xs\" label=\"Extra Small\" placeholder=\"Extra small input\" />\n      <Input size=\"sm\" label=\"Small\" placeholder=\"Small input\" />\n      <Input label=\"Base\" placeholder=\"Base input (default)\" />\n      <Input size=\"lg\" label=\"Large\" placeholder=\"Large input\" />\n    </div>",
+        "<Input label=\"Disabled field\" placeholder=\"Cannot edit\" disabled />",
+        "<Input placeholder=\"Search...\" aria-label=\"Search products\" />",
+        "<div className=\"flex flex-col gap-4\">\n      <Input type=\"email\" label=\"Email\" placeholder=\"you@example.com\" />\n      <Input type=\"password\" label=\"Password\" placeholder=\"••••••••\" />\n      <Input type=\"number\" label=\"Age\" placeholder=\"18\" />\n      <Input type=\"tel\" label=\"Phone\" placeholder=\"+1 (555) 000-0000\" />\n    </div>",
+        "<Input\n      label=\"Phone Number\"\n      required={false}\n      placeholder=\"+1 (555) 000-0000\"\n    />",
+        "<Input\n      label=\"API Key\"\n      labelTooltip=\"Find this in your dashboard under Settings > API Keys\"\n      placeholder=\"sk_live_...\"\n    />",
+        "<Input\n      label={\n        <span>\n          Email for <strong>billing</strong>\n        </span>\n      }\n      required\n      placeholder=\"billing@company.com\"\n      type=\"email\"\n    />"
+      ],
+      "colors": [
+        "bg-kumo-control",
+        "ring-kumo-danger",
+        "ring-kumo-line",
+        "ring-kumo-ring",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "styling": {
+        "dimensions": {
+          "xs": {
+            "height": 20,
+            "paddingX": 6,
+            "fontSize": 12,
+            "borderRadius": 2,
+            "width": 160
+          },
+          "sm": {
+            "height": 26,
+            "paddingX": 8,
+            "fontSize": 12,
+            "borderRadius": 6,
+            "width": 200
+          },
+          "base": {
+            "height": 36,
+            "paddingX": 12,
+            "fontSize": 16,
+            "borderRadius": 8,
+            "width": 280
+          },
+          "lg": {
+            "height": 40,
+            "paddingX": 16,
+            "fontSize": 16,
+            "borderRadius": 8,
+            "width": 320
+          }
+        },
+        "baseTokens": {
+          "background": "color-secondary",
+          "text": "text-color-surface",
+          "placeholder": "text-color-muted",
+          "ring": "color-border"
+        },
+        "stateTokens": {
+          "focus": {
+            "ring": "color-active"
+          },
+          "error": {
+            "ring": "color-error"
+          },
+          "disabled": {
+            "opacity": 0.5,
+            "text": "text-color-muted"
+          }
+        }
+      }
+    },
+    "Label": {
+      "name": "Label",
+      "type": "component",
+      "description": "Label component for form fields.  Provides a standardized way to display labels with optional indicators: - Optional indicator: gray \"(optional)\" text when `showOptional={true}` - Tooltip: info icon with hover tooltip for additional context",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "The label content - can be a string or any React node"
+        },
+        "showOptional": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When true (and required is false), shows gray \"(optional)\" text after the label"
+        },
+        "tooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        },
+        "asContent": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When true, only renders the inline content (indicators, tooltip) without the outer span with font styling. Useful when composed inside another label element that already provides the text styling."
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-col gap-4\">\n      <Label>Default Label</Label>\n      <Label showOptional>Optional Label</Label>\n      <Label tooltip=\"More information about this field\">\n        Label with Tooltip\n      </Label>\n    </div>",
+        "<Input label=\"Phone Number\" required={false} placeholder=\"+1 555-0000\" />",
+        "<Input\n      label=\"API Key\"\n      labelTooltip=\"Find this in your dashboard settings under API > Keys\"\n      placeholder=\"sk_live_...\"\n    />",
+        "<Checkbox\n      label={\n        <span>\n          I agree to the <strong>Terms of Service</strong>\n        </span>\n      }\n    />",
+        "<div className=\"flex max-w-md flex-col gap-4\">\n      <Input label=\"Full Name\" placeholder=\"John Doe\" />\n      <Input\n        label=\"Email\"\n        labelTooltip=\"We'll send your receipt here\"\n        placeholder=\"john@example.com\"\n        type=\"email\"\n      />\n      <Input label=\"Company\" required={false} placeholder=\"Acme Inc.\" />\n      <Select label=\"Country\" hideLabel={false} placeholder=\"Select a country\">\n        <Select.Option value=\"us\">United States</Select.Option>\n        <Select.Option value=\"uk\">United Kingdom</Select.Option>\n        <Select.Option value=\"ca\">Canada</Select.Option>\n      </Select>\n    </div>",
+        "<div className=\"flex flex-col gap-3\">\n      <Label>Default</Label>\n      <Label showOptional>Optional</Label>\n      <Label tooltip=\"Important field\">With Tooltip</Label>\n    </div>"
+      ],
+      "colors": [
+        "text-kumo-default",
+        "text-kumo-strong"
+      ]
+    },
+    "LayerCard": {
+      "name": "LayerCard",
+      "type": "component",
+      "description": "LayerCard component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<LayerCard>\n      <LayerCard.Secondary className=\"flex items-center justify-between\">\n        <div>Next Steps</div>\n        <Button variant=\"ghost\" size=\"sm\" shape=\"square\">\n          <ArrowRightIcon size={16} />\n        </Button>\n      </LayerCard.Secondary>\n\n      <LayerCard.Primary>Get started with Kumo</LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard className=\"w-[250px]\">\n      <LayerCard.Secondary>Getting Started</LayerCard.Secondary>\n      <LayerCard.Primary>\n        <p className=\"text-sm text-kumo-subtle\">\n          Quick start guide for new users\n        </p>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<div className=\"flex gap-4\">\n      <LayerCard className=\"w-[200px]\">\n        <LayerCard.Secondary>Components</LayerCard.Secondary>\n        <LayerCard.Primary>\n          <p className=\"text-sm\">Browse all components</p>\n        </LayerCard.Primary>\n      </LayerCard>\n      <LayerCard className=\"w-[200px]\">\n        <LayerCard.Secondary>Examples</LayerCard.Secondary>\n        <LayerCard.Primary>\n          <p className=\"text-sm\">View code examples</p>\n        </LayerCard.Primary>\n      </LayerCard>\n    </div>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-elevated",
+        "ring-kumo-fill",
+        "ring-kumo-line",
+        "text-kumo-strong"
+      ],
+      "subComponents": {
+        "Primary": {
+          "name": "Primary",
+          "description": "Primary sub-component",
+          "props": {}
+        },
+        "Secondary": {
+          "name": "Secondary",
+          "description": "Secondary sub-component",
+          "props": {}
+        }
+      },
+      "styling": {
+        "container": {
+          "width": 280,
+          "borderRadius": 8
+        },
+        "secondary": {
+          "paddingX": 8,
+          "paddingY": 8,
+          "gap": 8,
+          "fontSize": 16,
+          "fontWeight": 500
+        },
+        "primary": {
+          "paddingX": 16,
+          "paddingY": 16,
+          "paddingRight": 12,
+          "gap": 8,
+          "fontSize": 16,
+          "fontWeight": 400,
+          "borderRadius": 8
+        }
+      }
+    },
+    "Link": {
+      "name": "Link",
+      "type": "component",
+      "description": "Link component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "inline",
+            "current",
+            "plain"
+          ],
+          "descriptions": {
+            "inline": "Inline text link that flows with content",
+            "current": "Link that inherits color from parent text",
+            "plain": "Link without underline decoration"
+          },
+          "classes": {
+            "inline": "text-primary underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors",
+            "current": "text-current underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors",
+            "plain": "text-primary hover:text-primary/70 transition-colors"
+          },
+          "stateClasses": {
+            "plain": {
+              "hover": "hover:text-primary/70"
+            }
+          },
+          "default": "inline"
+        },
+        "to": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "download": {
+          "type": "unknown",
+          "optional": true
+        },
+        "href": {
+          "type": "string",
+          "optional": true
+        },
+        "hrefLang": {
+          "type": "string",
+          "optional": true
+        },
+        "media": {
+          "type": "string",
+          "optional": true
+        },
+        "ping": {
+          "type": "string",
+          "optional": true
+        },
+        "target": {
+          "type": "React.HTMLAttributeAnchorTarget",
+          "optional": true
+        },
+        "type": {
+          "type": "string",
+          "optional": true
+        },
+        "referrerPolicy": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "",
+            "no-referrer",
+            "no-referrer-when-downgrade",
+            "origin",
+            "origin-when-cross-origin",
+            "same-origin",
+            "strict-origin",
+            "strict-origin-when-cross-origin",
+            "unsafe-url"
+          ]
+        },
+        "render": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Allows you to replace the component’s HTML element with a different tag, or compose it with another component.\n\nAccepts a `ReactElement` or a function that returns the element to render."
+        }
+      },
+      "examples": [
+        "<div className=\"text-base grid md:grid-cols-3 gap-y-4 gap-x-6\">\n      <Link href=\"#\">Default inline link</Link>\n      <Link href=\"#\" variant=\"current\">\n        Current color link\n      </Link>\n      <Link href=\"#\" variant=\"plain\">\n        Plain inline link\n      </Link>\n    </div>",
+        "<p className=\"text-surface text-base max-w-md mx-auto leading-relaxed\">\n      This is a paragraph with an <Link href=\"#\">inline link</Link> that flows\n      naturally with the surrounding text. Links maintain proper underline\n      offset for readability.\n    </p>",
+        "<Link\n      href=\"https://cloudflare.com\"\n      target=\"_blank\"\n      rel=\"noopener noreferrer\"\n      className=\"text-base\"\n    >\n      Visit Cloudflare <Link.ExternalIcon />\n    </Link>",
+        "<p className=\"text-error text-base\">\n      This error message contains a{\" \"}\n      <Link href=\"#\" variant=\"current\">\n        link\n      </Link>{\" \"}\n      that inherits the red color from its parent.\n    </p>",
+        "<div className=\"flex flex-col md:flex-row gap-x-6 gap-y-4 text-base\">\n      <Link render={<CustomRouterLink href=\"/dashboard\" />} variant=\"inline\">\n        Dashboard (via render)\n      </Link>\n      <Link\n        render={\n          <CustomRouterLink\n            href=\"https://developers.cloudflare.com\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n          />\n        }\n        variant=\"inline\"\n      >\n        Cloudflare Docs <Link.ExternalIcon />\n      </Link>\n    </div>"
+      ],
+      "colors": [],
+      "subComponents": {
+        "ExternalIcon": {
+          "name": "ExternalIcon",
+          "description": "ExternalIcon sub-component",
+          "props": {}
+        }
+      }
+    },
+    "Loader": {
+      "name": "Loader",
+      "type": "component",
+      "description": "Loader component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Feedback",
+      "props": {
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "sm": "Small loader for inline use",
+            "base": "Default loader size",
+            "lg": "Large loader for prominent loading states"
+          },
+          "default": "base"
+        }
+      },
+      "examples": [
+        "<Loader />",
+        "<div className=\"flex items-center gap-4\">\n      <Loader size=\"sm\" />\n      <Loader size=\"base\" />\n      <Loader size=\"lg\" />\n    </div>",
+        "<Loader size={24} />"
+      ],
+      "colors": []
+    },
+    "MenuBar": {
+      "name": "MenuBar",
+      "type": "component",
+      "description": "MenuBar component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Navigation",
+      "props": {
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "isActive": {
+          "type": "number | boolean | string",
+          "optional": true
+        },
+        "options": {
+          "type": "MenuOptionProps[]",
+          "required": true
+        },
+        "optionIds": {
+          "type": "boolean",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive=\"\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-fill",
+        "border-kumo-fill"
+      ],
+      "styling": {
+        "container": {
+          "height": 32,
+          "borderRadius": 8,
+          "padding": 2,
+          "gap": 2
+        },
+        "button": {
+          "width": 36,
+          "borderRadius": 6,
+          "iconSize": 18
+        }
+      }
+    },
+    "Meter": {
+      "name": "Meter",
+      "type": "component",
+      "description": "Meter component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "customValue": {
+          "type": "string",
+          "optional": true
+        },
+        "label": {
+          "type": "string",
+          "required": true
+        },
+        "showValue": {
+          "type": "boolean",
+          "optional": true
+        },
+        "trackClassName": {
+          "type": "string",
+          "optional": true
+        },
+        "indicatorClassName": {
+          "type": "string",
+          "optional": true
+        },
+        "value": {
+          "type": "number",
+          "description": "Current value of the meter"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum value of the meter (default: 100)"
+        },
+        "min": {
+          "type": "number",
+          "description": "Minimum value of the meter (default: 0)"
+        }
+      },
+      "examples": [
+        "<Meter label=\"Storage used\" value={65} />",
+        "<Meter label=\"API requests\" value={75} customValue=\"750 / 1,000\" />",
+        "<Meter label=\"Progress\" value={40} showValue={false} />",
+        "<Meter label=\"Quota reached\" value={100} />",
+        "<Meter label=\"Memory usage\" value={15} />",
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
+      ],
+      "colors": [
+        "bg-kumo-fill",
+        "text-kumo-default",
+        "text-kumo-strong"
+      ]
+    },
+    "Pagination": {
+      "name": "Pagination",
+      "type": "component",
+      "description": "Pagination component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Navigation",
+      "props": {
+        "controls": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "full",
+            "simple"
+          ],
+          "descriptions": {
+            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
+            "simple": "Simple pagination controls with only previous and next buttons"
+          },
+          "default": "full"
+        },
+        "setPage": {
+          "type": "(page: number) => void",
+          "required": true,
+          "description": "Callback when page changes"
+        },
+        "page": {
+          "type": "number",
+          "optional": true
+        },
+        "perPage": {
+          "type": "number",
+          "optional": true
+        },
+        "totalCount": {
+          "type": "number",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"simple\"\n    />",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"full\"\n    />",
+        "<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />",
+        "<Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />"
+      ],
+      "colors": [
+        "text-kumo-strong"
+      ],
+      "styling": {
+        "layout": {
+          "height": 36,
+          "buttonSize": 36,
+          "inputWidth": 50,
+          "iconSize": 16,
+          "gap": 8,
+          "borderRadius": 6
+        }
+      }
+    },
+    "Popover": {
+      "name": "Popover",
+      "type": "component",
+      "description": "Popover component for displaying accessible popup content anchored to a trigger.",
+      "importPath": "@cloudflare/kumo",
+      "category": "Overlay",
+      "props": {
+        "side": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "top",
+            "bottom",
+            "left",
+            "right"
+          ],
+          "descriptions": {
+            "top": "Popover appears above the trigger",
+            "bottom": "Popover appears below the trigger",
+            "left": "Popover appears to the left of the trigger",
+            "right": "Popover appears to the right of the trigger"
+          },
+          "default": "bottom"
+        }
+      },
+      "examples": [
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button shape=\"square\" icon={BellIcon} />\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Notifications</Popover.Title>\n        <Popover.Description>\n          You are all caught up. Good job!\n        </Popover.Description>\n      </Popover.Content>\n    </Popover>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button>Open Popover</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Popover Title</Popover.Title>\n        <Popover.Description>\n          This is a basic popover with a title and description.\n        </Popover.Description>\n      </Popover.Content>\n    </Popover>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button>Open Settings</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Settings</Popover.Title>\n        <Popover.Description>\n          Configure your preferences below.\n        </Popover.Description>\n        <div className=\"mt-3\">\n          <Popover.Close asChild>\n            <Button variant=\"secondary\" size=\"sm\">\n              Close\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>",
+        "<div className=\"flex flex-wrap gap-4\">\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Bottom</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"bottom\">\n          <Popover.Title>Bottom</Popover.Title>\n          <Popover.Description>\n            Popover on bottom (default).\n          </Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Top</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"top\">\n          <Popover.Title>Top</Popover.Title>\n          <Popover.Description>Popover on top.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Left</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"left\">\n          <Popover.Title>Left</Popover.Title>\n          <Popover.Description>Popover on left.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Right</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"right\">\n          <Popover.Title>Right</Popover.Title>\n          <Popover.Description>Popover on right.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n    </div>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button>User Profile</Button>\n      </Popover.Trigger>\n      <Popover.Content className=\"w-64\">\n        <div className=\"flex items-center gap-3\">\n          <div className=\"size-10 rounded-full bg-kumo-recessed\" />\n          <div>\n            <Popover.Title>Jane Doe</Popover.Title>\n            <p className=\"text-sm text-kumo-subtle\">jane@example.com</p>\n          </div>\n        </div>\n        <div className=\"mt-3 flex gap-2 border-t border-kumo-line pt-3\">\n          <Button variant=\"secondary\" size=\"sm\" className=\"flex-1\">\n            Profile\n          </Button>\n          <Popover.Close asChild>\n            <Button variant=\"ghost\" size=\"sm\" className=\"flex-1\">\n              Sign Out\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "fill-kumo-base",
+        "fill-kumo-tip-shadow",
+        "fill-kumo-tip-stroke",
+        "outline-kumo-fill",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "subComponents": {
+        "Trigger": {
+          "name": "Trigger",
+          "description": "Trigger sub-component",
+          "props": {}
+        },
+        "Content": {
+          "name": "Content",
+          "description": "Content sub-component",
+          "props": {}
+        },
+        "Title": {
+          "name": "Title",
+          "description": "Title sub-component",
+          "props": {}
+        },
+        "Description": {
+          "name": "Description",
+          "description": "Description sub-component",
+          "props": {}
+        },
+        "Close": {
+          "name": "Close",
+          "description": "Close sub-component",
+          "props": {}
+        }
+      }
+    },
+    "Radio": {
+      "name": "Radio",
+      "type": "component",
+      "description": "Radio component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "legend": {
+          "type": "string",
+          "required": true,
+          "description": "Legend text for the group (required for accessibility)"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Child Radio.Item components"
+        },
+        "orientation": {
+          "type": "enum",
+          "optional": true,
+          "description": "Layout direction of the radio items",
+          "values": [
+            "vertical",
+            "horizontal"
+          ]
+        },
+        "error": {
+          "type": "string",
+          "optional": true,
+          "description": "Error message for the group"
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Helper text for the group"
+        },
+        "value": {
+          "type": "string",
+          "optional": true,
+          "description": "Value of the radio that should be selected (controlled)"
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether all radios in the group are disabled"
+        },
+        "controlPosition": {
+          "type": "enum",
+          "optional": true,
+          "description": "Position of radio control relative to label: \"start\" (default) puts radio before label, \"end\" puts label before radio",
+          "values": [
+            "start",
+            "end"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "optional": true,
+          "description": "Form submission name for the radio group"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        }
+      },
+      "examples": [
+        "<Radio.Group\n      legend=\"Notification preference\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Email\" value=\"email\" />\n      <Radio.Item label=\"SMS\" value=\"sms\" />\n      <Radio.Item label=\"Push notification\" value=\"push\" />\n    </Radio.Group>",
+        "<Radio.Group legend=\"Account type\" value={value} onValueChange={setValue}>\n      <Radio.Item label=\"Personal\" value=\"personal\" />\n      <Radio.Item label=\"Business\" value=\"business\" />\n      <Radio.Item label=\"Enterprise\" value=\"enterprise\" />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Size\"\n      orientation=\"horizontal\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Small\" value=\"sm\" />\n      <Radio.Item label=\"Medium\" value=\"md\" />\n      <Radio.Item label=\"Large\" value=\"lg\" />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Shipping method\"\n      description=\"Choose how you'd like to receive your order\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Standard (5-7 days)\" value=\"standard\" />\n      <Radio.Item label=\"Express (2-3 days)\" value=\"express\" />\n      <Radio.Item label=\"Overnight\" value=\"overnight\" />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Payment method\"\n      error=\"Please select a payment method to continue\"\n    >\n      <Radio.Item label=\"Credit Card\" value=\"card\" variant=\"error\" />\n      <Radio.Item label=\"PayPal\" value=\"paypal\" variant=\"error\" />\n      <Radio.Item label=\"Bank Transfer\" value=\"bank\" variant=\"error\" />\n    </Radio.Group>",
+        "<div className=\"flex flex-col gap-6\">\n      <Radio.Group legend=\"Disabled group\" disabled defaultValue=\"a\">\n        <Radio.Item label=\"Option A\" value=\"a\" />\n        <Radio.Item label=\"Option B\" value=\"b\" />\n      </Radio.Group>\n      <Radio.Group legend=\"Individual disabled\" defaultValue=\"available\">\n        <Radio.Item label=\"Available\" value=\"available\" />\n        <Radio.Item label=\"Unavailable\" value=\"unavailable\" disabled />\n      </Radio.Group>\n    </div>",
+        "<Radio.Group legend=\"Preferences\" controlPosition=\"end\" defaultValue=\"a\">\n      <Radio.Item label=\"Label before radio\" value=\"a\" />\n      <Radio.Item label=\"Another option\" value=\"b\" />\n    </Radio.Group>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-contrast",
+        "border-kumo-line",
+        "ring-kumo-danger",
+        "ring-kumo-line",
+        "ring-kumo-ring",
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ]
+    },
+    "Select": {
+      "name": "Select",
+      "type": "component",
+      "description": "Select component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the select (enables Field wrapper) - can be a string or any React node"
+        },
+        "hideLabel": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether to visually hide the label (still accessible to screen readers)"
+        },
+        "placeholder": {
+          "type": "string",
+          "optional": true,
+          "description": "Placeholder text when no value is selected"
+        },
+        "loading": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the select is in a loading state"
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the select is disabled"
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the select is required"
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "value": {
+          "type": "string",
+          "optional": true,
+          "description": "The currently selected value"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Child elements (Select.Option components)"
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Helper text displayed below the select"
+        },
+        "error": {
+          "type": "string | object",
+          "optional": true,
+          "description": "Error message or validation error object"
+        },
+        "onValueChange": {
+          "type": "(value: string) => void",
+          "description": "Callback when selection changes"
+        },
+        "defaultValue": {
+          "type": "string",
+          "description": "Initial value for uncontrolled mode"
+        }
+      },
+      "examples": [
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"Apple\")}\n      placeholder=\"Please select\"\n    >\n      <Select.Option value=\"Apple\">Apple</Select.Option>\n      <Select.Option value=\"Banana\">Banana</Select.Option>\n      <Select.Option value=\"Cherry\">Cherry</Select.Option>\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    >\n      <Select.Option value=\"bug\">Bug</Select.Option>\n      <Select.Option value=\"documentation\">Documentation</Select.Option>\n      <Select.Option value=\"feature\">Feature</Select.Option>\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={[\n        { value: null, label: \"Please select\" },\n        { value: \"bug\", label: \"Bug\" },\n        { value: \"documentation\", label: \"Documentation\" },\n        { value: \"feature\", label: \"Feature\" },\n      ]}\n    >\n      <Select.Option value=\"bug\">Bug</Select.Option>\n      <Select.Option value=\"documentation\">Documentation</Select.Option>\n      <Select.Option value=\"feature\">Feature</Select.Option>\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      renderValue={(v) => (\n        <span>\n          {v.emoji} {v.label}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as (typeof languages)[0])}\n    >\n      {languages.map((language) => (\n        <Select.Option key={language.value} value={language}>\n          {language.emoji} {language.label}\n        </Select.Option>\n      ))}\n    </Select>",
+        "<Select className=\"w-[200px]\" loading />",
+        "<Select\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Please select\"\n    >\n      {data?.map((item) => (\n        <Select.Option key={item} value={item}>\n          {item}\n        </Select.Option>\n      ))}\n    </Select>",
+        "<Select\n      className=\"w-[250px]\"\n      multiple\n      renderValue={(value) => {\n        if (value.length > 3) {\n          return (\n            <span className=\"line-clamp-1\">\n              {value.slice(2).join(\", \") + ` and ${value.length - 2} more`}\n            </span>\n          );\n        }\n        return <span>{value.join(\", \")}</span>;\n      }}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"Name\">Name</Select.Option>\n      <Select.Option value=\"Location\">Location</Select.Option>\n      <Select.Option value=\"Size\">Size</Select.Option>\n      <Select.Option value=\"Read\">Read</Select.Option>\n      <Select.Option value=\"Write\">Write</Select.Option>\n      <Select.Option value=\"CreatedAt\">Created At</Select.Option>\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Please select author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
+      ],
+      "colors": [
+        "bg-kumo-control",
+        "bg-kumo-overlay",
+        "ring-kumo-line",
+        "ring-kumo-ring",
+        "text-kumo-default"
+      ],
+      "subComponents": {
+        "Option": {
+          "name": "Option",
+          "description": "Option sub-component",
+          "props": {}
+        }
+      },
+      "styling": {
+        "trigger": {
+          "height": 36,
+          "paddingX": 12,
+          "borderRadius": 8,
+          "background": "color-secondary",
+          "text": "text-color-surface",
+          "ring": "color-border",
+          "fontSize": 16,
+          "fontWeight": 400
+        },
+        "stateTokens": {
+          "focus": {
+            "ring": "color-active"
+          },
+          "disabled": {
+            "opacity": 0.5
+          }
+        },
+        "icons": {
+          "caret": {
+            "name": "ph-caret-up-down",
+            "size": 20
+          },
+          "check": {
+            "name": "ph-check",
+            "size": 20
+          }
+        },
+        "popup": {
+          "background": "color-secondary",
+          "ring": "color-border",
+          "borderRadius": 8,
+          "padding": 6
+        },
+        "option": {
+          "paddingX": 8,
+          "paddingY": 6,
+          "borderRadius": 4,
+          "fontSize": 16,
+          "highlightBackground": "color-surface-secondary"
+        }
+      }
+    },
+    "SensitiveInput": {
+      "name": "SensitiveInput",
+      "type": "component",
+      "description": "SensitiveInput component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "alt": {
+          "type": "string",
+          "optional": true
+        },
+        "autoComplete": {
+          "type": "React.HTMLInputAutoCompleteAttribute",
+          "optional": true
+        },
+        "checked": {
+          "type": "boolean",
+          "optional": true
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true
+        },
+        "height": {
+          "type": "number | string",
+          "optional": true
+        },
+        "list": {
+          "type": "string",
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": true
+        },
+        "placeholder": {
+          "type": "string",
+          "optional": true
+        },
+        "readOnly": {
+          "type": "boolean",
+          "optional": true
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true
+        },
+        "width": {
+          "type": "number | string",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "value": {
+          "type": "string",
+          "optional": true,
+          "description": "Controlled value"
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "description": "Size variant",
+          "values": [
+            "xs",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "default": "base"
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Style variant",
+          "values": [
+            "default",
+            "error"
+          ],
+          "default": "default"
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the input (enables Field wrapper and sets masked state label) - can be a string or any React node"
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Helper text displayed below the input"
+        },
+        "error": {
+          "type": "string | object",
+          "optional": true,
+          "description": "Error message or validation error object"
+        }
+      },
+      "examples": [
+        "<div className=\"w-80\">\n      <SensitiveInput label=\"API Key\" defaultValue=\"sk_live_abc123xyz789\" />\n    </div>",
+        "<div className=\"flex flex-col gap-4\">\n      {sizes.map((size) => (\n        <div key={size} className=\"flex items-center gap-2\">\n          <span className=\"w-12 text-sm text-kumo-subtle\">{size}</span>\n          <SensitiveInput\n            label={`${size} size`}\n            size={size}\n            defaultValue=\"secret-api-key-123\"\n          />\n        </div>\n      ))}\n    </div>",
+        "<div className=\"flex w-80 flex-col gap-4\">\n      <SensitiveInput\n        label=\"Controlled Secret\"\n        value={value}\n        onValueChange={setValue}\n      />\n      <div className=\"text-sm text-kumo-subtle\">\n        Current value: <code className=\"text-kumo-default\">{value}</code>\n      </div>\n      <div className=\"flex gap-2\">\n        <Button\n          onClick={() => setValue(\"new-secret-\" + Date.now())}\n          variant=\"primary\"\n          size=\"sm\"\n        >\n          Change value\n        </Button>\n        <Button onClick={() => setValue(\"\")} variant=\"secondary\" size=\"sm\">\n          Clear\n        </Button>\n      </div>\n    </div>",
+        "<div className=\"flex w-80 flex-col gap-4\">\n      <SensitiveInput\n        label=\"Error State\"\n        variant=\"error\"\n        defaultValue=\"invalid-key\"\n        error=\"This API key is not valid\"\n      />\n      <SensitiveInput label=\"Disabled\" defaultValue=\"cannot-edit\" disabled />\n      <SensitiveInput\n        label=\"Read-only\"\n        defaultValue=\"view-only-secret-key\"\n        readOnly\n      />\n      <SensitiveInput\n        label=\"With Description\"\n        defaultValue=\"my-secret-value\"\n        description=\"Keep this value secure and don't share it\"\n      />\n    </div>"
+      ],
+      "colors": [
+        "bg-kumo-brand",
+        "bg-kumo-control",
+        "outline-kumo-ring",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ]
+    },
+    "Surface": {
+      "name": "Surface",
+      "type": "component",
+      "description": "Surface component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Layout",
+      "props": {
+        "as": {
+          "type": "React.ElementType",
+          "optional": true,
+          "description": "The element type to render as (default: \"div\")"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Child elements"
+        }
+      },
+      "examples": [
+        "<Surface className=\"rounded-lg p-6\">\n      <Text size=\"lg\" bold>\n        Surface Component\n      </Text>\n      <div className=\"mt-2\">\n        <Text variant=\"secondary\">\n          A container with consistent elevation and border styling.\n        </Text>\n      </div>\n    </Surface>",
+        "<div className=\"flex flex-col gap-4\">\n      <Surface as=\"section\" className=\"rounded-lg p-4\">\n        <Text bold>As section element</Text>\n      </Surface>\n      <Surface as=\"article\" className=\"rounded-lg p-4\">\n        <Text bold>As article element</Text>\n      </Surface>\n      <Surface as=\"aside\" className=\"rounded-lg p-4\">\n        <Text bold>As aside element</Text>\n      </Surface>\n    </div>",
+        "<Surface className=\"rounded-lg p-6\">\n      <Text bold>Outer Surface</Text>\n      <Surface className=\"mt-4 rounded-md bg-kumo-elevated p-4\">\n        <Text variant=\"secondary\">Nested Surface</Text>\n      </Surface>\n    </Surface>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "ring-kumo-line"
+      ]
+    },
+    "Switch": {
+      "name": "Switch",
+      "type": "component",
+      "description": "Switch component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Input",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Visual variant: \"default\" or \"error\" for validation failures (visual only, no error text)",
+          "values": [
+            "default",
+            "error"
+          ],
+          "descriptions": {
+            "default": "Default switch appearance",
+            "error": "Error state for validation failures"
+          },
+          "classes": {
+            "error": "ring-kumo-danger"
+          },
+          "default": "default"
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes."
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the switch is required. When explicitly false, shows \"(optional)\" text after the label."
+        },
+        "controlFirst": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When true (default), switch appears before label. When false, label appears before switch."
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "sm": "Small switch for compact UIs",
+            "base": "Default switch size",
+            "lg": "Large switch for prominent toggles"
+          },
+          "classes": {
+            "sm": "h-5.5 w-8.5",
+            "base": "h-6.5 w-10.5",
+            "lg": "h-7.5 w-12.5"
+          },
+          "default": "base"
+        },
+        "checked": {
+          "type": "boolean",
+          "optional": true
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true
+        },
+        "transitioning": {
+          "type": "boolean",
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": true
+        },
+        "type": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "submit",
+            "reset",
+            "button"
+          ]
+        },
+        "value": {
+          "type": "string | string[] | number",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "onClick": {
+          "type": "(event: React.MouseEvent) => void",
+          "required": true,
+          "description": "Callback when switch is clicked"
+        }
+      },
+      "examples": [
+        "<Switch label=\"Switch\" checked={checked} onCheckedChange={setChecked} />",
+        "<Switch label=\"Switch\" checked={false} onCheckedChange={() => {}} />",
+        "<Switch label=\"Switch\" checked={true} onCheckedChange={() => {}} />",
+        "<Switch label=\"Disabled\" checked={false} disabled />"
+      ],
+      "colors": [
+        "bg-kumo-brand",
+        "bg-kumo-brand-hover",
+        "bg-kumo-danger",
+        "bg-kumo-interact",
+        "bg-kumo-recessed",
+        "border-kumo-line",
+        "ring-kumo-danger",
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "subComponents": {
+        "Item": {
+          "name": "Item",
+          "description": "Item sub-component",
+          "props": {}
+        },
+        "Group": {
+          "name": "Group",
+          "description": "Group sub-component",
+          "props": {
+            "legend": {
+              "type": "string",
+              "required": true
+            },
+            "children": {
+              "type": "ReactNode",
+              "required": true
+            },
+            "error": {
+              "type": "string",
+              "optional": true
+            },
+            "description": {
+              "type": "ReactNode",
+              "optional": true
+            },
+            "disabled": {
+              "type": "boolean",
+              "optional": true
+            },
+            "controlFirst": {
+              "type": "boolean",
+              "optional": true
+            },
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        }
+      }
+    },
+    "Table": {
+      "name": "Table",
+      "type": "component",
+      "description": "Table component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "layout": {
+          "type": "enum",
+          "values": [
+            "auto",
+            "fixed"
+          ],
+          "default": "auto",
+          "descriptions": {
+            "auto": "Auto table layout - columns resize based on content",
+            "fixed": "Fixed table layout - columns have equal width, controlled via colgroup"
+          }
+        },
+        "variant": {
+          "type": "enum",
+          "values": [
+            "default",
+            "selected"
+          ],
+          "default": "default",
+          "descriptions": {
+            "default": "Default row variant",
+            "selected": "Selected row variant"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "description": "Child elements"
+        }
+      },
+      "examples": [
+        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.slice(0, 3).map((row) => (\n              <Table.Row key={row.id}>\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.slice(0, 3).map((row) => (\n              <Table.Row key={row.id}>\n                <Table.CheckCell aria-label={`Select ${row.subject}`} />\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            <Table.Row>\n              <Table.CheckCell aria-label=\"Select row 1\" />\n              <Table.Cell>Kumo v1.0.0 released</Table.Cell>\n              <Table.Cell>Visal In</Table.Cell>\n              <Table.Cell>5 seconds ago</Table.Cell>\n            </Table.Row>\n            <Table.Row variant=\"selected\">\n              <Table.CheckCell checked aria-label=\"Select row 2\" />\n              <Table.Cell>New Job Offer</Table.Cell>\n              <Table.Cell>Cloudflare</Table.Cell>\n              <Table.Cell>10 minutes ago</Table.Cell>\n            </Table.Row>\n            <Table.Row>\n              <Table.CheckCell aria-label=\"Select row 3\" />\n              <Table.Cell>Daily Email Digest</Table.Cell>\n              <Table.Cell>Cloudflare</Table.Cell>\n              <Table.Cell>1 hour ago</Table.Cell>\n            </Table.Row>\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col />\n            <col className=\"w-[150px]\" />\n            <col className=\"w-[150px]\" />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row) => (\n              <Table.Row key={row.id}>\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Primary className=\"w-full overflow-x-auto p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col style={{ width: \"40px\" }} />\n            <col />\n            <col style={{ width: \"150px\" }} />\n            <col style={{ width: \"120px\" }} />\n            <col style={{ width: \"50px\" }} />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n              <Table.Head></Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row, index) => (\n              <Table.Row\n                key={row.id}\n                variant={index === 1 ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={index === 1}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>\n                  <div className=\"flex items-center gap-2\">\n                    <EnvelopeSimple size={16} />\n                    <span className=\"truncate\">{row.subject}</span>\n                    {row.tags && (\n                      <div className=\"ml-2 inline-flex gap-1\">\n                        {row.tags.map((tag) => (\n                          <Badge key={tag}>{tag}</Badge>\n                        ))}\n                      </div>\n                    )}\n                  </div>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.from}</span>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.date}</span>\n                </Table.Cell>\n                <Table.Cell className=\"text-right\">\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    shape=\"square\"\n                    aria-label=\"More options\"\n                  >\n                    <DotsThree weight=\"bold\" size={16} />\n                  </Button>\n                </Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-ring",
+        "bg-kumo-tint",
+        "border-kumo-fill",
+        "text-kumo-default"
+      ],
+      "subComponents": {
+        "Header": {
+          "name": "Header",
+          "description": "Header sub-component",
+          "props": {}
+        },
+        "Head": {
+          "name": "Head",
+          "description": "Head sub-component",
+          "props": {}
+        },
+        "Row": {
+          "name": "Row",
+          "description": "Row sub-component",
+          "props": {}
+        },
+        "Body": {
+          "name": "Body",
+          "description": "Body sub-component",
+          "props": {}
+        },
+        "Cell": {
+          "name": "Cell",
+          "description": "Cell sub-component",
+          "props": {}
+        },
+        "CheckCell": {
+          "name": "CheckCell",
+          "description": "CheckCell sub-component",
+          "props": {}
+        },
+        "CheckHead": {
+          "name": "CheckHead",
+          "description": "CheckHead sub-component",
+          "props": {}
+        },
+        "Footer": {
+          "name": "Footer",
+          "description": "Footer sub-component",
+          "props": {}
+        },
+        "ResizeHandle": {
+          "name": "ResizeHandle",
+          "description": "ResizeHandle sub-component",
+          "props": {}
+        }
+      }
+    },
+    "Tabs": {
+      "name": "Tabs",
+      "type": "component",
+      "description": "Tabs component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Navigation",
+      "props": {
+        "tabs": {
+          "type": "TabsItem[]",
+          "optional": true,
+          "description": "Array of tab items to render"
+        },
+        "value": {
+          "type": "string",
+          "optional": true,
+          "description": "Controlled value. When set, component becomes controlled."
+        },
+        "selectedValue": {
+          "type": "string",
+          "optional": true,
+          "description": "Default selected value for uncontrolled mode. Ignored when `value` is set."
+        },
+        "activateOnFocus": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When true, tabs are activated immediately upon receiving focus via arrow keys. When false (default), tabs receive focus but require Enter/Space to activate. Set to true for better keyboard UX in most cases."
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional class name for the root element"
+        },
+        "listClassName": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional class name for the tab list element"
+        },
+        "indicatorClassName": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional class name for the indicator element"
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "segmented",
+            "underline"
+          ],
+          "default": "segmented"
+        },
+        "onValueChange": {
+          "type": "(value: string) => void",
+          "description": "Callback when active tab changes"
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-col gap-6\">\n      <div>\n        <p className=\"mb-2 text-sm text-kumo-subtle\">Segmented (default)</p>\n        <Tabs\n          variant=\"segmented\"\n          tabs={[\n            { value: \"tab1\", label: \"Tab 1\" },\n            { value: \"tab2\", label: \"Tab 2\" },\n            { value: \"tab3\", label: \"Tab 3\" },\n          ]}\n          selectedValue=\"tab1\"\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm text-kumo-subtle\">Underline</p>\n        <Tabs\n          variant=\"underline\"\n          tabs={[\n            { value: \"tab1\", label: \"Tab 1\" },\n            { value: \"tab2\", label: \"Tab 2\" },\n            { value: \"tab3\", label: \"Tab 3\" },\n          ]}\n          selectedValue=\"tab1\"\n        />\n      </div>\n    </div>",
+        "<Tabs\n      variant=\"segmented\"\n      tabs={[\n        { value: \"tab1\", label: \"Tab 1\" },\n        { value: \"tab2\", label: \"Tab 2\" },\n        { value: \"tab3\", label: \"Tab 3\" },\n      ]}\n      selectedValue=\"tab1\"\n    />",
+        "<Tabs\n      variant=\"underline\"\n      tabs={[\n        { value: \"tab1\", label: \"Tab 1\" },\n        { value: \"tab2\", label: \"Tab 2\" },\n        { value: \"tab3\", label: \"Tab 3\" },\n      ]}\n      selectedValue=\"tab1\"\n    />",
+        "<div className=\"space-y-4\">\n      <Tabs\n        tabs={[\n          { value: \"tab1\", label: \"Tab 1\" },\n          { value: \"tab2\", label: \"Tab 2\" },\n          { value: \"tab3\", label: \"Tab 3\" },\n        ]}\n        value={activeTab}\n        onValueChange={setActiveTab}\n      />\n      <p className=\"text-sm text-kumo-subtle\">\n        Active tab: <code className=\"text-sm\">{activeTab}</code>\n      </p>\n    </div>",
+        "<Tabs\n      tabs={[\n        { value: \"overview\", label: \"Overview\" },\n        { value: \"analytics\", label: \"Analytics\" },\n        { value: \"reports\", label: \"Reports\" },\n        { value: \"notifications\", label: \"Notifications\" },\n        { value: \"settings\", label: \"Settings\" },\n        { value: \"billing\", label: \"Billing\" },\n      ]}\n      selectedValue=\"overview\"\n    />",
+        "<Tabs\n      tabs={[\n        {\n          value: \"tab1\",\n          label: \"Regular Tab\",\n        },\n        {\n          value: \"tab2\",\n          label: \"Link Tab\",\n          render: (props) => <a {...props} href=\"#tab2\" />,\n        },\n        {\n          value: \"tab3\",\n          label: \"Another Link\",\n          render: (props) => <a {...props} href=\"#tab3\" />,\n        },\n      ]}\n      selectedValue=\"tab1\"\n    />"
+      ],
+      "colors": [
+        "bg-kumo-brand",
+        "bg-kumo-overlay",
+        "bg-kumo-tint",
+        "border-kumo-line",
+        "border-kumo-tint",
+        "ring-kumo-fill-hover",
+        "ring-kumo-ring",
+        "text-kumo-default",
+        "text-kumo-strong",
+        "text-kumo-subtle"
+      ],
+      "styling": {
+        "container": {
+          "height": 34,
+          "borderRadius": 8,
+          "background": "color-accent",
+          "padding": 1
+        },
+        "tab": {
+          "paddingX": 10,
+          "verticalMargin": 1,
+          "fontSize": 16,
+          "fontWeight": 500,
+          "borderRadius": 8,
+          "activeColor": "text-color-surface",
+          "inactiveColor": "text-color-label"
+        },
+        "indicator": {
+          "background": "color-surface-secondary",
+          "ring": "color-color-2",
+          "borderRadius": 6,
+          "shadow": "shadow-sm"
+        }
+      }
+    },
+    "Text": {
+      "name": "Text",
+      "type": "component",
+      "description": "Text component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Display",
+      "props": {
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Text style variant",
+          "values": [
+            "heading1",
+            "heading2",
+            "heading3",
+            "body",
+            "secondary",
+            "success",
+            "error",
+            "mono",
+            "mono-secondary"
+          ],
+          "descriptions": {
+            "heading1": "Large heading for page titles",
+            "heading2": "Medium heading for section titles",
+            "heading3": "Small heading for subsections",
+            "body": "Default body text",
+            "secondary": "Muted text for secondary information",
+            "success": "Success state text",
+            "error": "Error state text",
+            "mono": "Monospace text for code",
+            "mono-secondary": "Muted monospace text"
+          },
+          "classes": {
+            "heading1": "text-3xl font-semibold",
+            "heading2": "text-2xl font-semibold",
+            "heading3": "text-lg font-semibold",
+            "body": "text-kumo-default",
+            "secondary": "text-kumo-subtle",
+            "success": "text-kumo-link",
+            "error": "text-kumo-danger",
+            "mono": "font-mono",
+            "mono-secondary": "font-mono text-kumo-subtle"
+          },
+          "default": "body"
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "description": "Text size (only applies to body/secondary/success/error variants)",
+          "values": [
+            "xs",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "xs": "Extra small text",
+            "sm": "Small text",
+            "base": "Default text size",
+            "lg": "Large text"
+          },
+          "classes": {
+            "xs": "text-xs",
+            "sm": "text-sm",
+            "base": "text-base",
+            "lg": "text-lg"
+          },
+          "default": "base"
+        },
+        "bold": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether to use bold font weight (only applies to body variants)"
+        },
+        "as": {
+          "type": "React.ElementType",
+          "optional": true,
+          "description": "The element type to render as"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Child text content"
+        }
+      },
+      "examples": [
+        "<div className=\"grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3\">\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"heading1\">Heading 1</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-3xl (30px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"heading2\">Heading 2</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-2xl (24px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"heading3\">Heading 3</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-lg (16px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text>Body</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-base (14px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text bold>Body bold</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-base (14px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text size=\"lg\">Body lg</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-lg (16px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text size=\"sm\">Body sm</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-sm (13px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text size=\"xs\">Body xs</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-xs (12px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"secondary\">Body secondary</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-base (14px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"mono\">Monospace</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-sm (13px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"mono\" size=\"lg\">\n          Monospace lg\n        </Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-base (14px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"mono-secondary\">Monospace secondary</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-sm (13px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"success\">Success</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-base (14px)</p>\n      </div>\n      <div className=\"flex flex-col justify-end gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4\">\n        <Text variant=\"error\">Error</Text>\n        <p className=\"font-mono text-xs text-kumo-subtle\">text-base (14px)</p>\n      </div>\n    </div>"
+      ],
+      "colors": [
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-link",
+        "text-kumo-subtle"
+      ],
+      "styling": {
+        "fontSizes": {
+          "xs": 12,
+          "sm": 14,
+          "base": 16,
+          "lg": 18,
+          "xl": 20,
+          "2xl": 24,
+          "3xl": 30
+        },
+        "fontWeights": {
+          "normal": 400,
+          "medium": 500,
+          "semibold": 600
+        },
+        "baseColor": "text-kumo-default",
+        "variantColors": {
+          "body": "text-kumo-default",
+          "secondary": "text-kumo-subtle",
+          "success": "text-kumo-link",
+          "error": "text-kumo-danger",
+          "mono": "text-kumo-default",
+          "mono-secondary": "text-kumo-subtle"
+        },
+        "fontFamilies": {
+          "default": "sans-serif",
+          "mono": "monospace"
+        }
+      }
+    },
+    "Toasty": {
+      "name": "Toasty",
+      "type": "component",
+      "description": "Toasty component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Feedback",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        }
+      },
+      "examples": [],
+      "colors": [
+        "bg-kumo-control",
+        "bg-kumo-fill-hover",
+        "border-kumo-fill",
+        "text-kumo-default",
+        "text-kumo-strong",
+        "text-kumo-subtle"
+      ],
+      "styling": {
+        "container": {
+          "width": 300,
+          "padding": 16,
+          "borderRadius": 8,
+          "background": "color-secondary",
+          "border": "color-color",
+          "shadow": "shadow-lg",
+          "gap": 4
+        },
+        "title": {
+          "fontSize": 16,
+          "fontWeight": 500,
+          "color": "text-color-surface"
+        },
+        "description": {
+          "fontSize": 15,
+          "fontWeight": 400,
+          "color": "text-color-muted"
+        },
+        "closeButton": {
+          "size": 20,
+          "iconSize": 16,
+          "iconName": "ph-x",
+          "iconColor": "text-color-muted",
+          "hoverBackground": "color-color-2",
+          "hoverColor": "text-color-label",
+          "borderRadius": 4
+        }
+      }
+    },
+    "Tooltip": {
+      "name": "Tooltip",
+      "type": "component",
+      "description": "Tooltip component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Overlay",
+      "props": {
+        "align": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "start",
+            "center",
+            "end"
+          ]
+        },
+        "asChild": {
+          "type": "boolean",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "side": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "top",
+            "bottom",
+            "left",
+            "right"
+          ],
+          "descriptions": {
+            "top": "Tooltip appears above the trigger",
+            "bottom": "Tooltip appears below the trigger",
+            "left": "Tooltip appears to the left of the trigger",
+            "right": "Tooltip appears to the right of the trigger"
+          },
+          "default": "top"
+        },
+        "content": {
+          "type": "ReactNode",
+          "required": true,
+          "description": "Content to display in the tooltip"
+        }
+      },
+      "examples": [
+        "<TooltipProvider>\n      <Tooltip content=\"Add new item\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} />\n      </Tooltip>\n    </TooltipProvider>",
+        "<TooltipProvider>\n      <Tooltip content=\"Add\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} />\n      </Tooltip>\n    </TooltipProvider>",
+        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button shape=\"square\" icon={TranslateIcon} />\n        </Tooltip>\n      </div>\n    </TooltipProvider>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "fill-kumo-base",
+        "fill-kumo-tip-shadow",
+        "fill-kumo-tip-stroke",
+        "outline-kumo-fill",
+        "text-kumo-default"
+      ]
+    },
+    "InputArea": {
+      "name": "InputArea",
+      "type": "component",
+      "description": "Multi-line textarea input with Input variants and InputArea-specific dimensions",
+      "importPath": "@cloudflare/kumo (synthetic - uses Input component)",
+      "category": "Input",
+      "props": {},
+      "styling": {
+        "sizeVariants": {
+          "xs": {
+            "minHeight": 60,
+            "width": 200
+          },
+          "sm": {
+            "minHeight": 72,
+            "width": 240
+          },
+          "base": {
+            "minHeight": 88,
+            "width": 320
+          },
+          "lg": {
+            "minHeight": 100,
+            "width": 360
+          }
+        }
+      },
+      "examples": [],
+      "colors": []
+    }
+  },
+  "blocks": {
+    "PageHeader": {
+      "name": "PageHeader",
+      "type": "block",
+      "description": "PageHeader component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Layout",
+      "props": {
+        "spacing": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "compact",
+            "base",
+            "relaxed"
+          ],
+          "descriptions": {
+            "compact": "Compact spacing between header elements",
+            "base": "Default spacing between header elements",
+            "relaxed": "Relaxed spacing for more prominent headers"
+          },
+          "classes": {
+            "compact": "gap-1",
+            "base": "gap-2",
+            "relaxed": "gap-4"
+          },
+          "default": "base"
+        },
+        "breadcrumbs": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "description": {
+          "type": "string",
+          "optional": true
+        },
+        "tabs": {
+          "type": "TabsItem[]",
+          "optional": true
+        },
+        "defaultTab": {
+          "type": "string",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        }
+      },
+      "examples": [
+        "<PageHeader\n      className=\"w-full\"\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link icon={<HouseIcon size={16} />} href=\"#\">\n            Workers & Pages\n          </Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>cloudflare-dev-platform</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n      tabs={[\n        { label: \"Overview\", value: \"overview\" },\n        { label: \"Metrics\", value: \"metrics\" },\n        { label: \"Deployments\", value: \"deployments\" },\n        { label: \"Bindings\", value: \"bindings\" },\n        { label: \"Observability\", value: \"observability\" },\n        { label: \"Settings\", value: \"settings\" },\n      ]}\n      defaultTab=\"overview\"\n      onValueChange={(v) => console.log(v)}\n    >\n      <Button icon={<CodeIcon />} className=\"h-8\">\n        Edit code\n      </Button>\n      <Button icon={<GlobeIcon />} variant=\"primary\" className=\"h-8\">\n        Visit\n      </Button>\n    </PageHeader>",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>Dashboard</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n    />",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link icon={<HouseIcon size={16} />} href=\"#\">\n            Home\n          </Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current icon={<GearIcon size={16} />}>\n            Settings\n          </Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n    />",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>Settings</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n      tabs={[\n        { label: \"General\", value: \"general\" },\n        { label: \"Security\", value: \"security\" },\n        { label: \"Notifications\", value: \"notifications\" },\n      ]}\n      defaultTab=\"general\"\n    />",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Link href=\"#\">Projects</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>My Project</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n      tabs={[\n        { label: \"Overview\", value: \"overview\" },\n        { label: \"Settings\", value: \"settings\" },\n      ]}\n      defaultTab=\"overview\"\n    >\n      <Button variant=\"primary\" size=\"base\">\n        Deploy\n      </Button>\n    </PageHeader>",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Link href=\"#\">Products</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>Page title</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n      title=\"Page title\"\n    />",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Link href=\"#\">Products</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>Page title</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n      title=\"Page title\"\n      description=\"Action-led, value-oriented description of what this page does. Optional second sentence with use cases or prerequisites.\"\n    />",
+        "<PageHeader\n      breadcrumbs={\n        <Breadcrumbs>\n          <Breadcrumbs.Link href=\"#\">Home</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Link href=\"#\">Products</Breadcrumbs.Link>\n          <Breadcrumbs.Separator />\n          <Breadcrumbs.Current>Page title</Breadcrumbs.Current>\n        </Breadcrumbs>\n      }\n      title=\"Page title\"\n      description=\"Action-led, value-oriented description of what this page does.\"\n      tabs={[\n        { label: \"Overview\", value: \"overview\" },\n        { label: \"Analytics\", value: \"analytics\" },\n        { label: \"Settings\", value: \"settings\" },\n      ]}\n      defaultTab=\"overview\"\n    >\n      <Button variant=\"outline\" size=\"sm\">\n        Export\n      </Button>\n      <Button variant=\"primary\" size=\"sm\" icon={<PlusIcon size={16} />}>\n        New Item\n      </Button>\n    </PageHeader>"
+      ],
+      "colors": [
+        "border-kumo-line",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "files": [
+        "page-header/page-header.tsx"
+      ],
+      "dependencies": [
+        "Tabs"
+      ]
+    },
+    "ResourceListPage": {
+      "name": "ResourceListPage",
+      "type": "block",
+      "description": "ResourceListPage - A layout component for resource list pages  Layouts are page-level components that provide consistent structure for common page patterns like resource lists, dashboards, and settings.",
+      "importPath": "@cloudflare/kumo",
+      "category": "Layout",
+      "props": {
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "description": {
+          "type": "string",
+          "optional": true
+        },
+        "icon": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "usage": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "additionalContent": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        }
+      },
+      "examples": [],
+      "colors": [
+        "bg-kumo-overlay",
+        "text-kumo-strong"
+      ],
+      "files": [
+        "resource-list/resource-list.tsx",
+        "resource-list/resource-list.test.tsx"
+      ],
+      "dependencies": []
+    }
+  },
+  "search": {
+    "byCategory": {
+      "Display": [
+        "Badge",
+        "Breadcrumbs",
+        "Code",
+        "Collapsible",
+        "Empty",
+        "LayerCard",
+        "Meter",
+        "Text"
+      ],
+      "Feedback": [
+        "Banner",
+        "Loader",
+        "Toasty"
+      ],
+      "Action": [
+        "Button",
+        "ClipboardText"
+      ],
+      "Input": [
+        "Checkbox",
+        "Combobox",
+        "DateRangePicker",
+        "Field",
+        "Input",
+        "Radio",
+        "Select",
+        "Switch"
+      ],
+      "Navigation": [
+        "CommandPalette",
+        "MenuBar",
+        "Pagination",
+        "Tabs"
+      ],
+      "Overlay": [
+        "Dialog",
+        "DropdownMenu",
+        "Popover",
+        "Tooltip"
+      ],
+      "Layout": [
+        "Grid",
+        "Surface",
+        "PageHeader",
+        "ResourceListPage"
+      ],
+      "Other": [
+        "Label",
+        "Link",
+        "SensitiveInput",
+        "Table"
+      ]
+    },
+    "byName": [
+      "Badge",
+      "Banner",
+      "Breadcrumbs",
+      "Button",
+      "Checkbox",
+      "ClipboardText",
+      "Code",
+      "Collapsible",
+      "Combobox",
+      "CommandPalette",
+      "DateRangePicker",
+      "Dialog",
+      "DropdownMenu",
+      "Empty",
+      "Field",
+      "Grid",
+      "Input",
+      "Label",
+      "LayerCard",
+      "Link",
+      "Loader",
+      "MenuBar",
+      "Meter",
+      "PageHeader",
+      "Pagination",
+      "Popover",
+      "Radio",
+      "ResourceListPage",
+      "Select",
+      "SensitiveInput",
+      "Surface",
+      "Switch",
+      "Table",
+      "Tabs",
+      "Text",
+      "Toasty",
+      "Tooltip"
+    ],
+    "byType": {
+      "component": [
+        "Badge",
+        "Banner",
+        "Breadcrumbs",
+        "Button",
+        "Checkbox",
+        "ClipboardText",
+        "Code",
+        "Collapsible",
+        "Combobox",
+        "CommandPalette",
+        "DateRangePicker",
+        "Dialog",
+        "DropdownMenu",
+        "Empty",
+        "Field",
+        "Grid",
+        "Input",
+        "Label",
+        "LayerCard",
+        "Link",
+        "Loader",
+        "MenuBar",
+        "Meter",
+        "Pagination",
+        "Popover",
+        "Radio",
+        "Select",
+        "SensitiveInput",
+        "Surface",
+        "Switch",
+        "Table",
+        "Tabs",
+        "Text",
+        "Toasty",
+        "Tooltip"
+      ],
+      "block": [
+        "PageHeader",
+        "ResourceListPage"
+      ]
+    }
+  }
+}

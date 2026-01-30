@@ -1,0 +1,40 @@
+# Source files
+src/
+scripts/
+
+# Config files
+*.config.ts
+*.config.js
+tsconfig.json
+vite.config.ts
+vitest.config.ts
+
+# Development files
+node_modules/
+*.log
+.DS_Store
+.gitkeep
+
+# Test files
+tests/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Story files
+**/*.stories.tsx
+**/*.stories.ts
+
+# Storybook Files
+storybook-static/
+
+# Scaffolding tools
+plop-templates/
+plopfile.js
+
+# CI/CD
+.gitlab-ci.yml
+
+# Changesets (if present at package level)
+.changeset/

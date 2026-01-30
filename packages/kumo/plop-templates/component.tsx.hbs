@@ -1,0 +1,18 @@
+import type { ReactNode } from "react";
+import { cn } from "../../utils/cn";
+
+export interface {{pascalCase name}}Props {
+  className?: string;
+  children?: ReactNode;
+}
+
+export function {{pascalCase name}}({ className, children }: {{pascalCase name}}Props) {
+  return (
+    <div className={cn(
+      "{{kebabCase name}}",
+      className
+    )}>
+      {children}
+    </div>
+  );
+}

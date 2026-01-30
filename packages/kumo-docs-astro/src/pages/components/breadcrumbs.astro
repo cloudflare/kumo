@@ -1,0 +1,143 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { BreadcrumbsDemo, BreadcrumbsWithIconsDemo, BreadcrumbsWithClipboardDemo, BreadcrumbsLoadingDemo, BreadcrumbsRootDemo } from "../../components/demos/BreadcrumbsDemo";
+---
+
+<DocLayout
+  title="Breadcrumbs"
+  description="A navigation component that shows the current page's location within a navigational hierarchy."
+  sourceFile="components/breadcrumbs"
+>
+  <ComponentSection>
+    <ComponentExample code={`<Breadcrumbs>
+  <Breadcrumbs.Link icon={<HouseIcon size={16} />} href="/">
+    Home
+  </Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Link href="/docs">Projects</Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Current>Current Project</Breadcrumbs.Current>
+</Breadcrumbs>`}>
+      <BreadcrumbsWithIconsDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <CodeBlock code={`import { Breadcrumbs } from "@cloudflare/kumo";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Breadcrumbs } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Breadcrumbs>
+      <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>
+    </Breadcrumbs>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="mb-12">
+      <Heading level={3}>Basic</Heading>
+      <ComponentExample code={`<Breadcrumbs>
+  <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>
+</Breadcrumbs>`}>
+        <BreadcrumbsDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <div class="mb-12">
+      <Heading level={3}>Loading</Heading>
+      <ComponentExample code={`<Breadcrumbs>
+  <Breadcrumbs.Link href="#" icon={<HouseIcon size={16} />}>
+    Home
+  </Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Current loading></Breadcrumbs.Current>
+</Breadcrumbs>`}>
+        <BreadcrumbsLoadingDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <div class="mb-12">
+      <Heading level={3}>Root</Heading>
+      <ComponentExample code={`<Breadcrumbs>
+  <Breadcrumbs.Current icon={<HouseIcon size={16} />}>
+    Worker Analytics
+  </Breadcrumbs.Current>
+</Breadcrumbs>`}>
+        <BreadcrumbsRootDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <div class="mb-12">
+      <Heading level={3}>Clipboard</Heading>
+      <ComponentExample code={`<Breadcrumbs>
+  <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+  <Breadcrumbs.Separator />
+  <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>
+  <Breadcrumbs.Clipboard text="#" />
+</Breadcrumbs>`}>
+        <BreadcrumbsWithClipboardDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    
+    <div class="space-y-8">
+      <div>
+        <Heading level={3} class="mb-3 text-lg">Breadcrumbs</Heading>
+        <PropsTable component="Breadcrumbs" />
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-3 text-lg">Breadcrumbs.Link</Heading>
+        <PropsTable component="Breadcrumbs.Link" />
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-3 text-lg">Breadcrumbs.Current</Heading>
+        <PropsTable component="Breadcrumbs.Current" />
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-3 text-lg">Breadcrumbs.Separator</Heading>
+        <PropsTable component="Breadcrumbs.Separator" />
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-3 text-lg">Breadcrumbs.Clipboard</Heading>
+        <PropsTable component="Breadcrumbs.Clipboard" />
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

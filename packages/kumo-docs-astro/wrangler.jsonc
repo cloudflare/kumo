@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kumo-docs",
+  "account_id": "61e3887ff0554f81e1e175d106c3926f",
+  "compatibility_date": "2025-04-04",
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+  },
+  "observability": {
+    "enabled": true,
+  },
+  "routes": [{ "pattern": "kumo-ui.com/*", "zone_name": "kumo-ui.com" }],
+  "env": {
+    "staging": {
+      "name": "kumo-docs-staging",
+      "routes": [
+        { "pattern": "staging.kumo-ui.com/*", "zone_name": "kumo-ui.com" },
+      ],
+    },
+  },
+}

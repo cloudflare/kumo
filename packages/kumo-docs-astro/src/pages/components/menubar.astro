@@ -1,0 +1,147 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  MenuBarBasicDemo,
+  MenuBarTextFormattingDemo,
+  MenuBarNoActiveDemo,
+} from "../../components/demos/MenuBarDemo";
+---
+
+<DocLayout
+  title="MenuBar"
+  description="A horizontal menu bar with icon buttons, commonly used for text editors or toolbars."
+  sourceFile="components/menubar"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<MenuBar
+  isActive="bold"
+  optionIds
+  options={[
+    {
+      icon: <TextBolderIcon />,
+      id: "bold",
+      tooltip: "Bold",
+      onClick: () => {},
+    },
+    {
+      icon: <TextItalicIcon />,
+      id: "italic",
+      tooltip: "Italic",
+      onClick: () => {},
+    },
+  ]}
+/>`}
+    >
+      <MenuBarBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { MenuBar } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { MenuBar } from "@cloudflare/kumo/components/menubar";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { MenuBar } from "@cloudflare/kumo";
+import { TextBolderIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <MenuBar
+      options={[
+        {
+          icon: <TextBolderIcon />,
+          id: "bold",
+          tooltip: "Bold",
+          onClick: () => console.log("Bold clicked"),
+        },
+      ]}
+    />
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Text Formatting</Heading>
+        <ComponentExample
+          code={`<MenuBar
+  isActive="bold"
+  optionIds
+  options={[
+    {
+      icon: <TextBolderIcon />,
+      id: "bold",
+      tooltip: "Bold",
+      onClick: () => {},
+    },
+    {
+      icon: <TextItalicIcon />,
+      id: "italic",
+      tooltip: "Italic",
+      onClick: () => {},
+    },
+  ]}
+/>`}
+        >
+          <MenuBarTextFormattingDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Without Active State</Heading>
+        <ComponentExample
+          code={`<MenuBar
+  isActive=""
+  optionIds
+  options={[
+    {
+      icon: <TextBolderIcon />,
+      id: "bold",
+      tooltip: "Bold",
+      onClick: () => {},
+    },
+    {
+      icon: <TextItalicIcon />,
+      id: "italic",
+      tooltip: "Italic",
+      onClick: () => {},
+    },
+  ]}
+/>`}
+        >
+          <MenuBarNoActiveDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="MenuBar" />
+  </ComponentSection>
+</DocLayout>

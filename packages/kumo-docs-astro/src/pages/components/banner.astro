@@ -1,0 +1,135 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  BannerVariantsDemo,
+  BannerDefaultDemo,
+  BannerAlertDemo,
+  BannerErrorDemo,
+  BannerWithIconDemo,
+  BannerCustomContentDemo,
+} from "../../components/demos/BannerDemo";
+---
+
+<DocLayout
+  title="Banner"
+  description="Displays contextual inline messages for informational, alert, or error states."
+  sourceFile="components/banner"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Banner>This is an informational banner.</Banner>
+<Banner variant={BannerVariant.ALERT}>
+  This is an alert banner.
+</Banner>
+<Banner variant={BannerVariant.ERROR}>
+  This is an error banner.
+</Banner>`}
+    >
+      <BannerVariantsDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Banner, BannerVariant } from "@cloudflare/kumo";
+import { Info } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <Banner icon={<Info />} variant={BannerVariant.DEFAULT}>
+      You have a new message.
+    </Banner>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <!-- Variants -->
+    <div class="mb-12">
+      <Heading level={3}>Variants</Heading>
+      <div class="space-y-8">
+        <div>
+          <h4 class="mb-3 text-base font-medium">Default</h4>
+          <ComponentExample
+            code={`<Banner>This is an informational banner.</Banner>`}
+          >
+            <BannerDefaultDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Alert</h4>
+          <ComponentExample
+            code={`<Banner variant={BannerVariant.ALERT}>
+  Your session will expire soon.
+</Banner>`}
+          >
+            <BannerAlertDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Error</h4>
+          <ComponentExample
+            code={`<Banner variant={BannerVariant.ERROR}>
+  We couldn't save your changes.
+</Banner>`}
+          >
+            <BannerErrorDemo client:visible />
+          </ComponentExample>
+        </div>
+      </div>
+    </div>
+
+    <!-- With icon -->
+    <div class="mb-12">
+      <Heading level={3}>With icon</Heading>
+      <ComponentExample
+        code={`<Banner icon={<WarningCircle />} variant={BannerVariant.ALERT}>
+  Review your billing information.
+</Banner>`}
+      >
+        <BannerWithIconDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Custom content -->
+    <div class="mb-12">
+      <Heading level={3}>Custom content</Heading>
+      <ComponentExample
+        code={`<Banner icon={<Info />}>
+  <Text DANGEROUS_className="text-inherit">
+    This banner supports <strong>custom content</strong> with Text.
+  </Text>
+</Banner>`}
+      >
+        <BannerCustomContentDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Banner" />
+  </ComponentSection>
+</DocLayout>

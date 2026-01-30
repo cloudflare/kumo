@@ -1,0 +1,78 @@
+---
+import DocLayout from "../layouts/DocLayout.astro";
+import ComponentSection from "../components/docs/ComponentSection.astro";
+import CodeBlock from "../components/docs/CodeBlock.astro";
+import Callout from "../components/docs/Callout.astro";
+import { ComponentRegistryView } from "../components/demos/RegistryDemo";
+---
+
+<DocLayout
+  title="Component Registry"
+  description="AI-readable component metadata for LLMs and code generation tools. Auto-generated from TypeScript types and component variants."
+>
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Overview</h2>
+    <p class="mb-4 text-kumo-strong">
+      The component registry is a machine-readable JSON file that describes all Kumo components,
+      their props, variants, examples, and semantic tokens. It's designed for AI agents, code
+      generators, and other tooling.
+    </p>
+    <div class="flex gap-4">
+      <a
+        href="/api/component-registry"
+        target="_blank"
+        class="inline-flex items-center gap-2 rounded-md bg-kumo-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-kumo-brand/90"
+      >
+        View JSON API
+      </a>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Accessing the Registry</h2>
+    <div class="space-y-4">
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">Via CLI</h3>
+        <CodeBlock
+          code={`# List all components
+npx @cloudflare/kumo ls
+
+# Get docs for a specific component
+npx @cloudflare/kumo doc Button`}
+          lang="bash"
+        />
+      </div>
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">Via HTTP API</h3>
+        <CodeBlock
+          code={`# JSON endpoint
+curl https://kumo-ui.com/api/component-registry`}
+          lang="bash"
+        />
+      </div>
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">Via jq (Local)</h3>
+        <CodeBlock
+          code={`# Get Button props
+jq '.components.Button.props' packages/kumo/ai/component-registry.json
+
+# List components by category
+jq '.search.byCategory' packages/kumo/ai/component-registry.json`}
+          lang="bash"
+        />
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Registry Contents</h2>
+    <Callout type="info">
+      The registry includes: component props with types and defaults, variant options with 
+      descriptions, real code examples from stories, semantic color tokens used, and 
+      sub-components for compound patterns.
+    </Callout>
+    <div class="mt-6">
+      <ComponentRegistryView client:load />
+    </div>
+  </ComponentSection>
+</DocLayout>

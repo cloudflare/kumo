@@ -1,0 +1,87 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { TooltipHeroDemo, TooltipBasicDemo, TooltipMultipleDemo } from "../../components/demos/TooltipDemo";
+---
+
+<DocLayout
+  title="Tooltip"
+  description="A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it."
+  sourceFile="components/tooltip"
+  baseUIComponent="tooltip"
+>
+  <ComponentSection>
+    <ComponentExample code={`<TooltipProvider>
+  <Tooltip content="Add new item" asChild>
+    <Button shape="square" icon={PlusIcon} />
+  </Tooltip>
+</TooltipProvider>`}>
+      <TooltipHeroDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Tooltip, TooltipProvider } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Tooltip, TooltipProvider, Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <TooltipProvider>
+      <Tooltip content="Tooltip text" asChild>
+        <Button>Hover me</Button>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic Tooltip</Heading>
+        <ComponentExample code={`<TooltipProvider>
+  <Tooltip content="Add" asChild>
+    <Button shape="square" icon={PlusIcon} />
+  </Tooltip>
+</TooltipProvider>`}>
+          <TooltipBasicDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Multiple Tooltips</Heading>
+        <ComponentExample code={`<TooltipProvider>
+  <div className="flex gap-2">
+    <Tooltip content="Add" asChild>
+      <Button shape="square" icon={PlusIcon} />
+    </Tooltip>
+    <Tooltip content="Change language" asChild>
+      <Button shape="square" icon={TranslateIcon} />
+    </Tooltip>
+  </div>
+</TooltipProvider>`}>
+          <TooltipMultipleDemo client:load />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Tooltip" />
+  </ComponentSection>
+</DocLayout>

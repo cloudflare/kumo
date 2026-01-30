@@ -1,0 +1,327 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import {
+  LabelBasicDemo,
+  LabelOptionalFieldDemo,
+  LabelWithTooltipDemo,
+  LabelReactNodeDemo,
+  LabelFormMixedDemo,
+  LabelStandaloneDemo,
+} from "../../components/demos/LabelDemo";
+---
+
+<DocLayout
+  title="Label"
+  description="A label component for form fields with support for required/optional indicators and tooltips."
+  sourceFile="components/label"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<div className="flex flex-col gap-4">
+  <Label>Default Label</Label>
+  <Label showOptional>Optional Label</Label>
+  <Label tooltip="More information about this field">
+    Label with Tooltip
+  </Label>
+</div>`}
+    >
+      <LabelBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Label } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Label } from "@cloudflare/kumo/components/label";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <Heading level={3} class="mb-2 text-lg">With Form Components (Recommended)</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      Label features are automatically available through form components like{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Input</code>,{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select</code>,{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Checkbox</code>, and{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Switch</code> via the{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">required</code> and{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code> props.
+    </p>
+    <CodeBlock
+      code={`import { Input } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <>
+      {/* Optional field with "(optional)" text */}
+      <Input label="Phone" required={false} placeholder="+1 555-0000" />
+      
+      {/* With tooltip */}
+      <Input 
+        label="API Key" 
+        labelTooltip="Find this in your dashboard settings"
+      />
+    </>
+  );
+}`}
+      lang="tsx"
+    />
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Standalone Label</h3>
+    <p class="mb-4 text-sm text-kumo-strong">
+      For custom form layouts, use the{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Label</code> component
+      directly.
+    </p>
+    <CodeBlock
+      code={`import { Label } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Label tooltip="This field is mandatory">
+      Username
+    </Label>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Optional Field</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Shows gray "(optional)" text when{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">required={"{false}"}</code>.
+        </p>
+        <ComponentExample
+          code={`<Input label="Phone Number" required={false} placeholder="+1 555-0000" />`}
+        >
+          <LabelOptionalFieldDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Tooltip</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Shows an info icon with a tooltip for additional context.
+        </p>
+        <ComponentExample
+          code={`<Input 
+  label="API Key" 
+  labelTooltip="Find this in your dashboard settings under API > Keys"
+  placeholder="sk_live_..." 
+/>`}
+        >
+          <LabelWithTooltipDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>ReactNode Label Content</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Labels support ReactNode content for rich formatting.
+        </p>
+        <ComponentExample
+          code={`<Checkbox 
+  label={
+    <span>
+      I agree to the <strong>Terms of Service</strong>
+    </span>
+  }
+/>`}
+        >
+          <LabelReactNodeDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Form with Mixed Fields</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Real-world example showing required and optional fields together.
+        </p>
+        <ComponentExample
+          code={`<div className="flex flex-col gap-4 max-w-md">
+  <Input label="Full Name" placeholder="John Doe" />
+  <Input 
+    label="Email" 
+    labelTooltip="We'll send your receipt here"
+    placeholder="john@example.com" 
+    type="email"
+  />
+  <Input label="Company" required={false} placeholder="Acme Inc." />
+  <Select 
+    label="Country" 
+    hideLabel={false}
+    placeholder="Select a country"
+  >
+    <Select.Option value="us">United States</Select.Option>
+    <Select.Option value="uk">United Kingdom</Select.Option>
+    <Select.Option value="ca">Canada</Select.Option>
+  </Select>
+</div>`}
+        >
+          <LabelFormMixedDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Standalone Label</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use Label directly for custom layouts or non-form contexts.
+        </p>
+        <ComponentExample
+          code={`<div className="flex flex-col gap-3">
+  <Label>Default</Label>
+  <Label showOptional>Optional</Label>
+  <Label tooltip="Important field">With Tooltip</Label>
+</div>`}
+        >
+          <LabelStandaloneDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+
+    <Heading level={3} class="mb-2 text-lg">Label Props</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      Props for the standalone Label component:
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Prop</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Default</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">children</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+            <td class="px-4 py-3 text-xs">Label content (required)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">showOptional</td>
+            <td class="px-4 py-3 font-mono text-xs">boolean</td>
+            <td class="px-4 py-3 font-mono text-xs">false</td>
+            <td class="px-4 py-3 text-xs">Shows gray "(optional)" text (only when required is false)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">tooltip</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+            <td class="px-4 py-3 text-xs">Tooltip content shown via info icon</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">className</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+            <td class="px-4 py-3 text-xs">Additional CSS classes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="mb-2 mt-8 text-lg font-semibold">Form Component Label Props</h3>
+    <p class="mb-4 text-sm text-kumo-strong">
+      These props are available on Input, InputArea, Select, Checkbox, Switch,
+      SensitiveInput, and Combobox:
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Prop</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Default</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">label</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+            <td class="px-4 py-3 text-xs">Label content (enables Field wrapper)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">required</td>
+            <td class="px-4 py-3 font-mono text-xs">boolean</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+            <td class="px-4 py-3 text-xs">
+              When false: shows "(optional)" text. Also sets HTML required attribute.
+            </td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">labelTooltip</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3 font-mono text-xs">-</td>
+            <td class="px-4 py-3 text-xs">
+              Tooltip content shown via info icon next to label
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+
+  <!-- Design Guidelines -->
+  <ComponentSection>
+    <Heading level={2}>Design Guidelines</Heading>
+    <div class="space-y-4 text-sm">
+      <div>
+        <h3 class="mb-2 font-semibold">When to Use Optional Indicators</h3>
+        <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>Use "(optional)" for optional fields when most fields are required</li>
+          <li>Be consistent within a form</li>
+          <li>Default fields (no indicator) are assumed required by users</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">When to Use Tooltips</h3>
+        <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>Provide additional context that doesn't fit in the label</li>
+          <li>Explain format requirements or validation rules</li>
+          <li>Link to help documentation for complex fields</li>
+          <li>Keep tooltip content concise - 1-2 sentences max</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="mb-2 font-semibold">Accessibility</h3>
+        <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
+          <li>
+            Optional indicators are purely visual - use the{" "}
+            <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">required</code> attribute
+            for validation
+          </li>
+          <li>Tooltips are accessible via keyboard focus on the info icon</li>
+          <li>Screen readers will announce tooltip content when focused</li>
+        </ul>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

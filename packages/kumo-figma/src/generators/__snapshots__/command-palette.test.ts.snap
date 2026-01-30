@@ -1,0 +1,273 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent base config 1`] = `
+{
+  "background": "color-kumo-control",
+  "borderRadius": 8,
+  "item": {
+    "highlightedBackground": "color-kumo-tint",
+    "iconColor": "text-kumo-subtle",
+    "normalBackground": null,
+    "padding": {
+      "borderRadius": 8,
+      "gap": 12,
+      "paddingX": 8,
+      "paddingY": 6,
+    },
+    "textColor": "text-color-kumo-default",
+  },
+  "sections": {
+    "footer": {
+      "background": "color-kumo-control",
+      "padding": {
+        "fillVariable": "color-kumo-elevated",
+        "fontSize": 12,
+        "paddingX": 16,
+        "paddingY": 12,
+        "textVariable": "text-color-kumo-strong",
+      },
+      "textColor": "text-color-kumo-strong",
+    },
+    "inputHeader": {
+      "background": "color-kumo-elevated",
+      "padding": {
+        "fillVariable": "color-kumo-base",
+        "gap": 12,
+        "paddingX": 16,
+        "paddingY": 12,
+      },
+    },
+    "list": {
+      "background": "color-kumo-elevated",
+      "border": "color-kumo-line",
+      "padding": {
+        "fillVariable": "color-kumo-base",
+        "hasBorder": true,
+        "paddingX": 8,
+        "paddingY": 8,
+        "strokeVariable": "color-kumo-line",
+      },
+    },
+  },
+  "shadow": {
+    "blur": 32,
+    "offsetX": 0,
+    "offsetY": 8,
+    "opacity": 0.16,
+    "spread": 0,
+  },
+  "width": 672,
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent classes 1`] = `
+{
+  "breadcrumbSeparator": "h-3 w-3 text-kumo-subtle",
+  "container": "rounded-lg bg-kumo-elevated",
+  "dialog": "max-w-2xl rounded-lg",
+  "empty": "p-8 text-kumo-strong",
+  "externalIcon": "h-3.5 w-3.5 text-kumo-subtle",
+  "footer": "rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong",
+  "group": "space-y-0.5",
+  "groupLabel": "px-2 pt-1 text-xs font-semibold text-kumo-strong",
+  "highlightMark": "rounded-sm bg-kumo-warning/50 text-kumo-default",
+  "input": "text-base",
+  "inputHeader": "gap-3 bg-kumo-base px-4 py-3",
+  "item": "gap-3 px-2 py-1.5 rounded-lg",
+  "itemHighlighted": "bg-kumo-overlay",
+  "list": "rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
+  "loading": "p-8",
+  "resultArrow": "h-4 w-4 text-kumo-subtle",
+  "resultIcon": "text-kumo-subtle",
+  "resultTitle": "text-base text-kumo-default",
+  "searchIcon": "h-4 w-4 text-kumo-subtle",
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent config 1`] = `
+{
+  "footerHeight": 36,
+  "groupLabelHeight": 24,
+  "inputHeight": 40,
+  "itemHeight": 26,
+  "maxHeight": 400,
+  "width": 672,
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent container styles 1`] = `
+{
+  "borderRadius": 8,
+  "fillVariable": "color-kumo-elevated",
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent footer styles 1`] = `
+{
+  "fillVariable": "color-kumo-elevated",
+  "fontSize": 12,
+  "paddingX": 16,
+  "paddingY": 12,
+  "textVariable": "text-color-kumo-strong",
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent inputHeader styles 1`] = `
+{
+  "fillVariable": "color-kumo-base",
+  "gap": 12,
+  "paddingX": 16,
+  "paddingY": 12,
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent intermediate data (golden path) 1`] = `
+{
+  "classes": {
+    "breadcrumbSeparator": "h-3 w-3 text-kumo-subtle",
+    "container": "rounded-lg bg-kumo-elevated",
+    "dialog": "max-w-2xl rounded-lg",
+    "empty": "p-8 text-kumo-strong",
+    "externalIcon": "h-3.5 w-3.5 text-kumo-subtle",
+    "footer": "rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong",
+    "group": "space-y-0.5",
+    "groupLabel": "px-2 pt-1 text-xs font-semibold text-kumo-strong",
+    "highlightMark": "rounded-sm bg-kumo-warning/50 text-kumo-default",
+    "input": "text-base",
+    "inputHeader": "gap-3 bg-kumo-base px-4 py-3",
+    "item": "gap-3 px-2 py-1.5 rounded-lg",
+    "itemHighlighted": "bg-kumo-overlay",
+    "list": "rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
+    "loading": "p-8",
+    "resultArrow": "h-4 w-4 text-kumo-subtle",
+    "resultIcon": "text-kumo-subtle",
+    "resultTitle": "text-base text-kumo-default",
+    "searchIcon": "h-4 w-4 text-kumo-subtle",
+  },
+  "config": {
+    "footerHeight": 36,
+    "groupLabelHeight": 24,
+    "inputHeight": 40,
+    "itemHeight": 26,
+    "maxHeight": 400,
+    "width": 672,
+  },
+  "parsedStyles": {
+    "breadcrumbSeparator": {
+      "height": 12,
+      "textVariable": "text-color-kumo-subtle",
+    },
+    "container": {
+      "borderRadius": 8,
+      "fillVariable": "color-kumo-elevated",
+    },
+    "dialog": {
+      "borderRadius": 8,
+    },
+    "empty": {
+      "textVariable": "text-color-kumo-strong",
+    },
+    "externalIcon": {
+      "height": 14,
+      "textVariable": "text-color-kumo-subtle",
+    },
+    "footer": {
+      "fillVariable": "color-kumo-elevated",
+      "fontSize": 12,
+      "paddingX": 16,
+      "paddingY": 12,
+      "textVariable": "text-color-kumo-strong",
+    },
+    "group": {},
+    "groupLabel": {
+      "fontSize": 12,
+      "fontWeight": 600,
+      "paddingX": 8,
+      "textVariable": "text-color-kumo-strong",
+    },
+    "highlightMark": {
+      "borderRadius": 4,
+      "fillOpacity": 0.5,
+      "fillVariable": "color-kumo-warning/50",
+      "textVariable": "text-color-kumo-default",
+    },
+    "input": {
+      "fontSize": 14,
+    },
+    "inputHeader": {
+      "fillVariable": "color-kumo-base",
+      "gap": 12,
+      "paddingX": 16,
+      "paddingY": 12,
+    },
+    "item": {
+      "borderRadius": 8,
+      "gap": 12,
+      "paddingX": 8,
+      "paddingY": 6,
+    },
+    "itemHighlighted": {
+      "fillVariable": "color-kumo-overlay",
+    },
+    "list": {
+      "fillVariable": "color-kumo-base",
+      "hasBorder": true,
+      "paddingX": 8,
+      "paddingY": 8,
+      "strokeVariable": "color-kumo-line",
+    },
+    "loading": {},
+    "resultArrow": {
+      "height": 16,
+      "textVariable": "text-color-kumo-subtle",
+    },
+    "resultIcon": {
+      "textVariable": "text-color-kumo-subtle",
+    },
+    "resultTitle": {
+      "fontSize": 14,
+      "textVariable": "text-color-kumo-default",
+    },
+    "searchIcon": {
+      "height": 16,
+      "textVariable": "text-color-kumo-subtle",
+    },
+  },
+  "subComponents": [
+    "Dialog",
+    "Root",
+    "Panel",
+    "Input",
+    "List",
+    "Group",
+    "GroupLabel",
+    "Item",
+    "ResultItem",
+    "HighlightedText",
+    "Empty",
+    "Loading",
+    "Footer",
+    "Results",
+    "Items",
+  ],
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent item styles 1`] = `
+{
+  "borderRadius": 8,
+  "gap": 12,
+  "paddingX": 8,
+  "paddingY": 6,
+}
+`;
+
+exports[`CommandPalette Generator - Snapshot Tests (Intermediate Data) > should produce consistent list styles 1`] = `
+{
+  "fillVariable": "color-kumo-base",
+  "hasBorder": true,
+  "paddingX": 8,
+  "paddingY": 8,
+  "strokeVariable": "color-kumo-line",
+}
+`;

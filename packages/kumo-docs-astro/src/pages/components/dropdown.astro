@@ -1,0 +1,264 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { DropdownBasicDemo, DropdownCheckboxDemo, DropdownNestedDemo } from "../../components/demos/DropdownDemo";
+---
+
+<DocLayout
+  title="Dropdown Menu"
+  description="Displays a menu to the user—such as a set of actions or functions—triggered by a button."
+  sourceFile="components/dropdown"
+  baseUIComponent="menu"
+>
+  <ComponentSection>
+    <ComponentExample code={`<DropdownMenu>
+  <DropdownMenu.Trigger render={<Button icon={PlusIcon}>Add</Button>} />
+  <DropdownMenu.Content>
+    <DropdownMenu.Item>Worker</DropdownMenu.Item>
+    <DropdownMenu.Item>Pages</DropdownMenu.Item>
+    <DropdownMenu.Item>KV Namespace</DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu>`}>
+      <DropdownBasicDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { DropdownMenu } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { DropdownMenu } from "@cloudflare/kumo/components/dropdown";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { DropdownMenu, Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Menu</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>Option 1</DropdownMenu.Item>
+        <DropdownMenu.Item>Option 2</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic Dropdown</Heading>
+        <ComponentExample code={`<DropdownMenu>
+  <DropdownMenu.Trigger render={<Button icon={PlusIcon}>Add</Button>} />
+  <DropdownMenu.Content>
+    <DropdownMenu.Item>Worker</DropdownMenu.Item>
+    <DropdownMenu.Item>Pages</DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu>`}>
+          <DropdownBasicDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Checkbox Items</Heading>
+        <p class="mb-4 text-sm text-label">
+          Use <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.CheckboxItem</code> for 
+          toggleable options that can be independently checked or unchecked.
+        </p>
+        <ComponentExample code={`<DropdownMenu>
+  <DropdownMenu.Trigger render={<Button>View Options</Button>} />
+  <DropdownMenu.Content>
+    <DropdownMenu.Group>
+      <DropdownMenu.Label>Display</DropdownMenu.Label>
+      <DropdownMenu.CheckboxItem
+        checked={showSidebar}
+        onCheckedChange={setShowSidebar}
+      >
+        Show sidebar
+      </DropdownMenu.CheckboxItem>
+      <DropdownMenu.CheckboxItem
+        checked={showLineNumbers}
+        onCheckedChange={setShowLineNumbers}
+      >
+        Show line numbers
+      </DropdownMenu.CheckboxItem>
+    </DropdownMenu.Group>
+  </DropdownMenu.Content>
+</DropdownMenu>`}>
+          <DropdownCheckboxDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Nested Menu with Radio Selection</Heading>
+        <p class="mb-4 text-sm text-label">
+          Use <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.Sub</code>, 
+          <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.SubTrigger</code>, and 
+          <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.SubContent</code> to create nested submenus.
+          For single-selection lists like language or timezone, use 
+          <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.RadioGroup</code> and
+          <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.RadioItem</code>.
+        </p>
+        <ComponentExample code={`<DropdownMenu>
+  <DropdownMenu.Trigger render={<Button icon={UserIcon}>Account</Button>} />
+  <DropdownMenu.Content>
+    <DropdownMenu.Item icon={UserIcon}>Profile</DropdownMenu.Item>
+    <DropdownMenu.Item icon={CreditCardIcon}>Billing</DropdownMenu.Item>
+    <DropdownMenu.Item icon={MoonIcon}>Dark mode</DropdownMenu.Item>
+
+    {/* Language submenu with RadioGroup */}
+    <DropdownMenu.Sub>
+      <DropdownMenu.SubTrigger>Language</DropdownMenu.SubTrigger>
+      <DropdownMenu.SubContent>
+        <DropdownMenu.Group>
+          <DropdownMenu.RadioGroup value="en">
+            <DropdownMenu.RadioItem value="en">
+              English
+              <DropdownMenu.RadioItemIndicator />
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value="es">
+              Español
+              <DropdownMenu.RadioItemIndicator />
+            </DropdownMenu.RadioItem>
+            {/* ... more languages */}
+          </DropdownMenu.RadioGroup>
+        </DropdownMenu.Group>
+      </DropdownMenu.SubContent>
+    </DropdownMenu.Sub>
+
+    {/* Timezone submenu with RadioGroup */}
+    <DropdownMenu.Sub>
+      <DropdownMenu.SubTrigger>Set Timezone</DropdownMenu.SubTrigger>
+      <DropdownMenu.SubContent>
+        <DropdownMenu.Group>
+          <DropdownMenu.RadioGroup value="America/Los_Angeles">
+            <DropdownMenu.RadioItem value="America/Los_Angeles">
+              Pacific Time (PT)
+              <DropdownMenu.RadioItemIndicator />
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value="America/New_York">
+              Eastern Time (ET)
+              <DropdownMenu.RadioItemIndicator />
+            </DropdownMenu.RadioItem>
+            {/* ... more timezones */}
+          </DropdownMenu.RadioGroup>
+        </DropdownMenu.Group>
+      </DropdownMenu.SubContent>
+    </DropdownMenu.Sub>
+
+    <DropdownMenu.Separator />
+    <DropdownMenu.Item icon={SignOutIcon} variant="danger">
+      Log out
+    </DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu>`}>
+          <DropdownNestedDemo client:load />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+    
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Root component that manages the dropdown state.
+        </p>
+        <PropsTable component="DropdownMenu" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.Trigger</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Button that opens the dropdown when clicked.
+        </p>
+        <PropsTable component="DropdownMenu.Trigger" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.Item</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Individual menu item.
+        </p>
+        <PropsTable component="DropdownMenu.Item" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.CheckboxItem</h3>
+        <p class="mb-3 text-sm text-label">
+          A menu item that can be toggled on or off. Use for independent boolean options.
+        </p>
+        <PropsTable component="DropdownMenu.CheckboxItem" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.Sub</h3>
+        <p class="mb-3 text-sm text-label">
+          Root component for a nested submenu. Wrap SubTrigger and SubContent inside this.
+        </p>
+        <PropsTable component="DropdownMenu.Sub" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.SubTrigger</h3>
+        <p class="mb-3 text-sm text-label">
+          Menu item that opens a nested submenu when hovered or clicked. Displays a caret icon automatically.
+        </p>
+        <PropsTable component="DropdownMenu.SubTrigger" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.SubContent</h3>
+        <p class="mb-3 text-sm text-label">
+          Container for submenu items. Positioned relative to the SubTrigger.
+        </p>
+        <PropsTable component="DropdownMenu.SubContent" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.Separator</h3>
+        <p class="mb-3 text-sm text-label">
+          A visual divider between menu items.
+        </p>
+        <PropsTable component="DropdownMenu.Separator" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.RadioGroup</h3>
+        <p class="mb-3 text-sm text-label">
+          Groups radio items for single-selection behavior. Only one item can be selected at a time.
+        </p>
+        <PropsTable component="DropdownMenu.RadioGroup" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.RadioItem</h3>
+        <p class="mb-3 text-sm text-label">
+          A menu item that works like a radio button. Must be used inside a RadioGroup.
+        </p>
+        <PropsTable component="DropdownMenu.RadioItem" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.RadioItemIndicator</h3>
+        <p class="mb-3 text-sm text-label">
+          Shows the selected state for a RadioItem. Displays a checkmark by default.
+        </p>
+        <PropsTable component="DropdownMenu.RadioItemIndicator" />
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

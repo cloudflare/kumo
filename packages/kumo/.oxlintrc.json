@@ -1,0 +1,18 @@
+{
+  "jsPlugins": ["./lint/kumo-plugin.js"],
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "jsx-a11y"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "kumo/no-tailwind-dark-variant": "error",
+    "kumo/no-primitive-colors": "error",
+    "kumo/enforce-variant-standard": "error",
+    "kumo/no-deprecated-props": "error",
+    "kumo/no-cross-package-imports": "error",
+    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/no-unnecessary-template-expression": "off",
+    "typescript/no-unnecessary-type-assertion": "off"
+  }
+}

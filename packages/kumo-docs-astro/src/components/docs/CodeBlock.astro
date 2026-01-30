@@ -1,0 +1,47 @@
+---
+import { Code } from "astro:components";
+
+interface Props {
+  code: string;
+  lang?: "tsx" | "ts" | "jsx" | "js" | "bash" | "css" | "json";
+}
+
+const { code, lang = "tsx" } = Astro.props;
+---
+
+<div
+  class="code-block overflow-hidden rounded-lg border border-kumo-line"
+>
+  <Code 
+    code={code} 
+    lang={lang} 
+    themes={{
+      light: "github-light",
+      dark: "vesper"
+    }}
+    defaultColor={false}
+  />
+</div>
+
+<style is:global>
+  .code-block .astro-code {
+    padding: 1rem;
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+
+  .code-block .astro-code,
+  .code-block .astro-code span {
+    color: var(--shiki-light) !important;
+    background-color: var(--shiki-light-bg) !important;
+  }
+  
+  /* Dark mode - use dark theme colors */
+  [data-mode="dark"] .code-block .astro-code,
+  [data-mode="dark"] .code-block .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+</style>

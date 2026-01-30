@@ -1,0 +1,197 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import Callout from "../../components/docs/Callout.astro";
+import { ResourceListBasicDemo, ResourceListWithUsageDemo, ResourceListCompleteDemo } from "../../components/demos/ResourceListDemo";
+---
+
+<DocLayout
+  title="Resource List"
+  description="A layout component for resource list pages with optional sidebar content."
+  sourceFile="blocks/resource-list"
+>
+  <ComponentSection>
+    <ComponentExample code={`<ResourceListPage
+  title="KV Namespaces"
+  description="Store key-value data globally with low-latency access"
+  icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
+  usage={
+    <Surface className="p-4">
+      <h3 className="mb-2 font-semibold">Usage Example</h3>
+      <Code lang="ts" code={\`// Read from KV
+const value = await KV.get('key');\`} />
+    </Surface>
+  }
+  additionalContent={
+    <Surface className="p-4">
+      <h3 className="mb-2 font-semibold">Learn More</h3>
+      <p className="text-sm text-kumo-strong">
+        Check out our documentation to learn more about KV storage.
+      </p>
+    </Surface>
+  }
+>
+  <div className="space-y-4">
+    <Surface className="p-6">
+      <h4 className="mb-2 font-semibold">production-kv</h4>
+      <p className="text-sm text-kumo-strong">Created 2 days ago</p>
+    </Surface>
+  </div>
+</ResourceListPage>`}>
+      <ResourceListCompleteDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <p class="mb-4 text-kumo-strong">
+      ResourceListPage is a <strong>block</strong> - a CLI-installed component that you own and can customize.
+      Unlike regular components, blocks are copied into your project so you have full control over the code.
+    </p>
+    <div class="space-y-4">
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">1. Initialize Kumo config (first time only)</p>
+        <CodeBlock code={`npx @cloudflare/kumo init`} lang="bash" />
+      </div>
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">2. Install the block</p>
+        <CodeBlock code={`npx @cloudflare/kumo add ResourceListPage`} lang="bash" />
+      </div>
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">3. Import from your local path</p>
+        <CodeBlock code={`// The path depends on your kumo.json blocksDir setting
+// Default: src/components/kumo/
+import { ResourceListPage } from "./components/kumo/resource-list/resource-list";`} lang="tsx" />
+      </div>
+    </div>
+    <div class="mt-4">
+      <Callout type="info">
+        <strong>Why blocks?</strong> Blocks give you full ownership of the code, allowing you to customize
+        layouts to fit your specific needs. They're ideal for page-level patterns that often need project-specific modifications.
+      </Callout>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
+import { Surface } from "@cloudflare/kumo";
+import { DatabaseIcon } from "@phosphor-icons/react";
+
+export default function DatabasesPage() {
+  return (
+    <ResourceListPage
+      title="Databases"
+      description="Manage your database instances and configurations"
+      icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
+    >
+      <Surface className="p-6">
+        {/* Your resource list content */}
+      </Surface>
+    </ResourceListPage>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="mb-12">
+      <Heading level={3}>Basic</Heading>
+      <p class="mb-4 text-kumo-strong">A minimal resource list page with title, description, and icon.</p>
+      <ComponentExample code={`<ResourceListPage
+  title="Databases"
+  description="Manage your database instances and configurations"
+  icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
+>
+  <Surface className="p-6">
+    <p>Main content area - your resource list would go here</p>
+  </Surface>
+</ResourceListPage>`}>
+        <ResourceListBasicDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <div class="mb-12">
+      <Heading level={3}>With Usage Sidebar</Heading>
+      <p class="mb-4 text-kumo-strong">Include a sidebar with usage examples or quick start guides.</p>
+      <ComponentExample code={`<ResourceListPage
+  title="API Keys"
+  description="Create and manage API keys for your applications"
+  usage={
+    <Surface className="p-4">
+      <h3 className="mb-2 font-semibold">Quick Start</h3>
+      <p className="mb-3 text-sm text-kumo-strong">
+        Generate an API key to authenticate your requests
+      </p>
+      <Code
+        lang="bash"
+        code='curl -H "Authorization: Bearer YOUR_API_KEY" https://api.example.com'
+      />
+    </Surface>
+  }
+>
+  <Surface className="p-6">
+    <p>API keys list would appear here</p>
+  </Surface>
+</ResourceListPage>`}>
+        <ResourceListWithUsageDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Property</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">title</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3">Page title displayed at the top</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">description</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3">Page description below the title</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">icon</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3">Icon displayed next to the title</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">usage</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3">Sidebar content for usage examples or quick start guides</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">additionalContent</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3">Additional sidebar content (e.g., resources, links)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">children</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+            <td class="px-4 py-3">Main content area for the resource list</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">className</td>
+            <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3">Additional CSS classes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+</DocLayout>

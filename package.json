@@ -1,0 +1,50 @@
+{
+  "name": "kumo-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.22.0",
+  "engines": {
+    "node": "^24.12.0",
+    "pnpm": ">=10.21.0"
+  },
+  "scripts": {
+    "build": "pnpm --filter @cloudflare/kumo-docs-astro build",
+    "codegen": "pnpm --filter @cloudflare/kumo codegen",
+    "build:all": "pnpm -r build",
+    "changeset": "changeset",
+    "clean": "pnpm -r exec rm -rf dist build .astro .wrangler node_modules",
+    "dev": "pnpm codegen && pnpm --filter @cloudflare/kumo-docs-astro dev",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "lint": "pnpm --filter @cloudflare/kumo lint && oxlint --config .oxlintrc.json packages/*/src",
+    "lockfile-check": "pnpm install --no-frozen-lockfile && git diff --exit-code pnpm-lock.yaml",
+    "preview": "pnpm --filter @cloudflare/kumo-docs-astro preview",
+    "publish:beta": "bash ci/versioning/publish-beta.sh",
+    "deploy:kumo-docs-preview": "bash ci/versioning/deploy-kumo-docs-preview.sh",
+    "deploy:kumo-docs-staging": "bash ci/versioning/deploy-kumo-docs-staging.sh",
+    "ci:post-pr-report": "tsx ci/scripts/post-pr-report.ts",
+    "release": "pnpm build:all && changeset publish",
+    "release:beta": "changeset publish --no-git-tag --tag beta",
+    "release:production": "bash ci/versioning/release-production.sh",
+    "kumo": "node packages/kumo/dist/command-line/cli.js",
+    "typecheck": "pnpm -r typecheck",
+    "version": "changeset version",
+    "version:beta": "./ci/versioning/version-beta.sh"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "lefthook",
+      "workerd"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.29.7",
+    "@octokit/rest": "22.0.1",
+    "@types/node": "catalog:",
+    "lefthook": "2.0.12",
+    "oxlint": "catalog:",
+    "prettier": "3.6.2",
+    "prettier-plugin-tailwindcss": "0.7.1",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

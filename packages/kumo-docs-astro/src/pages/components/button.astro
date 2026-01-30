@@ -1,0 +1,189 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  ButtonBasicDemo,
+  ButtonPrimaryDemo,
+  ButtonSecondaryDemo,
+  ButtonGhostDemo,
+  ButtonDestructiveDemo,
+  ButtonOutlineDemo,
+  ButtonSecondaryDestructiveDemo,
+  ButtonSizesDemo,
+  ButtonWithIconDemo,
+  ButtonIconOnlyDemo,
+  ButtonLoadingDemo,
+  ButtonDisabledDemo,
+} from "../../components/demos/ButtonDemo";
+---
+
+<DocLayout
+  title="Button"
+  description="Displays a button or a component that looks like a button."
+  sourceFile="components/button"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<Button variant="secondary">Button</Button>
+<Button variant="secondary" shape="square" icon={PlusIcon} />`}
+    >
+      <ButtonBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Button } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { Button } from "@cloudflare/kumo/components/button";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Button variant="secondary">Click me</Button>;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <!-- Variants -->
+    <div class="mb-12">
+      <Heading level={3}>Variants</Heading>
+
+      <div class="space-y-8">
+        <div>
+          <h4 class="mb-3 text-base font-medium">Primary</h4>
+          <ComponentExample code={`<Button variant="primary">Primary</Button>`}>
+            <ButtonPrimaryDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Secondary</h4>
+          <ComponentExample
+            code={`<Button variant="secondary">Secondary</Button>`}
+          >
+            <ButtonSecondaryDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Ghost</h4>
+          <ComponentExample code={`<Button variant="ghost">Ghost</Button>`}>
+            <ButtonGhostDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Destructive</h4>
+          <ComponentExample
+            code={`<Button variant="destructive">Destructive</Button>`}
+          >
+            <ButtonDestructiveDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Outline</h4>
+          <ComponentExample code={`<Button variant="outline">Outline</Button>`}>
+            <ButtonOutlineDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Secondary Destructive</h4>
+          <ComponentExample
+            code={`<Button variant="secondary-destructive">Secondary Destructive</Button>`}
+          >
+            <ButtonSecondaryDestructiveDemo client:visible />
+          </ComponentExample>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sizes -->
+    <div class="mb-12">
+      <Heading level={3}>Sizes</Heading>
+      <ComponentExample
+        code={`<Button size="xs" variant="secondary">Extra Small</Button>
+<Button size="sm" variant="secondary">Small</Button>
+<Button size="base" variant="secondary">Base</Button>
+<Button size="lg" variant="secondary">Large</Button>`}
+      >
+        <ButtonSizesDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- With Icon -->
+    <div class="mb-12">
+      <Heading level={3}>With Icon</Heading>
+      <ComponentExample
+        code={`<Button variant="secondary" icon={PlusIcon}>
+  Create Worker
+</Button>`}
+      >
+        <ButtonWithIconDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Icon Only -->
+    <div class="mb-12">
+      <Heading level={3}>Icon Only</Heading>
+      <ComponentExample
+        code={`<Button variant="secondary" shape="square" icon={PlusIcon} />
+<Button variant="secondary" shape="circle" icon={PlusIcon} />`}
+      >
+        <ButtonIconOnlyDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Loading State -->
+    <div class="mb-12">
+      <Heading level={3}>Loading State</Heading>
+      <ComponentExample
+        code={`<Button variant="primary" loading>
+  Loading...
+</Button>`}
+      >
+        <ButtonLoadingDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Disabled State -->
+    <div class="mb-12">
+      <Heading level={3}>Disabled State</Heading>
+      <ComponentExample
+        code={`<Button variant="secondary" disabled>
+  Disabled
+</Button>`}
+      >
+        <ButtonDisabledDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Button" />
+  </ComponentSection>
+</DocLayout>

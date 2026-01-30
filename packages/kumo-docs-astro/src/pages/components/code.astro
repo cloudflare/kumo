@@ -1,0 +1,131 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { CodeDemo, CodeTypeScriptDemo, CodeBashDemo, CodeJsonDemo, CodeWithValuesDemo } from "../../components/demos/CodeDemo";
+
+const heroCode = `<CodeBlock
+  lang="tsx"
+  code={\`const greeting = "Hello, World!";
+console.log(greeting);\`}
+/>`;
+
+const usageCode = `import { CodeBlock } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <CodeBlock 
+      lang="tsx" 
+      code={\`const hello = "world";\`} 
+    />
+  );
+}`;
+
+const tsCode = `<CodeBlock
+  lang="tsx"
+  code={\`interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const user: User = {
+  id: "1",
+  name: "John Doe",
+  email: "john@example.com"
+};\`}
+/>`;
+
+const bashCode = `<CodeBlock
+  lang="bash"
+  code={\`npm install @cloudflare/kumo
+pnpm add @cloudflare/kumo\`}
+/>`;
+
+const jsonCode = `<CodeBlock
+  lang="jsonc"
+  code={\`{
+  "name": "kumo",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "^19.0.0"
+  }
+}\`}
+/>`;
+
+const templateValuesCode = `<Code 
+  lang="bash" 
+  code="export API_KEY={{apiKey}}" 
+  values={{
+    apiKey: { value: "sk_live_123", highlight: true }
+  }}
+/>`;
+---
+
+<DocLayout
+  title="Code"
+  description="Syntax-highlighted code blocks with support for multiple languages."
+  sourceFile="components/code"
+>
+  <ComponentSection>
+    <ComponentExample code={heroCode}>
+      <CodeDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Code, CodeBlock } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { Code, CodeBlock } from "@cloudflare/kumo/components/code";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={usageCode} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>TypeScript</Heading>
+        <ComponentExample code={tsCode}>
+          <CodeTypeScriptDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Bash</Heading>
+        <ComponentExample code={bashCode}>
+          <CodeBashDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>JSON</Heading>
+        <ComponentExample code={jsonCode}>
+          <CodeJsonDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Template Values</Heading>
+    <p class="text-kumo-strong mb-4">Use the values prop to interpolate and highlight dynamic content.</p>
+    <ComponentExample code={templateValuesCode}>
+      <CodeWithValuesDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Code" />
+  </ComponentSection>
+</DocLayout>

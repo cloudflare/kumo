@@ -1,0 +1,155 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { TextVariantsDemo } from "../../components/demos/TextDemo";
+---
+
+<DocLayout
+  title="Text"
+  description="A typography component for various heading and copy styles."
+  sourceFile="components/text"
+>
+  <ComponentSection>
+    <ComponentExample code={`<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="heading1">Heading 1</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-3xl (30px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="heading2">Heading 2</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-2xl (24px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="heading3">Heading 3</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-lg (16px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text>Body</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-base (14px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text bold>Body bold</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-base (14px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text size="lg">Body lg</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-lg (16px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text size="sm">Body sm</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-sm (13px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text size="xs">Body xs</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-xs (12px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="secondary">Body secondary</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-base (14px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="mono">Monospace</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-sm (13px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="mono" size="lg">
+      Monospace lg
+    </Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-base (14px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="mono-secondary">Monospace secondary</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-sm (13px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="success">Success</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-base (14px)
+    </p>
+  </div>
+  <div className="flex flex-col gap-1 rounded-lg border border-kumo-line bg-kumo-base p-4 justify-end">
+    <Text variant="error">Error</Text>
+    <p className="text-xs text-kumo-subtle font-mono">
+      text-base (14px)
+    </p>
+  </div>
+</div>`}>
+      <TextVariantsDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Text } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { Text } from "@cloudflare/kumo/components/text";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Text } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Text>Your content here</Text>;
+}`} lang="tsx" />
+    <section class="mt-8 space-y-4">
+      <h3 class="text-lg font-semibold">Restrictions</h3>
+      <p class="text-kumo-strong">
+        The <code class="text-sm">bold</code> and <code class="text-sm">size</code> props are intentionally
+        restricted to the <code class="text-sm">base</code>, <code class="text-sm">secondary</code>,
+        <code class="text-sm">success</code>, and <code class="text-sm">error</code> text variants.
+      </p>
+      <CodeBlock code={`<Text size="sm" bold>Body</Text>
+<Text variant="secondary" bold>Body secondary</Text>
+<Text variant="success" size="lg">Success</Text>
+<Text variant="error">Error</Text>`} lang="tsx" />
+      <p class="text-kumo-strong">
+        Monospace variants (<code class="text-sm">mono</code> and
+        <code class="text-sm">mono-secondary</code>) can only set <code class="text-sm">size</code> to
+        <code class="text-sm">lg</code> and cannot use the <code class="text-sm">bold</code> prop:
+      </p>
+      <CodeBlock code={`<Text variant="mono">Monospace</Text>
+<Text variant="mono" size="lg">Monospace</Text>
+<Text variant="mono" bold>Monospace</Text> // Doesn't compile`} lang="tsx" />
+      <p class="text-kumo-strong">
+        Headings (i.e. <code class="text-sm">h1</code>, <code class="text-sm">h2</code> and <code class="text-sm">h3</code>
+        variants) cannot use these props at all:
+      </p>
+      <CodeBlock code={`<Text variant="h1" bold>Heading 1</Text> // Doesn't compile`} lang="tsx" />
+    </section>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="Text" />
+  </ComponentSection>
+</DocLayout>

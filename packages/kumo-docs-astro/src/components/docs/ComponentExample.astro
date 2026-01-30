@@ -1,0 +1,20 @@
+---
+import ComponentPreview from "./ComponentPreview.astro";
+import CodeBlock from "./CodeBlock.astro";
+
+interface Props {
+  code: string;
+  lang?: "tsx" | "ts" | "jsx" | "js" | "bash" | "css";
+}
+
+const { code, lang = "tsx" } = Astro.props;
+---
+
+<div class="overflow-hidden rounded-lg">
+  <ComponentPreview>
+    <slot />
+  </ComponentPreview>
+  <div class="[&_.rounded-lg]:rounded-none [&_.rounded-lg]:border-t-0">
+    <CodeBlock code={code} lang={lang} />
+  </div>
+</div>

@@ -1,0 +1,440 @@
+{
+  "name": "@cloudflare/kumo",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Kumo - Cloudflare's component library for building modern web applications",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudflare/kumo.git",
+    "directory": "packages/kumo"
+  },
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "cloudflare",
+    "design-system"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/src/index.d.ts",
+  "bin": {
+    "kumo": "./dist/command-line/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components/badge": {
+      "types": "./dist/src/components/badge/index.d.ts",
+      "import": "./dist/components/badge.js"
+    },
+    "./components/banner": {
+      "types": "./dist/src/components/banner/index.d.ts",
+      "import": "./dist/components/banner.js"
+    },
+    "./components/button": {
+      "types": "./dist/src/components/button/index.d.ts",
+      "import": "./dist/components/button.js"
+    },
+    "./components/date-range-picker": {
+      "types": "./dist/src/components/date-range-picker/index.d.ts",
+      "import": "./dist/components/date-range-picker.js"
+    },
+    "./components/checkbox": {
+      "types": "./dist/src/components/checkbox/index.d.ts",
+      "import": "./dist/components/checkbox.js"
+    },
+    "./components/clipboard-text": {
+      "types": "./dist/src/components/clipboard-text/index.d.ts",
+      "import": "./dist/components/clipboard-text.js"
+    },
+    "./components/code": {
+      "types": "./dist/src/components/code/index.d.ts",
+      "import": "./dist/components/code.js"
+    },
+    "./components/collapsible": {
+      "types": "./dist/src/components/collapsible/index.d.ts",
+      "import": "./dist/components/collapsible.js"
+    },
+    "./components/combobox": {
+      "types": "./dist/src/components/combobox/index.d.ts",
+      "import": "./dist/components/combobox.js"
+    },
+    "./components/dialog": {
+      "types": "./dist/src/components/dialog/index.d.ts",
+      "import": "./dist/components/dialog.js"
+    },
+    "./components/dropdown": {
+      "types": "./dist/src/components/dropdown/index.d.ts",
+      "import": "./dist/components/dropdown.js"
+    },
+    "./components/input": {
+      "types": "./dist/src/components/input/index.d.ts",
+      "import": "./dist/components/input.js"
+    },
+    "./components/layer-card": {
+      "types": "./dist/src/components/layer-card/index.d.ts",
+      "import": "./dist/components/layer-card.js"
+    },
+    "./components/label": {
+      "types": "./dist/src/components/label/index.d.ts",
+      "import": "./dist/components/label.js"
+    },
+    "./components/loader": {
+      "types": "./dist/src/components/loader/index.d.ts",
+      "import": "./dist/components/loader.js"
+    },
+    "./components/menubar": {
+      "types": "./dist/src/components/menubar/index.d.ts",
+      "import": "./dist/components/menubar.js"
+    },
+    "./components/meter": {
+      "types": "./dist/src/components/meter/index.d.ts",
+      "import": "./dist/components/meter.js"
+    },
+    "./components/pagination": {
+      "types": "./dist/src/components/pagination/index.d.ts",
+      "import": "./dist/components/pagination.js"
+    },
+    "./components/select": {
+      "types": "./dist/src/components/select/index.d.ts",
+      "import": "./dist/components/select.js"
+    },
+    "./components/sensitive-input": {
+      "types": "./dist/src/components/sensitive-input/index.d.ts",
+      "import": "./dist/components/sensitive-input.js"
+    },
+    "./components/surface": {
+      "types": "./dist/src/components/surface/index.d.ts",
+      "import": "./dist/components/surface.js"
+    },
+    "./components/switch": {
+      "types": "./dist/src/components/switch/index.d.ts",
+      "import": "./dist/components/switch.js"
+    },
+    "./components/table": {
+      "types": "./dist/src/components/table/index.d.ts",
+      "import": "./dist/components/table.js"
+    },
+    "./components/tabs": {
+      "types": "./dist/src/components/tabs/index.d.ts",
+      "import": "./dist/components/tabs.js"
+    },
+    "./components/text": {
+      "types": "./dist/src/components/text/index.d.ts",
+      "import": "./dist/components/text.js"
+    },
+    "./components/toast": {
+      "types": "./dist/src/components/toast/index.d.ts",
+      "import": "./dist/components/toast.js"
+    },
+    "./components/tooltip": {
+      "types": "./dist/src/components/tooltip/index.d.ts",
+      "import": "./dist/components/tooltip.js"
+    },
+    "./components/popover": {
+      "types": "./dist/src/components/popover/index.d.ts",
+      "import": "./dist/components/popover.js"
+    },
+    "./ai/component-registry.json": {
+      "import": "./ai/component-registry.json"
+    },
+    "./components/radio": {
+      "types": "./dist/src/components/radio/index.d.ts",
+      "import": "./dist/components/radio.js"
+    },
+    "./components/command-palette": {
+      "types": "./dist/src/components/command-palette/index.d.ts",
+      "import": "./dist/components/command-palette.js"
+    },
+    "./components/link": {
+      "types": "./dist/src/components/link/index.d.ts",
+      "import": "./dist/components/link.js"
+    },
+    "./components/breadcrumbs": {
+      "types": "./dist/src/components/breadcrumbs/index.d.ts",
+      "import": "./dist/components/breadcrumbs.js"
+    },
+    "./components/empty": {
+      "types": "./dist/src/components/empty/index.d.ts",
+      "import": "./dist/components/empty.js"
+    },
+    "./components/field": {
+      "types": "./dist/src/components/field/index.d.ts",
+      "import": "./dist/components/field.js"
+    },
+    "./components/grid": {
+      "types": "./dist/src/components/grid/index.d.ts",
+      "import": "./dist/components/grid.js"
+    },
+    "./utils": {
+      "types": "./dist/src/utils/index.d.ts",
+      "import": "./dist/utils.js"
+    },
+    "./primitives": {
+      "types": "./dist/src/primitives/index.d.ts",
+      "import": "./dist/primitives.js"
+    },
+    "./primitives/accordion": {
+      "types": "./dist/src/primitives/accordion.d.ts",
+      "import": "./dist/primitives/accordion.js"
+    },
+    "./primitives/alert-dialog": {
+      "types": "./dist/src/primitives/alert-dialog.d.ts",
+      "import": "./dist/primitives/alert-dialog.js"
+    },
+    "./primitives/autocomplete": {
+      "types": "./dist/src/primitives/autocomplete.d.ts",
+      "import": "./dist/primitives/autocomplete.js"
+    },
+    "./primitives/avatar": {
+      "types": "./dist/src/primitives/avatar.d.ts",
+      "import": "./dist/primitives/avatar.js"
+    },
+    "./primitives/button": {
+      "types": "./dist/src/primitives/button.d.ts",
+      "import": "./dist/primitives/button.js"
+    },
+    "./primitives/checkbox": {
+      "types": "./dist/src/primitives/checkbox.d.ts",
+      "import": "./dist/primitives/checkbox.js"
+    },
+    "./primitives/checkbox-group": {
+      "types": "./dist/src/primitives/checkbox-group.d.ts",
+      "import": "./dist/primitives/checkbox-group.js"
+    },
+    "./primitives/collapsible": {
+      "types": "./dist/src/primitives/collapsible.d.ts",
+      "import": "./dist/primitives/collapsible.js"
+    },
+    "./primitives/combobox": {
+      "types": "./dist/src/primitives/combobox.d.ts",
+      "import": "./dist/primitives/combobox.js"
+    },
+    "./primitives/context-menu": {
+      "types": "./dist/src/primitives/context-menu.d.ts",
+      "import": "./dist/primitives/context-menu.js"
+    },
+    "./primitives/dialog": {
+      "types": "./dist/src/primitives/dialog.d.ts",
+      "import": "./dist/primitives/dialog.js"
+    },
+    "./primitives/direction-provider": {
+      "types": "./dist/src/primitives/direction-provider.d.ts",
+      "import": "./dist/primitives/direction-provider.js"
+    },
+    "./primitives/field": {
+      "types": "./dist/src/primitives/field.d.ts",
+      "import": "./dist/primitives/field.js"
+    },
+    "./primitives/fieldset": {
+      "types": "./dist/src/primitives/fieldset.d.ts",
+      "import": "./dist/primitives/fieldset.js"
+    },
+    "./primitives/form": {
+      "types": "./dist/src/primitives/form.d.ts",
+      "import": "./dist/primitives/form.js"
+    },
+    "./primitives/input": {
+      "types": "./dist/src/primitives/input.d.ts",
+      "import": "./dist/primitives/input.js"
+    },
+    "./primitives/menu": {
+      "types": "./dist/src/primitives/menu.d.ts",
+      "import": "./dist/primitives/menu.js"
+    },
+    "./primitives/menubar": {
+      "types": "./dist/src/primitives/menubar.d.ts",
+      "import": "./dist/primitives/menubar.js"
+    },
+    "./primitives/meter": {
+      "types": "./dist/src/primitives/meter.d.ts",
+      "import": "./dist/primitives/meter.js"
+    },
+    "./primitives/navigation-menu": {
+      "types": "./dist/src/primitives/navigation-menu.d.ts",
+      "import": "./dist/primitives/navigation-menu.js"
+    },
+    "./primitives/number-field": {
+      "types": "./dist/src/primitives/number-field.d.ts",
+      "import": "./dist/primitives/number-field.js"
+    },
+    "./primitives/popover": {
+      "types": "./dist/src/primitives/popover.d.ts",
+      "import": "./dist/primitives/popover.js"
+    },
+    "./primitives/preview-card": {
+      "types": "./dist/src/primitives/preview-card.d.ts",
+      "import": "./dist/primitives/preview-card.js"
+    },
+    "./primitives/progress": {
+      "types": "./dist/src/primitives/progress.d.ts",
+      "import": "./dist/primitives/progress.js"
+    },
+    "./primitives/radio": {
+      "types": "./dist/src/primitives/radio.d.ts",
+      "import": "./dist/primitives/radio.js"
+    },
+    "./primitives/radio-group": {
+      "types": "./dist/src/primitives/radio-group.d.ts",
+      "import": "./dist/primitives/radio-group.js"
+    },
+    "./primitives/scroll-area": {
+      "types": "./dist/src/primitives/scroll-area.d.ts",
+      "import": "./dist/primitives/scroll-area.js"
+    },
+    "./primitives/select": {
+      "types": "./dist/src/primitives/select.d.ts",
+      "import": "./dist/primitives/select.js"
+    },
+    "./primitives/separator": {
+      "types": "./dist/src/primitives/separator.d.ts",
+      "import": "./dist/primitives/separator.js"
+    },
+    "./primitives/slider": {
+      "types": "./dist/src/primitives/slider.d.ts",
+      "import": "./dist/primitives/slider.js"
+    },
+    "./primitives/switch": {
+      "types": "./dist/src/primitives/switch.d.ts",
+      "import": "./dist/primitives/switch.js"
+    },
+    "./primitives/tabs": {
+      "types": "./dist/src/primitives/tabs.d.ts",
+      "import": "./dist/primitives/tabs.js"
+    },
+    "./primitives/toast": {
+      "types": "./dist/src/primitives/toast.d.ts",
+      "import": "./dist/primitives/toast.js"
+    },
+    "./primitives/toggle": {
+      "types": "./dist/src/primitives/toggle.d.ts",
+      "import": "./dist/primitives/toggle.js"
+    },
+    "./primitives/toggle-group": {
+      "types": "./dist/src/primitives/toggle-group.d.ts",
+      "import": "./dist/primitives/toggle-group.js"
+    },
+    "./primitives/toolbar": {
+      "types": "./dist/src/primitives/toolbar.d.ts",
+      "import": "./dist/primitives/toolbar.js"
+    },
+    "./primitives/tooltip": {
+      "types": "./dist/src/primitives/tooltip.d.ts",
+      "import": "./dist/primitives/tooltip.js"
+    },
+    "./registry": {
+      "types": "./dist/src/registry/index.d.ts",
+      "import": "./dist/registry.js"
+    },
+    "./catalog": {
+      "types": "./dist/src/catalog/index.d.ts",
+      "import": "./dist/catalog.js"
+    },
+    "./ai/schemas": {
+      "types": "./ai/schemas.ts",
+      "import": "./ai/schemas.ts"
+    },
+    "./registry/component-registry.json": "./ai/component-registry.json",
+    "./registry/component-registry.md": "./ai/component-registry.md",
+    "./styles/tailwind": "./dist/styles/kumo.css",
+    "./styles/standalone": "./dist/styles/kumo-standalone.css",
+    "./styles": "./dist/styles/kumo.css",
+    "./styles/*": "./dist/styles/*.css",
+    "./scripts/theme-generator/config": "./scripts/theme-generator/config.ts",
+    "./scripts/theme-generator/types": "./scripts/theme-generator/types.ts"
+  },
+  "files": [
+    "dist",
+    "ai",
+    "templates",
+    "scripts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": [
+    "*.css",
+    "dist/styles/*.css"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "prepublish": "pnpm run clean && pnpm run build && pnpm run test:unit",
+    "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
+    "dev": "vite build --watch --mode development",
+    "new:component": "plop component",
+    "clean": "rm -rf dist",
+    "codegen": "pnpm run codegen:primitives && pnpm run codegen:themes && pnpm run codegen:registry",
+    "codegen:themes": "tsx scripts/theme-generator/index.ts",
+    "migrate:tokens": "tsx scripts/theme-generator/migrate.ts",
+    "codegen:primitives": "tsx scripts/generate-primitives.ts",
+    "codegen:registry": "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos && tsx scripts/component-registry/index.ts",
+    "lint": "pnpm run lint:oxlint && pnpm run lint:eslint",
+    "lint:oxlint": "oxlint src/** --type-aware",
+    "lint:eslint": "eslint src/",
+    "test": "CI=true vitest run --project=unit",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:unit": "vitest run --project=unit",
+    "test:coverage": "vitest run --coverage",
+    "test:exports": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
+    "typecheck": "tsc --noEmit",
+    "validate:build": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
+    "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts"
+  },
+  "peerDependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "zod": "^3.24.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.0.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "catalog:",
+    "@tailwindcss/vite": "catalog:",
+    "@testing-library/react": "16.3.1",
+    "@testing-library/user-event": "14.6.1",
+    "@types/glob": "9.0.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/browser": "catalog:",
+    "@vitest/ui": "catalog:",
+    "esbuild": "0.27.2",
+    "eslint": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "glob": "13.0.0",
+    "happy-dom": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "playwright": "catalog:",
+    "plop": "4.0.4",
+    "rollup-plugin-preserve-directives": "0.4.0",
+    "tailwindcss": "catalog:",
+    "ts-json-schema-generator": "2.4.0",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.18.1",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:",
+    "zod": "^3.24.0"
+  }
+}

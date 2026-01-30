@@ -1,0 +1,356 @@
+---
+import DocLayout from "../layouts/DocLayout.astro";
+import ComponentSection from "../components/docs/ComponentSection.astro";
+import CodeBlock from "../components/docs/CodeBlock.astro";
+import Callout from "../components/docs/Callout.astro";
+---
+
+<DocLayout
+  title="Figma Resources"
+  description="Generate Figma components from Kumo definitions using the Figma plugin."
+>
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Kumo Figma Plugin</h2>
+    <p class="mb-4 text-kumo-strong">
+      The Kumo Figma plugin generates production-quality Figma components directly from Kumo component definitions. 
+      This keeps design and code in sync&mdash;components in Figma are generated from the same source of truth 
+      as the React components you use in code.
+    </p>
+    <p class="mb-4 text-kumo-strong">
+      The plugin reads from <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">component-registry.json</code> and 
+      creates Figma ComponentSets with proper auto-layout, semantic color variable bindings, and all variant combinations.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Local Development Setup</h2>
+    <p class="mb-4 text-kumo-strong">
+      Follow these steps to build and test the Figma plugin locally on any Figma file.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">1. Build the Plugin</h3>
+    <p class="mb-3 text-kumo-strong">From the repository root, run:</p>
+    <CodeBlock
+      code={`pnpm --filter @cloudflare/kumo-figma build`}
+      lang="bash"
+    />
+    <p class="mt-3 text-sm text-kumo-subtle">
+      This generates theme data, loader data, and icons, then bundles the plugin code into <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">src/code.js</code>.
+    </p>
+
+    <h3 class="mb-3 mt-8 text-xl font-semibold">2. Import the Plugin in Figma</h3>
+    <p class="mb-4 text-kumo-strong">
+      Open Figma Desktop (plugin development requires the desktop app, not the web version).
+    </p>
+    <ol class="mb-4 list-inside list-decimal space-y-3 text-kumo-strong">
+      <li>
+        Go to <strong>Plugins</strong> in the menu bar
+      </li>
+      <li>
+        Select <strong>Development</strong> &rarr; <strong>Import plugin from manifest...</strong>
+      </li>
+      <li>
+        Navigate to <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">packages/kumo-figma/src/manifest.json</code> in your local kumo repository
+      </li>
+    </ol>
+
+    <h3 class="mb-3 mt-8 text-xl font-semibold">3. Run the Plugin</h3>
+    <p class="mb-4 text-kumo-strong">
+      Once imported, the plugin appears in your development plugins list.
+    </p>
+    <ol class="mb-4 list-inside list-decimal space-y-3 text-kumo-strong">
+      <li>
+        Open any Figma file (or the Kumo design file if you have access)
+      </li>
+      <li>
+        Go to <strong>Plugins</strong> &rarr; <strong>Development</strong> &rarr; <strong>Kumo UI Kit Generator</strong>
+      </li>
+    </ol>
+
+    <h3 class="mb-3 mt-8 text-xl font-semibold">4. Use the Plugin UI</h3>
+    <p class="mb-4 text-kumo-strong">
+      The plugin opens a panel where you can select which components to generate. 
+      Click the component buttons to generate their Figma equivalents.
+    </p>
+
+    <Callout type="info">
+      <strong>Note:</strong> For components to bind to semantic color variables correctly, 
+      the target Figma file must have the <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">kumo-colors</code> variable collection. 
+      Run the token sync script first if you're setting up a new file.
+    </Callout>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Environment Variables</h2>
+    <p class="mb-4 text-kumo-strong">
+      The token sync script requires environment variables to authenticate with the Figma API 
+      and target the correct file.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Setup</h3>
+    <ol class="mb-4 list-inside list-decimal space-y-3 text-kumo-strong">
+      <li>
+        Get a <a href="https://www.figma.com/developers/api#authentication" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">Figma personal access token</a> from Figma Settings &rarr; Personal Access Tokens
+      </li>
+      <li>
+        Copy the environment template:
+        <CodeBlock
+          code={`cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env`}
+          lang="bash"
+        />
+      </li>
+      <li>
+        Configure the environment variables in <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">.env</code>
+      </li>
+    </ol>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Required Variables</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Variable</th>
+            <th class="px-4 py-3 text-left font-semibold">Required</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">FIGMA_TOKEN</td>
+            <td class="px-4 py-3">Yes</td>
+            <td class="px-4 py-3">Your Figma personal access token for API authentication</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">FIGMA_FILE_KEY</td>
+            <td class="px-4 py-3">Yes</td>
+            <td class="px-4 py-3">
+              The file key from your Figma URL: <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">figma.com/file/{'{FILE_KEY}'}/...</code>
+            </td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">FIGMA_COLLECTION_NAME</td>
+            <td class="px-4 py-3">No</td>
+            <td class="px-4 py-3">
+              Variable collection name in Figma. Defaults to <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">kumo-colors</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4">
+      <CodeBlock
+        code={`# packages/kumo-figma/scripts/.env
+FIGMA_TOKEN=figd_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+FIGMA_FILE_KEY=sKKZc6pC6W1TtzWBLxDGSU
+FIGMA_COLLECTION_NAME=kumo-colors`}
+        lang="bash"
+      />
+    </div>
+
+    <Callout type="warning">
+      <strong>Security:</strong> Never commit your Figma token. The <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">.env</code> file is gitignored.
+    </Callout>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Token Sync</h2>
+    <p class="mb-4 text-kumo-strong">
+      Before generating components, sync Kumo's semantic color tokens to Figma. 
+      This creates the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">kumo-colors</code> variable collection 
+      that components bind to for consistent theming.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Run Token Sync</h3>
+    <CodeBlock
+      code={`pnpm --filter @cloudflare/kumo-figma figma:sync`}
+      lang="bash"
+    />
+    <p class="mt-3 text-sm text-kumo-subtle">
+      This parses tokens from <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">theme-kumo.css</code>, 
+      resolves <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">light-dark()</code> values for both modes, 
+      and pushes them to Figma via the Variables API.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">What Gets Generated</h2>
+    <p class="mb-4 text-kumo-strong">
+      The Kumo Figma workflow produces two types of output in your target Figma file:
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">1. Figma Variables (Token Sync)</h3>
+    <p class="mb-4 text-kumo-strong">
+      The token sync script creates a <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">kumo-colors</code> variable collection containing:
+    </p>
+    <ul class="mb-4 list-inside list-disc space-y-2 text-kumo-strong">
+      <li><strong>Color variables</strong> &mdash; All semantic tokens like <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">color-primary</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">color-surface</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">text-color-muted</code></li>
+      <li><strong>Light and dark modes</strong> &mdash; Each variable has values for both color schemes</li>
+      <li><strong>Theme overrides</strong> &mdash; Extended modes like FedRAMP with their specific color overrides</li>
+    </ul>
+    <p class="text-sm text-kumo-subtle">
+      Variables appear in Figma's Variables panel and can be used throughout your design file. 
+      When you switch modes, all bound colors update automatically.
+    </p>
+
+    <h3 class="mb-3 mt-8 text-xl font-semibold">2. Figma Components (Plugin)</h3>
+    <p class="mb-4 text-kumo-strong">
+      The plugin generates a <strong>"ui kit"</strong> page containing ComponentSets for each Kumo component:
+    </p>
+    <ul class="mb-4 list-inside list-disc space-y-2 text-kumo-strong">
+      <li><strong>ComponentSets with variants</strong> &mdash; Each component (Button, Badge, Input, etc.) becomes a ComponentSet with all its variant combinations</li>
+      <li><strong>Variable bindings</strong> &mdash; Fills, strokes, and text colors are bound to <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">kumo-colors</code> variables, not hardcoded values</li>
+      <li><strong>Auto-layout</strong> &mdash; Components use Figma auto-layout matching the CSS flexbox behavior</li>
+      <li><strong>Proper sizing</strong> &mdash; Spacing, padding, border-radius, and font sizes match the code implementation</li>
+    </ul>
+
+    <div class="mt-4 rounded-lg border border-kumo-line bg-kumo-base p-4">
+      <h4 class="mb-2 font-semibold text-kumo-default">Currently Generated Components (30+)</h4>
+      <p class="text-sm text-kumo-strong">
+        Badge, Banner, Breadcrumbs, Button, Checkbox, ClipboardText, Code, CodeBlock, Collapsible, 
+        Combobox, CommandPalette, DateRangePicker, Dialog, Dropdown, Empty, Input, InputArea, 
+        Label, LayerCard, LinkButton, Loader, MenuBar, Meter, Pagination, Radio, RefreshButton, 
+        Select, SensitiveInput, Surface, Switch, Table, Tabs, Text, Toast, Tooltip
+      </p>
+    </div>
+
+    <h3 class="mb-3 mt-8 text-xl font-semibold">Destructive Sync</h3>
+    <p class="text-kumo-strong">
+      The plugin uses <strong>destructive sync</strong>&mdash;it purges all existing generated content and recreates 
+      everything fresh on each run. This ensures the Figma file always matches the current state of the codebase. 
+      Don't manually edit generated components; your changes will be overwritten on the next sync.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Complete Workflow</h2>
+    <p class="mb-4 text-kumo-strong">
+      The typical workflow when updating components:
+    </p>
+    <CodeBlock
+      code={`# 1. Make changes to Kumo components
+# ...edit packages/kumo/src/components/...
+
+# 2. Regenerate component registry
+pnpm --filter @cloudflare/kumo codegen:registry
+
+# 3. Sync tokens to Figma (if colors changed)
+pnpm --filter @cloudflare/kumo-figma figma:sync
+
+# 4. Build the plugin
+pnpm --filter @cloudflare/kumo-figma build
+
+# 5. Run in Figma: Plugins > Development > Kumo UI Kit Generator`}
+      lang="bash"
+    />
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Plugin Architecture</h2>
+    <p class="mb-4 text-kumo-strong">
+      The plugin is structured as follows:
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="px-4 py-3 text-left font-semibold">Directory</th>
+            <th class="px-4 py-3 text-left font-semibold">Purpose</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-strong">
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">src/code.ts</td>
+            <td class="px-4 py-3">Main plugin entry point, orchestrates generators</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">src/ui.html</td>
+            <td class="px-4 py-3">Plugin UI (component selection panel)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">src/generators/</td>
+            <td class="px-4 py-3">30+ component generators (badge.ts, button.ts, etc.)</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">src/parsers/</td>
+            <td class="px-4 py-3">Tailwind-to-Figma converters, registry parsing</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">scripts/</td>
+            <td class="px-4 py-3">Token sync script for Figma Variables API</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Adding a New Component Generator</h2>
+    <p class="mb-4 text-kumo-strong">
+      When you add a new component to Kumo, create a corresponding Figma generator:
+    </p>
+    <ol class="mb-4 list-inside list-decimal space-y-3 text-kumo-strong">
+      <li>
+        Create <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">src/generators/yourcomponent.ts</code>
+      </li>
+      <li>
+        Import shared utilities from <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">shared.ts</code>
+      </li>
+      <li>
+        Register in the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">GENERATORS</code> array in <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">code.ts</code>
+      </li>
+      <li>
+        Run <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">pnpm --filter @cloudflare/kumo-figma validate</code> to verify drift detection passes
+      </li>
+    </ol>
+
+    <p class="mb-4 text-kumo-strong">
+      If a component doesn't need Figma representation (utility or layout-only), add it to 
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">EXCLUDED_COMPONENTS</code> in <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">drift-detection.test.ts</code>.
+    </p>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Troubleshooting</h2>
+    <div class="space-y-6">
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">"kumo-colors collection not found"</h3>
+        <p class="text-kumo-strong">
+          The target Figma file needs the variable collection. Run the token sync script first:
+        </p>
+        <CodeBlock
+          code={`pnpm --filter @cloudflare/kumo-figma figma:sync`}
+          lang="bash"
+        />
+      </div>
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">"Variable not found: color-primary"</h3>
+        <p class="text-kumo-strong">
+          Variable names must match the kumo-colors collection. Verify tokens synced correctly by checking the Variables panel in Figma.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">"Font not found"</h3>
+        <p class="text-kumo-strong">
+          The plugin uses Inter font, which is a default Figma font. Ensure you have it available in your Figma fonts.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">Plugin not appearing in menu</h3>
+        <p class="text-kumo-strong">
+          Make sure you're using Figma Desktop (not web) and that you imported the manifest from the correct path: 
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">packages/kumo-figma/src/manifest.json</code>
+        </p>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Related</h2>
+    <ul class="list-inside list-disc space-y-2 text-kumo-strong">
+      <li><a href="/colors" class="text-kumo-link hover:underline">Colors</a> &mdash; Semantic color token reference</li>
+      <li><a href="/registry" class="text-kumo-link hover:underline">Registry</a> &mdash; Component registry that the plugin reads from</li>
+      <li><a href="/contributing" class="text-kumo-link hover:underline">Contributing</a> &mdash; Adding new components and generators</li>
+    </ul>
+  </ComponentSection>
+</DocLayout>

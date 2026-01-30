@@ -1,0 +1,67 @@
+---
+import DocLayout from "../layouts/DocLayout.astro";
+import ComponentSection from "../components/docs/ComponentSection.astro";
+import CodeBlock from "../components/docs/CodeBlock.astro";
+import { CLITerminal } from "../components/demos/CLIDemo";
+---
+
+<DocLayout
+  title="CLI"
+  description="Access component documentation and install blocks from your terminal."
+>
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Installation</h2>
+    <p class="mb-4 text-kumo-strong">
+      The Kumo CLI is available via npx. No installation required.
+    </p>
+    <CodeBlock code="npx @cloudflare/kumo help" lang="bash" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Commands</h2>
+    <div class="space-y-4">
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">Blocks</h3>
+        <p class="mb-3 text-kumo-strong">
+          Install copy-paste blocks into your project for full customization.
+        </p>
+        <CodeBlock
+          code={`# Initialize kumo.json configuration
+npx @cloudflare/kumo init
+
+# List all available blocks
+npx @cloudflare/kumo blocks
+
+# Install a block to your project
+npx @cloudflare/kumo add PageHeader`}
+          lang="bash"
+        />
+      </div>
+      <div>
+        <h3 class="mb-2 text-lg font-semibold">Component Registry</h3>
+        <p class="mb-3 text-kumo-strong">
+          Access component documentation directly from your terminal.
+        </p>
+        <CodeBlock
+          code={`# List all Kumo components with categories
+npx @cloudflare/kumo ls
+
+# Get detailed documentation for a component
+npx @cloudflare/kumo doc Button
+
+# Get documentation for all components
+npx @cloudflare/kumo docs`}
+          lang="bash"
+        />
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Try it out</h2>
+    <p class="mb-4 text-kumo-strong">
+      Type commands in the interactive terminal below to explore the CLI.
+    </p>
+    <CLITerminal client:load />
+  </ComponentSection>
+</DocLayout>

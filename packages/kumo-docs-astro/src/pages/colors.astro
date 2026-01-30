@@ -1,0 +1,159 @@
+---
+import DocLayout from "../layouts/DocLayout.astro";
+import ComponentSection from "../components/docs/ComponentSection.astro";
+import CodeBlock from "../components/docs/CodeBlock.astro";
+import Callout from "../components/docs/Callout.astro";
+import { TailwindColorTokens } from "../components/demos/ColorsDemo";
+---
+
+<DocLayout
+  title="Colors"
+  description="Kumo uses semantic color tokens that automatically adapt to light and dark mode. Use these classes in your Tailwind CSS instead of raw color values."
+>
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Usage</h2>
+    <p class="mb-4 text-kumo-strong">
+      Always use semantic tokens instead of raw Tailwind colors. This ensures your UI
+      automatically adapts to light and dark mode.
+    </p>
+    <div class="space-y-4">
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">Correct</p>
+        <CodeBlock
+          code={`<div className="bg-kumo-base text-kumo-default border-kumo-line">
+  <button className="bg-kumo-brand text-white">Primary</button>
+  <button className="bg-kumo-control text-kumo-default">Secondary</button>
+</div>`}
+          lang="tsx"
+        />
+      </div>
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">Incorrect</p>
+        <CodeBlock
+          code={`<!-- Never use raw Tailwind colors -->
+<div className="bg-white dark:bg-gray-900 text-black dark:text-white">
+  <button className="bg-blue-500">Primary</button>
+</div>`}
+          lang="tsx"
+        />
+      </div>
+    </div>
+    <div class="mt-6">
+      <Callout type="warning">
+        <strong>Lint rules enforce this:</strong> The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">no-primitive-colors</code> 
+        rule will flag any raw Tailwind colors like <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">bg-blue-500</code>.
+      </Callout>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Mode</h2>
+    <p class="mb-4 text-kumo-strong">
+      Set <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">data-mode</code> on a parent element to control light/dark mode.
+      Never use Tailwind's <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">dark:</code> variant—semantic tokens handle dark mode automatically via CSS <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">light-dark()</code>.
+    </p>
+    <CodeBlock
+      code={`// Set mode on html or body
+<html data-mode="light">  // Light mode
+<html data-mode="dark">   // Dark mode
+
+// Components automatically adapt - no dark: variants needed
+<div className="bg-kumo-base text-kumo-default" />`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Themes</h2>
+    <p class="mb-4 text-kumo-strong">
+      Themes override semantic token values while preserving the same token names.
+      Set <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">data-theme</code> on a parent element to apply a theme.
+    </p>
+    
+    <div class="mb-6">
+      <h3 class="mb-2 text-lg font-semibold">Available Themes</h3>
+      <ul class="list-inside list-disc space-y-1 text-kumo-strong">
+        <li><code class="rounded bg-kumo-control px-1 py-0.5 text-sm">kumo</code> — Default theme (no attribute needed)</li>
+        <li><code class="rounded bg-kumo-control px-1 py-0.5 text-sm">fedramp</code> — Government compliance styling</li>
+      </ul>
+    </div>
+
+    <CodeBlock
+      code={`// Apply a theme to a section or the whole app
+<div data-theme="fedramp">
+  {/* All Kumo components inside use fedramp token overrides */}
+  <Button>FedRAMP Styled</Button>
+</div>
+
+// Themes work with both light and dark mode
+<html data-mode="dark" data-theme="fedramp">`}
+      lang="tsx"
+    />
+
+    <div class="mt-6">
+      <h3 class="mb-2 text-lg font-semibold">Theme Generator</h3>
+      <p class="mb-4 text-kumo-strong">
+        Themes are defined in a centralized config and generated as CSS files. The theme generator ensures consistency across all themes.
+      </p>
+      <CodeBlock
+        code={`# List all tokens and their theme overrides
+pnpm --filter @cloudflare/kumo codegen:themes --list
+
+# Generate theme CSS files
+pnpm --filter @cloudflare/kumo codegen:themes
+
+# Preview changes without writing files
+pnpm --filter @cloudflare/kumo codegen:themes --dry-run`}
+        lang="bash"
+      />
+      <p class="mt-4 text-kumo-strong">
+        Theme config: <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">packages/kumo/scripts/theme-generator/config.ts</code>
+      </p>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="mb-2 text-lg font-semibold">Creating a New Theme</h3>
+      <p class="mb-4 text-kumo-strong">
+        Add theme overrides in the config file. Only override tokens that need to change—all other tokens inherit from the base kumo theme.
+      </p>
+      <CodeBlock
+        code={`// In scripts/theme-generator/config.ts
+export const THEME_CONFIG: ThemeConfig = {
+  color: {
+    "kumo-base": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-white, #fff)",
+          dark: "var(--color-black, #000)",
+        },
+        // Add your theme override
+        myTheme: {
+          light: "#f0f4f8",
+          dark: "#1a1f2e",
+        },
+      },
+    },
+    // ... other tokens
+  },
+};
+
+// Add to available themes
+export const AVAILABLE_THEMES = ["kumo", "fedramp", "myTheme"] as const;`}
+        lang="ts"
+      />
+      <p class="mt-4 text-kumo-strong">
+        Then run <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">pnpm codegen:themes</code> to generate the CSS.
+      </p>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Token Reference</h2>
+    <p class="mb-4 text-kumo-strong">
+      Toggle the theme in the header to see how tokens adapt. Tokens marked as "global" 
+      are explicit opt-in classes available regardless of theme.
+    </p>
+    <TailwindColorTokens client:load />
+  </ComponentSection>
+</DocLayout>
