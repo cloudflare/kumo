@@ -62,7 +62,6 @@ See [AGENTS.md](./AGENTS.md) for comprehensive development documentation includi
 ```bash
 pnpm install
 pnpm dev                    # Start docs site at localhost:4321
-pnpm storybook              # Start Storybook at localhost:6006
 pnpm --filter @cloudflare/kumo test
 ```
 
@@ -75,7 +74,6 @@ pnpm --filter @cloudflare/kumo new-component
 ## Documentation
 
 - **Live Docs**: [kumo-ui.com](https://kumo-ui.com)
-- **Storybook**: [storybook.kumo-ui.com](https://storybook.kumo-ui.com)
 - **AI/Agent Guide**: [AGENTS.md](./AGENTS.md)
 
 ## License
