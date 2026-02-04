@@ -648,9 +648,11 @@ Collapsible component for showing/hiding content.  Features: - Animated chevron 
 **Examples:**
 
 ```tsx
-<Collapsible label="What is Kumo?" open={isOpen} onOpenChange={setIsOpen}>
-      Kumo is Cloudflare's new design system.
-    </Collapsible>
+<div className="w-full">
+      <Collapsible label="What is Kumo?" open={isOpen} onOpenChange={setIsOpen}>
+        Kumo is Cloudflare's new design system.
+      </Collapsible>
+    </div>
 ```
 
 ```tsx
@@ -2410,7 +2412,7 @@ ExternalIcon sub-component
 **Examples:**
 
 ```tsx
-<div className="text-base grid md:grid-cols-3 gap-y-4 gap-x-6">
+<div className="grid gap-x-6 gap-y-4 text-base md:grid-cols-3">
       <Link href="#">Default inline link</Link>
       <Link href="#" variant="current">
         Current color link
@@ -2422,7 +2424,7 @@ ExternalIcon sub-component
 ```
 
 ```tsx
-<p className="text-surface text-base max-w-md mx-auto leading-relaxed">
+<p className="mx-auto max-w-md text-base leading-relaxed text-kumo-default">
       This is a paragraph with an <Link href="#">inline link</Link> that flows
       naturally with the surrounding text. Links maintain proper underline
       offset for readability.
@@ -2441,7 +2443,7 @@ ExternalIcon sub-component
 ```
 
 ```tsx
-<p className="text-error text-base">
+<p className="text-base text-kumo-danger">
       This error message contains a{" "}
       <Link href="#" variant="current">
         link
@@ -2451,7 +2453,7 @@ ExternalIcon sub-component
 ```
 
 ```tsx
-<div className="flex flex-col md:flex-row gap-x-6 gap-y-4 text-base">
+<div className="flex flex-col gap-x-6 gap-y-4 text-base md:flex-row">
       <Link render={<CustomRouterLink href="/dashboard" />} variant="inline">
         Dashboard (via render)
       </Link>
@@ -2606,6 +2608,164 @@ Meter component
       value={80}
       indicatorClassName="from-green-500 via-green-500 to-green-500"
     />
+```
+
+
+---
+
+### NativeSelect
+
+NativeSelect component
+
+**Type:** component
+
+**Import:** `import { NativeSelect } from "@cloudflare/kumo";`
+
+**Category:** Other
+
+**Props:**
+
+- `autoComplete`: string
+- `disabled`: boolean
+- `name`: string
+- `required`: boolean
+- `value`: string | string[] | number
+- `className`: string
+- `id`: string
+- `lang`: string
+- `title`: string
+- `children`: ReactNode
+- `size`: enum [default: base]
+  - `"xs"`: Extra small select for compact UIs
+  - `"sm"`: Small select for secondary fields
+  - `"base"`: Default select size
+  - `"lg"`: Large select for prominent fields
+- `label`: ReactNode
+  Label content for the select (enables Field wrapper) - can be a string or any React node
+- `labelTooltip`: ReactNode
+  Tooltip content to display next to the label via an info icon
+- `description`: ReactNode
+  Helper text displayed below the select
+- `error`: string | object
+  Error message or validation error object
+
+**Colors (kumo tokens used):**
+
+`text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+
+**Styling:**
+
+- **Dimensions:** `[object Object]`
+
+**Examples:**
+
+```tsx
+<NativeSelect
+      value={value}
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+        setValue(e.target.value)
+      }
+      aria-label="Select a fruit"
+      className="w-[200px]"
+    >
+      <option value="apple">Apple</option>
+      <option value="banana">Banana</option>
+      <option value="cherry">Cherry</option>
+      <option value="date">Date</option>
+    </NativeSelect>
+```
+
+```tsx
+<NativeSelect
+      label="Country"
+      description="Where you're located"
+      value={value}
+      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+        setValue(e.target.value)
+      }
+      className="w-[280px]"
+    >
+      <option value="">Select a country</option>
+      <option value="us">United States</option>
+      <option value="ca">Canada</option>
+      <option value="uk">United Kingdom</option>
+      <option value="au">Australia</option>
+    </NativeSelect>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <NativeSelect size="xs" aria-label="Extra small" className="w-[160px]">
+        <option>Extra Small</option>
+        <option>Option 2</option>
+      </NativeSelect>
+      <NativeSelect size="sm" aria-label="Small" className="w-[180px]">
+        <option>Small</option>
+        <option>Option 2</option>
+      </NativeSelect>
+      <NativeSelect size="base" aria-label="Base" className="w-[200px]">
+        <option>Base (default)</option>
+        <option>Option 2</option>
+      </NativeSelect>
+      <NativeSelect size="lg" aria-label="Large" className="w-[220px]">
+        <option>Large</option>
+        <option>Option 2</option>
+      </NativeSelect>
+    </div>
+```
+
+```tsx
+<NativeSelect label="Disabled select" disabled className="w-[200px]">
+      <option>Cannot change</option>
+      <option>Option 2</option>
+    </NativeSelect>
+```
+
+```tsx
+<NativeSelect
+      label="Category"
+      error="Please select a category"
+      className="w-[200px]"
+    >
+      <option value="">Select category</option>
+      <option value="bug">Bug</option>
+      <option value="feature">Feature</option>
+    </NativeSelect>
+```
+
+```tsx
+<NativeSelect
+      label="Preferred contact method"
+      required={false}
+      className="w-[280px]"
+    >
+      <option value="">No preference</option>
+      <option value="email">Email</option>
+      <option value="phone">Phone</option>
+      <option value="mail">Mail</option>
+    </NativeSelect>
+```
+
+```tsx
+<div className="flex flex-col gap-6">
+      <div>
+        <p className="mb-2 text-sm text-kumo-subtle">
+          NativeSelect (uses native OS picker on mobile)
+        </p>
+        <NativeSelect
+          value={nativeValue}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setNativeValue(e.target.value)
+          }
+          aria-label="Native select"
+          className="w-[200px]"
+        >
+          <option value="apple">Apple</option>
+          <option value="banana">Banana</option>
+          <option value="cherry">Cherry</option>
+        </NativeSelect>
+      </div>
+    </div>
 ```
 
 
@@ -2822,6 +2982,28 @@ Close sub-component
           <Popover.Close asChild>
             <Button variant="ghost" size="sm" className="flex-1">
               Sign Out
+            </Button>
+          </Popover.Close>
+        </div>
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger openOnHover delay={200} asChild>
+        <Button variant="secondary">Hover Me</Button>
+      </Popover.Trigger>
+      <Popover.Content>
+        <Popover.Title>Hover Triggered</Popover.Title>
+        <Popover.Description>
+          This popover opens on hover with a 200ms delay. It can still contain
+          interactive content like buttons and links.
+        </Popover.Description>
+        <div className="mt-3">
+          <Popover.Close asChild>
+            <Button variant="secondary" size="sm">
+              Got it
             </Button>
           </Popover.Close>
         </div>
@@ -3995,4 +4177,4 @@ Multi-line textarea input with Input variants and InputArea-specific dimensions
 - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
 - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
 - **Layout:** Grid, Surface, PageHeader, ResourceListPage
-- **Other:** Label, Link, SensitiveInput, Table
+- **Other:** Label, Link, NativeSelect, SensitiveInput, Table

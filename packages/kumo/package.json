@@ -96,6 +96,10 @@
       "types": "./dist/src/components/meter/index.d.ts",
       "import": "./dist/components/meter.js"
     },
+    "./components/native-select": {
+      "types": "./dist/src/components/native-select/index.d.ts",
+      "import": "./dist/components/native-select.js"
+    },
     "./components/pagination": {
       "types": "./dist/src/components/pagination/index.d.ts",
       "import": "./dist/components/pagination.js"

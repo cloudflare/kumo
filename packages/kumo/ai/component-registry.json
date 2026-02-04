@@ -849,8 +849,8 @@
         }
       },
       "examples": [
-        "<Collapsible label=\"What is Kumo?\" open={isOpen} onOpenChange={setIsOpen}>\n      Kumo is Cloudflare's new design system.\n    </Collapsible>",
-        "<Collapsible label=\"What is Kumo?\" open={isOpen} onOpenChange={setIsOpen}>\n      Kumo is Cloudflare's new design system.\n    </Collapsible>",
+        "<div className=\"w-full\">\n      <Collapsible label=\"What is Kumo?\" open={isOpen} onOpenChange={setIsOpen}>\n        Kumo is Cloudflare's new design system.\n      </Collapsible>\n    </div>",
+        "<div className=\"w-full\">\n      <Collapsible label=\"What is Kumo?\" open={isOpen} onOpenChange={setIsOpen}>\n        Kumo is Cloudflare's new design system.\n      </Collapsible>\n    </div>",
         "<div className=\"w-full space-y-2\">\n      <Collapsible label=\"What is Kumo?\" open={open1} onOpenChange={setOpen1}>\n        Kumo is Cloudflare's new design system.\n      </Collapsible>\n      <Collapsible\n        label=\"How do I use it?\"\n        open={open2}\n        onOpenChange={setOpen2}\n      >\n        Install the components and import them into your project.\n      </Collapsible>\n      <Collapsible\n        label=\"Is it open source?\"\n        open={open3}\n        onOpenChange={setOpen3}\n      >\n        Check the repository for license information.\n      </Collapsible>\n    </div>"
       ],
       "colors": [
@@ -2162,11 +2162,11 @@
         }
       },
       "examples": [
-        "<div className=\"text-base grid md:grid-cols-3 gap-y-4 gap-x-6\">\n      <Link href=\"#\">Default inline link</Link>\n      <Link href=\"#\" variant=\"current\">\n        Current color link\n      </Link>\n      <Link href=\"#\" variant=\"plain\">\n        Plain inline link\n      </Link>\n    </div>",
-        "<p className=\"text-surface text-base max-w-md mx-auto leading-relaxed\">\n      This is a paragraph with an <Link href=\"#\">inline link</Link> that flows\n      naturally with the surrounding text. Links maintain proper underline\n      offset for readability.\n    </p>",
+        "<div className=\"grid gap-x-6 gap-y-4 text-base md:grid-cols-3\">\n      <Link href=\"#\">Default inline link</Link>\n      <Link href=\"#\" variant=\"current\">\n        Current color link\n      </Link>\n      <Link href=\"#\" variant=\"plain\">\n        Plain inline link\n      </Link>\n    </div>",
+        "<p className=\"mx-auto max-w-md text-base leading-relaxed text-kumo-default\">\n      This is a paragraph with an <Link href=\"#\">inline link</Link> that flows\n      naturally with the surrounding text. Links maintain proper underline\n      offset for readability.\n    </p>",
         "<Link\n      href=\"https://cloudflare.com\"\n      target=\"_blank\"\n      rel=\"noopener noreferrer\"\n      className=\"text-base\"\n    >\n      Visit Cloudflare <Link.ExternalIcon />\n    </Link>",
-        "<p className=\"text-error text-base\">\n      This error message contains a{\" \"}\n      <Link href=\"#\" variant=\"current\">\n        link\n      </Link>{\" \"}\n      that inherits the red color from its parent.\n    </p>",
-        "<div className=\"flex flex-col md:flex-row gap-x-6 gap-y-4 text-base\">\n      <Link render={<CustomRouterLink href=\"/dashboard\" />} variant=\"inline\">\n        Dashboard (via render)\n      </Link>\n      <Link\n        render={\n          <CustomRouterLink\n            href=\"https://developers.cloudflare.com\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n          />\n        }\n        variant=\"inline\"\n      >\n        Cloudflare Docs <Link.ExternalIcon />\n      </Link>\n    </div>"
+        "<p className=\"text-base text-kumo-danger\">\n      This error message contains a{\" \"}\n      <Link href=\"#\" variant=\"current\">\n        link\n      </Link>{\" \"}\n      that inherits the red color from its parent.\n    </p>",
+        "<div className=\"flex flex-col gap-x-6 gap-y-4 text-base md:flex-row\">\n      <Link render={<CustomRouterLink href=\"/dashboard\" />} variant=\"inline\">\n        Dashboard (via render)\n      </Link>\n      <Link\n        render={\n          <CustomRouterLink\n            href=\"https://developers.cloudflare.com\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n          />\n        }\n        variant=\"inline\"\n      >\n        Cloudflare Docs <Link.ExternalIcon />\n      </Link>\n    </div>"
       ],
       "colors": [],
       "subComponents": {
@@ -2313,6 +2313,163 @@
         "text-kumo-strong"
       ]
     },
+    "NativeSelect": {
+      "name": "NativeSelect",
+      "type": "component",
+      "description": "NativeSelect component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "autoComplete": {
+          "type": "string",
+          "optional": true
+        },
+        "disabled": {
+          "type": "boolean",
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": true
+        },
+        "required": {
+          "type": "boolean",
+          "optional": true
+        },
+        "value": {
+          "type": "string | string[] | number",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": true
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "xs",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "descriptions": {
+            "xs": "Extra small select for compact UIs",
+            "sm": "Small select for secondary fields",
+            "base": "Default select size",
+            "lg": "Large select for prominent fields"
+          },
+          "classes": {
+            "xs": "h-5 text-xs rounded-sm px-1.5 pr-6",
+            "sm": "h-6.5 text-xs rounded-md px-2 pr-7",
+            "base": "h-9 text-base rounded-lg px-3 pr-8",
+            "lg": "h-10 text-base rounded-lg px-4 pr-9"
+          },
+          "default": "base"
+        },
+        "label": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Label content for the select (enables Field wrapper) - can be a string or any React node"
+        },
+        "labelTooltip": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Tooltip content to display next to the label via an info icon"
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Helper text displayed below the select"
+        },
+        "error": {
+          "type": "string | object",
+          "optional": true,
+          "description": "Error message or validation error object"
+        }
+      },
+      "examples": [
+        "<NativeSelect\n      value={value}\n      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>\n        setValue(e.target.value)\n      }\n      aria-label=\"Select a fruit\"\n      className=\"w-[200px]\"\n    >\n      <option value=\"apple\">Apple</option>\n      <option value=\"banana\">Banana</option>\n      <option value=\"cherry\">Cherry</option>\n      <option value=\"date\">Date</option>\n    </NativeSelect>",
+        "<NativeSelect\n      label=\"Country\"\n      description=\"Where you're located\"\n      value={value}\n      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>\n        setValue(e.target.value)\n      }\n      className=\"w-[280px]\"\n    >\n      <option value=\"\">Select a country</option>\n      <option value=\"us\">United States</option>\n      <option value=\"ca\">Canada</option>\n      <option value=\"uk\">United Kingdom</option>\n      <option value=\"au\">Australia</option>\n    </NativeSelect>",
+        "<div className=\"flex flex-col gap-4\">\n      <NativeSelect size=\"xs\" aria-label=\"Extra small\" className=\"w-[160px]\">\n        <option>Extra Small</option>\n        <option>Option 2</option>\n      </NativeSelect>\n      <NativeSelect size=\"sm\" aria-label=\"Small\" className=\"w-[180px]\">\n        <option>Small</option>\n        <option>Option 2</option>\n      </NativeSelect>\n      <NativeSelect size=\"base\" aria-label=\"Base\" className=\"w-[200px]\">\n        <option>Base (default)</option>\n        <option>Option 2</option>\n      </NativeSelect>\n      <NativeSelect size=\"lg\" aria-label=\"Large\" className=\"w-[220px]\">\n        <option>Large</option>\n        <option>Option 2</option>\n      </NativeSelect>\n    </div>",
+        "<NativeSelect label=\"Disabled select\" disabled className=\"w-[200px]\">\n      <option>Cannot change</option>\n      <option>Option 2</option>\n    </NativeSelect>",
+        "<NativeSelect\n      label=\"Category\"\n      error=\"Please select a category\"\n      className=\"w-[200px]\"\n    >\n      <option value=\"\">Select category</option>\n      <option value=\"bug\">Bug</option>\n      <option value=\"feature\">Feature</option>\n    </NativeSelect>",
+        "<NativeSelect\n      label=\"Preferred contact method\"\n      required={false}\n      className=\"w-[280px]\"\n    >\n      <option value=\"\">No preference</option>\n      <option value=\"email\">Email</option>\n      <option value=\"phone\">Phone</option>\n      <option value=\"mail\">Mail</option>\n    </NativeSelect>",
+        "<div className=\"flex flex-col gap-6\">\n      <div>\n        <p className=\"mb-2 text-sm text-kumo-subtle\">\n          NativeSelect (uses native OS picker on mobile)\n        </p>\n        <NativeSelect\n          value={nativeValue}\n          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>\n            setNativeValue(e.target.value)\n          }\n          aria-label=\"Native select\"\n          className=\"w-[200px]\"\n        >\n          <option value=\"apple\">Apple</option>\n          <option value=\"banana\">Banana</option>\n          <option value=\"cherry\">Cherry</option>\n        </NativeSelect>\n      </div>\n    </div>"
+      ],
+      "colors": [
+        "text-kumo-danger",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "styling": {
+        "dimensions": {
+          "xs": {
+            "height": 20,
+            "paddingX": 6,
+            "paddingRight": 24,
+            "fontSize": 12,
+            "borderRadius": 2
+          },
+          "sm": {
+            "height": 26,
+            "paddingX": 8,
+            "paddingRight": 28,
+            "fontSize": 12,
+            "borderRadius": 6
+          },
+          "base": {
+            "height": 36,
+            "paddingX": 12,
+            "paddingRight": 32,
+            "fontSize": 16,
+            "borderRadius": 8
+          },
+          "lg": {
+            "height": 40,
+            "paddingX": 16,
+            "paddingRight": 36,
+            "fontSize": 16,
+            "borderRadius": 8
+          }
+        },
+        "baseTokens": {
+          "background": "color-secondary",
+          "text": "text-color-surface",
+          "ring": "color-border"
+        },
+        "stateTokens": {
+          "focus": {
+            "ring": "color-active"
+          },
+          "disabled": {
+            "opacity": 0.5
+          }
+        },
+        "icons": {
+          "caret": {
+            "name": "ph-caret-up-down",
+            "size": 20
+          }
+        }
+      }
+    },
     "Pagination": {
       "name": "Pagination",
       "type": "component",
@@ -2402,7 +2559,8 @@
         "<Popover>\n      <Popover.Trigger asChild>\n        <Button>Open Popover</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Popover Title</Popover.Title>\n        <Popover.Description>\n          This is a basic popover with a title and description.\n        </Popover.Description>\n      </Popover.Content>\n    </Popover>",
         "<Popover>\n      <Popover.Trigger asChild>\n        <Button>Open Settings</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Settings</Popover.Title>\n        <Popover.Description>\n          Configure your preferences below.\n        </Popover.Description>\n        <div className=\"mt-3\">\n          <Popover.Close asChild>\n            <Button variant=\"secondary\" size=\"sm\">\n              Close\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>",
         "<div className=\"flex flex-wrap gap-4\">\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Bottom</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"bottom\">\n          <Popover.Title>Bottom</Popover.Title>\n          <Popover.Description>\n            Popover on bottom (default).\n          </Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Top</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"top\">\n          <Popover.Title>Top</Popover.Title>\n          <Popover.Description>Popover on top.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Left</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"left\">\n          <Popover.Title>Left</Popover.Title>\n          <Popover.Description>Popover on left.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Right</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"right\">\n          <Popover.Title>Right</Popover.Title>\n          <Popover.Description>Popover on right.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n    </div>",
-        "<Popover>\n      <Popover.Trigger asChild>\n        <Button>User Profile</Button>\n      </Popover.Trigger>\n      <Popover.Content className=\"w-64\">\n        <div className=\"flex items-center gap-3\">\n          <div className=\"size-10 rounded-full bg-kumo-recessed\" />\n          <div>\n            <Popover.Title>Jane Doe</Popover.Title>\n            <p className=\"text-sm text-kumo-subtle\">jane@example.com</p>\n          </div>\n        </div>\n        <div className=\"mt-3 flex gap-2 border-t border-kumo-line pt-3\">\n          <Button variant=\"secondary\" size=\"sm\" className=\"flex-1\">\n            Profile\n          </Button>\n          <Popover.Close asChild>\n            <Button variant=\"ghost\" size=\"sm\" className=\"flex-1\">\n              Sign Out\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>"
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button>User Profile</Button>\n      </Popover.Trigger>\n      <Popover.Content className=\"w-64\">\n        <div className=\"flex items-center gap-3\">\n          <div className=\"size-10 rounded-full bg-kumo-recessed\" />\n          <div>\n            <Popover.Title>Jane Doe</Popover.Title>\n            <p className=\"text-sm text-kumo-subtle\">jane@example.com</p>\n          </div>\n        </div>\n        <div className=\"mt-3 flex gap-2 border-t border-kumo-line pt-3\">\n          <Button variant=\"secondary\" size=\"sm\" className=\"flex-1\">\n            Profile\n          </Button>\n          <Popover.Close asChild>\n            <Button variant=\"ghost\" size=\"sm\" className=\"flex-1\">\n              Sign Out\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>",
+        "<Popover>\n      <Popover.Trigger openOnHover delay={200} asChild>\n        <Button variant=\"secondary\">Hover Me</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Hover Triggered</Popover.Title>\n        <Popover.Description>\n          This popover opens on hover with a 200ms delay. It can still contain\n          interactive content like buttons and links.\n        </Popover.Description>\n        <div className=\"mt-3\">\n          <Popover.Close asChild>\n            <Button variant=\"secondary\" size=\"sm\">\n              Got it\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3663,6 +3821,7 @@
       "Other": [
         "Label",
         "Link",
+        "NativeSelect",
         "SensitiveInput",
         "Table"
       ]
@@ -3691,6 +3850,7 @@
       "Loader",
       "MenuBar",
       "Meter",
+      "NativeSelect",
       "PageHeader",
       "Pagination",
       "Popover",
@@ -3731,6 +3891,7 @@
         "Loader",
         "MenuBar",
         "Meter",
+        "NativeSelect",
         "Pagination",
         "Popover",
         "Radio",

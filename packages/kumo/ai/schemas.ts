@@ -314,6 +314,24 @@ export const MeterPropsSchema = z.object({
   min: z.number().optional(), // Minimum value of the meter (default: 0)
 });
 
+export const NativeSelectPropsSchema = z.object({
+  autoComplete: z.string().optional(),
+  disabled: z.boolean().optional(),
+  name: z.string().optional(),
+  required: z.boolean().optional(),
+  value: z.unknown().optional(),
+  className: z.string().optional(),
+  id: z.string().optional(),
+  lang: z.string().optional(),
+  title: z.string().optional(),
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  size: z.enum(["xs", "sm", "base", "lg"]).optional(),
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) - can be a string or any React node
+  labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
+  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text displayed below the select
+  error: z.unknown().optional(), // Error message or validation error object
+});
+
 export const PaginationPropsSchema = z.object({
   controls: z.enum(["full", "simple"]).optional(),
   setPage: z.unknown(), // Callback when page changes
@@ -454,7 +472,7 @@ export const TooltipPropsSchema = z.object({
 /**
  * All valid component type names
  */
-export type KumoComponentType = "Badge" | "Banner" | "Breadcrumbs" | "Button" | "Checkbox" | "ClipboardText" | "Code" | "Collapsible" | "Combobox" | "CommandPalette" | "DateRangePicker" | "Dialog" | "DropdownMenu" | "Empty" | "Field" | "Grid" | "Input" | "InputArea" | "Label" | "LayerCard" | "Link" | "Loader" | "MenuBar" | "Meter" | "Pagination" | "Popover" | "Radio" | "Select" | "SensitiveInput" | "Surface" | "Switch" | "Table" | "Tabs" | "Text" | "Toasty" | "Tooltip";
+export type KumoComponentType = "Badge" | "Banner" | "Breadcrumbs" | "Button" | "Checkbox" | "ClipboardText" | "Code" | "Collapsible" | "Combobox" | "CommandPalette" | "DateRangePicker" | "Dialog" | "DropdownMenu" | "Empty" | "Field" | "Grid" | "Input" | "InputArea" | "Label" | "LayerCard" | "Link" | "Loader" | "MenuBar" | "Meter" | "NativeSelect" | "Pagination" | "Popover" | "Radio" | "Select" | "SensitiveInput" | "Surface" | "Switch" | "Table" | "Tabs" | "Text" | "Toasty" | "Tooltip";
 
 export const KumoComponentTypeSchema = z.enum([
   "Badge",
@@ -481,6 +499,7 @@ export const KumoComponentTypeSchema = z.enum([
   "Loader",
   "MenuBar",
   "Meter",
+  "NativeSelect",
   "Pagination",
   "Popover",
   "Radio",
@@ -523,6 +542,7 @@ export const ComponentPropsSchemas = {
   Loader: LoaderPropsSchema,
   MenuBar: MenuBarPropsSchema,
   Meter: MeterPropsSchema,
+  NativeSelect: NativeSelectPropsSchema,
   Pagination: PaginationPropsSchema,
   Popover: PopoverPropsSchema,
   Radio: RadioPropsSchema,
@@ -591,4 +611,4 @@ export function validateUITree(tree: unknown): z.SafeParseReturnType<unknown, UI
 /**
  * List of all component names (for catalog generation)
  */
-export const KUMO_COMPONENT_NAMES = ["Badge", "Banner", "Breadcrumbs", "Button", "Checkbox", "ClipboardText", "Code", "Collapsible", "Combobox", "CommandPalette", "DateRangePicker", "Dialog", "DropdownMenu", "Empty", "Field", "Grid", "Input", "InputArea", "Label", "LayerCard", "Link", "Loader", "MenuBar", "Meter", "Pagination", "Popover", "Radio", "Select", "SensitiveInput", "Surface", "Switch", "Table", "Tabs", "Text", "Toasty", "Tooltip"] as const;
+export const KUMO_COMPONENT_NAMES = ["Badge", "Banner", "Breadcrumbs", "Button", "Checkbox", "ClipboardText", "Code", "Collapsible", "Combobox", "CommandPalette", "DateRangePicker", "Dialog", "DropdownMenu", "Empty", "Field", "Grid", "Input", "InputArea", "Label", "LayerCard", "Link", "Loader", "MenuBar", "Meter", "NativeSelect", "Pagination", "Popover", "Radio", "Select", "SensitiveInput", "Surface", "Switch", "Table", "Tabs", "Text", "Toasty", "Tooltip"] as const;

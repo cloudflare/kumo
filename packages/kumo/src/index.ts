@@ -60,6 +60,16 @@ export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
 export { Select } from "./components/select";
+export {
+  NativeSelect,
+  nativeSelectVariants,
+  type NativeSelectProps,
+  type KumoNativeSelectSize,
+  type KumoNativeSelectVariantsProps,
+  KUMO_NATIVE_SELECT_VARIANTS,
+  KUMO_NATIVE_SELECT_DEFAULT_VARIANTS,
+  KUMO_NATIVE_SELECT_STYLING,
+} from "./components/native-select";
 export { Surface } from "./components/surface";
 export { Switch } from "./components/switch";
 export { Tabs, type TabsProps, type TabsItem } from "./components/tabs";

@@ -1,0 +1,264 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  NativeSelectBasicDemo,
+  NativeSelectWithLabelDemo,
+  NativeSelectSizesDemo,
+  NativeSelectDisabledDemo,
+  NativeSelectErrorDemo,
+  NativeSelectOptionalDemo,
+  NativeSelectComparisonDemo,
+  NativeSelectAutofillDemo,
+} from "../../components/demos/NativeSelectDemo";
+---
+
+<DocLayout
+  title="NativeSelect"
+  description="A native HTML select element styled to match the Kumo design system. Use when you need native OS behavior, especially on mobile devices."
+  sourceFile="components/native-select"
+>
+  <!-- Basic Usage -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Basic Usage</span>
+      <span class="text-kumo-strong">
+        A native select element that looks identical to the Select component trigger.
+        Uses the native OS picker on mobile devices for better UX.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { NativeSelect } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState("apple");
+
+  return (
+    <NativeSelect
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      aria-label="Select a fruit"
+    >
+      <option value="apple">Apple</option>
+      <option value="banana">Banana</option>
+      <option value="cherry">Cherry</option>
+    </NativeSelect>
+  );
+}`}
+    >
+      <NativeSelectBasicDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- With Label -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">With Label and Description</span>
+      <span class="text-kumo-strong">
+        When you provide a <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop,
+        NativeSelect automatically wraps itself in a Field component with proper accessibility associations.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { NativeSelect } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState("");
+
+  return (
+    <NativeSelect
+      label="Country"
+      description="Where you're located"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    >
+      <option value="">Select a country</option>
+      <option value="us">United States</option>
+      <option value="ca">Canada</option>
+      <option value="uk">United Kingdom</option>
+    </NativeSelect>
+  );
+}`}
+    >
+      <NativeSelectWithLabelDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Sizes -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Sizes</span>
+      <span class="text-kumo-strong">
+        NativeSelect supports the same size variants as other form controls:
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">xs</code>,
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">sm</code>,
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">base</code> (default), and
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">lg</code>.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`<NativeSelect size="xs">...</NativeSelect>
+<NativeSelect size="sm">...</NativeSelect>
+<NativeSelect size="base">...</NativeSelect>
+<NativeSelect size="lg">...</NativeSelect>`}
+    >
+      <NativeSelectSizesDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Disabled -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Disabled State</span>
+      <span class="text-kumo-strong">
+        Use the native <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> attribute
+        to prevent user interaction.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`<NativeSelect label="Disabled select" disabled>
+  <option>Cannot change</option>
+</NativeSelect>`}
+    >
+      <NativeSelectDisabledDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Error State -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Error State</span>
+      <span class="text-kumo-strong">
+        Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code> prop
+        to display validation errors.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`<NativeSelect
+  label="Category"
+  error="Please select a category"
+>
+  <option value="">Select category</option>
+  <option value="bug">Bug</option>
+  <option value="feature">Feature</option>
+</NativeSelect>`}
+    >
+      <NativeSelectErrorDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Optional Field -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Optional Field</span>
+      <span class="text-kumo-strong">
+        Set <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">required={`{false}`}</code>
+        to show an "(optional)" indicator next to the label.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`<NativeSelect
+  label="Preferred contact method"
+  required={false}
+>
+  <option value="">No preference</option>
+  <option value="email">Email</option>
+  <option value="phone">Phone</option>
+</NativeSelect>`}
+    >
+      <NativeSelectOptionalDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Browser Autofill -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">Browser Autofill</span>
+      <span class="text-kumo-strong">
+        NativeSelect supports browser autofill through the standard HTML
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">autoComplete</code> attribute.
+        This is critical for payment forms, address forms, and any other forms where users
+        expect the browser to fill in saved values.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`// Autofill triggers from text inputs and fills the whole form
+<form>
+  <Input
+    label="Street address"
+    name="street-address"
+    autoComplete="street-address"
+  />
+  <NativeSelect
+    label="Country"
+    name="country"
+    autoComplete="country"
+  >
+    <option value="">Select a country</option>
+    <option value="US">United States</option>
+    <option value="CA">Canada</option>
+  </NativeSelect>
+</form>`}
+    >
+      <NativeSelectAutofillDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- When to use -->
+  <ComponentSection>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-xl font-semibold">When to Use NativeSelect vs Select</span>
+    </p>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="rounded-lg border border-kumo-line p-4">
+        <h4 class="mb-2 font-semibold text-kumo-default">Use NativeSelect when:</h4>
+        <ul class="list-inside list-disc space-y-1 text-kumo-strong">
+          <li>Mobile UX is a priority (native OS picker)</li>
+          <li>You don't need custom option rendering</li>
+          <li>You want simpler, lighter-weight markup</li>
+          <li>Form submission with native form data</li>
+        </ul>
+      </div>
+      <div class="rounded-lg border border-kumo-line p-4">
+        <h4 class="mb-2 font-semibold text-kumo-default">Use Select when:</h4>
+        <ul class="list-inside list-disc space-y-1 text-kumo-strong">
+          <li>You need custom option rendering (icons, avatars, etc.)</li>
+          <li>You need complex object values</li>
+          <li>You need multi-select with chips</li>
+          <li>You need loading states</li>
+          <li>Consistent desktop/mobile appearance is required</li>
+        </ul>
+      </div>
+    </div>
+
+    <ComponentExample
+      code={`// Both look identical when closed
+<NativeSelect aria-label="Native">
+  <option>Apple</option>
+</NativeSelect>
+
+<Select aria-label="Custom">
+  <Select.Option value="apple">Apple</Select.Option>
+</Select>`}
+    >
+      <NativeSelectComparisonDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">API Reference</h2>
+    <h3 class="mb-3 text-lg font-semibold">NativeSelect</h3>
+    <PropsTable component="NativeSelect" />
+  </ComponentSection>
+</DocLayout>

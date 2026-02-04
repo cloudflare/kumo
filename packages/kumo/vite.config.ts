@@ -131,6 +131,10 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/select/index.ts",
           ),
+          "components/native-select": resolve(
+            __dirname,
+            "src/components/native-select/index.ts",
+          ),
           "components/surface": resolve(
             __dirname,
             "src/components/surface/index.ts",
@@ -169,10 +173,7 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/command-palette/index.ts",
           ),
-          "components/link": resolve(
-            __dirname,
-            "src/components/link/index.ts",
-          ),
+          "components/link": resolve(__dirname, "src/components/link/index.ts"),
           "components/breadcrumbs": resolve(
             __dirname,
             "src/components/breadcrumbs/index.ts",

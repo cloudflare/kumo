@@ -45,6 +45,7 @@ const componentItems: NavItem[] = [
   { label: "Loader", href: "/components/loader" },
   { label: "MenuBar", href: "/components/menubar" },
   { label: "Meter", href: "/components/meter" },
+  { label: "Native Select", href: "/components/native-select" },
   { label: "Pagination", href: "/components/pagination" },
   { label: "Popover", href: "/components/popover" },
   { label: "Radio", href: "/components/radio" },
