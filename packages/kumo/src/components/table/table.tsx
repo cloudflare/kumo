@@ -150,29 +150,18 @@ const TableCheckCell = forwardRef<
       <TableCell
         ref={ref}
         {...props}
-        className={cn(
-          "w-10 cursor-pointer p-0 leading-none",
-          disabled && "cursor-default",
-          props.className,
-        )}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!disabled) {
-            onValueChange?.(!checked);
-          }
-        }}
+        className={cn("w-10 leading-none", props.className)}
       >
-        <span onClick={(e) => e.stopPropagation()} onKeyDown={() => {}}>
-          <Checkbox
-            checked={checked}
-            indeterminate={indeterminate}
-            onCheckedChange={(newChecked) => {
-              onValueChange?.(newChecked);
-            }}
-            aria-label={label ?? "Select row"}
-            disabled={disabled}
-          />
-        </span>
+        <Checkbox
+          checked={checked}
+          indeterminate={indeterminate}
+          onCheckedChange={(newChecked) => {
+            onValueChange?.(newChecked);
+          }}
+          aria-label={label ?? "Select row"}
+          disabled={disabled}
+          className="relative before:absolute before:-inset-3 before:content-['']"
+        />
       </TableCell>
     );
   },
@@ -196,29 +185,18 @@ const TableCheckHead = forwardRef<
       <TableHead
         ref={ref}
         {...props}
-        className={cn(
-          "w-10 cursor-pointer p-0 leading-none",
-          disabled && "cursor-default",
-          props.className,
-        )}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!disabled) {
-            onValueChange?.(!checked);
-          }
-        }}
+        className={cn("w-10 leading-none", props.className)}
       >
-        <span onClick={(e) => e.stopPropagation()} onKeyDown={() => {}}>
-          <Checkbox
-            checked={checked}
-            indeterminate={indeterminate}
-            onCheckedChange={(newChecked) => {
-              onValueChange?.(newChecked);
-            }}
-            aria-label={label ?? "Select all rows"}
-            disabled={disabled}
-          />
-        </span>
+        <Checkbox
+          checked={checked}
+          indeterminate={indeterminate}
+          onCheckedChange={(newChecked) => {
+            onValueChange?.(newChecked);
+          }}
+          aria-label={label ?? "Select all rows"}
+          disabled={disabled}
+          className="relative before:absolute before:-inset-3 before:content-['']"
+        />
       </TableHead>
     );
   },
