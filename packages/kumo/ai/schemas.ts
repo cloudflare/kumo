@@ -7,6 +7,11 @@
 
 import { z } from "zod";
 
+// SafeParseReturnType was removed in Zod v4, but we still want stable typing.
+export type SafeParseResult<T> =
+  | { success: true; data: T; error?: never }
+  | { success: false; error: z.ZodError<any>; data?: never };
+
 // =============================================================================
 // Dynamic Value Schema (for data binding)
 // =============================================================================
@@ -573,7 +578,7 @@ export type UITree = z.infer<typeof UITreeSchema>;
 /**
  * Validate an element's props against its component schema
  */
-export function validateElementProps(element: UIElement): z.SafeParseReturnType<unknown, unknown> {
+export function validateElementProps(element: UIElement): SafeParseResult<unknown> {
   const schema = ComponentPropsSchemas[element.type as keyof typeof ComponentPropsSchemas];
   if (!schema) {
     return { success: false, error: new z.ZodError([{ code: 'custom', message: `Unknown component type: ${element.type}`, path: ['type'] }]) };
@@ -584,7 +589,7 @@ export function validateElementProps(element: UIElement): z.SafeParseReturnType<
 /**
  * Validate a complete UI tree
  */
-export function validateUITree(tree: unknown): z.SafeParseReturnType<unknown, UITree> {
+export function validateUITree(tree: unknown): SafeParseResult<UITree> {
   return UITreeSchema.safeParse(tree);
 }
 

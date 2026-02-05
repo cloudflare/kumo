@@ -76,8 +76,8 @@ kumo/ai/component-registry.{json,md}
 pnpm --filter @cloudflare/kumo codegen:registry  # Component registry
 pnpm --filter @cloudflare/kumo codegen           # All codegen (primitives + registry)
 npx @cloudflare/kumo doc                         # CLI docs (works in any project)
-pnpm --filter @cloudflare/kumo-figma build       # Build Figma plugin
-pnpm --filter @cloudflare/kumo-figma figma:sync  # Sync tokens to Figma
+pnpm --filter @cloudflare/kumo-figma build       # Build Figma plugin (auto-runs figma:sync if FIGMA_TOKEN is set)
+pnpm --filter @cloudflare/kumo-figma figma:sync  # Sync tokens to Figma (manual)
 pnpm lint                                        # Custom rules + oxlint
 ```
 
@@ -979,7 +979,11 @@ ci/
 ### Quick Start
 
 ```bash
-# Build the plugin
+## Optional: enable token sync during build
+# cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env
+# $EDITOR packages/kumo-figma/scripts/.env  # set FIGMA_TOKEN (and optionally FIGMA_FILE_KEY)
+
+# Build the plugin (auto-runs token sync when FIGMA_TOKEN is present)
 pnpm --filter @cloudflare/kumo-figma build
 
 # Run in Figma: Plugins > Development > Import plugin from manifest...
@@ -988,8 +992,8 @@ pnpm --filter @cloudflare/kumo-figma build
 
 ### Workflow
 
-1. **Sync tokens first**: `pnpm --filter @cloudflare/kumo-figma figma:sync`
-2. **Build plugin**: `pnpm --filter @cloudflare/kumo-figma build`
+1. **Sync tokens** (optional): `pnpm --filter @cloudflare/kumo-figma figma:sync` (or just set `FIGMA_TOKEN` and run build)
+2. **Build plugin**: `pnpm --filter @cloudflare/kumo-figma build` (auto-syncs when `FIGMA_TOKEN` is present)
 3. **Run in Figma**: Plugins > Development > Kumo UI Kit Generator
 
 ### Adding New Component Generators

@@ -28,11 +28,11 @@ export function resolveColor(value: string): FigmaColor {
 
   // Handle CSS var() with fallback - extract the fallback value
   if (trimmed.startsWith("var(")) {
-    const fallbackMatch = trimmed.match(/var\([^,]+,\s*([^)]+)\)/);
-    if (fallbackMatch?.[1]) {
-      return resolveColor(fallbackMatch[1]);
+    const fallback = extractCssVarFallback(trimmed);
+    if (!fallback) {
+      throw new Error(`Cannot resolve CSS variable without fallback: ${value}`);
     }
-    throw new Error(`Cannot resolve CSS variable without fallback: ${value}`);
+    return resolveColor(fallback);
   }
 
   // Handle OKLCH format
@@ -46,6 +46,34 @@ export function resolveColor(value: string): FigmaColor {
   }
 
   throw new Error(`Unsupported color format: ${value}`);
+}
+
+function extractCssVarFallback(value: string): string | null {
+  // CSS syntax: var(--name[, fallback])
+  // The fallback can contain nested functions like oklch(...), so regexes that stop
+  // at the first ')' will truncate. Parse by tracking parentheses depth.
+  const s = value.trim();
+  if (!s.startsWith("var(")) return null;
+
+  const end = s.trimEnd();
+  if (!end.endsWith(")")) return null;
+
+  let depth = 0;
+  let commaIndex = -1;
+  for (let i = 0; i < end.length; i++) {
+    const ch = end[i];
+    if (ch === "(") depth++;
+    else if (ch === ")") depth--;
+    else if (ch === "," && depth === 1) {
+      commaIndex = i;
+      break;
+    }
+  }
+
+  if (commaIndex === -1) return null;
+
+  const closeIndex = end.length - 1; // last ')'
+  return end.slice(commaIndex + 1, closeIndex).trim();
 }
 
 /**

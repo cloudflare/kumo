@@ -5,6 +5,7 @@ node_modules/
 build/
 dist/
 .react-router/
+.build-complete
 
 # Cloudflare
 .wrangler/

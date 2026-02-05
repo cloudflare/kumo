@@ -7,6 +7,10 @@ Kumo UI Kit Generator - generates production-quality Figma components from Kumo 
 ## Quick Start
 
 ```bash
+# Optional: enable auto token sync during build
+# cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env
+# $EDITOR packages/kumo-figma/scripts/.env  # set FIGMA_TOKEN (and optionally FIGMA_FILE_KEY)
+
 pnpm --filter @cloudflare/kumo-figma build
 # In Figma: Plugins > Development > Import plugin from manifest...
 # Select: packages/kumo-figma/src/manifest.json
@@ -60,7 +64,9 @@ Extracts opacity patterns like `bg-kumo-brand/70` for Figma variable bindings.
 FIGMA_TOKEN="your-token" pnpm --filter @cloudflare/kumo-figma figma:sync
 ```
 
-This syncs CSS tokens to Figma's `kumo-colors` variable collection. **Run before plugin.**
+This syncs CSS tokens to Figma's `kumo-colors` variable collection.
+
+`pnpm --filter @cloudflare/kumo-figma build` now runs this automatically when `FIGMA_TOKEN` is present (it also reads `packages/kumo-figma/scripts/.env` if it exists). To skip auto-sync: `KUMO_FIGMA_SKIP_SYNC=1 pnpm --filter @cloudflare/kumo-figma build`.
 
 ### Build & Run
 
