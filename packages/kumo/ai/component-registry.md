@@ -648,9 +648,11 @@ Collapsible component for showing/hiding content.  Features: - Animated chevron 
 **Examples:**
 
 ```tsx
-<Collapsible label="What is Kumo?" open={isOpen} onOpenChange={setIsOpen}>
-      Kumo is Cloudflare's new design system.
-    </Collapsible>
+<div className="w-full">
+      <Collapsible label="What is Kumo?" open={isOpen} onOpenChange={setIsOpen}>
+        Kumo is Cloudflare's new design system.
+      </Collapsible>
+    </div>
 ```
 
 ```tsx
@@ -2410,7 +2412,7 @@ ExternalIcon sub-component
 **Examples:**
 
 ```tsx
-<div className="text-base grid md:grid-cols-3 gap-y-4 gap-x-6">
+<div className="grid gap-x-6 gap-y-4 text-base md:grid-cols-3">
       <Link href="#">Default inline link</Link>
       <Link href="#" variant="current">
         Current color link
@@ -2422,7 +2424,7 @@ ExternalIcon sub-component
 ```
 
 ```tsx
-<p className="text-surface text-base max-w-md mx-auto leading-relaxed">
+<p className="mx-auto max-w-md text-base leading-relaxed text-kumo-default">
       This is a paragraph with an <Link href="#">inline link</Link> that flows
       naturally with the surrounding text. Links maintain proper underline
       offset for readability.
@@ -2441,7 +2443,7 @@ ExternalIcon sub-component
 ```
 
 ```tsx
-<p className="text-error text-base">
+<p className="text-base text-kumo-danger">
       This error message contains a{" "}
       <Link href="#" variant="current">
         link
@@ -2451,7 +2453,7 @@ ExternalIcon sub-component
 ```
 
 ```tsx
-<div className="flex flex-col md:flex-row gap-x-6 gap-y-4 text-base">
+<div className="flex flex-col gap-x-6 gap-y-4 text-base md:flex-row">
       <Link render={<CustomRouterLink href="/dashboard" />} variant="inline">
         Dashboard (via render)
       </Link>
@@ -2822,6 +2824,28 @@ Close sub-component
           <Popover.Close asChild>
             <Button variant="ghost" size="sm" className="flex-1">
               Sign Out
+            </Button>
+          </Popover.Close>
+        </div>
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger openOnHover delay={200} asChild>
+        <Button variant="secondary">Hover Me</Button>
+      </Popover.Trigger>
+      <Popover.Content>
+        <Popover.Title>Hover Triggered</Popover.Title>
+        <Popover.Description>
+          This popover opens on hover with a 200ms delay. It can still contain
+          interactive content like buttons and links.
+        </Popover.Description>
+        <div className="mt-3">
+          <Popover.Close asChild>
+            <Button variant="secondary" size="sm">
+              Got it
             </Button>
           </Popover.Close>
         </div>
@@ -3512,31 +3536,35 @@ ResizeHandle sub-component
         <Table>
           <Table.Header>
             <Table.Row>
-              <Table.CheckHead aria-label="Select all rows" />
+              <Table.CheckHead
+                checked={selectedIds.size === rows.length}
+                indeterminate={
+                  selectedIds.size > 0 && selectedIds.size < rows.length
+                }
+                onValueChange={toggleAll}
+                aria-label="Select all rows"
+              />
               <Table.Head>Subject</Table.Head>
               <Table.Head>From</Table.Head>
               <Table.Head>Date</Table.Head>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            <Table.Row>
-              <Table.CheckCell aria-label="Select row 1" />
-              <Table.Cell>Kumo v1.0.0 released</Table.Cell>
-              <Table.Cell>Visal In</Table.Cell>
-              <Table.Cell>5 seconds ago</Table.Cell>
-            </Table.Row>
-            <Table.Row variant="selected">
-              <Table.CheckCell checked aria-label="Select row 2" />
-              <Table.Cell>New Job Offer</Table.Cell>
-              <Table.Cell>Cloudflare</Table.Cell>
-              <Table.Cell>10 minutes ago</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.CheckCell aria-label="Select row 3" />
-              <Table.Cell>Daily Email Digest</Table.Cell>
-              <Table.Cell>Cloudflare</Table.Cell>
-              <Table.Cell>1 hour ago</Table.Cell>
-            </Table.Row>
+            {rows.map((row) => (
+              <Table.Row
+                key={row.id}
+                variant={selectedIds.has(row.id) ? "selected" : "default"}
+              >
+                <Table.CheckCell
+                  checked={selectedIds.has(row.id)}
+                  onValueChange={() => toggleRow(row.id)}
+                  aria-label={`Select ${row.subject}`}
+                />
+                <Table.Cell>{row.subject}</Table.Cell>
+                <Table.Cell>{row.from}</Table.Cell>
+                <Table.Cell>{row.date}</Table.Cell>
+              </Table.Row>
+            ))}
           </Table.Body>
         </Table>
       </LayerCard.Primary>
@@ -3586,7 +3614,14 @@ ResizeHandle sub-component
           </colgroup>
           <Table.Header>
             <Table.Row>
-              <Table.CheckHead aria-label="Select all rows" />
+              <Table.CheckHead
+                checked={selectedIds.size === emailData.length}
+                indeterminate={
+                  selectedIds.size > 0 && selectedIds.size < emailData.length
+                }
+                onValueChange={toggleAll}
+                aria-label="Select all rows"
+              />
               <Table.Head>Subject</Table.Head>
               <Table.Head>From</Table.Head>
               <Table.Head>Date</Table.Head>
@@ -3594,13 +3629,14 @@ ResizeHandle sub-component
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {emailData.map((row, index) => (
+            {emailData.map((row) => (
               <Table.Row
                 key={row.id}
-                variant={index === 1 ? "selected" : "default"}
+                variant={selectedIds.has(row.id) ? "selected" : "default"}
               >
                 <Table.CheckCell
-                  checked={index === 1}
+                  checked={selectedIds.has(row.id)}
+                  onValueChange={() => toggleRow(row.id)}
                   aria-label={`Select ${row.subject}`}
                 />
                 <Table.Cell>
