@@ -1,6 +1,18 @@
 import { useState } from "react";
-import { Badge, Button, LayerCard, Table } from "@cloudflare/kumo";
-import { DotsThree, EnvelopeSimple } from "@phosphor-icons/react";
+import {
+  Badge,
+  Button,
+  DropdownMenu,
+  LayerCard,
+  Table,
+} from "@cloudflare/kumo";
+import {
+  DotsThree,
+  EnvelopeSimple,
+  Eye,
+  PencilSimple,
+  Trash,
+} from "@phosphor-icons/react";
 
 // Sample data for demos
 const emailData = [
@@ -307,14 +319,30 @@ export function TableFullDemo() {
                   <span className="truncate">{row.date}</span>
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    shape="square"
-                    aria-label="More options"
-                  >
-                    <DotsThree weight="bold" size={16} />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenu.Trigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          shape="square"
+                          aria-label="More options"
+                        >
+                          <DotsThree weight="bold" size={16} />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item icon={Eye}>View</DropdownMenu.Item>
+                      <DropdownMenu.Item icon={PencilSimple}>
+                        Edit
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item icon={Trash} variant="danger">
+                        Delete
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu>
                 </Table.Cell>
               </Table.Row>
             ))}
