@@ -242,7 +242,7 @@ export function HomeGrid() {
       name: "Dropdown",
       id: "dropdown",
       Component: (
-        <DropdownMenu open modal={false}>
+        <DropdownMenu>
           <DropdownMenu.Trigger render={<Button icon={PlusIcon}>Add</Button>} />
           <DropdownMenu.Content>
             <DropdownMenu.Item>Worker</DropdownMenu.Item>

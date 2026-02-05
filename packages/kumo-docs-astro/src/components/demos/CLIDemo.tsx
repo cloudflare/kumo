@@ -539,7 +539,7 @@ export const CLITerminal: FC = () => {
 
   // Focus input on click
   const handleTerminalClick = useCallback(() => {
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   }, []);
 
   const handleSubmit = useCallback(() => {
@@ -632,7 +632,7 @@ export const CLITerminal: FC = () => {
               type="button"
               onClick={() => {
                 setCurrentInput(cmd);
-                inputRef.current?.focus();
+                inputRef.current?.focus({ preventScroll: true });
               }}
               className="rounded bg-kumo-overlay px-2 py-1 font-mono text-xs text-kumo-default transition-colors hover:bg-kumo-recessed"
             >
@@ -646,7 +646,7 @@ export const CLITerminal: FC = () => {
         ref={terminalRef}
         onClick={handleTerminalClick}
         onKeyDown={undefined}
-        className="h-[500px] w-full max-w-[800px] cursor-text overflow-x-auto overflow-y-scroll rounded-lg bg-kumo-contrast p-4 font-mono text-sm text-kumo-inverse"
+        className="relative h-[500px] w-full max-w-[800px] cursor-text overflow-x-auto overflow-y-auto overscroll-contain rounded-lg bg-kumo-contrast p-4 font-mono text-sm text-kumo-inverse"
       >
         {/* Output lines */}
         {lines.map((line, i) => {

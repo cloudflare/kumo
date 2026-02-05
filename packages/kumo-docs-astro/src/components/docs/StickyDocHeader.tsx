@@ -49,6 +49,7 @@ export function StickyDocHeader({
   // Watch for page header visibility
   useEffect(() => {
     const pageHeader = document.getElementById("page-header");
+    const mainContent = document.getElementById("main-content");
     if (!pageHeader) return;
 
     const observer = new IntersectionObserver(
@@ -56,7 +57,11 @@ export function StickyDocHeader({
         // Show sticky title when page header is not visible
         setShowStickyTitle(!entry.isIntersecting);
       },
-      { threshold: 0, rootMargin: `-${STICKY_HEADER_HEIGHT}px 0px 0px 0px` },
+      {
+        root: mainContent, // Use main-content as scroll container
+        threshold: 0,
+        rootMargin: `-${STICKY_HEADER_HEIGHT}px 0px 0px 0px`,
+      },
     );
 
     observer.observe(pageHeader);

@@ -13,7 +13,7 @@ const currentPath = Astro.url.pathname;
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class="min-h-screen isolate">
+  <div class="isolate">
     <SidebarNav currentPath={currentPath} client:load />
 
     <!-- Theme toggle: fixed in top right corner -->

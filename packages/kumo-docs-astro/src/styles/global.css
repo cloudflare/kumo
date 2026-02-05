@@ -20,8 +20,3 @@
 html {
   font-display: optional;
 }
-
-/* Prevent layout shift on page load */
-body {
-  overflow-y: scroll;
-}
