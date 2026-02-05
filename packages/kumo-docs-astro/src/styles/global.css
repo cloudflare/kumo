@@ -21,7 +21,7 @@ html {
   font-display: optional;
 }
 
-/* Prevent layout shift on page load */
+/* Prevent layout shift on page load - scrolling handled by #main-content container */
 body {
-  overflow-y: scroll;
+  overflow: hidden;
 }
