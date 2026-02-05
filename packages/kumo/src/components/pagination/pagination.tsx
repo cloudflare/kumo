@@ -80,11 +80,12 @@ export function Pagination({
 
   return (
     <div className="flex items-center justify-between gap-2">
-      <div className="grow text-sm text-kumo-strong">
-        {totalCount && totalCount > 0
-          ? `Showing ${pageShowingRange} of ${totalCount}`
-          : null}
-      </div>
+      {totalCount && totalCount > 0 && (
+        <div className="grow text-sm text-kumo-strong">
+          Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
+          <span className="tabular-nums">{totalCount}</span>
+        </div>
+      )}
       <div>
         <InputGroup focusMode="individual">
           {controls === "full" && (
