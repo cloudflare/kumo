@@ -151,7 +151,7 @@ const TableCheckCell = forwardRef<
         ref={ref}
         {...props}
         className={cn(
-          "cursor-pointer p-0 leading-none",
+          "w-10 cursor-pointer p-0 leading-none",
           disabled && "cursor-default",
           props.className,
         )}
@@ -162,15 +162,17 @@ const TableCheckCell = forwardRef<
           }
         }}
       >
-        <Checkbox
-          checked={checked}
-          indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
-            onValueChange?.(newChecked);
-          }}
-          aria-label={label ?? "Select row"}
-          disabled={disabled}
-        />
+        <span onClick={(e) => e.stopPropagation()} onKeyDown={() => {}}>
+          <Checkbox
+            checked={checked}
+            indeterminate={indeterminate}
+            onCheckedChange={(newChecked) => {
+              onValueChange?.(newChecked);
+            }}
+            aria-label={label ?? "Select row"}
+            disabled={disabled}
+          />
+        </span>
       </TableCell>
     );
   },
@@ -195,7 +197,7 @@ const TableCheckHead = forwardRef<
         ref={ref}
         {...props}
         className={cn(
-          "cursor-pointer p-0 leading-none",
+          "w-10 cursor-pointer p-0 leading-none",
           disabled && "cursor-default",
           props.className,
         )}
@@ -206,15 +208,17 @@ const TableCheckHead = forwardRef<
           }
         }}
       >
-        <Checkbox
-          checked={checked}
-          indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
-            onValueChange?.(newChecked);
-          }}
-          aria-label={label ?? "Select all rows"}
-          disabled={disabled}
-        />
+        <span onClick={(e) => e.stopPropagation()} onKeyDown={() => {}}>
+          <Checkbox
+            checked={checked}
+            indeterminate={indeterminate}
+            onCheckedChange={(newChecked) => {
+              onValueChange?.(newChecked);
+            }}
+            aria-label={label ?? "Select all rows"}
+            disabled={disabled}
+          />
+        </span>
       </TableHead>
     );
   },
