@@ -1,5 +1,7 @@
 import React from "react";
 import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
+import { useRender } from "@base-ui/react/use-render";
+import { mergeProps } from "@base-ui/react/merge-props";
 import { Loader } from "../loader/loader";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
@@ -122,10 +124,18 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   return <Comp />;
 };
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+/**
+ * State object passed to the render callback function.
+ * Allows consumers to conditionally render based on button state.
+ */
+export interface ButtonState extends Record<string, unknown> {
+  disabled: boolean;
+  loading: boolean;
+}
+
+export type ButtonProps = useRender.ComponentProps<"button", ButtonState> &
   KumoButtonVariantsProps & {
     children?: React.ReactNode;
-    className?: string;
     icon?: Icon | React.ReactNode;
     loading?: boolean;
   };
@@ -139,41 +149,97 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
     linksExternal?: boolean;
   };
 
+/**
+ * Button component with support for composition via the `render` prop.
+ *
+ * The `render` prop allows you to replace the underlying `<button>` element
+ * with a different element or component (like an anchor or React Router Link),
+ * while preserving all Button styling and behavior.
+ *
+ * @example Basic usage
+ * ```tsx
+ * <Button variant="primary">Click me</Button>
+ * ```
+ *
+ * @example As a link (anchor)
+ * ```tsx
+ * <Button render={<a href="/about" />}>About</Button>
+ * ```
+ *
+ * @example With React Router
+ * ```tsx
+ * import { Link } from 'react-router-dom';
+ * <Button render={<Link to="/dashboard" />}>Dashboard</Button>
+ * ```
+ *
+ * @example With Next.js Link
+ * ```tsx
+ * import Link from 'next/link';
+ * <Button render={<Link href="/page" />}>Page</Button>
+ * ```
+ *
+ * @example Render callback for state-based rendering
+ * ```tsx
+ * <Button
+ *   render={(props, state) => (
+ *     <a {...props} href="/link">
+ *       {state.loading ? 'Loading...' : 'Click me'}
+ *     </a>
+ *   )}
+ * />
+ * ```
+ */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children,
       className,
       disabled,
-      loading,
+      loading = false,
       shape = "base",
       size = "base",
       variant = "secondary",
       icon: IconComponent,
+      render,
       ...props
     },
     ref,
   ) => {
     const { type, ...restProps } = props;
-    return (
-      <button
-        ref={ref}
-        className={cn(
-          buttonVariants({ variant, size, shape }),
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
-          disabled && "cursor-not-allowed opacity-50",
-          className,
-        )}
-        disabled={loading || disabled}
-        type={type ?? "button"}
-        {...restProps}
-      >
-        {loading && <Loader size={size === "lg" ? 16 : 14} />}
-        {!loading && renderIconNode(IconComponent)}
 
-        {children}
-      </button>
+    const isDisabled = loading || disabled || false;
+
+    const state: ButtonState = React.useMemo(
+      () => ({
+        disabled: isDisabled,
+        loading,
+      }),
+      [isDisabled, loading],
     );
+
+    const defaultProps: useRender.ElementProps<"button"> = {
+      className: cn(
+        buttonVariants({ variant, size, shape }),
+        "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
+        isDisabled && "cursor-not-allowed opacity-50",
+      ),
+      disabled: isDisabled,
+      type: type ?? "button",
+      children: (
+        <>
+          {loading && <Loader size={size === "lg" ? 16 : 14} />}
+          {!loading && renderIconNode(IconComponent)}
+          {children}
+        </>
+      ),
+    };
+
+    return useRender<ButtonState, HTMLButtonElement>({
+      render: render ?? <button />,
+      ref,
+      state,
+      props: mergeProps<"button">(defaultProps, restProps, { className }),
+    });
   },
 );
 

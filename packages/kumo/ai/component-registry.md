@@ -215,7 +215,7 @@ Props:
 
 ### Button
 
-Button component
+Button component with support for composition via the `render` prop.  The `render` prop allows you to replace the underlying `<button>` element with a different element or component (like an anchor or React Router Link), while preserving all Button styling and behavior.
 
 **Type:** component
 
@@ -226,7 +226,6 @@ Button component
 **Props:**
 
 - `children`: ReactNode
-- `className`: string
 - `icon`: ReactNode
 - `loading`: boolean
 - `shape`: enum [default: base]
@@ -263,6 +262,11 @@ Button component
     - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control`
     - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70`
     - `data-state`: `data-[state=open]:bg-kumo-control`
+- `render`: ReactNode
+  Allows you to replace the component’s HTML element with a different tag, or compose it with another component.
+
+Accepts a `ReactElement` or a function that returns the element to render.
+- `className`: string
 - `id`: string
 - `lang`: string
 - `title`: string
@@ -316,6 +320,51 @@ Button component
       <Button variant="secondary" shape="square" icon={PlusIcon} />
       <Button variant="secondary" shape="circle" icon={PlusIcon} />
     </div>
+```
+
+```tsx
+<Button
+      render={
+        <a
+          href="https://cloudflare.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      }
+      variant="primary"
+    >
+      Visit Cloudflare
+      <ArrowUpRight className="ml-1" />
+    </Button>
+```
+
+```tsx
+<div className="flex flex-wrap items-center gap-3">
+      <Button render={<a href="#primary" />} variant="primary">
+        Primary Link
+      </Button>
+      <Button render={<a href="#secondary" />} variant="secondary">
+        Secondary Link
+      </Button>
+      <Button render={<a href="#ghost" />} variant="ghost">
+        Ghost Link
+      </Button>
+    </div>
+```
+
+```tsx
+<Button
+      loading={false}
+      render={(
+        props: React.HTMLAttributes<HTMLAnchorElement>,
+        state: { loading: boolean },
+      ) => (
+        <a {...props} href="#callback">
+          {state.loading ? "Loading..." : "Render Callback"}
+        </a>
+      )}
+      variant="secondary"
+    />
 ```
 
 

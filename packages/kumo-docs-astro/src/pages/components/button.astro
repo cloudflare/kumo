@@ -18,6 +18,9 @@ import {
   ButtonIconOnlyDemo,
   ButtonLoadingDemo,
   ButtonDisabledDemo,
+  ButtonAsLinkDemo,
+  ButtonAsLinkVariantsDemo,
+  ButtonRenderCallbackDemo,
 } from "../../components/demos/ButtonDemo";
 ---
 
@@ -178,6 +181,123 @@ export default function Example() {
       >
         <ButtonDisabledDemo client:visible />
       </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <!-- Composition / Polymorphism -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Composition</Heading>
+    <p class="mb-6 text-kumo-subtle">
+      The Button component supports polymorphism via the <code class="bg-kumo-recessed px-1.5 py-0.5 rounded text-sm">render</code> prop,
+      allowing you to render it as a different element (like an anchor) or compose it with routing libraries
+      like React Router or Next.js Link.
+    </p>
+
+    <!-- As a Link -->
+    <div class="mb-12">
+      <Heading level={3}>As a Link</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Render the button as an anchor element for external links or standard navigation.
+      </p>
+      <ComponentExample
+        code={`<Button
+  render={<a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" />}
+  variant="primary"
+>
+  Visit Cloudflare
+  <ArrowUpRight className="ml-1" />
+</Button>`}
+      >
+        <ButtonAsLinkDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- With Different Variants -->
+    <div class="mb-12">
+      <Heading level={3}>Link Variants</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        All button variants work seamlessly with the render prop.
+      </p>
+      <ComponentExample
+        code={`<Button render={<a href="#primary" />} variant="primary">
+  Primary Link
+</Button>
+<Button render={<a href="#secondary" />} variant="secondary">
+  Secondary Link
+</Button>
+<Button render={<a href="#ghost" />} variant="ghost">
+  Ghost Link
+</Button>`}
+      >
+        <ButtonAsLinkVariantsDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- With React Router -->
+    <div class="mb-12">
+      <Heading level={3}>With React Router</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Compose with React Router's <code class="bg-kumo-recessed px-1.5 py-0.5 rounded text-sm">Link</code> for client-side navigation.
+      </p>
+      <CodeBlock
+        code={`import { Link } from 'react-router-dom';
+
+<Button render={<Link to="/dashboard" />} variant="primary">
+  Go to Dashboard
+</Button>`}
+        lang="tsx"
+      />
+    </div>
+
+    <!-- With Next.js Link -->
+    <div class="mb-12">
+      <Heading level={3}>With Next.js</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Compose with Next.js <code class="bg-kumo-recessed px-1.5 py-0.5 rounded text-sm">Link</code> for optimized navigation.
+      </p>
+      <CodeBlock
+        code={`import Link from 'next/link';
+
+<Button render={<Link href="/about" />} variant="secondary">
+  About Us
+</Button>`}
+        lang="tsx"
+      />
+    </div>
+
+    <!-- Render Callback -->
+    <div class="mb-12">
+      <Heading level={3}>Render Callback</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        For advanced use cases, pass a function to access props and state for conditional rendering.
+      </p>
+      <ComponentExample
+        code={`<Button
+  loading={false}
+  render={(props, state) => (
+    <a {...props} href="#callback">
+      {state.loading ? "Loading..." : "Render Callback"}
+    </a>
+  )}
+  variant="secondary"
+/>`}
+      >
+        <ButtonRenderCallbackDemo client:visible />
+      </ComponentExample>
+      <p class="mt-4 text-sm text-kumo-subtle">
+        The callback receives <code class="bg-kumo-recessed px-1 py-0.5 rounded">props</code> (to spread on your element)
+        and <code class="bg-kumo-recessed px-1 py-0.5 rounded">state</code> (containing <code class="bg-kumo-recessed px-1 py-0.5 rounded">loading</code> and <code class="bg-kumo-recessed px-1 py-0.5 rounded">disabled</code>).
+      </p>
+    </div>
+
+    <!-- Important Notes -->
+    <div class="mb-12 rounded-lg border border-kumo-line bg-kumo-elevated p-4">
+      <Heading level={3} class="mb-2 text-base">Important Notes</Heading>
+      <ul class="list-inside list-disc space-y-2 text-sm text-kumo-subtle">
+        <li>The custom element must forward refs and spread all received props on its DOM node.</li>
+        <li>Button styles, loading states, and disabled states are automatically applied to the rendered element.</li>
+        <li>Use <code class="bg-kumo-recessed px-1 py-0.5 rounded">LinkButton</code> if you need a simpler API for basic link buttons without framework-specific routing.</li>
+      </ul>
     </div>
   </ComponentSection>
 

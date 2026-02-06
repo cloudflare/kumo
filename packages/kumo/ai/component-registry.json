@@ -226,16 +226,12 @@
     "Button": {
       "name": "Button",
       "type": "component",
-      "description": "Button component",
+      "description": "Button component with support for composition via the `render` prop.  The `render` prop allows you to replace the underlying `<button>` element with a different element or component (like an anchor or React Router Link), while preserving all Button styling and behavior.",
       "importPath": "@cloudflare/kumo",
       "category": "Action",
       "props": {
         "children": {
           "type": "ReactNode",
-          "optional": true
-        },
-        "className": {
-          "type": "string",
           "optional": true
         },
         "icon": {
@@ -340,6 +336,15 @@
           },
           "default": "secondary"
         },
+        "render": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Allows you to replace the component’s HTML element with a different tag, or compose it with another component.\n\nAccepts a `ReactElement` or a function that returns the element to render."
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
         "id": {
           "type": "string",
           "optional": true
@@ -386,7 +391,10 @@
         "<Button variant=\"secondary\" icon={PlusIcon}>\n      Create Worker\n    </Button>",
         "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button variant=\"secondary\" shape=\"square\" icon={PlusIcon} />\n      <Button variant=\"secondary\" shape=\"circle\" icon={PlusIcon} />\n    </div>",
         "<Button variant=\"primary\" loading>\n      Loading...\n    </Button>",
-        "<Button variant=\"secondary\" disabled>\n      Disabled\n    </Button>"
+        "<Button variant=\"secondary\" disabled>\n      Disabled\n    </Button>",
+        "<Button\n      render={\n        <a\n          href=\"https://cloudflare.com\"\n          target=\"_blank\"\n          rel=\"noopener noreferrer\"\n        />\n      }\n      variant=\"primary\"\n    >\n      Visit Cloudflare\n      <ArrowUpRight className=\"ml-1\" />\n    </Button>",
+        "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button render={<a href=\"#primary\" />} variant=\"primary\">\n        Primary Link\n      </Button>\n      <Button render={<a href=\"#secondary\" />} variant=\"secondary\">\n        Secondary Link\n      </Button>\n      <Button render={<a href=\"#ghost\" />} variant=\"ghost\">\n        Ghost Link\n      </Button>\n    </div>",
+        "<Button\n      loading={false}\n      render={(\n        props: React.HTMLAttributes<HTMLAnchorElement>,\n        state: { loading: boolean },\n      ) => (\n        <a {...props} href=\"#callback\">\n          {state.loading ? \"Loading...\" : \"Render Callback\"}\n        </a>\n      )}\n      variant=\"secondary\"\n    />"
       ],
       "colors": [
         "bg-kumo-base",
