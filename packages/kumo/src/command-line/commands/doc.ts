@@ -45,8 +45,8 @@ interface ComponentRegistry {
  */
 function getRegistryPath(): string {
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  // When bundled and running from dist/command-line/, go up 2 levels to package root then into catalog/
-  return join(__dirname, "..", "..", "catalog", "component-registry.json");
+  // When bundled and running from dist/command-line/, go up 2 levels to package root then into ai/
+  return join(__dirname, "..", "..", "ai", "component-registry.json");
 }
 
 /**
