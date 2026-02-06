@@ -35,6 +35,7 @@ import {
   Toasty,
   Tooltip,
   TooltipProvider,
+  useKumoToastManager,
 } from "@cloudflare/kumo";
 import {
   MagnifyingGlassIcon,
@@ -85,13 +86,14 @@ const componentRoutes: Record<string, string> = {
 };
 
 function ToastTriggerButton() {
-  const toastManager = Toast.useToastManager();
+  const toastManager = useKumoToastManager();
   return (
     <Button
       onClick={() =>
         toastManager.add({
           title: `Toast created`,
           description: "This is a toast notification.",
+          variant: "warning",
         })
       }
     >

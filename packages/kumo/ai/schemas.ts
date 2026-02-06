@@ -441,7 +441,9 @@ export const TextPropsSchema = z.object({
 });
 
 export const ToastyPropsSchema = z.object({
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  variant: z.enum(["default", "error", "warning"]).optional(),
+  className: z.string().optional(), // Additional CSS classes
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
 });
 
 export const TooltipPropsSchema = z.object({

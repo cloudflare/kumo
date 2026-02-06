@@ -3924,11 +3924,18 @@ Toasty component
 
 **Props:**
 
+- `variant`: enum [default: default]
+  - `"default"`: Default toast style
+  - `"error"`: Error toast for critical issues
+  - `"warning"`: Warning toast for cautionary messages
+- `className`: string
+  Additional CSS classes
 - `children`: ReactNode
+  Child elements
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-contrast`, `bg-kumo-control`, `bg-kumo-fill-hover`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 

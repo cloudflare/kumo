@@ -3348,13 +3348,32 @@
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "default",
+            "error",
+            "warning"
+          ],
+          "default": "default",
+          "descriptions": {
+            "default": "Default toast style",
+            "error": "Error toast for critical issues",
+            "warning": "Warning toast for cautionary messages"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
         "children": {
           "type": "ReactNode",
-          "optional": true
+          "description": "Child elements"
         }
       },
       "examples": [],
       "colors": [
+        "bg-kumo-contrast",
         "bg-kumo-control",
         "bg-kumo-fill-hover",
         "border-kumo-fill",
