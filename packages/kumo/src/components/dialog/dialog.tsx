@@ -6,7 +6,7 @@ import { cn } from "../../utils/cn";
 export const KUMO_DIALOG_VARIANTS = {
   size: {
     base: {
-      classes: "min-w-96",
+      classes: "sm:min-w-96",
       description: "Default dialog width",
     },
     sm: {
@@ -99,7 +99,7 @@ export function dialogVariants({
 }: KumoDialogVariantsProps = {}) {
   return cn(
     // Base styles
-    "shadow-m z-modal fixed top-1/2 left-1/2 max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-kumo-base text-kumo-default duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
+    "shadow-m z-modal fixed top-1/2 left-1/2 w-full sm:w-auto max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-kumo-base text-kumo-default duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
     // Apply size from KUMO_DIALOG_VARIANTS
     KUMO_DIALOG_VARIANTS.size[size].classes,
   );
