@@ -726,6 +726,1135 @@
         ]
       }
     },
+    "CloudflareLogo": {
+      "name": "CloudflareLogo",
+      "type": "component",
+      "description": "Cloudflare logo component.",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "height": {
+          "type": "number | string",
+          "optional": true
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "media": {
+          "type": "string",
+          "optional": true
+        },
+        "method": {
+          "type": "string",
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": true
+        },
+        "target": {
+          "type": "string",
+          "optional": true
+        },
+        "type": {
+          "type": "string",
+          "optional": true
+        },
+        "width": {
+          "type": "number | string",
+          "optional": true
+        },
+        "accentHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "accumulate": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "none",
+            "sum"
+          ]
+        },
+        "additive": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "replace",
+            "sum"
+          ]
+        },
+        "alignmentBaseline": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "auto",
+            "baseline",
+            "before-edge",
+            "text-before-edge",
+            "middle",
+            "central",
+            "after-edge",
+            "text-after-edge",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "inherit"
+          ]
+        },
+        "allowReorder": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "no",
+            "yes"
+          ]
+        },
+        "alphabetic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "amplitude": {
+          "type": "number | string",
+          "optional": true
+        },
+        "arabicForm": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "initial",
+            "medial",
+            "terminal",
+            "isolated"
+          ]
+        },
+        "ascent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "attributeName": {
+          "type": "string",
+          "optional": true
+        },
+        "attributeType": {
+          "type": "string",
+          "optional": true
+        },
+        "autoReverse": {
+          "type": "Booleanish",
+          "optional": true
+        },
+        "azimuth": {
+          "type": "number | string",
+          "optional": true
+        },
+        "baseFrequency": {
+          "type": "number | string",
+          "optional": true
+        },
+        "baselineShift": {
+          "type": "number | string",
+          "optional": true
+        },
+        "baseProfile": {
+          "type": "number | string",
+          "optional": true
+        },
+        "bbox": {
+          "type": "number | string",
+          "optional": true
+        },
+        "begin": {
+          "type": "number | string",
+          "optional": true
+        },
+        "bias": {
+          "type": "number | string",
+          "optional": true
+        },
+        "by": {
+          "type": "number | string",
+          "optional": true
+        },
+        "calcMode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "capHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "clip": {
+          "type": "number | string",
+          "optional": true
+        },
+        "clipPath": {
+          "type": "string",
+          "optional": true
+        },
+        "clipPathUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "clipRule": {
+          "type": "number | string",
+          "optional": true
+        },
+        "colorInterpolation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "colorInterpolationFilters": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "auto",
+            "sRGB",
+            "linearRGB",
+            "inherit"
+          ]
+        },
+        "colorProfile": {
+          "type": "number | string",
+          "optional": true
+        },
+        "colorRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "contentScriptType": {
+          "type": "number | string",
+          "optional": true
+        },
+        "contentStyleType": {
+          "type": "number | string",
+          "optional": true
+        },
+        "cursor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "cx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "cy": {
+          "type": "number | string",
+          "optional": true
+        },
+        "d": {
+          "type": "string",
+          "optional": true
+        },
+        "decelerate": {
+          "type": "number | string",
+          "optional": true
+        },
+        "descent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "diffuseConstant": {
+          "type": "number | string",
+          "optional": true
+        },
+        "direction": {
+          "type": "number | string",
+          "optional": true
+        },
+        "display": {
+          "type": "number | string",
+          "optional": true
+        },
+        "divisor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "dominantBaseline": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "auto",
+            "use-script",
+            "no-change",
+            "reset-size",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "central",
+            "middle",
+            "text-after-edge",
+            "text-before-edge",
+            "inherit"
+          ]
+        },
+        "dur": {
+          "type": "number | string",
+          "optional": true
+        },
+        "dx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "dy": {
+          "type": "number | string",
+          "optional": true
+        },
+        "edgeMode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "elevation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "enableBackground": {
+          "type": "number | string",
+          "optional": true
+        },
+        "end": {
+          "type": "number | string",
+          "optional": true
+        },
+        "exponent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "externalResourcesRequired": {
+          "type": "Booleanish",
+          "optional": true
+        },
+        "fill": {
+          "type": "string",
+          "optional": true
+        },
+        "fillOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fillRule": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "nonzero",
+            "evenodd",
+            "inherit"
+          ]
+        },
+        "filter": {
+          "type": "string",
+          "optional": true
+        },
+        "filterRes": {
+          "type": "number | string",
+          "optional": true
+        },
+        "filterUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "floodColor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "floodOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "focusable": {
+          "type": "Booleanish | string",
+          "optional": true
+        },
+        "fontFamily": {
+          "type": "string",
+          "optional": true
+        },
+        "fontSize": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontSizeAdjust": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontStretch": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontStyle": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontVariant": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontWeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "format": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fr": {
+          "type": "number | string",
+          "optional": true
+        },
+        "from": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fy": {
+          "type": "number | string",
+          "optional": true
+        },
+        "g1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "g2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphName": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphOrientationHorizontal": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphOrientationVertical": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphRef": {
+          "type": "number | string",
+          "optional": true
+        },
+        "gradientTransform": {
+          "type": "string",
+          "optional": true
+        },
+        "gradientUnits": {
+          "type": "string",
+          "optional": true
+        },
+        "hanging": {
+          "type": "number | string",
+          "optional": true
+        },
+        "horizAdvX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "horizOriginX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "href": {
+          "type": "string",
+          "optional": true
+        },
+        "ideographic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "imageRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "in2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "in": {
+          "type": "string",
+          "optional": true
+        },
+        "intercept": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k3": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k4": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k": {
+          "type": "number | string",
+          "optional": true
+        },
+        "kernelMatrix": {
+          "type": "number | string",
+          "optional": true
+        },
+        "kernelUnitLength": {
+          "type": "number | string",
+          "optional": true
+        },
+        "kerning": {
+          "type": "number | string",
+          "optional": true
+        },
+        "keyPoints": {
+          "type": "number | string",
+          "optional": true
+        },
+        "keySplines": {
+          "type": "number | string",
+          "optional": true
+        },
+        "keyTimes": {
+          "type": "number | string",
+          "optional": true
+        },
+        "lengthAdjust": {
+          "type": "number | string",
+          "optional": true
+        },
+        "letterSpacing": {
+          "type": "number | string",
+          "optional": true
+        },
+        "lightingColor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "limitingConeAngle": {
+          "type": "number | string",
+          "optional": true
+        },
+        "local": {
+          "type": "number | string",
+          "optional": true
+        },
+        "markerEnd": {
+          "type": "string",
+          "optional": true
+        },
+        "markerHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "markerMid": {
+          "type": "string",
+          "optional": true
+        },
+        "markerStart": {
+          "type": "string",
+          "optional": true
+        },
+        "markerUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "markerWidth": {
+          "type": "number | string",
+          "optional": true
+        },
+        "mask": {
+          "type": "string",
+          "optional": true
+        },
+        "maskContentUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "maskUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "mathematical": {
+          "type": "number | string",
+          "optional": true
+        },
+        "mode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "numOctaves": {
+          "type": "number | string",
+          "optional": true
+        },
+        "offset": {
+          "type": "number | string",
+          "optional": true
+        },
+        "opacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "operator": {
+          "type": "number | string",
+          "optional": true
+        },
+        "order": {
+          "type": "number | string",
+          "optional": true
+        },
+        "orient": {
+          "type": "number | string",
+          "optional": true
+        },
+        "orientation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "origin": {
+          "type": "number | string",
+          "optional": true
+        },
+        "overflow": {
+          "type": "number | string",
+          "optional": true
+        },
+        "overlinePosition": {
+          "type": "number | string",
+          "optional": true
+        },
+        "overlineThickness": {
+          "type": "number | string",
+          "optional": true
+        },
+        "paintOrder": {
+          "type": "number | string",
+          "optional": true
+        },
+        "panose1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "path": {
+          "type": "string",
+          "optional": true
+        },
+        "pathLength": {
+          "type": "number | string",
+          "optional": true
+        },
+        "patternContentUnits": {
+          "type": "string",
+          "optional": true
+        },
+        "patternTransform": {
+          "type": "number | string",
+          "optional": true
+        },
+        "patternUnits": {
+          "type": "string",
+          "optional": true
+        },
+        "pointerEvents": {
+          "type": "number | string",
+          "optional": true
+        },
+        "points": {
+          "type": "string",
+          "optional": true
+        },
+        "pointsAtX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "pointsAtY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "pointsAtZ": {
+          "type": "number | string",
+          "optional": true
+        },
+        "preserveAlpha": {
+          "type": "Booleanish",
+          "optional": true
+        },
+        "preserveAspectRatio": {
+          "type": "string",
+          "optional": true
+        },
+        "primitiveUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "r": {
+          "type": "number | string",
+          "optional": true
+        },
+        "radius": {
+          "type": "number | string",
+          "optional": true
+        },
+        "refX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "refY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "renderingIntent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "repeatCount": {
+          "type": "number | string",
+          "optional": true
+        },
+        "repeatDur": {
+          "type": "number | string",
+          "optional": true
+        },
+        "requiredExtensions": {
+          "type": "number | string",
+          "optional": true
+        },
+        "requiredFeatures": {
+          "type": "number | string",
+          "optional": true
+        },
+        "restart": {
+          "type": "number | string",
+          "optional": true
+        },
+        "result": {
+          "type": "string",
+          "optional": true
+        },
+        "rotate": {
+          "type": "number | string",
+          "optional": true
+        },
+        "rx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "ry": {
+          "type": "number | string",
+          "optional": true
+        },
+        "scale": {
+          "type": "number | string",
+          "optional": true
+        },
+        "seed": {
+          "type": "number | string",
+          "optional": true
+        },
+        "shapeRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "slope": {
+          "type": "number | string",
+          "optional": true
+        },
+        "spacing": {
+          "type": "number | string",
+          "optional": true
+        },
+        "specularConstant": {
+          "type": "number | string",
+          "optional": true
+        },
+        "specularExponent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "speed": {
+          "type": "number | string",
+          "optional": true
+        },
+        "spreadMethod": {
+          "type": "string",
+          "optional": true
+        },
+        "startOffset": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stdDeviation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stemh": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stemv": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stitchTiles": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stopColor": {
+          "type": "string",
+          "optional": true
+        },
+        "stopOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strikethroughPosition": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strikethroughThickness": {
+          "type": "number | string",
+          "optional": true
+        },
+        "string": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stroke": {
+          "type": "string",
+          "optional": true
+        },
+        "strokeDasharray": {
+          "type": "string | number",
+          "optional": true
+        },
+        "strokeDashoffset": {
+          "type": "string | number",
+          "optional": true
+        },
+        "strokeLinecap": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "butt",
+            "round",
+            "square",
+            "inherit"
+          ]
+        },
+        "strokeLinejoin": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "miter",
+            "round",
+            "bevel",
+            "inherit"
+          ]
+        },
+        "strokeMiterlimit": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strokeOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strokeWidth": {
+          "type": "number | string",
+          "optional": true
+        },
+        "surfaceScale": {
+          "type": "number | string",
+          "optional": true
+        },
+        "systemLanguage": {
+          "type": "number | string",
+          "optional": true
+        },
+        "tableValues": {
+          "type": "number | string",
+          "optional": true
+        },
+        "targetX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "targetY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "textAnchor": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "start",
+            "middle",
+            "end",
+            "inherit"
+          ]
+        },
+        "textDecoration": {
+          "type": "number | string",
+          "optional": true
+        },
+        "textLength": {
+          "type": "number | string",
+          "optional": true
+        },
+        "textRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "to": {
+          "type": "number | string",
+          "optional": true
+        },
+        "transform": {
+          "type": "string",
+          "optional": true
+        },
+        "u1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "u2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "underlinePosition": {
+          "type": "number | string",
+          "optional": true
+        },
+        "underlineThickness": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unicode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unicodeBidi": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unicodeRange": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unitsPerEm": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vAlphabetic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "values": {
+          "type": "string",
+          "optional": true
+        },
+        "vectorEffect": {
+          "type": "number | string",
+          "optional": true
+        },
+        "version": {
+          "type": "string",
+          "optional": true
+        },
+        "vertAdvY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vertOriginX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vertOriginY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vHanging": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vIdeographic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "viewBox": {
+          "type": "string",
+          "optional": true
+        },
+        "viewTarget": {
+          "type": "number | string",
+          "optional": true
+        },
+        "visibility": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vMathematical": {
+          "type": "number | string",
+          "optional": true
+        },
+        "widths": {
+          "type": "number | string",
+          "optional": true
+        },
+        "wordSpacing": {
+          "type": "number | string",
+          "optional": true
+        },
+        "writingMode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "x1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "x2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "x": {
+          "type": "number | string",
+          "optional": true
+        },
+        "xChannelSelector": {
+          "type": "string",
+          "optional": true
+        },
+        "xHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "xlinkActuate": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkArcrole": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkHref": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkRole": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkShow": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkTitle": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkType": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlBase": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlLang": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlns": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlnsXlink": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlSpace": {
+          "type": "string",
+          "optional": true
+        },
+        "y1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "y2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "y": {
+          "type": "number | string",
+          "optional": true
+        },
+        "yChannelSelector": {
+          "type": "string",
+          "optional": true
+        },
+        "z": {
+          "type": "number | string",
+          "optional": true
+        },
+        "zoomAndPan": {
+          "type": "string",
+          "optional": true
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Logo variant\n- `glyph`: Cloud icon only\n- `full`: Cloud icon with \"CLOUDFLARE\" wordmark below",
+          "values": [
+            "glyph",
+            "full"
+          ],
+          "descriptions": {
+            "glyph": "Cloud glyph only (logomark)",
+            "full": "Full logo with cloud glyph and wordmark stacked"
+          },
+          "default": "full"
+        }
+      },
+      "examples": [
+        "<CloudflareLogo className=\"w-72\" />",
+        "<CloudflareLogo variant=\"glyph\" className=\"w-24\" />",
+        "<div className=\"flex flex-wrap items-center gap-8\">\n      <div className=\"flex flex-col items-center gap-2\">\n        <CloudflareLogo className=\"w-28\" color=\"color\" />\n        <span className=\"text-sm text-kumo-subtle\">color</span>\n      </div>\n      <div className=\"flex flex-col items-center gap-2\">\n        <CloudflareLogo className=\"w-28\" color=\"black\" />\n        <span className=\"text-sm text-kumo-subtle\">black</span>\n      </div>\n      <div className=\"flex flex-col items-center gap-2 rounded-lg bg-kumo-contrast p-4\">\n        <CloudflareLogo className=\"w-28\" color=\"white\" />\n        <span className=\"text-sm text-white/70\">white</span>\n      </div>\n    </div>",
+        "<div className=\"flex flex-wrap items-center gap-8\">\n      <div className=\"flex flex-col items-center gap-2\">\n        <CloudflareLogo variant=\"glyph\" className=\"w-12\" color=\"color\" />\n        <span className=\"text-sm text-kumo-subtle\">color</span>\n      </div>\n      <div className=\"flex flex-col items-center gap-2\">\n        <CloudflareLogo variant=\"glyph\" className=\"w-12\" color=\"black\" />\n        <span className=\"text-sm text-kumo-subtle\">black</span>\n      </div>\n      <div className=\"flex flex-col items-center gap-2 rounded-lg bg-kumo-contrast p-4\">\n        <CloudflareLogo variant=\"glyph\" className=\"w-12\" color=\"white\" />\n        <span className=\"text-sm text-white/70\">white</span>\n      </div>\n    </div>",
+        "<div className=\"flex flex-wrap items-end gap-6\">\n      <CloudflareLogo className=\"w-20\" />\n      <CloudflareLogo className=\"w-28\" />\n      <CloudflareLogo className=\"w-44\" />\n    </div>",
+        "<div className=\"flex items-center gap-4\">\n      <DropdownMenu>\n        <DropdownMenu.Trigger>\n          <button\n            type=\"button\"\n            className=\"flex items-center gap-2 rounded-lg bg-kumo-contrast px-4 py-3 text-white transition-opacity hover:opacity-80\"\n          >\n            <CloudflareLogo variant=\"glyph\" color=\"white\" className=\"w-8\" />\n            <span className=\"font-medium\">Logo</span>\n          </button>\n        </DropdownMenu.Trigger>\n        <DropdownMenu.Content>\n          <DropdownMenu.Item\n            icon={CloudIcon}\n            onSelect={() => copyToClipboard(generateGlyphSvg(), \"glyph\")}\n          >\n            {copied === \"glyph\" ? \"Copied!\" : \"Copy logo as SVG\"}\n          </DropdownMenu.Item>\n          <DropdownMenu.Item\n            icon={CodeIcon}\n            onSelect={() => copyToClipboard(generateFullLogoSvg(), \"wordmark\")}\n          >\n            {copied === \"wordmark\" ? \"Copied!\" : \"Copy wordmark as SVG\"}\n          </DropdownMenu.Item>\n          <DropdownMenu.Item\n            icon={DownloadSimpleIcon}\n            onSelect={() =>\n              window.open(\n                \"https://www.cloudflare.com/press-kit/\",\n                \"_blank\",\n                \"noopener\",\n              )\n            }\n          >\n            Download brand assets\n          </DropdownMenu.Item>\n          <DropdownMenu.Separator />\n          <DropdownMenu.Item\n            icon={ArrowSquareOutIcon}\n            onSelect={() =>\n              window.open(\n                \"https://www.cloudflare.com/brand-assets/\",\n                \"_blank\",\n                \"noopener\",\n              )\n            }\n          >\n            Visit brand guidelines\n          </DropdownMenu.Item>\n        </DropdownMenu.Content>\n      </DropdownMenu>\n\n      <span className=\"text-sm text-kumo-subtle\">\n        Click to open the brand assets menu\n      </span>\n    </div>",
+        "<PoweredByCloudflare />",
+        "<div className=\"flex flex-wrap items-center gap-4\">\n      <PoweredByCloudflare />\n      <PoweredByCloudflare color=\"black\" />\n      <div className=\"rounded-lg bg-kumo-contrast p-3\">\n        <PoweredByCloudflare color=\"white\" />\n      </div>\n    </div>",
+        "<footer className=\"flex w-full items-center justify-between rounded-lg border border-kumo-line bg-kumo-elevated px-6 py-4\">\n      <span className=\"text-sm text-kumo-subtle\">\n        &copy; 2026 Your Company. All rights reserved.\n      </span>\n      <PoweredByCloudflare />\n    </footer>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-overlay",
+        "ring-kumo-line",
+        "text-kumo-default"
+      ]
+    },
     "Code": {
       "name": "Code",
       "type": "component",
@@ -3643,6 +4772,13 @@
         "Select",
         "Switch"
       ],
+      "Other": [
+        "CloudflareLogo",
+        "Label",
+        "Link",
+        "SensitiveInput",
+        "Table"
+      ],
       "Navigation": [
         "CommandPalette",
         "MenuBar",
@@ -3660,12 +4796,6 @@
         "Surface",
         "PageHeader",
         "ResourceListPage"
-      ],
-      "Other": [
-        "Label",
-        "Link",
-        "SensitiveInput",
-        "Table"
       ]
     },
     "byName": [
@@ -3675,6 +4805,7 @@
       "Button",
       "Checkbox",
       "ClipboardText",
+      "CloudflareLogo",
       "Code",
       "Collapsible",
       "Combobox",
@@ -3715,6 +4846,7 @@
         "Button",
         "Checkbox",
         "ClipboardText",
+        "CloudflareLogo",
         "Code",
         "Collapsible",
         "Combobox",
