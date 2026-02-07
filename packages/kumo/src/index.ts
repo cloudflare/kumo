@@ -51,6 +51,12 @@ export {
   DialogTitle,
   DialogDescription,
   DialogClose,
+  type DialogProps,
+  type DialogRootProps,
+  type DialogTriggerProps,
+  type DialogTitleProps,
+  type DialogDescriptionProps,
+  type DialogCloseProps,
 } from "./components/dialog";
 export { DropdownMenu } from "./components/dropdown";
 export { Collapsible } from "./components/collapsible";

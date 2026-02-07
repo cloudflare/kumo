@@ -1,4 +1,4 @@
-import type { CSSProperties, FC, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
 import { Surface } from "../surface";
 import { cn } from "../../utils/cn";
@@ -183,27 +183,91 @@ function DialogContent({
   );
 }
 
-type DialogComponent = FC<DialogProps> & {
-  Root: typeof DialogBase.Root;
-  Trigger: typeof DialogBase.Trigger;
-  Title: typeof DialogBase.Title;
-  Description: typeof DialogBase.Description;
-  Close: typeof DialogBase.Close;
-};
+// ============================================================================
+// Dialog Root
+// ============================================================================
+
+type BaseDialogRootProps = ComponentPropsWithoutRef<typeof DialogBase.Root>;
+
+export type DialogRootProps = BaseDialogRootProps;
+
+function DialogRoot({ children, ...props }: DialogRootProps) {
+  return <DialogBase.Root {...props}>{children}</DialogBase.Root>;
+}
+
+DialogRoot.displayName = "Dialog.Root";
+
+// ============================================================================
+// Dialog Trigger
+// ============================================================================
+
+type BaseDialogTriggerProps = ComponentPropsWithoutRef<
+  typeof DialogBase.Trigger
+>;
+
+export type DialogTriggerProps = BaseDialogTriggerProps;
+
+function DialogTrigger({ children, ...props }: DialogTriggerProps) {
+  return <DialogBase.Trigger {...props}>{children}</DialogBase.Trigger>;
+}
+
+DialogTrigger.displayName = "Dialog.Trigger";
+
+// ============================================================================
+// Dialog Title
+// ============================================================================
+
+type BaseDialogTitleProps = ComponentPropsWithoutRef<typeof DialogBase.Title>;
+
+export type DialogTitleProps = BaseDialogTitleProps;
+
+function DialogTitle({ className, ...props }: DialogTitleProps) {
+  return <DialogBase.Title className={className} {...props} />;
+}
+
+DialogTitle.displayName = "Dialog.Title";
+
+// ============================================================================
+// Dialog Description
+// ============================================================================
+
+type BaseDialogDescriptionProps = ComponentPropsWithoutRef<
+  typeof DialogBase.Description
+>;
+
+export type DialogDescriptionProps = BaseDialogDescriptionProps;
+
+function DialogDescription({ className, ...props }: DialogDescriptionProps) {
+  return <DialogBase.Description className={className} {...props} />;
+}
+
+DialogDescription.displayName = "Dialog.Description";
+
+// ============================================================================
+// Dialog Close
+// ============================================================================
+
+type BaseDialogCloseProps = ComponentPropsWithoutRef<typeof DialogBase.Close>;
+
+export type DialogCloseProps = BaseDialogCloseProps;
+
+function DialogClose({ children, ...props }: DialogCloseProps) {
+  return <DialogBase.Close {...props}>{children}</DialogBase.Close>;
+}
+
+DialogClose.displayName = "Dialog.Close";
+
+// ============================================================================
+// Compound Component Export
+// ============================================================================
 
 const Dialog = Object.assign(DialogContent, {
-  Root: DialogBase.Root,
-  Trigger: DialogBase.Trigger,
-  Title: DialogBase.Title,
-  Description: DialogBase.Description,
-  Close: DialogBase.Close,
-}) as DialogComponent;
-
-const DialogRoot = Dialog.Root;
-const DialogTrigger = Dialog.Trigger;
-const DialogTitle = Dialog.Title;
-const DialogDescription = Dialog.Description;
-const DialogClose = Dialog.Close;
+  Root: DialogRoot,
+  Trigger: DialogTrigger,
+  Title: DialogTitle,
+  Description: DialogDescription,
+  Close: DialogClose,
+});
 
 export {
   Dialog,
