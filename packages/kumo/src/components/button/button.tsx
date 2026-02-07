@@ -151,24 +151,42 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
 /**
  * Button component props.
  *
+ * Uses a discriminated union on `shape` so that icon-only buttons
+ * (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ *
  * @example
  * ```tsx
  * <Button variant="primary">Save</Button>
- * <Button variant="secondary" shape="square" icon={PlusIcon} />
+ * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add" />
  * <Button variant="destructive" loading>Deleting...</Button>
  * ```
  */
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
-  KumoButtonVariantsProps & {
-    /** Content rendered inside the button. */
-    children?: React.ReactNode;
-    /** Additional CSS classes merged via `cn()`. */
-    className?: string;
-    /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
-    icon?: Icon | React.ReactNode;
-    /** Shows a loading spinner and disables interaction. */
-    loading?: boolean;
-  };
+type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Content rendered inside the button. */
+  children?: React.ReactNode;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+  /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
+  icon?: Icon | React.ReactNode;
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean;
+};
+
+type ButtonWithTextProps = ButtonBaseProps & {
+  shape?: "base";
+  size?: KumoButtonSize;
+  variant?: KumoButtonVariant;
+};
+
+type IconOnlyButtonProps = ButtonBaseProps & {
+  shape: "square" | "circle";
+  size?: KumoButtonSize;
+  variant?: KumoButtonVariant;
+  /** Required for icon-only buttons to provide accessible label for screen readers */
+  "aria-label": string;
+};
+
+export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
 
 /**
  * LinkButton component props — renders an anchor styled as a button.
