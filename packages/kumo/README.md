@@ -26,7 +26,7 @@ npx @cloudflare/kumo doc Button # Get component documentation
 npx @cloudflare/kumo docs       # Get all component docs
 ```
 
-The CLI reads from `catalog/component-registry.json` (generated from TypeScript types + Storybook examples).
+The CLI reads from `ai/component-registry.json` (generated from TypeScript types + demo examples).
 
 ## Usage
 
@@ -44,15 +44,19 @@ import { Button } from "@cloudflare/kumo/components/button";
 
 #### For Tailwind CSS Users
 
-```js
-// Explicit import (recommended)
-import "@cloudflare/kumo/styles/tailwind";
+**Important:** Tailwind CSS v4 does not scan `node_modules/` by default. You must add a `@source` directive so Tailwind can discover the utility classes used by Kumo components. Without this, components may render with missing styles (e.g. Dialogs not centered).
 
-// Or use the default export (same as above)
-import "@cloudflare/kumo/styles";
+In your main CSS file (e.g. `app.css`):
+
+```css
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@import "tailwindcss";
+@import "@cloudflare/kumo/styles/tailwind";
 ```
 
-This imports the raw CSS with Tailwind directives (`@theme`, `@layer`, etc.) that your Tailwind setup will process.
+Alternatively, you can use the default style export (`@cloudflare/kumo/styles`) which is equivalent to `styles/tailwind`.
+
+If you are **not** using Tailwind CSS, use the standalone build instead (see below) — no `@source` directive is needed.
 
 #### For Non-Tailwind Users (Standalone)
 

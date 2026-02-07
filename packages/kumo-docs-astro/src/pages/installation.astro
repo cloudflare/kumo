@@ -236,7 +236,8 @@ import "@cloudflare/kumo/styles/standalone";`}
           CSS File (app.css)
         </p>
         <CodeBlock
-          code={`@import "tailwindcss";
+          code={`@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@import "tailwindcss";
 @import "@cloudflare/kumo/styles/tailwind";`}
           lang="css"
         />
