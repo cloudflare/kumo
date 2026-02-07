@@ -243,6 +243,9 @@ export function Toasty({ children }: ToastyProps) {
   );
 }
 
+/** Alias for Toasty — provided for discoverability when migrating from other libraries */
+export const ToastProvider = Toasty;
+
 function ToastList() {
   const { toasts } = useKumoToastManager();
   return toasts.map((toast) => (
