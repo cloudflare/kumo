@@ -265,9 +265,8 @@ export const PoweredByCloudflare = forwardRef<
           "ring-1 ring-inset transition-all hover:shadow-sm",
           // Color variants using semantic tokens
           color === "color" && "bg-kumo-base text-kumo-default ring-kumo-line",
-          color === "black" && "bg-kumo-base text-kumo-default ring-kumo-line",
-          color === "white" &&
-            "bg-neutral-900 text-white ring-neutral-700",
+          color === "black" && "bg-white text-black ring-neutral-300",
+          color === "white" && "bg-neutral-900 text-white ring-neutral-700",
           className,
         )}
         {...props}
