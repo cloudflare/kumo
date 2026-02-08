@@ -253,7 +253,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         disabled={disabled}
         onCheckedChange={handleCheckedChange}
         className={cn(
-          "flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring",
+          "relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled && "hover:ring-kumo-ring focus-visible:ring-kumo-ring",
           "data-[checked]:bg-kumo-contrast data-[indeterminate]:bg-kumo-contrast",
@@ -355,7 +355,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           disabled={disabled}
           onCheckedChange={handleCheckedChange}
           className={cn(
-            "peer flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring",
+            "peer relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               "group-hover:ring-kumo-ring hover:ring-kumo-ring focus-visible:ring-kumo-ring",
