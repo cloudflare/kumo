@@ -4,6 +4,7 @@ import { Loader } from "../loader/loader";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 
+/** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
 export const KUMO_BUTTON_VARIANTS = {
   shape: {
     base: {
@@ -87,8 +88,33 @@ export type KumoButtonSize = keyof typeof KUMO_BUTTON_VARIANTS.size;
 export type KumoButtonVariant = keyof typeof KUMO_BUTTON_VARIANTS.variant;
 
 export interface KumoButtonVariantsProps {
+  /**
+   * Button shape.
+   * - `"base"` — Default rectangular button
+   * - `"square"` — Square button for icon-only actions
+   * - `"circle"` — Circular button for icon-only actions
+   * @default "base"
+   */
   shape?: KumoButtonShape;
+  /**
+   * Button size.
+   * - `"xs"` — Extra small for compact UIs
+   * - `"sm"` — Small for secondary actions
+   * - `"base"` — Default size
+   * - `"lg"` — Large for primary CTAs
+   * @default "base"
+   */
   size?: KumoButtonSize;
+  /**
+   * Visual style of the button.
+   * - `"primary"` — High-emphasis, brand-colored for primary actions
+   * - `"secondary"` — Default style with border for most actions
+   * - `"ghost"` — Minimal, no background for tertiary actions
+   * - `"destructive"` — Danger button for destructive actions
+   * - `"secondary-destructive"` — Secondary style with destructive text
+   * - `"outline"` — Bordered with transparent background
+   * @default "secondary"
+   */
   variant?: KumoButtonVariant;
 }
 
@@ -122,23 +148,59 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   return <Comp />;
 };
 
+/**
+ * Button component props.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary">Save</Button>
+ * <Button variant="secondary" shape="square" icon={PlusIcon} />
+ * <Button variant="destructive" loading>Deleting...</Button>
+ * ```
+ */
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   KumoButtonVariantsProps & {
+    /** Content rendered inside the button. */
     children?: React.ReactNode;
+    /** Additional CSS classes merged via `cn()`. */
     className?: string;
+    /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
     icon?: Icon | React.ReactNode;
+    /** Shows a loading spinner and disables interaction. */
     loading?: boolean;
   };
 
+/**
+ * LinkButton component props — renders an anchor styled as a button.
+ *
+ * @example
+ * ```tsx
+ * <LinkButton href="/docs" variant="ghost" icon={BookIcon}>Docs</LinkButton>
+ * <LinkButton href="https://example.com" external>Visit Site</LinkButton>
+ * ```
+ */
 export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
   KumoButtonVariantsProps & {
+    /** Content rendered inside the link button. */
     children?: React.ReactNode;
+    /** Additional CSS classes merged via `cn()`. */
     className?: string;
+    /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
     icon?: Icon | React.ReactNode;
+    /** When `true`, opens in a new tab with `rel="noopener noreferrer"`. */
     external?: boolean;
     linksExternal?: boolean;
   };
 
+/**
+ * Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary">Save</Button>
+ * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
+ * ```
+ */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -179,6 +241,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = "Button";
 
+/**
+ * Square button with a rotating arrows icon, used to trigger data refresh actions.
+ *
+ * @example
+ * ```tsx
+ * <RefreshButton loading={isRefreshing} onClick={refresh} />
+ * ```
+ */
 export const RefreshButton = ({
   "aria-label": ariaLabel = "Refresh",
   loading,
@@ -196,6 +266,14 @@ export const RefreshButton = ({
   </Button>
 );
 
+/**
+ * Anchor element styled as a button. Integrates with `LinkProvider` for framework routing.
+ *
+ * @example
+ * ```tsx
+ * <LinkButton href="/settings" variant="ghost">Settings</LinkButton>
+ * ```
+ */
 export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
   (
     {

@@ -2,6 +2,7 @@ import { Tooltip as TooltipBase } from "@base-ui/react/tooltip";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
+/** Tooltip side variant definitions mapping positions to their Tailwind classes. */
 export const KUMO_TOOLTIP_VARIANTS = {
   side: {
     top: {
@@ -31,6 +32,14 @@ export const KUMO_TOOLTIP_DEFAULT_VARIANTS = {
 export type KumoTooltipSide = keyof typeof KUMO_TOOLTIP_VARIANTS.side;
 
 export interface KumoTooltipVariantsProps {
+  /**
+   * Preferred side of the trigger to render the tooltip.
+   * - `"top"` — Tooltip appears above the trigger
+   * - `"bottom"` — Tooltip appears below the trigger
+   * - `"left"` — Tooltip appears to the left of the trigger
+   * - `"right"` — Tooltip appears to the right of the trigger
+   * @default "top"
+   */
   side?: KumoTooltipSide;
 }
 
@@ -59,14 +68,46 @@ type TriggerProps = ComponentPropsWithoutRef<typeof TooltipBase.Trigger>;
 /** Alignment options for tooltip positioning. Source: PositionerProps["align"] */
 type TooltipAlign = "start" | "center" | "end";
 
+/**
+ * Tooltip component props.
+ *
+ * @example
+ * ```tsx
+ * <TooltipProvider>
+ *   <Tooltip content="Add new item" asChild>
+ *     <Button shape="square" icon={PlusIcon} />
+ *   </Tooltip>
+ * </TooltipProvider>
+ * ```
+ */
 export type TooltipProps = BaseTooltipProps &
   KumoTooltipVariantsProps & {
+    /**
+     * Alignment on the axis perpendicular to `side`.
+     * - `"start"` — Align to the start edge
+     * - `"center"` — Center-aligned
+     * - `"end"` — Align to the end edge
+     */
     align?: TooltipAlign;
+    /** When `true`, the trigger wraps the child element instead of adding a wrapper. */
     asChild?: boolean;
+    /** Additional CSS classes merged via `cn()`. */
     className?: string;
+    /** Content to display inside the tooltip popup. */
     content: ReactNode;
   };
 
+/**
+ * Accessible popup that shows additional information on hover/focus.
+ * Wrap your app or section with `<TooltipProvider>` to enable delay grouping.
+ *
+ * @example
+ * ```tsx
+ * <Tooltip content="Save changes" asChild>
+ *   <Button variant="primary">Save</Button>
+ * </Tooltip>
+ * ```
+ */
 export function Tooltip({
   content,
   children,

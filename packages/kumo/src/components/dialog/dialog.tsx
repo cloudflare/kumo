@@ -3,6 +3,7 @@ import { Dialog as DialogBase } from "@base-ui/react/dialog";
 import { Surface } from "../surface";
 import { cn } from "../../utils/cn";
 
+/** Dialog size variant definitions mapping sizes to their minimum widths. */
 export const KUMO_DIALOG_VARIANTS = {
   size: {
     base: {
@@ -91,6 +92,14 @@ export const KUMO_DIALOG_STYLING = {
 export type KumoDialogSize = keyof typeof KUMO_DIALOG_VARIANTS.size;
 
 export interface KumoDialogVariantsProps {
+  /**
+   * Dialog width.
+   * - `"sm"` — Small (min 288px) for simple confirmations
+   * - `"base"` — Default (min 384px)
+   * - `"lg"` — Large (min 512px) for complex content
+   * - `"xl"` — Extra large (min 768px) for detailed views
+   * @default "base"
+   */
   size?: KumoDialogSize;
 }
 
@@ -105,12 +114,46 @@ export function dialogVariants({
   );
 }
 
+/**
+ * Dialog component props — the modal content panel.
+ *
+ * @example
+ * ```tsx
+ * <Dialog.Root>
+ *   <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
+ *   <Dialog className="p-8">
+ *     <Dialog.Title>Confirm Action</Dialog.Title>
+ *     <Dialog.Description>Are you sure?</Dialog.Description>
+ *     <Dialog.Close render={(p) => <Button {...p}>Cancel</Button>} />
+ *   </Dialog>
+ * </Dialog.Root>
+ * ```
+ */
 export type DialogProps = KumoDialogVariantsProps & {
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Dialog content (typically Title, Description, Close, and action buttons). */
   children: ReactNode;
+  /** Inline styles. */
   style?: CSSProperties;
 };
 
+/**
+ * Modal dialog overlay with backdrop. Compound component with `Dialog.Root`,
+ * `Dialog.Trigger`, `Dialog.Title`, `Dialog.Description`, and `Dialog.Close`.
+ *
+ * @example
+ * ```tsx
+ * <Dialog.Root>
+ *   <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
+ *   <Dialog className="p-8">
+ *     <Dialog.Title>Delete Item</Dialog.Title>
+ *     <Dialog.Description>This action cannot be undone.</Dialog.Description>
+ *     <Dialog.Close render={(p) => <Button variant="destructive" {...p}>Delete</Button>} />
+ *   </Dialog>
+ * </Dialog.Root>
+ * ```
+ */
 function DialogContent({
   className,
   children,

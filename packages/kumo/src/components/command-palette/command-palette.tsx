@@ -778,17 +778,52 @@ function Results({
 
 const Items = Autocomplete.Collection;
 
-/**
- * CommandPalette variants configuration.
- * CommandPalette is a compound component without traditional variants.
- */
+/** CommandPalette variant definitions (no user-facing variants; structure reserved for future use). */
 export const KUMO_COMMAND_PALETTE_VARIANTS = {} as const;
 
-/**
- * CommandPalette default variants.
- */
 export const KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS = {} as const;
 
+/**
+ * CommandPalette — accessible command palette / spotlight search overlay.
+ *
+ * Compound component: `CommandPalette.Root` (or `.Dialog` + `.Panel`),
+ * `.Input`, `.List`, `.Results`, `.Items`, `.Group`, `.GroupLabel`,
+ * `.Item`, `.ResultItem`, `.HighlightedText`, `.Empty`, `.Loading`, `.Footer`.
+ *
+ * Built on `@base-ui/react/autocomplete` + `@base-ui/react/dialog`.
+ *
+ * @example
+ * ```tsx
+ * <CommandPalette.Root
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   items={results}
+ *   value={query}
+ *   onValueChange={setQuery}
+ *   itemToStringValue={(g) => g.label}
+ *   onSelect={(item, { newTab }) => navigate(item, newTab)}
+ *   getSelectableItems={(groups) => groups.flatMap((g) => g.items)}
+ * >
+ *   <CommandPalette.Input placeholder="Search…" />
+ *   <CommandPalette.List>
+ *     <CommandPalette.Results>
+ *       {(group) => (
+ *         <CommandPalette.Group items={group.items}>
+ *           <CommandPalette.GroupLabel>{group.label}</CommandPalette.GroupLabel>
+ *           <CommandPalette.Items>
+ *             {(item) => (
+ *               <CommandPalette.ResultItem title={item.title} value={item} onClick={…} />
+ *             )}
+ *           </CommandPalette.Items>
+ *         </CommandPalette.Group>
+ *       )}
+ *     </CommandPalette.Results>
+ *     <CommandPalette.Empty>No results found</CommandPalette.Empty>
+ *   </CommandPalette.List>
+ *   <CommandPalette.Footer>…keyboard hints…</CommandPalette.Footer>
+ * </CommandPalette.Root>
+ * ```
+ */
 export const CommandPalette = {
   /** Modal dialog wrapper - use with Panel for content that can swap */
   Dialog,

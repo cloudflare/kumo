@@ -9,6 +9,7 @@ import {
 } from "react";
 import { cn } from "../../utils/cn";
 
+/** Text variant and size definitions mapping names to their Tailwind classes. */
 export const KUMO_TEXT_VARIANTS = {
   variant: {
     heading1: {
@@ -170,22 +171,60 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
         : never);
 
 /**
- * Props for the Text component.
- * @description A typography component for rendering text with consistent styling.
+ * Text component props.
+ *
+ * @example
+ * ```tsx
+ * <Text variant="heading1">Page Title</Text>
+ * <Text variant="body">Default paragraph text.</Text>
+ * <Text variant="secondary" size="sm">Muted helper text</Text>
+ * <Text variant="error">Something went wrong</Text>
+ * <Text variant="mono">console.log("code")</Text>
+ * ```
  */
 export interface TextProps {
-  /** Text style variant */
+  /**
+   * Text style variant. Determines color, font, and weight.
+   * - `"heading1"` — Large page title (30px, semibold)
+   * - `"heading2"` — Section title (24px, semibold)
+   * - `"heading3"` — Subsection title (18px, semibold)
+   * - `"body"` — Default body text
+   * - `"secondary"` — Muted text for secondary information
+   * - `"success"` — Success state text
+   * - `"error"` — Error state text
+   * - `"mono"` — Monospace text for code
+   * - `"mono-secondary"` — Muted monospace text
+   * @default "body"
+   */
   variant?: KumoTextVariant;
-  /** Text size (only applies to body/secondary/success/error variants) */
+  /**
+   * Text size (only applies to body/secondary/success/error variants).
+   * - `"xs"` — 12px
+   * - `"sm"` — 14px
+   * - `"base"` — 16px
+   * - `"lg"` — 18px
+   * @default "base"
+   */
   size?: KumoTextSize;
-  /** Whether to use bold font weight (only applies to body variants) */
+  /** Whether to use bold font weight (only applies to body variants). */
   bold?: boolean;
-  /** The element type to render as */
+  /** The HTML element type to render as (e.g. `"span"`, `"p"`, `"h1"`). Auto-selected based on variant if omitted. */
   as?: ElementType;
-  /** Child text content */
+  /** Text content. */
   children?: React.ReactNode;
 }
 
+/**
+ * Typography component for rendering text with consistent styling.
+ * Automatically selects the appropriate HTML element based on variant
+ * (`h1`/`h2`/`h3` for headings, `p` for body, `span` for mono).
+ *
+ * @example
+ * ```tsx
+ * <Text variant="heading1">Dashboard</Text>
+ * <Text>Default body text</Text>
+ * ```
+ */
 function _Text<Variant extends TextVariant = "body">(
   {
     variant = "body" as Variant,
