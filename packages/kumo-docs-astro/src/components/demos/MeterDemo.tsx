@@ -25,7 +25,7 @@ export function MeterCustomStyleDemo() {
     <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-green-500 via-green-500 to-green-500"
+      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
     />
   );
 }
