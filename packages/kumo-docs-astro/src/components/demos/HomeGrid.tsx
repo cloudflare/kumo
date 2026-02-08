@@ -105,6 +105,7 @@ function ToastTriggerButton() {
 export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
+  const [value, setValue] = useState<{ id: string; value: string; } | null>(null);
 
   const components: Array<{
     name: string;
@@ -168,6 +169,8 @@ export function HomeGrid() {
             { id: "help-wanted", value: "help wanted" },
             { id: "good-first-issue", value: "good first issue" },
           ]}
+          onValueChange={setValue}
+          value={value}
         >
           <Combobox.TriggerInput placeholder="Select an issue..." />
           <Combobox.Content>
