@@ -32,17 +32,12 @@ export function CloudflareLogoGlyphDemo() {
 export function CloudflareLogoColorVariantsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-8">
-      <div className="flex flex-col items-center gap-2">
-        <CloudflareLogo className="w-28" color="color" />
-        <span className="text-sm text-kumo-subtle">color</span>
-      </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-neutral-100 p-4">
+      <CloudflareLogo className="w-28" color="color" />
+      <div className="rounded-lg bg-neutral-100 p-4">
         <CloudflareLogo className="w-28" color="black" />
-        <span className="text-sm text-neutral-500">black</span>
       </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-neutral-900 p-4">
+      <div className="rounded-lg bg-neutral-900 p-4">
         <CloudflareLogo className="w-28" color="white" />
-        <span className="text-sm text-neutral-400">white</span>
       </div>
     </div>
   );
@@ -51,17 +46,12 @@ export function CloudflareLogoColorVariantsDemo() {
 export function CloudflareLogoGlyphVariantsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-8">
-      <div className="flex flex-col items-center gap-2">
-        <CloudflareLogo variant="glyph" className="w-12" color="color" />
-        <span className="text-sm text-kumo-subtle">color</span>
-      </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-neutral-100 p-4">
+      <CloudflareLogo variant="glyph" className="w-12" color="color" />
+      <div className="rounded-lg bg-neutral-100 p-4">
         <CloudflareLogo variant="glyph" className="w-12" color="black" />
-        <span className="text-sm text-neutral-500">black</span>
       </div>
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-neutral-900 p-4">
+      <div className="rounded-lg bg-neutral-900 p-4">
         <CloudflareLogo variant="glyph" className="w-12" color="white" />
-        <span className="text-sm text-neutral-400">white</span>
       </div>
     </div>
   );

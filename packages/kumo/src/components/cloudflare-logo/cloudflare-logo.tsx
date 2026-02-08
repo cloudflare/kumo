@@ -260,14 +260,14 @@ export const PoweredByCloudflare = forwardRef<
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          // Base badge styles - spacious pill shape
-          "inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium",
+          // Base badge styles
+          "inline-flex items-center gap-2 rounded-lg py-1.5 pl-2.5 pr-3 text-sm font-medium",
           "ring-1 ring-inset transition-all hover:shadow-sm",
           // Color variants using semantic tokens
           color === "color" && "bg-kumo-base text-kumo-default ring-kumo-line",
           color === "black" && "bg-kumo-base text-kumo-default ring-kumo-line",
           color === "white" &&
-            "bg-kumo-overlay text-kumo-default ring-kumo-line",
+            "bg-neutral-900 text-white ring-neutral-700",
           className,
         )}
         {...props}
