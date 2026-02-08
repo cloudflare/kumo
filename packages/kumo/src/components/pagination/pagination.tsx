@@ -205,7 +205,7 @@ function PaginationControls({
       data-slot="pagination-controls"
       className={cn("grow flex flex-col items-end", className)}
     >
-      <div>
+      <nav aria-label="Pagination">
         <InputGroup focusMode="individual">
           {controls === "full" && (
             <InputGroup.Button
@@ -304,7 +304,7 @@ function PaginationControls({
             </InputGroup.Button>
           )}
         </InputGroup>
-      </div>
+      </nav>
     </div>
   );
 }
@@ -517,6 +517,8 @@ function PaginationRoot(props: PaginationProps) {
         className={cn("flex items-center gap-2 w-full", className)}
       >
         <div
+          aria-live="polite"
+          aria-atomic="true"
           data-slot="pagination-info"
           className="grow text-sm text-kumo-strong"
         >
