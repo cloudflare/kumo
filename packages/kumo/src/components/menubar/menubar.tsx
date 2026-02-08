@@ -44,6 +44,7 @@ const MenuOption = ({
 }: MenuOptionProps) => {
   const button = (
     <button
+      aria-label={tooltip}
       className={cn(
         "focus:inset-ring-focus relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-elevated first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-1 focus:outline-none focus-visible:z-1 focus-visible:inset-ring-[0.5]",
         {
