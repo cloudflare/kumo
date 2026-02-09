@@ -50,9 +50,11 @@ In your main CSS file (e.g. `app.css`):
 
 ```css
 @source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
-@import "tailwindcss";
 @import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss";
 ```
+
+> **Import order matters** — `@cloudflare/kumo/styles` must come **before** `@import "tailwindcss"` so Kumo's `@theme` tokens are registered first.
 
 > **Note:** The `@source` path is relative to your CSS file. Adjust it based on your project structure — e.g. if your CSS is in `src/styles/`, you may need `../../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}`.
 

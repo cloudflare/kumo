@@ -6,7 +6,7 @@
 
 ### Badge
 
-Badge component
+Small status label for categorizing or highlighting content.
 
 **Type:** component
 
@@ -23,7 +23,9 @@ Badge component
   - `"outline"`: Bordered badge with transparent background
   - `"beta"`: Indicates beta or experimental features
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 - `children`: ReactNode
+  Content rendered inside the badge.
 
 **Colors (kumo tokens used):**
 
@@ -57,7 +59,7 @@ Badge component
 
 ### Banner
 
-Banner component
+Full-width message bar for informational, warning, or error notices.
 
 **Type:** component
 
@@ -68,13 +70,16 @@ Banner component
 **Props:**
 
 - `icon`: ReactNode
+  Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
 - `text`: string
 - `children`: ReactNode
+  Banner message content. Accepts strings or custom React elements.
 - `variant`: enum [default: default]
   - `"default"`: Informational banner for general messages
   - `"alert"`: Warning banner for cautionary messages
   - `"error"`: Error banner for critical issues
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 
 **Colors (kumo tokens used):**
 
@@ -132,6 +137,7 @@ Breadcrumbs component
   - `"base"`: Default breadcrumbs size
 - `children`: ReactNode
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 
 **Colors (kumo tokens used):**
 
@@ -215,7 +221,7 @@ Props:
 
 ### Button
 
-Button component
+Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
 
 **Type:** component
 
@@ -262,7 +268,9 @@ Button component
 - `children`: ReactNode
 - `className`: string
 - `icon`: ReactNode
+  Icon from `@phosphor-icons/react` or a React element. Rendered before children.
 - `loading`: boolean
+  Shows a loading spinner and disables interaction.
 - `id`: string
 - `lang`: string
 - `title`: string
@@ -481,7 +489,7 @@ Props:
 
 ### ClipboardText
 
-ClipboardText component
+Read-only text field with a one-click copy-to-clipboard button.
 
 **Type:** component
 
@@ -496,9 +504,9 @@ ClipboardText component
   - `"base"`: Default clipboard text size
   - `"lg"`: Large clipboard text for prominent display
 - `text`: string (required)
-  The text to display and copy to clipboard
+  The text to display and copy to clipboard.
 - `className`: string
-  Additional CSS classes
+  Additional CSS classes merged via `cn()`.
 
 **Colors (kumo tokens used):**
 
@@ -559,6 +567,416 @@ ClipboardText component
 
 ---
 
+### CloudflareLogo
+
+Cloudflare logo component.
+
+**Type:** component
+
+**Import:** `import { CloudflareLogo } from "@cloudflare/kumo";`
+
+**Category:** Other
+
+**Props:**
+
+- `children`: ReactNode
+- `className`: string
+- `height`: number | string
+- `id`: string
+- `lang`: string
+- `media`: string
+- `method`: string
+- `name`: string
+- `target`: string
+- `type`: string
+- `width`: number | string
+- `accentHeight`: number | string
+- `accumulate`: enum
+- `additive`: enum
+- `alignmentBaseline`: enum
+- `allowReorder`: enum
+- `alphabetic`: number | string
+- `amplitude`: number | string
+- `arabicForm`: enum
+- `ascent`: number | string
+- `attributeName`: string
+- `attributeType`: string
+- `autoReverse`: Booleanish
+- `azimuth`: number | string
+- `baseFrequency`: number | string
+- `baselineShift`: number | string
+- `baseProfile`: number | string
+- `bbox`: number | string
+- `begin`: number | string
+- `bias`: number | string
+- `by`: number | string
+- `calcMode`: number | string
+- `capHeight`: number | string
+- `clip`: number | string
+- `clipPath`: string
+- `clipPathUnits`: number | string
+- `clipRule`: number | string
+- `colorInterpolation`: number | string
+- `colorInterpolationFilters`: enum
+- `colorProfile`: number | string
+- `colorRendering`: number | string
+- `contentScriptType`: number | string
+- `contentStyleType`: number | string
+- `cursor`: number | string
+- `cx`: number | string
+- `cy`: number | string
+- `d`: string
+- `decelerate`: number | string
+- `descent`: number | string
+- `diffuseConstant`: number | string
+- `direction`: number | string
+- `display`: number | string
+- `divisor`: number | string
+- `dominantBaseline`: enum
+- `dur`: number | string
+- `dx`: number | string
+- `dy`: number | string
+- `edgeMode`: number | string
+- `elevation`: number | string
+- `enableBackground`: number | string
+- `end`: number | string
+- `exponent`: number | string
+- `externalResourcesRequired`: Booleanish
+- `fill`: string
+- `fillOpacity`: number | string
+- `fillRule`: enum
+- `filter`: string
+- `filterRes`: number | string
+- `filterUnits`: number | string
+- `floodColor`: number | string
+- `floodOpacity`: number | string
+- `focusable`: Booleanish | string
+- `fontFamily`: string
+- `fontSize`: number | string
+- `fontSizeAdjust`: number | string
+- `fontStretch`: number | string
+- `fontStyle`: number | string
+- `fontVariant`: number | string
+- `fontWeight`: number | string
+- `format`: number | string
+- `fr`: number | string
+- `from`: number | string
+- `fx`: number | string
+- `fy`: number | string
+- `g1`: number | string
+- `g2`: number | string
+- `glyphName`: number | string
+- `glyphOrientationHorizontal`: number | string
+- `glyphOrientationVertical`: number | string
+- `glyphRef`: number | string
+- `gradientTransform`: string
+- `gradientUnits`: string
+- `hanging`: number | string
+- `horizAdvX`: number | string
+- `horizOriginX`: number | string
+- `href`: string
+- `ideographic`: number | string
+- `imageRendering`: number | string
+- `in2`: number | string
+- `in`: string
+- `intercept`: number | string
+- `k1`: number | string
+- `k2`: number | string
+- `k3`: number | string
+- `k4`: number | string
+- `k`: number | string
+- `kernelMatrix`: number | string
+- `kernelUnitLength`: number | string
+- `kerning`: number | string
+- `keyPoints`: number | string
+- `keySplines`: number | string
+- `keyTimes`: number | string
+- `lengthAdjust`: number | string
+- `letterSpacing`: number | string
+- `lightingColor`: number | string
+- `limitingConeAngle`: number | string
+- `local`: number | string
+- `markerEnd`: string
+- `markerHeight`: number | string
+- `markerMid`: string
+- `markerStart`: string
+- `markerUnits`: number | string
+- `markerWidth`: number | string
+- `mask`: string
+- `maskContentUnits`: number | string
+- `maskUnits`: number | string
+- `mathematical`: number | string
+- `mode`: number | string
+- `numOctaves`: number | string
+- `offset`: number | string
+- `opacity`: number | string
+- `operator`: number | string
+- `order`: number | string
+- `orient`: number | string
+- `orientation`: number | string
+- `origin`: number | string
+- `overflow`: number | string
+- `overlinePosition`: number | string
+- `overlineThickness`: number | string
+- `paintOrder`: number | string
+- `panose1`: number | string
+- `path`: string
+- `pathLength`: number | string
+- `patternContentUnits`: string
+- `patternTransform`: number | string
+- `patternUnits`: string
+- `pointerEvents`: number | string
+- `points`: string
+- `pointsAtX`: number | string
+- `pointsAtY`: number | string
+- `pointsAtZ`: number | string
+- `preserveAlpha`: Booleanish
+- `preserveAspectRatio`: string
+- `primitiveUnits`: number | string
+- `r`: number | string
+- `radius`: number | string
+- `refX`: number | string
+- `refY`: number | string
+- `renderingIntent`: number | string
+- `repeatCount`: number | string
+- `repeatDur`: number | string
+- `requiredExtensions`: number | string
+- `requiredFeatures`: number | string
+- `restart`: number | string
+- `result`: string
+- `rotate`: number | string
+- `rx`: number | string
+- `ry`: number | string
+- `scale`: number | string
+- `seed`: number | string
+- `shapeRendering`: number | string
+- `slope`: number | string
+- `spacing`: number | string
+- `specularConstant`: number | string
+- `specularExponent`: number | string
+- `speed`: number | string
+- `spreadMethod`: string
+- `startOffset`: number | string
+- `stdDeviation`: number | string
+- `stemh`: number | string
+- `stemv`: number | string
+- `stitchTiles`: number | string
+- `stopColor`: string
+- `stopOpacity`: number | string
+- `strikethroughPosition`: number | string
+- `strikethroughThickness`: number | string
+- `string`: number | string
+- `stroke`: string
+- `strokeDasharray`: string | number
+- `strokeDashoffset`: string | number
+- `strokeLinecap`: enum
+- `strokeLinejoin`: enum
+- `strokeMiterlimit`: number | string
+- `strokeOpacity`: number | string
+- `strokeWidth`: number | string
+- `surfaceScale`: number | string
+- `systemLanguage`: number | string
+- `tableValues`: number | string
+- `targetX`: number | string
+- `targetY`: number | string
+- `textAnchor`: enum
+- `textDecoration`: number | string
+- `textLength`: number | string
+- `textRendering`: number | string
+- `to`: number | string
+- `transform`: string
+- `u1`: number | string
+- `u2`: number | string
+- `underlinePosition`: number | string
+- `underlineThickness`: number | string
+- `unicode`: number | string
+- `unicodeBidi`: number | string
+- `unicodeRange`: number | string
+- `unitsPerEm`: number | string
+- `vAlphabetic`: number | string
+- `values`: string
+- `vectorEffect`: number | string
+- `version`: string
+- `vertAdvY`: number | string
+- `vertOriginX`: number | string
+- `vertOriginY`: number | string
+- `vHanging`: number | string
+- `vIdeographic`: number | string
+- `viewBox`: string
+- `viewTarget`: number | string
+- `visibility`: number | string
+- `vMathematical`: number | string
+- `widths`: number | string
+- `wordSpacing`: number | string
+- `writingMode`: number | string
+- `x1`: number | string
+- `x2`: number | string
+- `x`: number | string
+- `xChannelSelector`: string
+- `xHeight`: number | string
+- `xlinkActuate`: string
+- `xlinkArcrole`: string
+- `xlinkHref`: string
+- `xlinkRole`: string
+- `xlinkShow`: string
+- `xlinkTitle`: string
+- `xlinkType`: string
+- `xmlBase`: string
+- `xmlLang`: string
+- `xmlns`: string
+- `xmlnsXlink`: string
+- `xmlSpace`: string
+- `y1`: number | string
+- `y2`: number | string
+- `y`: number | string
+- `yChannelSelector`: string
+- `z`: number | string
+- `zoomAndPan`: string
+- `variant`: enum [default: full]
+  - `"glyph"`: Cloud glyph only (logomark)
+  - `"full"`: Full logo with cloud glyph and wordmark stacked
+
+**Colors (kumo tokens used):**
+
+`bg-kumo-base`, `ring-kumo-line`, `text-kumo-default`
+
+**Examples:**
+
+```tsx
+<CloudflareLogo className="w-72" />
+```
+
+```tsx
+<CloudflareLogo variant="glyph" className="w-24" />
+```
+
+```tsx
+<div className="flex flex-wrap items-center gap-8">
+      <CloudflareLogo className="w-28" color="color" />
+      <div className="rounded-lg bg-white p-4">
+        <CloudflareLogo className="w-28" color="black" />
+      </div>
+      <div className="rounded-lg bg-black p-4">
+        <CloudflareLogo className="w-28" color="white" />
+      </div>
+    </div>
+```
+
+```tsx
+<div className="flex flex-wrap items-center gap-8">
+      <CloudflareLogo variant="glyph" className="w-12" color="color" />
+      <div className="rounded-lg bg-white p-4">
+        <CloudflareLogo variant="glyph" className="w-12" color="black" />
+      </div>
+      <div className="rounded-lg bg-black p-4">
+        <CloudflareLogo variant="glyph" className="w-12" color="white" />
+      </div>
+    </div>
+```
+
+```tsx
+<div className="flex flex-wrap items-end gap-6">
+      <CloudflareLogo className="w-20" />
+      <CloudflareLogo className="w-28" />
+      <CloudflareLogo className="w-44" />
+    </div>
+```
+
+```tsx
+<div className="flex items-center gap-4">
+      <DropdownMenu>
+        <DropdownMenu.Trigger>
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-lg bg-black px-4 py-3 text-white transition-opacity hover:opacity-80"
+          >
+            <CloudflareLogo variant="glyph" color="white" className="w-8" />
+            <span className="font-medium">Logo</span>
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item
+            icon={CloudIcon}
+            onSelect={() =>
+              copyToClipboard(
+                generateCloudflareLogoSvg({ variant: "glyph" }),
+                "glyph",
+              )
+            }
+          >
+            {copied === "glyph" ? "Copied!" : "Copy logo as SVG"}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            icon={CodeIcon}
+            onSelect={() =>
+              copyToClipboard(
+                generateCloudflareLogoSvg({ variant: "full" }),
+                "full",
+              )
+            }
+          >
+            {copied === "full" ? "Copied!" : "Copy full logo as SVG"}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            icon={DownloadSimpleIcon}
+            onSelect={() =>
+              window.open(
+                "https://www.cloudflare.com/press-kit/",
+                "_blank",
+                "noopener",
+              )
+            }
+          >
+            Download brand assets
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            icon={ArrowSquareOutIcon}
+            onSelect={() =>
+              window.open(
+                "https://www.cloudflare.com/brand-assets/",
+                "_blank",
+                "noopener",
+              )
+            }
+          >
+            Visit brand guidelines
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
+
+      <span className="text-sm text-kumo-subtle">
+        Click to open the brand assets menu
+      </span>
+    </div>
+```
+
+```tsx
+<PoweredByCloudflare />
+```
+
+```tsx
+<div className="flex flex-wrap items-center gap-4">
+      <PoweredByCloudflare />
+      <PoweredByCloudflare color="black" />
+      <div className="rounded-lg bg-black p-3">
+        <PoweredByCloudflare color="white" />
+      </div>
+    </div>
+```
+
+```tsx
+<footer className="flex w-full items-center justify-between rounded-lg border border-kumo-line bg-kumo-elevated px-6 py-4">
+      <span className="text-sm text-kumo-subtle">
+        &copy; 2026 Your Company. All rights reserved.
+      </span>
+      <PoweredByCloudflare />
+    </footer>
+```
+
+
+---
+
 ### Code
 
 Code component
@@ -578,11 +996,11 @@ Code component
   - `"bash"`: Shell/Bash commands
   - `"css"`: CSS styles
 - `code`: string (required)
-  The code content to display
+  The code string to display.
 - `values`: Record<string, { value: string; highlight?: boolean }>
-  Template values for interpolation
+  Template values for `{{key}}` interpolation. Values with `highlight: true` are visually emphasized.
 - `className`: string
-  Additional CSS classes
+  Additional CSS classes merged via `cn()`.
 
 **Colors (kumo tokens used):**
 
@@ -692,7 +1110,7 @@ Collapsible component for showing/hiding content.  Features: - Animated chevron 
 
 ### Combobox
 
-Combobox component
+Combobox — autocomplete input with filterable dropdown list.  Compound component: `Combobox` (Root), `.TriggerInput`, `.TriggerValue`, `.TriggerMultipleWithInput`, `.Content`, `.Item`, `.Chip`, `.Input`, `.Empty`, `.GroupLabel`, `.Group`, `.List`, `.Collection`.
 
 **Type:** component
 
@@ -981,7 +1399,7 @@ Usage:
 
 ### CommandPalette
 
-CommandPalette component
+CommandPalette — accessible command palette / spotlight search overlay.  Compound component: `CommandPalette.Root` (or `.Dialog` + `.Panel`), `.Input`, `.List`, `.Results`, `.Items`, `.Group`, `.GroupLabel`, `.Item`, `.ResultItem`, `.HighlightedText`, `.Empty`, `.Loading`, `.Footer`.  Built on `@base-ui/react/autocomplete` + `@base-ui/react/dialog`.
 
 **Type:** component
 
@@ -1220,7 +1638,7 @@ CommandPalette component
 
 ### DateRangePicker
 
-DateRangePicker component
+DateRangePicker — dual-calendar date range selector.  Renders two side-by-side month calendars with click-to-select start/end dates, hover preview of the range, a timezone footer, and a reset button.
 
 **Type:** component
 
@@ -1238,9 +1656,9 @@ DateRangePicker component
   - `"default"`: Default calendar appearance
   - `"subtle"`: Subtle calendar with minimal background
 - `timezone`: string
-  Display timezone (display only)
+  Display timezone string shown in the footer.
 - `className`: string
-  Additional CSS classes
+  Additional CSS classes merged via `cn()`.
 - `onStartDateChange`: (date: Date | null) => void
   Callback when start date changes
 - `onEndDateChange`: (date: Date | null) => void
@@ -1387,7 +1805,9 @@ Dialog component
 **Props:**
 
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 - `children`: ReactNode
+  Dialog content (typically Title, Description, Close, and action buttons).
 - `size`: enum [default: base]
   - `"base"`: Default dialog width
   - `"sm"`: Small dialog for simple confirmations
@@ -1548,7 +1968,7 @@ Close sub-component
 
 ### DropdownMenu
 
-DropdownMenu component
+DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.
 
 **Type:** component
 
@@ -1635,7 +2055,7 @@ Group sub-component (wraps DropdownMenuPrimitive)
 
 ### Empty
 
-Empty component
+Placeholder shown when a list, table, or page has no content to display.
 
 **Type:** component
 
@@ -1650,11 +2070,17 @@ Empty component
   - `"base"`: Default empty state size
   - `"lg"`: Large empty state for prominent placement
 - `icon`: ReactNode
+  Decorative icon displayed above the title (e.g. from `@phosphor-icons/react`).
 - `title`: string (required)
+  Primary heading text for the empty state.
 - `description`: string
+  Secondary description text displayed below the title.
 - `commandLine`: string
+  Shell command displayed in a copyable code block.
 - `contents`: ReactNode
+  Additional content (buttons, links) rendered below the description.
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 
 **Colors (kumo tokens used):**
 
@@ -1750,7 +2176,7 @@ Empty component
 
 ### Field
 
-Field component
+Form field wrapper that provides a label, optional description, and error display around any form control. Built on Base UI Field primitives.
 
 **Type:** component
 
@@ -1761,16 +2187,19 @@ Field component
 **Props:**
 
 - `controlFirst`: boolean
-  When true, places the control (checkbox/switch) before the label visually. When false (default), places the label before the control. Used to support different layout patterns (e.g., iOS-style toggles on the right).
+  When `true`, places the control before the label (for checkbox/switch layouts).
 - `children`: ReactNode
+  The form control element(s) to wrap (Input, Select, Checkbox, etc.).
 - `label`: ReactNode
-  The label content - can be a string or any React node
+  The label content — can be a string or any React node.
 - `required`: boolean
-  When explicitly false, shows gray "(optional)" text after the label. When true or undefined, no indicator is shown.
+  When explicitly `false`, shows gray "(optional)" text after the label. When `true` or `undefined`, no indicator is shown.
 - `labelTooltip`: ReactNode
-  Tooltip content to display next to the label via an info icon
+  Tooltip content displayed next to the label via an info icon.
 - `error`: object
+  Validation error with a message and a browser `ValidityState` match key.
 - `description`: ReactNode
+  Helper text displayed below the control (hidden when `error` is present).
 
 **Colors (kumo tokens used):**
 
@@ -1780,7 +2209,7 @@ Field component
 
 ### Grid
 
-Grid component
+Responsive CSS grid layout container with preset column configurations.
 
 **Type:** component
 
@@ -1791,14 +2220,14 @@ Grid component
 **Props:**
 
 - `children`: ReactNode
-  Child node(s) that can be nested inside component
+  Grid items to render.
 - `className`: string
-  CSS class names that can be appended to the component
+  Additional CSS classes merged via `cn()`.
 - `id`: string
 - `lang`: string
 - `title`: string
 - `mobileDivider`: boolean
-  Show dividers between grid items on mobile (only works with 4up variant)
+  Show dividers between grid items on mobile (only works with `"4up"` variant).
 - `gap`: enum [default: base]
   - `"none"`: No gap between grid items
   - `"sm"`: Small gap between grid items
@@ -2211,13 +2640,13 @@ Label component for form fields.  Provides a standardized way to display labels 
 **Props:**
 
 - `children`: ReactNode
-  The label content - can be a string or any React node
+  The label content — can be a string or any React node.
 - `showOptional`: boolean
-  When true (and required is false), shows gray "(optional)" text after the label
+  When `true`, shows gray "(optional)" text after the label.
 - `tooltip`: ReactNode
-  Tooltip content to display next to the label via an info icon
+  Tooltip content displayed next to the label via an info icon.
 - `className`: string
-  Additional CSS classes
+  Additional CSS classes merged via `cn()`.
 - `htmlFor`: string
   The id of the form element this label is associated with
 - `asContent`: boolean
@@ -2296,6 +2725,7 @@ LayerCard component
 
 - `children`: ReactNode
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 
 **Colors (kumo tokens used):**
 
@@ -2479,7 +2909,7 @@ ExternalIcon sub-component
 
 ### Loader
 
-Loader component
+Animated circular spinner for indicating loading states.
 
 **Type:** component
 
@@ -2490,6 +2920,7 @@ Loader component
 **Props:**
 
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 - `size`: enum [default: base]
   - `"sm"`: Small loader for inline use
   - `"base"`: Default loader size
@@ -2514,7 +2945,7 @@ Loader component
 
 ### MenuBar
 
-MenuBar component
+MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  Each option renders as a `<button>` with a Tooltip. The active option is visually highlighted with an elevated background.
 
 **Type:** component
 
@@ -2525,9 +2956,13 @@ MenuBar component
 **Props:**
 
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 - `isActive`: number | boolean | string
+  The currently active option value — matched against option index or `id`.
 - `options`: MenuOptionProps[] (required)
+  Array of menu option configurations.
 - `optionIds`: boolean
+  When true, each option's `id` field is used for matching instead of its array index.
 
 **Colors (kumo tokens used):**
 
@@ -2564,7 +2999,7 @@ MenuBar component
 
 ### Meter
 
-Meter component
+Progress bar showing a measured value within a known range (e.g. quota usage).
 
 **Type:** component
 
@@ -2575,10 +3010,15 @@ Meter component
 **Props:**
 
 - `customValue`: string
+  Custom formatted value text (e.g. "750 / 1,000") displayed instead of percentage.
 - `label`: string (required)
+  Label text displayed above the meter track.
 - `showValue`: boolean
+  Whether to display the percentage value next to the label.
 - `trackClassName`: string
+  Additional CSS classes for the track (background bar).
 - `indicatorClassName`: string
+  Additional CSS classes for the indicator (filled bar).
 - `value`: number
   Current value of the meter
 - `max`: number
@@ -2617,7 +3057,7 @@ Meter component
 
 ### Pagination
 
-Pagination component
+Page navigation controls with page count display.
 
 **Type:** component
 
@@ -2633,8 +3073,11 @@ Pagination component
 - `setPage`: (page: number) => void (required)
   Callback when page changes
 - `page`: number
+  Current page number (1-indexed).
 - `perPage`: number
+  Number of items displayed per page.
 - `totalCount`: number
+  Total number of items across all pages.
 
 **Colors (kumo tokens used):**
 
@@ -2860,7 +3303,7 @@ Close sub-component
 
 ### Radio
 
-Radio component
+Radio — radio button group for single-select choices.  Compound component: `Radio.Group` (with built-in Fieldset) and `Radio.Item`. Built on `@base-ui/react/radio-group` + `@base-ui/react/radio`.
 
 **Type:** component
 
@@ -2982,29 +3425,29 @@ Select component
 **Props:**
 
 - `className`: string
-  Additional CSS classes
+  Additional CSS classes merged via `cn()`.
 - `label`: ReactNode
-  Label content for the select (enables Field wrapper) - can be a string or any React node
+  Label content for the select (enables Field wrapper) — can be a string or any React node.
 - `hideLabel`: boolean
-  Whether to visually hide the label (still accessible to screen readers)
+  Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
 - `placeholder`: string
-  Placeholder text when no value is selected
+  Placeholder text shown when no value is selected.
 - `loading`: boolean
-  Whether the select is in a loading state
+  When `true`, shows a skeleton loader in place of the selected value.
 - `disabled`: boolean
-  Whether the select is disabled
+  Whether the select is disabled.
 - `required`: boolean
-  Whether the select is required
+  Whether the select is required. When `false`, shows "(optional)" text.
 - `labelTooltip`: ReactNode
-  Tooltip content to display next to the label via an info icon
+  Tooltip content displayed next to the label via an info icon.
 - `value`: string
-  The currently selected value
+  Currently selected value (controlled mode).
 - `children`: ReactNode
-  Child elements (Select.Option components)
+  `Select.Option` elements to render in the dropdown.
 - `description`: ReactNode
-  Helper text displayed below the select
+  Helper text displayed below the select.
 - `error`: string | object
-  Error message or validation error object
+  Error message string or validation error object with `match` key.
 - `onValueChange`: (value: string) => void
   Callback when selection changes
 - `defaultValue`: string
@@ -3132,7 +3575,7 @@ Option sub-component
 
 ### SensitiveInput
 
-SensitiveInput component
+Password/secret input that masks its value by default and reveals on click. Includes a built-in copy-to-clipboard button on hover.
 
 **Type:** component
 
@@ -3161,9 +3604,15 @@ SensitiveInput component
 - `value`: string
   Controlled value
 - `size`: enum [default: base]
-  Size variant
+  Size of the input.
+- `"xs"` — Extra small for compact UIs
+- `"sm"` — Small for secondary fields
+- `"base"` — Default input size
+- `"lg"` — Large for prominent fields
 - `variant`: enum [default: default]
-  Style variant
+  Style variant of the input.
+- `"default"` — Default input appearance
+- `"error"` — Error state for validation failures
 - `label`: ReactNode
   Label content for the input (enables Field wrapper and sets masked state label) - can be a string or any React node
 - `labelTooltip`: ReactNode
@@ -3263,11 +3712,11 @@ Surface component
 **Props:**
 
 - `as`: React.ElementType
-  The element type to render as (default: "div")
+  The HTML element type to render as (e.g. `"div"`, `"section"`, `"article"`).
 - `className`: string
-  Additional CSS classes
+  Additional CSS classes merged via `cn()`.
 - `children`: ReactNode
-  Child elements
+  Content rendered inside the surface.
 
 **Colors (kumo tokens used):**
 
@@ -3395,7 +3844,7 @@ Props:
 
 ### Table
 
-Table component
+Table — semantic HTML table with styled rows, cells, and selection support.  Compound component: `Table` (Root), `.Header`, `.Head`, `.Body`, `.Row`, `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`.
 
 **Type:** component
 
@@ -3654,7 +4103,7 @@ ResizeHandle sub-component
 
 ### Tabs
 
-Tabs component
+Tab navigation component with segmented or underline style. Built on Base UI Tabs with animated active indicator.
 
 **Type:** component
 
@@ -3665,20 +4114,23 @@ Tabs component
 **Props:**
 
 - `tabs`: TabsItem[]
-  Array of tab items to render
+  Array of tab items to render.
 - `value`: string
   Controlled value. When set, component becomes controlled.
 - `selectedValue`: string
   Default selected value for uncontrolled mode. Ignored when `value` is set.
 - `activateOnFocus`: boolean
-  When true, tabs are activated immediately upon receiving focus via arrow keys. When false (default), tabs receive focus but require Enter/Space to activate. Set to true for better keyboard UX in most cases.
+  When `true`, tabs are activated immediately upon receiving focus via arrow keys. When `false` (default), tabs receive focus but require Enter/Space to activate.
 - `className`: string
-  Additional class name for the root element
+  Additional CSS classes for the root element.
 - `listClassName`: string
-  Additional class name for the tab list element
+  Additional CSS classes for the tab list element.
 - `indicatorClassName`: string
-  Additional class name for the indicator element
+  Additional CSS classes for the indicator element.
 - `variant`: enum [default: segmented]
+  Tab style.
+- `"segmented"` — Pill-shaped indicator on a filled track
+- `"underline"` — Underline indicator below tab text
 - `onValueChange`: (value: string) => void
   Callback when active tab changes
 
@@ -3816,11 +4268,11 @@ Text component
   - `"base"`: Default text size
   - `"lg"`: Large text
 - `bold`: boolean
-  Whether to use bold font weight (only applies to body variants)
+  Whether to use bold font weight (only applies to body variants).
 - `as`: React.ElementType
-  The element type to render as
+  The HTML element type to render as (e.g. `"span"`, `"p"`, `"h1"`). Auto-selected based on variant if omitted.
 - `children`: ReactNode
-  Child text content
+  Text content.
 
 **Colors (kumo tokens used):**
 
@@ -3899,7 +4351,7 @@ Text component
 
 ### Toasty
 
-Toasty component
+Toasty — toast notification provider and viewport.  Renders a `Toast.Provider` with a fixed-position viewport in the bottom-right corner. Toasts stack with smooth enter/exit animations, swipe-to-dismiss, and expand-on-hover.  Built on `@base-ui/react/toast`.
 
 **Type:** component
 
@@ -3929,7 +4381,7 @@ Toasty component
 
 ### Tooltip
 
-Tooltip component
+Accessible popup that shows additional information on hover/focus. Wrap your app or section with `<TooltipProvider>` to enable delay grouping.
 
 **Type:** component
 
@@ -3940,8 +4392,14 @@ Tooltip component
 **Props:**
 
 - `align`: enum
+  Alignment on the axis perpendicular to `side`.
+- `"start"` — Align to the start edge
+- `"center"` — Center-aligned
+- `"end"` — Align to the end edge
 - `asChild`: boolean
+  When `true`, the trigger wraps the child element instead of adding a wrapper.
 - `className`: string
+  Additional CSS classes merged via `cn()`.
 - `side`: enum [default: top]
   - `"top"`: Tooltip appears above the trigger
   - `"bottom"`: Tooltip appears below the trigger
@@ -4008,7 +4466,7 @@ Multi-line textarea input with Input variants and InputArea-specific dimensions
 - **Feedback:** Banner, Loader, Toasty
 - **Action:** Button, ClipboardText
 - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, Switch
+- **Other:** CloudflareLogo, Label, Link, SensitiveInput, Table, DeleteResource
 - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
 - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
 - **Layout:** Grid, Surface, PageHeader, ResourceListPage
-- **Other:** Label, Link, SensitiveInput, Table
