@@ -195,6 +195,12 @@ export function extractStateClasses(
         ? `${states["data-state"]} ${cls}`
         : cls;
     }
+    // Check for data-pressed
+    else if (cls.match(/^data-\[pressed\]:/)) {
+      states["data-pressed"] = states["data-pressed"]
+        ? `${states["data-pressed"]} ${cls}`
+        : cls;
+    }
   }
 
   return states;
