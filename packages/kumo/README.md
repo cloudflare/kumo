@@ -54,6 +54,8 @@ In your main CSS file (e.g. `app.css`):
 @import "@cloudflare/kumo/styles/tailwind";
 ```
 
+> **Note:** The `@source` path is relative to your CSS file. Adjust it based on your project structure — e.g. if your CSS is in `src/styles/`, you may need `../../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}`.
+
 Alternatively, you can use the default style export (`@cloudflare/kumo/styles`) which is equivalent to `styles/tailwind`.
 
 If you are **not** using Tailwind CSS, use the standalone build instead (see below) — no `@source` directive is needed.

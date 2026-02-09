@@ -184,6 +184,11 @@ import { Accordion } from "@cloudflare/kumo/primitives/accordion";`}
           content configuration and import the styles. Make sure to import
           Tailwind first, then Kumo styles:
         </p>
+        <Callout type="warning">
+          <strong>Important:</strong> Tailwind CSS v4 does not scan <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">node_modules/</code> by default. 
+          You must add a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@source</code> directive so Tailwind can discover the utility classes used by Kumo components. 
+          Without this, components may render with missing styles (e.g. Dialogs not centered).
+        </Callout>
         <CodeBlock
           code={`/* app.css or main.css */
 @source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
@@ -193,6 +198,11 @@ import { Accordion } from "@cloudflare/kumo/primitives/accordion";`}
 /* Your custom styles */`}
           lang="css"
         />
+        <Callout type="info">
+          The <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@source</code> path is relative to your CSS file. 
+          Adjust it based on your project structure — e.g. if your CSS is in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">src/styles/</code>, 
+          you may need <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">../../node_modules/@cloudflare/kumo/dist/**/*.{"{"}js,jsx,ts,tsx{"}"}</code>.
+        </Callout>
          <p class="mt-2 text-sm text-kumo-default">
           Note: You can also use the default export <code
             class="rounded bg-kumo-control px-1 py-0.5 text-xs"
@@ -241,6 +251,9 @@ import "@cloudflare/kumo/styles/standalone";`}
 @import "@cloudflare/kumo/styles/tailwind";`}
           lang="css"
         />
+        <p class="mt-2 text-sm text-kumo-subtle">
+          Note: The <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@source</code> path is relative to your CSS file. Adjust it based on your project structure.
+        </p>
       </div>
       <div>
         <p class="mb-2 text-sm font-medium text-kumo-default">
