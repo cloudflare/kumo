@@ -2,7 +2,11 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { PAGE_CONFIGS, getAffectedPages, type PageConfig } from "./page-config";
+import {
+  SCREENSHOT_CONFIGS,
+  getAffectedScreenshots,
+  type ScreenshotConfig,
+} from "./page-config";
 
 const WORKER_URL =
   process.env.SCREENSHOT_WORKER_URL ??
@@ -21,8 +25,8 @@ interface WorkerResponse {
 }
 
 interface ComparisonResult {
-  page: string;
-  state: string;
+  id: string;
+  name: string;
   beforePath: string;
   afterPath: string;
   changed: boolean;
@@ -48,29 +52,19 @@ function ensureDir(dir: string): void {
 
 async function captureScreenshots(
   baseUrl: string,
-  pages: PageConfig[],
+  configs: ScreenshotConfig[],
   outputDir: string,
 ): Promise<Map<string, string>> {
   ensureDir(outputDir);
   const screenshots = new Map<string, string>();
 
-  const requests = pages.flatMap((page) =>
-    page.states.map((state) => ({
-      url: page.path,
-      viewport: page.viewport,
-      waitForSelector: page.waitForSelector,
-      actions: state.selector
-        ? [
-            {
-              type: state.action ?? ("click" as const),
-              selector: state.selector,
-              waitAfter: state.waitAfter,
-            },
-          ]
-        : undefined,
-      _meta: { page: page.name, state: state.name },
-    })),
-  );
+  const requests = configs.map((config) => ({
+    url: config.url,
+    viewport: config.viewport,
+    actions: config.actions,
+    fullPage: true,
+    _meta: { id: config.id, name: config.name },
+  }));
 
   console.log(`Capturing ${requests.length} screenshot(s) from ${baseUrl}...`);
 
@@ -88,7 +82,8 @@ async function captureScreenshots(
   });
 
   if (!response.ok) {
-    throw new Error(`Worker request failed: ${response.status}`);
+    const text = await response.text();
+    throw new Error(`Worker request failed: ${response.status} - ${text}`);
   }
 
   const data = (await response.json()) as WorkerResponse;
@@ -96,20 +91,23 @@ async function captureScreenshots(
   for (let i = 0; i < data.results.length; i++) {
     const result = data.results[i];
     const meta = requests[i]._meta;
-    const filename = `${meta.page.toLowerCase().replace(/\s+/g, "-")}-${meta.state}.png`;
+    const filename = `${meta.id}.png`;
     const filepath = join(outputDir, filename);
 
     if (result.error) {
-      console.warn(
-        `  Error capturing ${meta.page} - ${meta.state}: ${result.error}`,
-      );
+      console.warn(`  Error: ${meta.name}: ${result.error}`);
+      continue;
+    }
+
+    if (!result.image) {
+      console.warn(`  Empty: ${meta.name}`);
       continue;
     }
 
     const imageBuffer = Buffer.from(result.image, "base64");
     writeFileSync(filepath, imageBuffer);
-    screenshots.set(`${meta.page}-${meta.state}`, filepath);
-    console.log(`  Captured ${meta.page} - ${meta.state}`);
+    screenshots.set(meta.id, filepath);
+    console.log(`  OK: ${meta.name}`);
   }
 
   return screenshots;
@@ -141,11 +139,11 @@ function generateMarkdownReport(comparisons: ComparisonResult[]): string {
     return lines.join("\n");
   }
 
-  lines.push(`**${changed.length} page(s) with visual changes:**`);
+  lines.push(`**${changed.length} screenshot(s) with visual changes:**`);
   lines.push("");
 
   for (const comp of changed) {
-    lines.push(`### ${comp.page} (${comp.state})`);
+    lines.push(`### ${comp.name}`);
     lines.push("");
     lines.push("| Before | After |");
     lines.push("|--------|-------|");
@@ -157,9 +155,11 @@ function generateMarkdownReport(comparisons: ComparisonResult[]): string {
 
   if (unchanged.length > 0) {
     lines.push("<details>");
-    lines.push(`<summary>${unchanged.length} page(s) unchanged</summary>`);
+    lines.push(
+      `<summary>${unchanged.length} screenshot(s) unchanged</summary>`,
+    );
     lines.push("");
-    unchanged.forEach((c) => lines.push(`- ${c.page} (${c.state})`));
+    unchanged.forEach((c) => lines.push(`- ${c.name}`));
     lines.push("</details>");
   }
 
@@ -228,21 +228,25 @@ async function main(): Promise<void> {
   const afterUrl =
     process.env.AFTER_URL ?? process.env.PREVIEW_URL ?? beforeUrl;
 
-  let pages: PageConfig[];
+  let configs: ScreenshotConfig[];
 
   if (fullRegression) {
-    pages = PAGE_CONFIGS;
-    console.log("Running full visual regression...\n");
+    configs = SCREENSHOT_CONFIGS;
+    console.log(
+      `Running full visual regression (${configs.length} screenshots)...\n`,
+    );
   } else {
     const changedFiles = getChangedFiles();
-    pages = getAffectedPages(changedFiles);
+    configs = getAffectedScreenshots(changedFiles);
 
-    if (pages.length === 0) {
-      console.log("No demo file changes detected. Skipping visual regression.");
+    if (configs.length === 0) {
+      console.log(
+        "No relevant file changes detected. Skipping visual regression.",
+      );
       return;
     }
 
-    console.log(`Found ${pages.length} affected page(s)\n`);
+    console.log(`Found ${configs.length} affected screenshot(s)\n`);
   }
 
   const beforeDir = join(SCREENSHOTS_DIR, "before");
@@ -251,32 +255,37 @@ async function main(): Promise<void> {
   console.log("=== Capturing BEFORE screenshots ===");
   const beforeScreenshots = await captureScreenshots(
     beforeUrl,
-    pages,
+    configs,
     beforeDir,
   );
 
   console.log("\n=== Capturing AFTER screenshots ===");
-  const afterScreenshots = await captureScreenshots(afterUrl, pages, afterDir);
+  const afterScreenshots = await captureScreenshots(
+    afterUrl,
+    configs,
+    afterDir,
+  );
 
   console.log("\n=== Comparing screenshots ===");
   const comparisons: ComparisonResult[] = [];
 
-  for (const [key, beforePath] of beforeScreenshots) {
-    const afterPath = afterScreenshots.get(key);
-    if (!afterPath) continue;
+  for (const config of configs) {
+    const beforePath = beforeScreenshots.get(config.id);
+    const afterPath = afterScreenshots.get(config.id);
 
-    const [page, state] = key.split("-");
+    if (!beforePath || !afterPath) continue;
+
     const changed = compareImages(beforePath, afterPath);
 
     comparisons.push({
-      page,
-      state,
+      id: config.id,
+      name: config.name,
       beforePath,
       afterPath,
       changed,
     });
 
-    console.log(`  ${page} (${state}): ${changed ? "CHANGED" : "unchanged"}`);
+    console.log(`  ${config.name}: ${changed ? "CHANGED" : "unchanged"}`);
   }
 
   console.log("\n=== Generating report ===");

@@ -1,186 +1,240 @@
-export interface PageState {
+export interface ScreenshotConfig {
+  id: string;
   name: string;
-  selector?: string;
-  action?: "click" | "hover" | "focus";
-  waitAfter?: number;
-}
-
-export interface PageConfig {
-  path: string;
-  name: string;
+  url: string;
   demoFiles: string[];
-  states: PageState[];
-  waitForSelector?: string;
   viewport?: { width: number; height: number };
+  actions?: Array<{
+    type: "click" | "hover" | "focus";
+    selector: string;
+    waitAfter?: number;
+  }>;
 }
 
-export const PAGE_CONFIGS: PageConfig[] = [
+export const SCREENSHOT_CONFIGS: ScreenshotConfig[] = [
   {
-    path: "/components/button",
+    id: "button",
     name: "Button",
-    demoFiles: ["ButtonDemo.tsx"],
-    states: [{ name: "default" }],
-    waitForSelector: "[data-component]",
+    url: "/components/button",
+    demoFiles: ["ButtonDemo.tsx", "button.tsx"],
   },
   {
-    path: "/components/dialog",
-    name: "Dialog",
-    demoFiles: ["DialogDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "open",
-        selector: "[data-demo='dialog'] button",
-        action: "click",
-        waitAfter: 300,
-      },
-    ],
-    waitForSelector: "[data-component]",
+    id: "dialog-closed",
+    name: "Dialog - Closed",
+    url: "/components/dialog",
+    demoFiles: ["DialogDemo.tsx", "dialog.tsx"],
   },
   {
-    path: "/components/dropdown",
-    name: "Dropdown",
-    demoFiles: ["DropdownDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "open",
-        selector: "[data-demo='dropdown'] button",
-        action: "click",
-        waitAfter: 300,
-      },
-    ],
-    waitForSelector: "[data-component]",
+    id: "dialog-open",
+    name: "Dialog - Open",
+    url: "/components/dialog",
+    demoFiles: ["DialogDemo.tsx", "dialog.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 400 }],
   },
   {
-    path: "/components/tooltip",
-    name: "Tooltip",
-    demoFiles: ["TooltipDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "visible",
-        selector: "[data-demo='tooltip'] button",
-        action: "hover",
-        waitAfter: 500,
-      },
-    ],
-    waitForSelector: "[data-component]",
+    id: "dropdown-closed",
+    name: "Dropdown - Closed",
+    url: "/components/dropdown",
+    demoFiles: ["DropdownDemo.tsx", "dropdown.tsx"],
   },
   {
-    path: "/components/select",
-    name: "Select",
-    demoFiles: ["SelectDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "open",
-        selector: "[data-demo='select'] button",
-        action: "click",
-        waitAfter: 300,
-      },
-    ],
-    waitForSelector: "[data-component]",
+    id: "dropdown-open",
+    name: "Dropdown - Open",
+    url: "/components/dropdown",
+    demoFiles: ["DropdownDemo.tsx", "dropdown.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 300 }],
   },
   {
-    path: "/components/combobox",
-    name: "Combobox",
-    demoFiles: ["ComboboxDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "open",
-        selector: "[data-demo='combobox'] input",
-        action: "click",
-        waitAfter: 300,
-      },
-    ],
-    waitForSelector: "[data-component]",
+    id: "tooltip",
+    name: "Tooltip - Visible",
+    url: "/components/tooltip",
+    demoFiles: ["TooltipDemo.tsx", "tooltip.tsx"],
+    actions: [{ type: "hover", selector: "button", waitAfter: 500 }],
   },
   {
-    path: "/components/tabs",
+    id: "select-closed",
+    name: "Select - Closed",
+    url: "/components/select",
+    demoFiles: ["SelectDemo.tsx", "select.tsx"],
+  },
+  {
+    id: "select-open",
+    name: "Select - Open",
+    url: "/components/select",
+    demoFiles: ["SelectDemo.tsx", "select.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 300 }],
+  },
+  {
+    id: "combobox-closed",
+    name: "Combobox - Closed",
+    url: "/components/combobox",
+    demoFiles: ["ComboboxDemo.tsx", "combobox.tsx"],
+  },
+  {
+    id: "combobox-open",
+    name: "Combobox - Open",
+    url: "/components/combobox",
+    demoFiles: ["ComboboxDemo.tsx", "combobox.tsx"],
+    actions: [{ type: "click", selector: "input", waitAfter: 300 }],
+  },
+  {
+    id: "toast",
+    name: "Toast - Visible",
+    url: "/components/toast",
+    demoFiles: ["ToastDemo.tsx", "toast.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 500 }],
+  },
+  {
+    id: "collapsible-collapsed",
+    name: "Collapsible - Collapsed",
+    url: "/components/collapsible",
+    demoFiles: ["CollapsibleDemo.tsx", "collapsible.tsx"],
+  },
+  {
+    id: "collapsible-expanded",
+    name: "Collapsible - Expanded",
+    url: "/components/collapsible",
+    demoFiles: ["CollapsibleDemo.tsx", "collapsible.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 300 }],
+  },
+  {
+    id: "tabs",
     name: "Tabs",
-    demoFiles: ["TabsDemo.tsx"],
-    states: [{ name: "default" }],
-    waitForSelector: "[data-component]",
+    url: "/components/tabs",
+    demoFiles: ["TabsDemo.tsx", "tabs.tsx"],
   },
   {
-    path: "/components/toast",
-    name: "Toast",
-    demoFiles: ["ToastDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "showing",
-        selector: "[data-demo='toast'] button",
-        action: "click",
-        waitAfter: 500,
-      },
-    ],
-    waitForSelector: "[data-component]",
-  },
-  {
-    path: "/components/collapsible",
-    name: "Collapsible",
-    demoFiles: ["CollapsibleDemo.tsx"],
-    states: [
-      { name: "default" },
-      {
-        name: "expanded",
-        selector: "[data-demo='collapsible'] button",
-        action: "click",
-        waitAfter: 300,
-      },
-    ],
-    waitForSelector: "[data-component]",
-  },
-  {
-    path: "/components/input",
+    id: "input",
     name: "Input",
-    demoFiles: ["InputDemo.tsx"],
-    states: [{ name: "default" }],
-    waitForSelector: "[data-component]",
+    url: "/components/input",
+    demoFiles: ["InputDemo.tsx", "input.tsx"],
   },
   {
-    path: "/components/checkbox",
+    id: "checkbox",
     name: "Checkbox",
-    demoFiles: ["CheckboxDemo.tsx"],
-    states: [{ name: "default" }],
-    waitForSelector: "[data-component]",
+    url: "/components/checkbox",
+    demoFiles: ["CheckboxDemo.tsx", "checkbox.tsx"],
   },
   {
-    path: "/components/badge",
+    id: "switch",
+    name: "Switch",
+    url: "/components/switch",
+    demoFiles: ["SwitchDemo.tsx", "switch.tsx"],
+  },
+  {
+    id: "badge",
     name: "Badge",
-    demoFiles: ["BadgeDemo.tsx"],
-    states: [{ name: "default" }],
-    waitForSelector: "[data-component]",
+    url: "/components/badge",
+    demoFiles: ["BadgeDemo.tsx", "badge.tsx"],
   },
   {
-    path: "/components/banner",
+    id: "banner",
     name: "Banner",
-    demoFiles: ["BannerDemo.tsx"],
-    states: [{ name: "default" }],
-    waitForSelector: "[data-component]",
+    url: "/components/banner",
+    demoFiles: ["BannerDemo.tsx", "banner.tsx"],
   },
   {
-    path: "/",
-    name: "Home",
+    id: "popover-open",
+    name: "Popover - Open",
+    url: "/components/popover",
+    demoFiles: ["PopoverDemo.tsx", "popover.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 300 }],
+  },
+  {
+    id: "date-range-picker-open",
+    name: "Date Range Picker - Open",
+    url: "/components/date-range-picker",
+    demoFiles: ["DateRangePickerDemo.tsx", "date-range-picker.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 300 }],
+  },
+  {
+    id: "command-palette-open",
+    name: "Command Palette - Open",
+    url: "/components/command-palette",
+    demoFiles: ["CommandPaletteDemo.tsx", "command-palette.tsx"],
+    actions: [{ type: "click", selector: "button", waitAfter: 300 }],
+  },
+  {
+    id: "loader",
+    name: "Loader",
+    url: "/components/loader",
+    demoFiles: ["LoaderDemo.tsx", "loader.tsx"],
+  },
+  {
+    id: "skeleton",
+    name: "Skeleton",
+    url: "/components/skeleton-line",
+    demoFiles: ["SkeletonLineDemo.tsx", "skeleton-line.tsx"],
+  },
+  {
+    id: "table",
+    name: "Table",
+    url: "/components/table",
+    demoFiles: ["TableDemo.tsx", "table.tsx"],
+  },
+  {
+    id: "pagination",
+    name: "Pagination",
+    url: "/components/pagination",
+    demoFiles: ["PaginationDemo.tsx", "pagination.tsx"],
+  },
+  {
+    id: "radio",
+    name: "Radio",
+    url: "/components/radio",
+    demoFiles: ["RadioDemo.tsx", "radio.tsx"],
+  },
+  {
+    id: "meter",
+    name: "Meter",
+    url: "/components/meter",
+    demoFiles: ["MeterDemo.tsx", "meter.tsx"],
+  },
+  {
+    id: "code",
+    name: "Code",
+    url: "/components/code",
+    demoFiles: ["CodeDemo.tsx", "code.tsx"],
+  },
+  {
+    id: "link",
+    name: "Link",
+    url: "/components/link",
+    demoFiles: ["LinkDemo.tsx", "link.tsx"],
+  },
+  {
+    id: "label",
+    name: "Label",
+    url: "/components/label",
+    demoFiles: ["LabelDemo.tsx", "label.tsx"],
+  },
+  {
+    id: "text",
+    name: "Text",
+    url: "/components/text",
+    demoFiles: ["TextDemo.tsx", "text.tsx"],
+  },
+  {
+    id: "home",
+    name: "Home Page",
+    url: "/",
     demoFiles: ["HomeGrid.tsx"],
-    states: [{ name: "default" }],
     viewport: { width: 1280, height: 900 },
   },
 ];
 
-export function getAffectedPages(changedFiles: string[]): PageConfig[] {
-  const demoFileNames = changedFiles
-    .filter((f) => f.includes("/demos/") && f.endsWith(".tsx"))
+export function getAffectedScreenshots(
+  changedFiles: string[],
+): ScreenshotConfig[] {
+  const fileNames = changedFiles
+    .filter((f) => f.endsWith(".tsx") || f.endsWith(".ts"))
     .map((f) => f.split("/").pop()!);
 
-  if (demoFileNames.length === 0) {
+  if (fileNames.length === 0) {
     return [];
   }
 
-  return PAGE_CONFIGS.filter((page) =>
-    page.demoFiles.some((demo) => demoFileNames.includes(demo)),
+  return SCREENSHOT_CONFIGS.filter((config) =>
+    config.demoFiles.some((demo) => fileNames.includes(demo)),
   );
 }
