@@ -31,7 +31,6 @@ import {
   Table,
   Tabs,
   Text,
-  Toast,
   Toasty,
   Tooltip,
   TooltipProvider,
