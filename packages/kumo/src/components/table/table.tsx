@@ -71,10 +71,10 @@ const TableRoot = forwardRef<
   const className = cn(
     "w-full",
     KUMO_TABLE_VARIANTS.layout[layout].classes,
-    "[&_tr_td]:border-b [&_tr_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
-    "[&_tr_td]:p-3", // Cell padding
-    "[&_tr_th]:border-b [&_tr_th]:border-kumo-fill [&_tr_th]:p-3 [&_tr_th]:font-semibold", // Header styles
-    "[&_tr_th]:bg-kumo-base", // Header background color
+    "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
+    "[&_td]:p-3", // Cell padding
+    "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold", // Header styles
+    "[&_th]:bg-kumo-base", // Header background color
     "text-left text-kumo-default",
     props.className,
   );
@@ -84,9 +84,17 @@ const TableRoot = forwardRef<
 
 const TableHeader = forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->((props, ref) => {
-  return <thead ref={ref} {...props} />;
+  React.HTMLAttributes<HTMLTableSectionElement> & {
+    variant?: "default" | "compact";
+  }
+>(({ variant = "default", ...props }, ref) => {
+  const className = cn(
+    variant === "compact" &&
+      "[&_th]:bg-kumo-elevated [&_th]:py-2 text-xs text-kumo-strong",
+    props.className,
+  );
+
+  return <thead ref={ref} {...props} className={className} />;
 });
 
 const TableHead = forwardRef<

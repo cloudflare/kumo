@@ -139,6 +139,33 @@ export function TableWithCheckboxDemo() {
   );
 }
 
+export function TableWithCompactHeaderDemo() {
+  return (
+    <LayerCard>
+      <LayerCard.Primary className="p-0">
+        <Table>
+          <Table.Header variant="compact">
+            <Table.Row>
+              <Table.Head>Subject</Table.Head>
+              <Table.Head>From</Table.Head>
+              <Table.Head>Date</Table.Head>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {emailData.slice(0, 3).map((row) => (
+              <Table.Row key={row.id}>
+                <Table.Cell>{row.subject}</Table.Cell>
+                <Table.Cell>{row.from}</Table.Cell>
+                <Table.Cell>{row.date}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}
+
 export function TableSelectedRowDemo() {
   const rows = emailData.slice(0, 3);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(["2"]));
