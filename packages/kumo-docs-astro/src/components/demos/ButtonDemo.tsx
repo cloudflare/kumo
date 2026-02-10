@@ -1,5 +1,6 @@
+import type React from "react";
 import { Button } from "@cloudflare/kumo";
-import { PlusIcon } from "@phosphor-icons/react";
+import { PlusIcon, ArrowUpRight } from "@phosphor-icons/react";
 
 export function ButtonBasicDemo() {
   return (
@@ -83,5 +84,58 @@ export function ButtonDisabledDemo() {
     <Button variant="secondary" disabled>
       Disabled
     </Button>
+  );
+}
+
+// Polymorphism / Composition demos
+
+export function ButtonAsLinkDemo() {
+  return (
+    <Button
+      render={
+        <a
+          href="https://cloudflare.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      }
+      variant="primary"
+    >
+      Visit Cloudflare
+      <ArrowUpRight className="ml-1" />
+    </Button>
+  );
+}
+
+export function ButtonAsLinkVariantsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button render={<a href="#primary" />} variant="primary">
+        Primary Link
+      </Button>
+      <Button render={<a href="#secondary" />} variant="secondary">
+        Secondary Link
+      </Button>
+      <Button render={<a href="#ghost" />} variant="ghost">
+        Ghost Link
+      </Button>
+    </div>
+  );
+}
+
+export function ButtonRenderCallbackDemo() {
+  return (
+    <Button
+      loading={false}
+      render={(
+        props: React.HTMLAttributes<HTMLAnchorElement>,
+        state: { loading: boolean },
+      ) => (
+        <a {...props} href="#callback">
+          {state.loading ? "Loading..." : "Render Callback"}
+        </a>
+      )}
+      variant="secondary"
+    />
   );
 }

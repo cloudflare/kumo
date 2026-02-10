@@ -132,12 +132,13 @@ export const BreadcrumbsPropsSchema = z.object({
 
 export const ButtonPropsSchema = z.object({
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  className: z.string().optional(),
   icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
   loading: z.boolean().optional(),
   shape: z.enum(["base", "square", "circle"]).optional(),
   size: z.enum(["xs", "sm", "base", "lg"]).optional(),
   variant: z.enum(["primary", "secondary", "ghost", "destructive", "secondary-destructive", "outline"]).optional(),
+  render: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Allows you to replace the component’s HTML element with a different tag, or compose it with another component. Accepts a `ReactElement` or a function that returns the element to render.
+  className: z.string().optional(),
   id: z.string().optional(),
   lang: z.string().optional(),
   title: z.string().optional(),
