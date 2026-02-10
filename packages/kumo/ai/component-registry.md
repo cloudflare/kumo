@@ -1530,13 +1530,7 @@ Usage:
           eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </Dialog.Description>
         <div className="mt-8 flex justify-end gap-2">
-          <Dialog.Close
-            render={(props) => (
-              <Button variant="secondary" {...props}>
-                Cancel
-              </Button>
-            )}
-          />
+          <Button variant="secondary">Cancel</Button>
           <Dialog.Close
             render={(props) => (
               <Button variant="destructive" {...props}>
