@@ -19,13 +19,9 @@ import {
  * 3. Add its description to COMPONENT_DESCRIPTIONS below
  */
 const COMPONENTS_WITHOUT_DOCS = new Set([
-  "CommandPalette",
-  "DateRangePicker",
   "Field",
   "Icon",
   "InputArea",
-  "Meter",
-  "Pagination",
   "Toasty",
 ]);
 
@@ -108,6 +104,11 @@ const STATIC_PAGES: Array<{
 /** Better descriptions from the Astro doc pages */
 const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   badge: "Displays a small label for status, categorization, or metadata.",
+  "command-palette":
+    "A keyboard-driven command menu for searching and navigating.",
+  "date-range-picker": "A date picker component for selecting date ranges.",
+  meter: "A visual indicator showing a value within a known range.",
+  pagination: "Navigation controls for paginated content.",
   banner:
     "Displays contextual inline messages for informational, alert, or error states.",
   button: "Displays a button or a component that looks like a button.",
@@ -245,7 +246,7 @@ function groupByCategory(items: SearchItem[]): SearchGroup[] {
     return 50; // Component categories in the middle
   };
 
-  const sortedCategories = Object.keys(groups).toSorted((a, b) => {
+  const sortedCategories = Object.keys(groups).sort((a, b) => {
     const orderDiff = categoryOrder(a) - categoryOrder(b);
     if (orderDiff !== 0) return orderDiff;
     return a.localeCompare(b);
