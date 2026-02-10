@@ -1,88 +1,88 @@
-name: Preview
+# Deploys docs preview for fork PRs via workflow_run.
+#
+# Security model: fork code runs in the untrusted pull_request context
+# (preview.yml docs-build job) and produces a static HTML artifact.
+# This workflow runs in the base repo context with secrets, but NEVER
+# checks out or executes fork code — it only deploys the built artifact.
+#
+# For internal PRs, deployment happens directly in preview.yml (docs-deploy job).
+
+name: Preview Deploy (Forks)
 
 on:
-  pull_request:
+  workflow_run:
+    workflows: ["Preview"]
+    types: [completed]
 
 permissions:
-  contents: write
   pull-requests: write
 
 concurrency:
-  group: preview-${{ github.event.pull_request.number }}
+  group: preview-deploy-${{ github.event.workflow_run.id }}
   cancel-in-progress: true
 
 jobs:
-  pkg-preview:
-    name: Package Preview
-    if: ${{ github.repository_owner == 'cloudflare' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          filter: "@cloudflare/kumo..."
-
-      - name: Build @cloudflare/kumo
-        run: pnpm --filter @cloudflare/kumo build
-
-      - name: Publish preview package
-        run: pnpm dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
-
-  # Stage 1: Build docs (runs for ALL PRs including forks).
-  # Produces an artifact consumed by either docs-deploy (internal) or
-  # the preview-deploy.yml workflow_run workflow (forks).
-  docs-build:
-    name: Docs Build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
-        with:
-          filter: "@cloudflare/kumo-docs-astro..."
-
-      - name: Build @cloudflare/kumo
-        run: pnpm --filter @cloudflare/kumo build
-
-      - name: Build docs
-        run: pnpm --filter @cloudflare/kumo-docs-astro build
-
-      - name: Upload docs artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-preview-dist
-          path: packages/kumo-docs-astro/dist/
-          retention-days: 1
-
-  # Stage 2 (internal path): Deploy docs preview for non-fork PRs.
-  # Runs in the same workflow with secrets available.
-  # Fork PRs are handled by preview-deploy.yml (workflow_run).
-  docs-deploy:
-    name: Docs Deploy
-    needs: docs-build
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+  deploy:
+    name: Docs Deploy (Fork)
+    # Only run for:
+    # 1. Successful workflow runs
+    # 2. Pull request events (not push)
+    # 3. Fork PRs only (internal PRs deploy in preview.yml directly)
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       preview_url: ${{ steps.deploy.outputs.preview_url }}
+      pr_number: ${{ steps.metadata.outputs.pr_number }}
     steps:
-      - name: Checkout
+      - name: Checkout (wrangler config only)
         uses: actions/checkout@v4
         with:
           sparse-checkout: packages/kumo-docs-astro/wrangler.jsonc
+
+      - name: Resolve PR metadata
+        id: metadata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // workflow_run.pull_requests can be empty for fork PRs.
+            // Fall back to the Pulls API when that happens.
+            const prs = context.payload.workflow_run.pull_requests;
+            if (prs && prs.length > 0) {
+              core.setOutput('pr_number', prs[0].number.toString());
+              core.setOutput('head_sha', prs[0].head.sha);
+              return;
+            }
+
+            // Fallback: find the PR matching the head SHA via API
+            const headSha = context.payload.workflow_run.head_sha;
+            const headBranch = context.payload.workflow_run.head_branch;
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.payload.workflow_run.head_repository.full_name.split('/')[0]}:${headBranch}`,
+            });
+
+            const match = pulls.find(pr => pr.head.sha === headSha);
+            if (!match) {
+              core.setFailed(`No open PR found for SHA ${headSha} on branch ${headBranch}`);
+              return;
+            }
+
+            core.setOutput('pr_number', match.number.toString());
+            core.setOutput('head_sha', headSha);
 
       - name: Download docs artifact
         uses: actions/download-artifact@v4
         with:
           name: docs-preview-dist
           path: packages/kumo-docs-astro/dist/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install wrangler
         run: npm install -g wrangler
@@ -93,25 +93,21 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
         run: |
-          COMMIT_SHORT="${GITHUB_SHA:0:7}"
+          COMMIT_SHORT="${HEAD_SHA:0:7}"
 
-          # "wrangler versions upload" creates a preview version without
-          # routing production traffic. Safe to run on every PR.
           VERSION_OUTPUT=$(wrangler versions upload --env="" --message "PR #${PR_NUMBER} (${COMMIT_SHORT})" 2>&1) || true
           echo "$VERSION_OUTPUT"
 
-          # Verify upload succeeded
           if ! echo "$VERSION_OUTPUT" | grep -q "Worker Version ID:"; then
             echo "::error::wrangler versions upload failed -- no Worker Version ID in output"
             exit 1
           fi
 
-          # Extract preview URL from wrangler output
           PREVIEW_URL=$(echo "$VERSION_OUTPUT" | grep -oE 'Version Preview URL: https://[^ ]+' | sed 's/Version Preview URL: //')
 
-          # Fallback: construct URL from version ID
           if [ -z "$PREVIEW_URL" ]; then
             VERSION_ID=$(echo "$VERSION_OUTPUT" | grep -oE 'Worker Version ID: [a-f0-9-]+' | sed 's/Worker Version ID: //')
             if [ -n "$VERSION_ID" ]; then
@@ -131,23 +127,27 @@ jobs:
         uses: actions/github-script@v7
         env:
           PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+          HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
         with:
           script: |
             const marker = '<!-- kumo-docs-preview -->';
             const previewUrl = process.env.PREVIEW_URL;
+            const headSha = process.env.HEAD_SHA;
+            const prNumber = parseInt(process.env.PR_NUMBER, 10);
             const body = [
               marker,
               '### Docs Preview',
               '',
               `[View docs preview](${previewUrl})`,
               '',
-              `Commit: \`${context.payload.pull_request.head.sha.substring(0, 7)}\``,
+              `Commit: \`${headSha.substring(0, 7)}\``,
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: prNumber,
             });
 
             const existing = comments.find(c => c.body?.startsWith(marker));
@@ -163,15 +163,15 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: prNumber,
                 body,
               });
             }
 
   visual-regression:
-    name: Visual Regression
-    needs: docs-deploy
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.docs-deploy.outputs.preview_url }}
+    name: Visual Regression (Fork)
+    needs: deploy
+    if: ${{ needs.deploy.outputs.preview_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -188,10 +188,10 @@ jobs:
       - name: Run Visual Regression
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_PR_NUMBER: ${{ needs.deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           BEFORE_URL: "https://kumo-ui.com"
-          AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}
+          AFTER_URL: ${{ needs.deploy.outputs.preview_url }}
           SCREENSHOT_WORKER_URL: ${{ secrets.SCREENSHOT_WORKER_URL }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
         run: pnpm tsx ci/visual-regression/run-visual-regression.ts
@@ -200,6 +200,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: visual-regression-screenshots
+          name: visual-regression-screenshots-fork
           path: ci/visual-regression/screenshots/
           retention-days: 7
