@@ -217,7 +217,7 @@ export function docs(): void {
   } catch (error) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
       console.error(
-        "Error: Component registry not found. Run `pnpm build:ai-metadata` first.",
+        "Error: Component registry not found. Run `pnpm codegen:registry` first.",
       );
       process.exit(1);
     }
@@ -253,7 +253,7 @@ export function doc(componentName?: string): void {
   } catch (error) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
       console.error(
-        "Error: Component registry not found. Run `pnpm build:ai-metadata` first.",
+        "Error: Component registry not found. Run `pnpm codegen:registry` first.",
       );
       process.exit(1);
     }

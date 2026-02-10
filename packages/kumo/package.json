@@ -371,7 +371,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "prepublish": "pnpm run clean && pnpm run build && pnpm run test:unit",
+    "prepublish": "pnpm run clean && pnpm run codegen:registry && pnpm run build && pnpm run test:unit",
     "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",
