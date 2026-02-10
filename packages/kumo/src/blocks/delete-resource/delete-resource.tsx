@@ -133,7 +133,7 @@ export function DeleteResource({
                 {errorMessage}
               </Banner>
             )}
-            <p className="text-base text-kumo-subtle dark:text-kumo-subtle/60 max-w-prose text-pretty">
+            <p className="text-base text-kumo-subtle max-w-prose text-pretty">
               This action cannot be undone. This will permanently delete the{" "}
               <span className="font-medium text-kumo-default">
                 {resourceName}
@@ -163,7 +163,7 @@ export function DeleteResource({
                     <CopyIcon
                       size={12}
                       weight="bold"
-                      className="inline text-kumo-subtle dark:text-kumo-subtle/60 group-hover:text-kumo-default ml-1.5"
+                      className="inline text-kumo-subtle group-hover:text-kumo-default ml-1.5"
                     />
                   )}
                 </button>{" "}
