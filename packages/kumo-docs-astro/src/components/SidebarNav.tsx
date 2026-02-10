@@ -67,6 +67,7 @@ const componentItems: NavItem[] = [
 const blockItems: NavItem[] = [
   { label: "Page Header", href: "/blocks/page-header" },
   { label: "Resource List", href: "/blocks/resource-list" },
+  { label: "Delete Resource", href: "/blocks/delete-resource" },
 ];
 
 // Build info injected via Vite define in astro.config.mjs

@@ -1,5 +1,21 @@
 # @cloudflare/kumo
 
+## 1.3.0
+
+### Minor Changes
+
+- 6a40edf: add 'Delete Resource' block
+
+## 1.2.0
+
+### Minor Changes
+
+- 833ce8b: Add variant support, custom content, and action buttons to Toast component.
+
+### Patch Changes
+
+- d10c711: "fix: adjusted bullet size for sensitive input"
+
 ## 1.1.0
 
 ### Minor Changes

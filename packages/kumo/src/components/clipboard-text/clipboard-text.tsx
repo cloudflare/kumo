@@ -4,6 +4,7 @@ import { Button } from "../button";
 import { inputVariants } from "../input";
 import { cn } from "../../utils/cn";
 
+/** ClipboardText size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_CLIPBOARD_TEXT_VARIANTS = {
   size: {
     sm: {
@@ -33,6 +34,13 @@ export type KumoClipboardTextSize =
   keyof typeof KUMO_CLIPBOARD_TEXT_VARIANTS.size;
 
 export interface KumoClipboardTextVariantsProps {
+  /**
+   * Size of the clipboard text field.
+   * - `"sm"` — Small clipboard text for compact UIs
+   * - `"base"` — Default clipboard text size
+   * - `"lg"` — Large clipboard text for prominent display
+   * @default "lg"
+   */
   size?: KumoClipboardTextSize;
 }
 
@@ -50,15 +58,32 @@ export function clipboardTextVariants({
 // Legacy type alias for backwards compatibility
 export type ClipboardTextSize = KumoClipboardTextSize;
 
+/**
+ * ClipboardText component props.
+ *
+ * @example
+ * ```tsx
+ * <ClipboardText text="sk_live_abc123" />
+ * <ClipboardText text="npm install @cloudflare/kumo" size="sm" />
+ * ```
+ */
 export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
-  /** The text to display and copy to clipboard */
+  /** The text to display and copy to clipboard. */
   text: string;
-  /** Additional CSS classes */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Callback fired after text is copied */
+  /** Callback fired after text is copied to clipboard. */
   onCopy?: () => void;
 }
 
+/**
+ * Read-only text field with a one-click copy-to-clipboard button.
+ *
+ * @example
+ * ```tsx
+ * <ClipboardText text="0c239dd2" />
+ * ```
+ */
 export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
   (
     {

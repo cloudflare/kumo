@@ -1,0 +1,37 @@
+name: Pull Request
+
+on:
+  pull_request:
+    paths-ignore:
+      - "*.md"
+      - ".changeset/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - run: pnpm --filter @cloudflare/kumo build
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  test:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - run: pnpm --filter @cloudflare/kumo build
+      - run: pnpm --filter @cloudflare/kumo test

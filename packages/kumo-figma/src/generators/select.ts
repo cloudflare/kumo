@@ -33,7 +33,6 @@ import {
   COLORS,
   GRID_LAYOUT,
   VAR_NAMES,
-  BORDER_RADIUS,
 } from "./shared";
 import { getButtonIcon, bindIconColor } from "./icon-utils";
 import { logComplete } from "../logger";

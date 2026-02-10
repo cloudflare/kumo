@@ -1,5 +1,28 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.2.0
+
+### Minor Changes
+
+- 6a40edf: add 'Delete Resource' block
+
+### Patch Changes
+
+- Updated dependencies [6a40edf]
+  - @cloudflare/kumo@1.3.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 833ce8b: Add variant support, custom content, and action buttons to Toast component.
+
+### Patch Changes
+
+- Updated dependencies [d10c711]
+- Updated dependencies [833ce8b]
+  - @cloudflare/kumo@1.2.0
+
 ## 1.0.1
 
 ### Patch Changes

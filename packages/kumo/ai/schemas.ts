@@ -111,33 +111,33 @@ export type Action = z.infer<typeof ActionSchema>;
 // =============================================================================
 
 export const BadgePropsSchema = z.object({
-  variant: z.enum(["primary", "secondary", "destructive", "outline", "beta"]).optional(),
-  className: z.string().optional(),
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  variant: z.enum(["primary", "secondary", "destructive", "outline", "beta"]).optional(), // Visual style of the badge. - `"primary"` — High-emphasis badge for important labels - `"secondary"` — Subtle badge for secondary information - `"destructive"` — Error or danger state indicator - `"outline"` — Bordered badge with transparent background - `"beta"` — Dashed-border badge for beta/experimental features
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Content rendered inside the badge.
 });
 
 export const BannerPropsSchema = z.object({
-  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
   text: z.string().optional(),
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  variant: z.enum(["default", "alert", "error"]).optional(),
-  className: z.string().optional(),
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Banner message content. Accepts strings or custom React elements.
+  variant: z.enum(["default", "alert", "error"]).optional(), // Visual style of the banner. - `"default"` — Informational blue banner for general messages - `"alert"` — Warning yellow banner for cautionary messages - `"error"` — Error red banner for critical issues
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
 
 export const BreadcrumbsPropsSchema = z.object({
-  size: z.enum(["sm", "base"]).optional(),
+  size: z.enum(["sm", "base"]).optional(), // Size of the breadcrumbs. - `"sm"` — Compact breadcrumbs for dense UIs - `"base"` — Default breadcrumbs size
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  className: z.string().optional(),
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
 
 export const ButtonPropsSchema = z.object({
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
   className: z.string().optional(),
-  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  loading: z.boolean().optional(),
-  shape: z.enum(["base", "square", "circle"]).optional(),
-  size: z.enum(["xs", "sm", "base", "lg"]).optional(),
-  variant: z.enum(["primary", "secondary", "ghost", "destructive", "secondary-destructive", "outline"]).optional(),
+  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon from `@phosphor-icons/react` or a React element. Rendered before children.
+  loading: z.boolean().optional(), // Shows a loading spinner and disables interaction.
+  shape: z.enum(["base", "square", "circle"]).optional(), // Button shape. - `"base"` — Default rectangular button - `"square"` — Square button for icon-only actions - `"circle"` — Circular button for icon-only actions
+  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Button size. - `"xs"` — Extra small for compact UIs - `"sm"` — Small for secondary actions - `"base"` — Default size - `"lg"` — Large for primary CTAs
+  variant: z.enum(["primary", "secondary", "ghost", "destructive", "secondary-destructive", "outline"]).optional(), // Visual style of the button. - `"primary"` — High-emphasis, brand-colored for primary actions - `"secondary"` — Default style with border for most actions - `"ghost"` — Minimal, no background for tertiary actions - `"destructive"` — Danger button for destructive actions - `"secondary-destructive"` — Secondary style with destructive text - `"outline"` — Bordered with transparent background
   id: z.string().optional(),
   lang: z.string().optional(),
   title: z.string().optional(),
@@ -162,9 +162,9 @@ export const CheckboxPropsSchema = z.object({
 });
 
 export const ClipboardTextPropsSchema = z.object({
-  size: z.enum(["sm", "base", "lg"]).optional(),
-  text: z.string(), // The text to display and copy to clipboard
-  className: z.string().optional(), // Additional CSS classes
+  size: z.enum(["sm", "base", "lg"]).optional(), // Size of the clipboard text field. - `"sm"` — Small clipboard text for compact UIs - `"base"` — Default clipboard text size - `"lg"` — Large clipboard text for prominent display
+  text: z.string(), // The text to display and copy to clipboard.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
 
 export const CloudflareLogoPropsSchema = z.object({
@@ -425,10 +425,10 @@ export const CloudflareLogoPropsSchema = z.object({
 });
 
 export const CodePropsSchema = z.object({
-  lang: z.enum(["ts", "tsx", "jsonc", "bash", "css"]).optional(),
-  code: z.string(), // The code content to display
-  values: z.unknown().optional(), // Template values for interpolation
-  className: z.string().optional(), // Additional CSS classes
+  lang: z.enum(["ts", "tsx", "jsonc", "bash", "css"]).optional(), // Language hint for the code content. - `"ts"` — TypeScript code - `"tsx"` — TypeScript JSX code - `"jsonc"` — JSON with comments - `"bash"` — Shell/Bash commands - `"css"` — CSS styles
+  code: z.string(), // The code string to display.
+  values: z.unknown().optional(), // Template values for `{{key}}` interpolation. Values with `highlight: true` are visually emphasized.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
 
 export const CollapsiblePropsSchema = z.object({
@@ -440,7 +440,7 @@ export const CollapsiblePropsSchema = z.object({
 });
 
 export const ComboboxPropsSchema = z.object({
-  inputSide: z.enum(["right", "top"]).optional(),
+  inputSide: z.enum(["right", "top"]).optional(), // Position of the text input relative to chips in multi-select mode. - `"right"` — Input inline to the right of chips - `"top"` — Input above chips
   items: z.array(z.unknown()), // Array of items to display in the dropdown
   value: z.array(z.unknown()).optional(), // Currently selected value(s)
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Combobox content (trigger, content, items)
@@ -461,53 +461,53 @@ export const CommandPalettePropsSchema = z.object({
 });
 
 export const DateRangePickerPropsSchema = z.object({
-  size: z.enum(["sm", "base", "lg"]).optional(),
-  variant: z.enum(["default", "subtle"]).optional(),
-  timezone: z.string().optional(), // Display timezone (display only)
-  className: z.string().optional(), // Additional CSS classes
+  size: z.enum(["sm", "base", "lg"]).optional(), // Calendar size. - `"sm"` — Compact calendar for tight spaces - `"base"` — Default calendar size - `"lg"` — Large calendar for prominent date selection
+  variant: z.enum(["default", "subtle"]).optional(), // Visual variant. - `"default"` — Standard appearance with overlay background - `"subtle"` — Minimal background
+  timezone: z.string().optional(), // Display timezone string shown in the footer.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
   onStartDateChange: z.unknown().optional(), // Callback when start date changes
   onEndDateChange: z.unknown().optional(), // Callback when end date changes
 });
 
 export const DialogPropsSchema = z.object({
-  className: z.string().optional(),
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  size: z.enum(["base", "sm", "lg", "xl"]).optional(),
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Dialog content (typically Title, Description, Close, and action buttons).
+  size: z.enum(["base", "sm", "lg", "xl"]).optional(), // Dialog width. - `"sm"` — Small (min 288px) for simple confirmations - `"base"` — Default (min 384px) - `"lg"` — Large (min 512px) for complex content - `"xl"` — Extra large (min 768px) for detailed views
 });
 
 export const DropdownMenuPropsSchema = z.object({
-  variant: z.enum(["default", "danger"]).optional(),
+  variant: z.enum(["default", "danger"]).optional(), // Visual style of the dropdown item. - `"default"` — Standard item appearance - `"danger"` — Destructive action with red text
 });
 
 export const EmptyPropsSchema = z.object({
-  size: z.enum(["sm", "base", "lg"]).optional(),
-  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  title: z.string(),
-  description: z.string().optional(),
-  commandLine: z.string().optional(),
-  contents: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  className: z.string().optional(),
+  size: z.enum(["sm", "base", "lg"]).optional(), // Size of the empty state container. - `"sm"` — Compact empty state for smaller containers - `"base"` — Default empty state size - `"lg"` — Large empty state for prominent placement
+  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Decorative icon displayed above the title (e.g. from `@phosphor-icons/react`).
+  title: z.string(), // Primary heading text for the empty state.
+  description: z.string().optional(), // Secondary description text displayed below the title.
+  commandLine: z.string().optional(), // Shell command displayed in a copyable code block.
+  contents: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Additional content (buttons, links) rendered below the description.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
 
 export const FieldPropsSchema = z.object({
-  controlFirst: z.boolean().optional(), // When true, places the control (checkbox/switch) before the label visually. When false (default), places the label before the control. Used to support different layout patterns (e.g., iOS-style toggles on the right).
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // The label content - can be a string or any React node
-  required: z.boolean().optional(), // When explicitly false, shows gray "(optional)" text after the label. When true or undefined, no indicator is shown.
-  labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
-  error: z.unknown().optional(),
-  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  controlFirst: z.boolean().optional(), // When `true`, places the control before the label (for checkbox/switch layouts).
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // The form control element(s) to wrap (Input, Select, Checkbox, etc.).
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // The label content — can be a string or any React node.
+  required: z.boolean().optional(), // When explicitly `false`, shows gray "(optional)" text after the label. When `true` or `undefined`, no indicator is shown.
+  labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content displayed next to the label via an info icon.
+  error: z.unknown().optional(), // Validation error with a message and a browser `ValidityState` match key.
+  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text displayed below the control (hidden when `error` is present).
 });
 
 export const GridPropsSchema = z.object({
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child node(s) that can be nested inside component
-  className: z.string().optional(), // CSS class names that can be appended to the component
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Grid items to render.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
   id: z.string().optional(),
   lang: z.string().optional(),
   title: z.string().optional(),
-  mobileDivider: z.boolean().optional(), // Show dividers between grid items on mobile (only works with 4up variant)
-  gap: z.enum(["none", "sm", "base", "lg"]).optional(), // Gap size between grid items
-  variant: z.enum(["2up", "side-by-side", "2-1", "1-2", "1-3up", "3up", "4up", "6up", "1-2-4up"]).optional(), // Stylistic variations of the Grid layout
+  mobileDivider: z.boolean().optional(), // Show dividers between grid items on mobile (only works with `"4up"` variant).
+  gap: z.enum(["none", "sm", "base", "lg"]).optional(), // Gap size between grid items. - `"none"` — No gap - `"sm"` — 12px gap - `"base"` — Responsive gap (8px → 24px → 32px) - `"lg"` — 32px gap
+  variant: z.enum(["2up", "side-by-side", "2-1", "1-2", "1-3up", "3up", "4up", "6up", "1-2-4up"]).optional(), // Responsive column layout variant. - `"2up"` — 1 col → 2 cols at md - `"side-by-side"` — Always 2 cols - `"2-1"` — 66%/33% split at md - `"1-2"` — 33%/66% split at md - `"3up"` — 1 → 2 → 3 cols - `"4up"` — 1 → 2 → 3 → 4 cols - `"6up"` — 2 → 3 → 4 → 6 cols - `"1-2-4up"` — 1 → 2 → 4 cols
 });
 
 export const InputPropsSchema = z.object({
@@ -515,27 +515,27 @@ export const InputPropsSchema = z.object({
   labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
   description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text displayed below the input
   error: z.unknown().optional(), // Error message or validation error object
-  size: z.enum(["xs", "sm", "base", "lg"]).optional(),
-  variant: z.enum(["default", "error"]).optional(),
+  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Input size. - `"xs"` — Extra small for compact UIs - `"sm"` — Small for secondary fields - `"base"` — Default size - `"lg"` — Large for prominent fields
+  variant: z.enum(["default", "error"]).optional(), // Visual variant. - `"default"` — Standard input - `"error"` — Error state for validation failures
 });
 
 export const InputAreaPropsSchema = z.object({});
 
 export const LabelPropsSchema = z.object({
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // The label content - can be a string or any React node
-  showOptional: z.boolean().optional(), // When true (and required is false), shows gray "(optional)" text after the label
-  tooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
-  className: z.string().optional(), // Additional CSS classes
-  asContent: z.boolean().optional(), // When true, only renders the inline content (indicators, tooltip) without the outer span with font styling. Useful when composed inside another label element that already provides the text styling.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // The label content — can be a string or any React node.
+  showOptional: z.boolean().optional(), // When `true`, shows gray "(optional)" text after the label.
+  tooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content displayed next to the label via an info icon.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  asContent: z.boolean().optional(), // When `true`, only renders the inline content (indicators, tooltip) without the outer span with font styling. Useful when composed inside another label element that already provides the text styling.
 });
 
 export const LayerCardPropsSchema = z.object({
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  className: z.string().optional(),
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
 
 export const LinkPropsSchema = z.object({
-  variant: z.enum(["inline", "current", "plain"]).optional(),
+  variant: z.enum(["inline", "current", "plain"]).optional(), // Visual style of the link. - `"inline"` — Inline text link that flows with content - `"current"` — Link that inherits color from parent text - `"plain"` — Link without underline decoration
   to: z.string().optional(),
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
   className: z.string().optional(),
@@ -554,23 +554,23 @@ export const LinkPropsSchema = z.object({
 });
 
 export const LoaderPropsSchema = z.object({
-  className: z.string().optional(),
-  size: z.enum(["sm", "base", "lg"]).optional(),
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  size: z.enum(["sm", "base", "lg"]).optional(), // Size of the spinner. Use a preset name or a custom pixel number. - `"sm"` — 16px, for inline use - `"base"` — 24px, default size - `"lg"` — 32px, for prominent loading states
 });
 
 export const MenuBarPropsSchema = z.object({
-  className: z.string().optional(),
-  isActive: z.unknown().optional(),
-  options: z.array(z.unknown()),
-  optionIds: z.boolean().optional(),
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  isActive: z.unknown().optional(), // The currently active option value — matched against option index or `id`.
+  options: z.array(z.unknown()), // Array of menu option configurations.
+  optionIds: z.boolean().optional(), // When true, each option's `id` field is used for matching instead of its array index.
 });
 
 export const MeterPropsSchema = z.object({
-  customValue: z.string().optional(),
-  label: z.string(),
-  showValue: z.boolean().optional(),
-  trackClassName: z.string().optional(),
-  indicatorClassName: z.string().optional(),
+  customValue: z.string().optional(), // Custom formatted value text (e.g. "750 / 1,000") displayed instead of percentage.
+  label: z.string(), // Label text displayed above the meter track.
+  showValue: z.boolean().optional(), // Whether to display the percentage value next to the label.
+  trackClassName: z.string().optional(), // Additional CSS classes for the track (background bar).
+  indicatorClassName: z.string().optional(), // Additional CSS classes for the indicator (filled bar).
   value: z.number().optional(), // Current value of the meter
   max: z.number().optional(), // Maximum value of the meter (default: 100)
   min: z.number().optional(), // Minimum value of the meter (default: 0)
@@ -579,13 +579,13 @@ export const MeterPropsSchema = z.object({
 export const PaginationPropsSchema = z.object({
   controls: z.enum(["full", "simple"]).optional(),
   setPage: z.unknown(), // Callback when page changes
-  page: z.number().optional(),
-  perPage: z.number().optional(),
-  totalCount: z.number().optional(),
+  page: z.number().optional(), // Current page number (1-indexed).
+  perPage: z.number().optional(), // Number of items displayed per page.
+  totalCount: z.number().optional(), // Total number of items across all pages.
 });
 
 export const PopoverPropsSchema = z.object({
-  side: z.enum(["top", "bottom", "left", "right"]).optional(),
+  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Which side of the trigger the popover appears on. - `"top"` — Above the trigger - `"bottom"` — Below the trigger - `"left"` — Left of the trigger - `"right"` — Right of the trigger
 });
 
 export const RadioPropsSchema = z.object({
@@ -602,18 +602,18 @@ export const RadioPropsSchema = z.object({
 });
 
 export const SelectPropsSchema = z.object({
-  className: z.string().optional(), // Additional CSS classes
-  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) - can be a string or any React node
-  hideLabel: z.boolean().optional(), // Whether to visually hide the label (still accessible to screen readers)
-  placeholder: z.string().optional(), // Placeholder text when no value is selected
-  loading: z.boolean().optional(), // Whether the select is in a loading state
-  disabled: z.boolean().optional(), // Whether the select is disabled
-  required: z.boolean().optional(), // Whether the select is required
-  labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
-  value: z.string().optional(), // The currently selected value
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements (Select.Option components)
-  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text displayed below the select
-  error: z.unknown().optional(), // Error message or validation error object
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) — can be a string or any React node.
+  hideLabel: z.boolean().optional(), // Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
+  placeholder: z.string().optional(), // Placeholder text shown when no value is selected.
+  loading: z.boolean().optional(), // When `true`, shows a skeleton loader in place of the selected value.
+  disabled: z.boolean().optional(), // Whether the select is disabled.
+  required: z.boolean().optional(), // Whether the select is required. When `false`, shows "(optional)" text.
+  labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content displayed next to the label via an info icon.
+  value: z.string().optional(), // Currently selected value (controlled mode).
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // `Select.Option` elements to render in the dropdown.
+  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text displayed below the select.
+  error: z.unknown().optional(), // Error message string or validation error object with `match` key.
   onValueChange: z.unknown().optional(), // Callback when selection changes
   defaultValue: z.string().optional(), // Initial value for uncontrolled mode
 });
@@ -636,8 +636,8 @@ export const SensitiveInputPropsSchema = z.object({
   title: z.string().optional(),
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
   value: z.string().optional(), // Controlled value
-  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Size variant
-  variant: z.enum(["default", "error"]).optional(), // Style variant
+  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Size of the input. - `"xs"` — Extra small for compact UIs - `"sm"` — Small for secondary fields - `"base"` — Default input size - `"lg"` — Large for prominent fields
+  variant: z.enum(["default", "error"]).optional(), // Style variant of the input. - `"default"` — Default input appearance - `"error"` — Error state for validation failures
   label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the input (enables Field wrapper and sets masked state label) - can be a string or any React node
   labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
   description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text displayed below the input
@@ -645,9 +645,9 @@ export const SensitiveInputPropsSchema = z.object({
 });
 
 export const SurfacePropsSchema = z.object({
-  as: z.unknown().optional(), // The element type to render as (default: "div")
-  className: z.string().optional(), // Additional CSS classes
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
+  as: z.unknown().optional(), // The HTML element type to render as (e.g. `"div"`, `"section"`, `"article"`).
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Content rendered inside the surface.
 });
 
 export const SwitchPropsSchema = z.object({
@@ -678,34 +678,36 @@ export const TablePropsSchema = z.object({
 });
 
 export const TabsPropsSchema = z.object({
-  tabs: z.array(z.unknown()).optional(), // Array of tab items to render
+  tabs: z.array(z.unknown()).optional(), // Array of tab items to render.
   value: z.string().optional(), // Controlled value. When set, component becomes controlled.
   selectedValue: z.string().optional(), // Default selected value for uncontrolled mode. Ignored when `value` is set.
-  activateOnFocus: z.boolean().optional(), // When true, tabs are activated immediately upon receiving focus via arrow keys. When false (default), tabs receive focus but require Enter/Space to activate. Set to true for better keyboard UX in most cases.
-  className: z.string().optional(), // Additional class name for the root element
-  listClassName: z.string().optional(), // Additional class name for the tab list element
-  indicatorClassName: z.string().optional(), // Additional class name for the indicator element
-  variant: z.enum(["segmented", "underline"]).optional(),
+  activateOnFocus: z.boolean().optional(), // When `true`, tabs are activated immediately upon receiving focus via arrow keys. When `false` (default), tabs receive focus but require Enter/Space to activate.
+  className: z.string().optional(), // Additional CSS classes for the root element.
+  listClassName: z.string().optional(), // Additional CSS classes for the tab list element.
+  indicatorClassName: z.string().optional(), // Additional CSS classes for the indicator element.
+  variant: z.enum(["segmented", "underline"]).optional(), // Tab style. - `"segmented"` — Pill-shaped indicator on a filled track - `"underline"` — Underline indicator below tab text
   onValueChange: z.unknown().optional(), // Callback when active tab changes
 });
 
 export const TextPropsSchema = z.object({
-  variant: z.enum(["heading1", "heading2", "heading3", "body", "secondary", "success", "error", "mono", "mono-secondary"]).optional(), // Text style variant
-  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Text size (only applies to body/secondary/success/error variants)
-  bold: z.boolean().optional(), // Whether to use bold font weight (only applies to body variants)
-  as: z.unknown().optional(), // The element type to render as
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child text content
+  variant: z.enum(["heading1", "heading2", "heading3", "body", "secondary", "success", "error", "mono", "mono-secondary"]).optional(), // Text style variant. Determines color, font, and weight. - `"heading1"` — Large page title (30px, semibold) - `"heading2"` — Section title (24px, semibold) - `"heading3"` — Subsection title (18px, semibold) - `"body"` — Default body text - `"secondary"` — Muted text for secondary information - `"success"` — Success state text - `"error"` — Error state text - `"mono"` — Monospace text for code - `"mono-secondary"` — Muted monospace text
+  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Text size (only applies to body/secondary/success/error variants). - `"xs"` — 12px - `"sm"` — 14px - `"base"` — 16px - `"lg"` — 18px
+  bold: z.boolean().optional(), // Whether to use bold font weight (only applies to body variants).
+  as: z.unknown().optional(), // The HTML element type to render as (e.g. `"span"`, `"p"`, `"h1"`). Auto-selected based on variant if omitted.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Text content.
 });
 
 export const ToastyPropsSchema = z.object({
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  variant: z.enum(["default", "error", "warning"]).optional(),
+  className: z.string().optional(), // Additional CSS classes
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
 });
 
 export const TooltipPropsSchema = z.object({
-  align: z.enum(["start", "center", "end"]).optional(),
-  asChild: z.boolean().optional(),
-  className: z.string().optional(),
-  side: z.enum(["top", "bottom", "left", "right"]).optional(),
+  align: z.enum(["start", "center", "end"]).optional(), // Alignment on the axis perpendicular to `side`. - `"start"` — Align to the start edge - `"center"` — Center-aligned - `"end"` — Align to the end edge
+  asChild: z.boolean().optional(), // When `true`, the trigger wraps the child element instead of adding a wrapper.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Preferred side of the trigger to render the tooltip. - `"top"` — Tooltip appears above the trigger - `"bottom"` — Tooltip appears below the trigger - `"left"` — Tooltip appears to the left of the trigger - `"right"` — Tooltip appears to the right of the trigger
   content: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]), // Content to display in the tooltip
 });
 
