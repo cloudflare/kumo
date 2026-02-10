@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 1.3.0
+
+### Minor Changes
+
+- 6a40edf: add 'Delete Resource' block
+
 ## 1.2.0
 
 ### Minor Changes

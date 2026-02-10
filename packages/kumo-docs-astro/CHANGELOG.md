@@ -1,5 +1,16 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.2.0
+
+### Minor Changes
+
+- 6a40edf: add 'Delete Resource' block
+
+### Patch Changes
+
+- Updated dependencies [6a40edf]
+  - @cloudflare/kumo@1.3.0
+
 ## 1.1.0
 
 ### Minor Changes
