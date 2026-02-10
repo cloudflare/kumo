@@ -1,5 +1,12 @@
 # @cloudflare/kumo
 
+## 1.4.1
+
+### Patch Changes
+
+- b64847d: fix: CLI commands now find component registry and run codegen:registry before publish
+- ea583d8: fix(cli): resolve registry path for docs and ls commands
+
 ## 1.4.0
 
 ### Minor Changes
