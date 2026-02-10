@@ -27,8 +27,8 @@ interface WorkerResponse {
 interface ComparisonResult {
   id: string;
   name: string;
-  beforePath: string;
-  afterPath: string;
+  beforeUrl: string;
+  afterUrl: string;
   changed: boolean;
 }
 
@@ -50,19 +50,112 @@ function ensureDir(dir: string): void {
   }
 }
 
+async function uploadImageToGitHub(
+  imageBuffer: Buffer,
+  filename: string,
+): Promise<string> {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPOSITORY ?? "cloudflare/kumo";
+  const prNumber = process.env.GITHUB_PR_NUMBER ?? process.env.PR_NUMBER;
+  const runId = process.env.GITHUB_RUN_ID ?? Date.now().toString();
+
+  if (!token) {
+    throw new Error("GITHUB_TOKEN required for image upload");
+  }
+
+  const [owner, repoName] = repo.split("/");
+  const branch = `vr-screenshots-${prNumber}-${runId}`;
+  const path = `screenshots/${filename}`;
+
+  const mainRef = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/git/ref/heads/main`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    },
+  );
+  const mainData = (await mainRef.json()) as { object: { sha: string } };
+  const baseSha = mainData.object.sha;
+
+  const refCheck = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/git/ref/heads/${branch}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    },
+  );
+
+  if (refCheck.status === 404) {
+    await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/refs`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ref: `refs/heads/${branch}`,
+        sha: baseSha,
+      }),
+    });
+  }
+
+  const content = imageBuffer.toString("base64");
+
+  const existingFile = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/contents/${path}?ref=${branch}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    },
+  );
+
+  const existingData = existingFile.ok
+    ? ((await existingFile.json()) as { sha?: string })
+    : null;
+
+  await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `Visual regression: ${filename}`,
+        content,
+        branch,
+        ...(existingData?.sha ? { sha: existingData.sha } : {}),
+      }),
+    },
+  );
+
+  return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${path}`;
+}
+
 async function captureScreenshots(
   baseUrl: string,
   configs: ScreenshotConfig[],
   outputDir: string,
-): Promise<Map<string, string>> {
+  prefix: string,
+): Promise<Map<string, { path: string; url: string | null }>> {
   ensureDir(outputDir);
-  const screenshots = new Map<string, string>();
+  const screenshots = new Map<string, { path: string; url: string | null }>();
 
   const requests = configs.map((config) => ({
     url: config.url,
     viewport: config.viewport,
     actions: config.actions,
     fullPage: true,
+    hideSidebar: true,
     _meta: { id: config.id, name: config.name },
   }));
 
@@ -78,7 +171,12 @@ async function captureScreenshots(
   const response = await fetch(`${WORKER_URL}/batch`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ baseUrl, pages: requests }),
+    body: JSON.stringify({
+      baseUrl,
+      pages: requests,
+      viewport: { width: 1440, height: 900 },
+      hideSidebar: true,
+    }),
   });
 
   if (!response.ok) {
@@ -91,7 +189,7 @@ async function captureScreenshots(
   for (let i = 0; i < data.results.length; i++) {
     const result = data.results[i];
     const meta = requests[i]._meta;
-    const filename = `${meta.id}.png`;
+    const filename = `${prefix}-${meta.id}.png`;
     const filepath = join(outputDir, filename);
 
     if (result.error) {
@@ -106,8 +204,21 @@ async function captureScreenshots(
 
     const imageBuffer = Buffer.from(result.image, "base64");
     writeFileSync(filepath, imageBuffer);
-    screenshots.set(meta.id, filepath);
-    console.log(`  OK: ${meta.name}`);
+
+    let imageUrl: string | null = null;
+    try {
+      imageUrl = await uploadImageToGitHub(imageBuffer, filename);
+      console.log(`  OK: ${meta.name} -> ${imageUrl}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes("GITHUB_TOKEN required")) {
+        console.log(`  OK: ${meta.name} (local only, no GITHUB_TOKEN)`);
+      } else {
+        console.error(`  Upload failed for ${meta.name}: ${msg}`);
+      }
+    }
+
+    screenshots.set(meta.id, { path: filepath, url: imageUrl });
   }
 
   return screenshots;
@@ -147,9 +258,7 @@ function generateMarkdownReport(comparisons: ComparisonResult[]): string {
     lines.push("");
     lines.push("| Before | After |");
     lines.push("|--------|-------|");
-    lines.push(
-      `| ![Before](${comp.beforePath}) | ![After](${comp.afterPath}) |`,
-    );
+    lines.push(`| ![Before](${comp.beforeUrl}) | ![After](${comp.afterUrl}) |`);
     lines.push("");
   }
 
@@ -257,6 +366,7 @@ async function main(): Promise<void> {
     beforeUrl,
     configs,
     beforeDir,
+    "before",
   );
 
   console.log("\n=== Capturing AFTER screenshots ===");
@@ -264,24 +374,29 @@ async function main(): Promise<void> {
     afterUrl,
     configs,
     afterDir,
+    "after",
   );
 
   console.log("\n=== Comparing screenshots ===");
   const comparisons: ComparisonResult[] = [];
 
   for (const config of configs) {
-    const beforePath = beforeScreenshots.get(config.id);
-    const afterPath = afterScreenshots.get(config.id);
+    const before = beforeScreenshots.get(config.id);
+    const after = afterScreenshots.get(config.id);
 
-    if (!beforePath || !afterPath) continue;
+    if (!before || !after) continue;
+    if (!before.url || !after.url) {
+      console.log(`  ${config.name}: skipped (upload failed)`);
+      continue;
+    }
 
-    const changed = compareImages(beforePath, afterPath);
+    const changed = compareImages(before.path, after.path);
 
     comparisons.push({
       id: config.id,
       name: config.name,
-      beforePath,
-      afterPath,
+      beforeUrl: before.url,
+      afterUrl: after.url,
       changed,
     });
 
