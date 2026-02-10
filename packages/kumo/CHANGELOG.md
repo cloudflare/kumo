@@ -1,5 +1,15 @@
 # @cloudflare/kumo
 
+## 1.4.0
+
+### Minor Changes
+
+- 71d667b: Add CloudflareLogo component with glyph and full logo variants, color schemes (brand/black/white), and exported SVG path data for custom implementations
+
+### Patch Changes
+
+- 262e0e6: Replace `.toSorted()` with `.sort()` on spread copies to fix TypeError on Chrome <110
+
 ## 1.3.0
 
 ### Minor Changes
