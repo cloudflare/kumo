@@ -23,6 +23,7 @@
     "@phosphor-icons/react": "catalog:",
     "astro": "^5.16.7",
     "clsx": "catalog:",
+    "echarts": "^6.0.0",
     "match-sorter": "^8.2.0",
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",

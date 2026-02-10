@@ -1,0 +1,57 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import {
+  PieChartDemo,
+  LineChartDemo,
+  ChartColorDemo,
+} from "~/components/demos/ChartDemo";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+---
+
+<DocLayout
+  title="Chart"
+  description="Displays a chart."
+  sourceFile="components/chart"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <LineChartDemo client:visible />
+  </ComponentSection>
+
+  <ComponentSection>
+    <ComponentExample
+      code={`import { Chart } from "@cloudflare/kumo"
+
+const options = useMemo(
+  () => ({
+      series: [
+        {
+          type: "pie",
+          data: [
+            { value: 101, name: "Series A" },
+            { value: 202, name: "Series B" },
+            { value: 303, name: "Series C" },
+            { value: 404, name: "Series D" },
+            { value: 505, name: "Series E" },
+          ],
+        },
+      ],
+    }) as echarts.EChartsOption,
+  [],
+);
+
+return (
+  <div className="w-full">
+    <Chart options={options} height={400} />
+  </div>
+);`}
+    >
+      <PieChartDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <ChartColorDemo />
+  </ComponentSection>
+</DocLayout>
