@@ -57,13 +57,13 @@ export function ls(): void {
     }
 
     // Sort categories and components
-    const sortedCategories = [...byCategory.keys()].toSorted();
+    const sortedCategories = [...byCategory.keys()].sort();
 
     console.log(`Kumo Components (${components.length} total)\n`);
 
     for (const category of sortedCategories) {
-      const categoryComponents = [...byCategory.get(category)!].toSorted(
-        (a, b) => a.name.localeCompare(b.name),
+      const categoryComponents = [...byCategory.get(category)!].sort((a, b) =>
+        a.name.localeCompare(b.name),
       );
 
       console.log(`${category}:`);

@@ -237,7 +237,10 @@ function InputHeader({
   return (
     <div className="flex items-center gap-3 bg-kumo-base px-4 py-3">
       {leading ?? (
-        <MagnifyingGlassIcon className="h-4 w-4 text-kumo-subtle" weight="bold" />
+        <MagnifyingGlassIcon
+          className="h-4 w-4 text-kumo-subtle"
+          weight="bold"
+        />
       )}
       {children}
       {trailing}
@@ -404,7 +407,7 @@ function HighlightedText({
   }
 
   // Sort highlights by start index and merge overlapping ranges
-  const sortedHighlights = [...highlights].toSorted((a, b) => a[0] - b[0]);
+  const sortedHighlights = [...highlights].sort((a, b) => a[0] - b[0]);
   const mergedHighlights: HighlightRange[] = [];
 
   for (const range of sortedHighlights) {
@@ -480,7 +483,9 @@ function ResultItem<T>({
       )}
     >
       {icon && (
-        <div className="flex flex-shrink-0 items-center text-kumo-subtle">{icon}</div>
+        <div className="flex flex-shrink-0 items-center text-kumo-subtle">
+          {icon}
+        </div>
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 truncate">
@@ -508,7 +513,9 @@ function ResultItem<T>({
           {description && (
             <>
               <span className="text-kumo-strong">—</span>
-              <span className="truncate text-sm text-kumo-strong">{description}</span>
+              <span className="truncate text-sm text-kumo-strong">
+                {description}
+              </span>
             </>
           )}
         </div>
