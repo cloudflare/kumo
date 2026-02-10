@@ -1,0 +1,84 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import { ChartColorDemo } from "~/components/demos/ChartDemo";
+import Heading from "~/components/docs/Heading.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+---
+
+<DocLayout
+  title="Charts"
+  description="Charts built on ECharts."
+  sourceFile="components/chart"
+>
+  <ComponentSection>
+    <p class="mb-4">
+      Chart components are built on ECharts. Install it as a dependency:
+    </p>
+
+    <CodeBlock code={"npm install echarts"} lang="bash" />
+
+    <p class="my-4">
+      For optimal bundle size, import only the ECharts components you need. The
+      examples below show the minimum required imports for our use cases.
+    </p>
+
+    <CodeBlock
+      code={`import * as echarts from "echarts/core";
+import { BarChart, LineChart, PieChart } from "echarts/charts";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AriaComponent,
+  AxisPointerComponent,
+  BrushComponent,
+  GridComponent,
+  TooltipComponent,
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+
+echarts.use([
+  BarChart,
+  LineChart,
+  PieChart,
+  AxisPointerComponent,
+  BrushComponent,
+  GridComponent,
+  TooltipComponent,
+  CanvasRenderer,
+  AriaComponent,
+]);`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Available Charts</Heading>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <a
+        href="/charts/timeseries"
+        class="group rounded-lg border border-kumo-line bg-kumo-elevated p-4 transition-colors hover:bg-kumo-recessed"
+      >
+        <div class="text-kumo-default">Timeseries Chart</div>
+        <div class="mt-1 text-sm text-kumo-secondary">
+          A specialized chart for displaying time-based data.
+        </div>
+      </a>
+      <a
+        href="/charts/custom"
+        class="group rounded-lg border border-kumo-line bg-kumo-elevated p-4 transition-colors hover:bg-kumo-recessed"
+      >
+        <div class="text-kumo-default">Custom Chart</div>
+        <div class="mt-1 text-sm text-kumo-secondary">
+          Examples like pie charts.
+        </div>
+      </a>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Coloring</Heading>
+
+    <ChartColorDemo />
+  </ComponentSection>
+</DocLayout>

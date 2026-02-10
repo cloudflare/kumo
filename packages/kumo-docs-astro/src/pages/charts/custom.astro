@@ -1,25 +1,19 @@
 ---
 import DocLayout from "../../layouts/DocLayout.astro";
 import ComponentSection from "../../components/docs/ComponentSection.astro";
-import {
-  PieChartDemo,
-  LineChartDemo,
-  ChartColorDemo,
-} from "~/components/demos/ChartDemo";
+import { PieChartDemo } from "~/components/demos/ChartDemo";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
+import Heading from "~/components/docs/Heading.astro";
 ---
 
 <DocLayout
-  title="Chart"
-  description="Displays a chart."
+  title="Custom Chart"
+  description="Example charts using the Chart component."
   sourceFile="components/chart"
 >
-  <!-- Demo -->
   <ComponentSection>
-    <LineChartDemo client:visible />
-  </ComponentSection>
+    <Heading level={2} class="mb-6">Custom Chart</Heading>
 
-  <ComponentSection>
     <ComponentExample
       code={`import { Chart } from "@cloudflare/kumo"
 
@@ -39,19 +33,12 @@ const options = useMemo(
       ],
     }) as echarts.EChartsOption,
   [],
-);
+)
 
-return (
-  <div className="w-full">
-    <Chart options={options} height={400} />
-  </div>
-);`}
+<Chart options={options} echarts={echarts} />
+`}
     >
       <PieChartDemo client:visible />
     </ComponentExample>
-  </ComponentSection>
-
-  <ComponentSection>
-    <ChartColorDemo />
   </ComponentSection>
 </DocLayout>

@@ -1,0 +1,23 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import { LineChartDemo } from "~/components/demos/ChartDemo";
+import Heading from "~/components/docs/Heading.astro";
+---
+
+<DocLayout
+  title="Timeseries Chart"
+  description="A specialized chart for displaying time-based data."
+  sourceFile="components/chart"
+>
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Timeseries Chart</Heading>
+
+    <p class="my-4">
+      The timeseries chart is a specialized chart for displaying time-based
+      data.
+    </p>
+
+    <LineChartDemo client:visible />
+  </ComponentSection>
+</DocLayout>

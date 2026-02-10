@@ -339,10 +339,6 @@ ${componentPart}
             </Table.Body>
           </Table>
         </div>
-
-        <pre className="border-t border-kumo-line p-4">
-          <code>{code}</code>
-        </pre>
       </LayerCard.Primary>
     </LayerCard>
   );
