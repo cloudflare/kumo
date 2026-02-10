@@ -88,7 +88,7 @@ Imports: `~/layouts/DocLayout.astro`, `~/components/docs/ComponentExample.astro`
 - **`dist/` is gitignored**: If `dist/demo-metadata.json` is missing, `codegen:registry` produces incomplete output
 - **SidebarNav is manual**: Adding a component page requires updating `SidebarNav.tsx` arrays
 - **HomeGrid is manual**: New components need adding to the showcase grid + `componentRoutes`
-- **Search requires build**: Pagefind index generated at `astro build` time; dev mode shows placeholder
+- **Search uses CommandPalette**: Client-side search powered by component registry API; works in dev mode without build step
 - **PropsTable error message is stale**: Says `pnpm build:ai-metadata` but correct command is `pnpm codegen:registry`
 - **BaseLayout has blocking inline script**: Reads `localStorage.theme` synchronously to prevent dark mode FOUC
 - **`global.css`**: `@custom-variant dark` overrides Tailwind dark to match `[data-mode="dark"]`
