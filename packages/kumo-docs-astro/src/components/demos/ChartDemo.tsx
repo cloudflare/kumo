@@ -457,6 +457,103 @@ export function ChartColorDemo() {
   );
 }
 
+/**
+ * Basic line chart example showing simple time-based data visualization.
+ */
+export function BasicLineChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.color(0),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.color(1),
+      },
+    ],
+    [],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Count"
+    />
+  );
+}
+
+/**
+ * Timeseries chart with incomplete data regions highlighted.
+ */
+export function IncompleteDataChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Bandwidth",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.color(0),
+      },
+    ],
+    [],
+  );
+
+  const incompleteTimestamp = data[0].data[data[0].data.length - 5][0];
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Mbps"
+      incomplete={{ after: incompleteTimestamp }}
+    />
+  );
+}
+
+/**
+ * Timeseries chart with time range selection enabled.
+ */
+export function TimeRangeSelectionChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "CPU Usage",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.color(0),
+      },
+    ],
+    [],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="%"
+      onTimeRangeChange={(from, to) => {
+        alert(
+          `Selected range:\nFrom: ${new Date(from).toLocaleString()}\nTo: ${new Date(to).toLocaleString()}`,
+        );
+      }}
+    />
+  );
+}
+
 function buildSeriesData(
   seed = 0,
   points = 50,

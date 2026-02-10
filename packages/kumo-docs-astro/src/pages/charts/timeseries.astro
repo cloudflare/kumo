@@ -1,7 +1,12 @@
 ---
 import DocLayout from "../../layouts/DocLayout.astro";
 import ComponentSection from "../../components/docs/ComponentSection.astro";
-import { LineChartDemo } from "~/components/demos/ChartDemo";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import {
+  BasicLineChartDemo,
+  IncompleteDataChartDemo,
+  TimeRangeSelectionChartDemo,
+} from "~/components/demos/ChartDemo";
 import Heading from "~/components/docs/Heading.astro";
 ---
 
@@ -10,14 +15,126 @@ import Heading from "~/components/docs/Heading.astro";
   description="A specialized chart for displaying time-based data."
   sourceFile="components/chart"
 >
+  <p class="mb-12">
+    The timeseries chart is a specialized chart for displaying time-based data.
+    Each data point is a tuple of <code>[timestamp_in_ms, value]</code>.
+  </p>
+
   <ComponentSection>
-    <Heading level={2} class="mb-6">Timeseries Chart</Heading>
+    <Heading level={3} class="mb-4">Basic Line Chart</Heading>
 
     <p class="my-4">
-      The timeseries chart is a specialized chart for displaying time-based
-      data.
+      A simple line chart displaying multiple data series over time.
     </p>
 
-    <LineChartDemo client:visible />
+    <ComponentExample
+      code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+const data = [
+  {
+    name: "Requests",
+    color: ChartPalette.color(0),
+    data: [
+      [timestamp_in_ms, value],
+      [timestamp_in_ms, value],
+      ...
+    ],
+  },
+  {
+    name: "Errors",
+    color: ChartPalette.color(1),
+    data: [
+      [timestamp_in_ms, value],
+      [timestamp_in_ms, value],
+      ...
+    ],
+  },
+];
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Count"
+/>`}
+    >
+      <BasicLineChartDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={3} class="mb-4">Incomplete Data</Heading>
+
+    <p class="my-4">
+      Use the <code>incomplete</code> prop to indicate regions where data may be
+      incomplete or still being collected.
+    </p>
+
+    <ComponentExample
+      code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+const data = [
+  {
+    name: "Bandwidth",
+    color: ChartPalette.color(0),
+    data: [
+      [timestamp_in_ms, value],
+      [timestamp_in_ms, value],
+      ...
+    ],
+  },
+];
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Mbps"
+  incomplete={{ after: timestamp_in_ms }}
+/>`}
+    >
+      <IncompleteDataChartDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={3} class="mb-4">Time Range Selection</Heading>
+
+    <p class="my-4">
+      Enable time range selection by providing the <code>onTimeRangeChange</code
+      >
+      callback. Users can click and drag on the chart to select a time range.
+    </p>
+
+    <ComponentExample
+      code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+const data = [
+  {
+    name: "CPU Usage",
+    color: ChartPalette.color(0),
+    data: [
+      [timestamp_in_ms, value],
+      [timestamp_in_ms, value],
+      ...
+    ],
+  },
+];
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="%"
+  onTimeRangeChange={(from, to) => {
+    alert("Selected range: " + from + " - " + to);
+  }}
+/>`}
+    >
+      <TimeRangeSelectionChartDemo client:visible />
+    </ComponentExample>
   </ComponentSection>
 </DocLayout>
