@@ -3,9 +3,10 @@ import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  SCREENSHOT_CONFIGS,
-  getAffectedScreenshots,
-  type ScreenshotConfig,
+  COMPONENT_ACTIONS,
+  discoverComponents,
+  getAffectedComponents,
+  type DiscoveredComponent,
 } from "./page-config";
 
 const WORKER_URL =
@@ -150,30 +151,44 @@ async function uploadImageToGitHub(
   return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${path}`;
 }
 
+interface PageRequest {
+  url: string;
+  captureSections: boolean;
+  hideSidebar: boolean;
+  actions?: Array<{ type: string; selector: string; waitAfter?: number }>;
+}
+
 async function captureScreenshots(
   baseUrl: string,
-  configs: ScreenshotConfig[],
+  components: DiscoveredComponent[],
   outputDir: string,
   prefix: string,
 ): Promise<CapturedScreenshot[]> {
   ensureDir(outputDir);
   const screenshots: CapturedScreenshot[] = [];
 
-  const requests = configs.map((config) => ({
-    url: config.url,
-    viewport: config.viewport,
-    actions: config.actions,
-    fullPage: !config.captureSections,
-    captureSections: config.captureSections,
-    hideSidebar: true,
-    _meta: {
-      id: config.id,
-      name: config.name,
-      captureSections: config.captureSections,
-    },
-  }));
+  const requests: PageRequest[] = [];
+
+  for (const component of components) {
+    requests.push({
+      url: component.url,
+      captureSections: true,
+      hideSidebar: true,
+    });
+
+    const action = COMPONENT_ACTIONS[component.id];
+    if (action) {
+      requests.push({
+        url: component.url,
+        captureSections: false,
+        hideSidebar: true,
+        actions: [action],
+      });
+    }
+  }
 
   console.log(`Capturing screenshots from ${baseUrl}...`);
+  console.log(`  ${components.length} components, ${requests.length} requests`);
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -200,8 +215,6 @@ async function captureScreenshots(
 
   const data = (await response.json()) as WorkerResponse;
 
-  const configMap = new Map(configs.map((c) => [c.url, c]));
-
   for (const result of data.results) {
     if (result.error) {
       console.warn(`  Error: ${result.url}: ${result.error}`);
@@ -213,16 +226,29 @@ async function captureScreenshots(
       continue;
     }
 
-    const urlPath = new URL(result.url).pathname;
-    const config = configMap.get(urlPath);
-    if (!config) continue;
+    const urlPath = new URL(result.url).pathname.replace(/\/$/, "");
+    const componentSlug = urlPath.split("/").pop() || "unknown";
 
-    const screenshotId = result.sectionId
-      ? `${config.id}-${result.sectionId}`
-      : config.id;
-    const screenshotName = result.sectionTitle
-      ? `${config.name} / ${result.sectionTitle}`
-      : config.name;
+    const isOpenState = requests.some(
+      (r) =>
+        r.url === urlPath.replace(/\/$/, "") &&
+        r.actions &&
+        r.actions.length > 0,
+    );
+
+    let screenshotId: string;
+    let screenshotName: string;
+
+    if (result.sectionId) {
+      screenshotId = `${componentSlug}-${result.sectionId}`;
+      screenshotName = `${formatName(componentSlug)} / ${result.sectionTitle || result.sectionId}`;
+    } else if (isOpenState) {
+      screenshotId = `${componentSlug}-open`;
+      screenshotName = `${formatName(componentSlug)} (Open)`;
+    } else {
+      screenshotId = componentSlug;
+      screenshotName = formatName(componentSlug);
+    }
 
     const filename = `${prefix}-${screenshotId}.png`;
     const filepath = join(outputDir, filename);
@@ -252,6 +278,13 @@ async function captureScreenshots(
   }
 
   return screenshots;
+}
+
+function formatName(slug: string): string {
+  return slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 function compareImages(beforePath: string, afterPath: string): boolean {
@@ -367,25 +400,31 @@ async function main(): Promise<void> {
   const afterUrl =
     process.env.AFTER_URL ?? process.env.PREVIEW_URL ?? beforeUrl;
 
-  let configs: ScreenshotConfig[];
+  console.log("Discovering components from docs site...");
+  const allComponents = await discoverComponents(beforeUrl);
+  console.log(`Found ${allComponents.length} components\n`);
+
+  let components: DiscoveredComponent[];
 
   if (fullRegression) {
-    configs = SCREENSHOT_CONFIGS;
+    components = allComponents;
     console.log(
-      `Running full visual regression (${configs.length} screenshots)...\n`,
+      `Running full visual regression (${components.length} components)...\n`,
     );
   } else {
     const changedFiles = getChangedFiles();
-    configs = getAffectedScreenshots(changedFiles);
+    components = getAffectedComponents(changedFiles, allComponents);
 
-    if (configs.length === 0) {
+    if (components.length === 0) {
       console.log(
         "No relevant file changes detected. Skipping visual regression.",
       );
       return;
     }
 
-    console.log(`Found ${configs.length} affected screenshot(s)\n`);
+    console.log(`Found ${components.length} affected component(s):`);
+    components.forEach((c) => console.log(`  - ${c.name} (${c.url})`));
+    console.log("");
   }
 
   const beforeDir = join(SCREENSHOTS_DIR, "before");
@@ -394,7 +433,7 @@ async function main(): Promise<void> {
   console.log("=== Capturing BEFORE screenshots ===");
   const beforeScreenshots = await captureScreenshots(
     beforeUrl,
-    configs,
+    components,
     beforeDir,
     "before",
   );
@@ -402,7 +441,7 @@ async function main(): Promise<void> {
   console.log("\n=== Capturing AFTER screenshots ===");
   const afterScreenshots = await captureScreenshots(
     afterUrl,
-    configs,
+    components,
     afterDir,
     "after",
   );
