@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { cn, Button } from "@cloudflare/kumo";
-import { CaretDownIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
+import {
+  CaretDownIcon,
+  MagnifyingGlassIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { KumoMenuIcon } from "./KumoMenuIcon";
 import { SearchDialog } from "./SearchDialog";
 
@@ -18,8 +22,6 @@ const staticPages: NavItem[] = [
   { label: "Figma Resources", href: "/figma" },
   { label: "CLI", href: "/cli" },
   { label: "Registry", href: "/registry" },
-  { label: "Streaming UI", href: "/streaming" },
-  { label: "Components vs Blocks", href: "/components-vs-blocks" },
 ];
 
 const componentItems: NavItem[] = [
@@ -76,8 +78,8 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
-  "block rounded-lg text-kumo-strong hover:text-kumo-default hover:bg-kumo-control p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10";
-const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-control";
+  "block rounded-lg text-kumo-strong hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10";
+const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
 
 interface SidebarNavProps {
   currentPath: string;
@@ -85,14 +87,16 @@ interface SidebarNavProps {
 
 export function SidebarNav({ currentPath }: SidebarNavProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [componentsOpen, setComponentsOpen] = useState(true);
   const [blocksOpen, setBlocksOpen] = useState(true);
 
   const [searchOpen, setSearchOpen] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
+  const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
 
-  // Keyboard shortcut: Cmd+K / Ctrl+K
+  // Keyboard shortcut: Cmd+K / Ctrl+K + custom event from headers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -100,16 +104,174 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         setSearchOpen(true);
       }
     };
+    const handleOpenSearch = () => setSearchOpen(true);
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("kumo:open-search", handleOpenSearch);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("kumo:open-search", handleOpenSearch);
+    };
   }, []);
+
+  // Shared nav content for both mobile and desktop
+  const navContent = (
+    <>
+      <button
+        onClick={() => setSearchOpen(true)}
+        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-ring"
+      >
+        <MagnifyingGlassIcon size={16} className="shrink-0" />
+        <span>Search...</span>
+      </button>
+
+      <ul className="flex flex-col gap-px">
+        {staticPages.map((item) => (
+          <li key={item.href}>
+            <a
+              href={item.href}
+              className={cn(
+                LI_STYLE,
+                currentPath === item.href && LI_ACTIVE_STYLE,
+              )}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div className="my-4 border-b border-kumo-line" />
+
+      <div className="mb-4">
+        {/* Components Section */}
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          onClick={() => setComponentsOpen(!componentsOpen)}
+        >
+          <span>Components</span>
+          <CaretDownIcon
+            size={12}
+            className={cn(
+              "text-kumo-subtle transition-transform duration-200",
+              !componentsOpen && "-rotate-90",
+            )}
+          />
+        </button>
+        <ul
+          className={cn(
+            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          {componentItems.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className={cn(
+                  LI_STYLE,
+                  "pl-4",
+                  currentPath === item.href && LI_ACTIVE_STYLE,
+                )}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        {/* Blocks Section */}
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          onClick={() => setBlocksOpen(!blocksOpen)}
+        >
+          <span>Blocks</span>
+          <CaretDownIcon
+            size={12}
+            className={cn(
+              "text-kumo-subtle transition-transform duration-200",
+              !blocksOpen && "-rotate-90",
+            )}
+          />
+        </button>
+        <ul
+          className={cn(
+            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          {blockItems.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className={cn(
+                  LI_STYLE,
+                  "pl-4",
+                  currentPath === item.href && LI_ACTIVE_STYLE,
+                )}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
 
   return (
     <>
-      {/* Left rail that always stays put */}
+      {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-12 bg-kumo-elevated",
+          "fixed inset-x-0 top-0 z-50 flex h-[49px] items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
+        )}
+      >
+        <Button
+          variant="ghost"
+          shape="square"
+          aria-label="Open menu"
+          onClick={toggleMobileMenu}
+        >
+          <KumoMenuIcon />
+        </Button>
+        <h1 className="text-base font-medium">Kumo</h1>
+        {/* Spacer to center the title */}
+        <div className="size-9" />
+      </div>
+
+      {/* Mobile slide-out drawer */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-elevated md:hidden",
+          "transition-transform duration-300 will-change-transform",
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <div className="flex h-[49px] flex-none items-center justify-between border-b border-kumo-line px-3">
+          <h1 className="text-base font-medium">Kumo</h1>
+          <Button
+            variant="ghost"
+            shape="square"
+            aria-label="Close menu"
+            onClick={toggleMobileMenu}
+          >
+            <XIcon size={20} />
+          </Button>
+        </div>
+        <div className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong">
+          {navContent}
+        </div>
+      </aside>
+
+      {/* Desktop: Left rail that always stays put */}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-elevated md:block",
           "border-r border-kumo-line",
         )}
       >
@@ -128,150 +290,26 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </div>
       </div>
 
-      {/* Kumo brand label: only visible when sidebar is closed */}
-      <div
-        className={cn(
-          "pointer-events-none fixed top-0 left-12 z-50 flex h-[49px] items-center px-4 font-medium transition-opacity duration-300 select-none",
-          sidebarOpen ? "opacity-0" : "opacity-100",
-        )}
-      >
-        <h1 className="flex gap-2 text-base">
-          <span>Kumo</span>
-        </h1>
+      {/* Desktop: Kumo brand label - always visible, panel slides behind it */}
+      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-[49px] items-center px-3 font-medium select-none md:flex">
+        <h1 className="text-base">Kumo</h1>
       </div>
 
-      {/* Sliding panel that opens to the right of the rail */}
+      {/* Desktop: Sliding panel that opens to the right of the rail */}
       <aside
         data-sidebar-open={sidebarOpen}
         className={cn(
-          "fixed inset-y-0 left-12 z-40 flex w-64 flex-col bg-kumo-elevated backdrop-blur",
-          "transition-transform duration-300 will-change-transform",
+          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-elevated md:flex",
+          "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
             ? "translate-x-0 border-r border-kumo-line"
             : "-translate-x-full",
         )}
       >
-        {/* Panel header with Kumo title and search button */}
-        <div
-          className={cn(
-            "flex h-[49px] flex-none items-center gap-3 px-3",
-            "border-b border-kumo-line",
-          )}
-        >
-          <h1 className="shrink-0 text-base font-medium">Kumo</h1>
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-kumo-line bg-kumo-control px-2 py-1 text-sm text-kumo-subtle transition-colors hover:bg-kumo-control"
-          >
-            <MagnifyingGlassIcon size={14} className="shrink-0" />
-            <span className="flex-1 truncate text-left text-xs">Search...</span>
-            <kbd className="hidden shrink-0 items-center gap-0.5 rounded border border-kumo-line bg-kumo-base px-1 py-0.5 text-[10px] sm:inline-flex">
-              ⌘K
-            </kbd>
-          </button>
-        </div>
+        <div className="h-[49px] flex-none border-b border-kumo-line" />
 
-        <div className="min-h-0 grow overflow-y-auto overscroll-contain p-4 text-sm text-kumo-strong">
-          <div>
-            <ul className="flex flex-col">
-              {staticPages.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className={cn(
-                      LI_STYLE,
-                      currentPath === item.href && LI_ACTIVE_STYLE,
-                    )}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="mb-6">
-            {/* Components Section */}
-            <h4
-              className="mt-4 mb-2 ml-2 flex cursor-pointer items-center justify-between text-xs font-medium text-kumo-subtle uppercase transition-colors select-none hover:text-kumo-default"
-              onClick={() => setComponentsOpen(!componentsOpen)}
-            >
-              <span>Components</span>
-              <CaretDownIcon
-                size={12}
-                weight="bold"
-                className={cn(
-                  "transition-transform duration-200",
-                  componentsOpen && "rotate-180",
-                )}
-              />
-            </h4>
-            <ul
-              className={cn(
-                "flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
-                componentsOpen
-                  ? "max-h-[2000px] opacity-100"
-                  : "max-h-0 opacity-0",
-              )}
-            >
-              {componentItems.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className={cn(
-                      LI_STYLE,
-                      currentPath === item.href && LI_ACTIVE_STYLE,
-                    )}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            {/* Blocks Section */}
-            <h4
-              className="mt-4 mb-2 ml-2 flex cursor-pointer items-center justify-between text-xs font-medium text-kumo-subtle uppercase transition-colors select-none hover:text-kumo-default"
-              onClick={() => setBlocksOpen(!blocksOpen)}
-            >
-              <span>Blocks</span>
-              <CaretDownIcon
-                size={12}
-                weight="bold"
-                className={cn(
-                  "transition-transform duration-200",
-                  blocksOpen && "rotate-180",
-                )}
-              />
-            </h4>
-            <ul
-              className={cn(
-                "flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
-                blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
-              )}
-            >
-              {blockItems.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className={cn(
-                      LI_STYLE,
-                      currentPath === item.href && LI_ACTIVE_STYLE,
-                    )}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Version badge at bottom of sidebar */}
-        <div className="flex-none border-t border-kumo-line p-3 text-xs text-kumo-subtle">
-          <span title={`Built: ${__BUILD_DATE__}`}>
-            docs v{__DOCS_VERSION__} ({__BUILD_COMMIT__})
-          </span>
+        <div className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong">
+          {navContent}
         </div>
       </aside>
 

@@ -558,12 +558,12 @@ export function HomeGrid() {
   ];
 
   return (
-    <ul className="grid auto-rows-min grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-line md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {components.map((c) => {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-elevated ring-1 ring-kumo-line"
+            className="relative flex aspect-square items-center justify-center bg-kumo-elevated"
             key={c.name}
           >
             {route ? (
