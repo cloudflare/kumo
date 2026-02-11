@@ -2,18 +2,18 @@ import { useState, useEffect } from "react";
 import { Select, Text } from "@cloudflare/kumo";
 
 export function SelectBasicDemo() {
-  const [value, setValue] = useState("Apple");
+  const [value, setValue] = useState("apple");
 
   return (
     <Select
       className="w-[200px]"
       value={value}
-      onValueChange={(v) => setValue(v ?? "Apple")}
-      placeholder="Please select"
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
     >
-      <Select.Option value="Apple">Apple</Select.Option>
-      <Select.Option value="Banana">Banana</Select.Option>
-      <Select.Option value="Cherry">Cherry</Select.Option>
+      <Select.Option value="apple">Apple</Select.Option>
+      <Select.Option value="banana">Banana</Select.Option>
+      <Select.Option value="cherry">Cherry</Select.Option>
     </Select>
   );
 }

@@ -5,7 +5,7 @@ export function PopoverHeroDemo() {
   return (
     <Popover>
       <Popover.Trigger asChild>
-        <Button shape="square" icon={BellIcon} />
+        <Button shape="square" icon={BellIcon} aria-label="Notifications" />
       </Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Notifications</Popover.Title>

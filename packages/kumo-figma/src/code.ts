@@ -89,6 +89,12 @@ function destructiveSyncPages(): PageNode {
     logInfo("✅ Found existing UI Kit page");
   }
 
+  // IMPORTANT: Switch away from the current page before removing others.
+  // Figma can throw when attempting to remove the active page.
+  if (figma.currentPage.id !== uiKitPage.id) {
+    figma.currentPage = uiKitPage;
+  }
+
   // Step 2: Remove ALL other pages (Figma requires at least one page, so we keep uiKitPage)
   const pagesToRemove = figma.root.children.filter(
     (page) => page.type === "PAGE" && page.id !== uiKitPage!.id,

@@ -1,120 +1,105 @@
-# Figma Plugin Knowledge Base
+# Figma Plugin (`@cloudflare/kumo-figma`)
 
-Kumo UI Kit Generator - generates production-quality Figma components from Kumo component definitions.
+Generates production-quality Figma components from `component-registry.json`. Destructive sync: purges and recreates all components per run.
 
-**Parent docs:** See [root AGENTS.md](../../AGENTS.md) for full project context.
+**Parent:** See [root AGENTS.md](../../AGENTS.md) for monorepo context.
 
-## Quick Start
-
-```bash
-pnpm --filter @cloudflare/kumo-figma build
-# In Figma: Plugins > Development > Import plugin from manifest...
-# Select: packages/kumo-figma/src/manifest.json
-```
-
-## Structure
+## STRUCTURE
 
 ```
 kumo-figma/
 ├── src/
-│   ├── manifest.json          # Figma plugin manifest
-│   ├── code.ts                # Main entry + GENERATORS array
-│   ├── ui.html                # Plugin UI
-│   ├── generated/             # Generated data files (JSON)
+│   ├── code.ts                    # Plugin entry: GENERATORS array, page management
+│   ├── ui.html                    # Plugin UI
+│   ├── manifest.json              # Figma manifest (main: "code.js")
+│   ├── generators/
+│   │   ├── shared.ts              # ALL constants + utilities (~1540 lines, critical file)
+│   │   ├── _test-utils.ts         # Shared test assertions
+│   │   ├── drift-detection.test.ts  # Meta-test: registry ↔ generator sync (1733 lines)
+│   │   ├── button.ts              # Example generator
+│   │   └── ...                    # 35+ component generators
 │   ├── parsers/
-│   │   ├── tailwind-to-figma.ts   # Parse Tailwind → Figma values
-│   │   └── opacity-extractor.ts   # Extract opacity modifiers
-│   └── generators/
-│       ├── shared.ts              # Centralized constants + utilities
-│       ├── badge.ts               # Badge generator
-│       ├── button.ts              # Button generator
-│       └── ...                    # 30+ component generators
-└── scripts/
-    └── sync-tokens-to-figma.ts    # CSS → Figma Variables API
+│   │   ├── tailwind-to-figma.ts   # Core: Tailwind classes → Figma values
+│   │   ├── opacity-extractor.ts   # `bg-kumo-brand/70` → opacity data
+│   │   ├── component-registry.ts  # Type-safe registry wrapper
+│   │   ├── loader-parser.ts       # SVG circle data for Loader
+│   │   └── tailwind-theme-parser.ts  # Parses tailwindcss/theme.css (test-only)
+│   └── generated/                 # BUILD OUTPUT (gitignored): theme-data.json, etc.
+├── scripts/
+│   ├── sync-tokens-to-figma.ts    # CSS → Figma Variables API (unidirectional)
+│   ├── figma-api.ts               # Low-level Figma REST client
+│   ├── color-utils.ts             # oklch → sRGB conversion (uses culori)
+│   └── maybe-sync.ts             # Conditional sync gate (skips if no FIGMA_TOKEN)
+└── vitest.config.ts               # Node env (no DOM)
 ```
 
-## Key Modules
+## WHERE TO LOOK
 
-### `parsers/tailwind-to-figma.ts`
+| Task                     | Location                                             | Notes                              |
+| ------------------------ | ---------------------------------------------------- | ---------------------------------- |
+| Add generator            | `src/generators/` + register in `code.ts` GENERATORS | Also update drift-detection        |
+| Centralized constants    | `src/generators/shared.ts`                           | ALL magic numbers must live here   |
+| Tailwind → Figma parsing | `src/parsers/tailwind-to-figma.ts`                   | Scale lookups from theme-data.json |
+| Token sync to Figma      | `scripts/sync-tokens-to-figma.ts`                    | Requires FIGMA_TOKEN               |
+| Drift detection          | `src/generators/drift-detection.test.ts`             | Meta-test enforcing sync           |
 
-Converts Tailwind classes to Figma values (colors, spacing, typography).
+## CONVENTIONS
 
-### `parsers/opacity-extractor.ts`
+### Generator Pattern (Canonical)
 
-Extracts opacity patterns like `bg-kumo-brand/70` for Figma variable bindings.
+Each generator file follows 4 steps:
 
-### `generators/shared.ts`
+1. **Import**: registry + `shared.ts` utilities + `parseTailwindClasses`
+2. **Extract**: Component data from `registry.components.YourComponent.props` (NEVER hardcode)
+3. **Testable exports**: Pure `get*Config()`/`get*ParsedStyles()` functions (no Figma API)
+4. **Generator entry**: `async generateYourComponentComponents(page, startY) → nextY`
+   - Creates components → `figma.combineAsVariants()` → light/dark section pair
 
-**Centralized constants** - all magic numbers live here:
+### Adding a Generator (3 Steps)
 
-- `SECTION_PADDING`, `SECTION_GAP` - Layout spacing
-- `SHADOWS` - Dialog, subtle shadow definitions
-- `GRID_LAYOUT` - Row gaps, column widths
-- `FALLBACK_VALUES` - Parser fallback values
+1. Create `generators/yourcomponent.ts` with testable exports + generator function
+2. Register in `code.ts` GENERATORS array (with wrapper lambda)
+3. Either create test file OR add to `EXCLUDED_COMPONENTS` in drift-detection.test.ts
 
-## Workflow
-
-### Token Sync First
+### Build Pipeline (Sequential, Order Matters)
 
 ```bash
-FIGMA_TOKEN="your-token" pnpm --filter @cloudflare/kumo-figma figma:sync
+pnpm build =
+  1. sync:maybe                        # Sync tokens if FIGMA_TOKEN present
+  2. build:data =                      # 4 codegen steps:
+     a. tsx build-theme-data.ts        → generated/theme-data.json
+     b. tsx build-loader-data.ts       → generated/loader-data.json
+     c. tsx build-phosphor-icons.ts    → generated/phosphor-icons.json
+     d. tsx build-figma-variables.ts   → generated/figma-variables.json
+  3. build:plugin =                    # esbuild → src/code.js (IIFE, ES2017)
 ```
 
-This syncs CSS tokens to Figma's `kumo-colors` variable collection. **Run before plugin.**
+### Testing Philosophy
 
-### Build & Run
+- **Test structure, NOT values**: `"DO NOT test specific colors, sizes, or variant names"`
+- Tests validate against registry as source of truth
+- `_test-utils.ts`: `expectValidRegistryProp()`, `expectAllClassesParsable()`, `expectValidParsedTypes()`
+- Drift detection enforces: every registry component has generator, no magic numbers, no hardcoded assertions
 
-```bash
-pnpm --filter @cloudflare/kumo-figma build
-# In Figma: Plugins > Development > Kumo UI Kit Generator
-```
+## ANTI-PATTERNS
 
-## Adding Generators
+| Pattern                                    | Why                     | Instead                              |
+| ------------------------------------------ | ----------------------- | ------------------------------------ |
+| Hardcoded `SECTION_PADDING`, `SECTION_GAP` | Drift detection fails   | Import from `shared.ts`              |
+| Hardcoded shadow effects                   | Test enforcement        | Import `SHADOWS` from `shared.ts`    |
+| Hardcoded `opacity = 0.5`                  | Test enforcement        | Use `OPACITY.disabled`               |
+| Hardcoded RGB `{ r: 0.5, ... }`            | Test enforcement        | Use `COLORS` from `shared.ts`        |
+| `.toBe(16)` for font sizes in tests        | Fragile assertions      | Use `FONT_SIZE.*` or registry values |
+| `.toBe(600)` for font weights              | Fragile assertions      | Use `FALLBACK_VALUES.fontWeight.*`   |
+| Redeclaring constants from shared.ts       | Drift detection catches | Always import                        |
 
-1. **Create generator**: `generators/yourcomponent.ts`
-2. **Register in `code.ts`** GENERATORS array
-3. **Run validation**: `pnpm --filter @cloudflare/kumo-figma validate`
-4. **Exclude if needed**: Add to `EXCLUDED_COMPONENTS` in `drift-detection.test.ts`
+## NOTES
 
-### Generator Template
-
-```typescript
-import { createTextNode, getVariableByName, SECTION_GAP } from "./shared";
-import registry from "../../../../ai/component-registry.json";
-
-const componentSpec = registry.components.YourComponent;
-
-export function getYourComponentConfig() {
-  return componentSpec.props;
-}
-
-export async function generateYourComponentComponents(
-  page: PageNode,
-  startY: number,
-): Promise<number> {
-  // Implementation
-  return startY + 500 + SECTION_GAP;
-}
-```
-
-## Drift Prevention
-
-CI enforces generator ↔ registry sync:
-
-- `drift-detection.test.ts` validates all components have generators
-- Fails MRs touching `component-registry.json` without generator updates
-- Exclusions documented in test file
-
-## Technical Constraints
-
-- **ES2020 target** - Figma runtime requirement
-- **No external dependencies** - Bundled into single `code.js`
-- **Variable bindings** - Requires `kumo-colors` collection from token sync
-
-## Troubleshooting
-
-| Error                              | Solution                               |
-| ---------------------------------- | -------------------------------------- |
-| "kumo-colors collection not found" | Run token sync first                   |
-| "Variable not found"               | Check token name matches CSS           |
-| "Font not found"                   | Inter is required (default Figma font) |
+- **`generated/` is gitignored**: Run `pnpm build:data` after clone/branch switch. Tests fail without it.
+- **ES2017 target**: Figma runtime constraint. Avoid `??`, output is IIFE not ESM.
+- **`code.js` lives in `src/`**: Not `dist/`. Figma reads `manifest.json` which points to `code.js` in same dir.
+- **Two color conversion paths**: `build-figma-variables.ts` (manual oklch→RGB), `scripts/color-utils.ts` (culori). Manual one is less accurate.
+- **Opacity variables created at runtime**: `getOrCreateVariableWithOpacity("color-kumo-info/20")` alpha-blends against white/black on the fly.
+- **Component name mapping** in drift-detection: `DropdownMenu→dropdown`, `Toasty→toast`, `Switch.Group→switch`
+- **`VAR_NAMES`** in shared.ts has legacy aliases (both `color.surface` and `color.base` map to same variable)
+- **Font**: Inter is required (default Figma font). `createTextNode()` handles async loading.

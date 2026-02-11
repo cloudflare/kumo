@@ -67,6 +67,18 @@ pnpm dev                    # Start docs site at localhost:4321
 pnpm --filter @cloudflare/kumo test
 ```
 
+### Figma Plugin
+
+```bash
+# Optional: enable token sync during build
+# cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env
+# $EDITOR packages/kumo-figma/scripts/.env  # set FIGMA_TOKEN (and optionally FIGMA_FILE_KEY)
+
+pnpm --filter @cloudflare/kumo-figma build
+# In Figma: Plugins > Development > Import plugin from manifest...
+# Select: packages/kumo-figma/src/manifest.json
+```
+
 ### Creating Components
 
 ```bash

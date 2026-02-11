@@ -1,5 +1,60 @@
 # @cloudflare/kumo
 
+## 1.5.0
+
+### Minor Changes
+
+- d7a6da3: fix(cli): resolve broken doc/docs/ls commands by fixing registry path from catalog/ to ai/
+  fix(dialog): wrap sub-components to isolate @base-ui/react type references from downstream consumers
+  fix(label): render as `<label>` element with htmlFor support instead of `<span>`
+  feat(input): add Textarea alias for InputArea
+  feat(toast): add ToastProvider alias for Toasty
+  feat(button): require aria-label on icon-only buttons (shape="square" | "circle") via discriminated union
+  fix(docs): add Tailwind 4 @source directive to usage example, add confirmation dialog recipe, update Select basic example, document icon-only button aria-label pattern
+
+## 1.4.1
+
+### Patch Changes
+
+- b64847d: fix: CLI commands now find component registry and run codegen:registry before publish
+- ea583d8: fix(cli): resolve registry path for docs and ls commands
+
+## 1.4.0
+
+### Minor Changes
+
+- 71d667b: Add CloudflareLogo component with glyph and full logo variants, color schemes (brand/black/white), and exported SVG path data for custom implementations
+
+### Patch Changes
+
+- 262e0e6: Replace `.toSorted()` with `.sort()` on spread copies to fix TypeError on Chrome <110
+
+## 1.3.0
+
+### Minor Changes
+
+- 6a40edf: add 'Delete Resource' block
+
+## 1.2.0
+
+### Minor Changes
+
+- 833ce8b: Add variant support, custom content, and action buttons to Toast component.
+
+### Patch Changes
+
+- d10c711: "fix: adjusted bullet size for sensitive input"
+
+## 1.1.0
+
+### Minor Changes
+
+- 001f9e7: fixes to figma plugin init + zod v4 in kumo
+
+### Patch Changes
+
+- 6dc9a73: Fix `kumo` CLI bin resolution in repo checkouts so `pnpm install` doesn't warn when `dist/` hasn't been built yet.
+
 ## 1.0.0
 
 ### Major Changes

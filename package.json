@@ -11,7 +11,7 @@
     "build": "pnpm --filter @cloudflare/kumo-docs-astro build",
     "codegen": "pnpm --filter @cloudflare/kumo codegen",
     "build:all": "pnpm -r build",
-    "changeset": "changeset",
+    "changeset": "tsx ci/scripts/ensure-changeset-config.ts && changeset",
     "clean": "pnpm -r exec rm -rf dist build .astro .wrangler node_modules",
     "dev": "pnpm codegen && pnpm --filter @cloudflare/kumo-docs-astro dev",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",

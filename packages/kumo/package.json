@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -21,7 +21,7 @@
   "module": "./dist/index.js",
   "types": "./dist/src/index.d.ts",
   "bin": {
-    "kumo": "./dist/command-line/cli.js"
+    "kumo": "./bin/kumo.js"
   },
   "exports": {
     ".": {
@@ -170,6 +170,10 @@
     "./components/grid": {
       "types": "./dist/src/components/grid/index.d.ts",
       "import": "./dist/components/grid.js"
+    },
+    "./components/cloudflare-logo": {
+      "types": "./dist/src/components/cloudflare-logo/index.d.ts",
+      "import": "./dist/components/cloudflare-logo.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
@@ -350,6 +354,7 @@
   },
   "files": [
     "dist",
+    "bin",
     "ai",
     "templates",
     "scripts",
@@ -366,7 +371,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "prepublish": "pnpm run clean && pnpm run build && pnpm run test:unit",
+    "prepublish": "pnpm run clean && pnpm run codegen:registry && pnpm run build && pnpm run test:unit",
     "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",
@@ -377,7 +382,7 @@
     "codegen:primitives": "tsx scripts/generate-primitives.ts",
     "codegen:registry": "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos && tsx scripts/component-registry/index.ts",
     "lint": "pnpm run lint:oxlint && pnpm run lint:eslint",
-    "lint:oxlint": "oxlint src/** --type-aware",
+    "lint:oxlint": "oxlint --config .oxlintrc.json src/** --type-aware",
     "lint:eslint": "eslint src/",
     "test": "CI=true vitest run --project=unit",
     "test:ui": "vitest --ui",
@@ -393,7 +398,7 @@
     "@phosphor-icons/react": "^2.1.10",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "zod": "^3.24.0"
+    "zod": "^4.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
@@ -435,6 +440,6 @@
     "vite-plugin-dts": "catalog:",
     "vitest": "catalog:",
     "wrangler": "catalog:",
-    "zod": "^3.24.0"
+    "zod": "^4.0.0"
   }
 }
