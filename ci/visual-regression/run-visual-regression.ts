@@ -3,9 +3,12 @@ import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  CANARY_COMPONENTS,
   COMPONENT_ACTIONS,
+  classifyChangedFiles,
   discoverComponents,
   getAffectedComponents,
+  getComponentFromFile,
   type DiscoveredComponent,
 } from "./page-config";
 
@@ -42,15 +45,17 @@ interface ComparisonResult {
   changed: boolean;
 }
 
-function getChangedFiles(): string[] {
+function getChangedFiles(): string[] | null {
   try {
     const base = process.env.GITHUB_BASE_REF ?? "main";
     const output = execSync(`git diff --name-only origin/${base}...HEAD`, {
       encoding: "utf-8",
     });
     return output.trim().split("\n").filter(Boolean);
-  } catch {
-    return [];
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`git diff failed, falling back to full regression: ${msg}`);
+    return null;
   }
 }
 
@@ -413,18 +418,54 @@ async function main(): Promise<void> {
     );
   } else {
     const changedFiles = getChangedFiles();
-    components = getAffectedComponents(changedFiles, allComponents);
 
-    if (components.length === 0) {
-      console.log(
-        "No relevant file changes detected. Skipping visual regression.",
+    // If git diff failed, we don't know what changed — run canary regression to be safe
+    if (changedFiles === null) {
+      components = allComponents.filter((c) =>
+        CANARY_COMPONENTS.includes(c.id),
       );
-      return;
-    }
+      console.log(
+        `Running canary regression on ${components.length} representative component(s)...\n`,
+      );
+    } else {
+      const classification = classifyChangedFiles(changedFiles);
 
-    console.log(`Found ${components.length} affected component(s):`);
-    components.forEach((c) => console.log(`  - ${c.name} (${c.url})`));
-    console.log("");
+      if (classification.allSkippable) {
+        console.log(
+          "No visually relevant file changes detected. Skipping visual regression.",
+        );
+        return;
+      }
+
+      if (classification.requiresFullRegression) {
+        components = allComponents.filter((c) =>
+          CANARY_COMPONENTS.includes(c.id),
+        );
+        const broadFiles = changedFiles.filter((f) => !getComponentFromFile(f));
+        console.log("Broad-impact files changed (running canary regression):");
+        broadFiles.slice(0, 10).forEach((f) => console.log(`  - ${f}`));
+        if (broadFiles.length > 10) {
+          console.log(`  ... and ${broadFiles.length - 10} more`);
+        }
+        console.log(
+          `\nRunning canary regression on ${components.length} representative component(s):\n`,
+        );
+        components.forEach((c) => console.log(`  - ${c.name} (${c.url})`));
+      } else {
+        components = getAffectedComponents(changedFiles, allComponents);
+
+        if (components.length === 0) {
+          console.log(
+            "Changed components not found in docs site. Skipping visual regression.",
+          );
+          return;
+        }
+
+        console.log(`Found ${components.length} affected component(s):`);
+        components.forEach((c) => console.log(`  - ${c.name} (${c.url})`));
+        console.log("");
+      }
+    }
   }
 
   const beforeDir = join(SCREENSHOTS_DIR, "before");

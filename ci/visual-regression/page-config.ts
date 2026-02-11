@@ -73,17 +73,76 @@ export async function discoverComponents(
 }
 
 /**
+ * Representative components used as canaries for broad-impact changes.
+ * Covers a simple input, a complex overlay, and a layout-heavy component
+ * to catch regressions without screenshotting every page.
+ */
+export const CANARY_COMPONENTS = ["button", "dialog", "select"];
+
+/**
+ * Patterns that indicate broad visual impact across all components.
+ * Changes to these files trigger a canary regression instead of granular checks.
+ */
+const FULL_REGRESSION_PATTERNS: RegExp[] = [
+  // Shared styles and theming
+  /packages\/kumo\/src\/styles\//,
+  /packages\/kumo\/src\/utils\//,
+  /packages\/kumo\/src\/hooks\//,
+  /packages\/kumo\/src\/primitives\//,
+  /theme-kumo\.css/,
+  /tailwind\.config/,
+
+  // Docs site infrastructure that wraps all component demos
+  /packages\/kumo-docs-astro\/src\/components\/docs\//,
+  /packages\/kumo-docs-astro\/src\/layouts\//,
+  /packages\/kumo-docs-astro\/src\/styles\//,
+];
+
+/**
+ * Patterns for files that have no visual impact and are safe to skip.
+ */
+const SKIP_PATTERNS: RegExp[] = [
+  /\.md$/,
+  /\.changeset\//,
+  /^ci\/(?!visual-regression)/,
+  /\.github\//,
+  /lint\//,
+  /\.test\.(ts|tsx)$/,
+  /\.spec\.(ts|tsx)$/,
+  /packages\/kumo\/ai\//,
+  /packages\/kumo\/scripts\//,
+  /packages\/kumo-figma\//,
+  /packages\/kumo\/src\/command-line\//,
+  /packages\/kumo\/src\/catalog\//,
+  /packages\/kumo\/src\/blocks\//,
+  /lefthook/,
+  /tsconfig/,
+  /\.env/,
+];
+
+export interface ChangeClassification {
+  /** Component slugs that were directly changed */
+  affectedComponents: Set<string>;
+  /** Whether any broad-impact files were changed, requiring full regression */
+  requiresFullRegression: boolean;
+  /** Whether all changed files are safe to skip */
+  allSkippable: boolean;
+}
+
+/**
  * Extract component slug from a changed file path.
- * Returns null if the file doesn't map to a component.
+ * Returns null if the file doesn't map to a specific component.
  *
  * Examples:
  *   packages/kumo/src/components/button/button.tsx -> "button"
+ *   packages/kumo/src/components/button/use-button.ts -> "button"
+ *   packages/kumo/src/components/button/index.ts -> "button"
  *   packages/kumo-docs-astro/.../ButtonDemo.tsx -> "button"
  */
 export function getComponentFromFile(filePath: string): string | null {
-  // Match component source files: packages/kumo/src/components/{name}/{name}.tsx
+  // Match any file under a component directory: packages/kumo/src/components/{name}/
   const componentMatch = filePath.match(
-    /packages\/kumo\/src\/components\/([^/]+)\/\1\.tsx$/,
+    /packages\/kumo\/src\/components\/([^/]+)\//,
   );
   if (componentMatch) {
     return componentMatch[1];
@@ -98,6 +157,53 @@ export function getComponentFromFile(filePath: string): string | null {
   }
 
   return null;
+}
+
+/**
+ * Classify changed files into three tiers:
+ * 1. Component-specific: test only those components (granular)
+ * 2. Broad-impact: triggers full regression (shared styles, docs infra, etc.)
+ * 3. Skippable: no visual impact (CI scripts, markdown, tests, etc.)
+ *
+ * Files that don't match any pattern are treated as broad-impact (safe default).
+ */
+export function classifyChangedFiles(
+  changedFiles: string[],
+): ChangeClassification {
+  const affectedComponents = new Set<string>();
+  let requiresFullRegression = false;
+  let hasUnclassifiedFiles = false;
+
+  for (const file of changedFiles) {
+    // Check if it maps to a specific component
+    const slug = getComponentFromFile(file);
+    if (slug) {
+      affectedComponents.add(slug);
+      continue;
+    }
+
+    // Check if it's a known broad-impact file
+    if (FULL_REGRESSION_PATTERNS.some((pattern) => pattern.test(file))) {
+      requiresFullRegression = true;
+      continue;
+    }
+
+    // Check if it's safe to skip
+    if (SKIP_PATTERNS.some((pattern) => pattern.test(file))) {
+      continue;
+    }
+
+    // Unknown file — treat as broad impact to be safe
+    hasUnclassifiedFiles = true;
+  }
+
+  if (hasUnclassifiedFiles) {
+    requiresFullRegression = true;
+  }
+
+  const allSkippable = !requiresFullRegression && affectedComponents.size === 0;
+
+  return { affectedComponents, requiresFullRegression, allSkippable };
 }
 
 /**
