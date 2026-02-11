@@ -288,7 +288,12 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
 ```tsx
 <div className="flex flex-wrap items-center gap-2">
       <Button variant="secondary">Button</Button>
-      <Button variant="secondary" shape="square" icon={PlusIcon} />
+      <Button
+        variant="secondary"
+        shape="square"
+        icon={PlusIcon}
+        aria-label="Add"
+      />
     </div>
 ```
 
@@ -1865,6 +1870,7 @@ Close sub-component
                 variant="secondary"
                 shape="square"
                 icon={<X />}
+                aria-label="Close"
               />
             )}
           />
@@ -1893,6 +1899,7 @@ Close sub-component
                 variant="secondary"
                 shape="square"
                 icon={<X />}
+                aria-label="Close"
               />
             )}
           />
@@ -2753,7 +2760,12 @@ Secondary sub-component
 <LayerCard>
       <LayerCard.Secondary className="flex items-center justify-between">
         <div>Next Steps</div>
-        <Button variant="ghost" size="sm" shape="square">
+        <Button
+          variant="ghost"
+          size="sm"
+          shape="square"
+          aria-label="Go to next steps"
+        >
           <ArrowRightIcon size={16} />
         </Button>
       </LayerCard.Secondary>
@@ -3157,7 +3169,7 @@ Close sub-component
 ```tsx
 <Popover>
       <Popover.Trigger asChild>
-        <Button shape="square" icon={BellIcon} />
+        <Button shape="square" icon={BellIcon} aria-label="Notifications" />
       </Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Notifications</Popover.Title>
@@ -4417,7 +4429,7 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 ```tsx
 <TooltipProvider>
       <Tooltip content="Add new item" asChild>
-        <Button shape="square" icon={PlusIcon} />
+        <Button shape="square" icon={PlusIcon} aria-label="Add new item" />
       </Tooltip>
     </TooltipProvider>
 ```
@@ -4426,10 +4438,14 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 <TooltipProvider>
       <div className="flex gap-2">
         <Tooltip content="Add" asChild>
-          <Button shape="square" icon={PlusIcon} />
+          <Button shape="square" icon={PlusIcon} aria-label="Add" />
         </Tooltip>
         <Tooltip content="Change language" asChild>
-          <Button shape="square" icon={TranslateIcon} />
+          <Button
+            shape="square"
+            icon={TranslateIcon}
+            aria-label="Change language"
+          />
         </Tooltip>
       </div>
     </TooltipProvider>
