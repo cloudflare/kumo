@@ -1,4 +1,4 @@
-import { CheckIcon, ClipboardIcon } from "@phosphor-icons/react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { Button } from "../button";
 import { inputVariants } from "../input";
@@ -169,7 +169,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
           aria-label={copied ? "Copied" : "Copy to clipboard"}
           aria-pressed={copied}
         >
-          {copied ? <CheckIcon /> : <ClipboardIcon />}
+          {copied ? <CheckIcon /> : <CopyIcon />}
         </Button>
         <span className="sr-only" aria-live="polite">
           {copied ? "Copied to clipboard" : ""}
