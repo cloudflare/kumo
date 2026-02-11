@@ -79,10 +79,12 @@ function copyBlockFiles(srcDir: string, destDir: string): void {
       mkdirSync(blockDestPath, { recursive: true });
     }
 
-    // Copy all .tsx files (source files needed by CLI)
+    // Copy only .tsx files (source files needed by CLI)
+    // We skip index.ts barrel files to avoid TypeScript resolution issues
+    // in other packages that might reference dist/src/blocks
     const files = readdirSync(blockSrcPath);
     for (const file of files) {
-      if (file.endsWith(".tsx") || file.endsWith(".ts")) {
+      if (file.endsWith(".tsx")) {
         const srcFile = join(blockSrcPath, file);
         const destFile = join(blockDestPath, file);
         // Only copy if it's a file (not directory)
