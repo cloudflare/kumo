@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, existsSync } from "fs";
+import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
@@ -8,6 +8,8 @@ const __dirname = dirname(__filename);
 
 const srcDir = join(__dirname, "../src/styles");
 const distDir = join(__dirname, "../dist/styles");
+const blocksSrcDir = join(__dirname, "../src/blocks");
+const blocksDistDir = join(__dirname, "../dist/src/blocks");
 
 // Create dist/styles directory if it doesn't exist
 if (!existsSync(distDir)) {
@@ -53,3 +55,45 @@ try {
 }
 
 console.log("✅ CSS build complete");
+
+// Copy block source files to dist for CLI `kumo add` command
+console.log("📦 Copying block source files...");
+
+function copyBlockFiles(srcDir: string, destDir: string): void {
+  if (!existsSync(srcDir)) {
+    console.warn(`⚠ Warning: blocks source directory not found at ${srcDir}`);
+    return;
+  }
+
+  const blockDirs = readdirSync(srcDir).filter((item) => {
+    const itemPath = join(srcDir, item);
+    return statSync(itemPath).isDirectory();
+  });
+
+  for (const blockDir of blockDirs) {
+    const blockSrcPath = join(srcDir, blockDir);
+    const blockDestPath = join(destDir, blockDir);
+
+    // Create destination directory
+    if (!existsSync(blockDestPath)) {
+      mkdirSync(blockDestPath, { recursive: true });
+    }
+
+    // Copy all .tsx files (source files needed by CLI)
+    const files = readdirSync(blockSrcPath);
+    for (const file of files) {
+      if (file.endsWith(".tsx") || file.endsWith(".ts")) {
+        const srcFile = join(blockSrcPath, file);
+        const destFile = join(blockDestPath, file);
+        // Only copy if it's a file (not directory)
+        if (statSync(srcFile).isFile()) {
+          copyFileSync(srcFile, destFile);
+          console.log(`  ✓ Copied ${blockDir}/${file}`);
+        }
+      }
+    }
+  }
+}
+
+copyBlockFiles(blocksSrcDir, blocksDistDir);
+console.log("✅ Block source files copied");
