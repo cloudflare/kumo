@@ -1641,6 +1641,185 @@ CommandPalette — accessible command palette / spotlight search overlay.  Compo
 
 ---
 
+### DatePicker
+
+DatePicker — a date selection calendar.  Built on [react-day-picker](https://daypicker.dev) with Kumo styling. Supports three selection modes: single, multiple, and range.  **Features:** - Three selection modes: single, multiple, range - Multiple month display with `numberOfMonths` - Localization via date-fns locales - Timezone support - Custom date modifiers for highlighting events - Accessible keyboard navigation
+
+**Type:** component
+
+**Import:** `import { DatePicker } from "@cloudflare/kumo";`
+
+**Category:** Other
+
+**Props:**
+
+- `className`: string
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
+
+**Colors (kumo tokens used):**
+
+`bg-kumo-base`
+
+**Examples:**
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="single"
+        selected={date}
+        onSelect={(selected) => setDate(selected)}
+      />
+      <p className="text-sm text-kumo-subtle">
+        Selected: {date ? date.toLocaleDateString() : "None"}
+      </p>
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="multiple"
+        selected={dates}
+        onSelect={(selected) => setDates(selected)}
+        max={5}
+      />
+      <p className="text-sm text-kumo-subtle">
+        Selected: {dates?.length ?? 0} date(s)
+      </p>
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="range"
+        selected={range}
+        onSelect={(selected) => setRange(selected)}
+        numberOfMonths={2}
+      />
+      <p className="text-sm text-kumo-subtle">
+        Range:{" "}
+        {range?.from
+          ? `${range.from.toLocaleDateString()} - ${range.to?.toLocaleDateString() ?? "..."}`
+          : "None"}
+      </p>
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="range"
+        selected={range}
+        onSelect={(selected) => setRange(selected)}
+        min={3}
+        max={7}
+        footer={
+          <span className="text-xs text-kumo-subtle">Select 3-7 nights</span>
+        }
+      />
+    </div>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {date ? date.toLocaleDateString() : "Pick a date"}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-3">
+        <DatePicker
+          mode="single"
+          selected={date}
+          onSelect={(d) => setDate(d)}
+        />
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {formatRange()}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-3">
+        <DatePicker
+          mode="range"
+          selected={range}
+          onSelect={(r) => setRange(r)}
+          numberOfMonths={2}
+        />
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {formatRange()}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-0">
+        <div className="flex">
+          <div className="flex flex-col gap-1 border-r border-kumo-line p-2 text-sm">
+            {presets.map((preset) => {
+              const isActive = isPresetActive(preset);
+              return (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => handlePresetClick(preset)}
+                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${
+                    isActive
+                      ? "bg-kumo-bg-inverse text-kumo-text-inverse"
+                      : "text-kumo-strong hover:bg-kumo-control"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-3">
+            <DatePicker
+              mode="range"
+              selected={range}
+              onSelect={(r) => setRange(r)}
+              month={month}
+              onMonthChange={setMonth}
+              numberOfMonths={2}
+            />
+          </div>
+        </div>
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<DatePicker
+      mode="multiple"
+      selected={dates}
+      onSelect={(selected) => setDates(selected)}
+      max={maxDays}
+      disabled={unavailableDates}
+      fixedWeeks
+      footer={
+        <p className="text-xs text-kumo-subtle pt-2 w-full">
+          {selectedCount}/{maxDays} days selected. Grayed dates are unavailable.
+        </p>
+      }
+    />
+```
+
+
+---
+
 ### DateRangePicker
 
 DateRangePicker — dual-calendar date range selector.  Renders two side-by-side month calendars with click-to-select start/end dates, hover preview of the range, a timezone footer, and a reset button.
@@ -4506,7 +4685,7 @@ Multi-line textarea input with Input variants and InputArea-specific dimensions
 - **Feedback:** Banner, Loader, Toasty
 - **Action:** Button, ClipboardText
 - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, Switch
-- **Other:** CloudflareLogo, Label, Link, SensitiveInput, Table, DeleteResource
+- **Other:** CloudflareLogo, DatePicker, Label, Link, SensitiveInput, Table, DeleteResource
 - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
 - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
 - **Layout:** Grid, Surface, PageHeader, ResourceListPage

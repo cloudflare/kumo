@@ -1,0 +1,342 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  DatePickerSingleDemo,
+  DatePickerMultipleDemo,
+  DatePickerRangeDemo,
+  DatePickerRangeMinMaxDemo,
+  DatePickerPopoverDemo,
+  DatePickerRangePopoverDemo,
+  DatePickerRangeWithPresetsDemo,
+  DatePickerDisabledWithFooterDemo,
+} from "../../components/demos/DatePickerDemo";
+---
+
+<DocLayout
+  title="DatePicker"
+  description="A date selection calendar supporting single, multiple, and range selection modes."
+  sourceFile="components/date-picker"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`const [date, setDate] = useState<Date>();
+<DatePicker mode="single" selected={date} onSelect={setDate} />`}
+    >
+      <DatePickerSingleDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { DatePicker, type DateRange } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { DatePicker, type DateRange } from "@cloudflare/kumo/components/date-picker";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <p class="mb-4 text-kumo-strong">
+      DatePicker supports three selection modes: <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">single</code>,
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">multiple</code>, and
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">range</code>.
+    </p>
+    <CodeBlock
+      code={`import { useState } from "react";
+import { DatePicker } from "@cloudflare/kumo";
+
+export default function Example() {
+  const [date, setDate] = useState<Date>();
+  
+  return (
+    <DatePicker
+      mode="single"
+      selected={date}
+      onSelect={setDate}
+    />
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <!-- Single Selection -->
+    <div class="mb-12">
+      <Heading level={3}>Single Date Selection</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Select a single date. The most common use case for date pickers.
+      </p>
+      <ComponentExample
+        code={`const [date, setDate] = useState<Date>();
+
+<DatePicker
+  mode="single"
+  selected={date}
+  onSelect={setDate}
+/>`}
+      >
+        <DatePickerSingleDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- Multiple Selection -->
+    <div class="mb-12">
+      <Heading level={3}>Multiple Date Selection</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Select multiple individual dates. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">max</code> to limit the number of selections.
+      </p>
+      <ComponentExample
+        code={`const [dates, setDates] = useState<Date[]>();
+
+<DatePicker
+  mode="multiple"
+  selected={dates}
+  onSelect={setDates}
+  max={5}
+/>`}
+      >
+        <DatePickerMultipleDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- Range Selection -->
+    <div class="mb-12">
+      <Heading level={3}>Date Range Selection</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Select a continuous range of dates. Works well with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">numberOfMonths={2}</code> for a side-by-side view.
+      </p>
+      <ComponentExample
+        code={`const [range, setRange] = useState<DateRange>();
+
+<DatePicker
+  mode="range"
+  selected={range}
+  onSelect={setRange}
+  numberOfMonths={2}
+/>`}
+      >
+        <DatePickerRangeDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- Range with Min/Max -->
+    <div class="mb-12">
+      <Heading level={3}>Range with Min/Max Constraints</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Constrain the range length using <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">min</code> and
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">max</code> props (in days/nights).
+      </p>
+      <ComponentExample
+        code={`<DatePicker
+  mode="range"
+  selected={range}
+  onSelect={setRange}
+  min={3}
+  max={7}
+  footer={<span>Select 3-7 nights</span>}
+/>`}
+      >
+        <DatePickerRangeMinMaxDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- With Popover -->
+    <div class="mb-12">
+      <Heading level={3}>With Popover</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Compose with the <a href="/components/popover" class="text-kumo-link hover:underline">Popover</a> component to create a dropdown date picker.
+      </p>
+      <ComponentExample
+        code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button variant="outline" icon={CalendarDotsIcon}>
+      {date ? date.toLocaleDateString() : "Pick a date"}
+    </Button>
+  </Popover.Trigger>
+  <Popover.Content className="p-1">
+    <DatePicker
+      mode="single"
+      selected={date}
+      onSelect={(d) => setDate(d)}
+    />
+  </Popover.Content>
+</Popover>`}
+      >
+        <DatePickerPopoverDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- Range with Popover -->
+    <div class="mb-12">
+      <Heading level={3}>Date Range with Popover</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        A date range picker in a popover with two months displayed.
+      </p>
+      <ComponentExample
+        code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button variant="outline" icon={CalendarDotsIcon}>
+      {formatRange()}
+    </Button>
+  </Popover.Trigger>
+  <Popover.Content className="p-1">
+    <DatePicker
+      mode="range"
+      selected={range}
+      onSelect={(r) => setRange(r)}
+      numberOfMonths={2}
+    />
+  </Popover.Content>
+</Popover>`}
+      >
+        <DatePickerRangePopoverDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- Range with Presets -->
+    <div class="mb-12">
+      <Heading level={3}>Date Range with Presets</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Combine the date picker with preset options for quick selection.
+      </p>
+      <ComponentExample
+        code={`<Popover>
+  <Popover.Trigger asChild>
+    <Button variant="outline" icon={CalendarDotsIcon}>
+      {formatRange()}
+    </Button>
+  </Popover.Trigger>
+  <Popover.Content className="p-0">
+    <div className="flex">
+      <div className="flex flex-col gap-1 border-r border-kumo-line p-2 text-sm">
+        {presets.map((preset) => (
+          <button
+            key={preset.label}
+            onClick={() => setRange(preset.range)}
+            className="rounded-md px-3 py-1.5 text-left hover:bg-kumo-control"
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+      <div className="p-1">
+        <DatePicker
+          mode="range"
+          selected={range}
+          onSelect={(r) => setRange(r)}
+          numberOfMonths={2}
+        />
+      </div>
+    </div>
+  </Popover.Content>
+</Popover>`}
+      >
+        <DatePickerRangeWithPresetsDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <!-- Disabled Dates with Footer -->
+    <div class="mb-12">
+      <Heading level={3}>Disabled Dates with Usage Limits</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">disabled</code> prop to make certain dates unselectable,
+        and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">footer</code> to display usage information.
+      </p>
+      <ComponentExample
+        code={`const unavailableDates = [
+  new Date(2025, 0, 5),
+  new Date(2025, 0, 12),
+];
+
+<DatePicker
+  mode="multiple"
+  selected={dates}
+  onSelect={setDates}
+  max={5}
+  disabled={unavailableDates}
+  footer={
+    <p className="text-xs text-kumo-subtle pt-2">
+      {selectedCount}/{maxDays} days selected. Grayed dates are unavailable.
+    </p>
+  }
+/>`}
+      >
+        <DatePickerDisabledWithFooterDemo client:load />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <!-- Composing with Popover (Code Example) -->
+  <ComponentSection>
+    <Heading level={2}>Full Popover Example</Heading>
+    <p class="mb-4 text-kumo-strong">
+      Here's a complete example showing how to compose DatePicker with Popover:
+    </p>
+    <CodeBlock
+      code={`import { useState } from "react";
+import { DatePicker, Popover, Button } from "@cloudflare/kumo";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
+
+export function DatePickerDropdown() {
+  const [date, setDate] = useState<Date>();
+
+  return (
+    <Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {date ? date.toLocaleDateString() : "Pick a date"}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-3">
+        <DatePicker
+          mode="single"
+          selected={date}
+          onSelect={(d) => setDate(d)}
+        />
+      </Popover.Content>
+    </Popover>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <p class="text-kumo-strong">
+      DatePicker forwards all props to <a href="https://daypicker.dev/api/interfaces/PropsBase" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">react-day-picker</a>. 
+      Key props include:
+    </p>
+    <ul class="mt-4 list-disc list-inside text-kumo-strong space-y-2">
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">mode</code> — <code class="text-xs">"single" | "multiple" | "range"</code> — Selection mode (required)</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">selected</code> — Currently selected date(s)</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onSelect</code> — Callback when selection changes</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">numberOfMonths</code> — Number of months to display</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">disabled</code> — Dates that cannot be selected</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">min</code> / <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">max</code> — Min/max selection constraints</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">footer</code> — Content rendered below the calendar</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">locale</code> — date-fns locale for internationalization</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">className</code> — Additional CSS classes</li>
+    </ul>
+    <p class="mt-4 text-kumo-subtle text-sm">
+      See the <a href="https://daypicker.dev/docs" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">react-day-picker documentation</a> for the full API.
+    </p>
+  </ComponentSection>
+
+</DocLayout>

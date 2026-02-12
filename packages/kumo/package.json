@@ -44,6 +44,10 @@
       "types": "./dist/src/components/date-range-picker/index.d.ts",
       "import": "./dist/components/date-range-picker.js"
     },
+    "./components/date-picker": {
+      "types": "./dist/src/components/date-picker/index.d.ts",
+      "import": "./dist/components/date-picker.js"
+    },
     "./components/checkbox": {
       "types": "./dist/src/components/checkbox/index.d.ts",
       "import": "./dist/components/checkbox.js"
@@ -408,6 +412,7 @@
   "dependencies": {
     "@base-ui/react": "^1.0.0",
     "clsx": "^2.1.1",
+    "react-day-picker": "^9.13.2",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

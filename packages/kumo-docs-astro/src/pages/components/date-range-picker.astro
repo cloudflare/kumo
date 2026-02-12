@@ -5,6 +5,7 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
+import { Banner } from "@cloudflare/kumo";
 import {
   DateRangePickerBasicDemo,
   DateRangePickerSizesDemo,
@@ -19,6 +20,13 @@ import {
   description="A dual-calendar date range picker for selecting start and end dates with timezone display."
   sourceFile="components/date-range-picker"
 >
+  <!-- Recommendation Banner -->
+  <div class="mb-8">
+    <Banner variant="default">
+      <strong>Recommendation:</strong> Consider using <a href="/components/date-picker" class="underline font-medium">DatePicker</a> with <code class="bg-kumo-control/50 px-1 rounded">mode="range"</code> for new projects. It offers more flexibility and a smaller bundle size.
+    </Banner>
+  </div>
+
   <!-- Demo -->
   <ComponentSection>
     <ComponentExample

@@ -191,6 +191,17 @@ export {
   type CloudflareLogoSvgVariant,
   type CloudflareLogoSvgColor,
 } from "./components/cloudflare-logo";
+
+// DatePicker
+export {
+  DatePicker,
+  type DatePickerProps,
+  type DatePickerSingleProps,
+  type DatePickerMultipleProps,
+  type DatePickerRangeProps,
+  type DateRange,
+} from "./components/date-picker";
+
 // PLOP_INJECT_EXPORT
 
 // Utils

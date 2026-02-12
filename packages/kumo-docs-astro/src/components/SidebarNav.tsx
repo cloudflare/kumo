@@ -36,6 +36,7 @@ const componentItems: NavItem[] = [
   { label: "Collapsible", href: "/components/collapsible" },
   { label: "Combobox", href: "/components/combobox" },
   { label: "Command Palette", href: "/components/command-palette" },
+  { label: "Date Picker", href: "/components/date-picker" },
   { label: "Date Range Picker", href: "/components/date-range-picker" },
   { label: "Dialog", href: "/components/dialog" },
   { label: "Dropdown", href: "/components/dropdown" },
