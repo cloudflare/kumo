@@ -200,7 +200,9 @@ export function DatePickerRangeWithPresetsDemo() {
   const handlePresetClick = (preset: { range: DateRange }) => {
     setRange(preset.range);
     // Navigate calendar to show the start of the range
-    setMonth(preset.range.from);
+    if (preset.range.from) {
+      setMonth(preset.range.from);
+    }
   };
 
   const isPresetActive = (preset: { range: DateRange }) => {

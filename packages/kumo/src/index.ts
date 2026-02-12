@@ -196,10 +196,8 @@ export {
 export {
   DatePicker,
   type DatePickerProps,
-  type DatePickerSingleProps,
-  type DatePickerMultipleProps,
-  type DatePickerRangeProps,
   type DateRange,
+  type DayPickerProps,
 } from "./components/date-picker";
 
 // PLOP_INJECT_EXPORT
