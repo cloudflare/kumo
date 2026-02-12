@@ -61,12 +61,13 @@
 .rdp-root {
   /* Prevent horizontal jitter from number width changes */
   font-variant-numeric: tabular-nums;
-  --rdp-day-height: 2rem;
-  --rdp-day-width: 2rem;
+  --rdp-cell-padding: 2px;
+  --rdp-day-height: calc(2rem + var(--rdp-cell-padding) * 2);
+  --rdp-day-width: calc(2rem + var(--rdp-cell-padding) * 2);
   --rdp-day_button-border-radius: 0.375rem;
   --rdp-day_button-border: none;
-  --rdp-day_button-height: 100%;
-  --rdp-day_button-width: 100%;
+  --rdp-day_button-height: 2rem;
+  --rdp-day_button-width: 2rem;
   --rdp-selected-border: none;
   --rdp-disabled-opacity: 0.4;
   --rdp-outside-opacity: 0.4;
@@ -142,6 +143,7 @@
   width: var(--rdp-day-width);
   height: var(--rdp-day-height);
   text-align: center;
+  padding: var(--rdp-cell-padding);
 }
 
 .rdp-day_button {
@@ -402,49 +404,67 @@
 }
 
 /* RANGE SELECTION */
+/* All styling goes on the CELL (<td>), buttons are transparent */
 
-/* Range start button - rounded left, square right */
-.rdp-day.rdp-range_start .rdp-day_button {
+/* Range start CELL - dark bg, rounded left, flat right for continuity */
+.rdp-day.rdp-range_start:not(.rdp-range_end) {
   background-color: var(--rdp-range_start-date-background-color);
-  color: var(--rdp-range_start-color);
   border-radius: var(--rdp-day_button-border-radius) 0 0
     var(--rdp-day_button-border-radius);
 }
 
-.rdp-day.rdp-range_start .rdp-day_button:hover {
-  background-color: var(--rdp-range_start-date-background-color);
+/* Range start BUTTON - transparent, inherits cell appearance */
+.rdp-day.rdp-range_start .rdp-day_button {
+  background-color: transparent;
+  color: var(--rdp-range_start-color);
 }
 
-/* Range middle button - square on both sides */
-.rdp-day.rdp-range_middle .rdp-day_button {
+.rdp-day.rdp-range_start .rdp-day_button:hover {
+  background-color: transparent;
+}
+
+/* Range middle CELL - solid background fills the entire cell */
+.rdp-day.rdp-range_middle {
   background-color: var(--rdp-range_middle-background-color);
-  border-radius: 0;
+}
+
+/* Range middle BUTTON - transparent, shows cell background through */
+.rdp-day.rdp-range_middle .rdp-day_button {
+  background-color: transparent;
   color: var(--rdp-range_middle-color);
 }
 
 .rdp-day.rdp-range_middle .rdp-day_button:hover {
   background-color: var(--rdp-fill-hover-bg);
+  border-radius: var(--rdp-day_button-border-radius);
 }
 
-/* Range end button - square left, rounded right */
-.rdp-day.rdp-range_end .rdp-day_button {
+/* Range end CELL - dark bg, flat left, rounded right */
+.rdp-day.rdp-range_end:not(.rdp-range_start) {
   background-color: var(--rdp-range_end-date-background-color);
-  color: var(--rdp-range_end-color);
   border-radius: 0 var(--rdp-day_button-border-radius)
     var(--rdp-day_button-border-radius) 0;
 }
 
+/* Range end BUTTON - transparent, inherits cell appearance */
+.rdp-day.rdp-range_end .rdp-day_button {
+  background-color: transparent;
+  color: var(--rdp-range_end-color);
+}
+
 .rdp-day.rdp-range_end .rdp-day_button:hover {
-  background-color: var(--rdp-range_end-date-background-color);
+  background-color: transparent;
 }
 
-/* When start and end are the same day */
-.rdp-range_start.rdp-range_end {
-  background: transparent;
-}
-
-.rdp-range_start.rdp-range_end .rdp-day_button {
+/* When start and end are the same day - fully rounded cell */
+.rdp-day.rdp-range_start.rdp-range_end {
+  background-color: var(--rdp-range_start-date-background-color);
   border-radius: var(--rdp-day_button-border-radius);
+}
+
+.rdp-day.rdp-range_start.rdp-range_end .rdp-day_button {
+  background-color: transparent;
+  color: var(--rdp-range_start-color);
 }
 
 /* Focusable days */
