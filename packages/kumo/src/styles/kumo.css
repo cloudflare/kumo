@@ -142,7 +142,6 @@
   width: var(--rdp-day-width);
   height: var(--rdp-day-height);
   text-align: center;
-  padding: 2px;
 }
 
 .rdp-day_button {
@@ -325,6 +324,7 @@
 
 .rdp-month_grid {
   border-collapse: collapse;
+  border-spacing: 0;
 }
 
 /* Navigation bar */
@@ -403,36 +403,21 @@
 
 /* RANGE SELECTION */
 
-/* Range start - the <td> gets a gradient background */
-.rdp-range_start {
-  background: linear-gradient(
-    var(--rdp-gradient-direction),
-    transparent 50%,
-    var(--rdp-range_middle-background-color) 50%
-  );
-}
-
-/* Range start button */
-.rdp-range_start .rdp-day_button {
+/* Range start button - rounded left, square right */
+.rdp-day.rdp-range_start .rdp-day_button {
   background-color: var(--rdp-range_start-date-background-color);
   color: var(--rdp-range_start-color);
   border-radius: var(--rdp-day_button-border-radius) 0 0
     var(--rdp-day_button-border-radius);
 }
 
-.rdp-range_start .rdp-day_button:hover {
+.rdp-day.rdp-range_start .rdp-day_button:hover {
   background-color: var(--rdp-range_start-date-background-color);
 }
 
-/* Range middle - the <td> gets solid background */
-.rdp-range_middle {
-  background-color: var(--rdp-range_middle-background-color);
-}
-
-/* Range middle button - transparent so <td> bg shows through */
-/* Use .rdp-day.rdp-range_middle for higher specificity over .rdp-selected */
+/* Range middle button - square on both sides */
 .rdp-day.rdp-range_middle .rdp-day_button {
-  background-color: transparent;
+  background-color: var(--rdp-range_middle-background-color);
   border-radius: 0;
   color: var(--rdp-range_middle-color);
 }
@@ -441,24 +426,15 @@
   background-color: var(--rdp-fill-hover-bg);
 }
 
-/* Range end - the <td> gets a gradient background */
-.rdp-range_end {
-  background: linear-gradient(
-    var(--rdp-gradient-direction),
-    var(--rdp-range_middle-background-color) 50%,
-    transparent 50%
-  );
-}
-
-/* Range end button */
-.rdp-range_end .rdp-day_button {
+/* Range end button - square left, rounded right */
+.rdp-day.rdp-range_end .rdp-day_button {
   background-color: var(--rdp-range_end-date-background-color);
   color: var(--rdp-range_end-color);
   border-radius: 0 var(--rdp-day_button-border-radius)
     var(--rdp-day_button-border-radius) 0;
 }
 
-.rdp-range_end .rdp-day_button:hover {
+.rdp-day.rdp-range_end .rdp-day_button:hover {
   background-color: var(--rdp-range_end-date-background-color);
 }
 
