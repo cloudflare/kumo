@@ -26,7 +26,7 @@ import {
   <ComponentSection>
     <ComponentExample
       code={`const [date, setDate] = useState<Date>();
-<DatePicker mode="single" selected={date} onSelect={setDate} />`}
+<DatePicker mode="single" selected={date} onChange={setDate} />`}
     >
       <DatePickerSingleDemo client:load />
     </ComponentExample>
@@ -63,7 +63,7 @@ export default function Example() {
     <DatePicker
       mode="single"
       selected={date}
-      onSelect={setDate}
+      onChange={setDate}
     />
   );
 }`}
@@ -87,7 +87,7 @@ export default function Example() {
 <DatePicker
   mode="single"
   selected={date}
-  onSelect={setDate}
+  onChange={setDate}
 />`}
       >
         <DatePickerSingleDemo client:load />
@@ -106,7 +106,7 @@ export default function Example() {
 <DatePicker
   mode="multiple"
   selected={dates}
-  onSelect={setDates}
+  onChange={setDates}
   max={5}
 />`}
       >
@@ -126,7 +126,7 @@ export default function Example() {
 <DatePicker
   mode="range"
   selected={range}
-  onSelect={setRange}
+  onChange={setRange}
   numberOfMonths={2}
 />`}
       >
@@ -145,7 +145,7 @@ export default function Example() {
         code={`<DatePicker
   mode="range"
   selected={range}
-  onSelect={setRange}
+  onChange={setRange}
   min={3}
   max={7}
   footer={<span>Select 3-7 nights</span>}
@@ -172,7 +172,7 @@ export default function Example() {
     <DatePicker
       mode="single"
       selected={date}
-      onSelect={(d) => setDate(d)}
+      onChange={(d) => setDate(d)}
     />
   </Popover.Content>
 </Popover>`}
@@ -198,7 +198,7 @@ export default function Example() {
     <DatePicker
       mode="range"
       selected={range}
-      onSelect={(r) => setRange(r)}
+      onChange={(r) => setRange(r)}
       numberOfMonths={2}
     />
   </Popover.Content>
@@ -238,7 +238,7 @@ export default function Example() {
         <DatePicker
           mode="range"
           selected={range}
-          onSelect={(r) => setRange(r)}
+          onChange={(r) => setRange(r)}
           numberOfMonths={2}
         />
       </div>
@@ -266,7 +266,7 @@ export default function Example() {
 <DatePicker
   mode="multiple"
   selected={dates}
-  onSelect={setDates}
+  onChange={setDates}
   max={5}
   disabled={unavailableDates}
   footer={
@@ -306,7 +306,7 @@ export function DatePickerDropdown() {
         <DatePicker
           mode="single"
           selected={date}
-          onSelect={(d) => setDate(d)}
+          onChange={(d) => setDate(d)}
         />
       </Popover.Content>
     </Popover>
@@ -326,7 +326,7 @@ export function DatePickerDropdown() {
     <ul class="mt-4 list-disc list-inside text-kumo-strong space-y-2">
       <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">mode</code> — <code class="text-xs">"single" | "multiple" | "range"</code> — Selection mode (required)</li>
       <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">selected</code> — Currently selected date(s)</li>
-      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onSelect</code> — Callback when selection changes</li>
+      <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onChange</code> — Callback when selection changes</li>
       <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">numberOfMonths</code> — Number of months to display</li>
       <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">disabled</code> — Dates that cannot be selected</li>
       <li><code class="rounded bg-kumo-control px-1 py-0.5 text-xs">min</code> / <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">max</code> — Min/max selection constraints</li>
@@ -336,6 +336,12 @@ export function DatePickerDropdown() {
     </ul>
     <p class="mt-4 text-kumo-subtle text-sm">
       See the <a href="https://daypicker.dev/docs" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">react-day-picker documentation</a> for the full API.
+    </p>
+
+    <Heading level={3} class="mt-8">Differences from react-day-picker</Heading>
+    <p class="mt-3 text-kumo-strong">
+      For consistency with other Kumo form components, DatePicker uses <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onChange</code> instead of react-day-picker's <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onSelect</code>.
+      Full type inference is preserved — TypeScript will correctly narrow the callback signature based on the <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">mode</code> prop.
     </p>
   </ComponentSection>
 

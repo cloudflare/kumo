@@ -12,11 +12,11 @@ export function DatePickerSingleDemo() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DatePicker
-        mode="single"
-        selected={date}
-        onSelect={(selected) => setDate(selected)}
-      />
+      <DatePicker mode="single" selected={date} onChange={d => {
+        if (d) {
+          setDate(d);
+        }
+      }} />
       <p className="text-sm text-kumo-subtle">
         Selected: {date ? date.toLocaleDateString() : "None"}
       </p>
@@ -35,7 +35,7 @@ export function DatePickerMultipleDemo() {
       <DatePicker
         mode="multiple"
         selected={dates}
-        onSelect={(selected) => setDates(selected)}
+        onChange={setDates}
         max={5}
       />
       <p className="text-sm text-kumo-subtle">
@@ -56,7 +56,7 @@ export function DatePickerRangeDemo() {
       <DatePicker
         mode="range"
         selected={range}
-        onSelect={(selected) => setRange(selected)}
+        onChange={setRange}
         numberOfMonths={2}
       />
       <p className="text-sm text-kumo-subtle">
@@ -80,7 +80,7 @@ export function DatePickerRangeMinMaxDemo() {
       <DatePicker
         mode="range"
         selected={range}
-        onSelect={(selected) => setRange(selected)}
+        onChange={setRange}
         min={3}
         max={7}
         footer={
@@ -105,11 +105,7 @@ export function DatePickerPopoverDemo() {
         </Button>
       </Popover.Trigger>
       <Popover.Content className="p-3">
-        <DatePicker
-          mode="single"
-          selected={date}
-          onSelect={(d) => setDate(d)}
-        />
+        <DatePicker mode="single" selected={date} onChange={setDate} />
       </Popover.Content>
     </Popover>
   );
@@ -138,7 +134,7 @@ export function DatePickerRangePopoverDemo() {
         <DatePicker
           mode="range"
           selected={range}
-          onSelect={(r) => setRange(r)}
+          onChange={setRange}
           numberOfMonths={2}
         />
       </Popover.Content>
@@ -238,11 +234,10 @@ export function DatePickerRangeWithPresetsDemo() {
                   key={preset.label}
                   type="button"
                   onClick={() => handlePresetClick(preset)}
-                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${
-                    isActive
-                      ? "bg-kumo-bg-inverse text-kumo-text-inverse"
-                      : "text-kumo-strong hover:bg-kumo-control"
-                  }`}
+                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${isActive
+                    ? "bg-kumo-bg-inverse text-kumo-text-inverse"
+                    : "text-kumo-strong hover:bg-kumo-control"
+                    }`}
                 >
                   {preset.label}
                 </button>
@@ -253,7 +248,7 @@ export function DatePickerRangeWithPresetsDemo() {
             <DatePicker
               mode="range"
               selected={range}
-              onSelect={(r) => setRange(r)}
+              onChange={setRange}
               month={month}
               onMonthChange={setMonth}
               numberOfMonths={2}
@@ -287,7 +282,7 @@ export function DatePickerDisabledWithFooterDemo() {
     <DatePicker
       mode="multiple"
       selected={dates}
-      onSelect={(selected) => setDates(selected)}
+      onChange={setDates}
       max={maxDays}
       disabled={unavailableDates}
       fixedWeeks
