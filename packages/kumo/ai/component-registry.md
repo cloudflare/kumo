@@ -512,6 +512,8 @@ Read-only text field with a one-click copy-to-clipboard button.
   The text to display and copy to clipboard.
 - `className`: string
   Additional CSS classes merged via `cn()`.
+- `showTooltip`: boolean
+  Show tooltip on copy.
 
 **Colors (kumo tokens used):**
 

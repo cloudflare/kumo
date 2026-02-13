@@ -3,6 +3,7 @@ import { forwardRef, useCallback, useEffect, useState } from "react";
 import { Button } from "../button";
 import { inputVariants } from "../input";
 import { cn } from "../../utils/cn";
+import { Tooltip } from "../tooltip";
 
 /** ClipboardText size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_CLIPBOARD_TEXT_VARIANTS = {
@@ -27,6 +28,16 @@ export const KUMO_CLIPBOARD_TEXT_VARIANTS = {
 
 export const KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS = {
   size: "lg",
+} as const;
+
+const slideBase = "pointer-events-none absolute inset-0 flex items-center justify-center opacity-0";
+
+const clipboardTextAnimations = {
+  slide: {
+    initial: `${slideBase} translate-y-full`,
+    animate: "translate-y-0 opacity-100",
+    end: `${slideBase} -translate-y-full`
+  },
 } as const;
 
 // Derived types from KUMO_CLIPBOARD_TEXT_VARIANTS
@@ -74,6 +85,8 @@ export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
   className?: string;
   /** Callback fired after text is copied to clipboard. */
   onCopy?: () => void;
+  /** Show tooltip on copy. @default true */
+  showTooltip?: boolean;
 }
 
 /**
@@ -91,6 +104,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
       className,
       size = KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
       onCopy,
+      showTooltip = true,
     },
     ref,
   ) => {
@@ -145,7 +159,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
       if (copied) {
         const timeoutId = setTimeout(() => {
           setCopied(false);
-        }, 2000);
+        }, 1100);
 
         return () => clearTimeout(timeoutId);
       }
@@ -161,16 +175,42 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
         )}
       >
         <span className="grow px-4">{text}</span>
-        <Button
-          size={sizeConfig.buttonSize}
-          variant="ghost"
-          className="rounded-none border-l! border-kumo-line! px-3"
-          onClick={copyToClipboard}
-          aria-label={copied ? "Copied" : "Copy to clipboard"}
-          aria-pressed={copied}
+        <Tooltip
+          content="Copied"
+          side="bottom"
+          open={showTooltip && copied}
+          asChild
         >
-          {copied ? <CheckIcon /> : <CopyIcon />}
+        <Button
+            size={sizeConfig.buttonSize}
+            variant="ghost"
+            className="rounded-none border-l! border-kumo-line! px-3 relative overflow-hidden transition-all duration-200"
+            onClick={copyToClipboard}
+            aria-label={copied ? "Copied" : "Copy to clipboard"}
+            aria-pressed={copied}
+          >
+            <span
+              className={cn(
+                "flex items-center gap-1 transition-all duration-200",
+                copied
+                  ? clipboardTextAnimations.slide.animate
+                  : clipboardTextAnimations.slide.initial,
+              )}
+            >
+              <CheckIcon />
+            </span>
+            <span
+              className={cn(
+                "flex items-center justify-center transition-all duration-200",
+                copied
+                  ? clipboardTextAnimations.slide.end
+                  : clipboardTextAnimations.slide.animate,
+              )}
+            >
+              <CopyIcon />
+            </span>
         </Button>
+        </Tooltip>
         <span className="sr-only" aria-live="polite">
           {copied ? "Copied to clipboard" : ""}
         </span>

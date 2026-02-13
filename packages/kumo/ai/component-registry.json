@@ -647,6 +647,11 @@
           "type": "string",
           "optional": true,
           "description": "Additional CSS classes merged via `cn()`."
+        },
+        "showTooltip": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Show tooltip on copy."
         }
       },
       "examples": [
