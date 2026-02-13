@@ -11,6 +11,7 @@ import { cn } from "../../utils/cn";
 import { Field } from "../field/field";
 import { Fieldset } from "@base-ui/react/fieldset";
 
+/** Switch size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_SWITCH_VARIANTS = {
   size: {
     sm: {
@@ -48,7 +49,20 @@ export type KumoSwitchSize = keyof typeof KUMO_SWITCH_VARIANTS.size;
 export type KumoSwitchVariant = keyof typeof KUMO_SWITCH_VARIANTS.variant;
 
 export interface KumoSwitchVariantsProps {
+  /**
+   * Switch size.
+   * - `"sm"` — Small for compact UIs
+   * - `"base"` — Default size
+   * - `"lg"` — Large for prominent toggles
+   * @default "base"
+   */
   size?: KumoSwitchSize;
+  /**
+   * Visual variant.
+   * - `"default"` — Standard switch appearance
+   * - `"error"` — Error state for validation failures
+   * @default "default"
+   */
   variant?: KumoSwitchVariant;
 }
 

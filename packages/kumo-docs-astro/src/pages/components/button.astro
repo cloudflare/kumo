@@ -148,9 +148,16 @@ export default function Example() {
     <!-- Icon Only -->
     <div class="mb-12">
       <Heading level={3}>Icon Only</Heading>
+      <p class="mb-3 text-sm text-kumo-strong">
+        For icon-only buttons, use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">shape="square"</code> or
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">shape="circle"</code> with the
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">icon</code> prop.
+        <strong>Always include <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">aria-label</code></strong> for accessibility —
+        without visible text, screen readers need the label to convey the button's purpose.
+      </p>
       <ComponentExample
-        code={`<Button variant="secondary" shape="square" icon={PlusIcon} />
-<Button variant="secondary" shape="circle" icon={PlusIcon} />`}
+        code={`<Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add item" />
+<Button variant="secondary" shape="circle" icon={PlusIcon} aria-label="Add item" />`}
       >
         <ButtonIconOnlyDemo client:visible />
       </ComponentExample>

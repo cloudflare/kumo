@@ -10,6 +10,7 @@ import {
   type CheckboxRootChangeEventDetails,
 } from "@base-ui/react/checkbox";
 
+/** Checkbox variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_CHECKBOX_VARIANTS = {
   variant: {
     default: {
@@ -31,6 +32,12 @@ export const KUMO_CHECKBOX_DEFAULT_VARIANTS = {
 export type KumoCheckboxVariant = keyof typeof KUMO_CHECKBOX_VARIANTS.variant;
 
 export interface KumoCheckboxVariantsProps {
+  /**
+   * Visual variant.
+   * - `"default"` — Standard checkbox appearance
+   * - `"error"` — Error state for validation failures
+   * @default "default"
+   */
   variant?: KumoCheckboxVariant;
 }
 

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "jsPlugins": ["./packages/kumo/lint/kumo-plugin.js"],
+  "plugins": ["eslint", "typescript"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "kumo/no-cross-package-imports": "error",
+    "kumo/no-primitive-colors": "error",
+    "kumo/no-tailwind-dark-variant": "error"
+  }
+}
