@@ -4,6 +4,7 @@ import { Fieldset } from "@base-ui/react/fieldset";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
 import { Radio as BaseRadio } from "@base-ui/react/radio";
 
+/** Radio variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_RADIO_VARIANTS = {
   variant: {
     default: {
@@ -25,6 +26,12 @@ export const KUMO_RADIO_DEFAULT_VARIANTS = {
 export type KumoRadioVariant = keyof typeof KUMO_RADIO_VARIANTS.variant;
 
 export interface KumoRadioVariantsProps {
+  /**
+   * Visual variant.
+   * - `"default"` — Standard radio appearance
+   * - `"error"` — Error state for validation failures
+   * @default "default"
+   */
   variant?: KumoRadioVariant;
 }
 
@@ -250,7 +257,21 @@ RadioGroup.displayName = "Radio.Group";
 // Export RadioGroup directly for external usage
 export { RadioGroup };
 
-// Radio namespace object (not a component itself - use Radio.Group with Radio.Item)
+/**
+ * Radio — radio button group for single-select choices.
+ *
+ * Compound component: `Radio.Group` (with built-in Fieldset) and `Radio.Item`.
+ * Built on `@base-ui/react/radio-group` + `@base-ui/react/radio`.
+ *
+ * @example
+ * ```tsx
+ * <Radio.Group legend="Notification preference" defaultValue="email">
+ *   <Radio.Item label="Email" value="email" />
+ *   <Radio.Item label="SMS" value="sms" />
+ *   <Radio.Item label="Push" value="push" />
+ * </Radio.Group>
+ * ```
+ */
 export const Radio = {
   Item: RadioItem,
   Group: RadioGroup,

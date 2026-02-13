@@ -5,6 +5,7 @@ import { SkeletonLine } from "../../components/loader/skeleton-line";
 import { useLinkComponent } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
 
+/** Breadcrumbs size variant definitions. */
 export const KUMO_BREADCRUMBS_VARIANTS = {
   size: {
     sm: {
@@ -25,6 +26,12 @@ export const KUMO_BREADCRUMBS_DEFAULT_VARIANTS = {
 export type KumoBreadcrumbsSize = keyof typeof KUMO_BREADCRUMBS_VARIANTS.size;
 
 export interface KumoBreadcrumbsVariantsProps {
+  /**
+   * Size of the breadcrumbs.
+   * - `"sm"` — Compact breadcrumbs for dense UIs
+   * - `"base"` — Default breadcrumbs size
+   * @default "base"
+   */
   size?: KumoBreadcrumbsSize;
 }
 
@@ -146,12 +153,40 @@ function Clipboard({ text }: { text: string }) {
   );
 }
 
+/**
+ * Breadcrumbs component props.
+ *
+ * @example
+ * ```tsx
+ * <Breadcrumbs>
+ *   <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
+ *   <Breadcrumbs.Separator />
+ *   <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
+ *   <Breadcrumbs.Separator />
+ *   <Breadcrumbs.Current>Current Page</Breadcrumbs.Current>
+ * </Breadcrumbs>
+ * ```
+ */
 export interface BreadcrumbsProps
   extends PropsWithChildren,
     KumoBreadcrumbsVariantsProps {
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
 
+/**
+ * Navigation breadcrumb trail showing the current page's location in a hierarchy.
+ * Compound component with `Breadcrumbs.Link`, `Breadcrumbs.Current`, `Breadcrumbs.Separator`, and `Breadcrumbs.Clipboard`.
+ *
+ * @example
+ * ```tsx
+ * <Breadcrumbs>
+ *   <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
+ *   <Breadcrumbs.Separator />
+ *   <Breadcrumbs.Current>Dashboard</Breadcrumbs.Current>
+ * </Breadcrumbs>
+ * ```
+ */
 export function Breadcrumb({
   children,
   size = "base",

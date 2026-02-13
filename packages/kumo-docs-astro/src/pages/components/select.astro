@@ -28,8 +28,10 @@ import {
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-xl font-semibold">Basic Usage</span>
       <span class="text-kumo-strong">
-        A simple select component where the display value matches the option
-        value. Perfect for basic dropdown menus with string-based options.
+        A simple select component. Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> prop
+        to map values to display labels — this controls what text appears in the
+        trigger when an option is selected. Without <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code>,
+        the raw value string is shown in the trigger.
       </span>
     </p>
 
@@ -37,13 +39,18 @@ import {
       code={`import { Select } from "@cloudflare/kumo";
 
 function App() {
-  const [value, setValue] = useState("Apple");
+  const [value, setValue] = useState("apple");
 
   return (
-    <Select className="w-[200px]" value={value} onValueChange={(v) => setValue(v ?? "Apple")}>
-      <Select.Option value="Apple">Apple</Select.Option>
-      <Select.Option value="Banana">Banana</Select.Option>
-      <Select.Option value="Cherry">Cherry</Select.Option>
+    <Select
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    >
+      <Select.Option value="apple">Apple</Select.Option>
+      <Select.Option value="banana">Banana</Select.Option>
+      <Select.Option value="cherry">Cherry</Select.Option>
     </Select>
   )
 }`}

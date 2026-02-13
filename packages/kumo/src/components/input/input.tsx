@@ -7,6 +7,7 @@ import {
 import { Input as BaseInput } from "@base-ui/react/input";
 import { Field, type FieldErrorMatch } from "../field/field";
 
+/** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {
   size: {
     xs: {
@@ -74,7 +75,21 @@ export type KumoInputSize = keyof typeof KUMO_INPUT_VARIANTS.size;
 export type KumoInputVariant = keyof typeof KUMO_INPUT_VARIANTS.variant;
 
 export interface KumoInputVariantsProps {
+  /**
+   * Input size.
+   * - `"xs"` — Extra small for compact UIs
+   * - `"sm"` — Small for secondary fields
+   * - `"base"` — Default size
+   * - `"lg"` — Large for prominent fields
+   * @default "base"
+   */
   size?: KumoInputSize;
+  /**
+   * Visual variant.
+   * - `"default"` — Standard input
+   * - `"error"` — Error state for validation failures
+   * @default "default"
+   */
   variant?: KumoInputVariant;
   parentFocusIndicator?: boolean;
   focusIndicator?: boolean;

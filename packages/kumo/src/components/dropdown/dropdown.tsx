@@ -9,6 +9,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 
+/** Dropdown item variant definitions (default and danger styles). */
 export const KUMO_DROPDOWN_VARIANTS = {
   variant: {
     default: {
@@ -31,6 +32,12 @@ export const KUMO_DROPDOWN_DEFAULT_VARIANTS = {
 export type KumoDropdownVariant = keyof typeof KUMO_DROPDOWN_VARIANTS.variant;
 
 export interface KumoDropdownVariantsProps {
+  /**
+   * Visual style of the dropdown item.
+   * - `"default"` — Standard item appearance
+   * - `"danger"` — Destructive action with red text
+   * @default "default"
+   */
   variant?: KumoDropdownVariant;
 }
 
@@ -346,6 +353,32 @@ const DropdownMenuTrigger = React.forwardRef<
 });
 DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
 
+/**
+ * DropdownMenu — accessible dropdown menu anchored to a trigger.
+ *
+ * Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`,
+ * `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`,
+ * `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.
+ *
+ * Built on `@base-ui/react/menu`.
+ *
+ * @example
+ * ```tsx
+ * <DropdownMenu>
+ *   <DropdownMenu.Trigger>
+ *     <Button>Actions</Button>
+ *   </DropdownMenu.Trigger>
+ *   <DropdownMenu.Content>
+ *     <DropdownMenu.Item>Edit</DropdownMenu.Item>
+ *     <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+ *     <DropdownMenu.Separator />
+ *     <DropdownMenu.Item variant="danger">Delete</DropdownMenu.Item>
+ *   </DropdownMenu.Content>
+ * </DropdownMenu>
+ * ```
+ *
+ * @see https://base-ui.com/react/components/menu
+ */
 export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   Trigger: DropdownMenuTrigger,
   Portal: DropdownMenuPrimitive.Portal,

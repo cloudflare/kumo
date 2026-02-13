@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.1.0",
+  "version": "1.5.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -170,6 +170,10 @@
     "./components/grid": {
       "types": "./dist/src/components/grid/index.d.ts",
       "import": "./dist/components/grid.js"
+    },
+    "./components/cloudflare-logo": {
+      "types": "./dist/src/components/cloudflare-logo/index.d.ts",
+      "import": "./dist/components/cloudflare-logo.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
@@ -367,7 +371,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "prepublish": "pnpm run clean && pnpm run build && pnpm run test:unit",
+    "prepublish": "pnpm run clean && pnpm run codegen:registry && pnpm run build && pnpm run test:unit",
     "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",

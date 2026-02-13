@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 
+/** Pagination controls variant definitions. */
 export const KUMO_PAGINATION_VARIANTS = {
   controls: {
     full: {
@@ -43,13 +44,37 @@ export function paginationVariants({
   );
 }
 
+/**
+ * Pagination component props.
+ *
+ * @example
+ * ```tsx
+ * <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
+ * <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} controls="simple" />
+ * ```
+ */
 export interface PaginationProps extends KumoPaginationVariantsProps {
+  /** Callback fired when the current page changes. */
   setPage: (page: number) => void;
+  /**
+   * Current page number (1-indexed).
+   * @default 1
+   */
   page?: number;
+  /** Number of items displayed per page. */
   perPage?: number;
+  /** Total number of items across all pages. */
   totalCount?: number;
 }
 
+/**
+ * Page navigation controls with page count display.
+ *
+ * @example
+ * ```tsx
+ * <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
+ * ```
+ */
 export function Pagination({
   page = 1,
   perPage,

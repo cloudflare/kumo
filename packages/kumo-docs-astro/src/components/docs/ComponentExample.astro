@@ -14,7 +14,7 @@ const { code, lang = "tsx" } = Astro.props;
   <ComponentPreview>
     <slot />
   </ComponentPreview>
-  <div class="[&_.rounded-lg]:rounded-none [&_.rounded-lg]:border-t-0">
+  <div class="[&>.code-block]:rounded-none [&>.code-block]:rounded-b-lg [&>.code-block]:border-t-0">
     <CodeBlock code={code} lang={lang} />
   </div>
 </div>

@@ -1,12 +1,13 @@
-import type { CSSProperties, FC, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
 import { Surface } from "../surface";
 import { cn } from "../../utils/cn";
 
+/** Dialog size variant definitions mapping sizes to their minimum widths. */
 export const KUMO_DIALOG_VARIANTS = {
   size: {
     base: {
-      classes: "min-w-96",
+      classes: "sm:min-w-96",
       description: "Default dialog width",
     },
     sm: {
@@ -91,6 +92,14 @@ export const KUMO_DIALOG_STYLING = {
 export type KumoDialogSize = keyof typeof KUMO_DIALOG_VARIANTS.size;
 
 export interface KumoDialogVariantsProps {
+  /**
+   * Dialog width.
+   * - `"sm"` — Small (min 288px) for simple confirmations
+   * - `"base"` — Default (min 384px)
+   * - `"lg"` — Large (min 512px) for complex content
+   * - `"xl"` — Extra large (min 768px) for detailed views
+   * @default "base"
+   */
   size?: KumoDialogSize;
 }
 
@@ -99,18 +108,52 @@ export function dialogVariants({
 }: KumoDialogVariantsProps = {}) {
   return cn(
     // Base styles
-    "shadow-m z-modal fixed top-1/2 left-1/2 max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-kumo-base text-kumo-default duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
+    "shadow-m z-modal fixed top-1/2 left-1/2 w-full sm:w-auto max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-kumo-base text-kumo-default duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
     // Apply size from KUMO_DIALOG_VARIANTS
     KUMO_DIALOG_VARIANTS.size[size].classes,
   );
 }
 
+/**
+ * Dialog component props — the modal content panel.
+ *
+ * @example
+ * ```tsx
+ * <Dialog.Root>
+ *   <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
+ *   <Dialog className="p-8">
+ *     <Dialog.Title>Confirm Action</Dialog.Title>
+ *     <Dialog.Description>Are you sure?</Dialog.Description>
+ *     <Dialog.Close render={(p) => <Button {...p}>Cancel</Button>} />
+ *   </Dialog>
+ * </Dialog.Root>
+ * ```
+ */
 export type DialogProps = KumoDialogVariantsProps & {
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Dialog content (typically Title, Description, Close, and action buttons). */
   children: ReactNode;
+  /** Inline styles. */
   style?: CSSProperties;
 };
 
+/**
+ * Modal dialog overlay with backdrop. Compound component with `Dialog.Root`,
+ * `Dialog.Trigger`, `Dialog.Title`, `Dialog.Description`, and `Dialog.Close`.
+ *
+ * @example
+ * ```tsx
+ * <Dialog.Root>
+ *   <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
+ *   <Dialog className="p-8">
+ *     <Dialog.Title>Delete Item</Dialog.Title>
+ *     <Dialog.Description>This action cannot be undone.</Dialog.Description>
+ *     <Dialog.Close render={(p) => <Button variant="destructive" {...p}>Delete</Button>} />
+ *   </Dialog>
+ * </Dialog.Root>
+ * ```
+ */
 function DialogContent({
   className,
   children,
@@ -140,27 +183,91 @@ function DialogContent({
   );
 }
 
-type DialogComponent = FC<DialogProps> & {
-  Root: typeof DialogBase.Root;
-  Trigger: typeof DialogBase.Trigger;
-  Title: typeof DialogBase.Title;
-  Description: typeof DialogBase.Description;
-  Close: typeof DialogBase.Close;
-};
+// ============================================================================
+// Dialog Root
+// ============================================================================
+
+type BaseDialogRootProps = ComponentPropsWithoutRef<typeof DialogBase.Root>;
+
+export type DialogRootProps = BaseDialogRootProps;
+
+function DialogRoot({ children, ...props }: DialogRootProps) {
+  return <DialogBase.Root {...props}>{children}</DialogBase.Root>;
+}
+
+DialogRoot.displayName = "Dialog.Root";
+
+// ============================================================================
+// Dialog Trigger
+// ============================================================================
+
+type BaseDialogTriggerProps = ComponentPropsWithoutRef<
+  typeof DialogBase.Trigger
+>;
+
+export type DialogTriggerProps = BaseDialogTriggerProps;
+
+function DialogTrigger({ children, ...props }: DialogTriggerProps) {
+  return <DialogBase.Trigger {...props}>{children}</DialogBase.Trigger>;
+}
+
+DialogTrigger.displayName = "Dialog.Trigger";
+
+// ============================================================================
+// Dialog Title
+// ============================================================================
+
+type BaseDialogTitleProps = ComponentPropsWithoutRef<typeof DialogBase.Title>;
+
+export type DialogTitleProps = BaseDialogTitleProps;
+
+function DialogTitle({ className, ...props }: DialogTitleProps) {
+  return <DialogBase.Title className={className} {...props} />;
+}
+
+DialogTitle.displayName = "Dialog.Title";
+
+// ============================================================================
+// Dialog Description
+// ============================================================================
+
+type BaseDialogDescriptionProps = ComponentPropsWithoutRef<
+  typeof DialogBase.Description
+>;
+
+export type DialogDescriptionProps = BaseDialogDescriptionProps;
+
+function DialogDescription({ className, ...props }: DialogDescriptionProps) {
+  return <DialogBase.Description className={className} {...props} />;
+}
+
+DialogDescription.displayName = "Dialog.Description";
+
+// ============================================================================
+// Dialog Close
+// ============================================================================
+
+type BaseDialogCloseProps = ComponentPropsWithoutRef<typeof DialogBase.Close>;
+
+export type DialogCloseProps = BaseDialogCloseProps;
+
+function DialogClose({ children, ...props }: DialogCloseProps) {
+  return <DialogBase.Close {...props}>{children}</DialogBase.Close>;
+}
+
+DialogClose.displayName = "Dialog.Close";
+
+// ============================================================================
+// Compound Component Export
+// ============================================================================
 
 const Dialog = Object.assign(DialogContent, {
-  Root: DialogBase.Root,
-  Trigger: DialogBase.Trigger,
-  Title: DialogBase.Title,
-  Description: DialogBase.Description,
-  Close: DialogBase.Close,
-}) as DialogComponent;
-
-const DialogRoot = Dialog.Root;
-const DialogTrigger = Dialog.Trigger;
-const DialogTitle = Dialog.Title;
-const DialogDescription = Dialog.Description;
-const DialogClose = Dialog.Close;
+  Root: DialogRoot,
+  Trigger: DialogTrigger,
+  Title: DialogTitle,
+  Description: DialogDescription,
+  Close: DialogClose,
+});
 
 export {
   Dialog,

@@ -130,7 +130,7 @@ export const kumoColors = ${JSON.stringify(colors, null, 2)};
       };
       moduleGraph: {
         getModuleById: (id: string) => unknown;
-        invalidateModule: (mod: unknown) => void;
+        invalidateModule: (mod: any) => void;
       };
       ws: { send: (message: { type: string }) => void };
     }) {
