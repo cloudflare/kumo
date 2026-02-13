@@ -113,17 +113,20 @@ export function DeleteResource({
           <DialogTitle className="text-lg font-semibold">
             Delete {resourceName}
           </DialogTitle>
-          <DialogClose>
-            <Button
-              variant="ghost"
-              shape="square"
-              size="sm"
-              aria-label="Close"
-              disabled={isDeleting}
-            >
-              <XIcon size={18} />
-            </Button>
-          </DialogClose>
+          <DialogClose
+            render={(props) => (
+              <Button
+                {...props}
+                variant="ghost"
+                shape="square"
+                size="sm"
+                aria-label="Close"
+                disabled={isDeleting}
+              >
+                <XIcon size={18} />
+              </Button>
+            )}
+          />
         </div>
 
         <div className="flex flex-col p-6 gap-4">
@@ -186,11 +189,13 @@ export function DeleteResource({
         </div>
 
         <div className="flex justify-end gap-3 border-t border-kumo-line px-6 py-4">
-          <DialogClose>
-            <Button variant="secondary" disabled={isDeleting}>
-              Cancel
-            </Button>
-          </DialogClose>
+          <DialogClose
+            render={(props) => (
+              <Button {...props} variant="secondary" disabled={isDeleting}>
+                Cancel
+              </Button>
+            )}
+          />
           <Button
             variant="destructive"
             onClick={handleDelete}

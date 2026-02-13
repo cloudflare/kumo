@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       dts({
-        include: ["src/**/*"],
+        include: ["src/**/*", "ai/**/*"],
         exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
         rollupTypes: false, // Disabled - causes timeouts with many entry points
         compilerOptions: {
