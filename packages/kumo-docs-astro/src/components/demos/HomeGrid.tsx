@@ -67,7 +67,7 @@ const componentRoutes: Record<string, string> = {
   label: "/components/label",
   "layer-card": "/components/layer-card",
   loader: "/components/loader",
-  menubar: "/components/menubar",
+  menubar: "/components/menu-bar",
   meter: "/components/meter",
   pagination: "/components/pagination",
   popover: "/components/popover",

@@ -65,6 +65,13 @@ export interface PaginationProps extends KumoPaginationVariantsProps {
   perPage?: number;
   /** Total number of items across all pages. */
   totalCount?: number;
+  /** Method to provide custom pagination text  */
+  text?: (props: {
+    page?: number;
+    perPage?: number;
+    totalCount?: number;
+    pageShowingRange: string;
+  }) => React.ReactNode;
 }
 
 /**
@@ -80,6 +87,7 @@ export function Pagination({
   perPage,
   totalCount,
   setPage,
+  text,
   controls = KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
 }: PaginationProps) {
   const [editingPage, setEditingPage] = useState<number>(1);
@@ -103,13 +111,18 @@ export function Pagination({
     return Math.ceil((totalCount ?? 1) / (perPage ?? 1));
   }, [totalCount, perPage]);
 
+  const getPaginationText = () => {
+    if (text) {
+      return text({ page, perPage, totalCount, pageShowingRange });
+    } else if (totalCount && totalCount > 0) {
+      return `Showing ${pageShowingRange} of ${totalCount}`;
+    }
+    return null;
+  };
+
   return (
     <div className="flex items-center justify-between gap-2">
-      <div className="grow text-sm text-kumo-strong">
-        {totalCount && totalCount > 0
-          ? `Showing ${pageShowingRange} of ${totalCount}`
-          : null}
-      </div>
+      <div className="grow text-sm text-kumo-strong">{getPaginationText()}</div>
       <div>
         <InputGroup focusMode="individual">
           {controls === "full" && (

@@ -91,6 +91,11 @@ async function uploadImageToGitHub(
       },
     },
   );
+  if (!mainRef.ok) {
+    throw new Error(
+      `Failed to get main ref: ${mainRef.status} ${await mainRef.text()}`,
+    );
+  }
   const mainData = (await mainRef.json()) as { object: { sha: string } };
   const baseSha = mainData.object.sha;
 
@@ -105,18 +110,26 @@ async function uploadImageToGitHub(
   );
 
   if (refCheck.status === 404) {
-    await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/refs`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-        "Content-Type": "application/json",
+    const createRef = await fetch(
+      `https://api.github.com/repos/${owner}/${repoName}/git/refs`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ref: `refs/heads/${branch}`,
+          sha: baseSha,
+        }),
       },
-      body: JSON.stringify({
-        ref: `refs/heads/${branch}`,
-        sha: baseSha,
-      }),
-    });
+    );
+    if (!createRef.ok) {
+      throw new Error(
+        `Failed to create branch ${branch}: ${createRef.status} ${await createRef.text()}`,
+      );
+    }
   }
 
   const content = imageBuffer.toString("base64");
@@ -135,7 +148,7 @@ async function uploadImageToGitHub(
     ? ((await existingFile.json()) as { sha?: string })
     : null;
 
-  await fetch(
+  const upload = await fetch(
     `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`,
     {
       method: "PUT",
@@ -152,6 +165,11 @@ async function uploadImageToGitHub(
       }),
     },
   );
+  if (!upload.ok) {
+    throw new Error(
+      `Failed to upload ${filename}: ${upload.status} ${await upload.text()}`,
+    );
+  }
 
   return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${path}`;
 }

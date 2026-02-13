@@ -164,73 +164,71 @@ const TableCheckCell = forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
+    indeterminate?: boolean;
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
->(({ checked, onValueChange, label, disabled, ...props }, ref) => {
-  return (
-    <TableCell
-      ref={ref}
-      {...props}
-      className={cn(
-        "cursor-pointer p-0 leading-none",
-        disabled && "cursor-default",
-        props.className,
-      )}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (!disabled) {
-          onValueChange?.(!checked);
-        }
-      }}
-    >
-      <Checkbox
-        checked={checked}
-        onClick={(e) => e.stopPropagation()}
-        onCheckedChange={onValueChange}
-        aria-label={label ?? "Select row"}
-        disabled={disabled}
-      />
-    </TableCell>
-  );
-});
+>(
+  (
+    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    ref,
+  ) => {
+    return (
+      <TableCell
+        ref={ref}
+        {...props}
+        className={cn("w-10 leading-none", props.className)}
+      >
+        <Checkbox
+          checked={checked}
+          indeterminate={indeterminate}
+          onCheckedChange={(newChecked) => {
+            onValueChange?.(newChecked);
+          }}
+          aria-label={label ?? "Select row"}
+          disabled={disabled}
+          className="relative before:absolute before:-inset-3 before:content-['']"
+        />
+      </TableCell>
+    );
+  },
+);
 
 const TableCheckHead = forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
+    indeterminate?: boolean;
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
->(({ checked, onValueChange, label, disabled, ...props }, ref) => {
-  return (
-    <TableHead
-      ref={ref}
-      {...props}
-      className={cn(
-        "cursor-pointer p-0 leading-none",
-        disabled && "cursor-default",
-        props.className,
-      )}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (!disabled) {
-          onValueChange?.(!checked);
-        }
-      }}
-    >
-      <Checkbox
-        checked={checked}
-        onClick={(e) => e.stopPropagation()}
-        onCheckedChange={onValueChange}
-        aria-label={label ?? "Select all rows"}
-        disabled={disabled}
-      />
-    </TableHead>
-  );
-});
+>(
+  (
+    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    ref,
+  ) => {
+    return (
+      <TableHead
+        ref={ref}
+        {...props}
+        className={cn("w-10 leading-none", props.className)}
+      >
+        <Checkbox
+          checked={checked}
+          indeterminate={indeterminate}
+          onCheckedChange={(newChecked) => {
+            onValueChange?.(newChecked);
+          }}
+          aria-label={label ?? "Select all rows"}
+          disabled={disabled}
+          className="relative before:absolute before:-inset-3 before:content-['']"
+        />
+      </TableHead>
+    );
+  },
+);
 
 TableRoot.displayName = "Table";
 TableBody.displayName = "Table.Body";

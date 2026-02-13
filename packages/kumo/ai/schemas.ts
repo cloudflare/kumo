@@ -584,6 +584,7 @@ export const PaginationPropsSchema = z.object({
   page: z.number().optional(), // Current page number (1-indexed).
   perPage: z.number().optional(), // Number of items displayed per page.
   totalCount: z.number().optional(), // Total number of items across all pages.
+  text: z.unknown().optional(), // Method to provide custom pagination text
 });
 
 export const PopoverPropsSchema = z.object({

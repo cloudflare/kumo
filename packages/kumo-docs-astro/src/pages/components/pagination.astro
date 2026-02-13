@@ -11,6 +11,7 @@ import {
   PaginationFullDemo,
   PaginationMidPageDemo,
   PaginationLargeDatasetDemo,
+  PaginationCustomTextDemo,
 } from "../../components/demos/PaginationDemo";
 ---
 
@@ -145,6 +146,24 @@ export default function Example() {
 />`}
         >
           <PaginationLargeDatasetDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Text</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          You can set custom pagination text
+        </p>
+        <ComponentExample
+          code={`<Pagination
+  text={({perPage}) => \`Showing $\{perPage\} per page!\`}
+  page={1}
+  setPage={setPage}
+  perPage={25}
+  totalCount={100}
+/>`}
+        >
+          <PaginationCustomTextDemo client:visible />
         </ComponentExample>
       </div>
     </div>
