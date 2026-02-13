@@ -5,7 +5,7 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
-import { DialogBasicDemo, DialogWithActionsDemo } from "../../components/demos/DialogDemo";
+import { DialogBasicDemo, DialogWithActionsDemo, DialogConfirmationDemo } from "../../components/demos/DialogDemo";
 ---
 
 <DocLayout
@@ -120,6 +120,50 @@ export default function Example() {
   </Dialog>
 </Dialog.Root>`}>
           <DialogBasicDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Confirmation Dialog (Alert)</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          For confirmation dialogs that should not be dismissed by clicking outside (similar to an AlertDialog),
+          use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">disablePointerDismissal</code> on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Dialog.Root</code>. 
+          This ensures the user must explicitly choose an action.
+        </p>
+        <ComponentExample code={`<Dialog.Root disablePointerDismissal>
+  <Dialog.Trigger
+    render={(p) => (
+      <Button {...p} variant="destructive">Delete Project</Button>
+    )}
+  />
+  <Dialog className="p-8">
+    <div className="mb-4 flex items-center gap-3">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
+        <Warning size={20} className="text-kumo-danger" />
+      </div>
+      <Dialog.Title className="text-xl font-semibold">
+        Delete Project?
+      </Dialog.Title>
+    </div>
+    <Dialog.Description className="text-kumo-subtle">
+      This action cannot be undone. This will permanently
+      delete the project and all associated data.
+    </Dialog.Description>
+    <div className="mt-8 flex justify-end gap-2">
+      <Dialog.Close
+        render={(props) => (
+          <Button variant="secondary" {...props}>Cancel</Button>
+        )}
+      />
+      <Dialog.Close
+        render={(props) => (
+          <Button variant="destructive" {...props}>Delete</Button>
+        )}
+      />
+    </div>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogConfirmationDemo client:load />
         </ComponentExample>
       </div>
 

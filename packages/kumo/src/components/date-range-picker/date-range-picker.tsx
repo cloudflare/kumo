@@ -6,6 +6,7 @@ import {
 import { useCallback, useState } from "react";
 import { cn } from "../../utils/cn";
 
+/** DateRangePicker size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_DATE_RANGE_PICKER_VARIANTS = {
   size: {
     sm: {
@@ -60,7 +61,20 @@ export type KumoDateRangePickerVariant =
   keyof typeof KUMO_DATE_RANGE_PICKER_VARIANTS.variant;
 
 export interface KumoDateRangePickerVariantsProps {
+  /**
+   * Calendar size.
+   * - `"sm"` — Compact calendar for tight spaces
+   * - `"base"` — Default calendar size
+   * - `"lg"` — Large calendar for prominent date selection
+   * @default "base"
+   */
   size?: KumoDateRangePickerSize;
+  /**
+   * Visual variant.
+   * - `"default"` — Standard appearance with overlay background
+   * - `"subtle"` — Minimal background
+   * @default "default"
+   */
   variant?: KumoDateRangePickerVariant;
 }
 
@@ -93,17 +107,56 @@ enum DateRangeCellMode {
 
 const DAYS_OF_WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
 
+/**
+ * DateRangePicker component props.
+ *
+ * Dual-calendar date range selector with hover preview, timezone display, and reset support.
+ *
+ * @example
+ * ```tsx
+ * <DateRangePicker
+ *   onStartDateChange={(d) => setStart(d)}
+ *   onEndDateChange={(d) => setEnd(d)}
+ *   timezone="New York, NY, USA (GMT-4)"
+ * />
+ *
+ * // Compact variant
+ * <DateRangePicker
+ *   size="sm"
+ *   variant="subtle"
+ *   onStartDateChange={setStart}
+ *   onEndDateChange={setEnd}
+ * />
+ * ```
+ */
 export interface DateRangePickerProps extends KumoDateRangePickerVariantsProps {
-  /** Callback fired when start date changes */
+  /** Callback fired when start date changes. Receives `null` on reset. */
   onStartDateChange: (date: Date | null) => void;
-  /** Callback fired when end date changes */
+  /** Callback fired when end date changes. Receives `null` on reset. */
   onEndDateChange: (date: Date | null) => void;
-  /** Display timezone (display only) */
+  /**
+   * Display timezone string shown in the footer.
+   * @default "New York, NY, USA (GMT-4)"
+   */
   timezone?: string;
-  /** Additional CSS classes */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
 
+/**
+ * DateRangePicker — dual-calendar date range selector.
+ *
+ * Renders two side-by-side month calendars with click-to-select start/end dates,
+ * hover preview of the range, a timezone footer, and a reset button.
+ *
+ * @example
+ * ```tsx
+ * <DateRangePicker
+ *   onStartDateChange={setStart}
+ *   onEndDateChange={setEnd}
+ * />
+ * ```
+ */
 export function DateRangePicker({
   onStartDateChange,
   onEndDateChange,

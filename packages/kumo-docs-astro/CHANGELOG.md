@@ -1,5 +1,61 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.0
+
+### Minor Changes
+
+- d7a6da3: fix(cli): resolve broken doc/docs/ls commands by fixing registry path from catalog/ to ai/
+  fix(dialog): wrap sub-components to isolate @base-ui/react type references from downstream consumers
+  fix(label): render as `<label>` element with htmlFor support instead of `<span>`
+  feat(input): add Textarea alias for InputArea
+  feat(toast): add ToastProvider alias for Toasty
+  feat(button): require aria-label on icon-only buttons (shape="square" | "circle") via discriminated union
+  fix(docs): add Tailwind 4 @source directive to usage example, add confirmation dialog recipe, update Select basic example, document icon-only button aria-label pattern
+
+### Patch Changes
+
+- Updated dependencies [d7a6da3]
+  - @cloudflare/kumo@1.5.0
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies [b64847d]
+- Updated dependencies [ea583d8]
+  - @cloudflare/kumo@1.4.1
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies [71d667b]
+- Updated dependencies [262e0e6]
+  - @cloudflare/kumo@1.4.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 6a40edf: add 'Delete Resource' block
+
+### Patch Changes
+
+- Updated dependencies [6a40edf]
+  - @cloudflare/kumo@1.3.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 833ce8b: Add variant support, custom content, and action buttons to Toast component.
+
+### Patch Changes
+
+- Updated dependencies [d10c711]
+- Updated dependencies [833ce8b]
+  - @cloudflare/kumo@1.2.0
+
 ## 1.0.1
 
 ### Patch Changes

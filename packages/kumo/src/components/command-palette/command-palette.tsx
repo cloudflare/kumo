@@ -237,7 +237,10 @@ function InputHeader({
   return (
     <div className="flex items-center gap-3 bg-kumo-base px-4 py-3">
       {leading ?? (
-        <MagnifyingGlassIcon className="h-4 w-4 text-kumo-subtle" weight="bold" />
+        <MagnifyingGlassIcon
+          className="h-4 w-4 text-kumo-subtle"
+          weight="bold"
+        />
       )}
       {children}
       {trailing}
@@ -404,7 +407,7 @@ function HighlightedText({
   }
 
   // Sort highlights by start index and merge overlapping ranges
-  const sortedHighlights = [...highlights].toSorted((a, b) => a[0] - b[0]);
+  const sortedHighlights = [...highlights].sort((a, b) => a[0] - b[0]);
   const mergedHighlights: HighlightRange[] = [];
 
   for (const range of sortedHighlights) {
@@ -480,7 +483,9 @@ function ResultItem<T>({
       )}
     >
       {icon && (
-        <div className="flex flex-shrink-0 items-center text-kumo-subtle">{icon}</div>
+        <div className="flex flex-shrink-0 items-center text-kumo-subtle">
+          {icon}
+        </div>
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 truncate">
@@ -508,7 +513,9 @@ function ResultItem<T>({
           {description && (
             <>
               <span className="text-kumo-strong">—</span>
-              <span className="truncate text-sm text-kumo-strong">{description}</span>
+              <span className="truncate text-sm text-kumo-strong">
+                {description}
+              </span>
             </>
           )}
         </div>
@@ -778,17 +785,52 @@ function Results({
 
 const Items = Autocomplete.Collection;
 
-/**
- * CommandPalette variants configuration.
- * CommandPalette is a compound component without traditional variants.
- */
+/** CommandPalette variant definitions (no user-facing variants; structure reserved for future use). */
 export const KUMO_COMMAND_PALETTE_VARIANTS = {} as const;
 
-/**
- * CommandPalette default variants.
- */
 export const KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS = {} as const;
 
+/**
+ * CommandPalette — accessible command palette / spotlight search overlay.
+ *
+ * Compound component: `CommandPalette.Root` (or `.Dialog` + `.Panel`),
+ * `.Input`, `.List`, `.Results`, `.Items`, `.Group`, `.GroupLabel`,
+ * `.Item`, `.ResultItem`, `.HighlightedText`, `.Empty`, `.Loading`, `.Footer`.
+ *
+ * Built on `@base-ui/react/autocomplete` + `@base-ui/react/dialog`.
+ *
+ * @example
+ * ```tsx
+ * <CommandPalette.Root
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   items={results}
+ *   value={query}
+ *   onValueChange={setQuery}
+ *   itemToStringValue={(g) => g.label}
+ *   onSelect={(item, { newTab }) => navigate(item, newTab)}
+ *   getSelectableItems={(groups) => groups.flatMap((g) => g.items)}
+ * >
+ *   <CommandPalette.Input placeholder="Search…" />
+ *   <CommandPalette.List>
+ *     <CommandPalette.Results>
+ *       {(group) => (
+ *         <CommandPalette.Group items={group.items}>
+ *           <CommandPalette.GroupLabel>{group.label}</CommandPalette.GroupLabel>
+ *           <CommandPalette.Items>
+ *             {(item) => (
+ *               <CommandPalette.ResultItem title={item.title} value={item} onClick={…} />
+ *             )}
+ *           </CommandPalette.Items>
+ *         </CommandPalette.Group>
+ *       )}
+ *     </CommandPalette.Results>
+ *     <CommandPalette.Empty>No results found</CommandPalette.Empty>
+ *   </CommandPalette.List>
+ *   <CommandPalette.Footer>…keyboard hints…</CommandPalette.Footer>
+ * </CommandPalette.Root>
+ * ```
+ */
 export const CommandPalette = {
   /** Modal dialog wrapper - use with Panel for content that can swap */
   Dialog,

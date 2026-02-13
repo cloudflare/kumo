@@ -111,7 +111,26 @@ export function toastVariants({
   );
 }
 
+/**
+ * Toasty component props.
+ *
+ * Wrap your app with `<Toasty>` to enable toast notifications.
+ * Use `Toast.useToastManager().notify(…)` to create toasts.
+ *
+ * @example
+ * ```tsx
+ * // 1. Wrap your app
+ * <Toasty>
+ *   <App />
+ * </Toasty>
+ *
+ * // 2. Show a toast from any child component
+ * const toasts = Toast.useToastManager();
+ * toasts.notify({ title: "Saved", description: "Changes saved successfully." });
+ * ```
+ */
 export interface ToastyProps extends KumoToastVariantsProps {
+  /** Application content. Toasts render via a portal above this. */
   children: React.ReactNode;
 }
 
@@ -196,6 +215,21 @@ export const createKumoToastManager = () => {
   return wrapManagerMethods(Toast.createToastManager());
 };
 
+/**
+ * Toasty — toast notification provider and viewport.
+ *
+ * Renders a `Toast.Provider` with a fixed-position viewport in the bottom-right corner.
+ * Toasts stack with smooth enter/exit animations, swipe-to-dismiss, and expand-on-hover.
+ *
+ * Built on `@base-ui/react/toast`.
+ *
+ * @example
+ * ```tsx
+ * <Toasty>
+ *   <App />
+ * </Toasty>
+ * ```
+ */
 export function Toasty({ children }: ToastyProps) {
   return (
     <Toast.Provider>
@@ -208,6 +242,9 @@ export function Toasty({ children }: ToastyProps) {
     </Toast.Provider>
   );
 }
+
+/** Alias for Toasty — provided for discoverability when migrating from other libraries */
+export const ToastProvider = Toasty;
 
 function ToastList() {
   const { toasts } = useKumoToastManager();

@@ -5,6 +5,7 @@ import { inputVariants } from "../input/input";
 import { cn } from "../../utils/cn";
 import { Field, type FieldErrorMatch } from "../field/field";
 
+/** Combobox input position variant definitions. */
 export const KUMO_COMBOBOX_VARIANTS = {
   inputSide: {
     right: {
@@ -27,6 +28,12 @@ export type KumoComboboxInputSide =
   keyof typeof KUMO_COMBOBOX_VARIANTS.inputSide;
 
 export interface KumoComboboxVariantsProps {
+  /**
+   * Position of the text input relative to chips in multi-select mode.
+   * - `"right"` — Input inline to the right of chips
+   * - `"top"` — Input above chips
+   * @default "right"
+   */
   inputSide?: KumoComboboxInputSide;
 }
 
@@ -44,7 +51,39 @@ export type ComboboxRootProps<
   Multiple extends boolean | undefined = false,
 > = ComboboxBase.Root.Props<Value, Multiple>;
 
-// Simplified props type for AI/documentation (non-generic)
+/**
+ * Combobox component props (simplified for documentation; the actual Root is generic).
+ *
+ * Combobox provides an autocomplete/typeahead input with a filterable dropdown.
+ * Supports single-select, multi-select with chips, grouped items, and Field wrapper integration.
+ *
+ * @example
+ * ```tsx
+ * // Single-select with search input
+ * <Combobox value={value} onValueChange={setValue} items={options}>
+ *   <Combobox.TriggerInput placeholder="Search…" />
+ *   <Combobox.Content>
+ *     <Combobox.List>
+ *       {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}
+ *     </Combobox.List>
+ *     <Combobox.Empty>No results</Combobox.Empty>
+ *   </Combobox.Content>
+ * </Combobox>
+ *
+ * // Multi-select with chips
+ * <Combobox multiple items={options} label="Tags">
+ *   <Combobox.TriggerMultipleWithInput
+ *     placeholder="Add tag…"
+ *     renderItem={(item) => <Combobox.Chip value={item}>{item.label}</Combobox.Chip>}
+ *   />
+ *   <Combobox.Content>
+ *     <Combobox.List>
+ *       {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}
+ *     </Combobox.List>
+ *   </Combobox.Content>
+ * </Combobox>
+ * ```
+ */
 export interface ComboboxProps extends KumoComboboxVariantsProps {
   /** Array of items to display in the dropdown */
   items: unknown[];
@@ -331,6 +370,27 @@ Item.displayName = "Combobox.Item";
 Chip.displayName = "Combobox.Chip";
 TriggerMultipleWithInput.displayName = "Combobox.TriggerMultipleWithInput";
 
+/**
+ * Combobox — autocomplete input with filterable dropdown list.
+ *
+ * Compound component: `Combobox` (Root), `.TriggerInput`, `.TriggerValue`,
+ * `.TriggerMultipleWithInput`, `.Content`, `.Item`, `.Chip`, `.Input`,
+ * `.Empty`, `.GroupLabel`, `.Group`, `.List`, `.Collection`.
+ *
+ * @example
+ * ```tsx
+ * <Combobox items={fruits} label="Fruit">
+ *   <Combobox.TriggerInput placeholder="Pick a fruit…" />
+ *   <Combobox.Content>
+ *     <Combobox.List>
+ *       {(item) => <Combobox.Item value={item}>{item}</Combobox.Item>}
+ *     </Combobox.List>
+ *   </Combobox.Content>
+ * </Combobox>
+ * ```
+ *
+ * @see https://base-ui.com/react/components/combobox
+ */
 export const Combobox = Object.assign(Root, {
   // Helper components
   Content,
