@@ -216,9 +216,13 @@ export function HomeGrid() {
       Component: (
         <Dialog.Root>
           <Dialog.Trigger render={(p) => <Button {...p}>Click me!</Button>} />
-          <Dialog>
-            <Dialog.Title>Hello!</Dialog.Title>
-            <Dialog.Description>I'm a dialog.</Dialog.Description>
+          <Dialog className="p-8">
+            <Dialog.Title className="text-2xl font-semibold mb-4">
+              Hello!
+            </Dialog.Title>
+            <Dialog.Description className="text-kumo-subtle">
+              I'm a dialog.
+            </Dialog.Description>
           </Dialog>
         </Dialog.Root>
       ),
