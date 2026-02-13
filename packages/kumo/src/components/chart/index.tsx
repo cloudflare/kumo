@@ -1,5 +1,6 @@
 export { TimeseriesChart } from "./TimeseriesChart";
 export { Chart, type ChartEvents } from "./EChart";
+export { ChartLegend } from "./Legend";
 
 enum ChartCategoricalLightColors {
   Blue = "#086FFF",

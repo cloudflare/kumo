@@ -1,4 +1,10 @@
-import { ChartPalette, TimeseriesChart, Chart } from "@cloudflare/kumo";
+import {
+  ChartPalette,
+  TimeseriesChart,
+  Chart,
+  ChartLegend,
+  LayerCard,
+} from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
@@ -199,6 +205,135 @@ export function PieChartPreviewDemo() {
   );
 
   return <Chart echarts={echarts} options={options} height={160} />;
+}
+
+/**
+ * Legend items with default variant showing semantic colors.
+ */
+export function LegendDefaultDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  return (
+    <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+      <ChartLegend.LargeItem
+        name="Requests"
+        color={ChartPalette.semantic("Neutral", isDarkMode)}
+        value="1,234"
+        unit="req/s"
+      />
+      <ChartLegend.LargeItem
+        name="Storage"
+        color={ChartPalette.semantic("Attention", isDarkMode)}
+        value="56"
+        unit="GB"
+      />
+      <ChartLegend.LargeItem
+        name="Warnings"
+        color={ChartPalette.semantic("Warning", isDarkMode)}
+        value="128"
+      />
+    </div>
+  );
+}
+
+/**
+ * Legend items with compact variant using categorical colors.
+ */
+export function LegendCompactDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  return (
+    <div className="flex flex-wrap gap-4">
+      <ChartLegend.SmallItem
+        name="Requests"
+        color={ChartPalette.semantic("Neutral", isDarkMode)}
+        value="1,234"
+        unit="req/s"
+      />
+      <ChartLegend.SmallItem
+        name="Storage"
+        color={ChartPalette.semantic("Attention", isDarkMode)}
+        value="56"
+        unit="GB"
+      />
+      <ChartLegend.SmallItem
+        name="Warnings"
+        color={ChartPalette.semantic("Warning", isDarkMode)}
+        value="128"
+      />
+    </div>
+  );
+}
+
+export function ChartExampleDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "P99",
+        data: buildSeriesData(3, 30, 60_000, 1),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+      {
+        name: "P95",
+        data: buildSeriesData(2, 30, 60_000, 0.6),
+        color: ChartPalette.semantic("Warning", isDarkMode),
+      },
+      {
+        name: "P75",
+        data: buildSeriesData(1, 30, 60_000, 0.4),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "P50",
+        data: buildSeriesData(0, 30, 60_000, 0.2),
+        color: ChartPalette.semantic("NeutralLight", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <LayerCard>
+      <LayerCard.Secondary>Read latency</LayerCard.Secondary>
+      <LayerCard.Primary>
+        <div className="flex divide-x divide-kumo-line gap-4 px-2 mb-2">
+          <ChartLegend.LargeItem
+            name="P99"
+            color={ChartPalette.semantic("Attention", isDarkMode)}
+            value="124"
+            unit="ms"
+          />
+          <ChartLegend.LargeItem
+            name="P95"
+            color={ChartPalette.semantic("Warning", isDarkMode)}
+            value="76"
+            unit="ms"
+          />
+          <ChartLegend.LargeItem
+            name="P75"
+            color={ChartPalette.semantic("Neutral", isDarkMode)}
+            value="32"
+            unit="ms"
+          />
+          <ChartLegend.LargeItem
+            name="P50"
+            color={ChartPalette.semantic("NeutralLight", isDarkMode)}
+            value="10"
+            unit="ms"
+          />
+        </div>
+        <TimeseriesChart
+          xAxisName="Time (UTC)"
+          echarts={echarts}
+          isDarkMode={isDarkMode}
+          data={data}
+          height={300}
+        />
+      </LayerCard.Primary>
+    </LayerCard>
+  );
 }
 
 function buildSeriesData(

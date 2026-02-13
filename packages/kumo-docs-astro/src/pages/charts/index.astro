@@ -4,11 +4,15 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import {
   PieChartPreviewDemo,
   TimeseriesChartPreviewDemo,
+  LegendDefaultDemo,
+  LegendCompactDemo,
+  ChartExampleDemo,
 } from "~/components/demos/Chart/ChartDemo";
 import { ColorDemo } from "~/components/demos/Chart/ColorDemo";
 import ChartCard from "~/components/demos/Chart/ChartCard.astro";
 import Heading from "~/components/docs/Heading.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
 ---
 
 <DocLayout
@@ -98,4 +102,38 @@ const series0 = ChartPalette.color(0, isDarkMode);`}
       <ColorDemo />
     </div>
   </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Legend</Heading>
+
+    <p class="mb-6">
+      Use <code>LegendItem</code> to display chart series information with color
+      indicators.
+    </p>
+
+    <Heading level={3} class="mb-4">Default</Heading>
+    <ComponentExample
+      code={`<ChartLegend.LargeItem
+  name="Requests"
+  color={ChartPalette.semantic("Neutral", isDarkMode)}
+  value="1,234"
+  unit="req/s"
+/>`}
+    >
+      <LegendDefaultDemo client:visible />
+    </ComponentExample>
+
+    <Heading level={3} class="mb-4 mt-8">Compact</Heading>
+    <ComponentExample
+      code={`<ChartLegend.SmallItem
+  name="Series A"
+  color={ChartPalette.color(0, isDarkMode)}
+  value="45%"
+/>`}
+    >
+      <LegendCompactDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ChartExampleDemo client:visible />
 </DocLayout>
