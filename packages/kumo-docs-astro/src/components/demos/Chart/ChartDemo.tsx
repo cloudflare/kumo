@@ -490,6 +490,36 @@ export function BasicLineChartDemo() {
   );
 }
 
+export function TimeseriesChartPreviewDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 30, 60_000, 1),
+        color: ChartPalette.semantic("Neutral"),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 30, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention"),
+      },
+    ],
+    [],
+  );
+
+  return (
+    <TimeseriesChart
+      yAxisTickNumber={2}
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      height={160}
+    />
+  );
+}
+
 /**
  * Timeseries chart with incomplete data regions highlighted.
  */
@@ -552,6 +582,30 @@ export function TimeRangeSelectionChartDemo() {
       }}
     />
   );
+}
+
+export function PieChartPreviewDemo() {
+  const options = useMemo(
+    () =>
+      ({
+        toolbox: {
+          show: false,
+        },
+        series: [
+          {
+            type: "pie",
+            data: [
+              { value: 101, name: "Series A" },
+              { value: 202, name: "Series B" },
+              { value: 303, name: "Series C" },
+            ],
+          },
+        ],
+      }) as echarts.EChartsCoreOption,
+    [],
+  );
+
+  return <Chart echarts={echarts} options={options} height={160} />;
 }
 
 function buildSeriesData(

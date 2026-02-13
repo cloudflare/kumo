@@ -1,7 +1,12 @@
 ---
 import DocLayout from "../../layouts/DocLayout.astro";
 import ComponentSection from "../../components/docs/ComponentSection.astro";
-import { ChartColorDemo } from "~/components/demos/ChartDemo";
+import {
+  ChartColorDemo,
+  PieChartPreviewDemo,
+  TimeseriesChartPreviewDemo,
+} from "~/components/demos/Chart/ChartDemo";
+import ChartCard from "~/components/demos/Chart/ChartCard.astro";
 import Heading from "~/components/docs/Heading.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
 ---
@@ -55,24 +60,21 @@ echarts.use([
     <Heading level={2} class="mb-6">Available Charts</Heading>
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <a
+      <ChartCard
+        title="Timeseries Chart"
+        description="A specialized chart for displaying time-based data."
         href="/charts/timeseries"
-        class="group rounded-lg border border-kumo-line bg-kumo-elevated p-4 transition-colors hover:bg-kumo-recessed"
       >
-        <div class="text-kumo-default">Timeseries Chart</div>
-        <div class="mt-1 text-sm text-kumo-secondary">
-          A specialized chart for displaying time-based data.
-        </div>
-      </a>
-      <a
+        <TimeseriesChartPreviewDemo client:visible />
+      </ChartCard>
+
+      <ChartCard
+        title="Custom Chart"
+        description="Examples like pie charts."
         href="/charts/custom"
-        class="group rounded-lg border border-kumo-line bg-kumo-elevated p-4 transition-colors hover:bg-kumo-recessed"
       >
-        <div class="text-kumo-default">Custom Chart</div>
-        <div class="mt-1 text-sm text-kumo-secondary">
-          Examples like pie charts.
-        </div>
-      </a>
+        <PieChartPreviewDemo client:visible />
+      </ChartCard>
     </div>
   </ComponentSection>
 

@@ -169,6 +169,7 @@ export function TimeseriesChart({
           show: false,
         },
         axisLine: { show: false },
+        splitNumber: 5,
       },
       yAxis: {
         name: yAxisName,
