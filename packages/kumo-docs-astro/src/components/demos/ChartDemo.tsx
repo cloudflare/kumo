@@ -468,12 +468,12 @@ export function BasicLineChartDemo() {
       {
         name: "Requests",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0),
+        color: ChartPalette.semantic("Neutral"),
       },
       {
         name: "Errors",
         data: buildSeriesData(1, 50, 60_000, 0.3),
-        color: ChartPalette.color(1),
+        color: ChartPalette.semantic("Attention"),
       },
     ],
     [],

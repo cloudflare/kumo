@@ -33,7 +33,7 @@ import Heading from "~/components/docs/Heading.astro";
 const data = [
   {
     name: "Requests",
-    color: ChartPalette.color(0),
+    color: ChartPalette.semantic("Neutral"),
     data: [
       [timestamp_in_ms, value],
       [timestamp_in_ms, value],
@@ -42,7 +42,7 @@ const data = [
   },
   {
     name: "Errors",
-    color: ChartPalette.color(1),
+    color: ChartPalette.semantic("Attention"),
     data: [
       [timestamp_in_ms, value],
       [timestamp_in_ms, value],
