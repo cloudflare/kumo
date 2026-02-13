@@ -97,6 +97,8 @@ const COLOR_TO_VARIABLE: Record<string, string> = {
   "bg-kumo-warning-tint": "color-kumo-warning-tint",
   "bg-kumo-danger": "color-kumo-danger",
   "bg-kumo-danger-tint": "color-kumo-danger-tint",
+  "bg-kumo-success": "color-kumo-success",
+  "bg-kumo-success-tint": "color-kumo-success-tint",
   "bg-transparent": null!, // No fill
   "bg-inherit": null!, // No fill
 
@@ -124,6 +126,7 @@ const COLOR_TO_VARIABLE: Record<string, string> = {
   "border-kumo-info": "color-kumo-info",
   "border-kumo-warning": "color-kumo-warning",
   "border-kumo-danger": "color-kumo-danger",
+  "border-kumo-success": "color-kumo-success",
   "ring-kumo-line": "color-kumo-line",
   "ring-kumo-ring": "color-kumo-ring",
   "ring-kumo-danger": "color-kumo-danger",
