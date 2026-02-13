@@ -1,5 +1,23 @@
 # @cloudflare/kumo
 
+## 1.5.1
+
+### Patch Changes
+
+- 2c8a5ad: Changed ClipboardIcon to CopyIcon in ClipboardText component
+- 31cc2e1: Fix AI command USAGE.md path resolution to work correctly from bundled dist output
+- 1ae7dfd: fix(cli): include block source files in build for `kumo add` command
+
+  The `kumo add` command was failing because block source files (`.tsx`) were not being copied to `dist/` during the build process. This adds copying of block source files from `src/blocks/` to `dist/src/blocks/` so the CLI can install them into user projects.
+
+- fa3eba3: fix(Table): Add indeterminate prop and fix checkbox click handling
+  - Added `indeterminate` prop to `Table.CheckHead` and `Table.CheckCell` components to support indeterminate checkbox state (shows minus icon when some but not all rows are selected)
+  - Fixed checkbox click handling - clicking directly on the checkbox now works correctly (previously only clicking the cell area next to the checkbox worked)
+  - Updated Table demos (`TableSelectedRowDemo` and `TableFullDemo`) with proper React state management for interactive row selection
+
+- 3bc976e: fix: delete-resource shouldn't nest buttons within each other
+- 752fdf1: support overwriting text in pagination component
+
 ## 1.5.0
 
 ### Minor Changes
