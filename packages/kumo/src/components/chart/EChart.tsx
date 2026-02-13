@@ -2,7 +2,7 @@ import type * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { forwardRef, useEffect, useRef } from "react";
 import { cn } from "../../utils";
-import { CHART_COLORS } from ".";
+import { CHART_DARK_COLORS, CHART_LIGHT_COLORS } from ".";
 
 type EChartsMouseEventParams = {
   componentType: string;
@@ -105,7 +105,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
       isDarkMode
         ? "dark"
         : {
-            color: CHART_COLORS,
+            color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
           },
     );
     chartRef.current = chart;

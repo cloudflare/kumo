@@ -2,10 +2,10 @@
 import DocLayout from "../../layouts/DocLayout.astro";
 import ComponentSection from "../../components/docs/ComponentSection.astro";
 import {
-  ChartColorDemo,
   PieChartPreviewDemo,
   TimeseriesChartPreviewDemo,
 } from "~/components/demos/Chart/ChartDemo";
+import { ColorDemo } from "~/components/demos/Chart/ColorDemo";
 import ChartCard from "~/components/demos/Chart/ChartCard.astro";
 import Heading from "~/components/docs/Heading.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
@@ -81,6 +81,21 @@ echarts.use([
   <ComponentSection>
     <Heading level={2} class="mb-6">Coloring</Heading>
 
-    <ChartColorDemo />
+    <div class="space-y-6">
+      <p>
+        Use semantic colors for meaning (errors, warnings) and categorical
+        colors for differentiating arbitrary series.
+      </p>
+
+      <CodeBlock
+        code={`import { ChartPalette } from "@cloudflare/kumo";
+
+const attention = ChartPalette.semantic("Attention", isDarkMode);
+const series0 = ChartPalette.color(0, isDarkMode);`}
+        lang="tsx"
+      />
+
+      <ColorDemo />
+    </div>
   </ComponentSection>
 </DocLayout>

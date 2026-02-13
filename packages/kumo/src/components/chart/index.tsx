@@ -14,6 +14,19 @@ enum ChartCategoricalLightColors {
   Indigo2 = "#7366E4",
 }
 
+enum ChartCategoricalDarkColors {
+  Blue = "#086FFFE6",
+  Violet = "#CF7EE9E6",
+  Cyan = "#73CEE6E6",
+  Indigo = "#5B5FEFE6",
+  LightBlue = "#82B6FFE6",
+  Pink = "#F5609FE6",
+  Indigo3 = "#C2BDF3E6",
+  Violet2 = "#8D1EB1E6",
+  Violet3 = "#EBCAF6E6",
+  Indigo2 = "#7366E4E6",
+}
+
 enum ChartSemanticLightColors {
   Attention = "#FC574A",
   Warning = "#F8A054",
@@ -32,7 +45,7 @@ enum ChartSemanticDarkColors {
   DisabledLight = "#D9D9D9E6",
 }
 
-export const CHART_COLORS = [
+export const CHART_LIGHT_COLORS = [
   ChartCategoricalLightColors.Blue,
   ChartCategoricalLightColors.Violet,
   ChartCategoricalLightColors.Cyan,
@@ -43,6 +56,19 @@ export const CHART_COLORS = [
   ChartCategoricalLightColors.Violet2,
   ChartCategoricalLightColors.Violet3,
   ChartCategoricalLightColors.Indigo2,
+];
+
+export const CHART_DARK_COLORS = [
+  ChartCategoricalDarkColors.Blue,
+  ChartCategoricalDarkColors.Violet,
+  ChartCategoricalDarkColors.Cyan,
+  ChartCategoricalDarkColors.Indigo,
+  ChartCategoricalDarkColors.LightBlue,
+  ChartCategoricalDarkColors.Pink,
+  ChartCategoricalDarkColors.Indigo3,
+  ChartCategoricalDarkColors.Violet2,
+  ChartCategoricalDarkColors.Violet3,
+  ChartCategoricalDarkColors.Indigo2,
 ];
 
 export class ChartPalette {
@@ -61,8 +87,10 @@ export class ChartPalette {
       : ChartSemanticLightColors[name];
   }
 
-  static color(index: number) {
-    return CHART_COLORS[index % CHART_COLORS.length];
+  static color(index: number, isDarkMode = false) {
+    return isDarkMode
+      ? CHART_DARK_COLORS[index % CHART_DARK_COLORS.length]
+      : CHART_LIGHT_COLORS[index % CHART_LIGHT_COLORS.length];
   }
 
   static orangeShade(index: number, count: number) {

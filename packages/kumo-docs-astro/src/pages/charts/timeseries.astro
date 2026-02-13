@@ -33,7 +33,7 @@ import Heading from "~/components/docs/Heading.astro";
 const data = [
   {
     name: "Requests",
-    color: ChartPalette.semantic("Neutral"),
+    color: ChartPalette.semantic("Neutral", isDarkMode),
     data: [
       [timestamp_in_ms, value],
       [timestamp_in_ms, value],
@@ -42,7 +42,7 @@ const data = [
   },
   {
     name: "Errors",
-    color: ChartPalette.semantic("Attention"),
+    color: ChartPalette.semantic("Attention", isDarkMode),
     data: [
       [timestamp_in_ms, value],
       [timestamp_in_ms, value],
@@ -77,7 +77,7 @@ const data = [
 const data = [
   {
     name: "Bandwidth",
-    color: ChartPalette.color(0),
+    color: ChartPalette.color(0, isDarkMode),
     data: [
       [timestamp_in_ms, value],
       [timestamp_in_ms, value],
@@ -114,7 +114,7 @@ const data = [
 const data = [
   {
     name: "CPU Usage",
-    color: ChartPalette.color(0),
+    color: ChartPalette.color(0, isDarkMode),
     data: [
       [timestamp_in_ms, value],
       [timestamp_in_ms, value],
