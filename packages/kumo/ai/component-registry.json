@@ -274,10 +274,10 @@
             "lg": "Large button for primary CTAs"
           },
           "classes": {
-            "xs": "h-5 gap-1 rounded-sm px-1.5 text-xs",
-            "sm": "h-6.5 gap-1 rounded-md px-2 text-xs",
-            "base": "h-9 gap-1.5 rounded-lg px-3 text-base",
-            "lg": "h-10 gap-2 rounded-lg px-4 text-base"
+            "xs": "h-5 gap-1 px-1.5 rounded-sm text-xs",
+            "sm": "h-6.5 gap-1 px-2 rounded-md text-xs",
+            "base": "h-9 gap-1.5 px-3 rounded-lg text-base",
+            "lg": "h-10 gap-2 px-4 rounded-lg text-base"
           },
           "default": "base"
         },
@@ -301,33 +301,31 @@
             "outline": "Bordered button with transparent background"
           },
           "classes": {
-            "primary": "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
-            "secondary": "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
-            "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
-            "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
-            "secondary-destructive": "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
-            "outline": "bg-kumo-base text-kumo-default ring ring-kumo-line"
+            "primary": "bg-kumo-brand text-white not-disabled:[:hover,:focus-visible,[data-pressed]]:bg-kumo-brand-hover",
+            "secondary": "bg-kumo-control text-kumo-default ring ring-kumo-line shadow-none not-disabled:not-data-pressed:hover:ring-kumo-control",
+            "ghost": "bg-inherit text-kumo-default shadow-none not-disabled:[:hover,[data-pressed]]:bg-kumo-tint",
+            "destructive": "bg-kumo-danger text-white shadow-none not-disabled:[:hover,[data-pressed]]:bg-kumo-danger/70",
+            "secondary-destructive": "bg-kumo-control text-kumo-danger ring ring-kumo-line shadow-none not-disabled:not-data-pressed:hover:ring-kumo-control",
+            "outline": "bg-kumo-base text-kumo-default ring ring-kumo-line not-disabled:[:hover,[data-pressed]]:bg-kumo-control data-[state=open]:bg-kumo-control"
           },
           "stateClasses": {
             "primary": {
-              "hover": "hover:bg-kumo-brand-hover",
-              "focus": "focus:bg-kumo-brand-hover",
-              "disabled": "disabled:bg-kumo-brand/50"
+              "not-disabled": "not-disabled:[:hover,:focus-visible,[data-pressed]]:bg-kumo-brand-hover"
             },
             "secondary": {
-              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control",
-              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-default/70",
-              "data-state": "data-[state=open]:bg-kumo-control"
+              "not-disabled": "not-disabled:not-data-pressed:hover:ring-kumo-control"
             },
             "ghost": {
-              "hover": "hover:bg-kumo-tint"
+              "not-disabled": "not-disabled:[:hover,[data-pressed]]:bg-kumo-tint"
             },
             "destructive": {
-              "hover": "hover:bg-kumo-danger/70"
+              "not-disabled": "not-disabled:[:hover,[data-pressed]]:bg-kumo-danger/70"
             },
             "secondary-destructive": {
-              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control",
-              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70",
+              "not-disabled": "not-disabled:not-data-pressed:hover:ring-kumo-control"
+            },
+            "outline": {
+              "not-disabled": "not-disabled:[:hover,[data-pressed]]:bg-kumo-control",
               "data-state": "data-[state=open]:bg-kumo-control"
             }
           },
@@ -406,11 +404,11 @@
         "bg-kumo-control",
         "bg-kumo-danger",
         "bg-kumo-tint",
+        "ring-kumo-brand",
+        "ring-kumo-control",
         "ring-kumo-line",
-        "ring-kumo-ring",
         "text-kumo-danger",
-        "text-kumo-default",
-        "text-kumo-subtle"
+        "text-kumo-default"
       ]
     },
     "Checkbox": {

@@ -250,20 +250,17 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
 
   **State Classes:**
   - `"primary"`:
-    - `hover`: `hover:bg-kumo-brand-hover`
-    - `focus`: `focus:bg-kumo-brand-hover`
-    - `disabled`: `disabled:bg-kumo-brand/50`
+    - `not-disabled`: `not-disabled:[:hover,:focus-visible,[data-pressed]]:bg-kumo-brand-hover`
   - `"secondary"`:
-    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control`
-    - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-default/70`
-    - `data-state`: `data-[state=open]:bg-kumo-control`
+    - `not-disabled`: `not-disabled:not-data-pressed:hover:ring-kumo-control`
   - `"ghost"`:
-    - `hover`: `hover:bg-kumo-tint`
+    - `not-disabled`: `not-disabled:[:hover,[data-pressed]]:bg-kumo-tint`
   - `"destructive"`:
-    - `hover`: `hover:bg-kumo-danger/70`
+    - `not-disabled`: `not-disabled:[:hover,[data-pressed]]:bg-kumo-danger/70`
   - `"secondary-destructive"`:
-    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control`
-    - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70`
+    - `not-disabled`: `not-disabled:not-data-pressed:hover:ring-kumo-control`
+  - `"outline"`:
+    - `not-disabled`: `not-disabled:[:hover,[data-pressed]]:bg-kumo-control`
     - `data-state`: `data-[state=open]:bg-kumo-control`
 - `children`: ReactNode
 - `className`: string
@@ -281,7 +278,7 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-control`, `bg-kumo-danger`, `bg-kumo-tint`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-control`, `bg-kumo-danger`, `bg-kumo-tint`, `ring-kumo-brand`, `ring-kumo-control`, `ring-kumo-line`, `text-kumo-danger`, `text-kumo-default`
 
 **Examples:**
 
