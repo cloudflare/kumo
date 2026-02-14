@@ -86,6 +86,8 @@ export const Loader = ({
       stroke="currentColor"
       className={className}
       style={{ height: sizeValue, width: sizeValue }}
+      role="status"
+      aria-label="Loading"
     >
       <circle
         cx="12"
