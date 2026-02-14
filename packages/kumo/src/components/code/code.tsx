@@ -1,6 +1,7 @@
 import { type CSSProperties } from "react";
 import { cn } from "../../utils/cn";
 
+/** Code language variant definitions. */
 export const KUMO_CODE_VARIANTS = {
   lang: {
     ts: {
@@ -82,6 +83,15 @@ export const KUMO_CODEBLOCK_STYLING = {
 export type KumoCodeLang = keyof typeof KUMO_CODE_VARIANTS.lang;
 
 export interface KumoCodeVariantsProps {
+  /**
+   * Language hint for the code content.
+   * - `"ts"` — TypeScript code
+   * - `"tsx"` — TypeScript JSX code
+   * - `"jsonc"` — JSON with comments
+   * - `"bash"` — Shell/Bash commands
+   * - `"css"` — CSS styles
+   * @default "ts"
+   */
   lang?: KumoCodeLang;
 }
 
@@ -102,10 +112,21 @@ export type CodeLang = KumoCodeLang;
 /** @deprecated Use CodeLang instead */
 export type BundledLanguage = CodeLang;
 
+/**
+ * Code component props.
+ *
+ * @example
+ * ```tsx
+ * <Code code="const x = 1;" lang="ts" />
+ * <Code code="export API_KEY={{apiKey}}" lang="bash"
+ *   values={{ apiKey: { value: "sk_live_123", highlight: true } }}
+ * />
+ * ```
+ */
 export interface CodeProps extends KumoCodeVariantsProps {
-  /** The code content to display */
+  /** The code string to display. */
   code: string;
-  /** Template values for interpolation */
+  /** Template values for `{{key}}` interpolation. Values with `highlight: true` are visually emphasized. */
   values?: Record<
     string,
     {
@@ -113,9 +134,9 @@ export interface CodeProps extends KumoCodeVariantsProps {
       highlight?: boolean;
     }
   >;
-  /** Additional CSS classes */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Inline styles */
+  /** Inline styles. */
   style?: CSSProperties;
 }
 
@@ -146,10 +167,21 @@ function CodeComponent({
 
 CodeComponent.displayName = "Code";
 
+/**
+ * CodeBlock component props — code inside a bordered container.
+ *
+ * @example
+ * ```tsx
+ * <CodeBlock lang="tsx" code={`const greeting = "Hello!";`} />
+ * ```
+ */
 export interface CodeBlockProps {
-  /** The code content to display */
+  /** The code string to display. */
   code: string;
-  /** Language for syntax highlighting metadata */
+  /**
+   * Language hint for the code content.
+   * @default "ts"
+   */
   lang?: CodeLang;
 }
 

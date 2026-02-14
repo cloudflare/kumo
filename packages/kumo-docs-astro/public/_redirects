@@ -1,0 +1,3 @@
+# Renamed routes — keep old URLs working
+/components/menubar /components/menu-bar 301
+/components/menubar/ /components/menu-bar/ 301

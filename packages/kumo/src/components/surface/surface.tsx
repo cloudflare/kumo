@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { cn } from "../../utils/cn";
 
+/** Surface color variant definitions. */
 export const KUMO_SURFACE_VARIANTS = {
   color: {
     primary: {
@@ -28,6 +29,12 @@ export const KUMO_SURFACE_DEFAULT_VARIANTS = {
 export type KumoSurfaceColor = keyof typeof KUMO_SURFACE_VARIANTS.color;
 
 export interface KumoSurfaceVariantsProps {
+  /**
+   * Surface color variant.
+   * - `"primary"` — Primary surface color
+   * - `"secondary"` — Secondary surface color
+   * @default "primary"
+   */
   color?: KumoSurfaceColor;
 }
 
@@ -58,17 +65,22 @@ type SurfacePropsGeneric<E extends ElementType = typeof defaultElement> =
   PolymorphicProps<E> & KumoSurfaceVariantsProps;
 
 /**
- * Props for the Surface component.
- * @description A polymorphic container component for creating elevated surfaces with consistent styling.
+ * Surface component props.
+ *
+ * @example
+ * ```tsx
+ * <Surface className="rounded-lg p-4">Card content</Surface>
+ * <Surface as="section" className="rounded-lg p-6">Section content</Surface>
+ * ```
  */
 export interface SurfaceProps {
-  /** The element type to render as (default: "div") */
+  /** The HTML element type to render as (e.g. `"div"`, `"section"`, `"article"`). @default "div" */
   as?: ElementType;
-  /** Surface color variant */
+  /** Surface color variant. @default "primary" */
   color?: KumoSurfaceColor;
-  /** Additional CSS classes */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Child elements */
+  /** Content rendered inside the surface. */
   children?: React.ReactNode;
 }
 
@@ -76,6 +88,14 @@ type SurfaceComponent = <E extends ElementType = typeof defaultElement>(
   props: SurfacePropsGeneric<E> & { ref?: PolymorphicRef<E> },
 ) => React.JSX.Element;
 
+/**
+ * Polymorphic container with consistent background, shadow, and border styling.
+ *
+ * @example
+ * ```tsx
+ * <Surface className="rounded-lg p-4">Card content</Surface>
+ * ```
+ */
 const SurfaceImpl = function Surface<
   E extends ElementType = typeof defaultElement,
 >(

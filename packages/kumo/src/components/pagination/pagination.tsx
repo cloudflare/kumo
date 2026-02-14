@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 
+/** Pagination controls variant definitions. */
 export const KUMO_PAGINATION_VARIANTS = {
   controls: {
     full: {
@@ -43,18 +44,50 @@ export function paginationVariants({
   );
 }
 
+/**
+ * Pagination component props.
+ *
+ * @example
+ * ```tsx
+ * <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
+ * <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} controls="simple" />
+ * ```
+ */
 export interface PaginationProps extends KumoPaginationVariantsProps {
+  /** Callback fired when the current page changes. */
   setPage: (page: number) => void;
+  /**
+   * Current page number (1-indexed).
+   * @default 1
+   */
   page?: number;
+  /** Number of items displayed per page. */
   perPage?: number;
+  /** Total number of items across all pages. */
   totalCount?: number;
+  /** Method to provide custom pagination text  */
+  text?: (props: {
+    page?: number;
+    perPage?: number;
+    totalCount?: number;
+    pageShowingRange: string;
+  }) => React.ReactNode;
 }
 
+/**
+ * Page navigation controls with page count display.
+ *
+ * @example
+ * ```tsx
+ * <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
+ * ```
+ */
 export function Pagination({
   page = 1,
   perPage,
   totalCount,
   setPage,
+  text,
   controls = KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
 }: PaginationProps) {
   const [editingPage, setEditingPage] = useState<number>(1);
@@ -78,13 +111,18 @@ export function Pagination({
     return Math.ceil((totalCount ?? 1) / (perPage ?? 1));
   }, [totalCount, perPage]);
 
+  const getPaginationText = () => {
+    if (text) {
+      return text({ page, perPage, totalCount, pageShowingRange });
+    } else if (totalCount && totalCount > 0) {
+      return `Showing ${pageShowingRange} of ${totalCount}`;
+    }
+    return null;
+  };
+
   return (
     <div className="flex items-center justify-between gap-2">
-      <div className="grow text-sm text-kumo-strong">
-        {totalCount && totalCount > 0
-          ? `Showing ${pageShowingRange} of ${totalCount}`
-          : null}
-      </div>
+      <div className="grow text-sm text-kumo-strong">{getPaginationText()}</div>
       <div>
         <InputGroup focusMode="individual">
           {controls === "full" && (

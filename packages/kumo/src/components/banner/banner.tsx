@@ -1,13 +1,11 @@
 import { type ReactNode, isValidElement } from "react";
 import { cn } from "../../utils/cn";
 
-/**
- * Base styles applied to all banner variants.
- * Used by bannerVariants() and consumed by Figma plugin for component generation.
- */
+/** Base styles applied to all banner variants. */
 export const KUMO_BANNER_BASE_STYLES =
   "flex w-full items-center gap-2 rounded-lg border px-4 py-1.5 text-base";
 
+/** Banner variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BANNER_VARIANTS = {
   variant: {
     default: {
@@ -35,6 +33,13 @@ export const KUMO_BANNER_DEFAULT_VARIANTS = {
 export type KumoBannerVariant = keyof typeof KUMO_BANNER_VARIANTS.variant;
 
 export interface KumoBannerVariantsProps {
+  /**
+   * Visual style of the banner.
+   * - `"default"` — Informational banner for general messages
+   * - `"alert"` — Warning banner for cautionary messages
+   * - `"error"` — Error banner for critical issues
+   * @default "default"
+   */
   variant?: KumoBannerVariant;
 }
 
@@ -56,15 +61,45 @@ export enum BannerVariant {
   ERROR,
 }
 
+/**
+ * Banner component props.
+ *
+ * @example
+ * ```tsx
+ * <Banner>This is an informational banner.</Banner>
+ * <Banner variant="alert">Your session will expire soon.</Banner>
+ * <Banner variant="error">We couldn't save your changes.</Banner>
+ * ```
+ */
 export interface BannerProps {
+  /** Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`). */
   icon?: ReactNode;
   /** @deprecated Use `children` instead. Will be removed in a future major version. */
   text?: string;
+  /** Banner message content. Accepts strings or custom React elements. */
   children?: ReactNode;
+  /**
+   * Visual style of the banner.
+   * - `"default"` — Informational blue banner for general messages
+   * - `"alert"` — Warning yellow banner for cautionary messages
+   * - `"error"` — Error red banner for critical issues
+   * @default "default"
+   */
   variant?: KumoBannerVariant;
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
 
+/**
+ * Full-width message bar for informational, warning, or error notices.
+ *
+ * @example
+ * ```tsx
+ * <Banner variant="alert" icon={<WarningCircle />}>
+ *   Review your billing information.
+ * </Banner>
+ * ```
+ */
 export function Banner({
   icon,
   children,

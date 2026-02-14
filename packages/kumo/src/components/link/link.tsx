@@ -37,6 +37,7 @@ const ExternalIcon = (props: SVGProps<SVGSVGElement>) => (
 
 ExternalIcon.displayName = "Link.ExternalIcon";
 
+/** Link variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_LINK_VARIANTS = {
   variant: {
     inline: {
@@ -63,6 +64,13 @@ export const KUMO_LINK_DEFAULT_VARIANTS = {
 export type KumoLinkVariant = keyof typeof KUMO_LINK_VARIANTS.variant;
 
 export interface KumoLinkVariantsProps {
+  /**
+   * Visual style of the link.
+   * - `"inline"` — Inline text link that flows with content
+   * - `"current"` — Link that inherits color from parent text
+   * - `"plain"` — Link without underline decoration
+   * @default "inline"
+   */
   variant?: KumoLinkVariant;
 }
 
@@ -72,6 +80,18 @@ export function linkVariants({
   return cn(KUMO_LINK_VARIANTS.variant[variant].classes);
 }
 
+/**
+ * Link component props.
+ *
+ * @example
+ * ```tsx
+ * <Link href="/docs">Learn more</Link>
+ * <Link href="https://cloudflare.com" target="_blank" rel="noopener noreferrer">
+ *   Visit Cloudflare <Link.ExternalIcon />
+ * </Link>
+ * <Link render={<RouterLink to="/dashboard" />}>Dashboard</Link>
+ * ```
+ */
 export type LinkProps = useRender.ComponentProps<"a"> &
   LinkComponentProps &
   KumoLinkVariantsProps;

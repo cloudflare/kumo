@@ -1,3 +1,4 @@
+/** Loader size variant definitions mapping sizes to their pixel values. */
 export const KUMO_LOADER_VARIANTS = {
   size: {
     sm: {
@@ -23,6 +24,13 @@ export const KUMO_LOADER_DEFAULT_VARIANTS = {
 export type KumoLoaderSize = keyof typeof KUMO_LOADER_VARIANTS.size;
 
 export interface KumoLoaderVariantsProps {
+  /**
+   * Size of the loader. Use a preset name or a custom pixel number.
+   * - `"sm"` — 16px, small loader for inline use
+   * - `"base"` — 24px, default loader size
+   * - `"lg"` — 32px, large loader for prominent loading states
+   * @default "base"
+   */
   size?: KumoLoaderSize | number;
 }
 
@@ -33,11 +41,37 @@ export function loaderVariants({
   return KUMO_LOADER_VARIANTS.size[size].value;
 }
 
+/**
+ * Loader component props.
+ *
+ * @example
+ * ```tsx
+ * <Loader />
+ * <Loader size="sm" />
+ * <Loader size={24} />
+ * ```
+ */
 export interface LoaderProps {
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /**
+   * Size of the spinner. Use a preset name or a custom pixel number.
+   * - `"sm"` — 16px, for inline use
+   * - `"base"` — 24px, default size
+   * - `"lg"` — 32px, for prominent loading states
+   * @default "base"
+   */
   size?: KumoLoaderSize | number;
 }
 
+/**
+ * Animated circular spinner for indicating loading states.
+ *
+ * @example
+ * ```tsx
+ * <Loader />
+ * ```
+ */
 export const Loader = ({
   className,
   size = KUMO_LOADER_DEFAULT_VARIANTS.size,

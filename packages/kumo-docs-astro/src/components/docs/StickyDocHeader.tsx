@@ -113,8 +113,8 @@ export function StickyDocHeader({
       )}
 
       {/* Sticky header bar */}
-      <header className="sticky top-0 z-10 border-b border-kumo-line bg-kumo-elevated pr-12">
-        <div className="mx-auto flex h-12 items-center justify-between border-r border-kumo-line px-4">
+      <header className="sticky top-0 z-10 border-b border-kumo-line bg-kumo-elevated md:pr-12">
+        <div className="mx-auto flex h-12 items-center justify-between md:border-r md:border-kumo-line px-4">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
@@ -157,7 +157,7 @@ export function StickyDocHeader({
             href="https://github.com/cloudflare/kumo"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-mono text-base text-kumo-subtle transition-colors hover:text-kumo-strong"
+            className="font-mono text-sm text-kumo-subtle transition-colors hover:text-kumo-default"
           >
             @cloudflare/kumo
           </a>

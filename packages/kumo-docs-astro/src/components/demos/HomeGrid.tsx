@@ -31,10 +31,10 @@ import {
   Table,
   Tabs,
   Text,
-  Toast,
   Toasty,
   Tooltip,
   TooltipProvider,
+  useKumoToastManager,
 } from "@cloudflare/kumo";
 import {
   MagnifyingGlassIcon,
@@ -67,7 +67,7 @@ const componentRoutes: Record<string, string> = {
   label: "/components/label",
   "layer-card": "/components/layer-card",
   loader: "/components/loader",
-  menubar: "/components/menubar",
+  menubar: "/components/menu-bar",
   meter: "/components/meter",
   pagination: "/components/pagination",
   popover: "/components/popover",
@@ -85,13 +85,14 @@ const componentRoutes: Record<string, string> = {
 };
 
 function ToastTriggerButton() {
-  const toastManager = Toast.useToastManager();
+  const toastManager = useKumoToastManager();
   return (
     <Button
       onClick={() =>
         toastManager.add({
           title: `Toast created`,
           description: "This is a toast notification.",
+          variant: "warning",
         })
       }
     >
@@ -229,10 +230,14 @@ export function HomeGrid() {
         <TooltipProvider>
           <div className="flex gap-2">
             <Tooltip content="Add" asChild open>
-              <Button shape="square" icon={PlusIcon} />
+              <Button shape="square" icon={PlusIcon} aria-label="Add" />
             </Tooltip>
             <Tooltip content="Change language" asChild>
-              <Button shape="square" icon={TranslateIcon} />
+              <Button
+                shape="square"
+                icon={TranslateIcon}
+                aria-label="Change language"
+              />
             </Tooltip>
           </div>
         </TooltipProvider>
@@ -557,12 +562,12 @@ export function HomeGrid() {
   ];
 
   return (
-    <ul className="grid auto-rows-min grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-line md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {components.map((c) => {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-elevated ring-1 ring-kumo-line"
+            className="relative flex aspect-square items-center justify-center bg-kumo-elevated"
             key={c.name}
           >
             {route ? (

@@ -8,6 +8,7 @@ import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { kumoColorsPlugin } from "./src/lib/vite-plugin-kumo-colors.js";
 import { kumoRegistryPlugin } from "./src/lib/vite-plugin-kumo-registry.js";
+import { kumoHmrPlugin } from "./src/lib/vite-plugin-kumo-hmr.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -58,12 +59,23 @@ function getBuildInfo() {
 
 const buildInfo = getBuildInfo();
 
+// Detect dev mode: `astro dev` sets this in process.argv
+const isDev = process.argv.includes("dev");
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
   vite: {
-    // @ts-expect-error - Vite version mismatch between Astro and @tailwindcss/vite
-    plugins: [tailwindcss(), kumoColorsPlugin(), kumoRegistryPlugin()],
+    plugins: [
+      // @ts-expect-error - Vite version mismatch between Astro and @tailwindcss/vite
+      tailwindcss(),
+      kumoColorsPlugin(),
+      kumoRegistryPlugin(),
+      // In dev mode, resolve @cloudflare/kumo imports to raw source files
+      // for instant HMR. In production builds, the normal package.json
+      // exports (dist/) are used — preserving the real consumer experience.
+      ...(isDev ? [kumoHmrPlugin()] : []),
+    ],
 
     define: {
       __KUMO_VERSION__: JSON.stringify(buildInfo.kumoVersion),

@@ -52,3 +52,16 @@ export function PaginationLargeDatasetDemo() {
     <Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />
   );
 }
+
+export function PaginationCustomTextDemo() {
+  const [page, setPage] = useState(1);
+  return (
+    <Pagination
+      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}
+      page={page}
+      setPage={setPage}
+      perPage={25}
+      totalCount={100}
+    />
+  );
+}

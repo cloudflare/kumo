@@ -4,13 +4,14 @@
     "Badge": {
       "name": "Badge",
       "type": "component",
-      "description": "Badge component",
+      "description": "Small status label for categorizing or highlighting content.",
       "importPath": "@cloudflare/kumo",
       "category": "Display",
       "props": {
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Visual style of the badge.\n- `\"primary\"` — High-emphasis badge for important labels\n- `\"secondary\"` — Subtle badge for secondary information\n- `\"destructive\"` — Error or danger state indicator\n- `\"outline\"` — Bordered badge with transparent background\n- `\"beta\"` — Dashed-border badge for beta/experimental features",
           "values": [
             "primary",
             "secondary",
@@ -36,11 +37,13 @@
         },
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "children": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Content rendered inside the badge."
         }
       },
       "examples": [
@@ -67,13 +70,14 @@
     "Banner": {
       "name": "Banner",
       "type": "component",
-      "description": "Banner component",
+      "description": "Full-width message bar for informational, warning, or error notices.",
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
         "icon": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`)."
         },
         "text": {
           "type": "string",
@@ -81,11 +85,13 @@
         },
         "children": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Banner message content. Accepts strings or custom React elements."
         },
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Visual style of the banner.\n- `\"default\"` — Informational blue banner for general messages\n- `\"alert\"` — Warning yellow banner for cautionary messages\n- `\"error\"` — Error red banner for critical issues",
           "values": [
             "default",
             "alert",
@@ -105,7 +111,8 @@
         },
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         }
       },
       "examples": [
@@ -142,6 +149,7 @@
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Size of the breadcrumbs.\n- `\"sm\"` — Compact breadcrumbs for dense UIs\n- `\"base\"` — Default breadcrumbs size",
           "values": [
             "sm",
             "base"
@@ -162,7 +170,8 @@
         },
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         }
       },
       "examples": [
@@ -226,26 +235,10 @@
     "Button": {
       "name": "Button",
       "type": "component",
-      "description": "Button component",
+      "description": "Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.",
       "importPath": "@cloudflare/kumo",
       "category": "Action",
       "props": {
-        "children": {
-          "type": "ReactNode",
-          "optional": true
-        },
-        "className": {
-          "type": "string",
-          "optional": true
-        },
-        "icon": {
-          "type": "ReactNode",
-          "optional": true
-        },
-        "loading": {
-          "type": "boolean",
-          "optional": true
-        },
         "shape": {
           "type": "enum",
           "optional": true,
@@ -340,6 +333,24 @@
           },
           "default": "secondary"
         },
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "icon": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Icon from `@phosphor-icons/react` or a React element. Rendered before children."
+        },
+        "loading": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Shows a loading spinner and disables interaction."
+        },
         "id": {
           "type": "string",
           "optional": true
@@ -375,7 +386,7 @@
         }
       },
       "examples": [
-        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Button variant=\"secondary\">Button</Button>\n      <Button variant=\"secondary\" shape=\"square\" icon={PlusIcon} />\n    </div>",
+        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Button variant=\"secondary\">Button</Button>\n      <Button\n        variant=\"secondary\"\n        shape=\"square\"\n        icon={PlusIcon}\n        aria-label=\"Add\"\n      />\n    </div>",
         "<Button variant=\"primary\">Primary</Button>",
         "<Button variant=\"secondary\">Secondary</Button>",
         "<Button variant=\"ghost\">Ghost</Button>",
@@ -384,7 +395,7 @@
         "<Button variant=\"secondary-destructive\">Secondary Destructive</Button>",
         "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button size=\"xs\" variant=\"secondary\">\n        Extra Small\n      </Button>\n      <Button size=\"sm\" variant=\"secondary\">\n        Small\n      </Button>\n      <Button size=\"base\" variant=\"secondary\">\n        Base\n      </Button>\n      <Button size=\"lg\" variant=\"secondary\">\n        Large\n      </Button>\n    </div>",
         "<Button variant=\"secondary\" icon={PlusIcon}>\n      Create Worker\n    </Button>",
-        "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button variant=\"secondary\" shape=\"square\" icon={PlusIcon} />\n      <Button variant=\"secondary\" shape=\"circle\" icon={PlusIcon} />\n    </div>",
+        "<div className=\"flex flex-wrap items-center gap-3\">\n      <Button\n        variant=\"secondary\"\n        shape=\"square\"\n        icon={PlusIcon}\n        aria-label=\"Add item\"\n      />\n      <Button\n        variant=\"secondary\"\n        shape=\"circle\"\n        icon={PlusIcon}\n        aria-label=\"Add item\"\n      />\n    </div>",
         "<Button variant=\"primary\" loading>\n      Loading...\n    </Button>",
         "<Button variant=\"secondary\" disabled>\n      Disabled\n    </Button>"
       ],
@@ -602,13 +613,14 @@
     "ClipboardText": {
       "name": "ClipboardText",
       "type": "component",
-      "description": "ClipboardText component",
+      "description": "Read-only text field with a one-click copy-to-clipboard button.",
       "importPath": "@cloudflare/kumo",
       "category": "Action",
       "props": {
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Size of the clipboard text field.\n- `\"sm\"` — Small clipboard text for compact UIs\n- `\"base\"` — Default clipboard text size\n- `\"lg\"` — Large clipboard text for prominent display",
           "values": [
             "sm",
             "base",
@@ -629,12 +641,12 @@
         "text": {
           "type": "string",
           "required": true,
-          "description": "The text to display and copy to clipboard"
+          "description": "The text to display and copy to clipboard."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional CSS classes"
+          "description": "Additional CSS classes merged via `cn()`."
         }
       },
       "examples": [
@@ -726,6 +738,1134 @@
         ]
       }
     },
+    "CloudflareLogo": {
+      "name": "CloudflareLogo",
+      "type": "component",
+      "description": "Cloudflare logo component.",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "optional": true
+        },
+        "className": {
+          "type": "string",
+          "optional": true
+        },
+        "height": {
+          "type": "number | string",
+          "optional": true
+        },
+        "id": {
+          "type": "string",
+          "optional": true
+        },
+        "lang": {
+          "type": "string",
+          "optional": true
+        },
+        "media": {
+          "type": "string",
+          "optional": true
+        },
+        "method": {
+          "type": "string",
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": true
+        },
+        "target": {
+          "type": "string",
+          "optional": true
+        },
+        "type": {
+          "type": "string",
+          "optional": true
+        },
+        "width": {
+          "type": "number | string",
+          "optional": true
+        },
+        "accentHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "accumulate": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "none",
+            "sum"
+          ]
+        },
+        "additive": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "replace",
+            "sum"
+          ]
+        },
+        "alignmentBaseline": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "auto",
+            "baseline",
+            "before-edge",
+            "text-before-edge",
+            "middle",
+            "central",
+            "after-edge",
+            "text-after-edge",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "inherit"
+          ]
+        },
+        "allowReorder": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "no",
+            "yes"
+          ]
+        },
+        "alphabetic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "amplitude": {
+          "type": "number | string",
+          "optional": true
+        },
+        "arabicForm": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "initial",
+            "medial",
+            "terminal",
+            "isolated"
+          ]
+        },
+        "ascent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "attributeName": {
+          "type": "string",
+          "optional": true
+        },
+        "attributeType": {
+          "type": "string",
+          "optional": true
+        },
+        "autoReverse": {
+          "type": "Booleanish",
+          "optional": true
+        },
+        "azimuth": {
+          "type": "number | string",
+          "optional": true
+        },
+        "baseFrequency": {
+          "type": "number | string",
+          "optional": true
+        },
+        "baselineShift": {
+          "type": "number | string",
+          "optional": true
+        },
+        "baseProfile": {
+          "type": "number | string",
+          "optional": true
+        },
+        "bbox": {
+          "type": "number | string",
+          "optional": true
+        },
+        "begin": {
+          "type": "number | string",
+          "optional": true
+        },
+        "bias": {
+          "type": "number | string",
+          "optional": true
+        },
+        "by": {
+          "type": "number | string",
+          "optional": true
+        },
+        "calcMode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "capHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "clip": {
+          "type": "number | string",
+          "optional": true
+        },
+        "clipPath": {
+          "type": "string",
+          "optional": true
+        },
+        "clipPathUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "clipRule": {
+          "type": "number | string",
+          "optional": true
+        },
+        "colorInterpolation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "colorInterpolationFilters": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "auto",
+            "sRGB",
+            "linearRGB",
+            "inherit"
+          ]
+        },
+        "colorProfile": {
+          "type": "number | string",
+          "optional": true
+        },
+        "colorRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "contentScriptType": {
+          "type": "number | string",
+          "optional": true
+        },
+        "contentStyleType": {
+          "type": "number | string",
+          "optional": true
+        },
+        "cursor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "cx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "cy": {
+          "type": "number | string",
+          "optional": true
+        },
+        "d": {
+          "type": "string",
+          "optional": true
+        },
+        "decelerate": {
+          "type": "number | string",
+          "optional": true
+        },
+        "descent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "diffuseConstant": {
+          "type": "number | string",
+          "optional": true
+        },
+        "direction": {
+          "type": "number | string",
+          "optional": true
+        },
+        "display": {
+          "type": "number | string",
+          "optional": true
+        },
+        "divisor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "dominantBaseline": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "auto",
+            "use-script",
+            "no-change",
+            "reset-size",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "central",
+            "middle",
+            "text-after-edge",
+            "text-before-edge",
+            "inherit"
+          ]
+        },
+        "dur": {
+          "type": "number | string",
+          "optional": true
+        },
+        "dx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "dy": {
+          "type": "number | string",
+          "optional": true
+        },
+        "edgeMode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "elevation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "enableBackground": {
+          "type": "number | string",
+          "optional": true
+        },
+        "end": {
+          "type": "number | string",
+          "optional": true
+        },
+        "exponent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "externalResourcesRequired": {
+          "type": "Booleanish",
+          "optional": true
+        },
+        "fill": {
+          "type": "string",
+          "optional": true
+        },
+        "fillOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fillRule": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "nonzero",
+            "evenodd",
+            "inherit"
+          ]
+        },
+        "filter": {
+          "type": "string",
+          "optional": true
+        },
+        "filterRes": {
+          "type": "number | string",
+          "optional": true
+        },
+        "filterUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "floodColor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "floodOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "focusable": {
+          "type": "Booleanish | string",
+          "optional": true
+        },
+        "fontFamily": {
+          "type": "string",
+          "optional": true
+        },
+        "fontSize": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontSizeAdjust": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontStretch": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontStyle": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontVariant": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fontWeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "format": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fr": {
+          "type": "number | string",
+          "optional": true
+        },
+        "from": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "fy": {
+          "type": "number | string",
+          "optional": true
+        },
+        "g1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "g2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphName": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphOrientationHorizontal": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphOrientationVertical": {
+          "type": "number | string",
+          "optional": true
+        },
+        "glyphRef": {
+          "type": "number | string",
+          "optional": true
+        },
+        "gradientTransform": {
+          "type": "string",
+          "optional": true
+        },
+        "gradientUnits": {
+          "type": "string",
+          "optional": true
+        },
+        "hanging": {
+          "type": "number | string",
+          "optional": true
+        },
+        "horizAdvX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "horizOriginX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "href": {
+          "type": "string",
+          "optional": true
+        },
+        "ideographic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "imageRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "in2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "in": {
+          "type": "string",
+          "optional": true
+        },
+        "intercept": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k3": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k4": {
+          "type": "number | string",
+          "optional": true
+        },
+        "k": {
+          "type": "number | string",
+          "optional": true
+        },
+        "kernelMatrix": {
+          "type": "number | string",
+          "optional": true
+        },
+        "kernelUnitLength": {
+          "type": "number | string",
+          "optional": true
+        },
+        "kerning": {
+          "type": "number | string",
+          "optional": true
+        },
+        "keyPoints": {
+          "type": "number | string",
+          "optional": true
+        },
+        "keySplines": {
+          "type": "number | string",
+          "optional": true
+        },
+        "keyTimes": {
+          "type": "number | string",
+          "optional": true
+        },
+        "lengthAdjust": {
+          "type": "number | string",
+          "optional": true
+        },
+        "letterSpacing": {
+          "type": "number | string",
+          "optional": true
+        },
+        "lightingColor": {
+          "type": "number | string",
+          "optional": true
+        },
+        "limitingConeAngle": {
+          "type": "number | string",
+          "optional": true
+        },
+        "local": {
+          "type": "number | string",
+          "optional": true
+        },
+        "markerEnd": {
+          "type": "string",
+          "optional": true
+        },
+        "markerHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "markerMid": {
+          "type": "string",
+          "optional": true
+        },
+        "markerStart": {
+          "type": "string",
+          "optional": true
+        },
+        "markerUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "markerWidth": {
+          "type": "number | string",
+          "optional": true
+        },
+        "mask": {
+          "type": "string",
+          "optional": true
+        },
+        "maskContentUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "maskUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "mathematical": {
+          "type": "number | string",
+          "optional": true
+        },
+        "mode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "numOctaves": {
+          "type": "number | string",
+          "optional": true
+        },
+        "offset": {
+          "type": "number | string",
+          "optional": true
+        },
+        "opacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "operator": {
+          "type": "number | string",
+          "optional": true
+        },
+        "order": {
+          "type": "number | string",
+          "optional": true
+        },
+        "orient": {
+          "type": "number | string",
+          "optional": true
+        },
+        "orientation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "origin": {
+          "type": "number | string",
+          "optional": true
+        },
+        "overflow": {
+          "type": "number | string",
+          "optional": true
+        },
+        "overlinePosition": {
+          "type": "number | string",
+          "optional": true
+        },
+        "overlineThickness": {
+          "type": "number | string",
+          "optional": true
+        },
+        "paintOrder": {
+          "type": "number | string",
+          "optional": true
+        },
+        "panose1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "path": {
+          "type": "string",
+          "optional": true
+        },
+        "pathLength": {
+          "type": "number | string",
+          "optional": true
+        },
+        "patternContentUnits": {
+          "type": "string",
+          "optional": true
+        },
+        "patternTransform": {
+          "type": "number | string",
+          "optional": true
+        },
+        "patternUnits": {
+          "type": "string",
+          "optional": true
+        },
+        "pointerEvents": {
+          "type": "number | string",
+          "optional": true
+        },
+        "points": {
+          "type": "string",
+          "optional": true
+        },
+        "pointsAtX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "pointsAtY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "pointsAtZ": {
+          "type": "number | string",
+          "optional": true
+        },
+        "preserveAlpha": {
+          "type": "Booleanish",
+          "optional": true
+        },
+        "preserveAspectRatio": {
+          "type": "string",
+          "optional": true
+        },
+        "primitiveUnits": {
+          "type": "number | string",
+          "optional": true
+        },
+        "r": {
+          "type": "number | string",
+          "optional": true
+        },
+        "radius": {
+          "type": "number | string",
+          "optional": true
+        },
+        "refX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "refY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "renderingIntent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "repeatCount": {
+          "type": "number | string",
+          "optional": true
+        },
+        "repeatDur": {
+          "type": "number | string",
+          "optional": true
+        },
+        "requiredExtensions": {
+          "type": "number | string",
+          "optional": true
+        },
+        "requiredFeatures": {
+          "type": "number | string",
+          "optional": true
+        },
+        "restart": {
+          "type": "number | string",
+          "optional": true
+        },
+        "result": {
+          "type": "string",
+          "optional": true
+        },
+        "rotate": {
+          "type": "number | string",
+          "optional": true
+        },
+        "rx": {
+          "type": "number | string",
+          "optional": true
+        },
+        "ry": {
+          "type": "number | string",
+          "optional": true
+        },
+        "scale": {
+          "type": "number | string",
+          "optional": true
+        },
+        "seed": {
+          "type": "number | string",
+          "optional": true
+        },
+        "shapeRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "slope": {
+          "type": "number | string",
+          "optional": true
+        },
+        "spacing": {
+          "type": "number | string",
+          "optional": true
+        },
+        "specularConstant": {
+          "type": "number | string",
+          "optional": true
+        },
+        "specularExponent": {
+          "type": "number | string",
+          "optional": true
+        },
+        "speed": {
+          "type": "number | string",
+          "optional": true
+        },
+        "spreadMethod": {
+          "type": "string",
+          "optional": true
+        },
+        "startOffset": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stdDeviation": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stemh": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stemv": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stitchTiles": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stopColor": {
+          "type": "string",
+          "optional": true
+        },
+        "stopOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strikethroughPosition": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strikethroughThickness": {
+          "type": "number | string",
+          "optional": true
+        },
+        "string": {
+          "type": "number | string",
+          "optional": true
+        },
+        "stroke": {
+          "type": "string",
+          "optional": true
+        },
+        "strokeDasharray": {
+          "type": "string | number",
+          "optional": true
+        },
+        "strokeDashoffset": {
+          "type": "string | number",
+          "optional": true
+        },
+        "strokeLinecap": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "butt",
+            "round",
+            "square",
+            "inherit"
+          ]
+        },
+        "strokeLinejoin": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "miter",
+            "round",
+            "bevel",
+            "inherit"
+          ]
+        },
+        "strokeMiterlimit": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strokeOpacity": {
+          "type": "number | string",
+          "optional": true
+        },
+        "strokeWidth": {
+          "type": "number | string",
+          "optional": true
+        },
+        "surfaceScale": {
+          "type": "number | string",
+          "optional": true
+        },
+        "systemLanguage": {
+          "type": "number | string",
+          "optional": true
+        },
+        "tableValues": {
+          "type": "number | string",
+          "optional": true
+        },
+        "targetX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "targetY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "textAnchor": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "start",
+            "middle",
+            "end",
+            "inherit"
+          ]
+        },
+        "textDecoration": {
+          "type": "number | string",
+          "optional": true
+        },
+        "textLength": {
+          "type": "number | string",
+          "optional": true
+        },
+        "textRendering": {
+          "type": "number | string",
+          "optional": true
+        },
+        "to": {
+          "type": "number | string",
+          "optional": true
+        },
+        "transform": {
+          "type": "string",
+          "optional": true
+        },
+        "u1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "u2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "underlinePosition": {
+          "type": "number | string",
+          "optional": true
+        },
+        "underlineThickness": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unicode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unicodeBidi": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unicodeRange": {
+          "type": "number | string",
+          "optional": true
+        },
+        "unitsPerEm": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vAlphabetic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "values": {
+          "type": "string",
+          "optional": true
+        },
+        "vectorEffect": {
+          "type": "number | string",
+          "optional": true
+        },
+        "version": {
+          "type": "string",
+          "optional": true
+        },
+        "vertAdvY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vertOriginX": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vertOriginY": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vHanging": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vIdeographic": {
+          "type": "number | string",
+          "optional": true
+        },
+        "viewBox": {
+          "type": "string",
+          "optional": true
+        },
+        "viewTarget": {
+          "type": "number | string",
+          "optional": true
+        },
+        "visibility": {
+          "type": "number | string",
+          "optional": true
+        },
+        "vMathematical": {
+          "type": "number | string",
+          "optional": true
+        },
+        "widths": {
+          "type": "number | string",
+          "optional": true
+        },
+        "wordSpacing": {
+          "type": "number | string",
+          "optional": true
+        },
+        "writingMode": {
+          "type": "number | string",
+          "optional": true
+        },
+        "x1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "x2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "x": {
+          "type": "number | string",
+          "optional": true
+        },
+        "xChannelSelector": {
+          "type": "string",
+          "optional": true
+        },
+        "xHeight": {
+          "type": "number | string",
+          "optional": true
+        },
+        "xlinkActuate": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkArcrole": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkHref": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkRole": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkShow": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkTitle": {
+          "type": "string",
+          "optional": true
+        },
+        "xlinkType": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlBase": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlLang": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlns": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlnsXlink": {
+          "type": "string",
+          "optional": true
+        },
+        "xmlSpace": {
+          "type": "string",
+          "optional": true
+        },
+        "y1": {
+          "type": "number | string",
+          "optional": true
+        },
+        "y2": {
+          "type": "number | string",
+          "optional": true
+        },
+        "y": {
+          "type": "number | string",
+          "optional": true
+        },
+        "yChannelSelector": {
+          "type": "string",
+          "optional": true
+        },
+        "z": {
+          "type": "number | string",
+          "optional": true
+        },
+        "zoomAndPan": {
+          "type": "string",
+          "optional": true
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Logo variant\n- `glyph`: Cloud icon only\n- `full`: Cloud icon with \"CLOUDFLARE\" wordmark below",
+          "values": [
+            "glyph",
+            "full"
+          ],
+          "descriptions": {
+            "glyph": "Cloud glyph only (logomark)",
+            "full": "Full logo with cloud glyph and wordmark stacked"
+          },
+          "default": "full"
+        }
+      },
+      "examples": [
+        "<CloudflareLogo className=\"w-72\" />",
+        "<CloudflareLogo variant=\"glyph\" className=\"w-24\" />",
+        "<div className=\"flex flex-wrap items-center gap-8\">\n      <CloudflareLogo className=\"w-28\" color=\"color\" />\n      <div className=\"rounded-lg bg-white p-4\">\n        <CloudflareLogo className=\"w-28\" color=\"black\" />\n      </div>\n      <div className=\"rounded-lg bg-black p-4\">\n        <CloudflareLogo className=\"w-28\" color=\"white\" />\n      </div>\n    </div>",
+        "<div className=\"flex flex-wrap items-center gap-8\">\n      <CloudflareLogo variant=\"glyph\" className=\"w-12\" color=\"color\" />\n      <div className=\"rounded-lg bg-white p-4\">\n        <CloudflareLogo variant=\"glyph\" className=\"w-12\" color=\"black\" />\n      </div>\n      <div className=\"rounded-lg bg-black p-4\">\n        <CloudflareLogo variant=\"glyph\" className=\"w-12\" color=\"white\" />\n      </div>\n    </div>",
+        "<div className=\"flex flex-wrap items-end gap-6\">\n      <CloudflareLogo className=\"w-20\" />\n      <CloudflareLogo className=\"w-28\" />\n      <CloudflareLogo className=\"w-44\" />\n    </div>",
+        "<div className=\"flex items-center gap-4\">\n      <DropdownMenu>\n        <DropdownMenu.Trigger>\n          <button\n            type=\"button\"\n            className=\"flex items-center gap-2 rounded-lg bg-black px-4 py-3 text-white transition-opacity hover:opacity-80\"\n          >\n            <CloudflareLogo variant=\"glyph\" color=\"white\" className=\"w-8\" />\n            <span className=\"font-medium\">Logo</span>\n          </button>\n        </DropdownMenu.Trigger>\n        <DropdownMenu.Content>\n          <DropdownMenu.Item\n            icon={CloudIcon}\n            onSelect={() =>\n              copyToClipboard(\n                generateCloudflareLogoSvg({ variant: \"glyph\" }),\n                \"glyph\",\n              )\n            }\n          >\n            {copied === \"glyph\" ? \"Copied!\" : \"Copy logo as SVG\"}\n          </DropdownMenu.Item>\n          <DropdownMenu.Item\n            icon={CodeIcon}\n            onSelect={() =>\n              copyToClipboard(\n                generateCloudflareLogoSvg({ variant: \"full\" }),\n                \"full\",\n              )\n            }\n          >\n            {copied === \"full\" ? \"Copied!\" : \"Copy full logo as SVG\"}\n          </DropdownMenu.Item>\n          <DropdownMenu.Item\n            icon={DownloadSimpleIcon}\n            onSelect={() =>\n              window.open(\n                \"https://www.cloudflare.com/press-kit/\",\n                \"_blank\",\n                \"noopener\",\n              )\n            }\n          >\n            Download brand assets\n          </DropdownMenu.Item>\n          <DropdownMenu.Separator />\n          <DropdownMenu.Item\n            icon={ArrowSquareOutIcon}\n            onSelect={() =>\n              window.open(\n                \"https://www.cloudflare.com/brand-assets/\",\n                \"_blank\",\n                \"noopener\",\n              )\n            }\n          >\n            Visit brand guidelines\n          </DropdownMenu.Item>\n        </DropdownMenu.Content>\n      </DropdownMenu>\n\n      <span className=\"text-sm text-kumo-subtle\">\n        Click to open the brand assets menu\n      </span>\n    </div>",
+        "<PoweredByCloudflare />",
+        "<div className=\"flex flex-wrap items-center gap-4\">\n      <PoweredByCloudflare />\n      <PoweredByCloudflare color=\"black\" />\n      <div className=\"rounded-lg bg-black p-3\">\n        <PoweredByCloudflare color=\"white\" />\n      </div>\n    </div>",
+        "<footer className=\"flex w-full items-center justify-between rounded-lg border border-kumo-line bg-kumo-elevated px-6 py-4\">\n      <span className=\"text-sm text-kumo-subtle\">\n        &copy; 2026 Your Company. All rights reserved.\n      </span>\n      <PoweredByCloudflare />\n    </footer>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "ring-kumo-line",
+        "text-kumo-default"
+      ]
+    },
     "Code": {
       "name": "Code",
       "type": "component",
@@ -736,6 +1876,7 @@
         "lang": {
           "type": "enum",
           "optional": true,
+          "description": "Language hint for the code content.\n- `\"ts\"` — TypeScript code\n- `\"tsx\"` — TypeScript JSX code\n- `\"jsonc\"` — JSON with comments\n- `\"bash\"` — Shell/Bash commands\n- `\"css\"` — CSS styles",
           "values": [
             "ts",
             "tsx",
@@ -755,17 +1896,17 @@
         "code": {
           "type": "string",
           "required": true,
-          "description": "The code content to display"
+          "description": "The code string to display."
         },
         "values": {
           "type": "Record<string, { value: string; highlight?: boolean }>",
           "optional": true,
-          "description": "Template values for interpolation"
+          "description": "Template values for `{{key}}` interpolation. Values with `highlight: true` are visually emphasized."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional CSS classes"
+          "description": "Additional CSS classes merged via `cn()`."
         }
       },
       "examples": [
@@ -861,13 +2002,14 @@
     "Combobox": {
       "name": "Combobox",
       "type": "component",
-      "description": "Combobox component",
+      "description": "Combobox — autocomplete input with filterable dropdown list.  Compound component: `Combobox` (Root), `.TriggerInput`, `.TriggerValue`, `.TriggerMultipleWithInput`, `.Content`, `.Item`, `.Chip`, `.Input`, `.Empty`, `.GroupLabel`, `.Group`, `.List`, `.Collection`.",
       "importPath": "@cloudflare/kumo",
       "category": "Input",
       "props": {
         "inputSide": {
           "type": "enum",
           "optional": true,
+          "description": "Position of the text input relative to chips in multi-select mode.\n- `\"right\"` — Input inline to the right of chips\n- `\"top\"` — Input above chips",
           "values": [
             "right",
             "top"
@@ -1062,7 +2204,7 @@
     "CommandPalette": {
       "name": "CommandPalette",
       "type": "component",
-      "description": "CommandPalette component",
+      "description": "CommandPalette — accessible command palette / spotlight search overlay.  Compound component: `CommandPalette.Root` (or `.Dialog` + `.Panel`), `.Input`, `.List`, `.Results`, `.Items`, `.Group`, `.GroupLabel`, `.Item`, `.ResultItem`, `.HighlightedText`, `.Empty`, `.Loading`, `.Footer`.  Built on `@base-ui/react/autocomplete` + `@base-ui/react/dialog`.",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
@@ -1097,13 +2239,14 @@
     "DateRangePicker": {
       "name": "DateRangePicker",
       "type": "component",
-      "description": "DateRangePicker component",
+      "description": "DateRangePicker — dual-calendar date range selector.  Renders two side-by-side month calendars with click-to-select start/end dates, hover preview of the range, a timezone footer, and a reset button.",
       "importPath": "@cloudflare/kumo",
       "category": "Input",
       "props": {
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Calendar size.\n- `\"sm\"` — Compact calendar for tight spaces\n- `\"base\"` — Default calendar size\n- `\"lg\"` — Large calendar for prominent date selection",
           "values": [
             "sm",
             "base",
@@ -1124,6 +2267,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Visual variant.\n- `\"default\"` — Standard appearance with overlay background\n- `\"subtle\"` — Minimal background",
           "values": [
             "default",
             "subtle"
@@ -1141,12 +2285,12 @@
         "timezone": {
           "type": "string",
           "optional": true,
-          "description": "Display timezone (display only)"
+          "description": "Display timezone string shown in the footer."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional CSS classes"
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "onStartDateChange": {
           "type": "(date: Date | null) => void",
@@ -1228,15 +2372,18 @@
       "props": {
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "children": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Dialog content (typically Title, Description, Close, and action buttons)."
         },
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Dialog width.\n- `\"sm\"` — Small (min 288px) for simple confirmations\n- `\"base\"` — Default (min 384px)\n- `\"lg\"` — Large (min 512px) for complex content\n- `\"xl\"` — Extra large (min 768px) for detailed views",
           "values": [
             "base",
             "sm",
@@ -1250,7 +2397,7 @@
             "xl": "Extra large dialog for detailed views"
           },
           "classes": {
-            "base": "min-w-96",
+            "base": "sm:min-w-96",
             "sm": "min-w-72",
             "lg": "min-w-[32rem]",
             "xl": "min-w-[48rem]"
@@ -1259,8 +2406,9 @@
         }
       },
       "examples": [
-        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n      </Dialog>\n    </Dialog.Root>",
-        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Button variant=\"secondary\">Cancel</Button>\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>"
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n      </Dialog>\n    </Dialog.Root>",
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>",
+        "<Dialog.Root disablePointerDismissal>\n      <Dialog.Trigger\n        render={(p) => (\n          <Button {...p} variant=\"destructive\">\n            Delete Project\n          </Button>\n        )}\n      />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-center gap-3\">\n          <div className=\"flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20\">\n            <Warning size={20} className=\"text-kumo-danger\" />\n          </div>\n          <Dialog.Title className=\"text-xl font-semibold\">\n            Delete Project?\n          </Dialog.Title>\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          This action cannot be undone. This will permanently delete the project\n          and all associated data.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>"
       ],
       "colors": [
         "bg-kumo-base",
@@ -1270,113 +2418,28 @@
       "subComponents": {
         "Root": {
           "name": "Root",
-          "description": "Controls the open state of the dialog. Doesn't render its own HTML element.",
-          "props": {
-            "open": {
-              "type": "boolean",
-              "description": "Whether the dialog is currently open (controlled mode)"
-            },
-            "defaultOpen": {
-              "type": "boolean",
-              "description": "Whether the dialog is initially open (uncontrolled mode)",
-              "default": "false"
-            },
-            "onOpenChange": {
-              "type": "(open: boolean, event: Event) => void",
-              "description": "Callback fired when the dialog opens or closes"
-            },
-            "modal": {
-              "type": "boolean | 'trap-focus'",
-              "description": "Whether the dialog is modal. When true, focus is trapped and page scroll is locked",
-              "default": "true"
-            },
-            "dismissible": {
-              "type": "boolean",
-              "description": "Whether clicking outside closes the dialog",
-              "default": "true"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "DialogBase.Root",
-          "usageExamples": [
-            "<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>",
-            "<Dialog.Root defaultOpen={false}>"
-          ]
+          "description": "Root sub-component",
+          "props": {}
         },
         "Trigger": {
           "name": "Trigger",
-          "description": "A button that opens the dialog when clicked.",
-          "props": {
-            "render": {
-              "type": "ReactElement | ((props, state) => ReactElement)",
-              "description": "Custom element to render instead of the default button"
-            },
-            "disabled": {
-              "type": "boolean",
-              "description": "Whether the trigger is disabled"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "DialogBase.Trigger",
-          "usageExamples": [
-            "<Dialog.Trigger render={<Button>Open</Button>} />",
-            "<Dialog.Trigger>Open Dialog</Dialog.Trigger>"
-          ],
-          "renderElement": "<button>"
+          "description": "Trigger sub-component",
+          "props": {}
         },
         "Title": {
           "name": "Title",
-          "description": "A heading that labels the dialog for accessibility.",
-          "props": {
-            "render": {
-              "type": "ReactElement | ((props, state) => ReactElement)",
-              "description": "Custom element to render instead of the default h2"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "DialogBase.Title",
-          "usageExamples": [
-            "<Dialog.Title>Confirm Action</Dialog.Title>",
-            "<Dialog.Title render={<h3 />}>Custom Heading</Dialog.Title>"
-          ],
-          "renderElement": "<h2>"
+          "description": "Title sub-component",
+          "props": {}
         },
         "Description": {
           "name": "Description",
-          "description": "A paragraph providing additional context about the dialog.",
-          "props": {
-            "render": {
-              "type": "ReactElement | ((props, state) => ReactElement)",
-              "description": "Custom element to render instead of the default p"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "DialogBase.Description",
-          "usageExamples": [
-            "<Dialog.Description>Are you sure you want to proceed?</Dialog.Description>"
-          ],
-          "renderElement": "<p>"
+          "description": "Description sub-component",
+          "props": {}
         },
         "Close": {
           "name": "Close",
-          "description": "A button that closes the dialog when clicked.",
-          "props": {
-            "render": {
-              "type": "ReactElement | ((props, state) => ReactElement)",
-              "description": "Custom element to render instead of the default button"
-            },
-            "disabled": {
-              "type": "boolean",
-              "description": "Whether the close button is disabled"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "DialogBase.Close",
-          "usageExamples": [
-            "<Dialog.Close render={<Button>Cancel</Button>} />",
-            "<Dialog.Close>×</Dialog.Close>"
-          ],
-          "renderElement": "<button>"
+          "description": "Close sub-component",
+          "props": {}
         }
       },
       "styling": {
@@ -1454,13 +2517,14 @@
     "DropdownMenu": {
       "name": "DropdownMenu",
       "type": "component",
-      "description": "DropdownMenu component",
+      "description": "DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.",
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Visual style of the dropdown item.\n- `\"default\"` — Standard item appearance\n- `\"danger\"` — Destructive action with red text",
           "values": [
             "default",
             "danger"
@@ -1575,13 +2639,14 @@
     "Empty": {
       "name": "Empty",
       "type": "component",
-      "description": "Empty component",
+      "description": "Placeholder shown when a list, table, or page has no content to display.",
       "importPath": "@cloudflare/kumo",
       "category": "Display",
       "props": {
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Size of the empty state container.\n- `\"sm\"` — Compact empty state for smaller containers\n- `\"base\"` — Default empty state size\n- `\"lg\"` — Large empty state for prominent placement",
           "values": [
             "sm",
             "base",
@@ -1601,27 +2666,33 @@
         },
         "icon": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Decorative icon displayed above the title (e.g. from `@phosphor-icons/react`)."
         },
         "title": {
           "type": "string",
-          "required": true
+          "required": true,
+          "description": "Primary heading text for the empty state."
         },
         "description": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Secondary description text displayed below the title."
         },
         "commandLine": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Shell command displayed in a copyable code block."
         },
         "contents": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Additional content (buttons, links) rendered below the description."
         },
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         }
       },
       "examples": [
@@ -1647,41 +2718,44 @@
     "Field": {
       "name": "Field",
       "type": "component",
-      "description": "Field component",
+      "description": "Form field wrapper that provides a label, optional description, and error display around any form control. Built on Base UI Field primitives.",
       "importPath": "@cloudflare/kumo",
       "category": "Input",
       "props": {
         "controlFirst": {
           "type": "boolean",
           "optional": true,
-          "description": "When true, places the control (checkbox/switch) before the label visually. When false (default), places the label before the control. Used to support different layout patterns (e.g., iOS-style toggles on the right)."
+          "description": "When `true`, places the control before the label (for checkbox/switch layouts)."
         },
         "children": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "The form control element(s) to wrap (Input, Select, Checkbox, etc.)."
         },
         "label": {
           "type": "ReactNode",
           "optional": true,
-          "description": "The label content - can be a string or any React node"
+          "description": "The label content — can be a string or any React node."
         },
         "required": {
           "type": "boolean",
           "optional": true,
-          "description": "When explicitly false, shows gray \"(optional)\" text after the label. When true or undefined, no indicator is shown."
+          "description": "When explicitly `false`, shows gray \"(optional)\" text after the label. When `true` or `undefined`, no indicator is shown."
         },
         "labelTooltip": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Tooltip content to display next to the label via an info icon"
+          "description": "Tooltip content displayed next to the label via an info icon."
         },
         "error": {
           "type": "object",
-          "optional": true
+          "optional": true,
+          "description": "Validation error with a message and a browser `ValidityState` match key."
         },
         "description": {
           "type": "ReactNode",
-          "optional": true
+          "optional": true,
+          "description": "Helper text displayed below the control (hidden when `error` is present)."
         }
       },
       "examples": [],
@@ -1694,19 +2768,19 @@
     "Grid": {
       "name": "Grid",
       "type": "component",
-      "description": "Grid component",
+      "description": "Responsive CSS grid layout container with preset column configurations.",
       "importPath": "@cloudflare/kumo",
       "category": "Layout",
       "props": {
         "children": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Child node(s) that can be nested inside component"
+          "description": "Grid items to render."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "CSS class names that can be appended to the component"
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "id": {
           "type": "string",
@@ -1723,12 +2797,12 @@
         "mobileDivider": {
           "type": "boolean",
           "optional": true,
-          "description": "Show dividers between grid items on mobile (only works with 4up variant)"
+          "description": "Show dividers between grid items on mobile (only works with `\"4up\"` variant)."
         },
         "gap": {
           "type": "enum",
           "optional": true,
-          "description": "Gap size between grid items",
+          "description": "Gap size between grid items.\n- `\"none\"` — No gap\n- `\"sm\"` — 12px gap\n- `\"base\"` — Responsive gap (8px → 24px → 32px)\n- `\"lg\"` — 32px gap",
           "values": [
             "none",
             "sm",
@@ -1752,7 +2826,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
-          "description": "Stylistic variations of the Grid layout",
+          "description": "Responsive column layout variant.\n- `\"2up\"` — 1 col → 2 cols at md\n- `\"side-by-side\"` — Always 2 cols\n- `\"2-1\"` — 66%/33% split at md\n- `\"1-2\"` — 33%/66% split at md\n- `\"3up\"` — 1 → 2 → 3 cols\n- `\"4up\"` — 1 → 2 → 3 → 4 cols\n- `\"6up\"` — 2 → 3 → 4 → 6 cols\n- `\"1-2-4up\"` — 1 → 2 → 4 cols",
           "values": [
             "2up",
             "side-by-side",
@@ -1829,6 +2903,7 @@
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Input size.\n- `\"xs\"` — Extra small for compact UIs\n- `\"sm\"` — Small for secondary fields\n- `\"base\"` — Default size\n- `\"lg\"` — Large for prominent fields",
           "values": [
             "xs",
             "sm",
@@ -1852,6 +2927,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Visual variant.\n- `\"default\"` — Standard input\n- `\"error\"` — Error state for validation failures",
           "values": [
             "default",
             "error"
@@ -1957,27 +3033,32 @@
         "children": {
           "type": "ReactNode",
           "optional": true,
-          "description": "The label content - can be a string or any React node"
+          "description": "The label content — can be a string or any React node."
         },
         "showOptional": {
           "type": "boolean",
           "optional": true,
-          "description": "When true (and required is false), shows gray \"(optional)\" text after the label"
+          "description": "When `true`, shows gray \"(optional)\" text after the label."
         },
         "tooltip": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Tooltip content to display next to the label via an info icon"
+          "description": "Tooltip content displayed next to the label via an info icon."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional CSS classes"
+          "description": "Additional CSS classes merged via `cn()`."
+        },
+        "htmlFor": {
+          "type": "string",
+          "optional": true,
+          "description": "The id of the form element this label is associated with"
         },
         "asContent": {
           "type": "boolean",
           "optional": true,
-          "description": "When true, only renders the inline content (indicators, tooltip) without the outer span with font styling. Useful when composed inside another label element that already provides the text styling."
+          "description": "When true, only renders the inline content (indicators, tooltip) without the outer label element with font styling. Useful when composed inside another label element that already provides the text styling."
         }
       },
       "examples": [
@@ -2006,11 +3087,12 @@
         },
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         }
       },
       "examples": [
-        "<LayerCard>\n      <LayerCard.Secondary className=\"flex items-center justify-between\">\n        <div>Next Steps</div>\n        <Button variant=\"ghost\" size=\"sm\" shape=\"square\">\n          <ArrowRightIcon size={16} />\n        </Button>\n      </LayerCard.Secondary>\n\n      <LayerCard.Primary>Get started with Kumo</LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Secondary className=\"flex items-center justify-between\">\n        <div>Next Steps</div>\n        <Button\n          variant=\"ghost\"\n          size=\"sm\"\n          shape=\"square\"\n          aria-label=\"Go to next steps\"\n        >\n          <ArrowRightIcon size={16} />\n        </Button>\n      </LayerCard.Secondary>\n\n      <LayerCard.Primary>Get started with Kumo</LayerCard.Primary>\n    </LayerCard>",
         "<LayerCard className=\"w-[250px]\">\n      <LayerCard.Secondary>Getting Started</LayerCard.Secondary>\n      <LayerCard.Primary>\n        <p className=\"text-sm text-kumo-subtle\">\n          Quick start guide for new users\n        </p>\n      </LayerCard.Primary>\n    </LayerCard>",
         "<div className=\"flex gap-4\">\n      <LayerCard className=\"w-[200px]\">\n        <LayerCard.Secondary>Components</LayerCard.Secondary>\n        <LayerCard.Primary>\n          <p className=\"text-sm\">Browse all components</p>\n        </LayerCard.Primary>\n      </LayerCard>\n      <LayerCard className=\"w-[200px]\">\n        <LayerCard.Secondary>Examples</LayerCard.Secondary>\n        <LayerCard.Primary>\n          <p className=\"text-sm\">View code examples</p>\n        </LayerCard.Primary>\n      </LayerCard>\n    </div>"
       ],
@@ -2066,6 +3148,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Visual style of the link.\n- `\"inline\"` — Inline text link that flows with content\n- `\"current\"` — Link that inherits color from parent text\n- `\"plain\"` — Link without underline decoration",
           "values": [
             "inline",
             "current",
@@ -2180,17 +3263,19 @@
     "Loader": {
       "name": "Loader",
       "type": "component",
-      "description": "Loader component",
+      "description": "Animated circular spinner for indicating loading states.",
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "size": {
           "type": "enum",
           "optional": true,
+          "description": "Size of the spinner. Use a preset name or a custom pixel number.\n- `\"sm\"` — 16px, for inline use\n- `\"base\"` — 24px, default size\n- `\"lg\"` — 32px, for prominent loading states",
           "values": [
             "sm",
             "base",
@@ -2214,25 +3299,29 @@
     "MenuBar": {
       "name": "MenuBar",
       "type": "component",
-      "description": "MenuBar component",
+      "description": "MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  Each option renders as a `<button>` with a Tooltip. The active option is visually highlighted with an elevated background.",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "isActive": {
           "type": "number | boolean | string",
-          "optional": true
+          "optional": true,
+          "description": "The currently active option value — matched against option index or `id`."
         },
         "options": {
           "type": "MenuOptionProps[]",
-          "required": true
+          "required": true,
+          "description": "Array of menu option configurations."
         },
         "optionIds": {
           "type": "boolean",
-          "optional": true
+          "optional": true,
+          "description": "When true, each option's `id` field is used for matching instead of its array index."
         }
       },
       "examples": [
@@ -2262,29 +3351,34 @@
     "Meter": {
       "name": "Meter",
       "type": "component",
-      "description": "Meter component",
+      "description": "Progress bar showing a measured value within a known range (e.g. quota usage).",
       "importPath": "@cloudflare/kumo",
       "category": "Display",
       "props": {
         "customValue": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Custom formatted value text (e.g. \"750 / 1,000\") displayed instead of percentage."
         },
         "label": {
           "type": "string",
-          "required": true
+          "required": true,
+          "description": "Label text displayed above the meter track."
         },
         "showValue": {
           "type": "boolean",
-          "optional": true
+          "optional": true,
+          "description": "Whether to display the percentage value next to the label."
         },
         "trackClassName": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes for the track (background bar)."
         },
         "indicatorClassName": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes for the indicator (filled bar)."
         },
         "value": {
           "type": "number",
@@ -2316,7 +3410,7 @@
     "Pagination": {
       "name": "Pagination",
       "type": "component",
-      "description": "Pagination component",
+      "description": "Page navigation controls with page count display.",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
@@ -2340,15 +3434,23 @@
         },
         "page": {
           "type": "number",
-          "optional": true
+          "optional": true,
+          "description": "Current page number (1-indexed)."
         },
         "perPage": {
           "type": "number",
-          "optional": true
+          "optional": true,
+          "description": "Number of items displayed per page."
         },
         "totalCount": {
           "type": "number",
-          "optional": true
+          "optional": true,
+          "description": "Total number of items across all pages."
+        },
+        "text": {
+          "type": "object",
+          "optional": true,
+          "description": "Method to provide custom pagination text"
         }
       },
       "examples": [
@@ -2356,7 +3458,8 @@
         "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"simple\"\n    />",
         "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"full\"\n    />",
         "<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />",
-        "<Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />"
+        "<Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />",
+        "<Pagination\n      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />"
       ],
       "colors": [
         "text-kumo-strong"
@@ -2382,6 +3485,7 @@
         "side": {
           "type": "enum",
           "optional": true,
+          "description": "Which side of the trigger the popover appears on.\n- `\"top\"` — Above the trigger\n- `\"bottom\"` — Below the trigger\n- `\"left\"` — Left of the trigger\n- `\"right\"` — Right of the trigger",
           "values": [
             "top",
             "bottom",
@@ -2398,7 +3502,7 @@
         }
       },
       "examples": [
-        "<Popover>\n      <Popover.Trigger asChild>\n        <Button shape=\"square\" icon={BellIcon} />\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Notifications</Popover.Title>\n        <Popover.Description>\n          You are all caught up. Good job!\n        </Popover.Description>\n      </Popover.Content>\n    </Popover>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button shape=\"square\" icon={BellIcon} aria-label=\"Notifications\" />\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Notifications</Popover.Title>\n        <Popover.Description>\n          You are all caught up. Good job!\n        </Popover.Description>\n      </Popover.Content>\n    </Popover>",
         "<Popover>\n      <Popover.Trigger asChild>\n        <Button>Open Popover</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Popover Title</Popover.Title>\n        <Popover.Description>\n          This is a basic popover with a title and description.\n        </Popover.Description>\n      </Popover.Content>\n    </Popover>",
         "<Popover>\n      <Popover.Trigger asChild>\n        <Button>Open Settings</Button>\n      </Popover.Trigger>\n      <Popover.Content>\n        <Popover.Title>Settings</Popover.Title>\n        <Popover.Description>\n          Configure your preferences below.\n        </Popover.Description>\n        <div className=\"mt-3\">\n          <Popover.Close asChild>\n            <Button variant=\"secondary\" size=\"sm\">\n              Close\n            </Button>\n          </Popover.Close>\n        </div>\n      </Popover.Content>\n    </Popover>",
         "<div className=\"flex flex-wrap gap-4\">\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Bottom</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"bottom\">\n          <Popover.Title>Bottom</Popover.Title>\n          <Popover.Description>\n            Popover on bottom (default).\n          </Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Top</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"top\">\n          <Popover.Title>Top</Popover.Title>\n          <Popover.Description>Popover on top.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Left</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"left\">\n          <Popover.Title>Left</Popover.Title>\n          <Popover.Description>Popover on left.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n\n      <Popover>\n        <Popover.Trigger asChild>\n          <Button variant=\"secondary\">Right</Button>\n        </Popover.Trigger>\n        <Popover.Content side=\"right\">\n          <Popover.Title>Right</Popover.Title>\n          <Popover.Description>Popover on right.</Popover.Description>\n        </Popover.Content>\n      </Popover>\n    </div>",
@@ -2445,7 +3549,7 @@
     "Radio": {
       "name": "Radio",
       "type": "component",
-      "description": "Radio component",
+      "description": "Radio — radio button group for single-select choices.  Compound component: `Radio.Group` (with built-in Fieldset) and `Radio.Item`. Built on `@base-ui/react/radio-group` + `@base-ui/react/radio`.",
       "importPath": "@cloudflare/kumo",
       "category": "Input",
       "props": {
@@ -2539,62 +3643,62 @@
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional CSS classes"
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "label": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Label content for the select (enables Field wrapper) - can be a string or any React node"
+          "description": "Label content for the select (enables Field wrapper) — can be a string or any React node."
         },
         "hideLabel": {
           "type": "boolean",
           "optional": true,
-          "description": "Whether to visually hide the label (still accessible to screen readers)"
+          "description": "Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper."
         },
         "placeholder": {
           "type": "string",
           "optional": true,
-          "description": "Placeholder text when no value is selected"
+          "description": "Placeholder text shown when no value is selected."
         },
         "loading": {
           "type": "boolean",
           "optional": true,
-          "description": "Whether the select is in a loading state"
+          "description": "When `true`, shows a skeleton loader in place of the selected value."
         },
         "disabled": {
           "type": "boolean",
           "optional": true,
-          "description": "Whether the select is disabled"
+          "description": "Whether the select is disabled."
         },
         "required": {
           "type": "boolean",
           "optional": true,
-          "description": "Whether the select is required"
+          "description": "Whether the select is required. When `false`, shows \"(optional)\" text."
         },
         "labelTooltip": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Tooltip content to display next to the label via an info icon"
+          "description": "Tooltip content displayed next to the label via an info icon."
         },
         "value": {
           "type": "string",
           "optional": true,
-          "description": "The currently selected value"
+          "description": "Currently selected value (controlled mode)."
         },
         "children": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Child elements (Select.Option components)"
+          "description": "`Select.Option` elements to render in the dropdown."
         },
         "description": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Helper text displayed below the select"
+          "description": "Helper text displayed below the select."
         },
         "error": {
           "type": "string | object",
           "optional": true,
-          "description": "Error message or validation error object"
+          "description": "Error message string or validation error object with `match` key."
         },
         "onValueChange": {
           "type": "(value: string) => void",
@@ -2606,7 +3710,7 @@
         }
       },
       "examples": [
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"Apple\")}\n      placeholder=\"Please select\"\n    >\n      <Select.Option value=\"Apple\">Apple</Select.Option>\n      <Select.Option value=\"Banana\">Banana</Select.Option>\n      <Select.Option value=\"Cherry\">Cherry</Select.Option>\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"apple\")}\n      items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n    >\n      <Select.Option value=\"apple\">Apple</Select.Option>\n      <Select.Option value=\"banana\">Banana</Select.Option>\n      <Select.Option value=\"cherry\">Cherry</Select.Option>\n    </Select>",
         "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    >\n      <Select.Option value=\"bug\">Bug</Select.Option>\n      <Select.Option value=\"documentation\">Documentation</Select.Option>\n      <Select.Option value=\"feature\">Feature</Select.Option>\n    </Select>",
         "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={[\n        { value: null, label: \"Please select\" },\n        { value: \"bug\", label: \"Bug\" },\n        { value: \"documentation\", label: \"Documentation\" },\n        { value: \"feature\", label: \"Feature\" },\n      ]}\n    >\n      <Select.Option value=\"bug\">Bug</Select.Option>\n      <Select.Option value=\"documentation\">Documentation</Select.Option>\n      <Select.Option value=\"feature\">Feature</Select.Option>\n    </Select>",
         "<Select\n      className=\"w-[200px]\"\n      renderValue={(v) => (\n        <span>\n          {v.emoji} {v.label}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as (typeof languages)[0])}\n    >\n      {languages.map((language) => (\n        <Select.Option key={language.value} value={language}>\n          {language.emoji} {language.label}\n        </Select.Option>\n      ))}\n    </Select>",
@@ -2676,7 +3780,7 @@
     "SensitiveInput": {
       "name": "SensitiveInput",
       "type": "component",
-      "description": "SensitiveInput component",
+      "description": "Password/secret input that masks its value by default and reveals on click. Includes a built-in copy-to-clipboard button on hover.",
       "importPath": "@cloudflare/kumo",
       "category": "Other",
       "props": {
@@ -2752,7 +3856,7 @@
         "size": {
           "type": "enum",
           "optional": true,
-          "description": "Size variant",
+          "description": "Size of the input.\n- `\"xs\"` — Extra small for compact UIs\n- `\"sm\"` — Small for secondary fields\n- `\"base\"` — Default input size\n- `\"lg\"` — Large for prominent fields",
           "values": [
             "xs",
             "sm",
@@ -2764,7 +3868,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
-          "description": "Style variant",
+          "description": "Style variant of the input.\n- `\"default\"` — Default input appearance\n- `\"error\"` — Error state for validation failures",
           "values": [
             "default",
             "error"
@@ -2816,17 +3920,17 @@
         "as": {
           "type": "React.ElementType",
           "optional": true,
-          "description": "The element type to render as (default: \"div\")"
+          "description": "The HTML element type to render as (e.g. `\"div\"`, `\"section\"`, `\"article\"`)."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional CSS classes"
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "children": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Child elements"
+          "description": "Content rendered inside the surface."
         }
       },
       "examples": [
@@ -3017,7 +4121,7 @@
     "Table": {
       "name": "Table",
       "type": "component",
-      "description": "Table component",
+      "description": "Table — semantic HTML table with styled rows, cells, and selection support.  Compound component: `Table` (Root), `.Header`, `.Head`, `.Body`, `.Row`, `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`.",
       "importPath": "@cloudflare/kumo",
       "category": "Other",
       "props": {
@@ -3057,9 +4161,9 @@
       "examples": [
         "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.slice(0, 3).map((row) => (\n              <Table.Row key={row.id}>\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
         "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.slice(0, 3).map((row) => (\n              <Table.Row key={row.id}>\n                <Table.CheckCell aria-label={`Select ${row.subject}`} />\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
-        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            <Table.Row>\n              <Table.CheckCell aria-label=\"Select row 1\" />\n              <Table.Cell>Kumo v1.0.0 released</Table.Cell>\n              <Table.Cell>Visal In</Table.Cell>\n              <Table.Cell>5 seconds ago</Table.Cell>\n            </Table.Row>\n            <Table.Row variant=\"selected\">\n              <Table.CheckCell checked aria-label=\"Select row 2\" />\n              <Table.Cell>New Job Offer</Table.Cell>\n              <Table.Cell>Cloudflare</Table.Cell>\n              <Table.Cell>10 minutes ago</Table.Cell>\n            </Table.Row>\n            <Table.Row>\n              <Table.CheckCell aria-label=\"Select row 3\" />\n              <Table.Cell>Daily Email Digest</Table.Cell>\n              <Table.Cell>Cloudflare</Table.Cell>\n              <Table.Cell>1 hour ago</Table.Cell>\n            </Table.Row>\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead\n                checked={selectedIds.size === rows.length}\n                indeterminate={\n                  selectedIds.size > 0 && selectedIds.size < rows.length\n                }\n                onValueChange={toggleAll}\n                aria-label=\"Select all rows\"\n              />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {rows.map((row) => (\n              <Table.Row\n                key={row.id}\n                variant={selectedIds.has(row.id) ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={selectedIds.has(row.id)}\n                  onValueChange={() => toggleRow(row.id)}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
         "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col />\n            <col className=\"w-[150px]\" />\n            <col className=\"w-[150px]\" />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row) => (\n              <Table.Row key={row.id}>\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
-        "<LayerCard>\n      <LayerCard.Primary className=\"w-full overflow-x-auto p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col style={{ width: \"40px\" }} />\n            <col />\n            <col style={{ width: \"150px\" }} />\n            <col style={{ width: \"120px\" }} />\n            <col style={{ width: \"50px\" }} />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n              <Table.Head></Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row, index) => (\n              <Table.Row\n                key={row.id}\n                variant={index === 1 ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={index === 1}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>\n                  <div className=\"flex items-center gap-2\">\n                    <EnvelopeSimple size={16} />\n                    <span className=\"truncate\">{row.subject}</span>\n                    {row.tags && (\n                      <div className=\"ml-2 inline-flex gap-1\">\n                        {row.tags.map((tag) => (\n                          <Badge key={tag}>{tag}</Badge>\n                        ))}\n                      </div>\n                    )}\n                  </div>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.from}</span>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.date}</span>\n                </Table.Cell>\n                <Table.Cell className=\"text-right\">\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    shape=\"square\"\n                    aria-label=\"More options\"\n                  >\n                    <DotsThree weight=\"bold\" size={16} />\n                  </Button>\n                </Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>"
+        "<LayerCard>\n      <LayerCard.Primary className=\"w-full overflow-x-auto p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col style={{ width: \"40px\" }} />\n            <col />\n            <col style={{ width: \"150px\" }} />\n            <col style={{ width: \"120px\" }} />\n            <col style={{ width: \"50px\" }} />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead\n                checked={selectedIds.size === emailData.length}\n                indeterminate={\n                  selectedIds.size > 0 && selectedIds.size < emailData.length\n                }\n                onValueChange={toggleAll}\n                aria-label=\"Select all rows\"\n              />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n              <Table.Head></Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row) => (\n              <Table.Row\n                key={row.id}\n                variant={selectedIds.has(row.id) ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={selectedIds.has(row.id)}\n                  onValueChange={() => toggleRow(row.id)}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>\n                  <div className=\"flex items-center gap-2\">\n                    <EnvelopeSimple size={16} />\n                    <span className=\"truncate\">{row.subject}</span>\n                    {row.tags && (\n                      <div className=\"ml-2 inline-flex gap-1\">\n                        {row.tags.map((tag) => (\n                          <Badge key={tag}>{tag}</Badge>\n                        ))}\n                      </div>\n                    )}\n                  </div>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.from}</span>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.date}</span>\n                </Table.Cell>\n                <Table.Cell className=\"text-right\">\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    shape=\"square\"\n                    aria-label=\"More options\"\n                  >\n                    <DotsThree weight=\"bold\" size={16} />\n                  </Button>\n                </Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3119,14 +4223,14 @@
     "Tabs": {
       "name": "Tabs",
       "type": "component",
-      "description": "Tabs component",
+      "description": "Tab navigation component with segmented or underline style. Built on Base UI Tabs with animated active indicator.",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
         "tabs": {
           "type": "TabsItem[]",
           "optional": true,
-          "description": "Array of tab items to render"
+          "description": "Array of tab items to render."
         },
         "value": {
           "type": "string",
@@ -3141,26 +4245,27 @@
         "activateOnFocus": {
           "type": "boolean",
           "optional": true,
-          "description": "When true, tabs are activated immediately upon receiving focus via arrow keys. When false (default), tabs receive focus but require Enter/Space to activate. Set to true for better keyboard UX in most cases."
+          "description": "When `true`, tabs are activated immediately upon receiving focus via arrow keys. When `false` (default), tabs receive focus but require Enter/Space to activate."
         },
         "className": {
           "type": "string",
           "optional": true,
-          "description": "Additional class name for the root element"
+          "description": "Additional CSS classes for the root element."
         },
         "listClassName": {
           "type": "string",
           "optional": true,
-          "description": "Additional class name for the tab list element"
+          "description": "Additional CSS classes for the tab list element."
         },
         "indicatorClassName": {
           "type": "string",
           "optional": true,
-          "description": "Additional class name for the indicator element"
+          "description": "Additional CSS classes for the indicator element."
         },
         "variant": {
           "type": "enum",
           "optional": true,
+          "description": "Tab style.\n- `\"segmented\"` — Pill-shaped indicator on a filled track\n- `\"underline\"` — Underline indicator below tab text",
           "values": [
             "segmented",
             "underline"
@@ -3226,7 +4331,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
-          "description": "Text style variant",
+          "description": "Text style variant. Determines color, font, and weight.\n- `\"heading1\"` — Large page title (30px, semibold)\n- `\"heading2\"` — Section title (24px, semibold)\n- `\"heading3\"` — Subsection title (18px, semibold)\n- `\"body\"` — Default body text\n- `\"secondary\"` — Muted text for secondary information\n- `\"success\"` — Success state text\n- `\"error\"` — Error state text\n- `\"mono\"` — Monospace text for code\n- `\"mono-secondary\"` — Muted monospace text",
           "values": [
             "heading1",
             "heading2",
@@ -3265,7 +4370,7 @@
         "size": {
           "type": "enum",
           "optional": true,
-          "description": "Text size (only applies to body/secondary/success/error variants)",
+          "description": "Text size (only applies to body/secondary/success/error variants).\n- `\"xs\"` — 12px\n- `\"sm\"` — 14px\n- `\"base\"` — 16px\n- `\"lg\"` — 18px",
           "values": [
             "xs",
             "sm",
@@ -3289,17 +4394,17 @@
         "bold": {
           "type": "boolean",
           "optional": true,
-          "description": "Whether to use bold font weight (only applies to body variants)"
+          "description": "Whether to use bold font weight (only applies to body variants)."
         },
         "as": {
           "type": "React.ElementType",
           "optional": true,
-          "description": "The element type to render as"
+          "description": "The HTML element type to render as (e.g. `\"span\"`, `\"p\"`, `\"h1\"`). Auto-selected based on variant if omitted."
         },
         "children": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Child text content"
+          "description": "Text content."
         }
       },
       "examples": [
@@ -3344,17 +4449,36 @@
     "Toasty": {
       "name": "Toasty",
       "type": "component",
-      "description": "Toasty component",
+      "description": "Toasty — toast notification provider and viewport.  Renders a `Toast.Provider` with a fixed-position viewport in the bottom-right corner. Toasts stack with smooth enter/exit animations, swipe-to-dismiss, and expand-on-hover.  Built on `@base-ui/react/toast`.",
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
+        "variant": {
+          "type": "enum",
+          "values": [
+            "default",
+            "error",
+            "warning"
+          ],
+          "default": "default",
+          "descriptions": {
+            "default": "Default toast style",
+            "error": "Error toast for critical issues",
+            "warning": "Warning toast for cautionary messages"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
         "children": {
           "type": "ReactNode",
-          "optional": true
+          "description": "Child elements"
         }
       },
       "examples": [],
       "colors": [
+        "bg-kumo-contrast",
         "bg-kumo-control",
         "bg-kumo-fill-hover",
         "border-kumo-fill",
@@ -3396,13 +4520,14 @@
     "Tooltip": {
       "name": "Tooltip",
       "type": "component",
-      "description": "Tooltip component",
+      "description": "Accessible popup that shows additional information on hover/focus. Wrap your app or section with `<TooltipProvider>` to enable delay grouping.",
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
         "align": {
           "type": "enum",
           "optional": true,
+          "description": "Alignment on the axis perpendicular to `side`.\n- `\"start\"` — Align to the start edge\n- `\"center\"` — Center-aligned\n- `\"end\"` — Align to the end edge",
           "values": [
             "start",
             "center",
@@ -3411,15 +4536,18 @@
         },
         "asChild": {
           "type": "boolean",
-          "optional": true
+          "optional": true,
+          "description": "When `true`, the trigger wraps the child element instead of adding a wrapper."
         },
         "className": {
           "type": "string",
-          "optional": true
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
         },
         "side": {
           "type": "enum",
           "optional": true,
+          "description": "Preferred side of the trigger to render the tooltip.\n- `\"top\"` — Tooltip appears above the trigger\n- `\"bottom\"` — Tooltip appears below the trigger\n- `\"left\"` — Tooltip appears to the left of the trigger\n- `\"right\"` — Tooltip appears to the right of the trigger",
           "values": [
             "top",
             "bottom",
@@ -3441,9 +4569,9 @@
         }
       },
       "examples": [
-        "<TooltipProvider>\n      <Tooltip content=\"Add new item\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} />\n      </Tooltip>\n    </TooltipProvider>",
-        "<TooltipProvider>\n      <Tooltip content=\"Add\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} />\n      </Tooltip>\n    </TooltipProvider>",
-        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button shape=\"square\" icon={TranslateIcon} />\n        </Tooltip>\n      </div>\n    </TooltipProvider>"
+        "<TooltipProvider>\n      <Tooltip content=\"Add new item\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add new item\" />\n      </Tooltip>\n    </TooltipProvider>",
+        "<TooltipProvider>\n      <Tooltip content=\"Add\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n      </Tooltip>\n    </TooltipProvider>",
+        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button\n            shape=\"square\"\n            icon={TranslateIcon}\n            aria-label=\"Change language\"\n          />\n        </Tooltip>\n      </div>\n    </TooltipProvider>"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3486,6 +4614,92 @@
     }
   },
   "blocks": {
+    "DeleteResource": {
+      "name": "DeleteResource",
+      "type": "block",
+      "description": "DeleteResource component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "size": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "sm",
+            "base"
+          ],
+          "descriptions": {
+            "sm": "Small dialog for simple delete confirmations",
+            "base": "Default delete confirmation dialog size"
+          },
+          "default": "base"
+        },
+        "open": {
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the dialog is open"
+        },
+        "resourceType": {
+          "type": "string",
+          "required": true,
+          "description": "The type of resource being deleted (e.g., \"Zone\", \"Worker\", \"KV Namespace\")"
+        },
+        "resourceName": {
+          "type": "string",
+          "required": true,
+          "description": "The name of the specific resource being deleted"
+        },
+        "isDeleting": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the delete action is in progress"
+        },
+        "caseSensitive": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Whether the confirmation input should be case-sensitive (default: true)"
+        },
+        "deleteButtonText": {
+          "type": "string",
+          "optional": true,
+          "description": "Custom delete button text (defaults to \"Delete {resourceType}\")"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional className for the dialog"
+        },
+        "errorMessage": {
+          "type": "string",
+          "optional": true,
+          "description": "Error message to display if the delete action fails"
+        }
+      },
+      "examples": [
+        "<>\n      <Button variant=\"destructive\" onClick={() => setOpen(true)}>\n        Delete Zone\n      </Button>\n      <DeleteResource\n        open={open}\n        onOpenChange={setOpen}\n        resourceType=\"Zone\"\n        resourceName=\"example.com\"\n        onDelete={handleDelete}\n        isDeleting={isDeleting}\n      />\n    </>",
+        "<>\n      <Button variant=\"destructive\" onClick={() => setOpen(true)}>\n        Delete Worker\n      </Button>\n      <DeleteResource\n        open={open}\n        onOpenChange={setOpen}\n        resourceType=\"Worker\"\n        resourceName=\"api-gateway-worker\"\n        onDelete={handleDelete}\n        isDeleting={isDeleting}\n      />\n    </>",
+        "<>\n      <Button variant=\"destructive\" onClick={() => setOpen(true)}>\n        Delete Zone\n      </Button>\n      <DeleteResource\n        open={open}\n        onOpenChange={setOpen}\n        resourceType=\"Zone\"\n        resourceName=\"example.com\"\n        onDelete={handleDelete}\n        isDeleting={isDeleting}\n        errorMessage={errorMsg}\n      />\n    </>"
+      ],
+      "colors": [
+        "bg-kumo-fill",
+        "bg-kumo-tint",
+        "border-kumo-line",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "files": [
+        "delete-resource/delete-resource.tsx"
+      ],
+      "dependencies": [
+        "Banner",
+        "Button",
+        "Dialog",
+        "DialogClose",
+        "DialogRoot",
+        "DialogTitle",
+        "Input"
+      ]
+    },
     "PageHeader": {
       "name": "PageHeader",
       "type": "block",
@@ -3643,6 +4857,14 @@
         "Select",
         "Switch"
       ],
+      "Other": [
+        "CloudflareLogo",
+        "Label",
+        "Link",
+        "SensitiveInput",
+        "Table",
+        "DeleteResource"
+      ],
       "Navigation": [
         "CommandPalette",
         "MenuBar",
@@ -3660,12 +4882,6 @@
         "Surface",
         "PageHeader",
         "ResourceListPage"
-      ],
-      "Other": [
-        "Label",
-        "Link",
-        "SensitiveInput",
-        "Table"
       ]
     },
     "byName": [
@@ -3675,11 +4891,13 @@
       "Button",
       "Checkbox",
       "ClipboardText",
+      "CloudflareLogo",
       "Code",
       "Collapsible",
       "Combobox",
       "CommandPalette",
       "DateRangePicker",
+      "DeleteResource",
       "Dialog",
       "DropdownMenu",
       "Empty",
@@ -3715,6 +4933,7 @@
         "Button",
         "Checkbox",
         "ClipboardText",
+        "CloudflareLogo",
         "Code",
         "Collapsible",
         "Combobox",
@@ -3746,6 +4965,7 @@
         "Tooltip"
       ],
       "block": [
+        "DeleteResource",
         "PageHeader",
         "ResourceListPage"
       ]

@@ -70,6 +70,9 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
 
 InputArea.displayName = "InputArea";
 
+/** Alias for InputArea — provided for discoverability when migrating from other libraries */
+export const Textarea = InputArea;
+
 /**
  * InputArea component props
  * @property {ReactNode} [label] - Label content for the textarea (enables Field wrapper)

@@ -1,11 +1,29 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
+/**
+ * {{pascalCase name}} component props.
+ *
+ * @example
+ * ```tsx
+ * <{{pascalCase name}}>Content</{{pascalCase name}}>
+ * ```
+ */
 export interface {{pascalCase name}}Props {
+  /** Additional CSS classes merged via `cn()`. Use kumo semantic tokens only. */
   className?: string;
+  /** Content rendered inside the component. */
   children?: ReactNode;
 }
 
+/**
+ * {{pascalCase name}} component.
+ *
+ * @example
+ * ```tsx
+ * <{{pascalCase name}}>Content</{{pascalCase name}}>
+ * ```
+ */
 export function {{pascalCase name}}({ className, children }: {{pascalCase name}}Props) {
   return (
     <div className={cn(
