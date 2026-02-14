@@ -221,11 +221,14 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
         className={cn(inputVariants(), "w-full pr-12")}
       />
 
-      <ComboboxBase.Clear className="absolute top-1/2 right-8 flex -translate-y-1/2 cursor-pointer bg-transparent p-0">
+      <ComboboxBase.Clear
+        aria-label="Clear selection"
+        className="absolute top-1/2 right-8 flex -translate-y-1/2 cursor-pointer bg-transparent p-0"
+      >
         <XIcon />
       </ComboboxBase.Clear>
 
-      <ComboboxBase.Trigger className="p-0">
+      <ComboboxBase.Trigger aria-label="Show options" className="p-0">
         <ComboboxBase.Icon className="absolute top-1/2 right-2 flex -translate-y-1/2 cursor-pointer">
           <CaretDownIcon className="fill-kumo-ring" />
         </ComboboxBase.Icon>
@@ -289,7 +292,10 @@ function Chip(props: ComboboxBase.Chip.Props) {
       className="flex items-center gap-1 rounded-md bg-kumo-overlay px-2 py-1"
     >
       {props.children}
-      <ComboboxBase.ChipRemove className="cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover">
+      <ComboboxBase.ChipRemove
+        aria-label="Remove selection"
+        className="cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover"
+      >
         <XIcon size={12} weight="bold" />
       </ComboboxBase.ChipRemove>
     </ComboboxBase.Chip>
