@@ -154,7 +154,8 @@ const DropdownMenuItem = React.forwardRef<
 
       if (!href) return innerContent;
 
-      const isExternal = href.startsWith("https://");
+      // Matches http://, https://, or protocol-relative //
+      const isExternal = /^(https?:)?\/\//.test(href);
       const styles = cn(
         "flex items-center",
         variant === "danger" &&
