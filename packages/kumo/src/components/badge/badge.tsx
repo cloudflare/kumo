@@ -20,12 +20,17 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-danger text-white",
       description: "Error or danger state indicator",
     },
+    success: {
+      classes: "bg-kumo-success text-white",
+      description: "Success or positive state indicator",
+    },
     outline: {
       classes: "border border-kumo-fill bg-transparent text-kumo-default",
       description: "Bordered badge with transparent background",
     },
     beta: {
-      classes: "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
+      classes:
+        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
       description: "Indicates beta or experimental features",
     },
   },
