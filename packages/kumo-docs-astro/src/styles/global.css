@@ -21,3 +21,7 @@
 html {
   font-display: optional;
 }
+
+body {
+  overflow: clip;
+}
