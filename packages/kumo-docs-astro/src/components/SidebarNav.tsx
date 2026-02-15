@@ -7,6 +7,7 @@ import {
 } from "@phosphor-icons/react";
 import { KumoMenuIcon } from "./KumoMenuIcon";
 import { SearchDialog } from "./SearchDialog";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavItem {
   label: string;
@@ -240,8 +241,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <KumoMenuIcon />
         </Button>
         <h1 className="text-base font-medium">Kumo</h1>
-        {/* Spacer to center the title */}
-        <div className="size-9" />
+        <ThemeToggle />
       </div>
 
       {/* Mobile slide-out drawer */}

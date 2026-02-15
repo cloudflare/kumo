@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@cloudflare/kumo";
-import { GithubLogo } from "@phosphor-icons/react";
+import { GithubLogoIcon } from "@phosphor-icons/react";
+import { ThemeToggle } from "../ThemeToggle";
 import { BaseUIIcon } from "./icons/BaseUIIcon";
 
 /** Height of the sticky header in pixels - matches h-12 Tailwind class (3rem) */
@@ -92,7 +93,7 @@ export function StickyDocHeader({
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle ? 0 : -1}
               >
-                <GithubLogo size={18} weight="fill" />
+                <GithubLogoIcon size={18} weight="fill" />
               </a>
             )}
             {baseUIUrl && (
@@ -113,8 +114,8 @@ export function StickyDocHeader({
       )}
 
       {/* Sticky header bar */}
-      <header className="sticky top-0 z-10 border-b border-kumo-line bg-kumo-elevated md:pr-12">
-        <div className="mx-auto flex h-12 items-center justify-between md:border-r md:border-kumo-line px-4">
+      <header className="sticky flex h-12 top-0 z-10 border-b border-kumo-line bg-kumo-elevated">
+        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-line">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
@@ -136,7 +137,7 @@ export function StickyDocHeader({
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
               >
-                <GithubLogo size={20} weight="fill" />
+                <GithubLogoIcon size={20} weight="fill" />
               </a>
             )}
             {baseUIUrl && (
@@ -161,6 +162,9 @@ export function StickyDocHeader({
           >
             @cloudflare/kumo
           </a>
+        </div>
+        <div className="hidden w-12 shrink-0 items-center justify-center md:flex">
+          <ThemeToggle />
         </div>
       </header>
     </>
