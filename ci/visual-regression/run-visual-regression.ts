@@ -52,7 +52,7 @@ interface ComparisonResult {
 
 function getChangedFiles(): string[] | null {
   try {
-    const base = process.env.GITHUB_BASE_REF ?? "main";
+    const base = process.env.GITHUB_BASE_REF || "main";
     const output = execSync(`git diff --name-only origin/${base}...HEAD`, {
       encoding: "utf-8",
     });
@@ -516,13 +516,11 @@ async function main(): Promise<void> {
   } else {
     const changedFiles = getChangedFiles();
 
-    // If git diff failed, we don't know what changed — run canary regression to be safe
+    // If git diff failed, we don't know what changed — run full regression to be safe
     if (changedFiles === null) {
-      components = allComponents.filter((c) =>
-        CANARY_COMPONENTS.includes(c.id),
-      );
+      components = allComponents;
       console.log(
-        `Running canary regression on ${components.length} representative component(s)...\n`,
+        `Running full visual regression (${components.length} components, git diff unavailable)...\n`,
       );
     } else {
       const classification = classifyChangedFiles(changedFiles);

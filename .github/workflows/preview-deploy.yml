@@ -179,6 +179,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Checkout the fork's PR head so git diff can compare against main
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - name: Install Dependencies
@@ -191,6 +193,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ needs.deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BASE_REF: main
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.deploy.outputs.preview_url }}
           SCREENSHOT_WORKER_URL: ${{ secrets.SCREENSHOT_WORKER_URL }}
