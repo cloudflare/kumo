@@ -84,10 +84,6 @@
   }
 }
 
-.z-modal {
-  z-index: 9999;
-}
-
 @keyframes right {
   to {
     transform: translateX(100%);

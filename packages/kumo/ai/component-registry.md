@@ -2157,6 +2157,110 @@ Close sub-component
     </Dialog.Root>
 ```
 
+```tsx
+<Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Create Resource
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-4 text-kumo-subtle">
+          Select a region for your new resource.
+        </Dialog.Description>
+        <Select
+          className="w-full"
+          renderValue={(v) =>
+            regions.find((r) => r.value === v)?.label ?? "Select region..."
+          }
+        >
+          {regions.map((region) => (
+            <Select.Option key={region.value} value={region.value}>
+              {region.label}
+            </Select.Option>
+          ))}
+        </Select>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
+```
+
+```tsx
+<Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Create Resource
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-4 text-kumo-subtle">
+          Search and select a region for your new resource.
+        </Dialog.Description>
+        <Combobox value={value} onValueChange={setValue} items={regions}>
+          <Combobox.TriggerInput
+            className="w-full"
+            placeholder="Search regions..."
+          />
+          <Combobox.Content>
+            <Combobox.Empty>No regions found</Combobox.Empty>
+            <Combobox.List>
+              {(item: { value: string; label: string }) => (
+                <Combobox.Item key={item.value} value={item}>
+                  {item.label}
+                </Combobox.Item>
+              )}
+            </Combobox.List>
+          </Combobox.Content>
+        </Combobox>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
+```
+
 
 ---
 
