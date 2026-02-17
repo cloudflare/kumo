@@ -25,12 +25,12 @@ Use only semantic tokens. Raw Tailwind colors fail lint.
 
 | Do                                      | Do Not                             |
 | --------------------------------------- | ---------------------------------- |
-| `bg-kumo-base`, `bg-kumo-elevated`      | `bg-white`, `bg-gray-100`          |
+| `bg-kumo-base`, `bg-kumo-elevated`      | `bg-gray-100`, `bg-slate-50`       |
 | `text-kumo-default`, `text-kumo-subtle` | `text-gray-900`, `text-gray-500`   |
 | `border-kumo-line`, `ring-kumo-ring`    | `border-gray-200`, `ring-blue-500` |
 | `bg-kumo-brand`, `bg-kumo-danger`       | `bg-orange-500`, `bg-red-500`      |
 
-Exceptions: `bg-white`, `bg-black`, `text-white`, `text-black`, `transparent` are allowed.
+Allowed exceptions: `bg-white`, `bg-black`, `text-white`, `text-black`, `transparent`.
 
 Never use the `dark:` variant. Dark mode is automatic via `light-dark()` in CSS custom properties.
 
@@ -122,8 +122,10 @@ pnpm typecheck                              # TypeScript check all packages
 
 # Component library
 pnpm --filter @cloudflare/kumo build        # Build library
-pnpm --filter @cloudflare/kumo test         # Run tests
+pnpm --filter @cloudflare/kumo test         # Vitest (happy-dom env, v8 coverage)
 pnpm --filter @cloudflare/kumo codegen:registry  # Regenerate registry
+
+# Test path aliases: @/ → src/, @cloudflare/kumo → src/index.ts
 
 # Docs site
 pnpm --filter @cloudflare/kumo-docs-astro codegen:demos  # Extract demo metadata
@@ -173,6 +175,18 @@ When adding a generator in `packages/kumo-figma/src/generators/`:
 3. Add test file OR add to `EXCLUDED_COMPONENTS` in drift-detection.test.ts
 
 All constants must come from `shared.ts`. Hardcoded values fail drift detection.
+
+## Custom Lint Rules
+
+The repo uses oxlint with 5 custom JS rules in `lint/` (shared) and `packages/kumo/lint/` (adds `no-deprecated-props`).
+
+Key rules:
+
+- `no-deprecated-props` — reads deprecation data from `ai/component-registry.json`
+- `no-raw-tailwind-colors` — enforces semantic tokens
+- `no-dark-variant` — blocks `dark:` prefix usage
+
+When you see lint errors from these rules, check the rule source for context.
 
 ## Anti-Patterns
 
