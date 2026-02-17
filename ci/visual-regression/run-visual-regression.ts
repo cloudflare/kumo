@@ -2,6 +2,8 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 import {
   CANARY_COMPONENTS,
   COMPONENT_ACTIONS,
@@ -42,12 +44,15 @@ interface ComparisonResult {
   name: string;
   beforeUrl: string;
   afterUrl: string;
+  diffUrl: string | null;
   changed: boolean;
+  diffPixels: number;
+  diffPercent: number;
 }
 
 function getChangedFiles(): string[] | null {
   try {
-    const base = process.env.GITHUB_BASE_REF ?? "main";
+    const base = process.env.GITHUB_BASE_REF || "main";
     const output = execSync(`git diff --name-only origin/${base}...HEAD`, {
       encoding: "utf-8",
     });
@@ -310,15 +315,84 @@ function formatName(slug: string): string {
     .join(" ");
 }
 
-function compareImages(beforePath: string, afterPath: string): boolean {
+interface DiffResult {
+  changed: boolean;
+  diffPixels: number;
+  diffPercent: number;
+  /** Raw PNG buffer of the diff image, null if images are identical or missing */
+  diffImage: Buffer | null;
+}
+
+function compareImages(beforePath: string, afterPath: string): DiffResult {
   if (!existsSync(beforePath) || !existsSync(afterPath)) {
-    return true;
+    return { changed: true, diffPixels: 0, diffPercent: 100, diffImage: null };
   }
 
-  const before = readFileSync(beforePath);
-  const after = readFileSync(afterPath);
+  const beforeBuf = readFileSync(beforePath);
+  const afterBuf = readFileSync(afterPath);
 
-  return !before.equals(after);
+  // Fast path: byte-identical images need no pixel comparison
+  if (beforeBuf.equals(afterBuf)) {
+    return { changed: false, diffPixels: 0, diffPercent: 0, diffImage: null };
+  }
+
+  const beforePng = PNG.sync.read(beforeBuf);
+  const afterPng = PNG.sync.read(afterBuf);
+
+  // Handle size mismatches by padding the smaller image
+  const width = Math.max(beforePng.width, afterPng.width);
+  const height = Math.max(beforePng.height, afterPng.height);
+
+  const padToSize = (png: PNG, w: number, h: number): Uint8Array => {
+    if (png.width === w && png.height === h) {
+      return new Uint8Array(
+        png.data.buffer,
+        png.data.byteOffset,
+        png.data.byteLength,
+      );
+    }
+    const padded = new Uint8Array(w * h * 4);
+    for (let y = 0; y < png.height; y++) {
+      const srcOffset = y * png.width * 4;
+      const dstOffset = y * w * 4;
+      padded.set(
+        png.data.subarray(srcOffset, srcOffset + png.width * 4),
+        dstOffset,
+      );
+    }
+    return padded;
+  };
+
+  const beforeData = padToSize(beforePng, width, height);
+  const afterData = padToSize(afterPng, width, height);
+  const diffData = new Uint8Array(width * height * 4);
+
+  const diffPixels = pixelmatch(
+    beforeData,
+    afterData,
+    diffData,
+    width,
+    height,
+    {
+      threshold: 0.1,
+      diffColor: [255, 0, 0],
+      alpha: 0.3,
+    },
+  );
+
+  const totalPixels = width * height;
+  const diffPercent = totalPixels > 0 ? (diffPixels / totalPixels) * 100 : 0;
+
+  const diffPng = new PNG({ width, height });
+  diffPng.data = Buffer.from(diffData);
+  const diffImage = PNG.sync.write(diffPng);
+
+  return {
+    changed: true,
+    diffPixels,
+    diffPercent: Math.round(diffPercent * 100) / 100,
+    diffImage,
+  };
 }
 
 function generateMarkdownReport(comparisons: ComparisonResult[]): string {
@@ -340,11 +414,16 @@ function generateMarkdownReport(comparisons: ComparisonResult[]): string {
   lines.push("");
 
   for (const comp of changed) {
+    const diffLabel = `${comp.diffPixels.toLocaleString()} px (${comp.diffPercent}%)`;
     lines.push(`### ${comp.name}`);
+    lines.push(`${diffLabel} changed`);
     lines.push("");
-    lines.push("| Before | After |");
-    lines.push("|--------|-------|");
-    lines.push(`| ![Before](${comp.beforeUrl}) | ![After](${comp.afterUrl}) |`);
+    lines.push("| Before | After | Diff |");
+    lines.push("|--------|-------|------|");
+    const diffCell = comp.diffUrl ? `![Diff](${comp.diffUrl})` : "*no diff*";
+    lines.push(
+      `| ![Before](${comp.beforeUrl}) | ![After](${comp.afterUrl}) | ${diffCell} |`,
+    );
     lines.push("");
   }
 
@@ -437,13 +516,11 @@ async function main(): Promise<void> {
   } else {
     const changedFiles = getChangedFiles();
 
-    // If git diff failed, we don't know what changed — run canary regression to be safe
+    // If git diff failed, we don't know what changed — run full regression to be safe
     if (changedFiles === null) {
-      components = allComponents.filter((c) =>
-        CANARY_COMPONENTS.includes(c.id),
-      );
+      components = allComponents;
       console.log(
-        `Running canary regression on ${components.length} representative component(s)...\n`,
+        `Running full visual regression (${components.length} components, git diff unavailable)...\n`,
       );
     } else {
       const classification = classifyChangedFiles(changedFiles);
@@ -527,17 +604,41 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const changed = compareImages(before.path, after.path);
+    const diff = compareImages(before.path, after.path);
+
+    let diffUrl: string | null = null;
+    if (diff.changed && diff.diffImage) {
+      const diffFilename = `diff-${id}.png`;
+      const diffPath = join(SCREENSHOTS_DIR, "diff", diffFilename);
+      ensureDir(join(SCREENSHOTS_DIR, "diff"));
+      writeFileSync(diffPath, diff.diffImage);
+
+      try {
+        diffUrl = await uploadImageToGitHub(diff.diffImage, diffFilename);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`  Diff upload failed for ${before.name}: ${msg}`);
+      }
+    }
 
     comparisons.push({
       id,
       name: before.name,
       beforeUrl: before.url,
       afterUrl: after.url,
-      changed,
+      diffUrl,
+      changed: diff.changed,
+      diffPixels: diff.diffPixels,
+      diffPercent: diff.diffPercent,
     });
 
-    console.log(`  ${before.name}: ${changed ? "CHANGED" : "unchanged"}`);
+    if (diff.changed) {
+      console.log(
+        `  ${before.name}: CHANGED (${diff.diffPixels} px, ${diff.diffPercent}%)`,
+      );
+    } else {
+      console.log(`  ${before.name}: unchanged`);
+    }
   }
 
   console.log("\n=== Generating report ===");

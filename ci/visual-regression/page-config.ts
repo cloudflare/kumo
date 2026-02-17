@@ -206,6 +206,11 @@ export function classifyChangedFiles(
   return { affectedComponents, requiresFullRegression, allSkippable };
 }
 
+/** Strip hyphens for fuzzy slug comparison (e.g. "menubar" matches "menu-bar") */
+function normalizeSlug(slug: string): string {
+  return slug.replace(/-/g, "");
+}
+
 /**
  * Get the components that should be screenshotted based on changed files.
  */
@@ -218,9 +223,9 @@ export function getAffectedComponents(
   for (const file of changedFiles) {
     const slug = getComponentFromFile(file);
     if (slug) {
-      affectedSlugs.add(slug);
+      affectedSlugs.add(normalizeSlug(slug));
     }
   }
 
-  return allComponents.filter((c) => affectedSlugs.has(c.id));
+  return allComponents.filter((c) => affectedSlugs.has(normalizeSlug(c.id)));
 }
