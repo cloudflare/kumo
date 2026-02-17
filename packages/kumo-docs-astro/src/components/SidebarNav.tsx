@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn, Button } from "@cloudflare/kumo";
 import {
   CaretDownIcon,
@@ -37,6 +37,7 @@ const componentItems: NavItem[] = [
   { label: "Collapsible", href: "/components/collapsible" },
   { label: "Combobox", href: "/components/combobox" },
   { label: "Command Palette", href: "/components/command-palette" },
+  { label: "Date Picker", href: "/components/date-picker" },
   { label: "Date Range Picker", href: "/components/date-range-picker" },
   { label: "Dialog", href: "/components/dialog" },
   { label: "Dropdown", href: "/components/dropdown" },
@@ -94,6 +95,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
 
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // Refs for scroll containers
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
+
   const toggleSidebar = () => setSidebarOpen((v) => !v);
   const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
 
@@ -112,6 +117,50 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("kumo:open-search", handleOpenSearch);
+    };
+  }, []);
+
+  // Save scroll position on scroll and navigation
+  useEffect(() => {
+    const STORAGE_KEY = "kumo-sidebar-scroll";
+
+    // Save scroll position before navigation
+    const handleBeforeUnload = () => {
+      const scrollPosition =
+        mobileScrollRef.current?.scrollTop ||
+        desktopScrollRef.current?.scrollTop ||
+        0;
+      sessionStorage.setItem(STORAGE_KEY, scrollPosition.toString());
+    };
+
+    // Save on scroll for more reliable restoration
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      sessionStorage.setItem(STORAGE_KEY, target.scrollTop.toString());
+    };
+
+    // Listen for navigation events
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Attach scroll listeners to both containers
+    const mobileContainer = mobileScrollRef.current;
+    const desktopContainer = desktopScrollRef.current;
+
+    if (mobileContainer) {
+      mobileContainer.addEventListener("scroll", handleScroll);
+    }
+    if (desktopContainer) {
+      desktopContainer.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      if (mobileContainer) {
+        mobileContainer.removeEventListener("scroll", handleScroll);
+      }
+      if (desktopContainer) {
+        desktopContainer.removeEventListener("scroll", handleScroll);
+      }
     };
   }, []);
 
@@ -263,7 +312,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <XIcon size={20} />
           </Button>
         </div>
-        <div className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong">
+        <div
+          ref={mobileScrollRef}
+          data-sidebar-scroll="mobile"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          style={{ scrollBehavior: "auto" }}
+        >
           {navContent}
         </div>
       </aside>
@@ -308,7 +362,11 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       >
         <div className="h-[49px] flex-none border-b border-kumo-line" />
 
-        <div className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong">
+        <div
+          ref={desktopScrollRef}
+          data-sidebar-scroll="desktop"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+        >
           {navContent}
         </div>
       </aside>

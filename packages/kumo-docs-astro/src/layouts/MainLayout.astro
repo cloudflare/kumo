@@ -15,6 +15,29 @@ const currentPath = Astro.url.pathname;
   <div class="isolate">
     <SidebarNav currentPath={currentPath} client:load />
 
+    <script is:inline>
+      (function () {
+        const KEY = "kumo-sidebar-scroll";
+        function restore() {
+          try {
+            const raw = sessionStorage.getItem(KEY);
+            if (!raw) return;
+            const pos = Number.parseInt(raw, 10);
+            if (!Number.isFinite(pos)) return;
+            const els = document.querySelectorAll("[data-sidebar-scroll]");
+            for (const el of els) {
+              el.scrollTop = pos;
+            }
+          } catch {
+            // no-op
+          }
+        }
+
+        restore();
+        window.addEventListener("astro:after-swap", restore);
+      })();
+    </script>
+
     <!-- Main content area - margin controlled by CSS :has() based on sidebar state -->
     <div
       id="main-content"
