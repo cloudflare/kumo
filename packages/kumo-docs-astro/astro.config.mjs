@@ -76,10 +76,13 @@ export default defineConfig({
       // IMPORTANT: Must come BEFORE tailwindcss() so CSS @import statements
       // like `@import "@cloudflare/kumo/styles"` are aliased to source files
       // before Tailwind processes them.
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
       ...(isDev ? [kumoHmrPlugin()] : []),
-      // @ts-expect-error - Vite version mismatch between Astro and @tailwindcss/vite
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @tailwindcss/vite (Vite 7)
       tailwindcss(),
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
       kumoColorsPlugin(),
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
       kumoRegistryPlugin(),
     ],
 
