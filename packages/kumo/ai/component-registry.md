@@ -1881,94 +1881,6 @@ DateRangePicker — dual-calendar date range selector.  Renders two side-by-side
       - padding: 20
       - gap: 12
 
-**Examples:**
-
-```tsx
-<div className="flex flex-col gap-4">
-      <DateRangePicker
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-      />
-      <div className="text-sm text-kumo-subtle">
-        {startDate && endDate ? (
-          <span>
-            Selected: {startDate.toLocaleDateString()} -{" "}
-            {endDate.toLocaleDateString()}
-          </span>
-        ) : startDate ? (
-          <span>Start: {startDate.toLocaleDateString()} (select end date)</span>
-        ) : (
-          <span>Select a date range</span>
-        )}
-      </div>
-    </div>
-```
-
-```tsx
-<div className="flex flex-col gap-8">
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">Small</p>
-        <DateRangePicker
-          size="sm"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Base (default)
-        </p>
-        <DateRangePicker
-          size="base"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">Large</p>
-        <DateRangePicker
-          size="lg"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-    </div>
-```
-
-```tsx
-<div className="flex flex-col gap-8">
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Default variant
-        </p>
-        <DateRangePicker
-          variant="default"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Subtle variant
-        </p>
-        <DateRangePicker
-          variant="subtle"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-    </div>
-```
-
-```tsx
-<DateRangePicker
-      timezone="London, UK (GMT+0)"
-      onStartDateChange={() => {}}
-      onEndDateChange={() => {}}
-    />
-```
-
-
 ---
 
 ### Dialog
@@ -4141,16 +4053,27 @@ ResizeHandle sub-component
         <Table>
           <Table.Header>
             <Table.Row>
-              <Table.CheckHead aria-label="Select all rows" />
+              <Table.CheckHead
+                checked={selectedIds.size === rows.length}
+                indeterminate={
+                  selectedIds.size > 0 && selectedIds.size < rows.length
+                }
+                onValueChange={toggleAll}
+                aria-label="Select all rows"
+              />
               <Table.Head>Subject</Table.Head>
               <Table.Head>From</Table.Head>
               <Table.Head>Date</Table.Head>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {emailData.slice(0, 3).map((row) => (
+            {rows.map((row) => (
               <Table.Row key={row.id}>
-                <Table.CheckCell aria-label={`Select ${row.subject}`} />
+                <Table.CheckCell
+                  checked={selectedIds.has(row.id)}
+                  onValueChange={() => toggleRow(row.id)}
+                  aria-label={`Select ${row.subject}`}
+                />
                 <Table.Cell>{row.subject}</Table.Cell>
                 <Table.Cell>{row.from}</Table.Cell>
                 <Table.Cell>{row.date}</Table.Cell>
@@ -4238,7 +4161,8 @@ ResizeHandle sub-component
       <LayerCard.Primary className="w-full overflow-x-auto p-0">
         <Table layout="fixed">
           <colgroup>
-            <col style={{ width: "40px" }} />
+            <col />{" "}
+            {/* Checkbox column - width handled by Table.CheckHead/CheckCell */}
             <col />
             <col style={{ width: "150px" }} />
             <col style={{ width: "120px" }} />
@@ -4291,14 +4215,30 @@ ResizeHandle sub-component
                   <span className="truncate">{row.date}</span>
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    shape="square"
-                    aria-label="More options"
-                  >
-                    <DotsThree weight="bold" size={16} />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenu.Trigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          shape="square"
+                          aria-label="More options"
+                        >
+                          <DotsThree weight="bold" size={16} />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item icon={Eye}>View</DropdownMenu.Item>
+                      <DropdownMenu.Item icon={PencilSimple}>
+                        Edit
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item icon={Trash} variant="danger">
+                        Delete
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu>
                 </Table.Cell>
               </Table.Row>
             ))}
