@@ -187,14 +187,6 @@ Tests in a workspace are executed, by [Vitest](https://vitest.dev/), which is co
   pnpm run test
   ```
 
-- Watch the files in a specific workspace (e.g. Kumo), and run the tests when anything changes
-
-  ```sh
-  pnpm run --filter Kumo test:watch
-  ```
-
-  This will also run all the tests in a single process (rather than in parallel shards) and will increase the test-timeout to 50 seconds, which is helpful when debugging.
-
 ## Steps For Making Changes
 
 Every change you make should be stored in a [git commit](https://github.com/git-guides/git-commit).
