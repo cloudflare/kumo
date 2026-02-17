@@ -647,17 +647,30 @@
           "type": "string",
           "optional": true,
           "description": "Additional CSS classes merged via `cn()`."
+        },
+        "tooltip": {
+          "type": "object",
+          "optional": true,
+          "description": "Tooltip config. Shows tooltip on hover, anchored toast on click."
+        },
+        "labels": {
+          "type": "object",
+          "optional": true,
+          "description": "Accessible labels for i18n."
         }
       },
       "examples": [
         "<ClipboardText text=\"0c239dd2\" />",
         "<ClipboardText text=\"abc123\" />",
         "<ClipboardText text=\"sk_live_51H8...\" />",
-        "<ClipboardText text=\"https://example.com/very/long/url/path\" />"
+        "<ClipboardText text=\"https://example.com/very/long/url/path\" />",
+        "<ClipboardTextToastProvider>\n      <ClipboardText\n        text=\"npx kumo add button\"\n        tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n      />\n    </ClipboardTextToastProvider>"
       ],
       "colors": [
         "bg-kumo-base",
-        "border-kumo-line"
+        "border-kumo-line",
+        "outline-kumo-fill",
+        "text-kumo-default"
       ],
       "styling": {
         "baseTokens": [

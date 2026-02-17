@@ -512,10 +512,14 @@ Read-only text field with a one-click copy-to-clipboard button.
   The text to display and copy to clipboard.
 - `className`: string
   Additional CSS classes merged via `cn()`.
+- `tooltip`: object
+  Tooltip config. Shows tooltip on hover, anchored toast on click.
+- `labels`: object
+  Accessible labels for i18n.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `border-kumo-line`
+`bg-kumo-base`, `border-kumo-line`, `outline-kumo-fill`, `text-kumo-default`
 
 **Styling:**
 
@@ -567,6 +571,15 @@ Read-only text field with a one-click copy-to-clipboard button.
 
 ```tsx
 <ClipboardText text="0c239dd2" />
+```
+
+```tsx
+<ClipboardTextToastProvider>
+      <ClipboardText
+        text="npx kumo add button"
+        tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+      />
+    </ClipboardTextToastProvider>
 ```
 
 

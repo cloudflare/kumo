@@ -165,6 +165,8 @@ export const ClipboardTextPropsSchema = z.object({
   size: z.enum(["sm", "base", "lg"]).optional(), // Size of the clipboard text field. - `"sm"` — Small clipboard text for compact UIs - `"base"` — Default clipboard text size - `"lg"` — Large clipboard text for prominent display
   text: z.string(), // The text to display and copy to clipboard.
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  tooltip: z.unknown().optional(), // Tooltip config. Shows tooltip on hover, anchored toast on click.
+  labels: z.unknown().optional(), // Accessible labels for i18n.
 });
 
 export const CloudflareLogoPropsSchema = z.object({
