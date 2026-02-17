@@ -1,0 +1,376 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import {
+  FlowBasicDemo,
+  FlowParallelDemo,
+  FlowCustomContentDemo,
+  FlowComplexDemo,
+  FlowAnchorDemo,
+  FlowPanningDemo,
+} from "../../components/demos/FlowDemo";
+---
+
+<DocLayout
+  title="Flow"
+  description="A group of components for building directed flow diagrams with nodes and connectors."
+  sourceFile="components/flow"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<FlowDiagram>
+  <FlowNode>Start</FlowNode>
+  <FlowParallelNode>
+    <FlowNode>Branch A</FlowNode>
+    <FlowNode>Branch B</FlowNode>
+    <FlowNode>Branch C</FlowNode>
+  </FlowParallelNode>
+  <FlowNode>End</FlowNode>
+</FlowDiagram>`}
+    >
+      <FlowParallelDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock
+      code={`import { FlowDiagram, FlowNode, FlowParallelNode } from "@cloudflare/kumo";`}
+      lang="tsx"
+    />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { FlowDiagram, FlowNode, FlowParallelNode } from "@cloudflare/kumo/components/flow";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <p class="mb-4">
+      The Flow components work together to create directed flow diagrams. Use{
+        " "
+      }
+      <code class="rounded bg-kumo-control px-1 py-0.5">FlowDiagram</code> as the
+      container,{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5">FlowNode</code> for individual
+      steps, and{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5">FlowParallelNode</code> to
+      create branching paths.
+    </p>
+    <CodeBlock
+      code={`import { FlowDiagram, FlowNode, FlowParallelNode } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <FlowDiagram>
+      <FlowNode>Step 1</FlowNode>
+      <FlowNode>Step 2</FlowNode>
+      <FlowNode>Step 3</FlowNode>
+    </FlowDiagram>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-12">
+      <div>
+        <Heading level={3}>Sequential Flow</Heading>
+        <p class="mb-4">
+          A simple linear flow with nodes connected in sequence.
+        </p>
+        <ComponentExample
+          code={`<FlowDiagram>
+  <FlowNode>Step 1</FlowNode>
+  <FlowNode>Step 2</FlowNode>
+  <FlowNode>Step 3</FlowNode>
+</FlowDiagram>`}
+        >
+          <FlowBasicDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Parallel Branches</Heading>
+        <p class="mb-4">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5"
+            >FlowParallelNode</code
+          > to create branching paths that run in parallel.
+        </p>
+        <ComponentExample
+          code={`<FlowDiagram>
+  <FlowNode>Start</FlowNode>
+  <FlowParallelNode>
+    <FlowNode>Branch A</FlowNode>
+    <FlowNode>Branch B</FlowNode>
+    <FlowNode>Branch C</FlowNode>
+  </FlowParallelNode>
+  <FlowNode>End</FlowNode>
+</FlowDiagram>`}
+        >
+          <FlowParallelDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Node Content</Heading>
+        <p class="mb-4">
+          Nodes can contain any content. Use the{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">className</code> prop
+          to customize styling.
+        </p>
+        <ComponentExample
+          code={`<FlowDiagram>
+  <FlowNode className="rounded-full size-4 p-0 shadow-none ring-0 bg-neutral-400" />
+  <FlowNode className="bg-black ring-0 shadow-none text-white rounded-lg font-medium">
+    <p>my-worker</p>
+  </FlowNode>
+</FlowDiagram>`}
+        >
+          <FlowCustomContentDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Complex Flow</Heading>
+        <p class="mb-4">
+          Combine sequential and parallel nodes to build complex workflows.
+        </p>
+        <ComponentExample
+          code={`<FlowDiagram>
+  <FlowNode>Trigger</FlowNode>
+  <FlowParallelNode>
+    <FlowNode>Validate Input</FlowNode>
+    <FlowNode>Check Cache</FlowNode>
+  </FlowParallelNode>
+  <FlowNode>Process Request</FlowNode>
+  <FlowParallelNode>
+    <FlowNode>Log Analytics</FlowNode>
+    <FlowNode>Update Cache</FlowNode>
+    <FlowNode>Send Notification</FlowNode>
+  </FlowParallelNode>
+  <FlowNode>Complete</FlowNode>
+</FlowDiagram>`}
+        >
+          <FlowComplexDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Anchor Points</Heading>
+        <p class="mb-4">
+          By default, connectors attach to the center of each node. Use{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5"
+            >FlowNode.Anchor</code
+          > to specify custom attachment points. The <code
+            class="rounded bg-kumo-control px-1 py-0.5">type</code
+          > prop controls whether the anchor serves as a <code
+            class="rounded bg-kumo-control px-1 py-0.5">"start"</code
+          > point (where connectors leave) or <code
+            class="rounded bg-kumo-control px-1 py-0.5">"end"</code
+          > point (where connectors arrive).
+        </p>
+        <ComponentExample
+          code={`<FlowDiagram>
+  <FlowNode>Load balancer</FlowNode>
+  <FlowNode className="shadow-none bg-kumo-overlay p-0">
+    <FlowNode.Anchor
+      type="end"
+      className="text-kumo-subtle h-10 flex items-center px-2.5"
+    >
+      my-worker
+    </FlowNode.Anchor>
+    <FlowNode.Anchor
+      type="start"
+      className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0"
+    >
+      Bindings
+      <span className="text-kumo-subtle w-5 ml-3">2</span>
+    </FlowNode.Anchor>
+  </FlowNode>
+  <FlowParallelNode>
+    <FlowNode>DATABASE</FlowNode>
+    <FlowNode>OTHER_SERVICE</FlowNode>
+  </FlowParallelNode>
+</FlowDiagram>`}
+        >
+          <FlowAnchorDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Panning Large Diagrams</Heading>
+        <p class="mb-4">
+          When a diagram exceeds its container, FlowDiagram automatically
+          enables panning. Drag to pan the viewport, or use the scroll wheel.
+          Scrollbars appear on hover to indicate available scroll area.
+        </p>
+        <ComponentExample
+          code={`<FlowDiagram>
+  <FlowNode>Start</FlowNode>
+  <FlowNode>Authenticate</FlowNode>
+  <FlowNode>Validate</FlowNode>
+  <FlowNode>Transform</FlowNode>
+  <FlowNode>Process</FlowNode>
+  <FlowNode>Store</FlowNode>
+  <FlowNode>Notify</FlowNode>
+  <FlowNode>Log</FlowNode>
+  <FlowNode>Complete</FlowNode>
+  <FlowNode>End</FlowNode>
+</FlowDiagram>`}
+        >
+          <FlowPanningDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Components -->
+  <ComponentSection>
+    <Heading level={2}>Components</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3} class="mb-2 text-lg">FlowDiagram</Heading>
+        <p class="mb-4">
+          The root container for flow diagrams. Provides panning and scrolling
+          for large diagrams.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-kumo-line">
+                <th class="px-4 py-3 text-left font-semibold">Prop</th>
+                <th class="px-4 py-3 text-left font-semibold">Type</th>
+                <th class="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">className</td>
+                <td class="px-4 py-3 font-mono">string</td>
+                <td class="px-4 py-3"
+                  >Additional CSS classes for the container</td
+                >
+              </tr>
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">children</td>
+                <td class="px-4 py-3 font-mono">ReactNode</td>
+                <td class="px-4 py-3"
+                  >FlowNode and FlowParallelNode components</td
+                >
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">FlowNode</Heading>
+        <p class="mb-4">
+          A single node in the flow diagram. Renders as a styled card with
+          automatic connector points.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-kumo-line">
+                <th class="px-4 py-3 text-left font-semibold">Prop</th>
+                <th class="px-4 py-3 text-left font-semibold">Type</th>
+                <th class="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">className</td>
+                <td class="px-4 py-3 font-mono">string</td>
+                <td class="px-4 py-3">Additional CSS classes for the node</td>
+              </tr>
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">children</td>
+                <td class="px-4 py-3 font-mono">ReactNode</td>
+                <td class="px-4 py-3">Content to display inside the node</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">FlowNode.Anchor</Heading>
+        <p class="mb-4">
+          A sub-component that marks a custom attachment point for connectors
+          within a FlowNode. Use this to control exactly where connector lines
+          attach instead of the default node center.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-kumo-line">
+                <th class="px-4 py-3 text-left font-semibold">Prop</th>
+                <th class="px-4 py-3 text-left font-semibold">Type</th>
+                <th class="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">type</td>
+                <td class="px-4 py-3 font-mono">"start" | "end"</td>
+                <td class="px-4 py-3">
+                  Whether this anchor serves as a "start" point (outgoing
+                  connectors) or "end" point (incoming connectors). When
+                  omitted, serves as both.
+                </td>
+              </tr>
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">children</td>
+                <td class="px-4 py-3 font-mono">ReactNode</td>
+                <td class="px-4 py-3">Content to render at the anchor point</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">FlowParallelNode</Heading>
+        <p class="mb-4">
+          A container for parallel branches. Child FlowNodes are displayed in
+          parallel with junction connectors.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-kumo-line">
+                <th class="px-4 py-3 text-left font-semibold">Prop</th>
+                <th class="px-4 py-3 text-left font-semibold">Type</th>
+                <th class="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">children</td>
+                <td class="px-4 py-3 font-mono">ReactNode</td>
+                <td class="px-4 py-3"
+                  >FlowNode components to display in parallel</td
+                >
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>

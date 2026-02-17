@@ -179,6 +179,10 @@
       "types": "./dist/src/components/cloudflare-logo/index.d.ts",
       "import": "./dist/components/cloudflare-logo.js"
     },
+    "./components/flow": {
+      "types": "./dist/src/components/flow/index.d.ts",
+      "import": "./dist/components/flow.js"
+    },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
       "import": "./dist/utils.js"
@@ -412,6 +416,7 @@
   "dependencies": {
     "@base-ui/react": "^1.0.0",
     "clsx": "^2.1.1",
+    "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",
     "tailwind-merge": "^3.4.0"
   },
