@@ -245,9 +245,9 @@ export function FlowDiagram({
 
         {/* Vertical scrollbar */}
         {canScrollY && (
-          <div className="absolute right-1 top-4 bottom-4 w-1.5 rounded-full bg-neutral-200/50 dark:bg-neutral-700/50 opacity-0 group-hover:opacity-100">
+          <div className="absolute right-1 top-4 bottom-4 w-1.5 rounded-full bg-kumo-line/50 opacity-0 group-hover:opacity-100">
             <motion.div
-              className="absolute w-full rounded-full bg-neutral-400/70 dark:bg-neutral-500/70"
+              className="absolute w-full rounded-full bg-kumo-fill"
               style={{
                 height: `${scrollThumbHeight}%`,
                 top: scrollTop,
@@ -258,9 +258,9 @@ export function FlowDiagram({
 
         {/* Horizontal scrollbar */}
         {canScrollX && (
-          <div className="absolute bottom-1 left-4 right-4 h-1.5 rounded-full bg-neutral-200/50 dark:bg-neutral-700/50 opacity-0 group-hover:opacity-100">
+          <div className="absolute bottom-1 left-4 right-4 h-1.5 rounded-full bg-kumo-line/50 opacity-0 group-hover:opacity-100">
             <motion.div
-              className="absolute h-full rounded-full bg-neutral-400/70 dark:bg-neutral-500/70"
+              className="absolute h-full rounded-full bg-kumo-fill"
               style={{
                 width: `${scrollThumbWidth}%`,
                 left: scrollLeft,

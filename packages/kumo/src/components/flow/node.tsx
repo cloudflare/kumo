@@ -78,7 +78,7 @@ export function FlowNode({ className, children }: FlowNodeProps) {
     >
       <li
         className={cn(
-          "py-2 px-3 rounded-md shadow bg-surface ring ring-kumo-line",
+          "py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line",
           className,
         )}
         data-node-index={index}

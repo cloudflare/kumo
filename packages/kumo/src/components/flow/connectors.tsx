@@ -1,4 +1,4 @@
-import { forwardRef, useId, type ReactNode } from 'react';
+import { forwardRef, useId, type ReactNode } from "react";
 
 export interface Connector {
   x1: number;
@@ -11,7 +11,7 @@ export interface Connector {
 type ConnectorsProps = {
   connectors: Connector[];
   children?: ReactNode;
-} & Omit<PathProps, 'isBottom'>;
+} & Omit<PathProps, "isBottom">;
 
 type PathProps = Partial<{
   cornerRadius: number;
@@ -19,7 +19,7 @@ type PathProps = Partial<{
   arrowheadOffset: number;
   isBottom: boolean;
   single: boolean;
-  orientation: 'vertical' | 'horizontal';
+  orientation: "vertical" | "horizontal";
 }>;
 
 export function createRoundedPath(
@@ -30,10 +30,10 @@ export function createRoundedPath(
     arrowheadOffset = 8,
     isBottom = false,
     single = false,
-    orientation = 'vertical'
-  }: PathProps = {}
+    orientation = "vertical",
+  }: PathProps = {},
 ) {
-  if (orientation === 'horizontal') {
+  if (orientation === "horizontal") {
     if (y2 === y1) return `M ${x1} ${y1} L ${x2 - arrowheadOffset} ${y2}`;
 
     // Horizontal orientation: horizontal → vertical → horizontal
@@ -58,7 +58,7 @@ export function createRoundedPath(
     const bottomCurveCommands = [
       `L ${firstHorizontalEnd} ${y1}`,
       `Q ${verticalX} ${y1} ${verticalX} ${verticalStart}`,
-      `L ${verticalX} ${y2}`
+      `L ${verticalX} ${y2}`,
     ];
 
     const topCurveCommands = [
@@ -66,16 +66,16 @@ export function createRoundedPath(
         ? `L ${firstHorizontalEnd} ${y1} Q ${verticalX} ${y1} ${verticalX} ${verticalStart}`
         : `L ${verticalX} ${y1}`,
       `L ${verticalX} ${verticalEnd}`,
-      `Q ${verticalX} ${y2} ${secondHorizontalStart} ${y2}`
+      `Q ${verticalX} ${y2} ${secondHorizontalStart} ${y2}`,
     ];
 
     const commands = [
       `M ${x1} ${y1}`,
       isBottom ? [...bottomCurveCommands] : [...topCurveCommands],
-      `L ${pathEndX} ${y2}`
+      `L ${pathEndX} ${y2}`,
     ];
 
-    return commands.join(' ');
+    return commands.join(" ");
   }
 
   if (x2 === x1) return `M ${x1} ${y1} L ${x2} ${y2 - arrowheadOffset}`;
@@ -102,22 +102,22 @@ export function createRoundedPath(
   const bottomCurveCommands = [
     `L ${x1} ${firstVerticalEnd}`,
     `Q ${x1} ${horizontalY} ${horizontalStart} ${horizontalY}`,
-    `L ${x2} ${horizontalY}`
+    `L ${x2} ${horizontalY}`,
   ];
 
   const topCurveCommands = [
     `L ${x1} ${horizontalY}`,
     `L ${horizontalEnd} ${horizontalY}`,
-    `Q ${x2} ${horizontalY} ${x2} ${secondVerticalStart}`
+    `Q ${x2} ${horizontalY} ${x2} ${secondVerticalStart}`,
   ];
 
   const commands = [
     `M ${x1} ${y1}`, // Move the cursor to the starting point
     isBottom ? [...bottomCurveCommands] : [...topCurveCommands],
-    `L ${x2} ${pathEndY}` // Draw the final line to the end point
+    `L ${x2} ${pathEndY}`, // Draw the final line to the end point
   ];
 
-  return commands.join(' ');
+  return commands.join(" ");
 }
 
 export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
@@ -128,7 +128,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
         width="100%"
         height="100%"
         aria-hidden="true"
-        className="text-neutral-400 dark:text-neutral-600 overflow-visible"
+        className="text-kumo-ring overflow-visible"
         ref={svgRef}
       >
         <defs>
@@ -151,7 +151,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
         {connectors.map((connector, index) => {
           const path = createRoundedPath(connector, {
             isBottom: connector.isBottom,
-            ...pathProps
+            ...pathProps,
           });
           return (
             <path
@@ -168,5 +168,5 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
         {children}
       </svg>
     );
-  }
+  },
 );

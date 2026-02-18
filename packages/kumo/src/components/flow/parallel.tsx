@@ -108,7 +108,7 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
             break;
           }
           default:
-            throw new Error(`Unknown orientation: ${orientation}`);
+            throw new Error(`Unknown orientation: ${orientation as string}`);
         }
         connectors.push({
           x1: start.x,
@@ -145,7 +145,7 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
             break;
           }
           default:
-            throw new Error(`Unknown orientation: ${orientation}`);
+            throw new Error(`Unknown orientation: ${orientation as string}`);
         }
         connectors.push({
           x1: branchEnd.x,

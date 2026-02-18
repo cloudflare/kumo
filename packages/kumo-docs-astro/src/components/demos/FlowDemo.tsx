@@ -1,9 +1,4 @@
-import {
-  FlowDiagram,
-  FlowNode,
-  FlowParallelNode,
-  Text,
-} from "@cloudflare/kumo";
+import { FlowDiagram, FlowNode, FlowParallelNode } from "@cloudflare/kumo";
 
 /** Basic flow diagram with sequential nodes */
 export function FlowBasicDemo() {
@@ -35,8 +30,8 @@ export function FlowParallelDemo() {
 export function FlowCustomContentDemo() {
   return (
     <FlowDiagram>
-      <FlowNode className="rounded-full size-4 p-0 shadow-none ring-0 bg-neutral-400" />
-      <FlowNode className="bg-black ring-0 shadow-none text-white rounded-lg font-medium">
+      <FlowNode className="rounded-full size-4 p-0 shadow-none ring-0 bg-kumo-ring" />
+      <FlowNode className="bg-kumo-contrast ring-0 shadow-none text-kumo-inverse rounded-lg font-medium">
         <p>my-worker</p>
       </FlowNode>
     </FlowDiagram>
