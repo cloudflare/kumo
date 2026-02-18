@@ -26,8 +26,3 @@ const Flow = Object.assign(FlowDiagram, {
 });
 
 export { Flow };
-
-// Also export individual components for backwards compatibility
-export { FlowDiagram, FlowNodeList } from "./diagram";
-export { FlowNode, FlowAnchor } from "./node";
-export { FlowParallelNode } from "./parallel";
