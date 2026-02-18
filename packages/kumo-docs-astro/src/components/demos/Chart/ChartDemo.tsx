@@ -31,6 +31,8 @@ echarts.use([
 ]);
 
 export function PieChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
   const options = useMemo(
     () =>
       ({
@@ -53,7 +55,14 @@ export function PieChartDemo() {
     [],
   );
 
-  return <Chart echarts={echarts} options={options} height={400} />;
+  return (
+    <Chart
+      echarts={echarts}
+      options={options}
+      height={400}
+      isDarkMode={isDarkMode}
+    />
+  );
 }
 
 /**
@@ -184,6 +193,8 @@ export function TimeRangeSelectionChartDemo() {
 }
 
 export function PieChartPreviewDemo() {
+  const isDarkMode = useIsDarkMode();
+
   const options = useMemo(
     () =>
       ({
@@ -204,7 +215,14 @@ export function PieChartPreviewDemo() {
     [],
   );
 
-  return <Chart echarts={echarts} options={options} height={160} />;
+  return (
+    <Chart
+      echarts={echarts}
+      options={options}
+      height={160}
+      isDarkMode={isDarkMode}
+    />
+  );
 }
 
 /**
@@ -214,24 +232,57 @@ export function LegendDefaultDemo() {
   const isDarkMode = useIsDarkMode();
 
   return (
-    <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
-      <ChartLegend.LargeItem
-        name="Requests"
-        color={ChartPalette.semantic("Neutral", isDarkMode)}
-        value="1,234"
-        unit="req/s"
-      />
-      <ChartLegend.LargeItem
-        name="Storage"
-        color={ChartPalette.semantic("Attention", isDarkMode)}
-        value="56"
-        unit="GB"
-      />
-      <ChartLegend.LargeItem
-        name="Warnings"
-        color={ChartPalette.semantic("Warning", isDarkMode)}
-        value="128"
-      />
+    <div className="space-y-4">
+      <h3 className="text-sm font-medium text-kumo-text-secondary">
+        Active State
+      </h3>
+
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+        <ChartLegend.LargeItem
+          name="Requests"
+          color={ChartPalette.semantic("Neutral", isDarkMode)}
+          value="1,234"
+          unit="req/s"
+        />
+        <ChartLegend.LargeItem
+          name="Storage"
+          color={ChartPalette.semantic("Attention", isDarkMode)}
+          value="56"
+          unit="GB"
+        />
+        <ChartLegend.LargeItem
+          name="Warnings"
+          color={ChartPalette.semantic("Warning", isDarkMode)}
+          value="128"
+        />
+      </div>
+
+      <h3 className="text-sm font-medium text-kumo-text-secondary mt-12">
+        Inactive State
+      </h3>
+
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+        <ChartLegend.LargeItem
+          name="Requests"
+          color={ChartPalette.semantic("Neutral", isDarkMode)}
+          value="1,234"
+          unit="req/s"
+          inactive
+        />
+        <ChartLegend.LargeItem
+          name="Storage"
+          color={ChartPalette.semantic("Attention", isDarkMode)}
+          value="56"
+          unit="GB"
+          inactive
+        />
+        <ChartLegend.LargeItem
+          name="Warnings"
+          color={ChartPalette.semantic("Warning", isDarkMode)}
+          value="128"
+          inactive
+        />
+      </div>
     </div>
   );
 }
@@ -243,24 +294,55 @@ export function LegendCompactDemo() {
   const isDarkMode = useIsDarkMode();
 
   return (
-    <div className="flex flex-wrap gap-4">
-      <ChartLegend.SmallItem
-        name="Requests"
-        color={ChartPalette.semantic("Neutral", isDarkMode)}
-        value="1,234"
-        unit="req/s"
-      />
-      <ChartLegend.SmallItem
-        name="Storage"
-        color={ChartPalette.semantic("Attention", isDarkMode)}
-        value="56"
-        unit="GB"
-      />
-      <ChartLegend.SmallItem
-        name="Warnings"
-        color={ChartPalette.semantic("Warning", isDarkMode)}
-        value="128"
-      />
+    <div className="space-y-4">
+      <h3 className="text-sm font-medium text-kumo-text-secondary">
+        Active State
+      </h3>
+      <div className="flex flex-wrap gap-4">
+        <ChartLegend.SmallItem
+          name="Requests"
+          color={ChartPalette.semantic("Neutral", isDarkMode)}
+          value="1,234"
+          unit="req/s"
+        />
+        <ChartLegend.SmallItem
+          name="Storage"
+          color={ChartPalette.semantic("Attention", isDarkMode)}
+          value="56"
+          unit="GB"
+        />
+        <ChartLegend.SmallItem
+          name="Warnings"
+          color={ChartPalette.semantic("Warning", isDarkMode)}
+          value="128"
+        />
+      </div>
+
+      <h3 className="text-sm font-medium text-kumo-text-secondary mt-12">
+        Inactive State
+      </h3>
+      <div className="flex flex-wrap gap-4">
+        <ChartLegend.SmallItem
+          name="Requests"
+          color={ChartPalette.semantic("Neutral", isDarkMode)}
+          value="1,234"
+          unit="req/s"
+          inactive
+        />
+        <ChartLegend.SmallItem
+          name="Storage"
+          color={ChartPalette.semantic("Attention", isDarkMode)}
+          value="56"
+          unit="GB"
+          inactive
+        />
+        <ChartLegend.SmallItem
+          name="Warnings"
+          color={ChartPalette.semantic("Warning", isDarkMode)}
+          value="128"
+          inactive
+        />
+      </div>
     </div>
   );
 }
