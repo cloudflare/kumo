@@ -348,7 +348,11 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
           {children}
         </ul>
         <div className="absolute inset-0 pointer-events-none">
-          <Connectors connectors={connectors} orientation="horizontal" />
+          <Connectors
+            connectors={connectors}
+            orientation={orientation}
+            single
+          />
         </div>
       </div>
     </DescendantsProvider>

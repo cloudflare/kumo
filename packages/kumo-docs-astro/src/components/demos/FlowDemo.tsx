@@ -30,7 +30,7 @@ export function FlowParallelDemo() {
 export function FlowCustomContentDemo() {
   return (
     <Flow>
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-fill" />} />
+      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
       <Flow.Node
         render={
           <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
@@ -67,25 +67,29 @@ export function FlowAnchorDemo() {
   return (
     <Flow>
       <Flow.Node>Load balancer</Flow.Node>
-      <Flow.Node render={<li className="shadow-none bg-kumo-overlay p-0" />}>
-        <Flow.Anchor
-          type="end"
-          render={
-            <div className="text-kumo-subtle h-10 flex items-center px-2.5">
-              my-worker
-            </div>
-          }
-        />
-        <Flow.Anchor
-          type="start"
-          render={
-            <div className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0">
-              Bindings
-              <span className="text-kumo-subtle w-5 ml-3">2</span>
-            </div>
-          }
-        />
-      </Flow.Node>
+      <Flow.Node
+        render={
+          <li className="shadow-none rounded-lg ring ring-kumo-line bg-kumo-overlay">
+            <Flow.Anchor
+              type="end"
+              render={
+                <div className="text-kumo-subtle h-10 flex items-center px-2.5">
+                  my-worker
+                </div>
+              }
+            />
+            <Flow.Anchor
+              type="start"
+              render={
+                <div className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0">
+                  Bindings
+                  <span className="text-kumo-subtle w-5 ml-3">2</span>
+                </div>
+              }
+            />
+          </li>
+        }
+      />
       <Flow.Parallel>
         <Flow.Node>DATABASE</Flow.Node>
         <Flow.Node>OTHER_SERVICE</Flow.Node>

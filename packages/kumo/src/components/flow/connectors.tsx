@@ -22,10 +22,17 @@ type PathProps = Partial<{
   orientation: "vertical" | "horizontal";
 }>;
 
+/**
+ * Maximum vertical/horizontal distance between anchor points where the line
+ * would render as straight. Below this number, the line will be drawn as a
+ * straight line.
+ */
+const FLAT_THRESHOLD = 2;
+
 export function createRoundedPath(
   { x1, y1, x2, y2 }: { x1: number; y1: number; x2: number; y2: number },
   {
-    cornerRadius = 8,
+    cornerRadius: maxCornerRadius = 8,
     midOffset = 32,
     arrowheadOffset = 8,
     isBottom = false,
@@ -33,8 +40,17 @@ export function createRoundedPath(
     orientation = "vertical",
   }: PathProps = {},
 ) {
+  /**
+   * Cap the corner radius to half the vertical/horizontal distance between the
+   * anchor points so the line still looks smooth even in small gaps.
+   */
+  const cornerRadius = Math.min(
+    maxCornerRadius,
+    Math.abs(orientation === "horizontal" ? (y2 - y1) / 2 : (x2 - x1) / 2),
+  );
   if (orientation === "horizontal") {
-    if (y2 === y1) return `M ${x1} ${y1} L ${x2 - arrowheadOffset} ${y2}`;
+    if (Math.abs(y2 - y1) <= FLAT_THRESHOLD)
+      return `M ${x1} ${y1} L ${x2 - arrowheadOffset} ${y2}`;
 
     // Horizontal orientation: horizontal → vertical → horizontal
     // verticalOffset is used as horizontalOffset (distance from x2 where we turn)
@@ -78,7 +94,8 @@ export function createRoundedPath(
     return commands.join(" ");
   }
 
-  if (x2 === x1) return `M ${x1} ${y1} L ${x2} ${y2 - arrowheadOffset}`;
+  if (Math.abs(x2 - x1) <= FLAT_THRESHOLD)
+    return `M ${x1} ${y1} L ${x2} ${y2 - arrowheadOffset}`;
 
   // Vertical orientation: vertical → horizontal → vertical
   // Vertical offset before turning horizontally
