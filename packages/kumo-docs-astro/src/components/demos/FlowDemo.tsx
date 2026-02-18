@@ -30,7 +30,7 @@ export function FlowParallelDemo() {
 export function FlowCustomContentDemo() {
   return (
     <Flow>
-      <Flow.Node className="rounded-full size-4 p-0 shadow-none ring-0 bg-kumo-fill" />
+      <Flow.Node className="rounded-full size-4 p-0 shadow-none ring-0 bg-kumo-ring" />
       <Flow.Node className="bg-kumo-contrast ring-0 shadow-none text-kumo-inverse rounded-lg font-medium">
         <p>my-worker</p>
       </Flow.Node>
