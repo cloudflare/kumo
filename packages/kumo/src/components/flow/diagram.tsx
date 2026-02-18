@@ -15,7 +15,7 @@ import {
   type MotionValue,
   type PanInfo,
 } from "motion/react";
-import { cn } from "@cloudflare/kumo";
+import { cn } from "../../utils/cn";
 import { Connectors, type Connector } from "./connectors";
 import {
   DescendantsProvider,

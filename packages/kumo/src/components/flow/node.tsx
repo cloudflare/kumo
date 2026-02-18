@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useNode, type RectLike } from "./diagram";
-import { cn } from "@cloudflare/kumo";
+import { cn } from "../../utils/cn";
 
 type FlowNodeProps = {
   className?: string;

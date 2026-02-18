@@ -1,5 +1,5 @@
 import { useMemo, useRef, type ReactNode } from "react";
-import { cn } from "@cloudflare/kumo";
+import { cn } from "../../utils/cn";
 import { Connectors, type Connector } from "./connectors";
 import {
   getNodeRect,
