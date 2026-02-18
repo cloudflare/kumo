@@ -98,6 +98,23 @@ export function FlowAnchorDemo() {
   );
 }
 
+/** Flow diagram with vertically centered nodes */
+export function FlowCenteredDemo() {
+  return (
+    <Flow align="center">
+      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
+      <Flow.Node>my-worker</Flow.Node>
+      <Flow.Node
+        render={
+          <li className="py-6 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line">
+            Taller node
+          </li>
+        }
+      />
+    </Flow>
+  );
+}
+
 /** Large flow diagram demonstrating panning */
 export function FlowPanningDemo() {
   return (

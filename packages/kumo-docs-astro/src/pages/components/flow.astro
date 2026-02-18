@@ -10,6 +10,7 @@ import {
   FlowCustomContentDemo,
   FlowComplexDemo,
   FlowAnchorDemo,
+  FlowCenteredDemo,
   FlowPanningDemo,
 } from "../../components/demos/FlowDemo";
 ---
@@ -149,6 +150,30 @@ export default function Example() {
       </div>
 
       <div>
+        <Heading level={3}>Centered Alignment</Heading>
+        <p class="mb-4">
+          Use the{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">align</code> prop
+          to vertically center nodes. This is useful when nodes have different heights.
+        </p>
+        <ComponentExample
+          code={`<Flow align="center">
+  <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
+  <Flow.Node>my-worker</Flow.Node>
+  <Flow.Node
+    render={
+      <li className="py-6 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line">
+        Taller node
+      </li>
+    }
+  />
+</Flow>`}
+        >
+          <FlowCenteredDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
         <Heading level={3}>Complex Flow</Heading>
         <p class="mb-4">
           Combine sequential and parallel nodes to build complex workflows.
@@ -272,6 +297,13 @@ export default function Example() {
               </tr>
             </thead>
             <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">align</td>
+                <td class="px-4 py-3 font-mono">"start" | "center"</td>
+                <td class="px-4 py-3"
+                  >Vertical alignment of nodes. <code class="rounded bg-kumo-control px-1 py-0.5">"start"</code> (default) aligns to top, <code class="rounded bg-kumo-control px-1 py-0.5">"center"</code> vertically centers nodes.</td
+                >
+              </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">className</td>
                 <td class="px-4 py-3 font-mono">string</td>
