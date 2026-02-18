@@ -111,12 +111,12 @@ type FlowNodeAnchorProps = {
   children?: ReactNode;
 };
 
-function FlowNodeAnchor({ type, className, children }: FlowNodeAnchorProps) {
+export function FlowAnchor({ type, className, children }: FlowNodeAnchorProps) {
   const context = useContext(FlowNodeAnchorContext);
   const anchorRef = useRef<HTMLDivElement>(null);
 
   if (!context) {
-    throw new Error("FlowNode.Anchor must be used within FlowNode");
+    throw new Error("Flow.Anchor must be used within Flow.Node");
   }
 
   useEffect(() => {
@@ -148,4 +148,4 @@ function FlowNodeAnchor({ type, className, children }: FlowNodeAnchorProps) {
   );
 }
 
-FlowNode.Anchor = FlowNodeAnchor;
+FlowNode.Anchor = FlowAnchor;

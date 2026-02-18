@@ -173,7 +173,7 @@ export default function Example() {
         <p class="mb-4">
           By default, connectors attach to the center of each node. Use{" "}
           <code class="rounded bg-kumo-control px-1 py-0.5"
-            >Flow.Node.Anchor</code
+            >Flow.Anchor</code
           > to specify custom attachment points. The <code
             class="rounded bg-kumo-control px-1 py-0.5">type</code
           > prop controls whether the anchor serves as a <code
@@ -186,19 +186,19 @@ export default function Example() {
           code={`<Flow>
   <Flow.Node>Load balancer</Flow.Node>
   <Flow.Node className="shadow-none bg-kumo-overlay p-0">
-    <Flow.Node.Anchor
+    <Flow.Anchor
       type="end"
       className="text-kumo-subtle h-10 flex items-center px-2.5"
     >
       my-worker
-    </Flow.Node.Anchor>
-    <Flow.Node.Anchor
+    </Flow.Anchor>
+    <Flow.Anchor
       type="start"
       className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0"
     >
       Bindings
       <span className="text-kumo-subtle w-5 ml-3">2</span>
-    </Flow.Node.Anchor>
+    </Flow.Anchor>
   </Flow.Node>
   <Flow.Parallel>
     <Flow.Node>DATABASE</Flow.Node>
@@ -309,9 +309,9 @@ export default function Example() {
       </div>
 
       <div>
-        <Heading level={3} class="mb-2 text-lg">Flow.Node.Anchor</Heading>
+        <Heading level={3} class="mb-2 text-lg">Flow.Anchor</Heading>
         <p class="mb-4">
-          A sub-component that marks a custom attachment point for connectors
+          A component that marks a custom attachment point for connectors
           within a Flow.Node. Use this to control exactly where connector lines
           attach instead of the default node center.
         </p>

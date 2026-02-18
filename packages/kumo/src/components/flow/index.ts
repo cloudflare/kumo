@@ -1,5 +1,5 @@
 import { FlowDiagram, FlowNodeList } from "./diagram";
-import { FlowNode } from "./node";
+import { FlowNode, FlowAnchor } from "./node";
 import { FlowParallelNode } from "./parallel";
 
 /**
@@ -22,11 +22,12 @@ const Flow = Object.assign(FlowDiagram, {
   Node: FlowNode,
   Parallel: FlowParallelNode,
   List: FlowNodeList,
+  Anchor: FlowAnchor,
 });
 
 export { Flow };
 
 // Also export individual components for backwards compatibility
 export { FlowDiagram, FlowNodeList } from "./diagram";
-export { FlowNode } from "./node";
+export { FlowNode, FlowAnchor } from "./node";
 export { FlowParallelNode } from "./parallel";

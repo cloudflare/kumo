@@ -64,19 +64,19 @@ export function FlowAnchorDemo() {
     <Flow>
       <Flow.Node>Load balancer</Flow.Node>
       <Flow.Node className="shadow-none bg-kumo-overlay p-0">
-        <Flow.Node.Anchor
+        <Flow.Anchor
           type="end"
           className="text-kumo-subtle h-10 flex items-center px-2.5"
         >
           my-worker
-        </Flow.Node.Anchor>
-        <Flow.Node.Anchor
+        </Flow.Anchor>
+        <Flow.Anchor
           type="start"
           className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0"
         >
           Bindings
           <span className="text-kumo-subtle w-5 ml-3">2</span>
-        </Flow.Node.Anchor>
+        </Flow.Anchor>
       </Flow.Node>
       <Flow.Parallel>
         <Flow.Node>DATABASE</Flow.Node>
