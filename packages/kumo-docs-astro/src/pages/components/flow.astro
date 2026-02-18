@@ -125,18 +125,23 @@ export default function Example() {
       </div>
 
       <div>
-        <Heading level={3}>Custom Node Content</Heading>
+        <Heading level={3}>Custom Node Styling</Heading>
         <p class="mb-4">
-          Nodes can contain any content. Use the{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5">className</code> prop
-          to customize styling.
+          Use the{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop
+          to completely customize node appearance. The render prop accepts a React element
+          that will be used instead of the default styled node.
         </p>
         <ComponentExample
           code={`<Flow>
-  <Flow.Node className="rounded-full size-4 p-0 shadow-none ring-0 bg-kumo-fill" />
-  <Flow.Node className="bg-kumo-contrast ring-0 shadow-none text-kumo-inverse rounded-lg font-medium">
-    <p>my-worker</p>
-  </Flow.Node>
+  <Flow.Node render={<li className="rounded-full size-4 bg-kumo-fill" />} />
+  <Flow.Node
+    render={
+      <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
+        my-worker
+      </li>
+    }
+  />
 </Flow>`}
         >
           <FlowCustomContentDemo client:visible />
@@ -174,7 +179,8 @@ export default function Example() {
           By default, connectors attach to the center of each node. Use{" "}
           <code class="rounded bg-kumo-control px-1 py-0.5"
             >Flow.Anchor</code
-          > to specify custom attachment points. The <code
+          > with its <code class="rounded bg-kumo-control px-1 py-0.5">render</code
+          > prop to specify custom attachment points. The <code
             class="rounded bg-kumo-control px-1 py-0.5">type</code
           > prop controls whether the anchor serves as a <code
             class="rounded bg-kumo-control px-1 py-0.5">"start"</code
@@ -185,20 +191,24 @@ export default function Example() {
         <ComponentExample
           code={`<Flow>
   <Flow.Node>Load balancer</Flow.Node>
-  <Flow.Node className="shadow-none bg-kumo-overlay p-0">
+  <Flow.Node render={<li className="shadow-none bg-kumo-overlay p-0" />}>
     <Flow.Anchor
       type="end"
-      className="text-kumo-subtle h-10 flex items-center px-2.5"
-    >
-      my-worker
-    </Flow.Anchor>
+      render={
+        <div className="text-kumo-subtle h-10 flex items-center px-2.5">
+          my-worker
+        </div>
+      }
+    />
     <Flow.Anchor
       type="start"
-      className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0"
-    >
-      Bindings
-      <span className="text-kumo-subtle w-5 ml-3">2</span>
-    </Flow.Anchor>
+      render={
+        <div className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0">
+          Bindings
+          <span className="text-kumo-subtle w-5 ml-3">2</span>
+        </div>
+      }
+    />
   </Flow.Node>
   <Flow.Parallel>
     <Flow.Node>DATABASE</Flow.Node>
@@ -281,7 +291,8 @@ export default function Example() {
         <Heading level={3} class="mb-2 text-lg">Flow.Node</Heading>
         <p class="mb-4">
           A single node in the flow diagram. Renders as a styled card with
-          automatic connector points.
+          automatic connector points. Use the <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop
+          to customize the element.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -294,9 +305,9 @@ export default function Example() {
             </thead>
             <tbody class="text-kumo-strong">
               <tr class="border-b border-kumo-line">
-                <td class="px-4 py-3 font-mono">className</td>
-                <td class="px-4 py-3 font-mono">string</td>
-                <td class="px-4 py-3">Additional CSS classes for the node</td>
+                <td class="px-4 py-3 font-mono">render</td>
+                <td class="px-4 py-3 font-mono">ReactElement</td>
+                <td class="px-4 py-3">Custom element to render instead of the default styled node</td>
               </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
@@ -313,7 +324,8 @@ export default function Example() {
         <p class="mb-4">
           A component that marks a custom attachment point for connectors
           within a Flow.Node. Use this to control exactly where connector lines
-          attach instead of the default node center.
+          attach instead of the default node center by providing a custom element
+          via the <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -333,6 +345,11 @@ export default function Example() {
                   connectors) or "end" point (incoming connectors). When
                   omitted, serves as both.
                 </td>
+              </tr>
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">render</td>
+                <td class="px-4 py-3 font-mono">ReactElement</td>
+                <td class="px-4 py-3">Custom element to render for the anchor point</td>
               </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>

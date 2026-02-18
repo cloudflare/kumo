@@ -10,7 +10,6 @@ import {
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useNode, type RectLike } from "./diagram";
-import { cn } from "../../utils/cn";
 
 /**
  * FlowNode component props.
@@ -22,17 +21,13 @@ import { cn } from "../../utils/cn";
  *
  * @example Custom render
  * ```tsx
- * <Flow.Node render={<div className="custom-node" />}>
- *   Custom content
- * </Flow.Node>
+ * <Flow.Node render={<div className="custom-node">Custom content</div>} />
  * ```
  */
-export type FlowNodeProps = useRender.ComponentProps<"li"> & {
-  className?: string;
-};
+export type FlowNodeProps = useRender.ComponentProps<"li">;
 
 const FlowNodeBase = forwardRef<HTMLLIElement, FlowNodeProps>(function FlowNode(
-  { className, render, ...props },
+  { render, ...props },
   ref,
 ) {
   const nodeRef = useRef<HTMLLIElement>(null);
@@ -82,10 +77,7 @@ const FlowNodeBase = forwardRef<HTMLLIElement, FlowNodeProps>(function FlowNode(
   });
 
   const defaultProps = {
-    className: cn(
-      "py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line",
-      className,
-    ),
+    className: "py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line",
     "data-node-index": index,
     "data-node-id": id,
   };
@@ -137,9 +129,7 @@ const FlowNodeAnchorContext = createContext<FlowNodeAnchorContextType | null>(
  *
  * @example Custom render
  * ```tsx
- * <Flow.Anchor type="end" render={<span className="custom-anchor" />}>
- *   Custom anchor
- * </Flow.Anchor>
+ * <Flow.Anchor type="end" render={<span className="custom-anchor">Custom anchor</span>} />
  * ```
  */
 export type FlowAnchorProps = useRender.ComponentProps<"div"> & {
@@ -149,11 +139,10 @@ export type FlowAnchorProps = useRender.ComponentProps<"div"> & {
    * When omitted, it serves as both the start and end points.
    */
   type?: "start" | "end";
-  className?: string;
 };
 
 export const FlowAnchor = forwardRef<HTMLDivElement, FlowAnchorProps>(
-  function FlowAnchor({ type, className, render, ...props }, ref) {
+  function FlowAnchor({ type, render, ...props }, ref) {
     const context = useContext(FlowNodeAnchorContext);
     const anchorRef = useRef<HTMLDivElement>(null);
 
@@ -183,15 +172,11 @@ export const FlowAnchor = forwardRef<HTMLDivElement, FlowAnchorProps>(
       };
     }, [type, context.registerStartAnchor, context.registerEndAnchor]);
 
-    const defaultProps: useRender.ElementProps<"div"> = {
-      className,
-    };
-
     const element = useRender({
       defaultTagName: "div",
       render,
       ref: [ref, anchorRef],
-      props: mergeProps<"div">(defaultProps, props),
+      props,
     });
 
     return element;
