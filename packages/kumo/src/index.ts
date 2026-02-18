@@ -133,6 +133,74 @@ export {
   type KumoGridVariant,
   type KumoGridGap,
 } from "./components/grid";
+export {
+  CloudflareLogo,
+  KUMO_CLOUDFLARE_LOGO_VARIANTS,
+  KUMO_CLOUDFLARE_LOGO_DEFAULT_VARIANTS,
+  type CloudflareLogoProps,
+  type CloudflareLogoVariant,
+  type CloudflareLogoColor,
+  // PoweredByCloudflare component
+  PoweredByCloudflare,
+  type PoweredByCloudflareProps,
+  // SVG generation helper
+  generateCloudflareLogoSvg,
+  type GenerateCloudflareLogoSvgOptions,
+  type CloudflareLogoSvgVariant,
+  type CloudflareLogoSvgColor,
+} from "./components/cloudflare-logo";
+
+// DatePicker
+export {
+  DatePicker,
+  type DatePickerProps,
+  type DateRange,
+  type DayPickerProps,
+} from "./components/date-picker";
+
+// Sidebar
+export {
+  Sidebar,
+  SidebarProvider,
+  SidebarRoot,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarSeparator,
+  SidebarInput,
+  SidebarTrigger,
+  SidebarRail,
+  SidebarResizeHandle,
+  SidebarMenuChevron,
+  SidebarCollapsible,
+  SidebarCollapsibleTrigger,
+  SidebarCollapsibleContent,
+  useSidebar,
+  KUMO_SIDEBAR_VARIANTS,
+  KUMO_SIDEBAR_DEFAULT_VARIANTS,
+  KUMO_SIDEBAR_STYLING,
+  type SidebarSide,
+  type SidebarVariant,
+  type SidebarCollapsible as SidebarCollapsibleType,
+  type SidebarContextValue,
+  type SidebarProviderProps,
+  type SidebarRootProps,
+  type SidebarMenuButtonSize,
+  type SidebarMenuButtonProps,
+  type SidebarMenuSubButtonProps,
+  type SidebarInputProps,
+} from "./components/sidebar";
 // PLOP_INJECT_EXPORT
 
 // Utils

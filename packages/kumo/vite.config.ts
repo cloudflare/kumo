@@ -169,10 +169,7 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/command-palette/index.ts",
           ),
-          "components/link": resolve(
-            __dirname,
-            "src/components/link/index.ts",
-          ),
+          "components/link": resolve(__dirname, "src/components/link/index.ts"),
           "components/breadcrumbs": resolve(
             __dirname,
             "src/components/breadcrumbs/index.ts",
@@ -182,6 +179,18 @@ export default defineConfig(({ mode }) => {
             "src/components/empty/index.ts",
           ),
           "components/grid": resolve(__dirname, "src/components/grid/index.ts"),
+          "components/cloudflare-logo": resolve(
+            __dirname,
+            "src/components/cloudflare-logo/index.ts",
+          ),
+          "components/date-picker": resolve(
+            __dirname,
+            "src/components/date-picker/index.ts",
+          ),
+          "components/sidebar": resolve(
+            __dirname,
+            "src/components/sidebar/index.ts",
+          ),
           // PLOP_INJECT_COMPONENT_ENTRY
           // Utils entry point
           utils: resolve(__dirname, "src/utils/index.ts"),
