@@ -14,6 +14,7 @@ import {
   SelectLoadingDataDemo,
   SelectMultipleDemo,
   SelectComplexDemo,
+  SelectMultiLineDemo,
 } from "../../components/demos/SelectDemo";
 ---
 
@@ -28,11 +29,16 @@ import {
     <Heading level={3}>Basic Usage</Heading>
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
-        A simple select component. Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> prop
-        to provide options — when <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> is provided without 
-        children, the select automatically renders options. This also controls what text appears in the
-        trigger when an option is selected. For custom option rendering, you can still provide manual 
-        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Option</code> children.
+        A simple select component. Use the <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code
+        > prop to provide options — when <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code
+        > is provided without children, the select automatically renders options.
+        This also controls what text appears in the trigger when an option is selected.
+        For custom option rendering, you can still provide manual
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >Select.Option</code
+        > children.
       </span>
     </p>
 
@@ -245,8 +251,8 @@ function App() {
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
         A select component with loading state. The loading state is passed to
-        the component via the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
-          >loading</code
+        the component via the <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code
         > prop.
       </span>
     </p>
@@ -363,6 +369,59 @@ function App() {
 }`}
     >
       <SelectComplexDemo client:load />
+    </ComponentExample>
+
+    <div class="h-8"></div>
+
+    <ComponentExample
+      code={`function App() {
+  const [value, setValue] = useState<(typeof products)[0] | null>(null);
+
+  return (
+    <Select
+      className="max-w-lg h-auto p-2 px-4"
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+      isItemEqualToValue={(item, value) => item?.id === value?.id}
+      renderValue={(product) =>
+        product ? (
+          <ProductLabel name={product.name} description={product.description} />
+        ) : (
+          "Select a plan"
+        )
+      }
+    >
+      {products.map((product) => (
+        <Select.Option key={product.id} value={product}>
+          <div className="flex w-[340px] items-center justify-between gap-4">
+            <ProductLabel name={product.name} description={product.description} />
+            <Text>{product.price}</Text>
+          </div>
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}
+
+function ProductLabel({ name, description }: { name: string; description: string }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <Text>{name}</Text>
+      <Text variant="secondary">{description}</Text>
+    </div>
+  );
+}
+
+const products = [
+  { id: 1, name: "Basic Plan",  description: "For individuals and small teams",          price: "$9/mo"  },
+  { id: 2, name: "Pro Plan",    description: "For growing businesses with more needs",    price: "$29/mo" },
+  { id: 3, name: "Enterprise",  description: "Custom solutions for large organizations",  price: "$99/mo" },
+  { id: 4, name: "Startup",     description: "Discounted plan for early-stage startups",  price: "$5/mo"  },
+];
+
+`}
+    >
+      <SelectMultiLineDemo client:load />
     </ComponentExample>
   </ComponentSection>
 
