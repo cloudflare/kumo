@@ -1,21 +1,40 @@
 import {
   createContext,
+  forwardRef,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
+import { useRender } from "@base-ui/react/use-render";
+import { mergeProps } from "@base-ui/react/merge-props";
 import { useNode, type RectLike } from "./diagram";
 import { cn } from "../../utils/cn";
 
-type FlowNodeProps = {
+/**
+ * FlowNode component props.
+ *
+ * @example Default styling
+ * ```tsx
+ * <Flow.Node>Step 1</Flow.Node>
+ * ```
+ *
+ * @example Custom render
+ * ```tsx
+ * <Flow.Node render={<div className="custom-node" />}>
+ *   Custom content
+ * </Flow.Node>
+ * ```
+ */
+export type FlowNodeProps = useRender.ComponentProps<"li"> & {
   className?: string;
-  children?: ReactNode;
 };
 
-export function FlowNode({ className, children }: FlowNodeProps) {
+const FlowNodeBase = forwardRef<HTMLLIElement, FlowNodeProps>(function FlowNode(
+  { className, render, ...props },
+  ref,
+) {
   const nodeRef = useRef<HTMLLIElement>(null);
   const startAnchorRef = useRef<HTMLElement | null>(null);
   const endAnchorRef = useRef<HTMLElement | null>(null);
@@ -62,34 +81,42 @@ export function FlowNode({ className, children }: FlowNodeProps) {
     });
   });
 
+  const defaultProps = {
+    className: cn(
+      "py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line",
+      className,
+    ),
+    "data-node-index": index,
+    "data-node-id": id,
+  };
+
+  const element = useRender({
+    defaultTagName: "li",
+    render,
+    ref: [ref, nodeRef],
+    props: mergeProps(defaultProps, props),
+  });
+
   return (
     <FlowNodeAnchorContext.Provider
       value={useMemo(
         () => ({
-          registerStartAnchor: (ref) => {
-            startAnchorRef.current = ref;
+          registerStartAnchor: (anchorRef) => {
+            startAnchorRef.current = anchorRef;
           },
-          registerEndAnchor: (ref) => {
-            endAnchorRef.current = ref;
+          registerEndAnchor: (anchorRef) => {
+            endAnchorRef.current = anchorRef;
           },
         }),
         [],
       )}
     >
-      <li
-        className={cn(
-          "py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line",
-          className,
-        )}
-        data-node-index={index}
-        data-node-id={id}
-        ref={nodeRef}
-      >
-        {children}
-      </li>
+      {element}
     </FlowNodeAnchorContext.Provider>
   );
-}
+});
+
+FlowNodeBase.displayName = "Flow.Node";
 
 type FlowNodeAnchorContextType = {
   registerStartAnchor: (ref: HTMLElement | null) => void;
@@ -100,7 +127,22 @@ const FlowNodeAnchorContext = createContext<FlowNodeAnchorContextType | null>(
   null,
 );
 
-type FlowNodeAnchorProps = {
+/**
+ * FlowAnchor component props.
+ *
+ * @example Default styling
+ * ```tsx
+ * <Flow.Anchor type="start">Anchor content</Flow.Anchor>
+ * ```
+ *
+ * @example Custom render
+ * ```tsx
+ * <Flow.Anchor type="end" render={<span className="custom-anchor" />}>
+ *   Custom anchor
+ * </Flow.Anchor>
+ * ```
+ */
+export type FlowAnchorProps = useRender.ComponentProps<"div"> & {
   /**
    * Determines if the anchor should serve as a "start" point for the
    * _next_ connector or the "end" point for the _previous_ connector.
@@ -108,44 +150,57 @@ type FlowNodeAnchorProps = {
    */
   type?: "start" | "end";
   className?: string;
-  children?: ReactNode;
 };
 
-export function FlowAnchor({ type, className, children }: FlowNodeAnchorProps) {
-  const context = useContext(FlowNodeAnchorContext);
-  const anchorRef = useRef<HTMLDivElement>(null);
+export const FlowAnchor = forwardRef<HTMLDivElement, FlowAnchorProps>(
+  function FlowAnchor({ type, className, render, ...props }, ref) {
+    const context = useContext(FlowNodeAnchorContext);
+    const anchorRef = useRef<HTMLDivElement>(null);
 
-  if (!context) {
-    throw new Error("Flow.Anchor must be used within Flow.Node");
-  }
-
-  useEffect(() => {
-    if (!anchorRef.current) {
-      return;
+    if (!context) {
+      throw new Error("Flow.Anchor must be used within Flow.Node");
     }
 
-    if (type === "start" || type === undefined) {
-      context.registerStartAnchor(anchorRef.current);
-    }
-    if (type === "end" || type === undefined) {
-      context.registerEndAnchor(anchorRef.current);
-    }
+    useEffect(() => {
+      if (!anchorRef.current) {
+        return;
+      }
 
-    return () => {
       if (type === "start" || type === undefined) {
-        context.registerStartAnchor(null);
+        context.registerStartAnchor(anchorRef.current);
       }
       if (type === "end" || type === undefined) {
-        context.registerEndAnchor(null);
+        context.registerEndAnchor(anchorRef.current);
       }
+
+      return () => {
+        if (type === "start" || type === undefined) {
+          context.registerStartAnchor(null);
+        }
+        if (type === "end" || type === undefined) {
+          context.registerEndAnchor(null);
+        }
+      };
+    }, [type, context.registerStartAnchor, context.registerEndAnchor]);
+
+    const defaultProps: useRender.ElementProps<"div"> = {
+      className,
     };
-  }, [type, context.registerStartAnchor, context.registerEndAnchor]);
 
-  return (
-    <div ref={anchorRef} className={className}>
-      {children}
-    </div>
-  );
-}
+    const element = useRender({
+      defaultTagName: "div",
+      render,
+      ref: [ref, anchorRef],
+      props: mergeProps<"div">(defaultProps, props),
+    });
 
-FlowNode.Anchor = FlowAnchor;
+    return element;
+  },
+);
+
+FlowAnchor.displayName = "Flow.Anchor";
+
+// Compound component with Anchor subcomponent (for backwards compatibility)
+export const FlowNode = Object.assign(FlowNodeBase, {
+  Anchor: FlowAnchor,
+});
