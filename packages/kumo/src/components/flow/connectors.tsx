@@ -128,7 +128,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
         width="100%"
         height="100%"
         aria-hidden="true"
-        className="text-kumo-ring overflow-visible"
+        className="text-kumo-inactive overflow-visible"
         ref={svgRef}
       >
         <defs>
