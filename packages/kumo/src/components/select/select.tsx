@@ -263,7 +263,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         {loading ? (
           <SkeletonLine className="w-32" />
         ) : (
-          <SelectBase.Value className="min-w-0 flex-1 truncate text-left">
+          <SelectBase.Value className="min-w-0 flex-1 truncate text-start">
             {renderValue}
           </SelectBase.Value>
         )}
