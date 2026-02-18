@@ -52,6 +52,10 @@
       "types": "./dist/src/components/checkbox/index.d.ts",
       "import": "./dist/components/checkbox.js"
     },
+    "./components/chart": {
+      "types": "./dist/src/components/chart/index.d.ts",
+      "import": "./dist/components/chart.js"
+    },
     "./components/clipboard-text": {
       "types": "./dist/src/components/clipboard-text/index.d.ts",
       "import": "./dist/components/clipboard-text.js"

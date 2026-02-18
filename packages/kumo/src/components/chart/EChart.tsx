@@ -2,7 +2,7 @@ import type * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { forwardRef, useEffect, useRef } from "react";
 import { cn } from "../../utils";
-import { CHART_DARK_COLORS, CHART_LIGHT_COLORS } from ".";
+import { CHART_DARK_COLORS, CHART_LIGHT_COLORS } from "./Color";
 
 type EChartsMouseEventParams = {
   componentType: string;

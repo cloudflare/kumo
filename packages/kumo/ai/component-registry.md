@@ -574,12 +574,10 @@ Read-only text field with a one-click copy-to-clipboard button.
 ```
 
 ```tsx
-<ClipboardTextToastProvider>
-      <ClipboardText
-        text="npx kumo add button"
-        tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
-      />
-    </ClipboardTextToastProvider>
+<ClipboardText
+      text="npx kumo add button"
+      tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+    />
 ```
 
 

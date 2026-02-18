@@ -69,6 +69,10 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/date-range-picker/index.ts",
           ),
+          "components/chart": resolve(
+            __dirname,
+            "src/components/chart/index.ts",
+          ),
           "components/checkbox": resolve(
             __dirname,
             "src/components/checkbox/index.ts",

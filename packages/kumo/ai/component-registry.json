@@ -664,7 +664,7 @@
         "<ClipboardText text=\"abc123\" />",
         "<ClipboardText text=\"sk_live_51H8...\" />",
         "<ClipboardText text=\"https://example.com/very/long/url/path\" />",
-        "<ClipboardTextToastProvider>\n      <ClipboardText\n        text=\"npx kumo add button\"\n        tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n      />\n    </ClipboardTextToastProvider>"
+        "<ClipboardText\n      text=\"npx kumo add button\"\n      tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
