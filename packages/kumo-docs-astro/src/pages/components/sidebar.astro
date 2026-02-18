@@ -1,0 +1,312 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  SidebarBasicDemo,
+  SidebarCollapsedDemo,
+  SidebarToggleDemo,
+  SidebarFullDemo,
+  SidebarResizableDemo,
+  SidebarRightDemo,
+} from "../../components/demos/SidebarDemo";
+---
+
+<DocLayout
+  title="Sidebar"
+  description="A composable sidebar navigation component with collapsible groups, icon-only mode, and responsive mobile support."
+  sourceFile="components/sidebar"
+>
+  <ComponentSection>
+    <ComponentExample code={`<Sidebar.Provider defaultOpen>
+  <Sidebar>
+    <Sidebar.Header>
+      <span>Acme Inc</span>
+    </Sidebar.Header>
+    <Sidebar.Content>
+      <Sidebar.Group>
+        <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+        <Sidebar.GroupContent>
+          <Sidebar.Menu>
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton icon={HouseIcon} active>
+                Home
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
+    </Sidebar.Content>
+  </Sidebar>
+  <main className="flex-1">...</main>
+</Sidebar.Provider>`}>
+      <SidebarFullDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { Sidebar } from "@cloudflare/kumo";`} lang="tsx" />
+    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <CodeBlock code={`import { Sidebar } from "@cloudflare/kumo/components/sidebar";`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock code={`import { Sidebar } from "@cloudflare/kumo";
+import { HouseIcon, GearIcon, CodeIcon } from "@phosphor-icons/react";
+
+export default function AppLayout({ children }) {
+  return (
+    <Sidebar.Provider defaultOpen>
+      <Sidebar>
+        <Sidebar.Header className="p-4">
+          <span className="text-lg font-semibold">Acme Inc</span>
+        </Sidebar.Header>
+        <Sidebar.Content>
+          <Sidebar.Group>
+            <Sidebar.GroupLabel>Navigation</Sidebar.GroupLabel>
+            <Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  <Sidebar.MenuButton icon={HouseIcon} active>
+                    Home
+                  </Sidebar.MenuButton>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubItem>
+                          <Sidebar.MenuSubButton>
+                            Workers
+                          </Sidebar.MenuSubButton>
+                        </Sidebar.MenuSubItem>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+              </Sidebar.Menu>
+            </Sidebar.GroupContent>
+          </Sidebar.Group>
+        </Sidebar.Content>
+        <Sidebar.Footer>
+          <Sidebar.Menu>
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton icon={GearIcon}>
+                Settings
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        </Sidebar.Footer>
+      </Sidebar>
+      <main className="flex-1">{children}</main>
+    </Sidebar.Provider>
+  );
+}`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Basic</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Sidebar with navigation groups, collapsible sub-menus, and active state indicators.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen>
+  <Sidebar>
+    <Sidebar.Header>...</Sidebar.Header>
+    <Sidebar.Content>
+      <Sidebar.Group>
+        <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+        <Sidebar.GroupContent>
+          <Sidebar.Menu>
+            <Sidebar.MenuItem>
+              <Sidebar.Collapsible defaultOpen>
+                <Sidebar.CollapsibleTrigger
+                  render={
+                    <Sidebar.MenuButton icon={CodeIcon}>
+                      Compute
+                      <Sidebar.MenuChevron />
+                    </Sidebar.MenuButton>
+                  }
+                />
+                <Sidebar.CollapsibleContent>
+                  <Sidebar.MenuSub>
+                    <Sidebar.MenuSubItem>
+                      <Sidebar.MenuSubButton active>
+                        Workers & Pages
+                      </Sidebar.MenuSubButton>
+                    </Sidebar.MenuSubItem>
+                  </Sidebar.MenuSub>
+                </Sidebar.CollapsibleContent>
+              </Sidebar.Collapsible>
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
+    </Sidebar.Content>
+  </Sidebar>
+  <main className="flex-1">...</main>
+</Sidebar.Provider>`}>
+          <SidebarBasicDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Collapsed (Icon Only)</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          When collapsed, the sidebar shows icons only with tooltips on hover.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen={false}>
+  <Sidebar>
+    <Sidebar.Content>
+      <Sidebar.Group>
+        <Sidebar.GroupContent>
+          <Sidebar.Menu>
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
+                Home
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
+    </Sidebar.Content>
+  </Sidebar>
+  <main className="flex-1">...</main>
+</Sidebar.Provider>`}>
+          <SidebarCollapsedDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Toggle</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">useSidebar()</code> or <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Trigger</code> to toggle expand/collapse.
+        </p>
+        <ComponentExample code={`function App() {
+  return (
+    <Sidebar.Provider defaultOpen>
+      <Sidebar>
+        <Sidebar.Content>...</Sidebar.Content>
+        <Sidebar.Footer>
+          <Sidebar.Menu>
+            <Sidebar.MenuItem>
+              <Sidebar.Trigger />
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        </Sidebar.Footer>
+      </Sidebar>
+      <main className="flex-1">
+        <ToggleButton />
+      </main>
+    </Sidebar.Provider>
+  );
+}
+
+function ToggleButton() {
+  const { toggleSidebar } = useSidebar();
+  return <button onClick={toggleSidebar}>Toggle</button>;
+}`}>
+          <SidebarToggleDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Resizable</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Enable drag-to-resize with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">resizable</code> on the Provider
+          and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.ResizeHandle</code> inside the Sidebar.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen resizable defaultWidth={240} minWidth={180} maxWidth={400}>
+  <Sidebar>
+    <Sidebar.Header>...</Sidebar.Header>
+    <Sidebar.Content>...</Sidebar.Content>
+    <Sidebar.Footer>...</Sidebar.Footer>
+    <Sidebar.ResizeHandle />
+  </Sidebar>
+  <main className="flex-1">...</main>
+</Sidebar.Provider>`}>
+          <SidebarResizableDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Right Side</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">side="right"</code> for a sidebar on the right edge.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen side="right">
+  <main className="flex-1">...</main>
+  <Sidebar>
+    <Sidebar.Header>Details</Sidebar.Header>
+    <Sidebar.Content>...</Sidebar.Content>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarRightDemo client:load />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">API Reference</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          The main sidebar container. Renders as <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;aside&gt;</code> on desktop, Dialog sheet on mobile.
+        </p>
+        <PropsTable component="Sidebar" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Provider</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Context provider managing expand/collapse state and mobile detection.
+        </p>
+        <PropsTable component="Sidebar.Provider" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.MenuButton</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Primary interactive element inside a menu item. Supports icons, active state, links, and auto-tooltip when collapsed.
+        </p>
+        <PropsTable component="Sidebar.MenuButton" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.MenuSubButton</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Button inside a sub-menu item for nested navigation.
+        </p>
+        <PropsTable component="Sidebar.MenuSubButton" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Input</h3>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Search trigger button styled as an input. Typically opens a command palette.
+        </p>
+        <PropsTable component="Sidebar.Input" />
+      </div>
+    </div>
+  </ComponentSection>
+</DocLayout>
