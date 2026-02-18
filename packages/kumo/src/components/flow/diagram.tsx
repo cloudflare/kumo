@@ -34,9 +34,11 @@ const MIN_SCROLLBAR_THUMB_SIZE = 10;
 
 // Vertical orientation is currently a no-op
 type Orientation = "horizontal" | "vertical";
+type Align = "start" | "center";
 
 interface DiagramContextValue {
   orientation: Orientation;
+  align: Align;
   x: MotionValue<number>;
   y: MotionValue<number>;
   /** Ref to the canvas viewport wrapper element */
@@ -55,12 +57,19 @@ export function useDiagramContext(): DiagramContextValue {
 
 interface FlowDiagramProps {
   orientation?: Orientation;
+  /**
+   * Controls vertical alignment of nodes in horizontal orientation.
+   * - `start`: Nodes align to the top (default)
+   * - `center`: Nodes are vertically centered
+   */
+  align?: Align;
   className?: string;
   children?: ReactNode;
 }
 
 export function FlowDiagram({
   orientation = "horizontal",
+  align = "start",
   className,
   children,
 }: FlowDiagramProps) {
@@ -212,8 +221,8 @@ export function FlowDiagram({
   const scrollLeft = useMotionTemplate`${scrollbarXPercent}%`;
 
   const contextValue = useMemo(
-    () => ({ orientation, x, y, wrapperRef }),
-    [orientation, x, y],
+    () => ({ orientation, align, x, y, wrapperRef }),
+    [orientation, align, x, y],
   );
 
   return (
@@ -305,7 +314,7 @@ export const getNodeRect = (
 };
 
 export function FlowNodeList({ children }: { children: ReactNode }) {
-  const { orientation } = useDiagramContext();
+  const { orientation, align } = useDiagramContext();
   const descendants = useNodeGroup();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -342,7 +351,9 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
             "ml-0 list-none",
             orientation === "vertical"
               ? "grid auto-rows-min gap-16"
-              : "flex items-start gap-16",
+              : "flex gap-16",
+            orientation === "horizontal" &&
+              (align === "center" ? "items-center" : "items-start"),
           )}
         >
           {children}
