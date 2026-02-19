@@ -20,11 +20,25 @@ const WORKER_URL =
 const SCREENSHOTS_DIR = "ci/visual-regression/screenshots";
 const API_KEY = process.env.SCREENSHOT_API_KEY ?? "";
 
+/**
+ * Screenshot result returned by the worker.
+ *
+ * For section-based screenshots (when `captureSections` was true and
+ * `[data-vr-demo]` elements were found), each element produces one result with:
+ * - `sectionId`: from `data-vr-section` attribute (e.g., "primary-variant")
+ * - `sectionTitle`: from `data-vr-title` attribute (e.g., "Primary Variant")
+ *
+ * These identifiers are used to create stable screenshot filenames that
+ * persist across runs, enabling accurate before/after comparisons.
+ */
 interface ScreenshotResult {
   url: string;
+  /** Base64-encoded PNG image */
   image: string;
   error?: string;
+  /** Unique identifier for this demo section, from data-vr-section attribute */
   sectionId?: string;
+  /** Human-readable title for reports, from data-vr-title attribute */
   sectionTitle?: string;
 }
 
@@ -179,6 +193,22 @@ async function uploadImageToGitHub(
   return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${path}`;
 }
 
+/**
+ * Request sent to the screenshot worker for each page.
+ *
+ * When `captureSections` is true, the worker should:
+ * 1. Query `document.querySelectorAll('[data-vr-demo]')` to find all demo sections
+ * 2. For each demo element:
+ *    - Scroll it into view (with margin for context)
+ *    - Take an element-level screenshot (not full page)
+ *    - Return a ScreenshotResult with:
+ *      - `sectionId` from `data-vr-section` attribute
+ *      - `sectionTitle` from `data-vr-title` attribute
+ * 3. If no `[data-vr-demo]` elements exist, fall back to full-page screenshot
+ *
+ * This ensures stable, per-component screenshots that don't shift based on
+ * scroll position or page layout changes.
+ */
 interface PageRequest {
   url: string;
   captureSections: boolean;

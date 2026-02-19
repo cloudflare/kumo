@@ -10,6 +10,8 @@ import { kumoColorsPlugin } from "./src/lib/vite-plugin-kumo-colors.js";
 import { kumoRegistryPlugin } from "./src/lib/vite-plugin-kumo-registry.js";
 import { kumoHmrPlugin } from "./src/lib/vite-plugin-kumo-hmr.js";
 
+import sitemap from "@astrojs/sitemap";
+
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 function getBuildInfo() {
@@ -67,7 +69,8 @@ const kumoSrc = resolve(__dirname, "../kumo/src");
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
+  integrations: [react(), sitemap()],
+  site: "https://kumo-ui.com/",
   vite: {
     plugins: [
       // In dev mode, resolve @cloudflare/kumo imports to raw source files

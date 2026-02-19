@@ -1,5 +1,95 @@
 # @cloudflare/kumo
 
+## 1.6.0
+
+### Minor Changes
+
+- 50d4251: Add DatePicker component built on react-day-picker v9
+
+  **New Component: DatePicker**
+  - Three selection modes: `single`, `multiple`, and `range`
+  - Forwards all react-day-picker props for maximum flexibility
+  - Styled with Kumo tokens (no external CSS import needed)
+  - Supports localization via date-fns locales
+  - Supports timezone via `timeZone` prop
+  - Custom modifiers for highlighting specific dates
+  - Footer prop for messages/usage limits
+  - Accessible keyboard navigation with Kumo-styled focus rings
+
+  **Usage:**
+
+  ```tsx
+  // Single date
+  <DatePicker mode="single" selected={date} onSelect={setDate} />
+
+  // Multiple dates
+  <DatePicker mode="multiple" selected={dates} onSelect={setDates} max={5} />
+
+  // Date range
+  <DatePicker mode="range" selected={range} onSelect={setRange} numberOfMonths={2} />
+  ```
+
+  **Composing with Popover:**
+
+  ```tsx
+  <Popover>
+    <Popover.Trigger asChild>
+      <Button variant="outline" icon={CalendarDotsIcon}>
+        Pick a date
+      </Button>
+    </Popover.Trigger>
+    <Popover.Content className="p-3">
+      <DatePicker mode="single" selected={date} onSelect={setDate} />
+    </Popover.Content>
+  </Popover>
+  ```
+
+  **Note:** Consider using `DatePicker` with `mode="range"` instead of `DateRangePicker` for new projects - it offers more flexibility and a smaller bundle size.
+
+  **Internal changes:**
+  - Added `react-day-picker` v9 as a dependency
+  - Updated lint rule to allow components without KUMO\_\*\_VARIANTS exports
+  - Updated component registry codegen to handle variant-less components
+  - Disabled `jsx-a11y/no-autofocus` rule (intentional prop forwarding)
+
+- 93361ed: feat(clipboard-text): add slide animation with tooltip on copy
+
+### Patch Changes
+
+- c71bd9b: Updated the MenuBar so its child buttons align with the container’s outer corners.
+- 46ecf42: Fix `kumo add` to consolidate imports from `@cloudflare/kumo` into a single statement using inline `type` syntax.
+
+  Previously, running `kumo add DeleteResource` would produce non-conformant code with duplicate imports:
+
+  ```typescript
+  import { Dialog, DialogRoot } from "@cloudflare/kumo";
+  import { Input } from "@cloudflare/kumo";
+  import { Button } from "@cloudflare/kumo";
+  ```
+
+  Now it produces a single consolidated import:
+
+  ```typescript
+  import {
+    Dialog,
+    DialogRoot,
+    Input,
+    Button,
+    type DialogProps,
+  } from "@cloudflare/kumo";
+  ```
+
+  This satisfies ESLint's `import/no-duplicates` rule with `prefer-inline: true`.
+
+- a9167fa: Fix z-index stacking issues with nested portaled components (e.g., Select inside Dialog)
+  - Remove unnecessary z-index values from Dialog, Select, Combobox, and Dropdown
+  - Delete `.z-modal { z-index: 9999 }` - DOM order now handles stacking naturally
+  - Components opened later correctly appear on top without z-index wars
+
+- f02494d: fix(dropdown): improve external link detection to handle http:// and protocol-relative urls
+
+  updated the external link check to use a regex that matches `https://`, `http://`, and protocol-relative URLs (`//`). previously only `https://` links opened in a new tab.
+
 ## 1.5.1
 
 ### Patch Changes
