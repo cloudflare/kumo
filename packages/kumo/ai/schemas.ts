@@ -135,9 +135,10 @@ export const ButtonPropsSchema = z.object({
   size: z.enum(["xs", "sm", "base", "lg"]).optional(),
   variant: z.enum(["primary", "secondary", "ghost", "destructive", "secondary-destructive", "outline"]).optional(),
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
-  className: z.string().optional(),
   icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon from `@phosphor-icons/react` or a React element. Rendered before children.
   loading: z.boolean().optional(), // Shows a loading spinner and disables interaction.
+  render: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Allows you to replace the component’s HTML element with a different tag, or compose it with another component. Accepts a `ReactElement` or a function that returns the element to render.
+  className: z.string().optional(),
   id: z.string().optional(),
   lang: z.string().optional(),
   title: z.string().optional(),

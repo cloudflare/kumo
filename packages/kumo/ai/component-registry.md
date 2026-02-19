@@ -221,7 +221,7 @@ Props:
 
 ### Button
 
-Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
+Button component with support for composition via the `render` prop.  The `render` prop allows you to replace the underlying `<button>` element with a different element or component (like an anchor or React Router Link), while preserving all Button styling and behavior.
 
 **Type:** component
 
@@ -266,11 +266,15 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
     - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70`
     - `data-state`: `data-[state=open]:bg-kumo-control`
 - `children`: ReactNode
-- `className`: string
 - `icon`: ReactNode
   Icon from `@phosphor-icons/react` or a React element. Rendered before children.
 - `loading`: boolean
   Shows a loading spinner and disables interaction.
+- `render`: ReactNode
+  Allows you to replace the component’s HTML element with a different tag, or compose it with another component.
+
+Accepts a `ReactElement` or a function that returns the element to render.
+- `className`: string
 - `id`: string
 - `lang`: string
 - `title`: string
@@ -339,6 +343,51 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
         aria-label="Add item"
       />
     </div>
+```
+
+```tsx
+<Button
+      render={
+        <a
+          href="https://cloudflare.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      }
+      variant="primary"
+    >
+      Visit Cloudflare
+      <ArrowUpRight className="ml-1" />
+    </Button>
+```
+
+```tsx
+<div className="flex flex-wrap items-center gap-3">
+      <Button render={<a href="#primary" />} variant="primary">
+        Primary Link
+      </Button>
+      <Button render={<a href="#secondary" />} variant="secondary">
+        Secondary Link
+      </Button>
+      <Button render={<a href="#ghost" />} variant="ghost">
+        Ghost Link
+      </Button>
+    </div>
+```
+
+```tsx
+<Button
+      loading={false}
+      render={(
+        props: React.HTMLAttributes<HTMLAnchorElement>,
+        state: { loading: boolean },
+      ) => (
+        <a {...props} href="#callback">
+          {state.loading ? "Loading..." : "Render Callback"}
+        </a>
+      )}
+      variant="secondary"
+    />
 ```
 
 
@@ -574,12 +623,10 @@ Read-only text field with a one-click copy-to-clipboard button.
 ```
 
 ```tsx
-<ClipboardTextToastProvider>
-      <ClipboardText
-        text="npx kumo add button"
-        tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
-      />
-    </ClipboardTextToastProvider>
+<ClipboardText
+      text="npx kumo add button"
+      tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+    />
 ```
 
 

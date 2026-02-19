@@ -1,5 +1,7 @@
 import React from "react";
 import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
+import { useRender } from "@base-ui/react/use-render";
+import { mergeProps } from "@base-ui/react/merge-props";
 import { Loader } from "../loader/loader";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
@@ -149,23 +151,33 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
 };
 
 /**
+ * State object passed to the render callback function.
+ * Allows consumers to conditionally render based on button state.
+ */
+export interface ButtonState extends Record<string, unknown> {
+  disabled: boolean;
+  loading: boolean;
+}
+
+/**
  * Button component props.
  *
  * Uses a discriminated union on `shape` so that icon-only buttons
  * (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ *
+ * Supports composition via the `render` prop for polymorphic rendering.
  *
  * @example
  * ```tsx
  * <Button variant="primary">Save</Button>
  * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add" />
  * <Button variant="destructive" loading>Deleting...</Button>
+ * <Button render={<a href="/about" />}>About</Button>
  * ```
  */
-type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonBaseProps = useRender.ComponentProps<"button", ButtonState> & {
   /** Content rendered inside the button. */
   children?: React.ReactNode;
-  /** Additional CSS classes merged via `cn()`. */
-  className?: string;
   /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
   icon?: Icon | React.ReactNode;
   /** Shows a loading spinner and disables interaction. */
@@ -211,12 +223,43 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
   };
 
 /**
- * Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
+ * Button component with support for composition via the `render` prop.
  *
- * @example
+ * The `render` prop allows you to replace the underlying `<button>` element
+ * with a different element or component (like an anchor or React Router Link),
+ * while preserving all Button styling and behavior.
+ *
+ * @example Basic usage
  * ```tsx
- * <Button variant="primary">Save</Button>
- * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
+ * <Button variant="primary">Click me</Button>
+ * ```
+ *
+ * @example As a link (anchor)
+ * ```tsx
+ * <Button render={<a href="/about" />}>About</Button>
+ * ```
+ *
+ * @example With React Router
+ * ```tsx
+ * import { Link } from 'react-router-dom';
+ * <Button render={<Link to="/dashboard" />}>Dashboard</Button>
+ * ```
+ *
+ * @example With Next.js Link
+ * ```tsx
+ * import Link from 'next/link';
+ * <Button render={<Link href="/page" />}>Page</Button>
+ * ```
+ *
+ * @example Render callback for state-based rendering
+ * ```tsx
+ * <Button
+ *   render={(props, state) => (
+ *     <a {...props} href="/link">
+ *       {state.loading ? 'Loading...' : 'Click me'}
+ *     </a>
+ *   )}
+ * />
  * ```
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -225,35 +268,51 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       className,
       disabled,
-      loading,
+      loading = false,
       shape = "base",
       size = "base",
       variant = "secondary",
       icon: IconComponent,
+      render,
       ...props
     },
     ref,
   ) => {
     const { type, ...restProps } = props;
-    return (
-      <button
-        ref={ref}
-        className={cn(
-          buttonVariants({ variant, size, shape }),
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
-          disabled && "cursor-not-allowed opacity-50",
-          className,
-        )}
-        disabled={loading || disabled}
-        type={type ?? "button"}
-        {...restProps}
-      >
-        {loading && <Loader size={size === "lg" ? 16 : 14} />}
-        {!loading && renderIconNode(IconComponent)}
 
-        {children}
-      </button>
+    const isDisabled = loading || disabled || false;
+
+    const state: ButtonState = React.useMemo(
+      () => ({
+        disabled: isDisabled,
+        loading,
+      }),
+      [isDisabled, loading],
     );
+
+    const defaultProps: useRender.ElementProps<"button"> = {
+      className: cn(
+        buttonVariants({ variant, size, shape }),
+        "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
+        isDisabled && "cursor-not-allowed opacity-50",
+      ),
+      disabled: isDisabled,
+      type: type ?? "button",
+      children: (
+        <>
+          {loading && <Loader size={size === "lg" ? 16 : 14} />}
+          {!loading && renderIconNode(IconComponent)}
+          {children}
+        </>
+      ),
+    };
+
+    return useRender<ButtonState, HTMLButtonElement>({
+      render: render ?? <button />,
+      ref,
+      state,
+      props: mergeProps<"button">(defaultProps, restProps, { className }),
+    });
   },
 );
 
