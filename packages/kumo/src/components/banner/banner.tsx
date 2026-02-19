@@ -137,7 +137,12 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
     return (
       <div ref={ref} className={cn(bannerVariants({ variant }), className)}>
         {icon && (
-          <span className={cn("shrink-0 mt-0.5", variantConfig.iconClasses)}>
+          <span
+            className={cn(
+              "shrink-0 flex items-center h-[1.375em]",
+              variantConfig.iconClasses,
+            )}
+          >
             {icon}
           </span>
         )}
