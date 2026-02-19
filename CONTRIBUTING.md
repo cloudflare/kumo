@@ -270,4 +270,4 @@ When contributing to Kumo, please refer to the [`STYLEGUIDE.md file`](STYLEGUIDE
 
 ## Releases
 
-We generally cut Kumo releases on Tuesday & Thursday each week. If you need a release cut outside of the regular cadence, please reach out to the [kumo-maintainers](https://github.com/orgs/cloudflare/teams/kumo-maintainers) team.
+We generally cut Kumo releases on every weekday. If you need a release cut outside of the regular cadence, please reach out to the [kumo-maintainers](https://github.com/orgs/cloudflare/teams/kumo-maintainers) team.
