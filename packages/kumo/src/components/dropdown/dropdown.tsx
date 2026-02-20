@@ -1,7 +1,6 @@
 import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
-import { useLinkComponent } from "../../utils/link-provider";
 import { Checkbox } from "../checkbox";
 import {
   CaretRightIcon as CaretRight,
@@ -114,13 +113,38 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   return <Comp className="mr-2 h-4 w-4" />;
 };
 
+/**
+ * DropdownMenuItem — a single item within a dropdown menu.
+ *
+ * Use the `render` prop for polymorphic rendering (links, buttons, etc.):
+ *
+ * @example
+ * ```tsx
+ * // Simple item
+ * <DropdownMenu.Item>Edit</DropdownMenu.Item>
+ *
+ * // As a link (external)
+ * <DropdownMenu.Item render={<a href="https://example.com" target="_blank" />}>
+ *   Visit site
+ * </DropdownMenu.Item>
+ *
+ * // As a React Router link
+ * <DropdownMenu.Item render={<Link to="/settings" />}>
+ *   Settings
+ * </DropdownMenu.Item>
+ *
+ * // As a Next.js link
+ * <DropdownMenu.Item render={<Link href="/dashboard" />}>
+ *   Dashboard
+ * </DropdownMenu.Item>
+ * ```
+ */
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
     icon?: Icon | React.ReactNode;
     selected?: boolean;
-    href?: string;
     variant?: "default" | "danger";
   }
 >(
@@ -131,76 +155,11 @@ const DropdownMenuItem = React.forwardRef<
       icon: IconComponent,
       children,
       selected,
-      render,
-      href,
       variant = "default",
       ...props
     },
     ref,
   ) => {
-    const LinkComponent = useLinkComponent();
-    const content = React.useMemo(() => {
-      const innerContent = (
-        <>
-          {IconComponent && renderIconNode(IconComponent)}
-          {children}
-          {selected && (
-            <span className="inline-flex">
-              <Check />
-            </span>
-          )}
-        </>
-      );
-
-      if (!href) return innerContent;
-
-      // Matches http://, https://, or protocol-relative //
-      const isExternal = /^(https?:)?\/\//.test(href);
-      const styles = cn(
-        "flex items-center",
-        variant === "danger" &&
-          "text-kumo-danger data-highlighted:bg-kumo-danger/5 data-highlighted:text-kumo-danger",
-      );
-      if (isExternal) {
-        return (
-          <a
-            className={cn(styles, "w-full text-inherit! no-underline!")}
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            /**
-             * For some reason we need this here to prevent the outer link
-             * from being clicked (thereby going to the worker details
-             * instead of visiting the link)
-             */
-            onClick={(e) => e.stopPropagation()}
-          >
-            {innerContent}
-          </a>
-        );
-      }
-      return (
-        <LinkComponent
-          className={cn(styles, "w-full text-inherit! no-underline!")}
-          href={href}
-          to={href}
-          /**
-           * For some reason we need this here to prevent the outer link
-           * from being clicked (thereby going to the worker details
-           * instead of visiting the link)
-           */
-          onClick={(e) => e.stopPropagation()}
-        >
-          {innerContent}
-        </LinkComponent>
-      );
-    }, [href, IconComponent, children, selected, variant, LinkComponent]);
-
-    // When href is provided, content already contains children via innerContent
-    // When render prop is provided, caller controls children rendering
-    // Only pass children directly when neither href nor render is used
-    const useRenderProp = href || render;
-
     return (
       <DropdownMenuPrimitive.Item
         ref={ref}
@@ -210,10 +169,15 @@ const DropdownMenuItem = React.forwardRef<
           dropdownVariants({ variant }),
           className,
         )}
-        render={href ? content : render}
         {...props}
       >
-        {useRenderProp ? undefined : children}
+        {IconComponent && renderIconNode(IconComponent)}
+        {children}
+        {selected && (
+          <span className="inline-flex">
+            <Check />
+          </span>
+        )}
       </DropdownMenuPrimitive.Item>
     );
   },

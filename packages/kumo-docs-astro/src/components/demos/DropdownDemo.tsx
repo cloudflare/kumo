@@ -6,6 +6,9 @@ import {
   CreditCardIcon,
   MoonIcon,
   SignOutIcon,
+  ArrowSquareOutIcon,
+  GearIcon,
+  BookOpenIcon,
 } from "@phosphor-icons/react";
 
 export function DropdownBasicDemo() {
@@ -79,6 +82,42 @@ export function DropdownCheckboxDemo() {
   );
 }
 
+/** Render items as links using the `render` prop for polymorphic behavior. */
+export function DropdownLinksDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Resources</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.Item
+          icon={BookOpenIcon}
+          render={
+            // oxlint-disable-next-line anchor-has-content -- content provided by DropdownMenu.Item children
+            <a
+              href="https://developers.cloudflare.com"
+              target="_blank"
+              rel="noreferrer"
+            />
+          }
+        >
+          Documentation
+          <ArrowSquareOutIcon className="ml-2 h-4 w-4 opacity-50" />
+        </DropdownMenu.Item>
+        <DropdownMenu.Item
+          icon={GearIcon}
+          // oxlint-disable-next-line anchor-has-content -- content provided by DropdownMenu.Item children
+          render={<a href="/settings" />}
+        >
+          Settings
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item variant="danger" icon={SignOutIcon}>
+          Log out
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
 export function DropdownNestedDemo() {
   const [language, setLanguage] = useState("en");
   const [timezone, setTimezone] = useState("America/Los_Angeles");
@@ -96,7 +135,10 @@ export function DropdownNestedDemo() {
           <DropdownMenu.SubTrigger>Language</DropdownMenu.SubTrigger>
           <DropdownMenu.SubContent>
             <DropdownMenu.Group>
-              <DropdownMenu.RadioGroup value={language} onValueChange={setLanguage}>
+              <DropdownMenu.RadioGroup
+                value={language}
+                onValueChange={setLanguage}
+              >
                 {languages.map((lang) => (
                   <DropdownMenu.RadioItem key={lang.code} value={lang.code}>
                     {lang.label}
@@ -113,7 +155,10 @@ export function DropdownNestedDemo() {
           <DropdownMenu.SubTrigger>Set Timezone</DropdownMenu.SubTrigger>
           <DropdownMenu.SubContent>
             <DropdownMenu.Group>
-              <DropdownMenu.RadioGroup value={timezone} onValueChange={setTimezone}>
+              <DropdownMenu.RadioGroup
+                value={timezone}
+                onValueChange={setTimezone}
+              >
                 {timezones.map((tz) => (
                   <DropdownMenu.RadioItem key={tz.value} value={tz.value}>
                     {tz.label}
