@@ -178,8 +178,9 @@ function Content({
       >
         <ComboboxBase.Popup
           className={cn(
-            "max-h-[min(var(--available-height),24rem)] max-w-(--available-width) min-w-(--anchor-width) scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-contain p-1.5",
-            "overflow-hidden bg-kumo-control text-kumo-default", // background
+            "flex flex-col", // flexbox layout for sticky input + scrollable list
+            "max-h-[min(var(--available-height),24rem)] max-w-(--available-width) min-w-(--anchor-width) py-1.5",
+            "bg-kumo-control text-kumo-default", // background
             "rounded-lg shadow-lg ring ring-kumo-line", // border part
             className,
           )}
@@ -238,7 +239,7 @@ function Item({ children, ...props }: ComboboxBase.Item.Props) {
   return (
     <ComboboxBase.Item
       {...props}
-      className="group grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
+      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
     >
       <div className="col-start-1">{children}</div>
       <ComboboxBase.ItemIndicator className="col-start-2 flex items-center">
@@ -253,7 +254,7 @@ function Empty(props: ComboboxBase.Empty.Props) {
     <ComboboxBase.Empty
       {...props}
       className={cn(
-        "px-4 py-2 text-[0.925rem] leading-4 text-kumo-subtle empty:m-0 empty:p-0",
+        "mx-1.5 shrink-0 px-4 py-2 text-[0.925rem] leading-4 text-kumo-subtle empty:m-0 empty:p-0",
       )}
       children={props.children ?? "No labels found."}
     />
@@ -264,7 +265,26 @@ function Input(props: ComboboxBase.Input.Props) {
   return (
     <ComboboxBase.Input
       {...props}
-      className={cn(inputVariants(), "w-full first:mb-2", props.className)}
+      className={cn(
+        inputVariants(),
+        "mx-1.5 w-[calc(100%-0.75rem)] shrink-0 first:mb-2",
+        props.className,
+      )}
+    />
+  );
+}
+
+function List({
+  className,
+  ...props
+}: ComboboxBase.List.Props & { className?: string }) {
+  return (
+    <ComboboxBase.List
+      {...props}
+      className={cn(
+        "min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-pt-2 scroll-pb-2",
+        className,
+      )}
     />
   );
 }
@@ -273,7 +293,7 @@ function GroupLabel(props: ComboboxBase.GroupLabel.Props) {
   return (
     <ComboboxBase.GroupLabel
       {...props}
-      className="ml-[16px] px-4 py-1.5 text-sm font-medium"
+      className="mx-1.5 px-4 py-1.5 text-sm font-medium"
     />
   );
 }
@@ -402,7 +422,9 @@ export const Combobox = Object.assign(Root, {
   GroupLabel,
   Group,
 
+  // Styled BaseUI
+  List,
+
   // BaseUI
-  List: ComboboxBase.List,
   Collection: ComboboxBase.Collection,
 });
