@@ -62,7 +62,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-400, oklch(70.8% 0 0))",
+          dark: "var(--color-neutral-600, oklch(70.8% 0 0))",
         },
       },
     },

@@ -5,7 +5,7 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
-import { DialogBasicDemo, DialogWithActionsDemo, DialogConfirmationDemo } from "../../components/demos/DialogDemo";
+import { DialogBasicDemo, DialogWithActionsDemo, DialogConfirmationDemo, DialogWithSelectDemo, DialogWithComboboxDemo, DialogWithDropdownDemo } from "../../components/demos/DialogDemo";
 ---
 
 <DocLayout
@@ -204,6 +204,76 @@ export default function Example() {
   </Dialog>
 </Dialog.Root>`}>
           <DialogWithActionsDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Select</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Dialog containing a Select dropdown.
+        </p>
+        <ComponentExample code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+  <Dialog className="p-8">
+    <Dialog.Title>Create Resource</Dialog.Title>
+    <Dialog.Description>Select a region for your new resource.</Dialog.Description>
+    <Select className="w-full">
+      <Select.Option value="us-east">US East</Select.Option>
+      <Select.Option value="us-west">US West</Select.Option>
+      <Select.Option value="eu-west">EU West</Select.Option>
+    </Select>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogWithSelectDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Combobox</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Dialog containing a Combobox for searchable selection.
+        </p>
+        <ComponentExample code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+  <Dialog className="p-8">
+    <Dialog.Title>Create Resource</Dialog.Title>
+    <Dialog.Description>Search and select a region.</Dialog.Description>
+    <Combobox value={value} onValueChange={setValue} items={regions}>
+      <Combobox.TriggerInput placeholder="Search regions..." />
+      <Combobox.Content>
+        <Combobox.List>
+          {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogWithComboboxDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Dropdown</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Dialog containing a Dropdown menu.
+        </p>
+        <ComponentExample code={`<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+  <Dialog className="p-8">
+    <Dialog.Title>Resource Actions</Dialog.Title>
+    <Dialog.Description>Choose an action.</Dialog.Description>
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Actions</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.Item>Edit</DropdownMenu.Item>
+        <DropdownMenu.Item>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item variant="danger">Delete</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogWithDropdownDemo client:load />
         </ComponentExample>
       </div>
     </div>

@@ -512,10 +512,14 @@ Read-only text field with a one-click copy-to-clipboard button.
   The text to display and copy to clipboard.
 - `className`: string
   Additional CSS classes merged via `cn()`.
+- `tooltip`: object
+  Tooltip config. Shows tooltip on hover, anchored toast on click.
+- `labels`: object
+  Accessible labels for i18n.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `border-kumo-line`
+`bg-kumo-base`, `border-kumo-line`, `outline-kumo-fill`, `text-kumo-default`
 
 **Styling:**
 
@@ -567,6 +571,15 @@ Read-only text field with a one-click copy-to-clipboard button.
 
 ```tsx
 <ClipboardText text="0c239dd2" />
+```
+
+```tsx
+<ClipboardTextToastProvider>
+      <ClipboardText
+        text="npx kumo add button"
+        tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+      />
+    </ClipboardTextToastProvider>
 ```
 
 
@@ -1881,94 +1894,6 @@ DateRangePicker — dual-calendar date range selector.  Renders two side-by-side
       - padding: 20
       - gap: 12
 
-**Examples:**
-
-```tsx
-<div className="flex flex-col gap-4">
-      <DateRangePicker
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-      />
-      <div className="text-sm text-kumo-subtle">
-        {startDate && endDate ? (
-          <span>
-            Selected: {startDate.toLocaleDateString()} -{" "}
-            {endDate.toLocaleDateString()}
-          </span>
-        ) : startDate ? (
-          <span>Start: {startDate.toLocaleDateString()} (select end date)</span>
-        ) : (
-          <span>Select a date range</span>
-        )}
-      </div>
-    </div>
-```
-
-```tsx
-<div className="flex flex-col gap-8">
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">Small</p>
-        <DateRangePicker
-          size="sm"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Base (default)
-        </p>
-        <DateRangePicker
-          size="base"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">Large</p>
-        <DateRangePicker
-          size="lg"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-    </div>
-```
-
-```tsx
-<div className="flex flex-col gap-8">
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Default variant
-        </p>
-        <DateRangePicker
-          variant="default"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Subtle variant
-        </p>
-        <DateRangePicker
-          variant="subtle"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-    </div>
-```
-
-```tsx
-<DateRangePicker
-      timezone="London, UK (GMT+0)"
-      onStartDateChange={() => {}}
-      onEndDateChange={() => {}}
-    />
-```
-
-
 ---
 
 ### Dialog
@@ -2139,6 +2064,110 @@ Close sub-component
               </Button>
             )}
           />
+        </div>
+      </Dialog>
+    </Dialog.Root>
+```
+
+```tsx
+<Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Create Resource
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-4 text-kumo-subtle">
+          Select a region for your new resource.
+        </Dialog.Description>
+        <Select
+          className="w-full"
+          renderValue={(v) =>
+            regions.find((r) => r.value === v)?.label ?? "Select region..."
+          }
+        >
+          {regions.map((region) => (
+            <Select.Option key={region.value} value={region.value}>
+              {region.label}
+            </Select.Option>
+          ))}
+        </Select>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
+```
+
+```tsx
+<Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Create Resource
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-4 text-kumo-subtle">
+          Search and select a region for your new resource.
+        </Dialog.Description>
+        <Combobox value={value} onValueChange={setValue} items={regions}>
+          <Combobox.TriggerInput
+            className="w-full"
+            placeholder="Search regions..."
+          />
+          <Combobox.Content>
+            <Combobox.Empty>No regions found</Combobox.Empty>
+            <Combobox.List>
+              {(item: { value: string; label: string }) => (
+                <Combobox.Item key={item.value} value={item}>
+                  {item.label}
+                </Combobox.Item>
+              )}
+            </Combobox.List>
+          </Combobox.Content>
+        </Combobox>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
         </div>
       </Dialog>
     </Dialog.Root>
@@ -4141,16 +4170,27 @@ ResizeHandle sub-component
         <Table>
           <Table.Header>
             <Table.Row>
-              <Table.CheckHead aria-label="Select all rows" />
+              <Table.CheckHead
+                checked={selectedIds.size === rows.length}
+                indeterminate={
+                  selectedIds.size > 0 && selectedIds.size < rows.length
+                }
+                onValueChange={toggleAll}
+                aria-label="Select all rows"
+              />
               <Table.Head>Subject</Table.Head>
               <Table.Head>From</Table.Head>
               <Table.Head>Date</Table.Head>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {emailData.slice(0, 3).map((row) => (
+            {rows.map((row) => (
               <Table.Row key={row.id}>
-                <Table.CheckCell aria-label={`Select ${row.subject}`} />
+                <Table.CheckCell
+                  checked={selectedIds.has(row.id)}
+                  onValueChange={() => toggleRow(row.id)}
+                  aria-label={`Select ${row.subject}`}
+                />
                 <Table.Cell>{row.subject}</Table.Cell>
                 <Table.Cell>{row.from}</Table.Cell>
                 <Table.Cell>{row.date}</Table.Cell>
@@ -4238,7 +4278,8 @@ ResizeHandle sub-component
       <LayerCard.Primary className="w-full overflow-x-auto p-0">
         <Table layout="fixed">
           <colgroup>
-            <col style={{ width: "40px" }} />
+            <col />{" "}
+            {/* Checkbox column - width handled by Table.CheckHead/CheckCell */}
             <col />
             <col style={{ width: "150px" }} />
             <col style={{ width: "120px" }} />
@@ -4291,14 +4332,30 @@ ResizeHandle sub-component
                   <span className="truncate">{row.date}</span>
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    shape="square"
-                    aria-label="More options"
-                  >
-                    <DotsThree weight="bold" size={16} />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenu.Trigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          shape="square"
+                          aria-label="More options"
+                        >
+                          <DotsThree weight="bold" size={16} />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item icon={Eye}>View</DropdownMenu.Item>
+                      <DropdownMenu.Item icon={PencilSimple}>
+                        Edit
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item icon={Trash} variant="danger">
+                        Delete
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu>
                 </Table.Cell>
               </Table.Row>
             ))}

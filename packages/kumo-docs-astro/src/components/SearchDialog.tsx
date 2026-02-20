@@ -19,6 +19,7 @@ import {
  * 3. Add its description to COMPONENT_DESCRIPTIONS below
  */
 const COMPONENTS_WITHOUT_DOCS = new Set([
+  "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
   "InputArea",
@@ -106,7 +107,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   badge: "Displays a small label for status, categorization, or metadata.",
   "command-palette":
     "A keyboard-driven command menu for searching and navigating.",
-  "date-range-picker": "A date picker component for selecting date ranges.",
   meter: "A visual indicator showing a value within a known range.",
   pagination: "Navigation controls for paginated content.",
   banner:

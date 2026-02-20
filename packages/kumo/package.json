@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -178,6 +178,10 @@
     "./components/cloudflare-logo": {
       "types": "./dist/src/components/cloudflare-logo/index.d.ts",
       "import": "./dist/components/cloudflare-logo.js"
+    },
+    "./components/flow": {
+      "types": "./dist/src/components/flow/index.d.ts",
+      "import": "./dist/components/flow.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
@@ -394,6 +398,7 @@
     "test:unit": "vitest run --project=unit",
     "test:coverage": "vitest run --coverage",
     "test:exports": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
+    "test:watch": "vitest run --project=unit --watch",
     "typecheck": "tsc --noEmit",
     "validate:build": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
     "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts"
@@ -412,6 +417,7 @@
   "dependencies": {
     "@base-ui/react": "^1.0.0",
     "clsx": "^2.1.1",
+    "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",
     "tailwind-merge": "^3.4.0"
   },

@@ -170,7 +170,7 @@ function Content({
   return (
     <ComboboxBase.Portal>
       <ComboboxBase.Positioner
-        className="z-50 outline-none"
+        className="outline-none"
         align={align}
         sideOffset={sideOffset}
         alignOffset={alignOffset}
@@ -179,7 +179,7 @@ function Content({
         <ComboboxBase.Popup
           className={cn(
             "max-h-[min(var(--available-height),24rem)] max-w-(--available-width) min-w-(--anchor-width) scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-contain p-1.5",
-            "z-50 overflow-hidden bg-kumo-control text-kumo-default", // background
+            "overflow-hidden bg-kumo-control text-kumo-default", // background
             "rounded-lg shadow-lg ring ring-kumo-line", // border part
             className,
           )}
