@@ -282,7 +282,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
           className,
         )}
       >
-        <span className="grow px-4">{text}</span>
+        <span className="grow overflow-hidden px-4">{text}</span>
         {tooltip ? (
           <TooltipWrapper>
             <Tooltip.Root
