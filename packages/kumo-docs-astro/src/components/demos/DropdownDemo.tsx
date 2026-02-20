@@ -82,33 +82,23 @@ export function DropdownCheckboxDemo() {
   );
 }
 
-/** Render items as links using the `render` prop for polymorphic behavior. */
+/** Use `LinkItem` for menu items that navigate to a URL. */
 export function DropdownLinksDemo() {
   return (
     <DropdownMenu>
       <DropdownMenu.Trigger render={<Button>Resources</Button>} />
       <DropdownMenu.Content>
-        <DropdownMenu.Item
+        <DropdownMenu.LinkItem
           icon={BookOpenIcon}
-          render={
-            // oxlint-disable-next-line anchor-has-content -- content provided by DropdownMenu.Item children
-            <a
-              href="https://developers.cloudflare.com"
-              target="_blank"
-              rel="noreferrer"
-            />
-          }
+          href="https://developers.cloudflare.com"
+          target="_blank"
         >
           Documentation
           <ArrowSquareOutIcon className="ml-2 h-4 w-4 opacity-50" />
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          icon={GearIcon}
-          // oxlint-disable-next-line anchor-has-content -- content provided by DropdownMenu.Item children
-          render={<a href="/settings" />}
-        >
+        </DropdownMenu.LinkItem>
+        <DropdownMenu.LinkItem icon={GearIcon} href="/settings">
           Settings
-        </DropdownMenu.Item>
+        </DropdownMenu.LinkItem>
         <DropdownMenu.Separator />
         <DropdownMenu.Item variant="danger" icon={SignOutIcon}>
           Log out

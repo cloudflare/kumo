@@ -102,31 +102,23 @@ export default function Example() {
       <div>
         <Heading level={3}>Links</Heading>
         <p class="mb-4 text-sm text-label">
-          Use the <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">render</code> prop
-          to render menu items as links. This gives you full control over the link element and its attributes.
+          Use <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.LinkItem</code>
+          for menu items that navigate to a URL. It renders a semantic <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">&lt;a&gt;</code> element
+          and accepts standard anchor attributes like <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">href</code> and <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">target</code>.
         </p>
         <ComponentExample code={`<DropdownMenu>
   <DropdownMenu.Trigger render={<Button>Resources</Button>} />
   <DropdownMenu.Content>
-    <DropdownMenu.Item
+    <DropdownMenu.LinkItem
       icon={BookOpenIcon}
-      render={
-        <a
-          href="https://developers.cloudflare.com"
-          target="_blank"
-          rel="noreferrer"
-        />
-      }
+      href="https://developers.cloudflare.com"
+      target="_blank"
     >
       Documentation
-      <ArrowSquareOutIcon className="ml-2 h-4 w-4 opacity-50" />
-    </DropdownMenu.Item>
-    <DropdownMenu.Item
-      icon={GearIcon}
-      render={<a href="/settings" />}
-    >
+    </DropdownMenu.LinkItem>
+    <DropdownMenu.LinkItem icon={GearIcon} href="/settings">
       Settings
-    </DropdownMenu.Item>
+    </DropdownMenu.LinkItem>
     <DropdownMenu.Separator />
     <DropdownMenu.Item variant="danger" icon={SignOutIcon}>
       Log out

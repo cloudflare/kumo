@@ -2,21 +2,21 @@
 "@cloudflare/kumo": major
 ---
 
-**BREAKING**: Remove `href`, `target`, and `rel` props from `DropdownMenu.Item`. Use the `render` prop for polymorphic link rendering instead.
+**BREAKING**: Remove `href`, `target`, and `rel` props from `DropdownMenu.Item`. Use the new `DropdownMenu.LinkItem` for navigation links instead.
 
 ```tsx
 // Before (no longer works)
 <DropdownMenu.Item href="https://example.com">Link</DropdownMenu.Item>
 
-// After
-<DropdownMenu.Item render={<a href="https://example.com" target="_blank" rel="noreferrer" />}>
+// After - use LinkItem for links
+<DropdownMenu.LinkItem href="https://example.com" target="_blank">
   Link
-</DropdownMenu.Item>
+</DropdownMenu.LinkItem>
 
-// Works with any router
-<DropdownMenu.Item render={<Link to="/settings" />}>
+// Internal links
+<DropdownMenu.LinkItem href="/settings">
   Settings
-</DropdownMenu.Item>
+</DropdownMenu.LinkItem>
 ```
 
-This gives you full control over link behavior rather than the component making assumptions.
+Also upgrades `@base-ui/react` from 1.0.0 to 1.2.0 (no breaking changes in Base UI).

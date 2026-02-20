@@ -114,29 +114,15 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
 };
 
 /**
- * DropdownMenuItem — a single item within a dropdown menu.
+ * DropdownMenuItem — a single actionable item within a dropdown menu.
  *
- * Use the `render` prop for polymorphic rendering (links, buttons, etc.):
+ * For navigation links, use `DropdownMenu.LinkItem` instead.
  *
  * @example
  * ```tsx
- * // Simple item
  * <DropdownMenu.Item>Edit</DropdownMenu.Item>
- *
- * // As a link (external)
- * <DropdownMenu.Item render={<a href="https://example.com" target="_blank" />}>
- *   Visit site
- * </DropdownMenu.Item>
- *
- * // As a React Router link
- * <DropdownMenu.Item render={<Link to="/settings" />}>
- *   Settings
- * </DropdownMenu.Item>
- *
- * // As a Next.js link
- * <DropdownMenu.Item render={<Link href="/dashboard" />}>
- *   Dashboard
- * </DropdownMenu.Item>
+ * <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+ * <DropdownMenu.Item variant="danger">Delete</DropdownMenu.Item>
  * ```
  */
 const DropdownMenuItem = React.forwardRef<
@@ -184,6 +170,63 @@ const DropdownMenuItem = React.forwardRef<
 );
 
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
+
+/**
+ * DropdownMenuLinkItem — a menu item that navigates to a URL.
+ *
+ * @example
+ * ```tsx
+ * // External link
+ * <DropdownMenu.LinkItem href="https://example.com" target="_blank">
+ *   Documentation
+ * </DropdownMenu.LinkItem>
+ *
+ * // Internal link
+ * <DropdownMenu.LinkItem href="/settings">
+ *   Settings
+ * </DropdownMenu.LinkItem>
+ * ```
+ */
+const DropdownMenuLinkItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.LinkItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.LinkItem> & {
+    inset?: boolean;
+    icon?: Icon | React.ReactNode;
+    variant?: "default" | "danger";
+  }
+>(
+  (
+    {
+      className,
+      inset,
+      icon: IconComponent,
+      children,
+      variant = "default",
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <DropdownMenuPrimitive.LinkItem
+        ref={ref}
+        className={cn(
+          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none focus:text-kumo-default data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          // Reset anchor styles to prevent external CSS pollution
+          "text-inherit no-underline",
+          inset && "pl-8",
+          dropdownVariants({ variant }),
+          className,
+        )}
+        {...props}
+      >
+        {IconComponent && renderIconNode(IconComponent)}
+        {children}
+      </DropdownMenuPrimitive.LinkItem>
+    );
+  },
+);
+
+DropdownMenuLinkItem.displayName = "DropdownMenuLinkItem";
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
@@ -294,7 +337,7 @@ DropdownMenuRadioItemIndicator.displayName = "DropdownMenuRadioItemIndicator";
  * to avoid nested button issues with base-ui's Menu.Trigger.
  */
 const DropdownMenuTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
 >(({ children, render, ...props }, ref) => {
   // If render prop is provided, use it directly
@@ -321,7 +364,7 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
  * DropdownMenu — accessible dropdown menu anchored to a trigger.
  *
  * Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`,
- * `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`,
+ * `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`,
  * `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.
  *
  * Built on `@base-ui/react/menu`.
@@ -334,7 +377,10 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
  *   </DropdownMenu.Trigger>
  *   <DropdownMenu.Content>
  *     <DropdownMenu.Item>Edit</DropdownMenu.Item>
- *     <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+ *     <DropdownMenu.LinkItem href="/settings">Settings</DropdownMenu.LinkItem>
+ *     <DropdownMenu.LinkItem href="https://example.com" target="_blank">
+ *       Documentation
+ *     </DropdownMenu.LinkItem>
  *     <DropdownMenu.Separator />
  *     <DropdownMenu.Item variant="danger">Delete</DropdownMenu.Item>
  *   </DropdownMenu.Content>
@@ -351,6 +397,7 @@ export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   SubContent: DropdownMenuContent,
   Content: DropdownMenuContent,
   Item: DropdownMenuItem,
+  LinkItem: DropdownMenuLinkItem,
   CheckboxItem: DropdownMenuCheckboxItem,
   RadioGroup: DropdownMenuPrimitive.RadioGroup,
   RadioItem: DropdownMenuRadioItem,
