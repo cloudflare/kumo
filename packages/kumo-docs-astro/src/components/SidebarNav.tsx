@@ -46,6 +46,7 @@ const componentItems: NavItem[] = [
   { label: "Dialog", href: "/components/dialog" },
   { label: "Dropdown", href: "/components/dropdown" },
   { label: "Empty", href: "/components/empty" },
+  { label: "Flow", href: "/components/flow" },
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
   { label: "Label", href: "/components/label" },

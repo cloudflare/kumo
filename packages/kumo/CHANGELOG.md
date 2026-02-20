@@ -1,5 +1,28 @@
 # @cloudflare/kumo
 
+## 1.7.0
+
+### Minor Changes
+
+- d9b6498: feat(flow): add FlowDiagram components for building directed flow diagrams
+
+  New components for visualizing workflows and data flows:
+  - `FlowDiagram` - Root container with pan/scroll support for large diagrams
+  - `FlowNode` - Individual node with automatic connector points
+  - `FlowNode.Anchor` - Custom attachment points for connectors within nodes
+  - `FlowParallelNode` - Container for parallel branches with junction connectors
+
+  Adds `motion` as a new dependency for smooth panning interactions.
+
+### Patch Changes
+
+- 835a7c0: Deprecate DateRangePicker in favor of DatePicker with `mode="range"`
+  - Added `@deprecated` JSDoc comments to DateRangePicker component and its exports
+  - IDEs will now show deprecation warnings guiding users to use DatePicker instead
+
+- 391f13a: Prevented ClipboardText from overflowing with long text values.
+- d0e1d29: chore(kumo): add test scripts to root package.json
+
 ## 1.6.0
 
 ### Minor Changes
