@@ -58,8 +58,9 @@ kumo/
 
 ### Changesets
 
-- **Required ONLY for `packages/kumo/`**: The component library is published to npm
-- **NOT required for**: `kumo-docs-astro` (internal docs) or `kumo-figma` (Figma plugin)
+- **Enforced for `packages/kumo/`**: Pre-push hook requires changeset for npm-published library
+- **Optional for `kumo-docs-astro`**: Version appears in `/api/version` endpoint (debugging) but nothing depends on it
+- **Not needed for `kumo-figma`**: Figma plugin, not published to npm
 - **Pre-push hook**: Lefthook validates before push. Bypass: `git push --no-verify`
 - **AI agents NEVER**: `pnpm version`, `pnpm release`, `pnpm publish:beta`, `pnpm release:production`
 
