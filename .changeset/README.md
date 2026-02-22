@@ -2,6 +2,16 @@
 
 This repo uses [Changesets](https://github.com/changesets/changesets) to manage versioning and changelog entries.
 
+## When is a changeset required?
+
+| Package                     | Changeset Required? | Why                                    |
+| --------------------------- | ------------------- | -------------------------------------- |
+| `packages/kumo/`            | **Yes**             | Published to npm as `@cloudflare/kumo` |
+| `packages/kumo-docs-astro/` | No                  | Internal docs site, not published      |
+| `packages/kumo-figma/`      | No                  | Figma plugin, not published to npm     |
+
+The pre-push hook (`lefthook.yml`) enforces changesets only for `packages/kumo/` changes.
+
 ## Creating a changeset
 
 ```bash
