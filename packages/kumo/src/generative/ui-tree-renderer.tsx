@@ -735,6 +735,11 @@ function mergeComponentMaps(
 
   const merged: Record<string, ElementType> = { ...COMPONENT_MAP };
   for (const [type, def] of Object.entries(customComponents)) {
+    if (process.env.NODE_ENV !== "production" && type in COMPONENT_MAP) {
+      console.warn(
+        `[kumo] Custom component "${type}" overrides a built-in component with the same name.`,
+      );
+    }
     merged[type] = def.component;
   }
   return merged;
