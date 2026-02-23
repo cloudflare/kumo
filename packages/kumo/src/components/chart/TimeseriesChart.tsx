@@ -30,6 +30,17 @@ export interface TimeseriesChartProps {
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
   xAxisTickCount?: number;
+  /**
+   * Custom formatter for y-axis tick labels.
+   * Receives the raw value and returns a display string.
+   * When omitted, ECharts' built-in formatter is used.
+   *
+   * @example
+   * ```ts
+   * yAxisTickLabelFormat={(value) => `${value}%`}
+   * ```
+   */
+  yAxisTickLabelFormat?: (value: number) => string;
   /** Label for the y-axis (value axis) */
   yAxisName?: string;
   /** Number of ticks to display on the y-axis */
@@ -66,6 +77,7 @@ export interface TimeseriesChartProps {
  *   echarts={echarts}
  *   data={[{ name: "Requests", data: [[Date.now(), 42]], color: "#086FFF" }]}
  *   xAxisName="Time"
+ *   xAxisTickLabelFormat={(value) => new Date(value).toLocaleTimeString()}
  *   yAxisName="Count"
  *   onTimeRangeChange={(from, to) => setRange([from, to])}
  * />
@@ -76,6 +88,8 @@ export function TimeseriesChart({
   type = "line",
   data,
   xAxisName,
+  xAxisTickCount,
+  yAxisTickLabelFormat,
   yAxisName,
   yAxisTickCount,
   onTimeRangeChange,
@@ -190,7 +204,7 @@ export function TimeseriesChart({
           const rows = filteredParams
             .map((param: any) => {
               const value = param?.value?.[1];
-              return `${param.marker} ${param.seriesName}: <strong>${value}</strong>`;
+              return `${param.marker} ${param.seriesName}: <strong>${yAxisTickLabelFormat ? yAxisTickLabelFormat(value) : value}</strong>`;
             })
             .join("<br/>");
 
@@ -208,7 +222,7 @@ export function TimeseriesChart({
           show: false,
         },
         axisLine: { show: false },
-        splitNumber: 5,
+        splitNumber: xAxisTickCount ?? 5,
       },
       yAxis: {
         name: yAxisName,
@@ -236,6 +250,8 @@ export function TimeseriesChart({
   }, [
     data,
     xAxisName,
+    xAxisTickCount,
+    yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
     incompleteBefore,

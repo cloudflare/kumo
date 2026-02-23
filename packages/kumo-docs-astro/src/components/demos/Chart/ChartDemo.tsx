@@ -98,6 +98,42 @@ export function BasicLineChartDemo() {
   );
 }
 
+/**
+ * Timeseries chart with a custom x-axis tick label format showing only the time (HH:MM).
+ */
+export function CustomXAxisLabelFormatDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Count"
+      yAxisTickLabelFormat={(value) => {
+        return Math.round(value).toString() + " requests";
+      }}
+    />
+  );
+}
+
 export function TimeseriesChartPreviewDemo() {
   const isDarkMode = useIsDarkMode();
 
