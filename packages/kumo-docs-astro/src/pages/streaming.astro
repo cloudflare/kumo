@@ -280,6 +280,164 @@ function StreamingUI() {
     </Callout>
   </ComponentSection>
 
+  <!-- Custom Components -->
+  <ComponentSection>
+    <h2 class="mb-4 text-2xl font-bold">Custom Components</h2>
+    <p class="mb-4 text-kumo-strong">
+      Extend UITreeRenderer with your own React components so LLM-generated UI can
+      include domain-specific elements (charts, maps, custom widgets) alongside
+      built-in Kumo components. The extension model has three independent layers:
+    </p>
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="rounded-lg border border-kumo-line bg-kumo-elevated p-4">
+        <h3 class="mb-1 font-semibold">Render</h3>
+        <p class="text-sm text-kumo-strong">
+          Pass custom components to <code>UITreeRenderer</code> so
+          it knows how to render new <code>type</code> strings.
+        </p>
+      </div>
+      <div class="rounded-lg border border-kumo-line bg-kumo-elevated p-4">
+        <h3 class="mb-1 font-semibold">Validation</h3>
+        <p class="text-sm text-kumo-strong">
+          Attach a Zod <code>propsSchema</code> to validate props at
+          runtime through the same pipeline as built-in components.
+        </p>
+      </div>
+      <div class="rounded-lg border border-kumo-line bg-kumo-elevated p-4">
+        <h3 class="mb-1 font-semibold">Prompt</h3>
+        <p class="text-sm text-kumo-strong">
+          Provide <code>props</code> metadata so <code>generatePrompt()</code>
+          includes your components in the LLM system prompt.
+        </p>
+      </div>
+    </div>
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Quick Start (Render Only)</h3>
+    <p class="mb-2 text-kumo-strong">
+      The minimal path: define a component and pass it to <code>UITreeRenderer</code>.
+      No validation or prompt generation — just rendering.
+    </p>
+    <CodeBlock
+      code={`import { defineCustomComponent } from "@cloudflare/kumo/generative";
+import { UITreeRenderer } from "@cloudflare/kumo/generative";
+import type { CustomComponentDefinition } from "@cloudflare/kumo/catalog";
+
+// Your domain component
+function BarChart({ data, color }: { data: number[]; color?: string }) {
+  return <svg>{/* chart rendering */}</svg>;
+}
+
+// Define outside the render path for stable identity
+const barChart = defineCustomComponent({
+  component: BarChart,
+  description: "Renders a bar chart from numeric data",
+});
+
+const customComponents: Readonly<Record<string, CustomComponentDefinition>> = {
+  BarChart: barChart,
+};
+
+// In your component
+function App() {
+  const { tree } = useUITree({ batchPatches: true });
+
+  return (
+    <UITreeRenderer
+      tree={tree}
+      streaming={true}
+      customComponents={customComponents}
+    />
+  );
+}`}
+      lang="tsx"
+    />
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Full Example (Validation + Prompt)</h3>
+    <p class="mb-2 text-kumo-strong">
+      For production use, add a Zod schema for runtime prop validation and prop
+      metadata for LLM prompt generation:
+    </p>
+    <CodeBlock
+      code={`import { z } from "zod";
+import { defineCustomComponent } from "@cloudflare/kumo/generative";
+import { UITreeRenderer } from "@cloudflare/kumo/generative";
+import { createKumoCatalog, initCatalog } from "@cloudflare/kumo/catalog";
+import type { CustomComponentDefinition } from "@cloudflare/kumo/catalog";
+
+// Zod schema for runtime validation
+const barChartSchema = z.object({
+  data: z.array(z.number()),
+  color: z.string().optional(),
+  title: z.string().optional(),
+});
+
+const barChart = defineCustomComponent({
+  component: BarChart,
+  description: "Renders a bar chart from numeric data",
+  // Runtime validation — same pipeline as built-in components
+  propsSchema: barChartSchema,
+  // Prompt metadata — tells the LLM what props are available
+  props: {
+    data: { type: "number[]", description: "Data points to plot" },
+    color: { type: "string", description: "Bar fill color", optional: true },
+    title: { type: "string", description: "Chart title", optional: true },
+  },
+  category: "Visualization",
+});
+
+const customComponents = { BarChart: barChart } as const;
+
+// Create catalog with custom components for prompt generation
+const catalog = createKumoCatalog({ customComponents });
+await initCatalog(catalog);
+
+// generatePrompt() now includes BarChart docs under "### Custom"
+const prompt = catalog.generatePrompt();`}
+      lang="tsx"
+    />
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Caveats</h3>
+    <ul class="mt-2 list-inside list-disc space-y-1 text-kumo-strong">
+      <li>
+        <strong>Define outside render</strong> — component definitions must be
+        created outside React render functions. <code>defineCustomComponent</code>
+        freezes the object, and <code>UITreeRenderer</code> memoises the merged map
+        by identity.
+      </li>
+      <li>
+        <strong>Consumer manages prompts</strong> — custom component docs are
+        included in <code>generatePrompt()</code> output, but you are responsible
+        for passing that prompt to your LLM.
+      </li>
+      <li>
+        <strong>No auto-codegen</strong> — custom components are not added to
+        <code>component-registry.json</code> or <code>ai/schemas.ts</code>.
+        Those files only cover built-in Kumo components.
+      </li>
+    </ul>
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Security</h3>
+    <ul class="mt-2 list-inside list-disc space-y-1 text-kumo-strong">
+      <li>
+        <strong>Props are sanitized</strong> — custom component props pass through
+        the same <code>sanitizeProps()</code> pipeline as built-in components
+        (event handlers and dangerous attributes are stripped).
+      </li>
+      <li>
+        <strong>Component internals are your responsibility</strong> — Kumo
+        sanitizes the props boundary, but what your component does with those
+        props (e.g. rendering user-provided HTML) is outside the library's
+        security scope.
+      </li>
+    </ul>
+    <Callout type="info">
+      When a custom component name collides with a built-in (e.g. naming yours
+      <code>Button</code>), the custom component wins and a console warning is
+      emitted in development. This is intentional — it lets you override built-ins
+      when needed.
+    </Callout>
+  </ComponentSection>
+
   <!-- System Prompt -->
   <ComponentSection>
     <h2 class="mb-4 text-2xl font-bold">System Prompt Generation</h2>
