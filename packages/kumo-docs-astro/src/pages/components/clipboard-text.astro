@@ -10,6 +10,7 @@ import {
   ClipboardTextShortDemo,
   ClipboardTextApiKeyDemo,
   ClipboardTextLongDemo,
+  ClipboardTextWithTooltipDemo,
 } from "../../components/demos/ClipboardTextDemo";
 ---
 
@@ -75,6 +76,21 @@ export default function Example() {
           code={`<ClipboardText text="https://example.com/very/long/url/path" />`}
         >
           <ClipboardTextLongDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Tooltip</Heading>
+        <p class="mb-3 text-sm text-kumo-subtle">
+          Shows "Copy" tooltip on hover, "Copied!" toast on click.
+        </p>
+        <ComponentExample
+          code={`<ClipboardText
+  text="npx kumo add button"
+  tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+/>`}
+        >
+          <ClipboardTextWithTooltipDemo client:visible />
         </ComponentExample>
       </div>
     </div>

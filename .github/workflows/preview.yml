@@ -2,16 +2,51 @@ name: Preview
 
 on:
   pull_request:
+  # Also trigger on push to PR branches (for bots that push via API)
+  push:
+    branches:
+      - "opencode/**"
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: preview-${{ github.event.pull_request.number }}
+  group: preview-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # Resolve PR number for push events (bots pushing via API)
+  resolve-pr:
+    name: Resolve PR
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.find-pr.outputs.pr_number }}
+      is_fork: ${{ steps.find-pr.outputs.is_fork }}
+    steps:
+      - name: Find PR for branch
+        id: find-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = context.ref.replace('refs/heads/', '');
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${branch}`,
+              state: 'open',
+            });
+
+            if (prs.length === 0) {
+              core.setFailed(`No open PR found for branch ${branch}`);
+              return;
+            }
+
+            const pr = prs[0];
+            core.setOutput('pr_number', pr.number.toString());
+            core.setOutput('is_fork', (pr.head.repo.full_name !== pr.base.repo.full_name).toString());
+
   pkg-preview:
     name: Package Preview
     if: ${{ github.repository_owner == 'cloudflare' }}
@@ -59,6 +94,7 @@ jobs:
         with:
           name: docs-preview-dist
           path: packages/kumo-docs-astro/dist/
+          include-hidden-files: true
           retention-days: 1
 
   # Stage 2 (internal path): Deploy docs preview for non-fork PRs.
@@ -66,13 +102,30 @@ jobs:
   # Fork PRs are handled by preview-deploy.yml (workflow_run).
   docs-deploy:
     name: Docs Deploy
-    needs: docs-build
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    needs: [docs-build, resolve-pr]
+    # Run for pull_request (non-fork) OR push events with resolved PR (non-fork)
+    if: |
+      always() &&
+      needs.docs-build.result == 'success' &&
+      (
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
+        (github.event_name == 'push' && needs.resolve-pr.result == 'success' && needs.resolve-pr.outputs.is_fork == 'false')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       preview_url: ${{ steps.deploy.outputs.preview_url }}
+      pr_number: ${{ steps.set-pr.outputs.pr_number }}
     steps:
+      - name: Set PR number
+        id: set-pr
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr_number=${{ needs.resolve-pr.outputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -93,7 +146,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ steps.set-pr.outputs.pr_number }}
         run: |
           COMMIT_SHORT="${GITHUB_SHA:0:7}"
 
@@ -131,23 +184,26 @@ jobs:
         uses: actions/github-script@v7
         env:
           PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+          PR_NUMBER: ${{ steps.set-pr.outputs.pr_number }}
         with:
           script: |
             const marker = '<!-- kumo-docs-preview -->';
             const previewUrl = process.env.PREVIEW_URL;
+            const prNumber = parseInt(process.env.PR_NUMBER, 10);
+            const commitSha = context.sha.substring(0, 7);
             const body = [
               marker,
               '### Docs Preview',
               '',
               `[View docs preview](${previewUrl})`,
               '',
-              `Commit: \`${context.payload.pull_request.head.sha.substring(0, 7)}\``,
+              `Commit: \`${commitSha}\``,
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: prNumber,
             });
 
             const existing = comments.find(c => c.body?.startsWith(marker));
@@ -163,7 +219,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: prNumber,
                 body,
               });
             }
@@ -171,7 +227,7 @@ jobs:
   visual-regression:
     name: Visual Regression
     needs: docs-deploy
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.docs-deploy.outputs.preview_url }}
+    if: ${{ needs.docs-deploy.outputs.preview_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -188,7 +244,7 @@ jobs:
       - name: Run Visual Regression
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_PR_NUMBER: ${{ needs.docs-deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}

@@ -5,12 +5,32 @@ import CodeBlock from "./CodeBlock.astro";
 interface Props {
   code: string;
   lang?: "tsx" | "ts" | "jsx" | "js" | "bash" | "css";
+  /**
+   * Visual regression section identifier.
+   * When provided, the screenshot worker can target this specific demo
+   * for stable, per-component screenshots instead of full-page captures.
+   */
+  vrSection?: string;
+  /**
+   * Human-readable title for visual regression reports.
+   * Defaults to vrSection with formatting applied.
+   */
+  vrTitle?: string;
 }
 
-const { code, lang = "tsx" } = Astro.props;
+const { code, lang = "tsx", vrSection, vrTitle } = Astro.props;
+
+// Build data attributes for visual regression targeting
+const vrAttrs = vrSection
+  ? {
+      "data-vr-demo": "",
+      "data-vr-section": vrSection,
+      "data-vr-title": vrTitle || vrSection.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    }
+  : {};
 ---
 
-<div class="overflow-hidden rounded-lg">
+<div class="overflow-hidden rounded-lg" {...vrAttrs}>
   <ComponentPreview>
     <slot />
   </ComponentPreview>

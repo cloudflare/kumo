@@ -39,6 +39,9 @@ export {
   type ButtonProps,
   type LinkButtonProps,
 } from "./components/button";
+/**
+ * @deprecated Use {@link DatePicker} with `mode="range"` instead.
+ */
 export { DateRangePicker } from "./components/date-range-picker";
 export { Checkbox, type CheckboxProps } from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
@@ -200,6 +203,7 @@ export {
   type DayPickerProps,
 } from "./components/date-picker";
 
+export { Flow } from "./components/flow";
 // PLOP_INJECT_EXPORT
 
 // Utils

@@ -15,3 +15,13 @@ export function ClipboardTextApiKeyDemo() {
 export function ClipboardTextLongDemo() {
   return <ClipboardText text="https://example.com/very/long/url/path" />;
 }
+
+/** With tooltip on hover showing "Copy", and anchored toast on click showing "Copied" */
+export function ClipboardTextWithTooltipDemo() {
+  return (
+    <ClipboardText
+      text="npx kumo add button"
+      tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+    />
+  );
+}

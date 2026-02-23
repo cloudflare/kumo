@@ -26,6 +26,8 @@
     "release:beta": "changeset publish --no-git-tag --tag beta",
     "release:production": "bash ci/versioning/release-production.sh",
     "kumo": "node packages/kumo/dist/command-line/cli.js",
+    "test": "pnpm --filter @cloudflare/kumo test",
+    "test:watch": "pnpm --filter @cloudflare/kumo test:watch",
     "typecheck": "pnpm -r typecheck",
     "version": "changeset version",
     "version:beta": "./ci/versioning/version-beta.sh"

@@ -234,10 +234,10 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal>
-        <SelectBase.Positioner className="z-50">
+        <SelectBase.Positioner>
           <SelectBase.Popup
             className={cn(
-              "z-50 overflow-hidden bg-kumo-control text-kumo-default", // background
+              "overflow-hidden bg-kumo-control text-kumo-default", // background
               "rounded-lg shadow-lg ring ring-kumo-line", // border part
               // 3px adjustment to account for padding + border differences
               "min-w-[calc(var(--anchor-width)+3px)] p-1.5", // spacing
