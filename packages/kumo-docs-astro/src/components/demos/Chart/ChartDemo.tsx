@@ -165,6 +165,40 @@ export function TimeseriesChartPreviewDemo() {
 }
 
 /**
+ * Timeseries chart with gradient fill beneath each line series.
+ */
+export function GradientLineChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Count"
+      gradient
+    />
+  );
+}
+
+/**
  * Timeseries chart with incomplete data regions highlighted.
  */
 export function IncompleteDataChartDemo() {

@@ -53,6 +53,12 @@ export interface TimeseriesChartProps {
   onTimeRangeChange?: (from: number, to: number) => void;
   /** When `true`, switches the chart to ECharts' built-in dark theme */
   isDarkMode?: boolean;
+  /**
+   * When `true`, renders a vertical gradient fill beneath each line series.
+   * The gradient fades from the series' color at the top to transparent at the bottom.
+   * Has no effect when `type` is `"bar"`.
+   */
+  gradient?: boolean;
 }
 
 /**
@@ -96,6 +102,7 @@ export function TimeseriesChart({
   height = 350,
   incomplete,
   isDarkMode,
+  gradient,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const incompleteBefore = incomplete?.before;
@@ -129,10 +136,21 @@ export function TimeseriesChart({
           : s.data;
 
       // Main complete data series
+      const areaStyle =
+        gradient && type === "line"
+          ? {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: colorWithOpacity(s.color, 0.4) },
+                { offset: 1, color: colorWithOpacity(s.color, 0) },
+              ]),
+            }
+          : undefined;
+
       transformSeries.push({
         data: completePoints,
         color: s.color,
         name: s.name,
+        ...(areaStyle ? { areaStyle } : {}),
         ...seriesType,
       });
 
@@ -257,6 +275,8 @@ export function TimeseriesChart({
     incompleteBefore,
     incompleteAfter,
     type,
+    gradient,
+    echarts,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
@@ -308,6 +328,48 @@ export function TimeseriesChart({
       onEvents={events}
     />
   );
+}
+
+/**
+ * Returns an `rgba(r, g, b, alpha)` string for any hex or rgb(a) color input,
+ * replacing whatever opacity was already present with the given `alpha` (0–1).
+ *
+ * Handles:
+ * - 6-digit hex:  `#RRGGBB`
+ * - 8-digit hex:  `#RRGGBBAA`  ← strips existing alpha
+ * - 3-digit hex:  `#RGB`
+ * - `rgb(r, g, b)`
+ * - `rgba(r, g, b, a)`  ← replaces existing alpha
+ */
+function colorWithOpacity(color: string, alpha: number): string {
+  const a = Math.max(0, Math.min(1, alpha));
+
+  // rgb / rgba
+  const rgbMatch = color.match(
+    /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i,
+  );
+  if (rgbMatch) {
+    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${a})`;
+  }
+
+  // hex — strip leading #
+  let hex = color.replace(/^#/, "");
+
+  // expand 3-digit → 6-digit
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+
+  // strip 8-digit alpha → keep only 6
+  if (hex.length === 8) {
+    hex = hex.slice(0, 6);
+  }
+
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 /** Zero-pads a number to two digits (e.g. `5` → `"05"`) */

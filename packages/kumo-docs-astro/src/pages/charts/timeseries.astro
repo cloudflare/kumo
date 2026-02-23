@@ -5,6 +5,7 @@ import ComponentExample from "../../components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
   CustomXAxisLabelFormatDemo,
+  GradientLineChartDemo,
   IncompleteDataChartDemo,
   TimeRangeSelectionChartDemo,
 } from "~/components/demos/Chart/ChartDemo";
@@ -87,6 +88,30 @@ const data = [
 />`}
     >
       <CustomXAxisLabelFormatDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={3} class="mb-4">Gradient Fill</Heading>
+
+    <p class="my-4">
+      Set <code>gradient</code> to <code>true</code> to render a vertical gradient
+      fill beneath each line series. The fill fades from the series color at the top
+      to transparent at the bottom, giving the chart a polished area-chart look
+      without losing the clarity of individual lines.
+    </p>
+
+    <ComponentExample
+      code={`<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Count"
+  gradient
+/>`}
+    >
+      <GradientLineChartDemo client:visible />
     </ComponentExample>
   </ComponentSection>
 
