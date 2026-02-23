@@ -32,7 +32,13 @@ import {
   type JsonPatchOp,
   type RuntimeValueStore,
 } from "@cloudflare/kumo/streaming";
-import { UITreeRenderer, isRenderableTree } from "@cloudflare/kumo/generative";
+import {
+  UITreeRenderer,
+  isRenderableTree,
+  defineCustomComponent,
+} from "@cloudflare/kumo/generative";
+import type { CustomComponentDefinition } from "@cloudflare/kumo/catalog";
+import { DemoButton } from "./DemoButton";
 
 // =============================================================================
 // Types
@@ -63,7 +69,33 @@ const PRESET_PROMPTS = [
     label: "Pricing table",
     prompt: "Display a pricing comparison table with 3 tiers",
   },
+  {
+    label: "Custom",
+    prompt:
+      'Show a heading that says "Custom Component Demo", a short paragraph explaining this is a custom DemoButton rendered through the customComponents extension point, then render three DemoButton components with children "Get Started", "Learn More", and "Subscribe" with variants light, dark, and light respectively. Wrap the buttons in a horizontal layout with some spacing.',
+  },
 ] as const;
+
+// Custom component definition — defined outside the render path for stable
+// identity (recommended pattern for custom components).
+const demoButtonDef = defineCustomComponent({
+  component: DemoButton,
+  description: "A fancy button with a rainbow conic-gradient hover effect",
+  props: {
+    children: { type: "string", description: "Button label text" },
+    variant: {
+      type: "string",
+      description: "Visual variant",
+      values: ["light", "dark"] as const,
+      default: "light",
+      optional: true,
+    },
+  },
+});
+
+const CUSTOM_COMPONENTS: Readonly<Record<string, CustomComponentDefinition>> = {
+  DemoButton: demoButtonDef,
+};
 
 // =============================================================================
 // SSE stream reader
@@ -643,6 +675,7 @@ export function StreamingDemo() {
               streaming={isStreaming}
               onAction={handleAction}
               runtimeValueStore={runtimeValueStore}
+              customComponents={CUSTOM_COMPONENTS}
             />
           </div>
         )}

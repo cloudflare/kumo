@@ -1,5 +1,9 @@
 import type { APIRoute } from "astro";
-import { createKumoCatalog, initCatalog } from "@cloudflare/kumo/catalog";
+import {
+  createKumoCatalog,
+  initCatalog,
+  type CustomComponentDefinition,
+} from "@cloudflare/kumo/catalog";
 
 export const prerender = false;
 
@@ -123,6 +127,30 @@ const PROMPT_COMPONENTS = [
   "Empty",
 ] as const;
 
+/**
+ * Custom component metadata for prompt generation. The actual React component
+ * lives in the client bundle (DemoButton.tsx); here we only need the metadata
+ * so the LLM knows the type exists and what props it accepts.
+ *
+ * Using a no-op stub for `component` since the server never renders it.
+ */
+const CUSTOM_COMPONENTS: Readonly<Record<string, CustomComponentDefinition>> = {
+  DemoButton: {
+    component: "span",
+    description: "A fancy button with a rainbow conic-gradient hover effect",
+    props: {
+      children: { type: "string", description: "Button label text" },
+      variant: {
+        type: "string",
+        description: "Visual variant",
+        values: ["light", "dark"],
+        default: "light",
+        optional: true,
+      },
+    },
+  },
+};
+
 /** Cached system prompt — generated once per cold start. */
 let systemPromptCache: string | null = null;
 let systemPromptPromise: Promise<string> | null = null;
@@ -131,7 +159,7 @@ async function getSystemPrompt(): Promise<string> {
   // In dev, rebuild prompt on each request so prompt tweaks are immediately
   // reflected without needing to restart the dev server.
   if (import.meta.env.DEV) {
-    const catalog = createKumoCatalog();
+    const catalog = createKumoCatalog({ customComponents: CUSTOM_COMPONENTS });
     await initCatalog(catalog);
     return catalog.generatePrompt({
       components: [...PROMPT_COMPONENTS],
@@ -144,7 +172,9 @@ async function getSystemPrompt(): Promise<string> {
 
   systemPromptPromise = (async () => {
     try {
-      const catalog = createKumoCatalog();
+      const catalog = createKumoCatalog({
+        customComponents: CUSTOM_COMPONENTS,
+      });
       await initCatalog(catalog);
       const prompt = catalog.generatePrompt({
         components: [...PROMPT_COMPONENTS],
