@@ -8,8 +8,9 @@
  */
 
 import React, { Component, memo, useMemo } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode, ElementType } from "react";
 import type { UITree, UIElement } from "../streaming/types";
+import type { CustomComponentDefinition } from "../catalog/types.js";
 import { GridItem } from "../index.js";
 import { COMPONENT_MAP, KNOWN_TYPES } from "./component-map.js";
 import {
@@ -642,6 +643,15 @@ interface UITreeRendererProps {
   readonly onAction?: ActionDispatch;
   /** Per-container runtime value store (captures uncontrolled input values). */
   readonly runtimeValueStore?: RuntimeValueStore;
+  /**
+   * Consumer-provided custom components to extend the rendering pipeline.
+   * Keys are the UITree element `type` strings. Custom components are merged
+   * over the built-in COMPONENT_MAP — consumer wins on name collision.
+   * Props pass through the same sanitizeProps() security pipeline as built-ins.
+   */
+  readonly customComponents?: Readonly<
+    Record<string, CustomComponentDefinition>
+  >;
 }
 
 // ---------------------------------------------------------------------------
@@ -698,6 +708,27 @@ function sanitizeProps(
     clean[key] = value;
   }
   return clean;
+}
+
+/** Resolved component map: type string → React element type. */
+type ResolvedComponentMap = Readonly<Record<string, ElementType>>;
+
+/**
+ * Merge the built-in COMPONENT_MAP with consumer-provided custom components.
+ * Custom components take precedence on name collision.
+ */
+function mergeComponentMaps(
+  customComponents:
+    | Readonly<Record<string, CustomComponentDefinition>>
+    | undefined,
+): ResolvedComponentMap {
+  if (!customComponents) return COMPONENT_MAP;
+
+  const merged: Record<string, ElementType> = { ...COMPONENT_MAP };
+  for (const [type, def] of Object.entries(customComponents)) {
+    merged[type] = def.component;
+  }
+  return merged;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -765,12 +796,14 @@ function RenderElement({
   depth = 0,
   streaming = false,
   onAction,
+  componentMap,
 }: {
   readonly elementKey: string;
   readonly elements: Record<string, UIElement>;
   readonly depth?: number;
   readonly streaming?: boolean;
   readonly onAction?: ActionDispatch;
+  readonly componentMap: ResolvedComponentMap;
 }): React.JSX.Element | null {
   const runtimeValueStore = useRuntimeValueStoreContext();
 
@@ -827,6 +860,7 @@ function RenderElement({
           depth={depth}
           streaming={streaming}
           onAction={onAction}
+          componentMap={componentMap}
         />
       );
     }
@@ -878,6 +912,7 @@ function RenderElement({
               depth={nextDepth}
               streaming={streaming}
               onAction={onAction}
+              componentMap={componentMap}
             />
           ))}
         </div>
@@ -885,7 +920,7 @@ function RenderElement({
     );
   }
 
-  const Comp = COMPONENT_MAP[type];
+  const Comp = componentMap[type];
   if (!Comp) {
     return (
       <div className="rounded border border-kumo-warning bg-kumo-warning-tint p-2 text-xs text-kumo-warning">
@@ -1005,6 +1040,7 @@ function RenderElement({
           depth={nextDepth}
           streaming={streaming}
           onAction={onAction}
+          componentMap={componentMap}
         />
       );
 
@@ -1103,6 +1139,7 @@ function UITreeRendererImpl({
   streaming = false,
   onAction,
   runtimeValueStore,
+  customComponents,
 }: UITreeRendererProps): React.JSX.Element | null {
   if (Object.keys(tree.elements).length === 0) return null;
 
@@ -1134,6 +1171,14 @@ function UITreeRendererImpl({
     );
   }, [tree, rootKey]);
 
+  // Merge built-in and custom component maps. Memoize to avoid rebuilding on
+  // every render — the identity of customComponents is stable when consumers
+  // define their map outside the render path (as recommended by docs).
+  const resolvedMap = useMemo(
+    () => mergeComponentMaps(customComponents),
+    [customComponents],
+  );
+
   return (
     <RuntimeValueStoreProvider value={runtimeValueStore ?? null}>
       <RenderElement
@@ -1141,6 +1186,7 @@ function UITreeRendererImpl({
         elements={normalizedTree.elements}
         streaming={streaming}
         onAction={onAction}
+        componentMap={resolvedMap}
       />
     </RuntimeValueStoreProvider>
   );
