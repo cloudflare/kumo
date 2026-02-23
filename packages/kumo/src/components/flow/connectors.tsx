@@ -55,8 +55,11 @@ export function createRoundedPath(
       return `M ${x1} ${y1} L ${x2 - arrowheadOffset} ${y2}`;
 
     // Horizontal orientation: horizontal → vertical → horizontal
-    // verticalOffset is used as horizontalOffset (distance from x2 where we turn)
-    const verticalX = x2 - midOffset;
+    // When single=true: vertical segment near endpoint for smooth S-curve
+    // When single=false (junction exists):
+    //   - isBottom=false (incoming): junction at start, turn near x1
+    //   - isBottom=true (outgoing): junction at end, turn near x2
+    const verticalX = single || isBottom ? x2 - midOffset : x1 + midOffset;
     const isGoingRight = x2 > x1;
     const horizontalSign = isGoingRight ? 1 : -1;
     const isGoingDown = y2 > y1;
@@ -102,8 +105,11 @@ export function createRoundedPath(
     return `M ${x1} ${y1} L ${x2} ${y2 - arrowheadOffset}`;
 
   // Vertical orientation: vertical → horizontal → vertical
-  // Vertical offset before turning horizontally
-  const horizontalY = y2 - midOffset;
+  // When single=true: horizontal segment near endpoint for smooth S-curve
+  // When single=false (junction exists):
+  //   - isBottom=false (incoming): junction at start, turn near y1
+  //   - isBottom=true (outgoing): junction at end, turn near y2
+  const horizontalY = single || isBottom ? y2 - midOffset : y1 + midOffset;
   const isGoingRight = x2 > x1;
   const horizontalSign = isGoingRight ? 1 : -1;
   const isGoingDown = y2 > y1;
