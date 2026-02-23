@@ -5,6 +5,9 @@
  * like visibility conditions, actions, and data binding.
  */
 
+import type { ElementType } from "react";
+import type { ZodType } from "zod";
+
 // Re-export registry types
 export type {
   ComponentRegistry,
@@ -210,6 +213,78 @@ export type ActionHandler = (
  * Map of action names to their handlers.
  */
 export type ActionHandlers = Record<string, ActionHandler>;
+
+// =============================================================================
+// Custom Components
+// =============================================================================
+
+/**
+ * Describes a single prop on a {@link CustomComponentDefinition}.
+ *
+ * This metadata is used for prompt generation — it tells the LLM what props
+ * the custom component accepts. It is **not** used for runtime validation;
+ * supply a `propsSchema` (Zod) on the definition for that.
+ *
+ * @example
+ * const statusProp: CustomPropDefinition = {
+ *   type: "string",
+ *   description: "Current status label",
+ *   values: ["active", "inactive", "pending"] as const,
+ *   default: "active",
+ *   optional: true,
+ * };
+ */
+export interface CustomPropDefinition {
+  /** JS/TS type name shown in prompt docs (e.g. `"string"`, `"boolean"`) */
+  type: string;
+  /** Human-readable description for the LLM prompt */
+  description?: string;
+  /** Whether the prop can be omitted */
+  optional?: boolean;
+  /** Allowed literal values (enum-like constraint for the LLM) */
+  values?: readonly string[];
+  /** Default value when prop is omitted */
+  default?: unknown;
+}
+
+/**
+ * Consumer-provided definition for a custom component that can be rendered
+ * by {@link UITreeRenderer} alongside the built-in Kumo components.
+ *
+ * At minimum, supply `component`. For runtime validation, add `propsSchema`
+ * (a Zod type). For prompt generation, add `props` with
+ * {@link CustomPropDefinition} entries.
+ *
+ * @example
+ * // Render-only (no validation, no prompt docs)
+ * const chart: CustomComponentDefinition = {
+ *   component: BarChart,
+ * };
+ *
+ * @example
+ * // Full definition (validation + prompt docs)
+ * const chart: CustomComponentDefinition = {
+ *   component: BarChart,
+ *   description: "Renders a bar chart from data",
+ *   category: "Visualization",
+ *   propsSchema: z.object({ data: z.array(z.number()) }),
+ *   props: {
+ *     data: { type: "number[]", description: "Chart data points" },
+ *   },
+ * };
+ */
+export interface CustomComponentDefinition {
+  /** React component to render for this type */
+  component: ElementType;
+  /** Optional Zod schema for runtime prop validation */
+  propsSchema?: ZodType;
+  /** Human-readable description for the LLM prompt */
+  description?: string;
+  /** Prop metadata for prompt generation */
+  props?: Record<string, CustomPropDefinition>;
+  /** Grouping category for prompt docs (e.g. `"Visualization"`) */
+  category?: string;
+}
 
 // =============================================================================
 // Catalog Types

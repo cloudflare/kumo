@@ -59,6 +59,9 @@ export type {
   CatalogConfig,
   GeneratePromptOptions,
   ValidationResult,
+  // Custom components
+  CustomComponentDefinition,
+  CustomPropDefinition,
   // Registry (re-exported)
   ComponentRegistry,
   ComponentSchema,
