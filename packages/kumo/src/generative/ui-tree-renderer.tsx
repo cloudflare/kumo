@@ -9,6 +9,7 @@
 
 import React, { Component, memo, useMemo } from "react";
 import type { ReactNode, ElementType } from "react";
+import type { ZodType } from "zod";
 import type { UITree, UIElement } from "../streaming/types";
 import type { CustomComponentDefinition } from "../catalog/types.js";
 import { GridItem } from "../index.js";
@@ -86,7 +87,15 @@ type ElementValidation = ReturnType<typeof validateElement>;
 const validationCache = new WeakMap<UIElement, ElementValidation>();
 const loggedInvalidElements = new WeakSet<UIElement>();
 
-function getElementValidation(element: UIElement): ElementValidation {
+function getElementValidation(
+  element: UIElement,
+  customSchemas?: Readonly<Record<string, ZodType>> | null,
+): ElementValidation {
+  // When custom schemas are provided, skip the cache — the same element could
+  // be validated with different schema sets in different renderer instances.
+  if (customSchemas != null) {
+    return validateElement(element, customSchemas);
+  }
   const cached = validationCache.get(element);
   if (cached) return cached;
   const result = validateElement(element);
@@ -731,6 +740,28 @@ function mergeComponentMaps(
   return merged;
 }
 
+/**
+ * Extract Zod schemas from custom component definitions.
+ * Returns null when no definitions provide a propsSchema (avoids allocating
+ * an empty object on every render).
+ */
+function extractCustomSchemas(
+  customComponents:
+    | Readonly<Record<string, CustomComponentDefinition>>
+    | undefined,
+): Readonly<Record<string, ZodType>> | null {
+  if (!customComponents) return null;
+
+  let schemas: Record<string, ZodType> | null = null;
+  for (const [type, def] of Object.entries(customComponents)) {
+    if (def.propsSchema != null) {
+      if (schemas == null) schemas = {};
+      schemas[type] = def.propsSchema;
+    }
+  }
+  return schemas;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -797,6 +828,7 @@ function RenderElement({
   streaming = false,
   onAction,
   componentMap,
+  customSchemas,
 }: {
   readonly elementKey: string;
   readonly elements: Record<string, UIElement>;
@@ -804,6 +836,7 @@ function RenderElement({
   readonly streaming?: boolean;
   readonly onAction?: ActionDispatch;
   readonly componentMap: ResolvedComponentMap;
+  readonly customSchemas?: Readonly<Record<string, ZodType>> | null;
 }): React.JSX.Element | null {
   const runtimeValueStore = useRuntimeValueStoreContext();
 
@@ -835,7 +868,7 @@ function RenderElement({
   // component renders with defaults instead of showing an error box.
   // Note: we validate the coerced element (not rawElement) so corrected
   // enum values pass through validation and survive into the rendered output.
-  const validation = getElementValidation(element);
+  const validation = getElementValidation(element, customSchemas);
   if (!validation.valid) {
     const repaired = repairElement(element, validation);
     if (repaired != null) {
@@ -861,6 +894,7 @@ function RenderElement({
           streaming={streaming}
           onAction={onAction}
           componentMap={componentMap}
+          customSchemas={customSchemas}
         />
       );
     }
@@ -913,6 +947,7 @@ function RenderElement({
               streaming={streaming}
               onAction={onAction}
               componentMap={componentMap}
+              customSchemas={customSchemas}
             />
           ))}
         </div>
@@ -1041,6 +1076,7 @@ function RenderElement({
           streaming={streaming}
           onAction={onAction}
           componentMap={componentMap}
+          customSchemas={customSchemas}
         />
       );
 
@@ -1179,6 +1215,13 @@ function UITreeRendererImpl({
     [customComponents],
   );
 
+  // Extract Zod schemas from custom component definitions for validation.
+  // Only built when at least one custom component provides a propsSchema.
+  const resolvedSchemas = useMemo(
+    () => extractCustomSchemas(customComponents),
+    [customComponents],
+  );
+
   return (
     <RuntimeValueStoreProvider value={runtimeValueStore ?? null}>
       <RenderElement
@@ -1187,6 +1230,7 @@ function UITreeRendererImpl({
         streaming={streaming}
         onAction={onAction}
         componentMap={resolvedMap}
+        customSchemas={resolvedSchemas}
       />
     </RuntimeValueStoreProvider>
   );

@@ -6,6 +6,7 @@
  * (sub-components, aliases, Div) pass through unchecked.
  */
 
+import type { ZodType } from "zod";
 import {
   ComponentPropsSchemas,
   validateElementProps,
@@ -178,8 +179,16 @@ const VALID: ElementValidationResult = { valid: true } as const;
  * BEFORE calling this function. Coercion fixes commonly hallucinated enum
  * values (e.g. Badge "success" → "primary") so they pass validation and
  * survive into the rendered output. See {@link ENUM_COERCION_MAP}.
+ *
+ * @param customSchemas - Optional map of custom component type → Zod schema.
+ *   When a custom schema exists for the element's type, props are validated
+ *   against it. Failures produce the same {@link ElementValidationResult}
+ *   shape as built-in failures.
  */
-export function validateElement(element: UIElement): ElementValidationResult {
+export function validateElement(
+  element: UIElement,
+  customSchemas?: Readonly<Record<string, ZodType>> | null,
+): ElementValidationResult {
   const { type, key } = element;
 
   // In generative UI, structural children are expressed via UIElement.children
@@ -223,6 +232,14 @@ export function validateElement(element: UIElement): ElementValidationResult {
         elementForValidation as Parameters<typeof validateElementProps>[0],
       ),
     );
+  }
+
+  // Custom schema — consumer-provided Zod schema for custom component types
+  const customSchema = customSchemas?.[type];
+  if (customSchema != null) {
+    const props = normalizeProps(elementForValidation.props);
+    const result = customSchema.safeParse(props);
+    return toResult(key, type, result as SafeParseResult<unknown>);
   }
 
   // Unknown type — no schema to validate against
