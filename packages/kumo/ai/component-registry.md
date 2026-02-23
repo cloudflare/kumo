@@ -59,7 +59,7 @@ Small status label for categorizing or highlighting content.
 
 ### Banner
 
-Full-width message bar for informational, warning, or error notices.
+Full-width message bar for informational, warning, or error notices. Supports structured title/description for i18n, or simple children for basic usage.
 
 **Type:** component
 
@@ -70,10 +70,13 @@ Full-width message bar for informational, warning, or error notices.
 **Props:**
 
 - `icon`: ReactNode
-  Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
+  Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`).
+- `title`: string
+  Primary heading text for the banner. Use for i18n string injection.
+- `description`: ReactNode
+  Secondary description text displayed below the title. Use for i18n string injection.
 - `text`: string
 - `children`: ReactNode
-  Banner message content. Accepts strings or custom React elements.
 - `variant`: enum [default: default]
   - `"default"`: Informational banner for general messages
   - `"alert"`: Warning banner for cautionary messages
@@ -83,38 +86,70 @@ Full-width message bar for informational, warning, or error notices.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-danger`, `bg-kumo-danger-tint`, `bg-kumo-info`, `bg-kumo-info-tint`, `bg-kumo-warning`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-info`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-link`, `text-kumo-warning`
+`bg-kumo-danger`, `bg-kumo-danger-tint`, `bg-kumo-info`, `bg-kumo-info-tint`, `bg-kumo-warning`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-info`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-info`, `text-kumo-warning`
 
 **Examples:**
 
 ```tsx
 <div className="space-y-3">
-      <Banner>This is an informational banner.</Banner>
-      <Banner variant="alert">This is an alert banner.</Banner>
-      <Banner variant="error">This is an error banner.</Banner>
+      <Banner
+        icon={<Info weight="fill" />}
+        title="Update available"
+        description="A new version is ready to install."
+      />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="alert"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+      />
+      <Banner
+        icon={<WarningCircle weight="fill" />}
+        variant="error"
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
+      />
     </div>
 ```
 
 ```tsx
-<Banner>This is an informational banner.</Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Update available"
+      description="A new version is ready to install."
+    />
 ```
 
 ```tsx
-<Banner variant="alert">Your session will expire soon.</Banner>
+<Banner
+      icon={<Warning weight="fill" />}
+      variant="alert"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+    />
 ```
 
 ```tsx
-<Banner icon={<WarningCircle />} variant="alert">
-      Review your billing information.
-    </Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Your changes have been saved."
+    />
 ```
 
 ```tsx
-<Banner icon={<Info />}>
-      <Text DANGEROUS_className="text-inherit">
-        This banner supports <strong>custom content</strong> with Text.
-      </Text>
-    </Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Custom content supported"
+      description={
+        <Text DANGEROUS_className="text-inherit">
+          This banner supports <strong>custom content</strong> with Text.
+        </Text>
+      }
+    />
+```
+
+```tsx
+<Banner icon={<Info />}>This is a simple banner using children.</Banner>
 ```
 
 
@@ -387,7 +422,7 @@ Checkbox component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-contrast`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -574,12 +609,10 @@ Read-only text field with a one-click copy-to-clipboard button.
 ```
 
 ```tsx
-<ClipboardTextToastProvider>
-      <ClipboardText
-        text="npx kumo add button"
-        tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
-      />
-    </ClipboardTextToastProvider>
+<ClipboardText
+      text="npx kumo add button"
+      tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+    />
 ```
 
 
@@ -1223,17 +1256,7 @@ Group sub-component
 
 #### Combobox.List
 
-A container for combobox items. Supports render prop for custom item rendering. Renders a `<div>` element.
-
-Props:
-- `children`: ReactNode | ((item: T, index: number) => ReactNode) - Items to render, or a function that receives each item and returns a node
-
-Usage:
-```tsx
-<Combobox.List>
-  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}
-</Combobox.List>
-```
+List sub-component
 
 #### Combobox.Collection
 

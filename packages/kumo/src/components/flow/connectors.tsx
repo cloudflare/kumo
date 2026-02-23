@@ -6,12 +6,14 @@ export interface Connector {
   x2: number;
   y2: number;
   isBottom?: boolean;
+  disabled?: boolean;
+  single?: boolean;
 }
 
 type ConnectorsProps = {
   connectors: Connector[];
   children?: ReactNode;
-} & Omit<PathProps, "isBottom">;
+} & Omit<PathProps, "isBottom" | "single">;
 
 type PathProps = Partial<{
   cornerRadius: number;
@@ -74,7 +76,9 @@ export function createRoundedPath(
     const bottomCurveCommands = [
       `L ${firstHorizontalEnd} ${y1}`,
       `Q ${verticalX} ${y1} ${verticalX} ${verticalStart}`,
-      `L ${verticalX} ${y2}`,
+      single
+        ? `L ${verticalX} ${verticalEnd} Q ${verticalX} ${y2} ${secondHorizontalStart} ${y2}`
+        : `L ${verticalX} ${y2}`,
     ];
 
     const topCurveCommands = [
@@ -165,23 +169,35 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
             />
           </marker>
         </defs>
-        {connectors.map((connector, index) => {
-          const path = createRoundedPath(connector, {
-            isBottom: connector.isBottom,
-            ...pathProps,
-          });
-          return (
-            <path
-              key={index}
-              d={path}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              markerEnd={`url(#${id})`}
-              data-index={index}
-            />
-          );
-        })}
+        {[...connectors]
+          .sort((a, b) => {
+            // Disabled connectors render first (below active ones)
+            if (a.disabled && !b.disabled) return -1;
+            if (!a.disabled && b.disabled) return 1;
+            return 0;
+          })
+          .map((connector, index) => {
+            const path = createRoundedPath(connector, {
+              isBottom: connector.isBottom,
+              single: connector.single,
+              ...pathProps,
+            });
+            return (
+              <g
+                key={index}
+                className={connector.disabled ? "opacity-40" : undefined}
+              >
+                <path
+                  d={path}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  markerEnd={`url(#${id})`}
+                  data-index={index}
+                />
+              </g>
+            );
+          })}
         {children}
       </svg>
     );

@@ -70,14 +70,24 @@
     "Banner": {
       "name": "Banner",
       "type": "component",
-      "description": "Full-width message bar for informational, warning, or error notices.",
+      "description": "Full-width message bar for informational, warning, or error notices. Supports structured title/description for i18n, or simple children for basic usage.",
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
         "icon": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`)."
+          "description": "Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`)."
+        },
+        "title": {
+          "type": "string",
+          "optional": true,
+          "description": "Primary heading text for the banner. Use for i18n string injection."
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Secondary description text displayed below the title. Use for i18n string injection."
         },
         "text": {
           "type": "string",
@@ -85,8 +95,7 @@
         },
         "children": {
           "type": "ReactNode",
-          "optional": true,
-          "description": "Banner message content. Accepts strings or custom React elements."
+          "optional": true
         },
         "variant": {
           "type": "enum",
@@ -103,9 +112,9 @@
             "error": "Error banner for critical issues"
           },
           "classes": {
-            "default": "bg-kumo-info/20 border-kumo-info text-kumo-link selection:bg-kumo-info-tint",
-            "alert": "bg-kumo-warning/20 border-kumo-warning text-kumo-warning selection:bg-kumo-warning-tint",
-            "error": "bg-kumo-danger/20 border-kumo-danger text-kumo-danger selection:bg-kumo-danger-tint"
+            "default": "bg-kumo-info/10 border-kumo-info/30 text-kumo-info selection:bg-kumo-info-tint",
+            "alert": "bg-kumo-warning/10 border-kumo-warning/30 text-kumo-warning selection:bg-kumo-warning-tint",
+            "error": "bg-kumo-danger/10 border-kumo-danger/30 text-kumo-danger selection:bg-kumo-danger-tint"
           },
           "default": "default"
         },
@@ -116,12 +125,14 @@
         }
       },
       "examples": [
-        "<div className=\"space-y-3\">\n      <Banner>This is an informational banner.</Banner>\n      <Banner variant=\"alert\">This is an alert banner.</Banner>\n      <Banner variant=\"error\">This is an error banner.</Banner>\n    </div>",
-        "<Banner>This is an informational banner.</Banner>",
-        "<Banner variant=\"alert\">Your session will expire soon.</Banner>",
-        "<Banner variant=\"error\">We couldn't save your changes.</Banner>",
-        "<Banner icon={<WarningCircle />} variant=\"alert\">\n      Review your billing information.\n    </Banner>",
-        "<Banner icon={<Info />}>\n      <Text DANGEROUS_className=\"text-inherit\">\n        This banner supports <strong>custom content</strong> with Text.\n      </Text>\n    </Banner>"
+        "<div className=\"space-y-3\">\n      <Banner\n        icon={<Info weight=\"fill\" />}\n        title=\"Update available\"\n        description=\"A new version is ready to install.\"\n      />\n      <Banner\n        icon={<Warning weight=\"fill\" />}\n        variant=\"alert\"\n        title=\"Session expiring\"\n        description=\"Your session will expire in 5 minutes.\"\n      />\n      <Banner\n        icon={<WarningCircle weight=\"fill\" />}\n        variant=\"error\"\n        title=\"Save failed\"\n        description=\"We couldn't save your changes. Please try again.\"\n      />\n    </div>",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Update available\"\n      description=\"A new version is ready to install.\"\n    />",
+        "<Banner\n      icon={<Warning weight=\"fill\" />}\n      variant=\"alert\"\n      title=\"Session expiring\"\n      description=\"Your session will expire in 5 minutes.\"\n    />",
+        "<Banner\n      icon={<WarningCircle weight=\"fill\" />}\n      variant=\"error\"\n      title=\"Save failed\"\n      description=\"We couldn't save your changes. Please try again.\"\n    />",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Your changes have been saved.\"\n    />",
+        "<Banner\n      icon={<Warning weight=\"fill\" />}\n      variant=\"alert\"\n      title=\"Review required\"\n      description=\"Please review your billing information before proceeding.\"\n    />",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Custom content supported\"\n      description={\n        <Text DANGEROUS_className=\"text-inherit\">\n          This banner supports <strong>custom content</strong> with Text.\n        </Text>\n      }\n    />",
+        "<Banner icon={<Info />}>This is a simple banner using children.</Banner>"
       ],
       "colors": [
         "bg-kumo-danger",
@@ -134,10 +145,10 @@
         "border-kumo-info",
         "border-kumo-warning",
         "text-kumo-danger",
-        "text-kumo-link",
+        "text-kumo-info",
         "text-kumo-warning"
       ],
-      "baseStyles": "flex w-full items-center gap-2 rounded-lg border px-4 py-1.5 text-base"
+      "baseStyles": "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-base"
     },
     "Breadcrumbs": {
       "name": "Breadcrumbs",
@@ -509,6 +520,7 @@
         "bg-kumo-base",
         "bg-kumo-contrast",
         "border-kumo-line",
+        "ring-kumo-contrast",
         "ring-kumo-danger",
         "ring-kumo-line",
         "ring-kumo-ring",
@@ -664,7 +676,7 @@
         "<ClipboardText text=\"abc123\" />",
         "<ClipboardText text=\"sk_live_51H8...\" />",
         "<ClipboardText text=\"https://example.com/very/long/url/path\" />",
-        "<ClipboardTextToastProvider>\n      <ClipboardText\n        text=\"npx kumo add button\"\n        tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n      />\n    </ClipboardTextToastProvider>"
+        "<ClipboardText\n      text=\"npx kumo add button\"\n      tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
@@ -2182,19 +2194,8 @@
         },
         "List": {
           "name": "List",
-          "description": "A container for combobox items. Supports render prop for custom item rendering.",
-          "props": {
-            "children": {
-              "type": "ReactNode | ((item: T, index: number) => ReactNode)",
-              "description": "Items to render, or a function that receives each item and returns a node"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "ComboboxBase.List",
-          "usageExamples": [
-            "<Combobox.List>\n  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}\n</Combobox.List>"
-          ],
-          "renderElement": "<div>"
+          "description": "List sub-component",
+          "props": {}
         },
         "Collection": {
           "name": "Collection",
