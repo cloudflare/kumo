@@ -60,6 +60,9 @@ export type {
   RuleName,
 } from "./structural-graders.js";
 
+// Custom component helper
+export { defineCustomComponent } from "./define-custom-component.js";
+
 // UITreeRenderer
 export {
   UITreeRenderer,
