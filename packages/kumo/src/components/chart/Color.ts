@@ -1,3 +1,7 @@
+/**
+ * Categorical colors for light mode — used when assigning colors to data series
+ * by index (e.g. the first series gets Blue, the second gets Violet, etc.).
+ */
 enum ChartCategoricalLightColors {
   Blue = "#086FFF",
   Violet = "#CF7EE9",
@@ -11,6 +15,10 @@ enum ChartCategoricalLightColors {
   Indigo2 = "#7366E4",
 }
 
+/**
+ * Categorical colors for dark mode — same hues as the light palette but with
+ * `E6` alpha (90% opacity) appended to soften contrast on dark backgrounds.
+ */
 enum ChartCategoricalDarkColors {
   Blue = "#086FFFE6",
   Violet = "#CF7EE9E6",
@@ -24,6 +32,10 @@ enum ChartCategoricalDarkColors {
   Indigo2 = "#7366E4E6",
 }
 
+/**
+ * Semantic colors for light mode — used to convey meaning (status, severity)
+ * rather than just distinguishing series. Use via `ChartPalette.semantic()`.
+ */
 enum ChartSemanticLightColors {
   Attention = "#FC574A",
   Warning = "#F8A054",
@@ -33,6 +45,10 @@ enum ChartSemanticLightColors {
   DisabledLight = "#D9D9D9",
 }
 
+/**
+ * Semantic colors for dark mode — same meanings as the light palette but with
+ * `E6` alpha (90% opacity) for dark backgrounds.
+ */
 enum ChartSemanticDarkColors {
   Attention = "#FC574AE6",
   Warning = "#F8A054E6",
@@ -42,6 +58,10 @@ enum ChartSemanticDarkColors {
   DisabledLight = "#D9D9D9E6",
 }
 
+/**
+ * Ordered list of categorical colors for light mode, indexed by series position.
+ * Used as the default ECharts color palette when `isDarkMode` is `false`.
+ */
 export const CHART_LIGHT_COLORS = [
   ChartCategoricalLightColors.Blue,
   ChartCategoricalLightColors.Violet,
@@ -55,6 +75,10 @@ export const CHART_LIGHT_COLORS = [
   ChartCategoricalLightColors.Indigo2,
 ];
 
+/**
+ * Ordered list of categorical colors for dark mode, indexed by series position.
+ * Used as the default ECharts color palette when `isDarkMode` is `true`.
+ */
 export const CHART_DARK_COLORS = [
   ChartCategoricalDarkColors.Blue,
   ChartCategoricalDarkColors.Violet,
@@ -68,8 +92,21 @@ export const CHART_DARK_COLORS = [
   ChartCategoricalDarkColors.Indigo2,
 ];
 
-export class ChartPalette {
-  static semantic(
+/**
+ * Utilities for resolving Kumo chart colors by semantic name or series index.
+ * Both functions accept an `isDarkMode` flag and return the appropriate hex color.
+ */
+export namespace ChartPalette {
+  /**
+   * Returns the hex color for a named semantic value (status, severity, etc.).
+   *
+   * @example
+   * ```ts
+   * ChartPalette.semantic("Attention")           // "#FC574A" (light)
+   * ChartPalette.semantic("Warning", true)       // "#F8A054E6" (dark)
+   * ```
+   */
+  export function semantic(
     name:
       | "Attention"
       | "Warning"
@@ -84,97 +121,20 @@ export class ChartPalette {
       : ChartSemanticLightColors[name];
   }
 
-  static color(index: number, isDarkMode = false) {
+  /**
+   * Returns the categorical color for a given series index.
+   * Wraps around via modulo when `index` exceeds the palette length (10 colors).
+   *
+   * @example
+   * ```ts
+   * ChartPalette.color(0)        // Blue (light)
+   * ChartPalette.color(0, true)  // Blue with E6 alpha (dark)
+   * ChartPalette.color(10)       // wraps back to Blue
+   * ```
+   */
+  export function color(index: number, isDarkMode = false) {
     return isDarkMode
       ? CHART_DARK_COLORS[index % CHART_DARK_COLORS.length]
       : CHART_LIGHT_COLORS[index % CHART_LIGHT_COLORS.length];
   }
-
-  static orangeShade(index: number, count: number) {
-    return shadingColor("#f8a054", index, count);
-  }
-
-  static grayShade(index: number, count: number) {
-    return shadingColor("#eee", index, count);
-  }
-
-  static blueShade(index: number, count: number) {
-    return shadingColor("#0051C3", index, count);
-  }
-}
-
-function shadingColor(baseHex: string, index: number, count: number) {
-  const c = Math.max(1, Math.floor(count));
-  const i = ((index % c) + c) % c;
-
-  const { r, g, b } = hexToRgb(baseHex);
-  const { h, s } = rgbToHsl(r, g, b);
-
-  // Lightness range (tweak to taste)
-  const maxL = clamp01(0.72); // lighter
-  const minL = clamp01(0.42); // darker
-
-  const t = c === 1 ? 0.5 : i / (c - 1);
-  const l = maxL + (minL - maxL) * t;
-
-  // Canvas (and ECharts) will accept hsl() strings
-  const hh = Math.round(h);
-  const ss = Math.round(s * 100);
-  const ll = Math.round(l * 100);
-  return `hsl(${hh}, ${ss}%, ${ll}%)`;
-}
-
-function clamp01(n: number) {
-  return Math.min(1, Math.max(0, n));
-}
-
-function hexToRgb(hex: string) {
-  const h = hex.replace("#", "").trim();
-  const full =
-    h.length === 3
-      ? h
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : h;
-  const n = Number.parseInt(full, 16);
-  return {
-    r: (n >> 16) & 255,
-    g: (n >> 8) & 255,
-    b: n & 255,
-  };
-}
-
-// returns h in [0..360), s/l in [0..1]
-function rgbToHsl(r: number, g: number, b: number) {
-  const rr = r / 255;
-  const gg = g / 255;
-  const bb = b / 255;
-
-  const max = Math.max(rr, gg, bb);
-  const min = Math.min(rr, gg, bb);
-  const d = max - min;
-
-  let h = 0;
-  const l = (max + min) / 2;
-
-  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
-
-  if (d !== 0) {
-    switch (max) {
-      case rr:
-        h = ((gg - bb) / d) % 6;
-        break;
-      case gg:
-        h = (bb - rr) / d + 2;
-        break;
-      default:
-        h = (rr - gg) / d + 4;
-        break;
-    }
-    h *= 60;
-    if (h < 0) h += 360;
-  }
-
-  return { h, s, l };
 }

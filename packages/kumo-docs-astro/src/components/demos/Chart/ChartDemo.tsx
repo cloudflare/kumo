@@ -119,7 +119,7 @@ export function TimeseriesChartPreviewDemo() {
 
   return (
     <TimeseriesChart
-      yAxisTickNumber={2}
+      yAxisTickCount={2}
       echarts={echarts}
       isDarkMode={isDarkMode}
       data={data}
@@ -233,9 +233,7 @@ export function LegendDefaultDemo() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-kumo-text-secondary">
-        Active State
-      </h3>
+      <h3 className="text-sm font-medium">Active State</h3>
 
       <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
         <ChartLegend.LargeItem
@@ -257,9 +255,7 @@ export function LegendDefaultDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium text-kumo-text-secondary mt-12">
-        Inactive State
-      </h3>
+      <h3 className="text-sm font-medium mt-12">Inactive State</h3>
 
       <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
         <ChartLegend.LargeItem
@@ -295,9 +291,7 @@ export function LegendCompactDemo() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-kumo-text-secondary">
-        Active State
-      </h3>
+      <h3 className="text-sm font-medium">Active State</h3>
       <div className="flex flex-wrap gap-4">
         <ChartLegend.SmallItem
           name="Requests"
@@ -318,9 +312,7 @@ export function LegendCompactDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium text-kumo-text-secondary mt-12">
-        Inactive State
-      </h3>
+      <h3 className="text-sm font-medium mt-12">Inactive State</h3>
       <div className="flex flex-wrap gap-4">
         <ChartLegend.SmallItem
           name="Requests"

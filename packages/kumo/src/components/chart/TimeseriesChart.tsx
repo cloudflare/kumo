@@ -4,46 +4,85 @@ import type { EChartsOption } from "echarts";
 import { useEffect, useMemo, useRef } from "react";
 import { Chart, ChartEvents } from "./EChart";
 
-interface TimeSeriesData {
+/** A single data series rendered on a `TimeseriesChart` */
+export interface TimeseriesData {
+  /** Display name shown in tooltips and legends */
   name: string;
+  /** Array of `[timestamp_ms, value]` tuples ordered by time */
   data: [number, number][];
+  /** Hex color string used for this series' line, bars, and legend dot */
   color: string;
 }
 
-interface TimeSeriesChartProps {
+/** Props for `TimeseriesChart` */
+export interface TimeseriesChartProps {
+  /**
+   * The ECharts core instance imported by the consumer.
+   * Passed in rather than imported directly so the consumer controls which
+   * ECharts modules are bundled (tree-shaking).
+   */
   echarts: typeof echarts;
+  /** Visual style of each series. Defaults to `"line"`. */
   type?: "line" | "bar";
   /** Array of time series data to display on the chart */
-  data: TimeSeriesData[];
+  data: TimeseriesData[];
   /** Label for the x-axis (time axis) */
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
-  xAxisTickNumber?: number;
+  xAxisTickCount?: number;
   /** Label for the y-axis (value axis) */
   yAxisName?: string;
   /** Number of ticks to display on the y-axis */
-  yAxisTickNumber?: number;
+  yAxisTickCount?: number;
   /** Indicates incomplete data periods with optional before/after timestamps in ms */
   incomplete?: { before?: number; after?: number };
-  /** Height of the chart in pixels */
+  /** Height of the chart in pixels. Defaults to `350`. */
   height?: number;
   /** Callback fired when user selects a time range via brush selection */
   onTimeRangeChange?: (from: number, to: number) => void;
+  /** When `true`, switches the chart to ECharts' built-in dark theme */
   isDarkMode?: boolean;
 }
 
+/**
+ * TimeseriesChart — a time-series line or bar chart.
+ *
+ * Built on `Chart` (Apache ECharts) with opinionated defaults for time-series data:
+ * a time-typed x-axis, dashed lines for incomplete data periods, brush-based
+ * time range selection, and automatic tooltip deduplication.
+ *
+ * @example
+ * ```tsx
+ * import * as echarts from "echarts/core";
+ * import { LineChart } from "echarts/charts";
+ * import { GridComponent, TooltipComponent, BrushComponent, ToolboxComponent } from "echarts/components";
+ * import { CanvasRenderer } from "echarts/renderers";
+ *
+ * echarts.use([LineChart, GridComponent, TooltipComponent, BrushComponent, ToolboxComponent, CanvasRenderer]);
+ *
+ * const [range, setRange] = useState<[number, number]>();
+ *
+ * <TimeseriesChart
+ *   echarts={echarts}
+ *   data={[{ name: "Requests", data: [[Date.now(), 42]], color: "#086FFF" }]}
+ *   xAxisName="Time"
+ *   yAxisName="Count"
+ *   onTimeRangeChange={(from, to) => setRange([from, to])}
+ * />
+ * ```
+ */
 export function TimeseriesChart({
   echarts,
   type = "line",
   data,
   xAxisName,
   yAxisName,
-  yAxisTickNumber,
+  yAxisTickCount,
   onTimeRangeChange,
   height = 350,
   incomplete,
   isDarkMode,
-}: TimeSeriesChartProps) {
+}: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
@@ -184,7 +223,7 @@ export function TimeseriesChart({
           show: true,
           lineStyle: { type: "dashed" as const, width: 1 },
         },
-        splitNumber: yAxisTickNumber,
+        splitNumber: yAxisTickCount,
       },
       grid: {
         left: yAxisName ? 30 : 24,
@@ -194,7 +233,15 @@ export function TimeseriesChart({
       },
       series: transformSeries,
     };
-  }, [data, xAxisName, yAxisName, incompleteBefore, incompleteAfter, type]);
+  }, [
+    data,
+    xAxisName,
+    yAxisName,
+    yAxisTickCount,
+    incompleteBefore,
+    incompleteAfter,
+    type,
+  ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
     if (!onTimeRangeChange) return {};
@@ -208,6 +255,8 @@ export function TimeseriesChart({
     };
   }, [onTimeRangeChange]);
 
+  // Activate the lineX brush cursor when a time-range callback is provided,
+  // and deactivate it on cleanup so the cursor resets when the prop is removed.
   const hasTimeRangeCallback = !!onTimeRangeChange;
   useEffect(() => {
     const chart = chartRef.current;
@@ -245,8 +294,16 @@ export function TimeseriesChart({
   );
 }
 
+/** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
+function pad(n: number) {
+  return n.toString().padStart(2, "0");
+}
+
+/**
+ * Formats a timestamp as `"YYYY-MM-DD HH:mm:ss"` for use in chart tooltips.
+ * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
+ */
 function formatTimestamp(ts: number | string | Date): string {
   const d = new Date(ts);
-  const pad = (n: number) => n.toString().padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
