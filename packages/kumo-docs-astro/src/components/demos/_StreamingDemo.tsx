@@ -72,7 +72,7 @@ const PRESET_PROMPTS = [
   {
     label: "Custom",
     prompt:
-      'Show two DemoButton components side by side: one "Light" variant and one "Dark" variant, each with a select_theme action',
+      'Show a "Theme Picker" heading, a short description about choosing a theme with custom DemoButton components, then a button group with two DemoButtons: "Light" (variant "light") and "Dark" (variant "dark"), each with a select_theme action and a theme param matching its variant',
   },
 ] as const;
 
