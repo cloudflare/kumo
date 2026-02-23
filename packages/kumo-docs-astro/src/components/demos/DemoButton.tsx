@@ -14,6 +14,12 @@ interface DemoButtonProps {
   readonly children?: ReactNode;
   /** Visual variant */
   readonly variant?: "light" | "dark";
+  /**
+   * Action callback injected by UITreeRenderer when the element declares an
+   * `action` field. Custom components receive `onAction` (not `onClick`) from
+   * the renderer's action-injection logic.
+   */
+  readonly onAction?: (context?: Record<string, unknown>) => void;
 }
 
 const sparkSvg = (
@@ -43,6 +49,7 @@ const sparkSvg = (
 export function DemoButton({
   children = "Click me",
   variant = "light",
+  onAction,
 }: DemoButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -53,8 +60,9 @@ export function DemoButton({
     const id = requestAnimationFrame(() => {
       requestAnimationFrame(() => el.classList.remove("scale-[0.97]"));
     });
+    onAction?.({ variant });
     return () => cancelAnimationFrame(id);
-  }, []);
+  }, [onAction, variant]);
 
   const isDark = variant === "dark";
 
