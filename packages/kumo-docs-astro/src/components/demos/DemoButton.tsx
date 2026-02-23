@@ -76,10 +76,12 @@ export function DemoButton({
           : "border-neutral-300 bg-neutral-200 text-neutral-800",
       ].join(" ")}
     >
-      {/* Conic gradient layer — visible on hover */}
+      {/* Conic gradient layer (mirrors button::before in the CodePen).
+          Absolutely positioned behind the grid content so backdrop-filter
+          on the .backdrop span can pick it up. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 rounded-[7px] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 rounded-[calc(0.5rem-1px)] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
         style={{
           background:
             "conic-gradient(from 45deg at 50% 50%, hsl(10 90% 70%), hsl(140 80% 70%), hsl(320 80% 70%), hsl(210 80% 70%), hsl(10 80% 70%))",
@@ -87,19 +89,22 @@ export function DemoButton({
         }}
       />
 
-      {/* Frosted backdrop */}
+      {/* Frosted backdrop — position: relative puts it above the absolute
+          gradient in stacking order. backdrop-filter blurs/brightens the
+          gradient behind it; semi-transparent bg lets the filtered result
+          show through. */}
       <span
         aria-hidden="true"
         className={[
-          "relative col-start-1 row-start-1 block size-full rounded-[calc(0.5rem-1px)]",
+          "relative col-start-1 row-start-1 block h-full w-full rounded-[calc(0.5rem-1px)]",
           isDark
-            ? "bg-neutral-900/40 backdrop-blur-[20px] backdrop-brightness-[1.2] backdrop-saturate-100"
-            : "bg-white/60 backdrop-blur-[20px] backdrop-brightness-150",
+            ? "bg-[hsl(0_0%_10%/0.4)] backdrop-blur-[20px] backdrop-brightness-[1.2] backdrop-saturate-100"
+            : "bg-[hsl(0_0%_98%/0.6)] backdrop-blur-[20px] backdrop-brightness-150",
         ].join(" ")}
       />
 
       {/* Text + icon */}
-      <span className="relative z-10 col-start-1 row-start-1 flex items-center gap-2 px-4 py-2">
+      <span className="z-[2] col-start-1 row-start-1 flex items-center gap-2 px-4 py-2">
         {sparkSvg}
         {children}
       </span>

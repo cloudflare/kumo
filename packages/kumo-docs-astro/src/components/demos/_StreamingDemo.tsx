@@ -72,7 +72,7 @@ const PRESET_PROMPTS = [
   {
     label: "Custom",
     prompt:
-      'Show a heading that says "Custom Component Demo", a short paragraph explaining this is a custom DemoButton rendered through the customComponents extension point, then render three DemoButton components with children "Get Started", "Learn More", and "Subscribe" with variants light, dark, and light respectively. Wrap the buttons in a horizontal layout with some spacing.',
+      'Show a heading that says "Custom Component Demo", a short paragraph explaining this is a custom DemoButton rendered through the customComponents extension point, then render two DemoButton components side by side: one with children "Light" and variant "light", and one with children "Dark" and variant "dark". Wrap the buttons in a horizontal layout with some spacing.',
   },
 ] as const;
 
