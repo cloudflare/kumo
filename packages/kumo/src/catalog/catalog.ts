@@ -153,13 +153,24 @@ function getSchemas(): SchemasModule {
  * }
  */
 export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
-  const { actions = {} } = config;
+  const { actions = {}, customComponents } = config;
   const actionNames = Object.keys(actions);
+  const customComponentNames: readonly string[] = customComponents
+    ? Object.keys(customComponents).toSorted((a, b) => a.localeCompare(b))
+    : [];
 
   return {
     get componentNames(): readonly string[] {
       const schemas = getSchemas();
-      return schemas.KUMO_COMPONENT_NAMES;
+      if (customComponentNames.length === 0) {
+        return schemas.KUMO_COMPONENT_NAMES;
+      }
+      // Merge built-in + custom, deduplicate, sort
+      const merged = new Set<string>([
+        ...schemas.KUMO_COMPONENT_NAMES,
+        ...customComponentNames,
+      ]);
+      return Array.from(merged).toSorted((a, b) => a.localeCompare(b));
     },
 
     get actionNames(): readonly string[] {
@@ -270,6 +281,7 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
       const componentsSection = buildComponentDocs(registry, {
         maxPropsPerComponent,
         components: componentFilter,
+        customComponents,
       });
 
       // Build system prompt with all sections

@@ -306,6 +306,8 @@ export interface ActionDefinition {
 export interface CatalogConfig {
   /** Action definitions (optional) */
   actions?: Record<string, ActionDefinition>;
+  /** Custom component definitions for rendering, validation, and prompt generation */
+  customComponents?: Readonly<Record<string, CustomComponentDefinition>>;
 }
 
 /**

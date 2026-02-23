@@ -16,6 +16,29 @@
  */
 
 // =============================================================================
+// Custom component definition (prompt-relevant fields only)
+// =============================================================================
+
+/**
+ * Structural subset of {@link CustomComponentDefinition} used by the prompt
+ * builder. Only the metadata needed for documentation is included — no React
+ * component or Zod schema references.
+ */
+interface CustomPropDefinitionLike {
+  readonly type: string;
+  readonly description?: string;
+  readonly optional?: boolean;
+  readonly values?: readonly string[];
+  readonly default?: unknown;
+}
+
+interface CustomComponentDefinitionLike {
+  readonly description?: string;
+  readonly props?: Record<string, CustomPropDefinitionLike>;
+  readonly category?: string;
+}
+
+// =============================================================================
 // Registry parsing types (defensive — avoid trusting JSON module typing)
 // =============================================================================
 
@@ -60,6 +83,14 @@ export interface PromptBuilderOptions {
    * When omitted, all registry components (plus aliases & synthetics) are included.
    */
   readonly components?: readonly string[];
+
+  /**
+   * Consumer-provided custom component definitions.
+   * When present, a `### Custom` section is appended to the component docs.
+   */
+  readonly customComponents?: Readonly<
+    Record<string, CustomComponentDefinitionLike>
+  >;
 }
 
 // =============================================================================
@@ -499,6 +530,51 @@ function collectAllTypes(registry: ParsedRegistry): readonly string[] {
 }
 
 // =============================================================================
+// Custom component docs rendering
+// =============================================================================
+
+/**
+ * Convert a {@link CustomPropDefinitionLike} record into the same prop line
+ * format used for built-in components, applying the same scoring & top-N logic.
+ */
+function renderCustomComponentDocs(
+  customComponents: Readonly<Record<string, CustomComponentDefinitionLike>>,
+  maxProps: number,
+): string[] {
+  const names = Object.keys(customComponents).toSorted((a, b) =>
+    a.localeCompare(b),
+  );
+  const lines: string[] = [];
+
+  for (const name of names) {
+    const def = customComponents[name];
+    if (!def) continue;
+
+    const description = def.description ?? "Custom component";
+    lines.push(`- **${name}** — ${description}`);
+
+    if (def.props) {
+      // Convert CustomPropDefinitionLike → RegistryProp shape for reuse
+      const registryProps: Record<string, RegistryProp> = {};
+      for (const [propName, propDef] of Object.entries(def.props)) {
+        registryProps[propName] = {
+          type:
+            propDef.values && propDef.values.length > 0 ? "enum" : propDef.type,
+          optional: propDef.optional,
+          values: propDef.values,
+          default: propDef.default,
+          description: propDef.description,
+        };
+      }
+      const propLines = renderPropsLines(registryProps, maxProps);
+      if (propLines.length > 0) lines.push(...propLines);
+    }
+  }
+
+  return lines;
+}
+
+// =============================================================================
 // Public API
 // =============================================================================
 
@@ -529,7 +605,11 @@ export function buildComponentDocs(
   registryJson: unknown,
   options: PromptBuilderOptions = {},
 ): string {
-  const { maxPropsPerComponent = 10, components: componentFilter } = options;
+  const {
+    maxPropsPerComponent = 10,
+    components: componentFilter,
+    customComponents,
+  } = options;
 
   const registry = parseRegistry(registryJson);
 
@@ -588,6 +668,19 @@ export function buildComponentDocs(
     out.push(`### ${group}`);
     out.push(...lines);
     out.push("");
+  }
+
+  // Append custom component docs under ### Custom heading
+  if (customComponents) {
+    const customLines = renderCustomComponentDocs(
+      customComponents,
+      maxPropsPerComponent,
+    );
+    if (customLines.length > 0) {
+      out.push(`### Custom`);
+      out.push(...customLines);
+      out.push("");
+    }
   }
 
   return out.join("\n").trimEnd();
