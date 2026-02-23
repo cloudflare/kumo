@@ -294,7 +294,7 @@ function GroupLabel(props: ComboboxBase.GroupLabel.Props) {
     <ComboboxBase.GroupLabel
       {...props}
       className={cn(
-        "mx-1.5 px-2 py-1.5 text-sm uppercase font-bold",
+        "mx-1.5 px-2 py-1.5 text-sm text-kumo-strong",
         props.className,
       )}
     />
@@ -302,7 +302,12 @@ function GroupLabel(props: ComboboxBase.GroupLabel.Props) {
 }
 
 function Group(props: ComboboxBase.Group.Props) {
-  return <ComboboxBase.Group {...props} className="mt-2 first:mt-0" />;
+  return (
+    <ComboboxBase.Group
+      {...props}
+      className="border-t border-kumo-line mt-2 pt-2 first:border-t-0 first:mt-0 first:pt-0"
+    />
+  );
 }
 
 function Chip(props: ComboboxBase.Chip.Props) {
