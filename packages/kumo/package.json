@@ -231,6 +231,10 @@
       "types": "./dist/src/primitives/context-menu.d.ts",
       "import": "./dist/primitives/context-menu.js"
     },
+    "./primitives/csp-provider": {
+      "types": "./dist/src/primitives/csp-provider.d.ts",
+      "import": "./dist/primitives/csp-provider.js"
+    },
     "./primitives/dialog": {
       "types": "./dist/src/primitives/dialog.d.ts",
       "import": "./dist/primitives/dialog.js"
@@ -238,6 +242,10 @@
     "./primitives/direction-provider": {
       "types": "./dist/src/primitives/direction-provider.d.ts",
       "import": "./dist/primitives/direction-provider.js"
+    },
+    "./primitives/drawer": {
+      "types": "./dist/src/primitives/drawer.d.ts",
+      "import": "./dist/primitives/drawer.js"
     },
     "./primitives/field": {
       "types": "./dist/src/primitives/field.d.ts",
@@ -415,7 +423,7 @@
     }
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
+    "@base-ui/react": "^1.2.0",
     "clsx": "^2.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",

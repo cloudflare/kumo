@@ -5,7 +5,7 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
-import { DropdownBasicDemo, DropdownCheckboxDemo, DropdownNestedDemo } from "../../components/demos/DropdownDemo";
+import { DropdownBasicDemo, DropdownCheckboxDemo, DropdownNestedDemo, DropdownLinkItemDemo } from "../../components/demos/DropdownDemo";
 ---
 
 <DocLayout
@@ -165,6 +165,35 @@ export default function Example() {
           <DropdownNestedDemo client:load />
         </ComponentExample>
       </div>
+
+      <div>
+        <Heading level={3}>Navigation Links</Heading>
+        <p class="mb-4 text-sm text-label">
+          Use <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">DropdownMenu.LinkItem</code> for menu items that navigate to a URL.
+          This renders a semantic <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">&lt;a&gt;</code> element with full control over link attributes like <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">target</code> and <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">rel</code>.
+        </p>
+        <ComponentExample code={`<DropdownMenu>
+  <DropdownMenu.Trigger render={<Button>Resources</Button>} />
+  <DropdownMenu.Content>
+    <DropdownMenu.LinkItem href="/settings" icon={GearIcon}>
+      Settings
+    </DropdownMenu.LinkItem>
+    <DropdownMenu.LinkItem href="/docs" icon={BookOpenIcon}>
+      Documentation
+    </DropdownMenu.LinkItem>
+    <DropdownMenu.Separator />
+    <DropdownMenu.LinkItem
+      href="https://developers.cloudflare.com"
+      target="_blank"
+      icon={ArrowSquareOutIcon}
+    >
+      Developer Docs
+    </DropdownMenu.LinkItem>
+  </DropdownMenu.Content>
+</DropdownMenu>`}>
+          <DropdownLinkItemDemo client:load />
+        </ComponentExample>
+      </div>
     </div>
   </ComponentSection>
 
@@ -191,9 +220,18 @@ export default function Example() {
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.Item</h3>
         <p class="mb-3 text-sm text-kumo-strong">
-          Individual menu item.
+          Individual menu item for actions.
         </p>
         <PropsTable component="DropdownMenu.Item" />
+      </div>
+
+      <div>
+        <h3 class="mb-3 text-lg font-semibold font-mono">DropdownMenu.LinkItem</h3>
+        <p class="mb-3 text-sm text-label">
+          A menu item that navigates to a URL. Renders a semantic <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">&lt;a&gt;</code> element.
+          Use this instead of <code class="rounded bg-color-3 px-1.5 py-0.5 font-mono text-xs">Item</code> for navigation links.
+        </p>
+        <PropsTable component="DropdownMenu.LinkItem" />
       </div>
 
       <div>
