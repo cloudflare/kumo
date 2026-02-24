@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@cloudflare/kumo";
-import { GithubLogo } from "@phosphor-icons/react";
+import { GithubLogoIcon } from "@phosphor-icons/react";
+import { ThemeToggle } from "../ThemeToggle";
 import { BaseUIIcon } from "./icons/BaseUIIcon";
-
-/** Height of the sticky header in pixels - matches h-12 Tailwind class (3rem) */
-const STICKY_HEADER_HEIGHT = 48;
 
 interface StickyDocHeaderProps {
   title: string;
@@ -19,6 +17,7 @@ export function StickyDocHeader({
 }: StickyDocHeaderProps) {
   const [showStickyTitle, setShowStickyTitle] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const headerRef = useRef<HTMLElement>(null);
 
   // Watch for sidebar state changes
   useEffect(() => {
@@ -49,19 +48,16 @@ export function StickyDocHeader({
   // Watch for page header visibility
   useEffect(() => {
     const pageHeader = document.getElementById("page-header");
-    const mainContent = document.getElementById("main-content");
-    if (!pageHeader) return;
+    if (!headerRef.current || !pageHeader) return;
 
+    const margin = Math.round(headerRef.current.getBoundingClientRect().bottom);
+
+    // Show sticky title when page header's bottom edge scrolls past the sticky header's bottom edge
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Show sticky title when page header is not visible
         setShowStickyTitle(!entry.isIntersecting);
       },
-      {
-        root: mainContent, // Use main-content as scroll container
-        threshold: 0,
-        rootMargin: `-${STICKY_HEADER_HEIGHT}px 0px 0px 0px`,
-      },
+      { rootMargin: `-${margin}px 0px 0px 0px` },
     );
 
     observer.observe(pageHeader);
@@ -74,7 +70,7 @@ export function StickyDocHeader({
       {!sidebarOpen && (
         <div
           className={cn(
-            "pointer-events-none fixed top-0 left-12 z-50 flex h-[49px] items-center font-medium transition-opacity duration-200 select-none",
+            "pointer-events-none fixed top-0 left-12 z-50 flex h-12 items-center font-medium transition-opacity duration-200 select-none",
             showStickyTitle ? "opacity-100" : "opacity-0",
           )}
           style={{ paddingLeft: "4.25rem" }} // Position after "Kumo" text (px-4 + "Kumo" width)
@@ -92,7 +88,7 @@ export function StickyDocHeader({
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle ? 0 : -1}
               >
-                <GithubLogo size={18} weight="fill" />
+                <GithubLogoIcon size={18} weight="fill" />
               </a>
             )}
             {baseUIUrl && (
@@ -113,8 +109,11 @@ export function StickyDocHeader({
       )}
 
       {/* Sticky header bar */}
-      <header className="sticky top-0 z-10 border-b border-kumo-line bg-kumo-elevated md:pr-12">
-        <div className="mx-auto flex h-12 items-center justify-between md:border-r md:border-kumo-line px-4">
+      <header
+        ref={headerRef}
+        className="sticky flex h-12 top-12 md:top-0 z-10 border-b border-kumo-line bg-kumo-elevated"
+      >
+        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-line">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
@@ -136,7 +135,7 @@ export function StickyDocHeader({
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
               >
-                <GithubLogo size={20} weight="fill" />
+                <GithubLogoIcon size={20} weight="fill" />
               </a>
             )}
             {baseUIUrl && (
@@ -161,6 +160,9 @@ export function StickyDocHeader({
           >
             @cloudflare/kumo
           </a>
+        </div>
+        <div className="hidden w-12 shrink-0 items-center justify-center md:flex">
+          <ThemeToggle />
         </div>
       </header>
     </>

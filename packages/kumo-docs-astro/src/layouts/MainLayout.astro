@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import { SidebarNav } from "../components/SidebarNav";
-import { ThemeToggle } from "../components/ThemeToggle";
 
 interface Props {
   title?: string;
@@ -39,17 +38,10 @@ const currentPath = Astro.url.pathname;
       })();
     </script>
 
-    <!-- Theme toggle: fixed in top right corner -->
-    <div
-      class="pointer-events-auto fixed top-0 right-2 z-50 flex h-[49px] items-center"
-    >
-      <ThemeToggle client:only="react" />
-    </div>
-
     <!-- Main content area - margin controlled by CSS :has() based on sidebar state -->
     <div
       id="main-content"
-      class="main-content mt-[49px] md:mt-0 md:ml-12 h-screen overflow-y-auto overscroll-y-none transition-[margin] duration-300"
+      class="main-content mt-12 md:mt-0 md:ml-12 transition-[margin] duration-300"
     >
       <slot />
     </div>

@@ -14,7 +14,8 @@ import {
 export const KUMO_CHECKBOX_VARIANTS = {
   variant: {
     default: {
-      classes: "[&:focus-within>span]:ring-kumo-ring [&:hover>span]:ring-kumo-ring",
+      classes:
+        "[&:focus-within>span]:ring-kumo-ring [&:hover>span]:ring-kumo-ring",
       description: "Default checkbox appearance",
     },
     error: {
@@ -263,7 +264,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
           "flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled && "hover:ring-kumo-ring focus-visible:ring-kumo-ring",
-          "data-[checked]:bg-kumo-contrast data-[indeterminate]:bg-kumo-contrast",
+          "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -366,7 +367,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               "group-hover:ring-kumo-ring hover:ring-kumo-ring focus-visible:ring-kumo-ring",
-            "data-[checked]:bg-kumo-contrast data-[indeterminate]:bg-kumo-contrast",
+            "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           )}
         >
           <BaseCheckbox.Indicator
@@ -425,7 +426,9 @@ function CheckboxGroup({
           </Fieldset.Legend>
           <div className="flex flex-col gap-2">{children}</div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
-          {description && <p className="text-sm text-kumo-subtle">{description}</p>}
+          {description && (
+            <p className="text-sm text-kumo-subtle">{description}</p>
+          )}
         </Fieldset.Root>
       </BaseCheckboxGroup>
     </CheckboxGroupContext.Provider>

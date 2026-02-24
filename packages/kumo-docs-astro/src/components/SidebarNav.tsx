@@ -7,6 +7,7 @@ import {
 } from "@phosphor-icons/react";
 import { KumoMenuIcon } from "./KumoMenuIcon";
 import { SearchDialog } from "./SearchDialog";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavItem {
   label: string;
@@ -287,7 +288,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-[49px] items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
         )}
       >
         <Button
@@ -299,8 +300,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <KumoMenuIcon />
         </Button>
         <h1 className="text-base font-medium">Kumo</h1>
-        {/* Spacer to center the title */}
-        <div className="size-9" />
+        <ThemeToggle />
       </div>
 
       {/* Mobile slide-out drawer */}
@@ -311,7 +311,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-[49px] flex-none items-center justify-between border-b border-kumo-line px-3">
+        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3">
           <h1 className="text-base font-medium">Kumo</h1>
           <Button
             variant="ghost"
@@ -339,7 +339,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "border-r border-kumo-line",
         )}
       >
-        <div className="relative h-[49px] border-b border-kumo-line">
+        <div className="relative h-12 border-b border-kumo-line">
           <div className="absolute top-2 right-1">
             <Button
               variant="ghost"
@@ -355,7 +355,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       </div>
 
       {/* Desktop: Kumo brand label - always visible, panel slides behind it */}
-      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-[49px] items-center px-3 font-medium select-none md:flex">
+      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-12 items-center px-3 font-medium select-none md:flex">
         <h1 className="text-base">Kumo</h1>
       </div>
 
@@ -370,7 +370,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             : "-translate-x-full",
         )}
       >
-        <div className="h-[49px] flex-none border-b border-kumo-line" />
+        <div className="h-12 flex-none border-b border-kumo-line" />
 
         <div
           ref={desktopScrollRef}

@@ -4,6 +4,8 @@
 # (preview.yml docs-build job) and produces a static HTML artifact.
 # This workflow runs in the base repo context with secrets, but NEVER
 # checks out or executes fork code — it only deploys the built artifact.
+# The wrangler config is checked out from the PR head (JSON only, not
+# executable) so that preview deploys match the PR's infrastructure changes.
 #
 # For internal PRs, deployment happens directly in preview.yml (docs-deploy job).
 
@@ -43,6 +45,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: packages/kumo-docs-astro/wrangler.jsonc
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Resolve PR metadata
         id: metadata

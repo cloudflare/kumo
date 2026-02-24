@@ -5,9 +5,16 @@ on:
     paths-ignore:
       - "*.md"
       - ".changeset/**"
+  # Also trigger on push to PR branches (for bots that push via API)
+  push:
+    branches:
+      - "opencode/**"
+    paths-ignore:
+      - "*.md"
+      - ".changeset/**"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:

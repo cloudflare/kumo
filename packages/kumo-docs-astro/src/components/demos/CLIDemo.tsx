@@ -646,7 +646,7 @@ export const CLITerminal: FC = () => {
         ref={terminalRef}
         onClick={handleTerminalClick}
         onKeyDown={undefined}
-        className="relative h-[500px] w-full max-w-[800px] cursor-text overflow-x-auto overflow-y-auto overscroll-contain rounded-lg bg-kumo-contrast p-4 font-mono text-sm text-kumo-inverse"
+        className="relative h-[500px] w-full max-w-[800px] cursor-text overflow-x-auto overflow-y-auto overscroll-contain rounded-lg bg-black p-4 font-mono text-sm text-white"
       >
         {/* Output lines */}
         {lines.map((line, i) => {
@@ -678,7 +678,7 @@ export const CLITerminal: FC = () => {
         <div className="flex items-center">
           <span className="text-kumo-success">$</span>
           <span className="mx-1 text-kumo-success">{currentInput}</span>
-          <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-kumo-contrast" />
+          <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-white" />
           <input
             ref={inputRef}
             type="text"
