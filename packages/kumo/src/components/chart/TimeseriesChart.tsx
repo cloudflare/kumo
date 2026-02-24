@@ -2,6 +2,7 @@ import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption } from "echarts";
 import { useEffect, useMemo, useRef } from "react";
+import { cn } from "../../utils";
 import { Chart, ChartEvents } from "./EChart";
 
 /** A single data series rendered on a `TimeseriesChart` */
@@ -59,6 +60,11 @@ export interface TimeseriesChartProps {
    * Has no effect when `type` is `"bar"`.
    */
   gradient?: boolean;
+  /**
+   * When `true`, hides the chart and displays an animated sine-wave skeleton
+   * that oscillates back and forth to indicate that data is being fetched.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -103,6 +109,7 @@ export function TimeseriesChart({
   incomplete,
   isDarkMode,
   gradient,
+  loading,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const incompleteBefore = incomplete?.before;
@@ -319,14 +326,74 @@ export function TimeseriesChart({
   }, [chartRef, hasTimeRangeCallback]);
 
   return (
-    <Chart
-      echarts={echarts}
-      ref={chartRef}
-      options={options as EChartsOption}
-      height={height}
-      isDarkMode={isDarkMode}
-      onEvents={events}
-    />
+    <div className="relative w-full" style={{ height }}>
+      {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
+      {!loading && (
+        <Chart
+          echarts={echarts}
+          ref={chartRef}
+          options={options as EChartsOption}
+          height={height}
+          isDarkMode={isDarkMode}
+          onEvents={events}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Animated sine-wave skeleton shown while `TimeseriesChart` is in `loading` state.
+ * Renders multiple staggered wave paths that sweep continuously left-to-right,
+ * mimicking the motion of live time-series data being drawn.
+ */
+function ChartWaveLoader({
+  height,
+  isDarkMode,
+}: {
+  height: number;
+  isDarkMode?: boolean;
+}) {
+  const mid = height / 2;
+  const amp = Math.min(height * 0.12, 28);
+  const period = 400;
+  const steps = 120;
+
+  const points: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const x = -period + (i / steps) * period * 3;
+    const y = mid + Math.sin((i / steps) * 2 * Math.PI * 3) * amp;
+    points.push(`${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`);
+  }
+  const d = points.join(" ");
+
+  const strokeColor = isDarkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.2)";
+
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 overflow-hidden"
+      style={{ height }}
+    >
+      <svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${period} ${height}`}
+        preserveAspectRatio="none"
+        className="w-full animate-pulse"
+      >
+        <path
+          d={d}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="2"
+          style={{
+            animation: `kumo-chart-wave 2.4s linear infinite`,
+            transformOrigin: "0 0",
+          }}
+        />
+      </svg>
+    </div>
   );
 }
 

@@ -4,9 +4,11 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
+  BarChartDemo,
   CustomXAxisLabelFormatDemo,
   GradientLineChartDemo,
   IncompleteDataChartDemo,
+  LoadingChartDemo,
   TimeRangeSelectionChartDemo,
 } from "~/components/demos/Chart/ChartDemo";
 import Heading from "~/components/docs/Heading.astro";
@@ -96,8 +98,8 @@ const data = [
 
     <p class="my-4">
       Set <code>gradient</code> to <code>true</code> to render a vertical gradient
-      fill beneath each line series. The fill fades from the series color at the top
-      to transparent at the bottom, giving the chart a polished area-chart look
+      fill beneath each line series. The fill fades from the series color at the
+      top to transparent at the bottom, giving the chart a polished area-chart look
       without losing the clarity of individual lines.
     </p>
 
@@ -187,6 +189,51 @@ const data = [
 />`}
     >
       <TimeRangeSelectionChartDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={3} class="mb-4">Bar Chart</Heading>
+
+    <p class="my-4">
+      Set <code>type="bar"</code> to render series as stacked bars instead of lines.
+      All other props — axes, tooltips, colors — work identically.
+    </p>
+
+    <ComponentExample
+      code={`<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  type="bar"
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Count"
+/>`}
+    >
+      <BarChartDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={3} class="mb-4">Loading State</Heading>
+
+    <p class="my-4">
+      Set <code>loading</code> to <code>true</code> to display an animated sine-wave
+      skeleton while data is being fetched. The chart canvas is hidden until loading
+      completes; swap back to <code>loading={`{false}`}</code> to reveal the chart.
+    </p>
+
+    <ComponentExample
+      code={`const [isLoading, setIsLoading] = useState(true);
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  loading={isLoading}
+/>`}
+    >
+      <LoadingChartDemo client:visible />
     </ComponentExample>
   </ComponentSection>
 </DocLayout>

@@ -17,6 +17,7 @@ import {
   TooltipComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+import { LabelLayout, UniversalTransition } from "echarts/features";
 
 echarts.use([
   BarChart,
@@ -26,8 +27,10 @@ echarts.use([
   BrushComponent,
   GridComponent,
   TooltipComponent,
-  CanvasRenderer,
   AriaComponent,
+  LabelLayout,
+  UniversalTransition,
+  CanvasRenderer,
 ]);
 
 export function PieChartDemo() {
@@ -36,6 +39,8 @@ export function PieChartDemo() {
   const options = useMemo(
     () =>
       ({
+        animation: true,
+        animationDuration: 2000,
         toolbox: {
           show: false,
         },
@@ -405,6 +410,60 @@ export function LegendCompactDemo() {
           inactive
         />
       </div>
+    </div>
+  );
+}
+
+/**
+ * Timeseries chart rendered as a stacked bar chart.
+ */
+export function BarChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 20, 3_600_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 20, 3_600_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      type="bar"
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Count"
+    />
+  );
+}
+
+/**
+ * Timeseries chart in loading state, showing the animated sine-wave skeleton.
+ * Loads for 5 seconds then reveals the real chart. A button restarts the cycle.
+ */
+export function LoadingChartDemo() {
+  const isDarkMode = useIsDarkMode();
+  return (
+    <div className="flex flex-col flex-1 w-full">
+      <TimeseriesChart
+        echarts={echarts}
+        isDarkMode={isDarkMode}
+        xAxisName="Time (UTC)"
+        yAxisName="Count"
+        data={[]}
+        loading
+      />
     </div>
   );
 }

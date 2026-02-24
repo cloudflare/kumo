@@ -249,7 +249,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     }
 
     boundEventsRef.current = nextBound;
-  }, [isDarkMode, onEvents]);
+  }, [echarts, isDarkMode, onEvents]);
 
   // Resize handling
   useEffect(() => {
@@ -257,7 +257,17 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const el = elRef.current;
     if (!chart || !el) return;
 
-    const ro = new ResizeObserver(() => chart.resize());
+    // Flag to skip the very first trigger
+    let isInitial = true;
+
+    const ro = new ResizeObserver(() => {
+      if (isInitial) {
+        isInitial = false;
+        return; // Skip the first resize to let the animation play
+      }
+      chart.resize();
+    });
+
     ro.observe(el);
 
     return () => ro.disconnect();
