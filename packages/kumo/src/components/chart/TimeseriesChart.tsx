@@ -2,7 +2,6 @@ import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption } from "echarts";
 import { useEffect, useMemo, useRef } from "react";
-import { cn } from "../../utils";
 import { Chart, ChartEvents } from "./EChart";
 
 /** A single data series rendered on a `TimeseriesChart` */
