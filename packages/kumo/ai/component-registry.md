@@ -3299,7 +3299,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 
 ### Pagination
 
-Page navigation controls with page count display.
+Pagination component
 
 **Type:** component
 
@@ -3309,9 +3309,6 @@ Page navigation controls with page count display.
 
 **Props:**
 
-- `controls`: enum [default: full]
-  - `"full"`: Full pagination controls with first, previous, page input, next, and last buttons
-  - `"simple"`: Simple pagination controls with only previous and next buttons
 - `setPage`: (page: number) => void (required)
   Callback when page changes
 - `page`: number
@@ -3320,14 +3317,60 @@ Page navigation controls with page count display.
   Number of items displayed per page.
 - `totalCount`: number
   Total number of items across all pages.
+- `className`: string
+  Additional CSS classes for the container
+- `children`: ReactNode
+  Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator.
+- `controls`: enum [default: full]
+  - `"full"`: Full pagination controls with first, previous, page input, next, and last buttons
+  - `"simple"`: Simple pagination controls with only previous and next buttons
 - `text`: object
-  Method to provide custom pagination text
 
 **Colors (kumo tokens used):**
 
-`text-kumo-strong`
+`border-kumo-line`, `text-kumo-strong`
 
 **Styling:**
+
+
+**Sub-Components:**
+
+This is a compound component. Use these sub-components:
+
+#### Pagination.Info
+
+Info sub-component
+
+Props:
+- `children`: (props: {
+- `page`: number (required)
+- `perPage`: number
+- `totalCount`: number
+- `pageShowingRange`: string (required)
+
+#### Pagination.PageSize
+
+PageSize sub-component
+
+Props:
+- `value`: number (required)
+- `options`: number[]
+- `label`: ReactNode
+- `className`: string
+
+#### Pagination.Controls
+
+Controls sub-component
+
+Props:
+- `className`: string
+
+#### Pagination.Separator
+
+Separator sub-component
+
+Props:
+- `className`: string
 
 
 **Examples:**
@@ -3348,12 +3391,77 @@ Page navigation controls with page count display.
 
 ```tsx
 <Pagination
-      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}
+      text={({ perPage }: { perPage?: number }) =>
+        `Page ${page} - showing ${perPage} per page`
+      }
       page={page}
       setPage={setPage}
       perPage={25}
       totalCount={100}
     />
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+      />
+      <Pagination.Controls />
+    </Pagination>
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={200}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+        options={[10, 20, 50]}
+      />
+      <Pagination.Controls />
+    </Pagination>
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <div className="flex items-center gap-2">
+        <Pagination.Controls />
+        <Pagination.Separator />
+        <Pagination.PageSize
+          value={perPage}
+          onChange={(size) => {
+            setPerPage(size);
+            setPage(1);
+          }}
+        />
+      </div>
+    </Pagination>
 ```
 
 

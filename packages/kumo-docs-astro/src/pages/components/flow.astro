@@ -12,6 +12,8 @@ import {
   FlowAnchorDemo,
   FlowCenteredDemo,
   FlowPanningDemo,
+  FlowDisabledDemo,
+  FlowParallelAlignEndDemo,
 } from "../../components/demos/FlowDemo";
 ---
 
@@ -273,6 +275,55 @@ export default function Example() {
           <FlowPanningDemo client:visible />
         </ComponentExample>
       </div>
+
+      <div>
+        <Heading level={3}>Disabled Nodes</Heading>
+        <p class="mb-4">
+          Use the{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">disabled</code> prop
+          on a node to visually indicate it's inactive. Connectors linking to
+          disabled nodes are rendered with reduced opacity.
+        </p>
+        <ComponentExample
+          code={`<Flow>
+  <Flow.Node>Request</Flow.Node>
+  <Flow.Parallel>
+    <Flow.Node>Primary Handler</Flow.Node>
+    <Flow.Node disabled>Backup Handler (disabled)</Flow.Node>
+  </Flow.Parallel>
+  <Flow.Node>Response</Flow.Node>
+</Flow>`}
+        >
+          <FlowDisabledDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Parallel Node Alignment</Heading>
+        <p class="mb-4">
+          Use the{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">align</code> prop on{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Parallel</code>{" "}
+          to control how nodes with different widths are aligned. Use{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">"start"</code>{" "}
+          (default) to align left, or{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">"end"</code> to
+          align right.
+        </p>
+        <ComponentExample
+          code={`<Flow>
+  <Flow.Node>Start</Flow.Node>
+  <Flow.Parallel align="end">
+    <Flow.Node>Short</Flow.Node>
+    <Flow.Node>Medium Length</Flow.Node>
+    <Flow.Node>Very Long Node Name</Flow.Node>
+  </Flow.Parallel>
+  <Flow.Node>End</Flow.Node>
+</Flow>`}
+        >
+          <FlowParallelAlignEndDemo client:visible />
+        </ComponentExample>
+      </div>
     </div>
   </ComponentSection>
 
@@ -346,6 +397,11 @@ export default function Example() {
                 <td class="px-4 py-3">Custom element to render instead of the default styled node</td>
               </tr>
               <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">disabled</td>
+                <td class="px-4 py-3 font-mono">boolean</td>
+                <td class="px-4 py-3">When true, connectors linking to this node are rendered with reduced opacity</td>
+              </tr>
+              <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
                 <td class="px-4 py-3 font-mono">ReactNode</td>
                 <td class="px-4 py-3">Content to display inside the node</td>
@@ -413,6 +469,13 @@ export default function Example() {
               </tr>
             </thead>
             <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">align</td>
+                <td class="px-4 py-3 font-mono">"start" | "end"</td>
+                <td class="px-4 py-3"
+                  >Controls horizontal alignment of nodes within the parallel group. <code class="rounded bg-kumo-control px-1 py-0.5">"start"</code> (default) aligns left, <code class="rounded bg-kumo-control px-1 py-0.5">"end"</code> aligns right.</td
+                >
+              </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
                 <td class="px-4 py-3 font-mono">ReactNode</td>

@@ -180,10 +180,29 @@ export function FlowDiagram({
     return () => wrapper.removeEventListener("wheel", handleWheel);
   }, [bounds, x, y]);
 
+  const isEventFromNode = (e: PointerEvent) => {
+    const target = e.target as HTMLElement;
+    return target.closest("[data-node-id]") !== null;
+  };
+
+  const handlePanStart = (e: PointerEvent) => {
+    if (isEventFromNode(e)) return;
+    setIsPanning(true);
+    document.body.style.cursor = "grabbing";
+    document.body.style.userSelect = "none";
+  };
+
   const handlePan = (_: PointerEvent, info: PanInfo) => {
-    if (!bounds) return;
+    if (!bounds || !isPanning) return;
     x.set(Math.max(bounds.x, Math.min(0, x.get() + info.delta.x)));
     y.set(Math.max(bounds.y, Math.min(0, y.get() + info.delta.y)));
+  };
+
+  const handlePanEnd = () => {
+    if (!isPanning) return;
+    setIsPanning(false);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
   };
 
   // Calculate scrollbar dimensions
@@ -236,17 +255,9 @@ export function FlowDiagram({
         style={{
           cursor: canPan && !isPanning ? "grab" : undefined,
         }}
-        onPanStart={() => {
-          setIsPanning(true);
-          document.body.style.cursor = "grabbing";
-          document.body.style.userSelect = "none";
-        }}
+        onPanStart={handlePanStart}
         onPan={handlePan}
-        onPanEnd={() => {
-          setIsPanning(false);
-          document.body.style.cursor = "";
-          document.body.style.userSelect = "";
-        }}
+        onPanEnd={handlePanEnd}
       >
         <motion.div ref={contentRef} className="w-max mx-auto" style={{ x, y }}>
           <FlowNodeList>{children}</FlowNodeList>
@@ -297,6 +308,7 @@ export type RectLike = {
 
 export type NodeData = {
   parallel?: boolean;
+  disabled?: boolean;
   start?: RectLike | null;
   end?: RectLike | null;
 };
@@ -327,15 +339,24 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
     const offsetY = containerRect?.top ?? 0;
 
     for (let i = 0; i < nodes.length - 1; i++) {
-      const currentRect = getNodeRect(nodes[i], { type: "start" });
-      const nextRect = getNodeRect(nodes[i + 1], { type: "end" });
+      const currentNode = nodes[i];
+      const nextNode = nodes[i + 1];
+
+      if (currentNode.props?.parallel || nextNode.props?.parallel) continue;
+
+      const currentRect = getNodeRect(currentNode, { type: "start" });
+      const nextRect = getNodeRect(nextNode, { type: "end" });
 
       if (currentRect && nextRect) {
+        const isDisabled =
+          currentNode.props.disabled || nextNode.props.disabled;
         edges.push({
           x1: currentRect.left - offsetX + currentRect.width,
           y1: currentRect.top - offsetY + currentRect.height / 2,
           x2: nextRect.left - offsetX,
           y2: nextRect.top - offsetY + nextRect.height / 2,
+          disabled: isDisabled,
+          single: true,
         });
       }
     }
@@ -359,11 +380,7 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
           {children}
         </ul>
         <div className="absolute inset-0 pointer-events-none">
-          <Connectors
-            connectors={connectors}
-            orientation={orientation}
-            single
-          />
+          <Connectors connectors={connectors} orientation={orientation} />
         </div>
       </div>
     </DescendantsProvider>

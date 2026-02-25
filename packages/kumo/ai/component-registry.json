@@ -3456,23 +3456,10 @@
     "Pagination": {
       "name": "Pagination",
       "type": "component",
-      "description": "Page navigation controls with page count display.",
+      "description": "Pagination component",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
-        "controls": {
-          "type": "enum",
-          "optional": true,
-          "values": [
-            "full",
-            "simple"
-          ],
-          "descriptions": {
-            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
-            "simple": "Simple pagination controls with only previous and next buttons"
-          },
-          "default": "full"
-        },
         "setPage": {
           "type": "(page: number) => void",
           "required": true,
@@ -3493,10 +3480,32 @@
           "optional": true,
           "description": "Total number of items across all pages."
         },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes for the container"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator."
+        },
+        "controls": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "full",
+            "simple"
+          ],
+          "descriptions": {
+            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
+            "simple": "Simple pagination controls with only previous and next buttons"
+          },
+          "default": "full"
+        },
         "text": {
           "type": "object",
-          "optional": true,
-          "description": "Method to provide custom pagination text"
+          "optional": true
         }
       },
       "examples": [
@@ -3505,11 +3514,86 @@
         "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"full\"\n    />",
         "<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />",
         "<Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />",
-        "<Pagination\n      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />"
+        "<Pagination\n      text={({ perPage }: { perPage?: number }) =>\n        `Page ${page} - showing ${perPage} per page`\n      }\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={500}\n    >\n      <Pagination.Info />\n      <Pagination.Separator />\n      <Pagination.PageSize\n        value={perPage}\n        onChange={(size) => {\n          setPerPage(size);\n          setPage(1);\n        }}\n      />\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={200}\n    >\n      <Pagination.Info />\n      <Pagination.Separator />\n      <Pagination.PageSize\n        value={perPage}\n        onChange={(size) => {\n          setPerPage(size);\n          setPage(1);\n        }}\n        options={[10, 20, 50]}\n      />\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination page={page} setPage={setPage} perPage={25} totalCount={100}>\n      <Pagination.Info>\n        {({ page, totalCount }) =>\n          `Page ${page} of ${Math.ceil((totalCount ?? 1) / 25)}`\n        }\n      </Pagination.Info>\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={500}\n    >\n      <Pagination.Info />\n      <div className=\"flex items-center gap-2\">\n        <Pagination.Controls />\n        <Pagination.Separator />\n        <Pagination.PageSize\n          value={perPage}\n          onChange={(size) => {\n            setPerPage(size);\n            setPage(1);\n          }}\n        />\n      </div>\n    </Pagination>"
       ],
       "colors": [
+        "border-kumo-line",
         "text-kumo-strong"
       ],
+      "subComponents": {
+        "Info": {
+          "name": "Info",
+          "description": "Info sub-component",
+          "props": {
+            "children": {
+              "type": "(props: {",
+              "optional": true
+            },
+            "page": {
+              "type": "number",
+              "required": true
+            },
+            "perPage": {
+              "type": "number",
+              "optional": true
+            },
+            "totalCount": {
+              "type": "number",
+              "optional": true
+            },
+            "pageShowingRange": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        "PageSize": {
+          "name": "PageSize",
+          "description": "PageSize sub-component",
+          "props": {
+            "value": {
+              "type": "number",
+              "required": true
+            },
+            "options": {
+              "type": "number[]",
+              "optional": true
+            },
+            "label": {
+              "type": "ReactNode",
+              "optional": true
+            },
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Controls": {
+          "name": "Controls",
+          "description": "Controls sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Separator": {
+          "name": "Separator",
+          "description": "Separator sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        }
+      },
       "styling": {
         "layout": {
           "height": 36,

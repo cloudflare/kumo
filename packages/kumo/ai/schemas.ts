@@ -587,12 +587,14 @@ export const MeterPropsSchema = z.object({
 });
 
 export const PaginationPropsSchema = z.object({
-  controls: z.enum(["full", "simple"]).optional(),
   setPage: z.unknown(), // Callback when page changes
   page: z.number().optional(), // Current page number (1-indexed).
   perPage: z.number().optional(), // Number of items displayed per page.
   totalCount: z.number().optional(), // Total number of items across all pages.
-  text: z.unknown().optional(), // Method to provide custom pagination text
+  className: z.string().optional(), // Additional CSS classes for the container
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator.
+  controls: z.enum(["full", "simple"]).optional(),
+  text: z.unknown().optional(),
 });
 
 export const PopoverPropsSchema = z.object({
