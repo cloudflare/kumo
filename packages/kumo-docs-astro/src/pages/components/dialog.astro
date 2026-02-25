@@ -5,7 +5,7 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
-import { DialogBasicDemo, DialogWithActionsDemo, DialogConfirmationDemo, DialogWithSelectDemo, DialogWithComboboxDemo, DialogWithDropdownDemo } from "../../components/demos/DialogDemo";
+import { DialogBasicDemo, DialogWithActionsDemo, DialogConfirmationDemo, DialogAlertDemo, DialogWithSelectDemo, DialogWithComboboxDemo, DialogWithDropdownDemo } from "../../components/demos/DialogDemo";
 ---
 
 <DocLayout
@@ -90,6 +90,54 @@ export default function Example() {
   </ComponentSection>
 
   <ComponentSection>
+    <Heading level={2}>Dialog vs Alert Dialog</Heading>
+    <p class="mb-4 text-kumo-strong">
+      The Dialog component supports two ARIA roles to properly convey semantic meaning to assistive technologies:
+    </p>
+    
+    <div class="overflow-hidden rounded-lg border border-kumo-line">
+      <table class="w-full text-sm">
+        <thead class="bg-kumo-elevated">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Role</th>
+            <th class="px-4 py-3 text-left font-medium">Use Case</th>
+            <th class="px-4 py-3 text-left font-medium">Behavior</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-kumo-line">
+          <tr>
+            <td class="px-4 py-3">
+              <code class="rounded bg-kumo-control px-1.5 py-0.5 text-xs">role="dialog"</code>
+              <span class="ml-2 text-kumo-subtle">(default)</span>
+            </td>
+            <td class="px-4 py-3">General-purpose modals, forms, content display</td>
+            <td class="px-4 py-3">Dismissible by default</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3">
+              <code class="rounded bg-kumo-control px-1.5 py-0.5 text-xs">role="alertdialog"</code>
+            </td>
+            <td class="px-4 py-3">Destructive actions, confirmations, critical warnings</td>
+            <td class="px-4 py-3">Requires explicit user acknowledgment</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <CodeBlock code={`// General-purpose dialog
+<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Edit Profile</Button>} />
+  <Dialog>{/* Form content */}</Dialog>
+</Dialog.Root>
+
+// Alert dialog for destructive actions
+<Dialog.Root role="alertdialog">
+  <Dialog.Trigger render={(p) => <Button variant="destructive" {...p}>Delete</Button>} />
+  <Dialog>{/* Confirmation content */}</Dialog>
+</Dialog.Root>`} lang="tsx" />
+  </ComponentSection>
+
+  <ComponentSection>
     <Heading level={2} class="mb-6">Examples</Heading>
 
     <div class="space-y-8">
@@ -124,11 +172,63 @@ export default function Example() {
       </div>
 
       <div>
-        <Heading level={3}>Confirmation Dialog (Alert)</Heading>
+        <Heading level={3}>Alert Dialog (<code class="font-normal">role="alertdialog"</code>)</Heading>
         <p class="mb-3 text-sm text-kumo-strong">
-          For confirmation dialogs that should not be dismissed by clicking outside (similar to an AlertDialog),
-          use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">disablePointerDismissal</code> on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Dialog.Root</code>. 
-          This ensures the user must explicitly choose an action.
+          For destructive or confirmation dialogs, use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">role="alertdialog"</code> on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Dialog.Root</code>.
+          This provides proper accessibility semantics by rendering the dialog with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">role="alertdialog"</code> instead of <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">role="dialog"</code>.
+        </p>
+        <div class="mb-4 rounded-lg border border-kumo-info/30 bg-kumo-info/10 p-4 text-sm text-kumo-info">
+          <p class="font-medium mb-2">When to use <code class="bg-kumo-info/20 px-1 rounded">role="alertdialog"</code>:</p>
+          <ul class="list-disc list-inside space-y-1 ml-2">
+            <li>Destructive actions (delete, discard, remove)</li>
+            <li>Confirmation flows requiring explicit user acknowledgment</li>
+            <li>Actions that cannot be undone</li>
+            <li>Critical warnings or errors</li>
+          </ul>
+        </div>
+        <ComponentExample code={`<Dialog.Root role="alertdialog">
+  <Dialog.Trigger
+    render={(p) => (
+      <Button {...p} variant="destructive">Delete Account</Button>
+    )}
+  />
+  <Dialog className="p-8">
+    <div className="mb-4 flex items-center gap-3">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
+        <Warning size={20} className="text-kumo-danger" weight="fill" />
+      </div>
+      <Dialog.Title className="text-xl font-semibold">
+        Delete Account?
+      </Dialog.Title>
+    </div>
+    <Dialog.Description className="text-kumo-subtle">
+      This action cannot be undone. All your data will be permanently
+      removed from our servers. Are you sure you want to proceed?
+    </Dialog.Description>
+    <div className="mt-8 flex justify-end gap-2">
+      <Dialog.Close
+        render={(props) => (
+          <Button variant="secondary" {...props}>Cancel</Button>
+        )}
+      />
+      <Dialog.Close
+        render={(props) => (
+          <Button variant="destructive" {...props}>Delete Account</Button>
+        )}
+      />
+    </div>
+  </Dialog>
+</Dialog.Root>`}>
+          <DialogAlertDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Confirmation Dialog (with <code class="font-normal">disablePointerDismissal</code>)</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          For confirmation dialogs that should not be dismissed by clicking outside,
+          use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">disablePointerDismissal</code> on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Dialog.Root</code>.
+          This can be combined with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">role="alertdialog"</code> for proper accessibility.
         </p>
         <ComponentExample code={`<Dialog.Root disablePointerDismissal>
   <Dialog.Trigger
@@ -296,6 +396,36 @@ export default function Example() {
         <p class="mb-3 text-sm text-kumo-strong">
           Controls the open state of the dialog. Doesn't render its own HTML element.
         </p>
+        <div class="mb-4 overflow-hidden rounded-lg border border-kumo-line">
+          <table class="w-full text-sm">
+            <thead class="bg-kumo-elevated">
+              <tr>
+                <th class="px-4 py-2 text-left font-medium">Prop</th>
+                <th class="px-4 py-2 text-left font-medium">Type</th>
+                <th class="px-4 py-2 text-left font-medium">Default</th>
+                <th class="px-4 py-2 text-left font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-kumo-line">
+              <tr>
+                <td class="px-4 py-2 font-mono text-xs">role</td>
+                <td class="px-4 py-2 font-mono text-xs">"dialog" | "alertdialog"</td>
+                <td class="px-4 py-2 font-mono text-xs">"dialog"</td>
+                <td class="px-4 py-2 text-kumo-subtle">
+                  The ARIA role for the dialog. Use <code class="bg-kumo-control px-1 rounded">"alertdialog"</code> for destructive or confirmation flows.
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono text-xs">disablePointerDismissal</td>
+                <td class="px-4 py-2 font-mono text-xs">boolean</td>
+                <td class="px-4 py-2 font-mono text-xs">false</td>
+                <td class="px-4 py-2 text-kumo-subtle">
+                  When true, prevents the dialog from being dismissed by clicking outside.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <PropsTable component="Dialog.Root" />
       </div>
 
