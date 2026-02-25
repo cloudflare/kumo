@@ -272,15 +272,33 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   }
 
   // Render with standalone label when label is hidden (sr-only)
+  // Still show description/error for accessibility and UX
+  const normalizedError = error
+    ? typeof error === "string"
+      ? { message: error, match: true as const }
+      : error
+    : undefined;
+
   return (
-    <>
+    <div className="grid gap-2">
       {label && (
         <span id={labelId} className="sr-only">
           {label}
         </span>
       )}
       {selectControl}
-    </>
+      {normalizedError ? (
+        <span className="text-sm text-kumo-danger">
+          {normalizedError.message}
+        </span>
+      ) : (
+        description && (
+          <span className="text-sm leading-snug text-kumo-subtle">
+            {description}
+          </span>
+        )
+      )}
+    </div>
   );
 }
 
