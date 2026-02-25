@@ -108,7 +108,12 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
       : null;
 
   return (
-    <div className={cn("text-sm text-kumo-strong", className)}>{content}</div>
+    <div
+      data-slot="pagination-info"
+      className={cn("text-sm text-kumo-strong", className)}
+    >
+      {content}
+    </div>
   );
 }
 
@@ -139,7 +144,10 @@ function PaginationPageSize({
   className,
 }: PaginationPageSizeProps) {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div
+      data-slot="pagination-page-size"
+      className={cn("flex items-center gap-2", className)}
+    >
       {label && <span className="text-sm text-kumo-strong">{label}</span>}
       <Select
         label="Page size"
@@ -175,7 +183,10 @@ function PaginationControls({
     usePaginationContext();
 
   return (
-    <div className={cn("grow flex flex-col items-end", className)}>
+    <div
+      data-slot="pagination-controls"
+      className={cn("grow flex flex-col items-end", className)}
+    >
       <div>
         <InputGroup focusMode="individual">
           {controls === "full" && (
@@ -264,7 +275,10 @@ export interface PaginationSeparatorProps {
 
 function PaginationSeparator({ className }: PaginationSeparatorProps) {
   return (
-    <div className={cn("mx-2 h-6 border-l border-kumo-line", className)} />
+    <div
+      data-slot="pagination-separator"
+      className={cn("mx-2 h-6 border-l border-kumo-line", className)}
+    />
   );
 }
 
@@ -424,7 +438,10 @@ function PaginationRoot(props: PaginationProps) {
   if (children) {
     return (
       <PaginationContext.Provider value={contextValue}>
-        <div className={cn("flex items-center gap-2 w-full", className)}>
+        <div
+          data-slot="pagination"
+          className={cn("flex items-center gap-2 w-full", className)}
+        >
           {children}
         </div>
       </PaginationContext.Provider>
@@ -443,8 +460,14 @@ function PaginationRoot(props: PaginationProps) {
 
   return (
     <PaginationContext.Provider value={contextValue}>
-      <div className={cn("flex items-center gap-2 w-full", className)}>
-        <div className="grow text-sm text-kumo-strong">
+      <div
+        data-slot="pagination"
+        className={cn("flex items-center gap-2 w-full", className)}
+      >
+        <div
+          data-slot="pagination-info"
+          className="grow text-sm text-kumo-strong"
+        >
           {getPaginationText()}
         </div>
         <PaginationControls controls={controls} />
