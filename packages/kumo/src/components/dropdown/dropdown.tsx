@@ -156,26 +156,20 @@ const DropdownMenuItem = React.forwardRef<
   ) => {
     const LinkComponent = useLinkComponent();
 
-    // Emit deprecation warning for href prop
-    React.useEffect(() => {
-      if (href && process.env.NODE_ENV !== "production") {
-        console.warn(
-          "[Kumo] DropdownMenu.Item `href` prop is deprecated. Use DropdownMenu.LinkItem instead.",
-        );
-      }
-    }, [href]);
-
     // Build the inner content with icon, children, and selected indicator
-    const innerContent = (
-      <>
-        {IconComponent && renderIconNode(IconComponent)}
-        {children}
-        {selected && (
-          <span className="inline-flex">
-            <Check />
-          </span>
-        )}
-      </>
+    const innerContent = React.useMemo(
+      () => (
+        <>
+          {IconComponent && renderIconNode(IconComponent)}
+          {children}
+          {selected && (
+            <span className="inline-flex">
+              <Check />
+            </span>
+          )}
+        </>
+      ),
+      [IconComponent, children, selected],
     );
 
     // Legacy href support (deprecated)
