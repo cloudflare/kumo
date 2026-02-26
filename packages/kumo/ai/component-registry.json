@@ -4654,29 +4654,43 @@
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
+        "align": {
+          "type": "enum",
+          "optional": true,
+          "description": "Alignment on the axis perpendicular to `side`.\n- `\"start\"` — Align to the start edge\n- `\"center\"` — Center-aligned\n- `\"end\"` — Align to the end edge",
+          "values": [
+            "start",
+            "center",
+            "end"
+          ]
+        },
+        "asChild": {
+          "type": "boolean",
+          "optional": true,
+          "description": "When `true`, the trigger wraps the child element instead of adding a wrapper."
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
+        },
         "side": {
           "type": "enum",
+          "optional": true,
+          "description": "Preferred side of the trigger to render the tooltip.\n- `\"top\"` — Tooltip appears above the trigger\n- `\"bottom\"` — Tooltip appears below the trigger\n- `\"left\"` — Tooltip appears to the left of the trigger\n- `\"right\"` — Tooltip appears to the right of the trigger",
           "values": [
             "top",
             "bottom",
             "left",
             "right"
           ],
-          "default": "top",
           "descriptions": {
             "top": "Tooltip appears above the trigger",
             "bottom": "Tooltip appears below the trigger",
             "left": "Tooltip appears to the left of the trigger",
             "right": "Tooltip appears to the right of the trigger"
-          }
-        },
-        "className": {
-          "type": "string",
-          "description": "Additional CSS classes"
-        },
-        "children": {
-          "type": "ReactNode",
-          "description": "Child elements"
+          },
+          "default": "top"
         },
         "content": {
           "type": "ReactNode",

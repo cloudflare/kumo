@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -21,6 +22,7 @@ import {
   DescendantsProvider,
   useDescendantIndex,
   useDescendants,
+  useOptionalDescendantsContext,
   type DescendantInfo,
 } from "./use-children";
 
@@ -317,6 +319,42 @@ export const useNodeGroup = () => useDescendants<NodeData>();
 
 export const useNode = (props: NodeData) => useDescendantIndex<NodeData>(props);
 
+/**
+ * Hook to optionally register as a node if within a parent descendants context.
+ * Returns registration info if registered, or null if no parent context exists.
+ */
+export const useOptionalNode = (props: NodeData) => {
+  const parentContext = useOptionalDescendantsContext<NodeData>();
+  const id = useId();
+
+  // Claim render order during render if we have a parent context
+  const renderOrder = parentContext?.claimRenderOrder(id) ?? -1;
+
+  const unregisterRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    if (!parentContext) return;
+
+    const { unregister } = parentContext.register(id, renderOrder, props);
+
+    if (!unregisterRef.current) {
+      unregisterRef.current = unregister;
+    }
+
+    return () => {
+      if (unregisterRef.current) {
+        unregisterRef.current();
+        unregisterRef.current = null;
+      }
+    };
+  }, [id, renderOrder, props, parentContext]);
+
+  if (!parentContext) return null;
+
+  const index = parentContext.descendants.findIndex((d) => d.id === id);
+  return { index, id };
+};
+
 export const getNodeRect = (
   node: DescendantInfo<NodeData> | undefined,
   { type = "start" }: { type?: "start" | "end" },
@@ -363,6 +401,28 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
 
     return edges;
   }, [descendants.descendants]);
+
+  // Get the first and last node's anchor points for parent registration
+  const firstNode = descendants.descendants[0];
+  const lastNode = descendants.descendants[descendants.descendants.length - 1];
+
+  // Use the first node's "end" anchor as our "end" (incoming connector point)
+  // Use the last node's "start" anchor as our "start" (outgoing connector point)
+  const endAnchor = firstNode?.props?.end ?? null;
+  const startAnchor = lastNode?.props?.start ?? null;
+
+  const nodeProps = useMemo(
+    () => ({
+      parallel: false,
+      disabled: false,
+      start: startAnchor,
+      end: endAnchor,
+    }),
+    [startAnchor, endAnchor],
+  );
+
+  // Register with parent context if we're nested (e.g., inside Flow.Parallel)
+  useOptionalNode(nodeProps);
 
   return (
     <DescendantsProvider value={descendants}>

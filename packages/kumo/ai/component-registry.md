@@ -4793,15 +4793,20 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 
 **Props:**
 
+- `align`: enum
+  Alignment on the axis perpendicular to `side`.
+- `"start"` — Align to the start edge
+- `"center"` — Center-aligned
+- `"end"` — Align to the end edge
+- `asChild`: boolean
+  When `true`, the trigger wraps the child element instead of adding a wrapper.
+- `className`: string
+  Additional CSS classes merged via `cn()`.
 - `side`: enum [default: top]
   - `"top"`: Tooltip appears above the trigger
   - `"bottom"`: Tooltip appears below the trigger
   - `"left"`: Tooltip appears to the left of the trigger
   - `"right"`: Tooltip appears to the right of the trigger
-- `className`: string
-  Additional CSS classes
-- `children`: ReactNode
-  Child elements
 - `content`: ReactNode (required)
   Content to display in the tooltip
 

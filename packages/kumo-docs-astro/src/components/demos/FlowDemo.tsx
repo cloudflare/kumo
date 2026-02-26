@@ -46,10 +46,9 @@ export function FlowCustomContentDemo() {
 export function FlowComplexDemo() {
   return (
     <Flow>
-      <Flow.Node>Trigger</Flow.Node>
       <Flow.Parallel>
-        <Flow.Node>Validate Input</Flow.Node>
-        <Flow.Node>Check Cache</Flow.Node>
+        <Flow.Node>HTTP Trigger</Flow.Node>
+        <Flow.Node>Cron Trigger</Flow.Node>
       </Flow.Parallel>
       <Flow.Node>Process Request</Flow.Node>
       <Flow.Parallel>
@@ -158,6 +157,29 @@ export function FlowParallelAlignEndDemo() {
         <Flow.Node>Very Long Node Name</Flow.Node>
       </Flow.Parallel>
       <Flow.Node>End</Flow.Node>
+    </Flow>
+  );
+}
+
+/** Flow diagram with parallel branches containing nested node sequences */
+export function FlowParallelNestedListDemo() {
+  return (
+    <Flow>
+      <Flow.Parallel>
+        <Flow.List>
+          <Flow.Node>Client Users</Flow.Node>
+          <Flow.Node>Engineering Team Access</Flow.Node>
+        </Flow.List>
+        <Flow.List>
+          <Flow.Parallel>
+            <Flow.Node>All Authenticated Users</Flow.Node>
+            <Flow.Node>Client Users</Flow.Node>
+            <Flow.Node>Site Users</Flow.Node>
+          </Flow.Parallel>
+          <Flow.Node>Contractor Access</Flow.Node>
+        </Flow.List>
+      </Flow.Parallel>
+      <Flow.Node>Destinations</Flow.Node>
     </Flow>
   );
 }

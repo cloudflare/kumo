@@ -14,6 +14,7 @@ import {
   FlowPanningDemo,
   FlowDisabledDemo,
   FlowParallelAlignEndDemo,
+  FlowParallelNestedListDemo,
 } from "../../components/demos/FlowDemo";
 ---
 
@@ -43,10 +44,7 @@ import {
   <ComponentSection>
     <Heading level={2}>Installation</Heading>
     <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
-    <CodeBlock
-      code={`import { Flow } from "@cloudflare/kumo";`}
-      lang="tsx"
-    />
+    <CodeBlock code={`import { Flow } from "@cloudflare/kumo";`} lang="tsx" />
     <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
     <CodeBlock
       code={`import { Flow } from "@cloudflare/kumo/components/flow";`}
@@ -61,12 +59,13 @@ import {
       The Flow components work together to create directed flow diagrams. Use{
         " "
       }
-      <code class="rounded bg-kumo-control px-1 py-0.5">Flow</code> as the
-      container,{" "}
+      <code class="rounded bg-kumo-control px-1 py-0.5">Flow</code> as the container,{
+        " "
+      }
       <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Node</code> for individual
       steps, and{" "}
-      <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Parallel</code> to
-      create branching paths.
+      <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Parallel</code> to create
+      branching paths.
     </p>
     <CodeBlock
       code={`import { Flow } from "@cloudflare/kumo";
@@ -131,8 +130,8 @@ export default function Example() {
         <Heading level={3}>Custom Node Styling</Heading>
         <p class="mb-4">
           Use the{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop
-          to completely customize node appearance. The render prop accepts a React element
+          <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop to
+          completely customize node appearance. The render prop accepts a React element
           that will be used instead of the default styled node.
         </p>
         <ComponentExample
@@ -155,8 +154,8 @@ export default function Example() {
         <Heading level={3}>Centered Alignment</Heading>
         <p class="mb-4">
           Use the{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5">align</code> prop
-          to vertically center nodes. This is useful when nodes have different heights.
+          <code class="rounded bg-kumo-control px-1 py-0.5">align</code> prop to
+          vertically center nodes. This is useful when nodes have different heights.
         </p>
         <ComponentExample
           code={`<Flow align="center">
@@ -204,10 +203,9 @@ export default function Example() {
         <Heading level={3}>Custom Anchor Points</Heading>
         <p class="mb-4">
           By default, connectors attach to the center of each node. Use{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5"
-            >Flow.Anchor</code
-          > with its <code class="rounded bg-kumo-control px-1 py-0.5">render</code
-          > prop to specify custom attachment points. The <code
+          <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Anchor</code> with
+          its <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop
+          to specify custom attachment points. The <code
             class="rounded bg-kumo-control px-1 py-0.5">type</code
           > prop controls whether the anchor serves as a <code
             class="rounded bg-kumo-control px-1 py-0.5">"start"</code
@@ -254,9 +252,9 @@ export default function Example() {
       <div>
         <Heading level={3}>Panning Large Diagrams</Heading>
         <p class="mb-4">
-          When a diagram exceeds its container, Flow automatically
-          enables panning. Drag to pan the viewport, or use the scroll wheel.
-          Scrollbars appear on hover to indicate available scroll area.
+          When a diagram exceeds its container, Flow automatically enables
+          panning. Drag to pan the viewport, or use the scroll wheel. Scrollbars
+          appear on hover to indicate available scroll area.
         </p>
         <ComponentExample
           code={`<Flow>
@@ -281,8 +279,8 @@ export default function Example() {
         <p class="mb-4">
           Use the{" "}
           <code class="rounded bg-kumo-control px-1 py-0.5">disabled</code> prop
-          on a node to visually indicate it's inactive. Connectors linking to
-          disabled nodes are rendered with reduced opacity.
+          on a node to visually indicate it's inactive. Connectors linking to disabled
+          nodes are rendered with reduced opacity.
         </p>
         <ComponentExample
           code={`<Flow>
@@ -302,13 +300,16 @@ export default function Example() {
         <Heading level={3}>Parallel Node Alignment</Heading>
         <p class="mb-4">
           Use the{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5">align</code> prop on{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Parallel</code>{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">align</code> prop on{
+            " "
+          }
+          <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Parallel</code
+          >{" "}
           to control how nodes with different widths are aligned. Use{" "}
           <code class="rounded bg-kumo-control px-1 py-0.5">"start"</code>{" "}
           (default) to align left, or{" "}
-          <code class="rounded bg-kumo-control px-1 py-0.5">"end"</code> to
-          align right.
+          <code class="rounded bg-kumo-control px-1 py-0.5">"end"</code> to align
+          right.
         </p>
         <ComponentExample
           code={`<Flow>
@@ -322,6 +323,49 @@ export default function Example() {
 </Flow>`}
         >
           <FlowParallelAlignEndDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Other Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Other Examples</Heading>
+
+    <div class="space-y-12">
+      <div>
+        <Heading level={3}>Nested Node Lists in Parallel</Heading>
+        <p class="mb-4">
+          Use{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">Flow.List</code>{
+            " "
+          }
+          inside{" "}
+          <code class="rounded bg-kumo-control px-1 py-0.5">Flow.Parallel</code
+          >{" "}
+          to create parallel branches where each branch contains a sequence of connected
+          nodes.
+        </p>
+        <ComponentExample
+          code={`<Flow>
+  <Flow.Parallel>
+    <Flow.List>
+      <Flow.Node>Client Users</Flow.Node>
+      <Flow.Node>Engineering Team Access</Flow.Node>
+    </Flow.List>
+    <Flow.List>
+      <Flow.Parallel>
+        <Flow.Node>All Authenticated Users</Flow.Node>
+        <Flow.Node>Client Users</Flow.Node>
+        <Flow.Node>Site Users</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Node>Contractor Access</Flow.Node>
+    </Flow.List>
+  </Flow.Parallel>
+  <Flow.Node>Destinations</Flow.Node>
+</Flow>`}
+        >
+          <FlowParallelNestedListDemo client:visible />
         </ComponentExample>
       </div>
     </div>
@@ -352,7 +396,11 @@ export default function Example() {
                 <td class="px-4 py-3 font-mono">align</td>
                 <td class="px-4 py-3 font-mono">"start" | "center"</td>
                 <td class="px-4 py-3"
-                  >Vertical alignment of nodes. <code class="rounded bg-kumo-control px-1 py-0.5">"start"</code> (default) aligns to top, <code class="rounded bg-kumo-control px-1 py-0.5">"center"</code> vertically centers nodes.</td
+                  >Vertical alignment of nodes. <code
+                    class="rounded bg-kumo-control px-1 py-0.5">"start"</code
+                  > (default) aligns to top, <code
+                    class="rounded bg-kumo-control px-1 py-0.5">"center"</code
+                  > vertically centers nodes.</td
                 >
               </tr>
               <tr class="border-b border-kumo-line">
@@ -365,8 +413,7 @@ export default function Example() {
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
                 <td class="px-4 py-3 font-mono">ReactNode</td>
-                <td class="px-4 py-3"
-                  >Flow.Node and Flow.Parallel components</td
+                <td class="px-4 py-3">Flow.Node and Flow.Parallel components</td
                 >
               </tr>
             </tbody>
@@ -378,8 +425,9 @@ export default function Example() {
         <Heading level={3} class="mb-2 text-lg">Flow.Node</Heading>
         <p class="mb-4">
           A single node in the flow diagram. Renders as a styled card with
-          automatic connector points. Use the <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop
-          to customize the element.
+          automatic connector points. Use the <code
+            class="rounded bg-kumo-control px-1 py-0.5">render</code
+          > prop to customize the element.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -394,12 +442,17 @@ export default function Example() {
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">render</td>
                 <td class="px-4 py-3 font-mono">ReactElement</td>
-                <td class="px-4 py-3">Custom element to render instead of the default styled node</td>
+                <td class="px-4 py-3"
+                  >Custom element to render instead of the default styled node</td
+                >
               </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">disabled</td>
                 <td class="px-4 py-3 font-mono">boolean</td>
-                <td class="px-4 py-3">When true, connectors linking to this node are rendered with reduced opacity</td>
+                <td class="px-4 py-3"
+                  >When true, connectors linking to this node are rendered with
+                  reduced opacity</td
+                >
               </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
@@ -414,10 +467,10 @@ export default function Example() {
       <div>
         <Heading level={3} class="mb-2 text-lg">Flow.Anchor</Heading>
         <p class="mb-4">
-          A component that marks a custom attachment point for connectors
-          within a Flow.Node. Use this to control exactly where connector lines
-          attach instead of the default node center by providing a custom element
-          via the <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop.
+          A component that marks a custom attachment point for connectors within
+          a Flow.Node. Use this to control exactly where connector lines attach
+          instead of the default node center by providing a custom element via
+          the <code class="rounded bg-kumo-control px-1 py-0.5">render</code> prop.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -441,7 +494,9 @@ export default function Example() {
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">render</td>
                 <td class="px-4 py-3 font-mono">ReactElement</td>
-                <td class="px-4 py-3">Custom element to render for the anchor point</td>
+                <td class="px-4 py-3"
+                  >Custom element to render for the anchor point</td
+                >
               </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
@@ -456,8 +511,8 @@ export default function Example() {
       <div>
         <Heading level={3} class="mb-2 text-lg">Flow.Parallel</Heading>
         <p class="mb-4">
-          A container for parallel branches. Child Flow.Node components are displayed in
-          parallel with junction connectors.
+          A container for parallel branches. Child Flow.Node components are
+          displayed in parallel with junction connectors.
         </p>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -473,14 +528,48 @@ export default function Example() {
                 <td class="px-4 py-3 font-mono">align</td>
                 <td class="px-4 py-3 font-mono">"start" | "end"</td>
                 <td class="px-4 py-3"
-                  >Controls horizontal alignment of nodes within the parallel group. <code class="rounded bg-kumo-control px-1 py-0.5">"start"</code> (default) aligns left, <code class="rounded bg-kumo-control px-1 py-0.5">"end"</code> aligns right.</td
+                  >Controls horizontal alignment of nodes within the parallel
+                  group. <code class="rounded bg-kumo-control px-1 py-0.5"
+                    >"start"</code
+                  > (default) aligns left, <code
+                    class="rounded bg-kumo-control px-1 py-0.5">"end"</code
+                  > aligns right.</td
                 >
               </tr>
               <tr class="border-b border-kumo-line">
                 <td class="px-4 py-3 font-mono">children</td>
                 <td class="px-4 py-3 font-mono">ReactNode</td>
                 <td class="px-4 py-3"
-                  >Flow.Node components to display in parallel</td
+                  >Flow.Node or Flow.List components to display in parallel</td
+                >
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Flow.List</Heading>
+        <p class="mb-4">
+          A container for a sequence of Flow.Node components with automatic
+          connectors between them. Use inside Flow.Parallel to create branches
+          with multiple sequential steps.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-kumo-line">
+                <th class="px-4 py-3 text-left font-semibold">Prop</th>
+                <th class="px-4 py-3 text-left font-semibold">Type</th>
+                <th class="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody class="text-kumo-strong">
+              <tr class="border-b border-kumo-line">
+                <td class="px-4 py-3 font-mono">children</td>
+                <td class="px-4 py-3 font-mono">ReactNode</td>
+                <td class="px-4 py-3"
+                  >Flow.Node components to display in sequence</td
                 >
               </tr>
             </tbody>
