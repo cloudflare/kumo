@@ -235,7 +235,7 @@ export function Toasty({ children }: ToastyProps) {
     <Toast.Provider>
       {children}
       <Toast.Portal>
-        <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-10 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
+        <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
           <ToastList />
         </Toast.Viewport>
       </Toast.Portal>

@@ -183,12 +183,12 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
     <div
       ref={containerRef}
       className={cn(
-        "relative",
+        "relative isolate",
         orientation === "horizontal" ? "px-16 -mx-16" : "py-16 -my-16",
       )}
       data-node-index={index}
     >
-      <div className="absolute inset-0 pointer-events-none z-10">
+      <div className="absolute inset-0 pointer-events-none z-1">
         {links && (
           <Connectors connectors={links.connectors} orientation={orientation}>
             {links.junctions?.start && (
