@@ -46,10 +46,9 @@ export function FlowCustomContentDemo() {
 export function FlowComplexDemo() {
   return (
     <Flow>
-      <Flow.Node>Trigger</Flow.Node>
       <Flow.Parallel>
-        <Flow.Node>Validate Input</Flow.Node>
-        <Flow.Node>Check Cache</Flow.Node>
+        <Flow.Node>HTTP Trigger</Flow.Node>
+        <Flow.Node>Cron Trigger</Flow.Node>
       </Flow.Parallel>
       <Flow.Node>Process Request</Flow.Node>
       <Flow.Parallel>
@@ -129,6 +128,58 @@ export function FlowPanningDemo() {
       <Flow.Node>Log</Flow.Node>
       <Flow.Node>Complete</Flow.Node>
       <Flow.Node>End</Flow.Node>
+    </Flow>
+  );
+}
+
+/** Flow diagram with disabled nodes */
+export function FlowDisabledDemo() {
+  return (
+    <Flow>
+      <Flow.Node>Request</Flow.Node>
+      <Flow.Parallel>
+        <Flow.Node>Primary Handler</Flow.Node>
+        <Flow.Node disabled>Backup Handler (disabled)</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Node>Response</Flow.Node>
+    </Flow>
+  );
+}
+
+/** Flow diagram with right-aligned parallel nodes */
+export function FlowParallelAlignEndDemo() {
+  return (
+    <Flow>
+      <Flow.Node>Start</Flow.Node>
+      <Flow.Parallel align="end">
+        <Flow.Node>Short</Flow.Node>
+        <Flow.Node>Medium Length</Flow.Node>
+        <Flow.Node>Very Long Node Name</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Node>End</Flow.Node>
+    </Flow>
+  );
+}
+
+/** Flow diagram with parallel branches containing nested node sequences */
+export function FlowParallelNestedListDemo() {
+  return (
+    <Flow>
+      <Flow.Parallel>
+        <Flow.List>
+          <Flow.Node>Client Users</Flow.Node>
+          <Flow.Node>Engineering Team Access</Flow.Node>
+        </Flow.List>
+        <Flow.List>
+          <Flow.Parallel>
+            <Flow.Node>All Authenticated Users</Flow.Node>
+            <Flow.Node>Client Users</Flow.Node>
+            <Flow.Node>Site Users</Flow.Node>
+          </Flow.Parallel>
+          <Flow.Node>Contractor Access</Flow.Node>
+        </Flow.List>
+      </Flow.Parallel>
+      <Flow.Node>Destinations</Flow.Node>
     </Flow>
   );
 }

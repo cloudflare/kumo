@@ -1,5 +1,70 @@
 # @cloudflare/kumo
 
+## 1.9.0
+
+### Minor Changes
+
+- 23865db: feat(dropdown): add LinkItem for navigation links and fix icon rendering
+
+  **New Features:**
+  - Add `DropdownMenu.LinkItem` for navigation links (semantic `<a>` element with proper menu item behavior)
+  - Upgrade `@base-ui/react` from 1.0.0 to 1.2.0
+  - Add new primitives: `csp-provider` and `drawer` from Base UI 1.2.0
+
+  **Bug Fixes:**
+  - Fix `icon` prop not rendering on `DropdownMenu.Item` when no `href` is provided
+
+  **Deprecations:**
+  - `href` prop on `DropdownMenu.Item` is deprecated. Use `DropdownMenu.LinkItem` instead.
+
+  **Migration:**
+
+  ```tsx
+  // Before (deprecated)
+  <DropdownMenu.Item href="https://example.com">Link</DropdownMenu.Item>
+
+  // After (recommended)
+  <DropdownMenu.LinkItem href="https://example.com" target="_blank">
+    Link
+  </DropdownMenu.LinkItem>
+  ```
+
+  `DropdownMenu.LinkItem` gives you full control over link attributes (`target`, `rel`, etc.) without the component making assumptions about your intent.
+
+- 68c2f0d: Add `positionMethod` prop to `Popover.Content` to control CSS positioning strategy. Use `"fixed"` when the popover needs to escape stacking contexts (e.g., inside sticky headers). Defaults to `"absolute"`.
+
+### Patch Changes
+
+- 89cb5ec: Improve Flow diagram components with disabled node support and better connector rendering:
+  - Add `disabled` prop to FlowNode for greying out connectors
+  - Add `align` prop to FlowParallelNode for start/end alignment
+  - Improve connector path rendering with smarter junction detection
+  - Fix panning behavior to not interfere with node interactions
+
+## 1.8.0
+
+### Minor Changes
+
+- cf4ff38: Refactor Banner component with softer styling and i18n-friendly props
+  - Added `title` and `description` props for structured content with i18n support
+  - Softened visual appearance: reduced background opacity (20% -> 10%), muted border colors
+  - Text now uses `text-kumo-default` for readability, with colored icons for variant indication
+  - Added `iconClasses` to variant config for per-variant icon coloring
+  - Component now uses `forwardRef` and sets `displayName` per conventions
+  - Deprecated `children` and `text` props in favor of `title`/`description`
+  - Legacy `children` prop still works for backwards compatibility
+
+### Patch Changes
+
+- 0ca3b05: Fix Checkbox ring color to use `ring-kumo-contrast` when checked or indeterminate
+- f69df6d: Fix Combobox dropdown scrolling regression and improve scroll behavior.
+
+  **Bug fix:** The `overflow-hidden` class was accidentally re-introduced during a semantic color token migration, which overrode `overflow-y-auto` and caused dropdown content to be clipped instead of scrollable.
+
+  **Improvement:** Restructured Combobox.Content to use flexbox layout so that when using `Combobox.Input` inside the dropdown (searchable popup pattern), the input stays fixed at the top while only the list scrolls. Previously, the entire popup content would scroll together.
+
+  **Scrollbar fix:** Moved horizontal padding from the popup container to individual child components, so the scrollbar renders flush with the popup edge instead of being inset (which was clipping the checkmark indicators).
+
 ## 1.7.0
 
 ### Minor Changes

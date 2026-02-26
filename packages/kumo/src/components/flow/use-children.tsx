@@ -7,8 +7,8 @@ import {
   useMemo,
   useRef,
   useState,
-  type ReactNode
-} from 'react';
+  type ReactNode,
+} from "react";
 
 // ============================================================================
 // Types
@@ -23,7 +23,7 @@ type DescendantsContextType<DescendantType = Record<string, unknown>> = {
   register: (
     id: string,
     renderOrder: number,
-    props?: DescendantType
+    props?: DescendantType,
   ) => { unregister: () => void };
   descendants: DescendantInfo<DescendantType>[];
   claimRenderOrder: (id: string) => number;
@@ -46,13 +46,13 @@ const DescendantsContext = createContext<DescendantsContextType | null>(null);
  * @returns The descendants context value with register function and descendants array
  */
 export function useDescendants<
-  DescendantType extends Record<string, unknown>
+  DescendantType extends Record<string, unknown>,
 >(): DescendantsContextType<DescendantType> {
   const [registeredDescendants, setRegisteredDescendants] = useState<
     DescendantInfo<DescendantType>[]
   >([]);
   const descendantsRef = useRef<Map<string, DescendantInfo<DescendantType>>>(
-    new Map()
+    new Map(),
   );
 
   // Track render order - resets each render cycle
@@ -76,19 +76,19 @@ export function useDescendants<
     (
       id: string,
       renderOrder: number,
-      props: DescendantType = {} as DescendantType
+      props: DescendantType = {} as DescendantType,
     ) => {
       // Add descendant to the map with render order
       const descendantInfo: DescendantInfo<DescendantType> = {
         id,
         props,
-        renderOrder
+        renderOrder,
       };
       descendantsRef.current.set(id, descendantInfo);
 
       // Update state with all descendants sorted by render order
       const sortedDescendants = Array.from(
-        descendantsRef.current.values()
+        descendantsRef.current.values(),
       ).sort((a, b) => a.renderOrder - b.renderOrder);
       setRegisteredDescendants(sortedDescendants);
 
@@ -96,23 +96,23 @@ export function useDescendants<
       const unregister = () => {
         descendantsRef.current.delete(id);
         const remainingDescendants = Array.from(
-          descendantsRef.current.values()
+          descendantsRef.current.values(),
         ).sort((a, b) => a.renderOrder - b.renderOrder);
         setRegisteredDescendants(remainingDescendants);
       };
 
       return { unregister };
     },
-    []
+    [],
   );
 
   const contextValue: DescendantsContextType<DescendantType> = useMemo(
     () => ({
       register,
       descendants: registeredDescendants,
-      claimRenderOrder
+      claimRenderOrder,
     }),
-    [register, registeredDescendants, claimRenderOrder]
+    [register, registeredDescendants, claimRenderOrder],
   );
 
   return contextValue;
@@ -129,7 +129,7 @@ type DescendantsProviderProps<T extends Record<string, unknown>> = {
 
 export function DescendantsProvider<T extends Record<string, unknown>>({
   value,
-  children
+  children,
 }: DescendantsProviderProps<T>) {
   return (
     <DescendantsContext.Provider
@@ -152,17 +152,30 @@ export function DescendantsProvider<T extends Record<string, unknown>>({
  * @throws Error if used outside of DescendantsProvider
  */
 export function useDescendantsContext<
-  T extends Record<string, unknown>
+  T extends Record<string, unknown>,
 >(): DescendantsContextType<T> {
   const context = useContext(DescendantsContext);
 
   if (!context) {
     throw new Error(
-      'useDescendantsContext must be used within DescendantsProvider'
+      "useDescendantsContext must be used within DescendantsProvider",
     );
   }
 
   return context as DescendantsContextType<T>;
+}
+
+/**
+ * Hook to optionally access the descendants context.
+ * Returns null if not within a DescendantsProvider (does not throw).
+ *
+ * @returns The descendants context value or null
+ */
+export function useOptionalDescendantsContext<
+  T extends Record<string, unknown>,
+>(): DescendantsContextType<T> | null {
+  const context = useContext(DescendantsContext);
+  return context as DescendantsContextType<T> | null;
 }
 
 // ============================================================================
@@ -202,7 +215,7 @@ export function useDescendantsContext<
 // ============================================================================
 
 export function useDescendantIndex<T extends Record<string, unknown>>(
-  props?: T
+  props?: T,
 ) {
   const context = useDescendantsContext<T>();
   const id = useId();
@@ -237,7 +250,7 @@ export function useDescendantIndex<T extends Record<string, unknown>>(
 
   // Derive index from sorted descendants array
   const index = useMemo(() => {
-    return context.descendants.findIndex(descendant => descendant.id === id);
+    return context.descendants.findIndex((descendant) => descendant.id === id);
   }, [context.descendants, id]);
 
   const getPrevious = useCallback((): DescendantInfo<T> | undefined => {

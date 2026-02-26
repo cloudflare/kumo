@@ -124,6 +124,12 @@ export type PopoverContentProps = KumoPopoverVariantsProps & {
    * @default 0
    */
   alignOffset?: number;
+  /**
+   * Determines which CSS `position` property to use.
+   * Use "fixed" when the popover needs to escape stacking contexts (e.g., inside sticky headers).
+   * @default "absolute"
+   */
+  positionMethod?: "absolute" | "fixed";
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Content to render inside the popover. */
@@ -136,6 +142,7 @@ function PopoverContent({
   align = "center",
   sideOffset = 8,
   alignOffset = 0,
+  positionMethod = "absolute",
   className,
 }: PopoverContentProps) {
   return (
@@ -145,6 +152,7 @@ function PopoverContent({
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
+        positionMethod={positionMethod}
       >
         <PopoverBase.Popup
           className={cn(

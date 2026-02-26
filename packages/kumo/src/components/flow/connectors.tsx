@@ -6,12 +6,14 @@ export interface Connector {
   x2: number;
   y2: number;
   isBottom?: boolean;
+  disabled?: boolean;
+  single?: boolean;
 }
 
 type ConnectorsProps = {
   connectors: Connector[];
   children?: ReactNode;
-} & Omit<PathProps, "isBottom">;
+} & Omit<PathProps, "isBottom" | "single">;
 
 type PathProps = Partial<{
   cornerRadius: number;
@@ -53,8 +55,11 @@ export function createRoundedPath(
       return `M ${x1} ${y1} L ${x2 - arrowheadOffset} ${y2}`;
 
     // Horizontal orientation: horizontal → vertical → horizontal
-    // verticalOffset is used as horizontalOffset (distance from x2 where we turn)
-    const verticalX = x2 - midOffset;
+    // When single=true: vertical segment near endpoint for smooth S-curve
+    // When single=false (junction exists):
+    //   - isBottom=false (incoming): junction at start, turn near x1
+    //   - isBottom=true (outgoing): junction at end, turn near x2
+    const verticalX = single || isBottom ? x2 - midOffset : x1 + midOffset;
     const isGoingRight = x2 > x1;
     const horizontalSign = isGoingRight ? 1 : -1;
     const isGoingDown = y2 > y1;
@@ -74,7 +79,9 @@ export function createRoundedPath(
     const bottomCurveCommands = [
       `L ${firstHorizontalEnd} ${y1}`,
       `Q ${verticalX} ${y1} ${verticalX} ${verticalStart}`,
-      `L ${verticalX} ${y2}`,
+      single
+        ? `L ${verticalX} ${verticalEnd} Q ${verticalX} ${y2} ${secondHorizontalStart} ${y2}`
+        : `L ${verticalX} ${y2}`,
     ];
 
     const topCurveCommands = [
@@ -98,8 +105,11 @@ export function createRoundedPath(
     return `M ${x1} ${y1} L ${x2} ${y2 - arrowheadOffset}`;
 
   // Vertical orientation: vertical → horizontal → vertical
-  // Vertical offset before turning horizontally
-  const horizontalY = y2 - midOffset;
+  // When single=true: horizontal segment near endpoint for smooth S-curve
+  // When single=false (junction exists):
+  //   - isBottom=false (incoming): junction at start, turn near y1
+  //   - isBottom=true (outgoing): junction at end, turn near y2
+  const horizontalY = single || isBottom ? y2 - midOffset : y1 + midOffset;
   const isGoingRight = x2 > x1;
   const horizontalSign = isGoingRight ? 1 : -1;
   const isGoingDown = y2 > y1;
@@ -165,23 +175,35 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
             />
           </marker>
         </defs>
-        {connectors.map((connector, index) => {
-          const path = createRoundedPath(connector, {
-            isBottom: connector.isBottom,
-            ...pathProps,
-          });
-          return (
-            <path
-              key={index}
-              d={path}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              markerEnd={`url(#${id})`}
-              data-index={index}
-            />
-          );
-        })}
+        {[...connectors]
+          .sort((a, b) => {
+            // Disabled connectors render first (below active ones)
+            if (a.disabled && !b.disabled) return -1;
+            if (!a.disabled && b.disabled) return 1;
+            return 0;
+          })
+          .map((connector, index) => {
+            const path = createRoundedPath(connector, {
+              isBottom: connector.isBottom,
+              single: connector.single,
+              ...pathProps,
+            });
+            return (
+              <g
+                key={index}
+                className={connector.disabled ? "opacity-40" : undefined}
+              >
+                <path
+                  d={path}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  markerEnd={`url(#${id})`}
+                  data-index={index}
+                />
+              </g>
+            );
+          })}
         {children}
       </svg>
     );
