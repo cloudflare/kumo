@@ -293,13 +293,21 @@ function GroupLabel(props: ComboboxBase.GroupLabel.Props) {
   return (
     <ComboboxBase.GroupLabel
       {...props}
-      className="mx-1.5 px-4 py-1.5 text-sm font-medium"
+      className={cn(
+        "mx-1.5 px-2 py-1.5 text-sm text-kumo-strong",
+        props.className,
+      )}
     />
   );
 }
 
 function Group(props: ComboboxBase.Group.Props) {
-  return <ComboboxBase.Group {...props} className="mt-2 first:mt-0" />;
+  return (
+    <ComboboxBase.Group
+      {...props}
+      className="border-t border-kumo-line mt-2 pt-2 first:border-t-0 first:mt-0 first:pt-0"
+    />
+  );
 }
 
 function Chip(props: ComboboxBase.Chip.Props) {

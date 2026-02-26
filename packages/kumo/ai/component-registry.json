@@ -70,14 +70,24 @@
     "Banner": {
       "name": "Banner",
       "type": "component",
-      "description": "Full-width message bar for informational, warning, or error notices.",
+      "description": "Full-width message bar for informational, warning, or error notices. Supports structured title/description for i18n, or simple children for basic usage.",
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
         "icon": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`)."
+          "description": "Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`)."
+        },
+        "title": {
+          "type": "string",
+          "optional": true,
+          "description": "Primary heading text for the banner. Use for i18n string injection."
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Secondary description text displayed below the title. Use for i18n string injection."
         },
         "text": {
           "type": "string",
@@ -85,8 +95,7 @@
         },
         "children": {
           "type": "ReactNode",
-          "optional": true,
-          "description": "Banner message content. Accepts strings or custom React elements."
+          "optional": true
         },
         "variant": {
           "type": "enum",
@@ -103,9 +112,9 @@
             "error": "Error banner for critical issues"
           },
           "classes": {
-            "default": "bg-kumo-info/20 border-kumo-info text-kumo-link selection:bg-kumo-info-tint",
-            "alert": "bg-kumo-warning/20 border-kumo-warning text-kumo-warning selection:bg-kumo-warning-tint",
-            "error": "bg-kumo-danger/20 border-kumo-danger text-kumo-danger selection:bg-kumo-danger-tint"
+            "default": "bg-kumo-info/10 border-kumo-info/30 text-kumo-info selection:bg-kumo-info-tint",
+            "alert": "bg-kumo-warning/10 border-kumo-warning/30 text-kumo-warning selection:bg-kumo-warning-tint",
+            "error": "bg-kumo-danger/10 border-kumo-danger/30 text-kumo-danger selection:bg-kumo-danger-tint"
           },
           "default": "default"
         },
@@ -116,12 +125,14 @@
         }
       },
       "examples": [
-        "<div className=\"space-y-3\">\n      <Banner>This is an informational banner.</Banner>\n      <Banner variant=\"alert\">This is an alert banner.</Banner>\n      <Banner variant=\"error\">This is an error banner.</Banner>\n    </div>",
-        "<Banner>This is an informational banner.</Banner>",
-        "<Banner variant=\"alert\">Your session will expire soon.</Banner>",
-        "<Banner variant=\"error\">We couldn't save your changes.</Banner>",
-        "<Banner icon={<WarningCircle />} variant=\"alert\">\n      Review your billing information.\n    </Banner>",
-        "<Banner icon={<Info />}>\n      <Text DANGEROUS_className=\"text-inherit\">\n        This banner supports <strong>custom content</strong> with Text.\n      </Text>\n    </Banner>"
+        "<div className=\"space-y-3\">\n      <Banner\n        icon={<Info weight=\"fill\" />}\n        title=\"Update available\"\n        description=\"A new version is ready to install.\"\n      />\n      <Banner\n        icon={<Warning weight=\"fill\" />}\n        variant=\"alert\"\n        title=\"Session expiring\"\n        description=\"Your session will expire in 5 minutes.\"\n      />\n      <Banner\n        icon={<WarningCircle weight=\"fill\" />}\n        variant=\"error\"\n        title=\"Save failed\"\n        description=\"We couldn't save your changes. Please try again.\"\n      />\n    </div>",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Update available\"\n      description=\"A new version is ready to install.\"\n    />",
+        "<Banner\n      icon={<Warning weight=\"fill\" />}\n      variant=\"alert\"\n      title=\"Session expiring\"\n      description=\"Your session will expire in 5 minutes.\"\n    />",
+        "<Banner\n      icon={<WarningCircle weight=\"fill\" />}\n      variant=\"error\"\n      title=\"Save failed\"\n      description=\"We couldn't save your changes. Please try again.\"\n    />",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Your changes have been saved.\"\n    />",
+        "<Banner\n      icon={<Warning weight=\"fill\" />}\n      variant=\"alert\"\n      title=\"Review required\"\n      description=\"Please review your billing information before proceeding.\"\n    />",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Custom content supported\"\n      description={\n        <Text DANGEROUS_className=\"text-inherit\">\n          This banner supports <strong>custom content</strong> with Text.\n        </Text>\n      }\n    />",
+        "<Banner icon={<Info />}>This is a simple banner using children.</Banner>"
       ],
       "colors": [
         "bg-kumo-danger",
@@ -134,10 +145,10 @@
         "border-kumo-info",
         "border-kumo-warning",
         "text-kumo-danger",
-        "text-kumo-link",
+        "text-kumo-info",
         "text-kumo-warning"
       ],
-      "baseStyles": "flex w-full items-center gap-2 rounded-lg border px-4 py-1.5 text-base"
+      "baseStyles": "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-base"
     },
     "Breadcrumbs": {
       "name": "Breadcrumbs",
@@ -509,6 +520,7 @@
         "bg-kumo-base",
         "bg-kumo-contrast",
         "border-kumo-line",
+        "ring-kumo-contrast",
         "ring-kumo-danger",
         "ring-kumo-line",
         "ring-kumo-ring",
@@ -664,7 +676,7 @@
         "<ClipboardText text=\"abc123\" />",
         "<ClipboardText text=\"sk_live_51H8...\" />",
         "<ClipboardText text=\"https://example.com/very/long/url/path\" />",
-        "<ClipboardTextToastProvider>\n      <ClipboardText\n        text=\"npx kumo add button\"\n        tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n      />\n    </ClipboardTextToastProvider>"
+        "<ClipboardText\n      text=\"npx kumo add button\"\n      tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
@@ -2182,19 +2194,8 @@
         },
         "List": {
           "name": "List",
-          "description": "A container for combobox items. Supports render prop for custom item rendering.",
-          "props": {
-            "children": {
-              "type": "ReactNode | ((item: T, index: number) => ReactNode)",
-              "description": "Items to render, or a function that receives each item and returns a node"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "ComboboxBase.List",
-          "usageExamples": [
-            "<Combobox.List>\n  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}\n</Combobox.List>"
-          ],
-          "renderElement": "<div>"
+          "description": "List sub-component",
+          "props": {}
         },
         "Collection": {
           "name": "Collection",
@@ -2557,7 +2558,7 @@
     "DropdownMenu": {
       "name": "DropdownMenu",
       "type": "component",
-      "description": "DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.",
+      "description": "DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.",
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
@@ -2628,6 +2629,11 @@
         "Item": {
           "name": "Item",
           "description": "Item sub-component",
+          "props": {}
+        },
+        "LinkItem": {
+          "name": "LinkItem",
+          "description": "LinkItem sub-component",
           "props": {}
         },
         "CheckboxItem": {
@@ -3450,23 +3456,10 @@
     "Pagination": {
       "name": "Pagination",
       "type": "component",
-      "description": "Page navigation controls with page count display.",
+      "description": "Pagination component",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
-        "controls": {
-          "type": "enum",
-          "optional": true,
-          "values": [
-            "full",
-            "simple"
-          ],
-          "descriptions": {
-            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
-            "simple": "Simple pagination controls with only previous and next buttons"
-          },
-          "default": "full"
-        },
         "setPage": {
           "type": "(page: number) => void",
           "required": true,
@@ -3487,10 +3480,32 @@
           "optional": true,
           "description": "Total number of items across all pages."
         },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes for the container"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator."
+        },
+        "controls": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "full",
+            "simple"
+          ],
+          "descriptions": {
+            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
+            "simple": "Simple pagination controls with only previous and next buttons"
+          },
+          "default": "full"
+        },
         "text": {
           "type": "object",
-          "optional": true,
-          "description": "Method to provide custom pagination text"
+          "optional": true
         }
       },
       "examples": [
@@ -3499,11 +3514,86 @@
         "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"full\"\n    />",
         "<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />",
         "<Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />",
-        "<Pagination\n      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />"
+        "<Pagination\n      text={({ perPage }: { perPage?: number }) =>\n        `Page ${page} - showing ${perPage} per page`\n      }\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={500}\n    >\n      <Pagination.Info />\n      <Pagination.Separator />\n      <Pagination.PageSize\n        value={perPage}\n        onChange={(size) => {\n          setPerPage(size);\n          setPage(1);\n        }}\n      />\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={200}\n    >\n      <Pagination.Info />\n      <Pagination.Separator />\n      <Pagination.PageSize\n        value={perPage}\n        onChange={(size) => {\n          setPerPage(size);\n          setPage(1);\n        }}\n        options={[10, 20, 50]}\n      />\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination page={page} setPage={setPage} perPage={25} totalCount={100}>\n      <Pagination.Info>\n        {({ page, totalCount }) =>\n          `Page ${page} of ${Math.ceil((totalCount ?? 1) / 25)}`\n        }\n      </Pagination.Info>\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={500}\n    >\n      <Pagination.Info />\n      <div className=\"flex items-center gap-2\">\n        <Pagination.Controls />\n        <Pagination.Separator />\n        <Pagination.PageSize\n          value={perPage}\n          onChange={(size) => {\n            setPerPage(size);\n            setPage(1);\n          }}\n        />\n      </div>\n    </Pagination>"
       ],
       "colors": [
+        "border-kumo-line",
         "text-kumo-strong"
       ],
+      "subComponents": {
+        "Info": {
+          "name": "Info",
+          "description": "Info sub-component",
+          "props": {
+            "children": {
+              "type": "(props: {",
+              "optional": true
+            },
+            "page": {
+              "type": "number",
+              "required": true
+            },
+            "perPage": {
+              "type": "number",
+              "optional": true
+            },
+            "totalCount": {
+              "type": "number",
+              "optional": true
+            },
+            "pageShowingRange": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        "PageSize": {
+          "name": "PageSize",
+          "description": "PageSize sub-component",
+          "props": {
+            "value": {
+              "type": "number",
+              "required": true
+            },
+            "options": {
+              "type": "number[]",
+              "optional": true
+            },
+            "label": {
+              "type": "ReactNode",
+              "optional": true
+            },
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Controls": {
+          "name": "Controls",
+          "description": "Controls sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Separator": {
+          "name": "Separator",
+          "description": "Separator sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        }
+      },
       "styling": {
         "layout": {
           "height": 36,

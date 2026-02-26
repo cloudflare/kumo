@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -21,6 +22,7 @@ import {
   DescendantsProvider,
   useDescendantIndex,
   useDescendants,
+  useOptionalDescendantsContext,
   type DescendantInfo,
 } from "./use-children";
 
@@ -180,10 +182,29 @@ export function FlowDiagram({
     return () => wrapper.removeEventListener("wheel", handleWheel);
   }, [bounds, x, y]);
 
+  const isEventFromNode = (e: PointerEvent) => {
+    const target = e.target as HTMLElement;
+    return target.closest("[data-node-id]") !== null;
+  };
+
+  const handlePanStart = (e: PointerEvent) => {
+    if (isEventFromNode(e)) return;
+    setIsPanning(true);
+    document.body.style.cursor = "grabbing";
+    document.body.style.userSelect = "none";
+  };
+
   const handlePan = (_: PointerEvent, info: PanInfo) => {
-    if (!bounds) return;
+    if (!bounds || !isPanning) return;
     x.set(Math.max(bounds.x, Math.min(0, x.get() + info.delta.x)));
     y.set(Math.max(bounds.y, Math.min(0, y.get() + info.delta.y)));
+  };
+
+  const handlePanEnd = () => {
+    if (!isPanning) return;
+    setIsPanning(false);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
   };
 
   // Calculate scrollbar dimensions
@@ -236,17 +257,9 @@ export function FlowDiagram({
         style={{
           cursor: canPan && !isPanning ? "grab" : undefined,
         }}
-        onPanStart={() => {
-          setIsPanning(true);
-          document.body.style.cursor = "grabbing";
-          document.body.style.userSelect = "none";
-        }}
+        onPanStart={handlePanStart}
         onPan={handlePan}
-        onPanEnd={() => {
-          setIsPanning(false);
-          document.body.style.cursor = "";
-          document.body.style.userSelect = "";
-        }}
+        onPanEnd={handlePanEnd}
       >
         <motion.div ref={contentRef} className="w-max mx-auto" style={{ x, y }}>
           <FlowNodeList>{children}</FlowNodeList>
@@ -297,6 +310,7 @@ export type RectLike = {
 
 export type NodeData = {
   parallel?: boolean;
+  disabled?: boolean;
   start?: RectLike | null;
   end?: RectLike | null;
 };
@@ -304,6 +318,42 @@ export type NodeData = {
 export const useNodeGroup = () => useDescendants<NodeData>();
 
 export const useNode = (props: NodeData) => useDescendantIndex<NodeData>(props);
+
+/**
+ * Hook to optionally register as a node if within a parent descendants context.
+ * Returns registration info if registered, or null if no parent context exists.
+ */
+export const useOptionalNode = (props: NodeData) => {
+  const parentContext = useOptionalDescendantsContext<NodeData>();
+  const id = useId();
+
+  // Claim render order during render if we have a parent context
+  const renderOrder = parentContext?.claimRenderOrder(id) ?? -1;
+
+  const unregisterRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    if (!parentContext) return;
+
+    const { unregister } = parentContext.register(id, renderOrder, props);
+
+    if (!unregisterRef.current) {
+      unregisterRef.current = unregister;
+    }
+
+    return () => {
+      if (unregisterRef.current) {
+        unregisterRef.current();
+        unregisterRef.current = null;
+      }
+    };
+  }, [id, renderOrder, props, parentContext]);
+
+  if (!parentContext) return null;
+
+  const index = parentContext.descendants.findIndex((d) => d.id === id);
+  return { index, id };
+};
 
 export const getNodeRect = (
   node: DescendantInfo<NodeData> | undefined,
@@ -327,21 +377,52 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
     const offsetY = containerRect?.top ?? 0;
 
     for (let i = 0; i < nodes.length - 1; i++) {
-      const currentRect = getNodeRect(nodes[i], { type: "start" });
-      const nextRect = getNodeRect(nodes[i + 1], { type: "end" });
+      const currentNode = nodes[i];
+      const nextNode = nodes[i + 1];
+
+      if (currentNode.props?.parallel || nextNode.props?.parallel) continue;
+
+      const currentRect = getNodeRect(currentNode, { type: "start" });
+      const nextRect = getNodeRect(nextNode, { type: "end" });
 
       if (currentRect && nextRect) {
+        const isDisabled =
+          currentNode.props.disabled || nextNode.props.disabled;
         edges.push({
           x1: currentRect.left - offsetX + currentRect.width,
           y1: currentRect.top - offsetY + currentRect.height / 2,
           x2: nextRect.left - offsetX,
           y2: nextRect.top - offsetY + nextRect.height / 2,
+          disabled: isDisabled,
+          single: true,
         });
       }
     }
 
     return edges;
   }, [descendants.descendants]);
+
+  // Get the first and last node's anchor points for parent registration
+  const firstNode = descendants.descendants[0];
+  const lastNode = descendants.descendants[descendants.descendants.length - 1];
+
+  // Use the first node's "end" anchor as our "end" (incoming connector point)
+  // Use the last node's "start" anchor as our "start" (outgoing connector point)
+  const endAnchor = firstNode?.props?.end ?? null;
+  const startAnchor = lastNode?.props?.start ?? null;
+
+  const nodeProps = useMemo(
+    () => ({
+      parallel: false,
+      disabled: false,
+      start: startAnchor,
+      end: endAnchor,
+    }),
+    [startAnchor, endAnchor],
+  );
+
+  // Register with parent context if we're nested (e.g., inside Flow.Parallel)
+  useOptionalNode(nodeProps);
 
   return (
     <DescendantsProvider value={descendants}>
@@ -359,11 +440,7 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
           {children}
         </ul>
         <div className="absolute inset-0 pointer-events-none">
-          <Connectors
-            connectors={connectors}
-            orientation={orientation}
-            single
-          />
+          <Connectors connectors={connectors} orientation={orientation} />
         </div>
       </div>
     </DescendantsProvider>

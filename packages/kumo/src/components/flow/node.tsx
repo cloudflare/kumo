@@ -9,17 +9,17 @@ import {
   useRef,
   useState,
   type ReactElement,
-  type ReactNode,
-} from "react";
-import { useNode, type RectLike } from "./diagram";
+  type ReactNode
+} from 'react';
+import { useNode, type RectLike } from './diagram';
 
 // Utility to merge refs
 function mergeRefs<T>(
   ...refs: (React.Ref<T> | undefined)[]
 ): React.RefCallback<T> {
-  return (value) => {
-    refs.forEach((ref) => {
-      if (typeof ref === "function") {
+  return value => {
+    refs.forEach(ref => {
+      if (typeof ref === 'function') {
         ref(value);
       } else if (ref != null) {
         (ref as React.MutableRefObject<T | null>).current = value;
@@ -48,10 +48,14 @@ export type FlowNodeProps = {
    */
   render?: ReactElement;
   children?: ReactNode;
+  /**
+   * When true, any connector linking to this node will be greyed out.
+   */
+  disabled?: boolean;
 };
 
 export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
-  function FlowNode({ render, children }, ref) {
+  function FlowNode({ render, children, disabled = false }, ref) {
     const nodeRef = useRef<HTMLElement>(null);
     const startAnchorRef = useRef<HTMLElement | null>(null);
     const endAnchorRef = useRef<HTMLElement | null>(null);
@@ -63,9 +67,10 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     const nodeProps = useMemo(
       () => ({
         parallel: false,
-        ...measurements,
+        disabled,
+        ...measurements
       }),
-      [measurements],
+      [measurements, disabled]
     );
 
     const { index, id } = useNode(nodeProps);
@@ -91,7 +96,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         endRect = endAnchorRef.current.getBoundingClientRect();
       }
 
-      setMeasurements((m) => {
+      setMeasurements(m => {
         const newVal = { start: startRect, end: endRect };
         if (JSON.stringify(m) === JSON.stringify(newVal)) return m;
         return newVal;
@@ -103,12 +108,16 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     let element: ReactElement;
     if (render && isValidElement(render)) {
       // When render prop is provided, clone it with ref and data attributes
-      const renderProps = render.props as { children?: ReactNode };
+      const renderProps = render.props as {
+        children?: ReactNode;
+        style?: React.CSSProperties;
+      };
       element = cloneElement(render, {
         ref: mergedRef,
-        "data-node-index": index,
-        "data-node-id": id,
-        children: renderProps.children ?? children,
+        'data-node-index': index,
+        'data-node-id': id,
+        style: { cursor: 'default', ...renderProps.style },
+        children: renderProps.children ?? children
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
     } else {
       // Default element
@@ -116,6 +125,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         <li
           ref={mergedRef}
           className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line"
+          style={{ cursor: 'default' }}
           data-node-index={index}
           data-node-id={id}
         >
@@ -128,23 +138,23 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
       <FlowNodeAnchorContext.Provider
         value={useMemo(
           () => ({
-            registerStartAnchor: (anchorRef) => {
+            registerStartAnchor: anchorRef => {
               startAnchorRef.current = anchorRef;
             },
-            registerEndAnchor: (anchorRef) => {
+            registerEndAnchor: anchorRef => {
               endAnchorRef.current = anchorRef;
-            },
+            }
           }),
-          [],
+          []
         )}
       >
         {element}
       </FlowNodeAnchorContext.Provider>
     );
-  },
+  }
 );
 
-FlowNode.displayName = "Flow.Node";
+FlowNode.displayName = 'Flow.Node';
 
 type FlowNodeAnchorContextType = {
   registerStartAnchor: (ref: HTMLElement | null) => void;
@@ -152,7 +162,7 @@ type FlowNodeAnchorContextType = {
 };
 
 const FlowNodeAnchorContext = createContext<FlowNodeAnchorContextType | null>(
-  null,
+  null
 );
 
 /**
@@ -174,7 +184,7 @@ export type FlowAnchorProps = {
    * _next_ connector or the "end" point for the _previous_ connector.
    * When omitted, it serves as both the start and end points.
    */
-  type?: "start" | "end";
+  type?: 'start' | 'end';
   /**
    * Custom element to render instead of the default div.
    * When provided, completely replaces the default element.
@@ -189,7 +199,7 @@ export const FlowAnchor = forwardRef<HTMLElement, FlowAnchorProps>(
     const anchorRef = useRef<HTMLElement>(null);
 
     if (!context) {
-      throw new Error("Flow.Anchor must be used within Flow.Node");
+      throw new Error('Flow.Anchor must be used within Flow.Node');
     }
 
     useEffect(() => {
@@ -197,18 +207,18 @@ export const FlowAnchor = forwardRef<HTMLElement, FlowAnchorProps>(
         return;
       }
 
-      if (type === "start" || type === undefined) {
+      if (type === 'start' || type === undefined) {
         context.registerStartAnchor(anchorRef.current);
       }
-      if (type === "end" || type === undefined) {
+      if (type === 'end' || type === undefined) {
         context.registerEndAnchor(anchorRef.current);
       }
 
       return () => {
-        if (type === "start" || type === undefined) {
+        if (type === 'start' || type === undefined) {
           context.registerStartAnchor(null);
         }
-        if (type === "end" || type === undefined) {
+        if (type === 'end' || type === undefined) {
           context.registerEndAnchor(null);
         }
       };
@@ -221,13 +231,13 @@ export const FlowAnchor = forwardRef<HTMLElement, FlowAnchorProps>(
       const renderProps = render.props as { children?: ReactNode };
       return cloneElement(render, {
         ref: mergedRef,
-        children: renderProps.children ?? children,
+        children: renderProps.children ?? children
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
     }
 
     // Default element
     return <div ref={mergedRef}>{children}</div>;
-  },
+  }
 );
 
-FlowAnchor.displayName = "Flow.Anchor";
+FlowAnchor.displayName = 'Flow.Anchor';

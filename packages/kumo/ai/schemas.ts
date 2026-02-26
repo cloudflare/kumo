@@ -117,9 +117,11 @@ export const BadgePropsSchema = z.object({
 });
 
 export const BannerPropsSchema = z.object({
-  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
+  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`).
+  title: z.string().optional(), // Primary heading text for the banner. Use for i18n string injection.
+  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Secondary description text displayed below the title. Use for i18n string injection.
   text: z.string().optional(),
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Banner message content. Accepts strings or custom React elements.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
   variant: z.enum(["default", "alert", "error"]).optional(), // Visual style of the banner. - `"default"` — Informational blue banner for general messages - `"alert"` — Warning yellow banner for cautionary messages - `"error"` — Error red banner for critical issues
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
@@ -585,12 +587,14 @@ export const MeterPropsSchema = z.object({
 });
 
 export const PaginationPropsSchema = z.object({
-  controls: z.enum(["full", "simple"]).optional(),
   setPage: z.unknown(), // Callback when page changes
   page: z.number().optional(), // Current page number (1-indexed).
   perPage: z.number().optional(), // Number of items displayed per page.
   totalCount: z.number().optional(), // Total number of items across all pages.
-  text: z.unknown().optional(), // Method to provide custom pagination text
+  className: z.string().optional(), // Additional CSS classes for the container
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator.
+  controls: z.enum(["full", "simple"]).optional(),
+  text: z.unknown().optional(),
 });
 
 export const PopoverPropsSchema = z.object({

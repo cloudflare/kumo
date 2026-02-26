@@ -1,4 +1,4 @@
-import { useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { Connectors, type Connector } from "./connectors";
 import {
@@ -55,15 +55,46 @@ function getStartAndEndPoints({
   return { start, end };
 }
 
-export function FlowParallelNode({ children }: { children: ReactNode }) {
+type FlowParallelNodeProps = {
+  children: ReactNode;
+  /**
+   * Controls alignment of nodes within the parallel group.
+   * - `start`: Nodes align to the left (default)
+   * - `end`: Nodes align to the right
+   */
+  align?: "start" | "end";
+};
+
+export function FlowParallelNode({
+  children,
+  align = "start",
+}: FlowParallelNodeProps) {
   const { orientation } = useDiagramContext();
   const descendants = useNodeGroup();
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLUListElement>(null);
+  const [measurements, setMeasurements] = useState<DOMRect | null>(null);
 
   const { index, getPrevious, getNext } = useNode(
-    useMemo(() => ({ parallel: true }), []),
+    useMemo(
+      () => ({ parallel: true, start: measurements, end: measurements }),
+      [measurements],
+    ),
   );
+
+  /**
+   * This effect intentionally has no dependencies because we want it to run on
+   * every render to ensure measurements are always up to date.
+   */
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const rect = contentRef.current.getBoundingClientRect();
+    setMeasurements((m) => {
+      if (JSON.stringify(m) === JSON.stringify(rect)) return m;
+      return rect;
+    });
+  });
 
   const measure = () => {
     const container = containerRef.current;
@@ -82,11 +113,81 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
       orientation,
     });
 
-    const newConnectors = descendants.descendants.flatMap(({ props }) => {
+    // First pass: collect all branch points to determine directions
+    const incomingBranchPoints: { y: number }[] = [];
+    const outgoingBranchPoints: { y: number }[] = [];
+
+    for (const descendant of descendants.descendants) {
+      const { props } = descendant;
+      const [endAnchorRect, startAnchorRect] = [props.end, props.start];
+
+      if (previousNodeRect && endAnchorRect) {
+        const anchorCenter =
+          orientation === "horizontal"
+            ? endAnchorRect.top - containerRect.top + endAnchorRect.height / 2
+            : endAnchorRect.left - containerRect.left + endAnchorRect.width / 2;
+        incomingBranchPoints.push({ y: anchorCenter });
+      }
+
+      if (nextNodeRect && startAnchorRect) {
+        const anchorCenter =
+          orientation === "horizontal"
+            ? startAnchorRect.top -
+              containerRect.top +
+              startAnchorRect.height / 2
+            : startAnchorRect.left -
+              containerRect.left +
+              startAnchorRect.width / 2;
+        outgoingBranchPoints.push({ y: anchorCenter });
+      }
+    }
+
+    // Determine if we need junctions based on branch directions
+    // A junction is needed if connections branch in different directions
+    // (including inline vs above/below)
+    const FLAT_THRESHOLD = 2;
+
+    const hasIncomingJunction = (() => {
+      if (incomingBranchPoints.length <= 1) return false;
+      const hasAbove = incomingBranchPoints.some(
+        (p) => p.y < start.y - FLAT_THRESHOLD,
+      );
+      const hasBelow = incomingBranchPoints.some(
+        (p) => p.y > start.y + FLAT_THRESHOLD,
+      );
+      const hasInline = incomingBranchPoints.some(
+        (p) => Math.abs(p.y - start.y) <= FLAT_THRESHOLD,
+      );
+      // Junction needed if connections go in different directions
+      const directions = [hasAbove, hasBelow, hasInline].filter(Boolean).length;
+      return directions > 1;
+    })();
+
+    const hasOutgoingJunction = (() => {
+      if (outgoingBranchPoints.length <= 1) return false;
+      const hasAbove = outgoingBranchPoints.some(
+        (p) => p.y < end.y - FLAT_THRESHOLD,
+      );
+      const hasBelow = outgoingBranchPoints.some(
+        (p) => p.y > end.y + FLAT_THRESHOLD,
+      );
+      const hasInline = outgoingBranchPoints.some(
+        (p) => Math.abs(p.y - end.y) <= FLAT_THRESHOLD,
+      );
+      // Junction needed if connections go in different directions
+      const directions = [hasAbove, hasBelow, hasInline].filter(Boolean).length;
+      return directions > 1;
+    })();
+
+    // Second pass: create connectors with single prop based on junction presence
+    const newConnectors = descendants.descendants.flatMap((descendant) => {
+      const { props } = descendant;
       const connectors: Connector[] = [];
 
       const [endAnchorRect, startAnchorRect] = [props.end, props.start];
-      if (endAnchorRect) {
+      const isDescendantDisabled = props.disabled;
+
+      if (previousNodeRect && endAnchorRect) {
         let branchStart: { x: number; y: number };
         switch (orientation) {
           case "vertical": {
@@ -116,6 +217,8 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
           x2: branchStart.x,
           y2: branchStart.y,
           isBottom: false,
+          disabled: prevNode?.props.disabled || isDescendantDisabled,
+          single: !hasIncomingJunction,
         });
       }
 
@@ -153,6 +256,8 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
           x2: end.x,
           y2: end.y,
           isBottom: true,
+          disabled: isDescendantDisabled || nextNode?.props.disabled,
+          single: !hasOutgoingJunction,
         });
       }
 
@@ -162,16 +267,20 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
     return {
       connectors: newConnectors,
       junctions: {
-        start: {
-          x: orientation === "vertical" ? start.x : start.x + 32,
-          y: orientation === "vertical" ? start.y + 32 : start.y,
-        },
-        end: nextNodeRect
-          ? {
-              x: orientation === "vertical" ? end.x : end.x - 32,
-              y: orientation === "vertical" ? end.y - 32 : end.y,
-            }
-          : undefined,
+        start:
+          previousNodeRect && hasIncomingJunction
+            ? {
+                x: orientation === "vertical" ? start.x : start.x + 32,
+                y: orientation === "vertical" ? start.y + 32 : start.y,
+              }
+            : undefined,
+        end:
+          nextNodeRect && hasOutgoingJunction
+            ? {
+                x: orientation === "vertical" ? end.x : end.x - 32,
+                y: orientation === "vertical" ? end.y - 32 : end.y,
+              }
+            : undefined,
       },
       containerRect: containerRect,
     };
@@ -210,11 +319,13 @@ export function FlowParallelNode({ children }: { children: ReactNode }) {
       </div>
       <ul
         className={cn(
-          "gap-5 list-none flex items-start",
+          "gap-5 list-none flex",
+          align === "start" ? "items-start" : "items-end",
           orientation === "horizontal"
             ? "flex-col ml-0"
             : "gap-5 w-fit mx-auto",
         )}
+        ref={contentRef}
       >
         <DescendantsProvider value={descendants}>
           {children}
