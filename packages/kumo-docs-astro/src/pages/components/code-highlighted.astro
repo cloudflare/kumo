@@ -16,6 +16,7 @@ import {
   CodeHighlightedFullFeaturedDemo,
   CodeHighlightedSharedProviderDemo,
   CodeHighlightedCssDemo,
+  CodeHighlightedCustomHighlightDemo,
 } from "../../components/demos/CodeHighlightedDemo";
 
 const heroCode = `<ShikiProvider
@@ -317,6 +318,15 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
         <ComponentExample code={`<CodeHighlighted code={code} lang="typescript" highlightLines={[5, 6]} />`}>
           <CodeHighlightedHighlightLinesDemo client:visible />
         </ComponentExample>
+      </div>
+
+      <!-- Custom Highlight Color -->
+      <div>
+        <Heading level={3}>Custom Highlight Color</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Customize the highlight color with the <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">--kumo-code-highlight-bg</code> CSS variable.
+        </p>
+        <CodeHighlightedCustomHighlightDemo client:load />
       </div>
 
       <!-- Line Numbers -->

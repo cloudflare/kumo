@@ -611,9 +611,13 @@
   background-color: var(--shiki-dark-bg) !important;
 }
 
-[data-mode="dark"] .kumo-shiki span {
+[data-mode="dark"] .kumo-shiki span:not(.line-highlighted) {
   color: var(--shiki-dark) !important;
   background-color: transparent !important;
+}
+
+[data-mode="dark"] .kumo-shiki .line-highlighted {
+  color: var(--shiki-dark) !important;
 }
 
 /* 
@@ -627,16 +631,20 @@
   min-width: 100%;
 }
 
+.kumo-shiki {
+  --kumo-code-highlight-bg: rgba(0, 0, 0, 0.05);
+}
+
+[data-mode="dark"] .kumo-shiki {
+  --kumo-code-highlight-bg: rgba(255, 255, 255, 0.08);
+}
+
 .kumo-shiki .line.line-highlighted {
   display: inline-block;
   width: calc(100% + 2rem);
   margin: 0 -1rem;
   padding: 0 1rem;
-  background-color: oklch(54.6% 0.215 262.881 / 0.1);
-}
-
-[data-mode="dark"] .kumo-shiki .line.line-highlighted {
-  background-color: oklch(62.3% 0.214 259.815 / 0.15);
+  background-color: var(--kumo-code-highlight-bg);
 }
 
 /* Line numbers - positioned alongside code with matching line-height */

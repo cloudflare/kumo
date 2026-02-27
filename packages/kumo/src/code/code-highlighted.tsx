@@ -71,11 +71,7 @@ export function CodeHighlighted({
   // Copy button - inline for single-line, absolute for multi-line
   const copyButton = showCopyButton ? (
     <div
-      className={cn(
-        isSingleLine
-          ? "shrink-0 border-l border-kumo-fill px-2"
-          : "absolute right-2 top-2",
-      )}
+      className={cn(isSingleLine ? "shrink-0 px-2" : "absolute right-2 top-2")}
     >
       <Button
         variant="secondary"

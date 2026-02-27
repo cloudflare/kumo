@@ -1,5 +1,5 @@
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 /**
  * Wrapper component that provides Shiki context for all demos.
@@ -248,6 +248,78 @@ export function CodeHighlightedCssDemo() {
 }`}
         lang="css"
       />
+    </DemoProvider>
+  );
+}
+
+/** Interactive highlight color customization demo */
+export function CodeHighlightedCustomHighlightDemo() {
+  const [hue, setHue] = useState(220);
+  const [opacity, setOpacity] = useState(10);
+
+  const lightBg = `hsla(${hue}, 80%, 50%, ${opacity / 100})`;
+  const darkBg = `hsla(${hue}, 60%, 70%, ${(opacity + 5) / 100})`;
+
+  // Generate a unique ID to scope the styles
+  const styleId = "custom-highlight-demo";
+
+  return (
+    <DemoProvider>
+      <div className="space-y-4">
+        <style>{`
+          #${styleId} .kumo-shiki {
+            --kumo-code-highlight-bg: ${lightBg};
+          }
+          [data-mode="dark"] #${styleId} .kumo-shiki {
+            --kumo-code-highlight-bg: ${darkBg};
+          }
+        `}</style>
+        <div id={styleId}>
+          <CodeHighlighted
+            code={`function greet(name: string) {
+  // This line is highlighted
+  console.log(\`Hello, \${name}!\`);
+  
+  return name.toUpperCase();
+}`}
+            lang="typescript"
+            highlightLines={[2, 3]}
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-6 rounded-md border border-kumo-line bg-kumo-elevated p-4">
+          <label className="flex flex-col gap-2">
+            <span className="text-sm text-kumo-subtle">Hue: {hue}°</span>
+            <input
+              type="range"
+              min="0"
+              max="360"
+              value={hue}
+              onChange={(e) => setHue(Number(e.target.value))}
+              className="w-32"
+            />
+          </label>
+          <label className="flex flex-col gap-2">
+            <span className="text-sm text-kumo-subtle">
+              Opacity: {opacity}%
+            </span>
+            <input
+              type="range"
+              min="2"
+              max="30"
+              value={opacity}
+              onChange={(e) => setOpacity(Number(e.target.value))}
+              className="w-32"
+            />
+          </label>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-kumo-subtle">CSS Variable</span>
+            <code className="rounded bg-kumo-control px-2 py-1 font-mono text-xs">
+              --kumo-code-highlight-bg: {lightBg}
+            </code>
+          </div>
+        </div>
+      </div>
     </DemoProvider>
   );
 }
