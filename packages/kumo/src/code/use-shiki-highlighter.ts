@@ -49,7 +49,7 @@ export function useShikiHighlighter(): UseShikiHighlighterResult {
     );
   }
 
-  const { highlighter, isLoading, error, themes, languages } = context;
+  const { highlighter, isLoading, error, themes, languages, labels } = context;
 
   const highlight = useCallback(
     (
@@ -98,5 +98,6 @@ export function useShikiHighlighter(): UseShikiHighlighterResult {
     isLoading,
     isReady: !isLoading && highlighter !== null,
     error,
+    labels,
   };
 }

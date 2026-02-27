@@ -18,6 +18,16 @@ export interface ShikiThemeConfig {
 }
 
 /**
+ * Localized labels for the copy button.
+ */
+export interface CodeHighlightedLabels {
+  /** Label for copy button (default: "Copy") */
+  copy?: string;
+  /** Label shown after copying (default: "Copied!") */
+  copied?: string;
+}
+
+/**
  * Props for ShikiProvider component.
  */
 export interface ShikiProviderProps {
@@ -39,6 +49,13 @@ export interface ShikiProviderProps {
    * @example { light: 'github-light', dark: 'github-dark' }
    */
   themes: ShikiThemeConfig;
+
+  /**
+   * Localized labels for UI elements (copy button, etc.).
+   * Can be overridden at the component level.
+   * @example { copy: "Copier", copied: "Copié!" }
+   */
+  labels?: CodeHighlightedLabels;
 
   /** React children */
   children: React.ReactNode;
@@ -75,6 +92,9 @@ export interface UseShikiHighlighterResult {
 
   /** Error if Shiki initialization failed */
   error: Error | null;
+
+  /** Localized labels from provider */
+  labels: CodeHighlightedLabels;
 }
 
 /**
@@ -106,6 +126,12 @@ export interface CodeHighlightedProps {
 
   /** Show copy-to-clipboard button */
   showCopyButton?: boolean;
+
+  /**
+   * Override provider labels for this instance.
+   * @example { copy: "Copy code", copied: "Done!" }
+   */
+  labels?: CodeHighlightedLabels;
 
   /** Additional CSS classes */
   className?: string;

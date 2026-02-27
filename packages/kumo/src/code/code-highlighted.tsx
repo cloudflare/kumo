@@ -37,10 +37,22 @@ export function CodeHighlighted({
   showLineNumbers = false,
   highlightLines,
   showCopyButton = false,
+  labels: labelOverrides,
   className,
 }: CodeHighlightedProps): ReactNode {
-  const { highlight, isLoading, error } = useShikiHighlighter();
+  const {
+    highlight,
+    isLoading,
+    error,
+    labels: providerLabels,
+  } = useShikiHighlighter();
   const [copied, setCopied] = useState(false);
+
+  // Merge provider labels with component-level overrides
+  const labels = useMemo(
+    () => ({ ...providerLabels, ...labelOverrides }),
+    [providerLabels, labelOverrides],
+  );
 
   const handleCopy = useCallback(async () => {
     try {
@@ -77,9 +89,9 @@ export function CodeHighlighted({
         variant="secondary"
         size="sm"
         onClick={handleCopy}
-        aria-label={copied ? "Copied!" : "Copy code"}
+        aria-label={copied ? labels.copied : labels.copy}
       >
-        {copied ? "Copied!" : "Copy"}
+        {copied ? labels.copied : labels.copy}
       </Button>
     </div>
   ) : null;

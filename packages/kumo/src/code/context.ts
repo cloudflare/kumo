@@ -1,6 +1,10 @@
 import { createContext } from "react";
 import type { Highlighter } from "shiki";
-import type { ShikiThemeConfig, BundledLanguage } from "./types";
+import type {
+  ShikiThemeConfig,
+  BundledLanguage,
+  CodeHighlightedLabels,
+} from "./types";
 
 export interface ShikiContextValue {
   /** The initialized Shiki highlighter instance */
@@ -17,6 +21,9 @@ export interface ShikiContextValue {
 
   /** Configured languages */
   languages: BundledLanguage[];
+
+  /** Localized labels for UI elements */
+  labels: CodeHighlightedLabels;
 }
 
 export const ShikiContext = createContext<ShikiContextValue | null>(null);

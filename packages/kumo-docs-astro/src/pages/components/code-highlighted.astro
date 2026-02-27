@@ -22,23 +22,21 @@ import {
 const heroCode = `<ShikiProvider
   engine="javascript"
   languages={["tsx", "bash", "json"]}
-  themes={{ light: cloudflare, dark: cloudflareDark }}
+  themes={{ light: "github-light", dark: "vesper" }}
 >
   <CodeHighlighted code={code} lang="tsx" />
 </ShikiProvider>`;
 
-const installCode = `import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";`;
+const installCode = `import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";`;
 
 const basicUsageCode = `import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
 
 export function App() {
   return (
     <ShikiProvider
       engine="javascript"
       languages={["tsx", "typescript", "bash", "json"]}
-      themes={{ light: cloudflare, dark: cloudflareDark }}
+      themes={{ light: "github-light", dark: "vesper" }}
     >
       {/* All CodeHighlighted components share the same Shiki instance */}
       <CodeHighlighted code="const x = 1;" lang="typescript" />
@@ -51,6 +49,7 @@ const providerPropsTable = `| Prop | Type | Required | Description |
 | \`engine\` | \`"javascript" \\| "wasm"\` | Yes | Highlighting engine. JavaScript is smaller (~50KB), WASM is more accurate (~180KB). |
 | \`languages\` | \`string[]\` | Yes | Languages to support. Only these will be loaded. |
 | \`themes\` | \`{ light: Theme, dark: Theme }\` | Yes | Themes for light and dark mode. |
+| \`labels\` | \`{ copy?: string, copied?: string }\` | No | Localized labels for copy button. |
 | \`children\` | \`ReactNode\` | Yes | App content. |`;
 
 const codeHighlightedPropsTable = `| Prop | Type | Required | Description |
@@ -60,8 +59,27 @@ const codeHighlightedPropsTable = `| Prop | Type | Required | Description |
 | \`showLineNumbers\` | \`boolean\` | No | Display line numbers. |
 | \`highlightLines\` | \`number[]\` | No | Lines to emphasize (1-indexed). |
 | \`showCopyButton\` | \`boolean\` | No | Show copy-to-clipboard button. |
+| \`labels\` | \`{ copy?: string, copied?: string }\` | No | Override provider labels for this instance. |
 | \`theme\` | \`Theme\` | No | Override provider theme for this instance. |
 | \`className\` | \`string\` | No | Additional CSS classes. |`;
+
+const i18nCode = `// Set labels at the provider level for all code blocks
+<ShikiProvider
+  engine="javascript"
+  languages={["tsx", "bash"]}
+  themes={{ light: "github-light", dark: "vesper" }}
+  labels={{ copy: "Copier", copied: "Copié!" }}
+>
+  <App />
+</ShikiProvider>
+
+// Or override at the component level
+<CodeHighlighted
+  code={code}
+  lang="tsx"
+  showCopyButton
+  labels={{ copy: "Copy code", copied: "Done!" }}
+/>`;
 
 const serverUsageCode = `// Next.js RSC or Astro
 import { highlightCode } from "@cloudflare/kumo/code/server";
@@ -101,7 +119,7 @@ function CustomCodeBlock({ code, lang }) {
   }
 
   const html = highlight(code, lang);
-  
+
   // null means highlighting failed — render plain text
   if (html === null) {
     return <pre><code>{code}</code></pre>;
@@ -110,28 +128,15 @@ function CustomCodeBlock({ code, lang }) {
   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
 }`;
 
-const themesCode = `// Use built-in Cloudflare themes (recommended)
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
-
+const themesCode = `// Use any Shiki/VS Code theme by name
 <ShikiProvider
-  themes={{ light: cloudflare, dark: cloudflareDark }}
+  themes={{ light: "github-light", dark: "vesper" }}
   // ...
 />
 
-// Or use any Shiki/VS Code theme by name
-<ShikiProvider
-  themes={{ light: "github-light", dark: "github-dark" }}
-  // ...
-/>
-
-// Custom theme object
-const customTheme = {
-  ...cloudflare,
-  colors: {
-    ...cloudflare.colors,
-    "editor.background": "#f5f5f5",
-  },
-};`;
+// Other popular themes:
+// Light: "github-light", "min-light", "slack-ochin"
+// Dark: "vesper", "github-dark", "nord", "dracula"`;
 
 const bundleSizeTable = `| Scenario | Languages | Engine | Lazy Load Size |
 |----------|-----------|--------|----------------|
@@ -143,14 +148,13 @@ const nextjsCode = `// app/providers.tsx
 "use client";
 
 import { ShikiProvider } from "@cloudflare/kumo/code";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
 
 export function Providers({ children }) {
   return (
     <ShikiProvider
       engine="javascript"
       languages={["tsx", "bash", "json"]}
-      themes={{ light: cloudflare, dark: cloudflareDark }}
+      themes={{ light: "github-light", dark: "vesper" }}
     >
       {children}
     </ShikiProvider>
@@ -173,11 +177,10 @@ export default function RootLayout({ children }) {
 const astroCode = `---
 // src/components/CodeBlock.astro
 import { highlightCode } from "@cloudflare/kumo/code/server";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
 
 const { code, lang } = Astro.props;
 const html = await highlightCode(code, lang, {
-  themes: { light: cloudflare, dark: cloudflareDark }
+  themes: { light: "github-light", dark: "vesper" }
 });
 ---
 
@@ -189,13 +192,12 @@ import { Code, CodeBlock } from "@cloudflare/kumo";
 
 // After
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
 
 // Once at app root
 <ShikiProvider
   engine="javascript"
   languages={["tsx"]}
-  themes={{ light: cloudflare, dark: cloudflareDark }}
+  themes={{ light: "github-light", dark: "vesper" }}
 >
   <App />
 </ShikiProvider>
@@ -226,9 +228,9 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
   <ComponentSection>
     <Heading level={2}>Overview</Heading>
     <p class="text-kumo-strong">
-      A Shiki-powered syntax highlighter. Supports 200+ languages with TextMate grammars, 
-      dual light/dark themes, and lazy loading. Exported from a separate entry point 
-      (<code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@cloudflare/kumo/code</code>) 
+      A Shiki-powered syntax highlighter. Supports 200+ languages with TextMate grammars,
+      dual light/dark themes, and lazy loading. Exported from a separate entry point
+      (<code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@cloudflare/kumo/code</code>)
       to avoid bundling Shiki for apps that don't need it.
     </p>
   </ComponentSection>
@@ -240,7 +242,7 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
       CodeHighlighted is exported from a separate entry point to avoid bundling Shiki for apps that don't need it.
     </p>
     <CodeBlock code={installCode} lang="tsx" />
-    
+
     <div class="mt-4 rounded-md border border-kumo-warning/20 bg-kumo-warning/5 p-4">
       <p class="text-sm text-kumo-strong">
         <strong>Important:</strong> Do NOT import from the main <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@cloudflare/kumo</code> entry.
@@ -374,7 +376,7 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
           Multiple code blocks can share a single <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">ShikiProvider</code>.
           Shiki loads once and is reused for all blocks.
         </p>
-        <ComponentExample code={`<ShikiProvider ...>
+        <ComponentExample code={`<ShikiProvider>
   <CodeHighlighted code={tsCode} lang="typescript" />
   <CodeHighlighted code={bashCode} lang="bash" />
   <CodeHighlighted code={jsonCode} lang="json" />
@@ -400,7 +402,7 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
     <p class="mb-4 text-kumo-strong">
       For SSR frameworks (Next.js RSC, Astro, Remix), use the server utilities to highlight at build time.
     </p>
-    
+
     <div class="space-y-6">
       <div>
         <h4 class="mb-3 text-base font-medium">One-off highlighting</h4>
@@ -423,10 +425,19 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
     <CodeBlock code={customHookCode} lang="tsx" />
   </ComponentSection>
 
+  <!-- Internationalization -->
+  <ComponentSection>
+    <Heading level={2}>Internationalization</Heading>
+    <p class="mb-4 text-kumo-strong">
+      Customize button labels at the provider level for all code blocks, or override per-component.
+    </p>
+    <CodeBlock code={i18nCode} lang="tsx" />
+  </ComponentSection>
+
   <!-- Framework Integration -->
   <ComponentSection>
     <Heading level={2}>Framework Integration</Heading>
-    
+
     <div class="space-y-8">
       <div>
         <Heading level={3}>Next.js App Router</Heading>
@@ -499,7 +510,7 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
   <!-- API Reference -->
   <ComponentSection>
     <Heading level={2}>API Reference</Heading>
-    
+
     <div class="space-y-8">
       <div>
         <Heading level={3}>ShikiProvider Props</Heading>
@@ -531,6 +542,12 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
                 <td class="py-2 pr-4"><code>{ light: Theme, dark: Theme }</code></td>
                 <td class="py-2 pr-4">Yes</td>
                 <td class="py-2">Themes for light and dark mode</td>
+              </tr>
+              <tr class="border-b border-kumo-line/50">
+                <td class="py-2 pr-4"><code>labels</code></td>
+                <td class="py-2 pr-4"><code>{ copy?: string, copied?: string }</code></td>
+                <td class="py-2 pr-4">No</td>
+                <td class="py-2">Localized labels for copy button</td>
               </tr>
               <tr>
                 <td class="py-2 pr-4"><code>children</code></td>
@@ -585,6 +602,12 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
                 <td class="py-2 pr-4"><code>boolean</code></td>
                 <td class="py-2 pr-4">No</td>
                 <td class="py-2">Show copy-to-clipboard button</td>
+              </tr>
+              <tr class="border-b border-kumo-line/50">
+                <td class="py-2 pr-4"><code>labels</code></td>
+                <td class="py-2 pr-4"><code>{ copy?: string, copied?: string }</code></td>
+                <td class="py-2 pr-4">No</td>
+                <td class="py-2">Override provider labels for this instance</td>
               </tr>
               <tr class="border-b border-kumo-line/50">
                 <td class="py-2 pr-4"><code>theme</code></td>

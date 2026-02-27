@@ -28,10 +28,16 @@ import type { ShikiProviderProps, BundledLanguage } from "./types";
  * }
  * ```
  */
+const DEFAULT_LABELS = {
+  copy: "Copy",
+  copied: "Copied!",
+};
+
 export function ShikiProvider({
   engine,
   languages,
   themes,
+  labels,
   children,
 }: ShikiProviderProps): ReactNode {
   const [state, setState] = useState<{
@@ -94,6 +100,11 @@ export function ShikiProvider({
     };
   }, [engine, languages, themes]);
 
+  const mergedLabels = useMemo(
+    () => ({ ...DEFAULT_LABELS, ...labels }),
+    [labels],
+  );
+
   const contextValue = useMemo<ShikiContextValue>(
     () => ({
       highlighter: state.highlighter,
@@ -101,8 +112,16 @@ export function ShikiProvider({
       error: state.error,
       themes,
       languages: languages as BundledLanguage[],
+      labels: mergedLabels,
     }),
-    [state.highlighter, state.isLoading, state.error, themes, languages],
+    [
+      state.highlighter,
+      state.isLoading,
+      state.error,
+      themes,
+      languages,
+      mergedLabels,
+    ],
   );
 
   return (
