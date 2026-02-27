@@ -75,15 +75,19 @@ export function CodeHighlighted({
 
   // Container styles - use flex layout for single-line with copy button
   const containerClasses = cn(
-    "relative min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
+    "group relative min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
     showCopyButton && isSingleLine && "flex items-center",
     className,
   );
 
   // Copy button - inline for single-line, absolute for multi-line
+  // Hidden until hover (or when showing "Copied!" feedback)
   const copyButton = showCopyButton ? (
     <div
-      className={cn(isSingleLine ? "shrink-0 px-2" : "absolute right-2 top-2")}
+      className={cn(
+        isSingleLine ? "shrink-0 px-2" : "absolute right-2 top-2",
+        !copied && "opacity-0 transition-opacity group-hover:opacity-100",
+      )}
     >
       <Button
         variant="secondary"
