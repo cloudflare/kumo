@@ -92,7 +92,7 @@ export function CodeHighlighted({
   const lineNumbers =
     showLineNumbers && !isSingleLine ? (
       <div
-        className="kumo-line-numbers shrink-0 select-none border-r border-kumo-fill py-4 pr-3 text-right font-mono text-sm text-kumo-subtle"
+        className="kumo-line-numbers shrink-0 select-none py-4 pr-4 text-right font-mono text-sm opacity-40"
         aria-hidden="true"
       >
         {Array.from({ length: lineCount }, (_, i) => (
