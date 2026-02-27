@@ -200,7 +200,6 @@ export default defineConfig(({ mode }) => {
           // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
           code: resolve(__dirname, "src/code/index.ts"),
           "code/server": resolve(__dirname, "src/code/server.ts"),
-          "code/themes": resolve(__dirname, "src/code/themes/index.ts"),
         },
         formats: ["es"],
         fileName: (format, entryName) => {
