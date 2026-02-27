@@ -138,6 +138,10 @@
   box-sizing: border-box;
 }
 
+.rdp-root thead {
+  background: transparent;
+}
+
 /* Day cells */
 .rdp-day {
   width: var(--rdp-day-width);
