@@ -4,6 +4,8 @@
  * This module is intentionally separate from the main `@cloudflare/kumo` export
  * to avoid bundling Shiki (~65-250KB) for consumers who don't need it.
  *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
+ *
  * @example
  * ```tsx
  * import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
@@ -13,7 +15,6 @@
  *     <ShikiProvider
  *       engine="javascript"
  *       languages={['tsx', 'bash', 'json']}
- *       themes={{ light: 'github-light', dark: 'github-dark' }}
  *     >
  *       <CodeHighlighted code="const x = 1;" lang="tsx" />
  *     </ShikiProvider>
@@ -37,9 +38,5 @@ export type {
   CodeHighlightedProps,
   UseShikiHighlighterResult,
   ShikiEngine,
-  ShikiThemeConfig,
-  HighlightOptions,
   BundledLanguage,
-  BundledTheme,
-  ThemeRegistration,
 } from "./types";

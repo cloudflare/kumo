@@ -22,7 +22,6 @@ import {
 const heroCode = `<ShikiProvider
   engine="javascript"
   languages={["tsx", "bash", "json"]}
-  themes={{ light: "github-light", dark: "vesper" }}
 >
   <CodeHighlighted code={code} lang="tsx" />
 </ShikiProvider>`;
@@ -36,7 +35,6 @@ export function App() {
     <ShikiProvider
       engine="javascript"
       languages={["tsx", "typescript", "bash", "json"]}
-      themes={{ light: "github-light", dark: "vesper" }}
     >
       {/* All CodeHighlighted components share the same Shiki instance */}
       <CodeHighlighted code="const x = 1;" lang="typescript" />
@@ -48,7 +46,6 @@ const providerPropsTable = `| Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | \`engine\` | \`"javascript" \\| "wasm"\` | Yes | Highlighting engine. JavaScript is smaller (~50KB), WASM is more accurate (~180KB). |
 | \`languages\` | \`string[]\` | Yes | Languages to support. Only these will be loaded. |
-| \`themes\` | \`{ light: Theme, dark: Theme }\` | Yes | Themes for light and dark mode. |
 | \`labels\` | \`{ copy?: string, copied?: string }\` | No | Localized labels for copy button. |
 | \`children\` | \`ReactNode\` | Yes | App content. |`;
 
@@ -60,14 +57,12 @@ const codeHighlightedPropsTable = `| Prop | Type | Required | Description |
 | \`highlightLines\` | \`number[]\` | No | Lines to emphasize (1-indexed). |
 | \`showCopyButton\` | \`boolean\` | No | Show copy-to-clipboard button. |
 | \`labels\` | \`{ copy?: string, copied?: string }\` | No | Override provider labels for this instance. |
-| \`theme\` | \`Theme\` | No | Override provider theme for this instance. |
 | \`className\` | \`string\` | No | Additional CSS classes. |`;
 
 const i18nCode = `// Set labels at the provider level for all code blocks
 <ShikiProvider
   engine="javascript"
   languages={["tsx", "bash"]}
-  themes={{ light: "github-light", dark: "vesper" }}
   labels={{ copy: "Copier", copied: "Copié!" }}
 >
   <App />
@@ -85,9 +80,7 @@ const serverUsageCode = `// Next.js RSC or Astro
 import { highlightCode } from "@cloudflare/kumo/code/server";
 
 export default async function Page() {
-  const html = await highlightCode(\`const x = 1;\`, "typescript", {
-    themes: { light: "github-light", dark: "github-dark" },
-  });
+  const html = await highlightCode(\`const x = 1;\`, "typescript");
 
   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
 }`;
@@ -97,7 +90,6 @@ import { createServerHighlighter } from "@cloudflare/kumo/code/server";
 
 const highlighter = await createServerHighlighter({
   languages: ["tsx", "bash", "json"],
-  themes: ["github-light", "github-dark"],
 });
 
 const html1 = highlighter.highlight(code1, "tsx");
@@ -128,15 +120,11 @@ function CustomCodeBlock({ code, lang }) {
   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
 }`;
 
-const themesCode = `// Use any Shiki/VS Code theme by name
-<ShikiProvider
-  themes={{ light: "github-light", dark: "vesper" }}
-  // ...
-/>
-
-// Other popular themes:
-// Light: "github-light", "min-light", "slack-ochin"
-// Dark: "vesper", "github-dark", "nord", "dracula"`;
+const themesCode = `// Themes are hardcoded for consistent styling:
+// - Light mode: github-light
+// - Dark mode: vesper
+//
+// No theme customization is needed or supported.`;
 
 const bundleSizeTable = `| Scenario | Languages | Engine | Lazy Load Size |
 |----------|-----------|--------|----------------|
@@ -154,7 +142,6 @@ export function Providers({ children }) {
     <ShikiProvider
       engine="javascript"
       languages={["tsx", "bash", "json"]}
-      themes={{ light: "github-light", dark: "vesper" }}
     >
       {children}
     </ShikiProvider>
@@ -179,9 +166,7 @@ const astroCode = `---
 import { highlightCode } from "@cloudflare/kumo/code/server";
 
 const { code, lang } = Astro.props;
-const html = await highlightCode(code, lang, {
-  themes: { light: "github-light", dark: "vesper" }
-});
+const html = await highlightCode(code, lang);
 ---
 
 <div class="code-block" set:html={html} />`;
@@ -197,7 +182,6 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 <ShikiProvider
   engine="javascript"
   languages={["tsx"]}
-  themes={{ light: "github-light", dark: "vesper" }}
 >
   <App />
 </ShikiProvider>
@@ -391,9 +375,15 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
   <ComponentSection>
     <Heading level={2}>Themes</Heading>
     <p class="mb-4 text-kumo-strong">
-      Kumo ships with Cloudflare-branded themes. You can also use any Shiki/VS Code theme.
+      CodeHighlighted uses hardcoded themes for consistent styling across all Kumo applications:
     </p>
-    <CodeBlock code={themesCode} lang="tsx" />
+    <ul class="mb-4 list-disc pl-6 text-kumo-strong">
+      <li><strong>Light mode:</strong> <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">github-light</code></li>
+      <li><strong>Dark mode:</strong> <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">vesper</code></li>
+    </ul>
+    <p class="text-sm text-kumo-subtle">
+      Theme customization is not supported. This ensures visual consistency across all code blocks in your application.
+    </p>
   </ComponentSection>
 
   <!-- Server-Side Usage -->
@@ -538,12 +528,6 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
                 <td class="py-2">Languages to support (e.g., ["tsx", "bash"])</td>
               </tr>
               <tr class="border-b border-kumo-line/50">
-                <td class="py-2 pr-4"><code>themes</code></td>
-                <td class="py-2 pr-4"><code>{ light: Theme, dark: Theme }</code></td>
-                <td class="py-2 pr-4">Yes</td>
-                <td class="py-2">Themes for light and dark mode</td>
-              </tr>
-              <tr class="border-b border-kumo-line/50">
                 <td class="py-2 pr-4"><code>labels</code></td>
                 <td class="py-2 pr-4"><code>{ copy?: string, copied?: string }</code></td>
                 <td class="py-2 pr-4">No</td>
@@ -608,12 +592,6 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
                 <td class="py-2 pr-4"><code>{ copy?: string, copied?: string }</code></td>
                 <td class="py-2 pr-4">No</td>
                 <td class="py-2">Override provider labels for this instance</td>
-              </tr>
-              <tr class="border-b border-kumo-line/50">
-                <td class="py-2 pr-4"><code>theme</code></td>
-                <td class="py-2 pr-4"><code>Theme</code></td>
-                <td class="py-2 pr-4">No</td>
-                <td class="py-2">Override provider theme for this instance</td>
               </tr>
               <tr>
                 <td class="py-2 pr-4"><code>className</code></td>

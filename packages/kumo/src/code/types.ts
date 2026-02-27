@@ -1,4 +1,4 @@
-import type { BundledLanguage, BundledTheme, ThemeRegistration } from "shiki";
+import type { BundledLanguage } from "shiki";
 
 /**
  * Shiki engine choice for syntax highlighting.
@@ -6,16 +6,6 @@ import type { BundledLanguage, BundledTheme, ThemeRegistration } from "shiki";
  * - `"wasm"` — Larger bundle (~180KB), VS Code-accurate highlighting
  */
 export type ShikiEngine = "javascript" | "wasm";
-
-/**
- * Theme configuration for light and dark modes.
- */
-export interface ShikiThemeConfig {
-  /** Theme for light mode */
-  light: BundledTheme | ThemeRegistration;
-  /** Theme for dark mode */
-  dark: BundledTheme | ThemeRegistration;
-}
 
 /**
  * Localized labels for the copy button.
@@ -45,12 +35,6 @@ export interface ShikiProviderProps {
   languages: BundledLanguage[];
 
   /**
-   * Theme configuration for light and dark modes.
-   * @example { light: 'github-light', dark: 'github-dark' }
-   */
-  themes: ShikiThemeConfig;
-
-  /**
    * Localized labels for UI elements (copy button, etc.).
    * Can be overridden at the component level.
    * @example { copy: "Copier", copied: "Copié!" }
@@ -62,14 +46,6 @@ export interface ShikiProviderProps {
 }
 
 /**
- * Options for the highlight function.
- */
-export interface HighlightOptions {
-  /** Override the theme for this specific highlight call */
-  theme?: BundledTheme | ThemeRegistration;
-}
-
-/**
  * Return value from useShikiHighlighter hook.
  */
 export interface UseShikiHighlighterResult {
@@ -78,11 +54,7 @@ export interface UseShikiHighlighterResult {
    * Returns `null` if highlighter is not ready or highlighting fails.
    * When `null` is returned, render the code as plain text.
    */
-  highlight: (
-    code: string,
-    lang: BundledLanguage,
-    options?: HighlightOptions,
-  ) => string | null;
+  highlight: (code: string, lang: BundledLanguage) => string | null;
 
   /** True while Shiki is loading */
   isLoading: boolean;
@@ -110,11 +82,6 @@ export interface CodeHighlightedProps {
    */
   lang: BundledLanguage;
 
-  /**
-   * Override provider theme for this instance.
-   */
-  theme?: BundledTheme | ThemeRegistration;
-
   /** Display line numbers */
   showLineNumbers?: boolean;
 
@@ -138,4 +105,4 @@ export interface CodeHighlightedProps {
 }
 
 // Re-export useful Shiki types for consumers
-export type { BundledLanguage, BundledTheme, ThemeRegistration } from "shiki";
+export type { BundledLanguage } from "shiki";

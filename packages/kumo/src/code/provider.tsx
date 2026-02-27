@@ -11,6 +11,8 @@ import type { ShikiProviderProps, BundledLanguage } from "./types";
  * until this provider mounts. While loading, child components can
  * render code as plain text.
  *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
+ *
  * @example
  * ```tsx
  * import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
@@ -20,7 +22,6 @@ import type { ShikiProviderProps, BundledLanguage } from "./types";
  *     <ShikiProvider
  *       engine="javascript"
  *       languages={['tsx', 'bash', 'json']}
- *       themes={{ light: 'github-light', dark: 'github-dark' }}
  *     >
  *       <CodeHighlighted code="const x = 1;" lang="tsx" />
  *     </ShikiProvider>
@@ -36,7 +37,6 @@ const DEFAULT_LABELS = {
 export function ShikiProvider({
   engine,
   languages,
-  themes,
   labels,
   children,
 }: ShikiProviderProps): ReactNode {
@@ -69,7 +69,7 @@ export function ShikiProvider({
               );
 
         const highlighter = await createHighlighter({
-          themes: [themes.light, themes.dark],
+          themes: ["github-light", "vesper"],
           langs: languages,
           engine: engineInstance,
         });
@@ -98,7 +98,7 @@ export function ShikiProvider({
     return () => {
       cancelled = true;
     };
-  }, [engine, languages, themes]);
+  }, [engine, languages]);
 
   const mergedLabels = useMemo(
     () => ({ ...DEFAULT_LABELS, ...labels }),
@@ -110,18 +110,10 @@ export function ShikiProvider({
       highlighter: state.highlighter,
       isLoading: state.isLoading,
       error: state.error,
-      themes,
       languages: languages as BundledLanguage[],
       labels: mergedLabels,
     }),
-    [
-      state.highlighter,
-      state.isLoading,
-      state.error,
-      themes,
-      languages,
-      mergedLabels,
-    ],
+    [state.highlighter, state.isLoading, state.error, languages, mergedLabels],
   );
 
   return (
