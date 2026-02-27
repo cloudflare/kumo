@@ -11,6 +11,7 @@ import {
   CodeHighlightedBashDemo,
   CodeHighlightedJsonDemo,
   CodeHighlightedHighlightLinesDemo,
+  CodeHighlightedLineNumbersDemo,
   CodeHighlightedCopyButtonDemo,
   CodeHighlightedFullFeaturedDemo,
   CodeHighlightedSharedProviderDemo,
@@ -55,7 +56,7 @@ const codeHighlightedPropsTable = `| Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | \`code\` | \`string\` | Yes | Source code to display. |
 | \`lang\` | \`string\` | Yes | Language identifier (must be in provider's \`languages\`). |
-| \`showLineNumbers\` | \`boolean\` | No | Display line numbers. **(Coming soon)** |
+| \`showLineNumbers\` | \`boolean\` | No | Display line numbers. |
 | \`highlightLines\` | \`number[]\` | No | Lines to emphasize (1-indexed). |
 | \`showCopyButton\` | \`boolean\` | No | Show copy-to-clipboard button. |
 | \`theme\` | \`Theme\` | No | Override provider theme for this instance. |
@@ -220,18 +221,15 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
     </ComponentExample>
   </ComponentSection>
 
-  <!-- Why CodeHighlighted -->
+  <!-- Overview -->
   <ComponentSection>
-    <Heading level={2}>Why CodeHighlighted?</Heading>
-    <div class="prose prose-sm max-w-none text-kumo-strong">
-      <ul class="space-y-2 pl-5">
-        <li><strong>VS Code-quality highlighting</strong> — Uses the same TextMate grammars as VS Code</li>
-        <li><strong>Zero bundle bloat by default</strong> — Shiki only loads when you import from <code>/code</code></li>
-        <li><strong>Lazy loading</strong> — Languages and themes load on-demand, not at import time</li>
-        <li><strong>Dual theme support</strong> — Automatic light/dark mode switching</li>
-        <li><strong>200+ languages</strong> — TypeScript, Rust, Go, Python, and many more</li>
-      </ul>
-    </div>
+    <Heading level={2}>Overview</Heading>
+    <p class="text-kumo-strong">
+      A Shiki-powered syntax highlighter. Supports 200+ languages with TextMate grammars, 
+      dual light/dark themes, and lazy loading. Exported from a separate entry point 
+      (<code class="rounded bg-kumo-control px-1 py-0.5 text-xs">@cloudflare/kumo/code</code>) 
+      to avoid bundling Shiki for apps that don't need it.
+    </p>
   </ComponentSection>
 
   <!-- Installation -->
@@ -318,6 +316,17 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
         </p>
         <ComponentExample code={`<CodeHighlighted code={code} lang="typescript" highlightLines={[5, 6]} />`}>
           <CodeHighlightedHighlightLinesDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <!-- Line Numbers -->
+      <div>
+        <Heading level={3}>Line Numbers</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Display line numbers with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">showLineNumbers</code>.
+        </p>
+        <ComponentExample code={`<CodeHighlighted code={code} lang="typescript" showLineNumbers />`}>
+          <CodeHighlightedLineNumbersDemo client:visible />
         </ComponentExample>
       </div>
 
@@ -553,7 +562,7 @@ import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
                 <td class="py-2 pr-4"><code>showLineNumbers</code></td>
                 <td class="py-2 pr-4"><code>boolean</code></td>
                 <td class="py-2 pr-4">No</td>
-                <td class="py-2">Display line numbers <em>(Coming soon)</em></td>
+                <td class="py-2">Display line numbers</td>
               </tr>
               <tr class="border-b border-kumo-line/50">
                 <td class="py-2 pr-4"><code>highlightLines</code></td>

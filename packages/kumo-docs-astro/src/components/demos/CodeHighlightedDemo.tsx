@@ -1,5 +1,4 @@
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
 import type { ReactNode } from "react";
 
 /**
@@ -19,7 +18,7 @@ function DemoProvider({ children }: { children: ReactNode }) {
         "css",
         "html",
       ]}
-      themes={{ light: cloudflare, dark: cloudflareDark }}
+      themes={{ light: "github-light", dark: "vesper" }}
     >
       {children}
     </ShikiProvider>
@@ -142,6 +141,38 @@ export function CodeHighlightedHighlightLinesDemo() {
   );
 }
 
+/** With line numbers */
+export function CodeHighlightedLineNumbersDemo() {
+  return (
+    <DemoProvider>
+      <CodeHighlighted
+        code={`import { useState, useEffect } from "react";
+
+export function useWindowSize() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  
+  useEffect(() => {
+    function handleResize() {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+  return size;
+}`}
+        lang="typescript"
+        showLineNumbers
+      />
+    </DemoProvider>
+  );
+}
+
 /** With copy button */
 export function CodeHighlightedCopyButtonDemo() {
   return (
@@ -161,14 +192,13 @@ export function CodeHighlightedFullFeaturedDemo() {
     <DemoProvider>
       <CodeHighlighted
         code={`import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { cloudflare, cloudflareDark } from "@cloudflare/kumo/code/themes";
 
 export function CodeExample({ code, language }: Props) {
   return (
     <ShikiProvider
       engine="javascript"
       languages={["tsx", "typescript", "bash", "json"]}
-      themes={{ light: cloudflare, dark: cloudflareDark }}
+      themes={{ light: "github-light", dark: "vesper" }}
     >
       <CodeHighlighted
         code={code}
@@ -180,7 +210,7 @@ export function CodeExample({ code, language }: Props) {
 }`}
         lang="tsx"
         showCopyButton
-        highlightLines={[7, 8, 9, 10, 11]}
+        highlightLines={[6, 7, 8, 9, 10]}
       />
     </DemoProvider>
   );

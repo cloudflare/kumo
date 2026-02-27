@@ -599,17 +599,21 @@
    Shiki syntax highlighting styles
    ============================================ */
 
-/* Shiki dual-theme support: switch between light/dark CSS variables */
-.kumo-shiki,
-.kumo-shiki span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
+/* 
+ * Shiki dual-theme support.
+ * Shiki outputs inline styles with light colors directly applied,
+ * and dark colors stored in --shiki-dark CSS variables.
+ * In light mode: use inline styles as-is (no override needed)
+ * In dark mode: override with --shiki-dark variables
+ * !important is needed to override inline styles.
+ */
+[data-mode="dark"] .kumo-shiki {
+  background-color: var(--shiki-dark-bg) !important;
 }
 
-[data-mode="dark"] .kumo-shiki,
 [data-mode="dark"] .kumo-shiki span {
-  color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
+  color: var(--shiki-dark) !important;
+  background-color: transparent !important;
 }
 
 /* 
@@ -633,4 +637,10 @@
 
 [data-mode="dark"] .kumo-shiki .line.line-highlighted {
   background-color: oklch(62.3% 0.214 259.815 / 0.15);
+}
+
+/* Line numbers - positioned alongside code with matching line-height */
+.kumo-line-numbers {
+  padding-left: 0.75rem;
+  line-height: 1.625; /* matches leading-relaxed */
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, type ReactNode } from "react";
+import { useState, useCallback, useMemo, type ReactNode } from "react";
 import { cn } from "../utils/cn";
 import { Button } from "../components/button";
 import { useShikiHighlighter } from "./use-shiki-highlighter";
@@ -42,14 +42,6 @@ export function CodeHighlighted({
   const { highlight, isLoading, error } = useShikiHighlighter();
   const [copied, setCopied] = useState(false);
 
-  // Line numbers not yet implemented
-  if (showLineNumbers && process.env.NODE_ENV === "development") {
-    console.warn(
-      "[Kumo CodeHighlighted] showLineNumbers is not yet implemented. " +
-        "This prop will be ignored.",
-    );
-  }
-
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code);
@@ -63,15 +55,28 @@ export function CodeHighlighted({
   // Get highlighted HTML (or null if not ready/failed)
   const html = highlight(code, lang, theme ? { theme } : undefined);
 
-  // Container styles
+  // Count lines for line numbers
+  const lineCount = useMemo(() => code.split("\n").length, [code]);
+
+  // Detect single-line code for layout adjustments
+  const isSingleLine = lineCount === 1;
+
+  // Container styles - use flex layout for single-line with copy button
   const containerClasses = cn(
     "relative min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
+    showCopyButton && isSingleLine && "flex items-center",
     className,
   );
 
-  // Render copy button
+  // Copy button - inline for single-line, absolute for multi-line
   const copyButton = showCopyButton ? (
-    <div className="absolute right-2 top-2">
+    <div
+      className={cn(
+        isSingleLine
+          ? "shrink-0 border-l border-kumo-fill px-2"
+          : "absolute right-2 top-2",
+      )}
+    >
       <Button
         variant="secondary"
         size="sm"
@@ -83,6 +88,21 @@ export function CodeHighlighted({
     </div>
   ) : null;
 
+  // Line numbers column
+  const lineNumbers =
+    showLineNumbers && !isSingleLine ? (
+      <div
+        className="kumo-line-numbers shrink-0 select-none border-r border-kumo-fill py-4 pr-3 text-right font-mono text-sm text-kumo-subtle"
+        aria-hidden="true"
+      >
+        {Array.from({ length: lineCount }, (_, i) => (
+          <div key={i + 1} className="leading-relaxed">
+            {i + 1}
+          </div>
+        ))}
+      </div>
+    ) : null;
+
   // Error state — still show code, just log the error
   if (error) {
     console.error("[Kumo CodeHighlighted] Shiki initialization error:", error);
@@ -92,10 +112,20 @@ export function CodeHighlighted({
   if (isLoading || html === null) {
     return (
       <div className={containerClasses}>
+        {lineNumbers && (
+          <div className="flex">
+            {lineNumbers}
+            <pre className="min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+              <code>{code}</code>
+            </pre>
+          </div>
+        )}
+        {!lineNumbers && (
+          <pre className="min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+            <code>{code}</code>
+          </pre>
+        )}
         {copyButton}
-        <pre className="overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
-          <code>{code}</code>
-        </pre>
       </div>
     );
   }
@@ -103,13 +133,26 @@ export function CodeHighlighted({
   // Highlighted code
   return (
     <div className={containerClasses}>
+      {lineNumbers && (
+        <div className="flex">
+          {lineNumbers}
+          <div
+            className="kumo-shiki min-w-0 flex-1 overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
+            dangerouslySetInnerHTML={{
+              __html: processHighlightedHtml(html, highlightLines),
+            }}
+          />
+        </div>
+      )}
+      {!lineNumbers && (
+        <div
+          className="kumo-shiki min-w-0 flex-1 overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
+          dangerouslySetInnerHTML={{
+            __html: processHighlightedHtml(html, highlightLines),
+          }}
+        />
+      )}
       {copyButton}
-      <div
-        className="kumo-shiki overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
-        dangerouslySetInnerHTML={{
-          __html: processHighlightedHtml(html, highlightLines),
-        }}
-      />
     </div>
   );
 }

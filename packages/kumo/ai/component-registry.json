@@ -16,6 +16,7 @@
             "primary",
             "secondary",
             "destructive",
+            "success",
             "outline",
             "beta"
           ],
@@ -23,6 +24,7 @@
             "primary": "Default high-emphasis badge for important labels",
             "secondary": "Subtle badge for secondary information",
             "destructive": "Error or danger state indicator",
+            "success": "Success or positive state indicator",
             "outline": "Bordered badge with transparent background",
             "beta": "Indicates beta or experimental features"
           },
@@ -30,6 +32,7 @@
             "primary": "bg-kumo-contrast text-kumo-inverse",
             "secondary": "bg-kumo-fill text-kumo-default",
             "destructive": "bg-kumo-danger text-white",
+            "success": "bg-kumo-success text-white",
             "outline": "border border-kumo-fill bg-transparent text-kumo-default",
             "beta": "border border-dashed border-kumo-brand bg-transparent text-kumo-link"
           },
@@ -47,10 +50,11 @@
         }
       },
       "examples": [
-        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Badge variant=\"primary\">Primary</Badge>\n      <Badge variant=\"secondary\">Secondary</Badge>\n      <Badge variant=\"destructive\">Destructive</Badge>\n      <Badge variant=\"outline\">Outline</Badge>\n      <Badge variant=\"beta\">Beta</Badge>\n    </div>",
+        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Badge variant=\"primary\">Primary</Badge>\n      <Badge variant=\"secondary\">Secondary</Badge>\n      <Badge variant=\"destructive\">Destructive</Badge>\n      <Badge variant=\"success\">Success</Badge>\n      <Badge variant=\"outline\">Outline</Badge>\n      <Badge variant=\"beta\">Beta</Badge>\n    </div>",
         "<Badge variant=\"primary\">Primary</Badge>",
         "<Badge variant=\"secondary\">Secondary</Badge>",
         "<Badge variant=\"destructive\">Destructive</Badge>",
+        "<Badge variant=\"success\">Success</Badge>",
         "<Badge variant=\"outline\">Outline</Badge>",
         "<Badge variant=\"beta\">Beta</Badge>",
         "<p className=\"flex items-center gap-2\">\n      Workers\n      <Badge variant=\"beta\">Beta</Badge>\n    </p>"
@@ -59,6 +63,7 @@
         "bg-kumo-contrast",
         "bg-kumo-danger",
         "bg-kumo-fill",
+        "bg-kumo-success",
         "border-kumo-brand",
         "border-kumo-fill",
         "text-kumo-default",
@@ -2115,9 +2120,11 @@
         "bg-kumo-control",
         "bg-kumo-fill-hover",
         "bg-kumo-overlay",
+        "border-kumo-line",
         "fill-kumo-ring",
         "ring-kumo-line",
         "text-kumo-default",
+        "text-kumo-strong",
         "text-kumo-subtle"
       ],
       "subComponents": {
@@ -4654,43 +4661,29 @@
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
-        "align": {
-          "type": "enum",
-          "optional": true,
-          "description": "Alignment on the axis perpendicular to `side`.\n- `\"start\"` — Align to the start edge\n- `\"center\"` — Center-aligned\n- `\"end\"` — Align to the end edge",
-          "values": [
-            "start",
-            "center",
-            "end"
-          ]
-        },
-        "asChild": {
-          "type": "boolean",
-          "optional": true,
-          "description": "When `true`, the trigger wraps the child element instead of adding a wrapper."
-        },
-        "className": {
-          "type": "string",
-          "optional": true,
-          "description": "Additional CSS classes merged via `cn()`."
-        },
         "side": {
           "type": "enum",
-          "optional": true,
-          "description": "Preferred side of the trigger to render the tooltip.\n- `\"top\"` — Tooltip appears above the trigger\n- `\"bottom\"` — Tooltip appears below the trigger\n- `\"left\"` — Tooltip appears to the left of the trigger\n- `\"right\"` — Tooltip appears to the right of the trigger",
           "values": [
             "top",
             "bottom",
             "left",
             "right"
           ],
+          "default": "top",
           "descriptions": {
             "top": "Tooltip appears above the trigger",
             "bottom": "Tooltip appears below the trigger",
             "left": "Tooltip appears to the left of the trigger",
             "right": "Tooltip appears to the right of the trigger"
-          },
-          "default": "top"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "description": "Child elements"
         },
         "content": {
           "type": "ReactNode",
