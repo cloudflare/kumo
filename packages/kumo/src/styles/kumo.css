@@ -594,3 +594,43 @@
   animation: rdp-fade_out var(--rdp-animation_duration)
     var(--rdp-animation_timing) forwards;
 }
+
+/* ============================================
+   Shiki syntax highlighting styles
+   ============================================ */
+
+/* Shiki dual-theme support: switch between light/dark CSS variables */
+.kumo-shiki,
+.kumo-shiki span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+[data-mode="dark"] .kumo-shiki,
+[data-mode="dark"] .kumo-shiki span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+/* 
+ * Line highlighting - based on VitePress pattern.
+ * The code element sizes to content (fit-content) but at least 100%,
+ * then highlighted lines extend into the padding with negative margins.
+ */
+.kumo-shiki code {
+  display: block;
+  width: fit-content;
+  min-width: 100%;
+}
+
+.kumo-shiki .line.line-highlighted {
+  display: inline-block;
+  width: calc(100% + 2rem);
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  background-color: oklch(54.6% 0.215 262.881 / 0.1);
+}
+
+[data-mode="dark"] .kumo-shiki .line.line-highlighted {
+  background-color: oklch(62.3% 0.214 259.815 / 0.15);
+}
