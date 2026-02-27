@@ -340,7 +340,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         )}
       >
         <div className="relative h-12 border-b border-kumo-line">
-          <div className="absolute top-2 right-1">
+          <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
               shape="square"
