@@ -4,37 +4,27 @@
  * Use these in SSR frameworks (Next.js, Astro, Remix) or build-time scripts.
  * These functions are async and should NOT be imported in client bundles.
  *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
+ *
  * @example
  * ```tsx
  * // Next.js RSC
  * import { highlightCode } from "@cloudflare/kumo/code/server";
  *
  * export default async function Page() {
- *   const html = await highlightCode(`const x = 1;`, "tsx", {
- *     themes: { light: "github-light", dark: "github-dark" },
- *   });
+ *   const html = await highlightCode(`const x = 1;`, "tsx");
  *
  *   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
  * }
  * ```
  */
 
-import type {
-  Highlighter,
-  BundledLanguage,
-  BundledTheme,
-  ThemeRegistration,
-} from "shiki";
+import type { Highlighter, BundledLanguage } from "shiki";
 import type { ShikiEngine } from "./types";
 
 export interface HighlightCodeOptions {
   /** Highlighting engine (default: "javascript") */
   engine?: ShikiEngine;
-  /** Themes for light and dark modes */
-  themes: {
-    light: BundledTheme | ThemeRegistration;
-    dark: BundledTheme | ThemeRegistration;
-  };
 }
 
 export interface CreateHighlighterOptions {
@@ -42,8 +32,6 @@ export interface CreateHighlighterOptions {
   engine?: ShikiEngine;
   /** Languages to support */
   languages: BundledLanguage[];
-  /** Themes to load */
-  themes: (BundledTheme | ThemeRegistration)[];
 }
 
 export interface ServerHighlighter {
@@ -57,19 +45,19 @@ export interface ServerHighlighter {
  * One-off highlighting for a single code snippet.
  *
  * Creates a highlighter, highlights the code, and disposes.
- * For multiple highlights, use `createHighlighter` instead.
+ * For multiple highlights, use `createServerHighlighter` instead.
+ *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
  *
  * @example
  * ```tsx
- * const html = await highlightCode(code, "tsx", {
- *   themes: { light: "cloudflare", dark: "cloudflare-dark" },
- * });
+ * const html = await highlightCode(code, "tsx");
  * ```
  */
 export async function highlightCode(
   code: string,
   lang: BundledLanguage,
-  options: HighlightCodeOptions,
+  options: HighlightCodeOptions = {},
 ): Promise<string> {
   const { createHighlighter } = await import("shiki");
 
@@ -84,7 +72,7 @@ export async function highlightCode(
         );
 
   const highlighter = await createHighlighter({
-    themes: [options.themes.light, options.themes.dark],
+    themes: ["github-light", "vesper"],
     langs: [lang],
     engine: engineInstance,
   });
@@ -92,8 +80,8 @@ export async function highlightCode(
   const html = highlighter.codeToHtml(code, {
     lang,
     themes: {
-      light: options.themes.light,
-      dark: options.themes.dark,
+      light: "github-light",
+      dark: "vesper",
     },
   });
 
@@ -108,11 +96,12 @@ export async function highlightCode(
  * More efficient than `highlightCode` when highlighting multiple snippets.
  * Remember to call `dispose()` when done.
  *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
+ *
  * @example
  * ```tsx
  * const highlighter = await createServerHighlighter({
  *   languages: ["tsx", "bash", "json"],
- *   themes: ["cloudflare", "cloudflare-dark"],
  * });
  *
  * const html1 = highlighter.highlight(code1, "tsx");
@@ -137,21 +126,18 @@ export async function createServerHighlighter(
         );
 
   const highlighter: Highlighter = await createHighlighter({
-    themes: options.themes,
+    themes: ["github-light", "vesper"],
     langs: options.languages,
     engine: engineInstance,
   });
-
-  // Get the first two themes for light/dark
-  const [lightTheme, darkTheme] = options.themes;
 
   return {
     highlight: (code: string, lang: BundledLanguage): string => {
       return highlighter.codeToHtml(code, {
         lang,
         themes: {
-          light: lightTheme,
-          dark: darkTheme,
+          light: "github-light",
+          dark: "vesper",
         },
       });
     },

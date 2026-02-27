@@ -1,5 +1,6 @@
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import type { ReactNode } from "react";
 
 /**
  * Wrapper component that provides Shiki context for all demos.
@@ -18,7 +19,6 @@ function DemoProvider({ children }: { children: ReactNode }) {
         "css",
         "html",
       ]}
-      themes={{ light: "github-light", dark: "vesper" }}
     >
       {children}
     </ShikiProvider>
@@ -198,7 +198,6 @@ export function CodeExample({ code, language }: Props) {
     <ShikiProvider
       engine="javascript"
       languages={["tsx", "typescript", "bash", "json"]}
-      themes={{ light: "github-light", dark: "vesper" }}
     >
       <CodeHighlighted
         code={code}
@@ -210,7 +209,7 @@ export function CodeExample({ code, language }: Props) {
 }`}
         lang="tsx"
         showCopyButton
-        highlightLines={[6, 7, 8, 9, 10]}
+        highlightLines={[6, 7, 8, 9]}
       />
     </DemoProvider>
   );

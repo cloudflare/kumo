@@ -12,6 +12,8 @@ import type { CodeHighlightedProps } from "./types";
  * Must be used within a ShikiProvider. While Shiki is loading,
  * displays code as plain text (no layout shift, immediately readable).
  *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
+ *
  * @example
  * ```tsx
  * import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
@@ -19,7 +21,6 @@ import type { CodeHighlightedProps } from "./types";
  * <ShikiProvider
  *   engine="javascript"
  *   languages={['tsx', 'bash']}
- *   themes={{ light: 'github-light', dark: 'github-dark' }}
  * >
  *   <CodeHighlighted
  *     code={`const greeting = "Hello!";`}
@@ -33,7 +34,6 @@ import type { CodeHighlightedProps } from "./types";
 export function CodeHighlighted({
   code,
   lang,
-  theme,
   showLineNumbers = false,
   highlightLines,
   showCopyButton = false,
@@ -65,7 +65,7 @@ export function CodeHighlighted({
   }, [code]);
 
   // Get highlighted HTML (or null if not ready/failed)
-  const html = highlight(code, lang, theme ? { theme } : undefined);
+  const html = highlight(code, lang);
 
   // Count lines for line numbers
   const lineCount = useMemo(() => code.split("\n").length, [code]);

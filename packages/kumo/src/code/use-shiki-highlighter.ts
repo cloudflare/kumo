@@ -2,16 +2,14 @@
 
 import { useContext, useCallback } from "react";
 import { ShikiContext } from "./context";
-import type {
-  UseShikiHighlighterResult,
-  BundledLanguage,
-  HighlightOptions,
-} from "./types";
+import type { UseShikiHighlighterResult, BundledLanguage } from "./types";
 
 /**
  * Hook for accessing Shiki highlighting in custom implementations.
  *
  * Must be used within a ShikiProvider.
+ *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
  *
  * @example
  * ```tsx
@@ -49,14 +47,10 @@ export function useShikiHighlighter(): UseShikiHighlighterResult {
     );
   }
 
-  const { highlighter, isLoading, error, themes, languages, labels } = context;
+  const { highlighter, isLoading, error, languages, labels } = context;
 
   const highlight = useCallback(
-    (
-      code: string,
-      lang: BundledLanguage,
-      options?: HighlightOptions,
-    ): string | null => {
+    (code: string, lang: BundledLanguage): string | null => {
       if (!highlighter) {
         return null;
       }
@@ -72,12 +66,12 @@ export function useShikiHighlighter(): UseShikiHighlighterResult {
       }
 
       try {
-        // Use dual theme for light/dark mode support
+        // Use dual theme for light/dark mode support with hardcoded themes
         const html = highlighter.codeToHtml(code, {
           lang,
           themes: {
-            light: options?.theme ?? themes.light,
-            dark: options?.theme ?? themes.dark,
+            light: "github-light",
+            dark: "vesper",
           },
         });
 
@@ -90,7 +84,7 @@ export function useShikiHighlighter(): UseShikiHighlighterResult {
         return null;
       }
     },
-    [highlighter, themes, languages],
+    [highlighter, languages],
   );
 
   return {
