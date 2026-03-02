@@ -216,9 +216,11 @@ export function useOptionalDescendantsContext<
 
 export function useDescendantIndex<T extends Record<string, unknown>>(
   props?: T,
+  customId?: string,
 ) {
   const context = useDescendantsContext<T>();
-  const id = useId();
+  const generatedId = useId();
+  const id = customId ?? generatedId;
 
   // Claim render order during render (synchronously, not in useEffect)
   // This captures the order in which descendants render

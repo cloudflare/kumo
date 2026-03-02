@@ -77,6 +77,44 @@ describe("Flow", () => {
       const node = screen.getByText("Node A");
       expect(node.getAttribute("data-node-id")).toBeTruthy();
     });
+
+    it("uses a custom id prop as data-node-id when provided", () => {
+      render(
+        <Flow>
+          <Flow.Node id="my-custom-id">Custom ID Node</Flow.Node>
+        </Flow>,
+      );
+
+      const node = screen.getByText("Custom ID Node");
+      expect(node.getAttribute("data-node-id")).toBe("my-custom-id");
+    });
+
+    it("uses a custom id on render prop elements", () => {
+      render(
+        <Flow>
+          <Flow.Node
+            id="render-custom-id"
+            render={<li data-testid="custom-render">Custom</li>}
+          />
+        </Flow>,
+      );
+
+      const node = screen.getByTestId("custom-render");
+      expect(node.getAttribute("data-node-id")).toBe("render-custom-id");
+    });
+
+    it("falls back to a generated id when no id prop is provided", () => {
+      render(
+        <Flow>
+          <Flow.Node>Auto ID</Flow.Node>
+        </Flow>,
+      );
+
+      const node = screen.getByText("Auto ID");
+      const nodeId = node.getAttribute("data-node-id");
+      expect(nodeId).toBeTruthy();
+      expect(nodeId).not.toBe("");
+    });
   });
 
   it("renders parallel branches alongside sequential nodes", () => {

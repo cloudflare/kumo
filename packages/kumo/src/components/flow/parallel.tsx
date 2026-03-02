@@ -219,6 +219,8 @@ export function FlowParallelNode({
           isBottom: false,
           disabled: prevNode?.props.disabled || isDescendantDisabled,
           single: !hasIncomingJunction,
+          fromId: prevNode?.id,
+          toId: descendant.id,
         });
       }
 
@@ -258,6 +260,8 @@ export function FlowParallelNode({
           isBottom: true,
           disabled: isDescendantDisabled || nextNode?.props.disabled,
           single: !hasOutgoingJunction,
+          fromId: descendant.id,
+          toId: nextNode?.id,
         });
       }
 
