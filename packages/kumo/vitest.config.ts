@@ -36,6 +36,7 @@ export default defineConfig({
             "scripts/**/*.{test,spec}.ts",
             "tests/**/*.{test,spec}.ts",
           ],
+          exclude: ["**/*.browser.test.{ts,tsx}"],
           setupFiles: ["./tests/setup.ts"],
           globals: true,
         },
