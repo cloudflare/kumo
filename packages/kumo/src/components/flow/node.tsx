@@ -116,11 +116,13 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
       const renderProps = render.props as {
         children?: ReactNode;
         style?: React.CSSProperties;
+        "data-testid"?: string;
       };
       element = cloneElement(render, {
         ref: mergedRef,
         "data-node-index": index,
         "data-node-id": id,
+        "data-testid": renderProps["data-testid"] ?? id,
         style: { cursor: "default", ...renderProps.style },
         children: renderProps.children ?? children,
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
@@ -133,6 +135,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
           style={{ cursor: "default" }}
           data-node-index={index}
           data-node-id={id}
+          data-testid={id}
         >
           {children}
         </li>

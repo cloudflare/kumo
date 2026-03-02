@@ -261,7 +261,12 @@ export function FlowDiagram({
         onPan={handlePan}
         onPanEnd={handlePanEnd}
       >
-        <motion.div ref={contentRef} className="w-max mx-auto" style={{ x, y }}>
+        <motion.div
+          data-testid="flow-contents"
+          ref={contentRef}
+          className="w-max mx-auto"
+          style={{ x, y }}
+        >
           <FlowNodeList>{children}</FlowNodeList>
         </motion.div>
 

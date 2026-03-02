@@ -204,8 +204,11 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
                   strokeWidth="2"
                   markerEnd={`url(#${id})`}
                   data-index={index}
-                  data-fromid={connector.fromId}
-                  data-toid={connector.toId}
+                  data-testid={
+                    connector.fromId && connector.toId
+                      ? `${connector.fromId}-${connector.toId}`
+                      : undefined
+                  }
                 />
               </g>
             );
