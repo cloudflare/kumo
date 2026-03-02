@@ -50,11 +50,13 @@ export interface KumoBadgeVariantsProps {
 export function badgeVariants({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
 }: KumoBadgeVariantsProps = {}) {
+  const variantConfig = KUMO_BADGE_VARIANTS.variant[variant];
   return cn(
     // Base styles (exported as KUMO_BADGE_BASE_STYLES for Figma plugin)
     KUMO_BADGE_BASE_STYLES,
-    // Apply variant styles from KUMO_BADGE_VARIANTS
-    KUMO_BADGE_VARIANTS.variant[variant].classes,
+    // Apply variant styles from KUMO_BADGE_VARIANTS (fallback to primary if variant not found)
+    variantConfig?.classes ??
+      KUMO_BADGE_VARIANTS.variant[KUMO_BADGE_DEFAULT_VARIANTS.variant].classes,
   );
 }
 
