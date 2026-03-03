@@ -208,7 +208,7 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         // Externalize dependencies that shouldn't be bundled
-        external: (id) => {
+        external: (id, importer) => {
           // Only externalize peer dependencies - bundle everything else
           switch (true) {
             case id === "react":
@@ -217,6 +217,15 @@ export default defineConfig(({ mode }) => {
             case id.startsWith("react-dom/"):
             case id === "@phosphor-icons/react":
               return true;
+            // Externalize shiki for server entry - it should be resolved at runtime in Node.js
+            // This prevents shiki from being bundled with "use client" directives
+            case id === "shiki":
+            case id.startsWith("shiki/"):
+              // Only externalize when imported from server.ts
+              if (importer?.includes("code/server")) {
+                return true;
+              }
+              return false;
             default:
               // Bundle all node_modules dependencies (don't externalize them)
               // This includes @base-ui-components and its transitive deps (tabbable, floating-ui, etc)
@@ -234,6 +243,10 @@ export default defineConfig(({ mode }) => {
           banner: (chunk) => {
             // Add "use client" to all chunks since this is a client-side component library
             // RSC apps will need this directive on all components that use hooks/events
+            // Exception: server utilities should NOT have "use client"
+            if (chunk.name === "code/server" || chunk.fileName?.includes("code/server")) {
+              return "";
+            }
             return '"use client";\n';
           },
           // Manual chunks for better code splitting
