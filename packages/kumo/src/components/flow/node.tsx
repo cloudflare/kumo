@@ -5,6 +5,7 @@ import {
   isValidElement,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -80,15 +81,10 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
 
     const { index, id } = useNode(nodeProps, idProp);
 
-    /**
-     * This effect intentionally has no dependencies because we want it to run on
-     * every render to ensure measurements are always up to date.
-     */
-    useEffect(() => {
+    const remeasure = () => {
       if (!nodeRef.current) return;
 
-      const rect = nodeRef.current.getBoundingClientRect();
-      const nodeRect = rect;
+      const nodeRect = nodeRef.current.getBoundingClientRect();
 
       let startRect: RectLike = nodeRect;
       let endRect: RectLike = nodeRect;
@@ -106,7 +102,25 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         if (JSON.stringify(m) === JSON.stringify(newVal)) return m;
         return newVal;
       });
-    });
+    };
+
+    /**
+     * This effect intentionally has no dependencies because we want it to run on
+     * every render to ensure measurements are always up to date.
+     */
+    useLayoutEffect(remeasure);
+
+    /**
+     * Observe the node element for size changes so that connectors update even
+     * when FlowNode itself does not re-render (e.g. an expandable render-prop
+     * child toggling its own state).
+     */
+    useLayoutEffect(() => {
+      if (!nodeRef.current) return;
+      const observer = new ResizeObserver(remeasure);
+      observer.observe(nodeRef.current);
+      return () => observer.disconnect();
+    }, []);
 
     const mergedRef = mergeRefs(ref, nodeRef);
 

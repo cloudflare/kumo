@@ -80,6 +80,9 @@ describe("Flow Integration", () => {
         .element(getByText("Extra content that makes the node taller."))
         .toBeVisible();
 
+      // Wait for paint to finish
+      await waitForNextFrame();
+
       // The expandable node is now taller, so connectors should update.
       // Re-assert that all connectors still point at the correct node
       // positions after the resize.
@@ -253,6 +256,9 @@ const ExpandableNode = forwardRef<
 // ---------------------------------------------------------------------------
 // Test utilities for connector assertions
 // ---------------------------------------------------------------------------
+
+const waitForNextFrame = async () =>
+  new Promise((p) => requestAnimationFrame(p));
 
 /**
  * Parse an SVG path's `d` attribute and return the absolute start and end

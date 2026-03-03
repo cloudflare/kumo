@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { cn } from "../../utils/cn";
 import { Connectors, type Connector } from "./connectors";
 import {
@@ -83,18 +90,31 @@ export function FlowParallelNode({
     ),
   );
 
-  /**
-   * This effect intentionally has no dependencies because we want it to run on
-   * every render to ensure measurements are always up to date.
-   */
-  useEffect(() => {
+  const remeasure = () => {
     if (!contentRef.current) return;
     const rect = contentRef.current.getBoundingClientRect();
     setMeasurements((m) => {
       if (JSON.stringify(m) === JSON.stringify(rect)) return m;
       return rect;
     });
-  });
+  };
+
+  /**
+   * This effect intentionally has no dependencies because we want it to run on
+   * every render to ensure measurements are always up to date.
+   */
+  useLayoutEffect(remeasure);
+
+  /**
+   * Observe the content element for size changes so that connectors update even
+   * when child nodes resize without triggering a FlowParallelNode re-render.
+   */
+  useLayoutEffect(() => {
+    if (!contentRef.current) return;
+    const observer = new ResizeObserver(remeasure);
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const measure = () => {
     const container = containerRef.current;
