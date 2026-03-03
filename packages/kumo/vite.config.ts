@@ -199,7 +199,7 @@ export default defineConfig(({ mode }) => {
           catalog: resolve(__dirname, "src/catalog/index.ts"),
           // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
           code: resolve(__dirname, "src/code/index.ts"),
-          "code/server": resolve(__dirname, "src/code/server.ts"),
+          "code/server": resolve(__dirname, "src/code/server.tsx"),
         },
         formats: ["es"],
         fileName: (format, entryName) => {
