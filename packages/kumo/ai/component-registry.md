@@ -20,6 +20,7 @@ Small status label for categorizing or highlighting content.
   - `"primary"`: Default high-emphasis badge for important labels
   - `"secondary"`: Subtle badge for secondary information
   - `"destructive"`: Error or danger state indicator
+  - `"success"`: Success or positive state indicator
   - `"outline"`: Bordered badge with transparent background
   - `"beta"`: Indicates beta or experimental features
 - `className`: string
@@ -29,7 +30,7 @@ Small status label for categorizing or highlighting content.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-contrast`, `bg-kumo-danger`, `bg-kumo-fill`, `border-kumo-brand`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`
+`bg-kumo-contrast`, `bg-kumo-danger`, `bg-kumo-fill`, `bg-kumo-success`, `border-kumo-brand`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`
 
 **Examples:**
 
@@ -38,6 +39,7 @@ Small status label for categorizing or highlighting content.
       <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="success">Success</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
     </div>
@@ -1201,7 +1203,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -3839,11 +3841,7 @@ Option sub-component
       value={value}
       onValueChange={(v) => setValue(v ?? "apple")}
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    >
-      <Select.Option value="apple">Apple</Select.Option>
-      <Select.Option value="banana">Banana</Select.Option>
-      <Select.Option value="cherry">Cherry</Select.Option>
-    </Select>
+    />
 ```
 
 ```tsx
@@ -3876,13 +3874,8 @@ Option sub-component
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
       placeholder="Please select"
-    >
-      {data?.map((item) => (
-        <Select.Option key={item} value={item}>
-          {item}
-        </Select.Option>
-      ))}
-    </Select>
+      items={items}
+    />
 ```
 
 ```tsx
@@ -4793,20 +4786,15 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 
 **Props:**
 
-- `align`: enum
-  Alignment on the axis perpendicular to `side`.
-- `"start"` — Align to the start edge
-- `"center"` — Center-aligned
-- `"end"` — Align to the end edge
-- `asChild`: boolean
-  When `true`, the trigger wraps the child element instead of adding a wrapper.
-- `className`: string
-  Additional CSS classes merged via `cn()`.
 - `side`: enum [default: top]
   - `"top"`: Tooltip appears above the trigger
   - `"bottom"`: Tooltip appears below the trigger
   - `"left"`: Tooltip appears to the left of the trigger
   - `"right"`: Tooltip appears to the right of the trigger
+- `className`: string
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
 - `content`: ReactNode (required)
   Content to display in the tooltip
 

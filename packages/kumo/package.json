@@ -355,6 +355,14 @@
       "types": "./dist/src/catalog/index.d.ts",
       "import": "./dist/catalog.js"
     },
+    "./code": {
+      "types": "./dist/src/code/index.d.ts",
+      "import": "./dist/code.js"
+    },
+    "./code/server": {
+      "types": "./dist/src/code/server.d.ts",
+      "import": "./dist/code/server.js"
+    },
     "./ai/schemas": {
       "types": "./ai/schemas.ts",
       "import": "./ai/schemas.ts"
@@ -427,6 +435,7 @@
     "clsx": "^2.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",
+    "shiki": "^4.0.0",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

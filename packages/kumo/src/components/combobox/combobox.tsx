@@ -1,12 +1,23 @@
 import { Combobox as ComboboxBase } from "@base-ui/react/combobox";
 import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
-import { Fragment, type PropsWithChildren, type ReactNode } from "react";
-import { inputVariants } from "../input/input";
+import {
+  Fragment,
+  createContext,
+  useContext,
+  type PropsWithChildren,
+  type ReactNode,
+} from "react";
+import {
+  inputVariants,
+  KUMO_INPUT_VARIANTS,
+  type KumoInputSize,
+} from "../input/input";
 import { cn } from "../../utils/cn";
 import { Field, type FieldErrorMatch } from "../field/field";
 
-/** Combobox input position variant definitions. */
+/** Combobox variant definitions. */
 export const KUMO_COMBOBOX_VARIANTS = {
+  size: KUMO_INPUT_VARIANTS.size,
   inputSide: {
     right: {
       classes: "",
@@ -20,14 +31,28 @@ export const KUMO_COMBOBOX_VARIANTS = {
 } as const;
 
 export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
+  size: "base",
   inputSide: "right",
 } as const;
 
+// Context to pass size down to sub-components
+const ComboboxSizeContext = createContext<KumoInputSize>("base");
+
 // Derived types from KUMO_COMBOBOX_VARIANTS
+export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
 export type KumoComboboxInputSide =
   keyof typeof KUMO_COMBOBOX_VARIANTS.inputSide;
 
 export interface KumoComboboxVariantsProps {
+  /**
+   * Size of the combobox trigger. Matches Input component sizes.
+   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
+   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
+   * - `"base"` — Default size (h-9 / 36px)
+   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * @default "base"
+   */
+  size?: KumoComboboxSize;
   /**
    * Position of the text input relative to chips in multi-select mode.
    * - `"right"` — Input inline to the right of chips
@@ -45,6 +70,7 @@ export function comboboxVariants({
 
 // Legacy type alias for backwards compatibility
 export type ComboboxInputSide = KumoComboboxInputSide;
+export type ComboboxSize = KumoComboboxSize;
 
 export type ComboboxRootProps<
   Value = unknown,
@@ -116,6 +142,7 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   description,
   error,
   children,
+  size = "base",
   ...props
 }: ComboboxBase.Root.Props<Value, Multiple> & {
   label?: ReactNode;
@@ -123,9 +150,12 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   labelTooltip?: ReactNode;
   description?: ReactNode;
   error?: string | { message: ReactNode; match: FieldErrorMatch };
+  size?: KumoComboboxSize;
 }) {
   const comboboxControl = (
-    <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
+    <ComboboxSizeContext.Provider value={size}>
+      <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
+    </ComboboxSizeContext.Provider>
   );
 
   // Render with Field wrapper if label, description, or error are provided
@@ -192,43 +222,110 @@ function Content({
   );
 }
 
+// Size-dependent styles for TriggerValue icon
+const triggerValueIconStyles: Record<
+  KumoComboboxSize,
+  { padding: string; iconSize: number; iconRight: string }
+> = {
+  xs: { padding: "pr-5", iconSize: 12, iconRight: "right-1" },
+  sm: { padding: "pr-6", iconSize: 14, iconRight: "right-1.5" },
+  base: { padding: "pr-8", iconSize: 16, iconRight: "right-2" },
+  lg: { padding: "pr-10", iconSize: 18, iconRight: "right-3" },
+};
+
 function TriggerValue({
   className,
   ...props
 }: ComboboxBase.Value.Props & { className?: string }) {
+  const size = useContext(ComboboxSizeContext);
+  const iconStyles = triggerValueIconStyles[size];
+
   return (
     <ComboboxBase.Trigger
       className={cn(
-        inputVariants(),
-        "relative flex items-center pr-8",
+        inputVariants({ size }),
+        "relative flex items-center",
+        iconStyles.padding,
         className,
       )}
     >
       <ComboboxBase.Value>{props.children}</ComboboxBase.Value>
-      <ComboboxBase.Icon className="absolute top-1/2 right-2 -translate-y-1/2">
-        <CaretDownIcon className="fill-kumo-ring" />
+      <ComboboxBase.Icon
+        className={cn(
+          "absolute top-1/2 -translate-y-1/2",
+          iconStyles.iconRight,
+        )}
+      >
+        <CaretDownIcon size={iconStyles.iconSize} className="fill-kumo-ring" />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
   );
 }
 
+// Size-dependent styles for TriggerInput icons
+const triggerInputIconStyles: Record<
+  KumoComboboxSize,
+  { padding: string; iconSize: number; clearRight: string; caretRight: string }
+> = {
+  xs: {
+    padding: "pr-7",
+    iconSize: 12,
+    clearRight: "right-5",
+    caretRight: "right-1",
+  },
+  sm: {
+    padding: "pr-9",
+    iconSize: 14,
+    clearRight: "right-6",
+    caretRight: "right-1.5",
+  },
+  base: {
+    padding: "pr-12",
+    iconSize: 16,
+    clearRight: "right-8",
+    caretRight: "right-2",
+  },
+  lg: {
+    padding: "pr-14",
+    iconSize: 18,
+    clearRight: "right-9",
+    caretRight: "right-3",
+  },
+};
+
 function TriggerInput(props: ComboboxBase.Input.Props) {
+  const size = useContext(ComboboxSizeContext);
+  const iconStyles = triggerInputIconStyles[size];
+
   return (
     <div
       className={cn("relative inline-block w-full max-w-xs", props.className)}
     >
       <ComboboxBase.Input
         {...props}
-        className={cn(inputVariants(), "w-full pr-12")}
+        className={cn(inputVariants({ size }), "w-full", iconStyles.padding)}
       />
 
-      <ComboboxBase.Clear className="absolute top-1/2 right-8 flex -translate-y-1/2 cursor-pointer bg-transparent p-0">
-        <XIcon />
+      <ComboboxBase.Clear
+        className={cn(
+          "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
+          iconStyles.clearRight,
+        )}
+      >
+        <XIcon size={iconStyles.iconSize} />
       </ComboboxBase.Clear>
 
       <ComboboxBase.Trigger className="p-0">
-        <ComboboxBase.Icon className="absolute top-1/2 right-2 flex -translate-y-1/2 cursor-pointer">
-          <CaretDownIcon className="fill-kumo-ring" />
+        <ComboboxBase.Icon
+          className={cn(
+            "absolute top-1/2 flex -translate-y-1/2 cursor-pointer",
+            iconStyles.caretRight,
+          )}
+        >
+          <CaretDownIcon
+            size={iconStyles.iconSize}
+            className="fill-kumo-ring"
+          />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
     </div>
@@ -324,6 +421,14 @@ function Chip(props: ComboboxBase.Chip.Props) {
   );
 }
 
+// Map size to min-height class for TriggerMultipleWithInput
+const sizeToMinHeight: Record<KumoComboboxSize, string> = {
+  xs: "min-h-5",
+  sm: "min-h-6.5",
+  base: "min-h-9",
+  lg: "min-h-10",
+};
+
 function TriggerMultipleWithInput<ValueType>({
   placeholder,
   renderItem,
@@ -338,14 +443,15 @@ function TriggerMultipleWithInput<ValueType>({
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
 }) {
+  const size = useContext(ComboboxSizeContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
 
   return (
     <ComboboxBase.Chips
       className={cn(
-        inputVariants(),
-        cn("flex flex-col", "gap-1 p-1", "min-h-9", "h-auto"),
+        inputVariants({ size }),
+        cn("flex flex-col", "gap-1 p-1", sizeToMinHeight[size], "h-auto"),
         className,
       )}
     >
