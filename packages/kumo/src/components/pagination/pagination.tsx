@@ -104,7 +104,12 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
   const content = children
     ? children({ page, perPage, totalCount, pageShowingRange })
     : totalCount && totalCount > 0
-      ? `Showing ${pageShowingRange} of ${totalCount}`
+      ? (
+          <>
+            Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
+            <span className="tabular-nums">{totalCount}</span>
+          </>
+        )
       : null;
 
   return (
@@ -453,7 +458,12 @@ function PaginationRoot(props: PaginationProps) {
     if (text) {
       return text({ page, perPage, totalCount, pageShowingRange });
     } else if (totalCount && totalCount > 0) {
-      return `Showing ${pageShowingRange} of ${totalCount}`;
+      return (
+        <>
+          Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
+          <span className="tabular-nums">{totalCount}</span>
+        </>
+      );
     }
     return null;
   };

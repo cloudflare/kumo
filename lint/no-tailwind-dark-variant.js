@@ -77,7 +77,9 @@ function extractStrings(node) {
 }
 
 function hasDarkVariant(str) {
-  return str.includes("dark:");
+  // Match dark: followed by a Tailwind utility pattern (e.g., dark:bg-blue-500, dark:text-white)
+  // This avoids false positives for object keys like { dark: "vesper" } or { light: ..., dark: ... }
+  return /\bdark:[a-z]+[-\w]*/.test(str);
 }
 
 function isInsideJsxAttribute(node) {

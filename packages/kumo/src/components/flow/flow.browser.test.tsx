@@ -3,81 +3,83 @@ import { render } from "vitest-browser-react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { Flow } from ".";
 
-test("renders a sequence of nodes", async () => {
-  const { getByText } = await render(
-    <Flow>
-      <Flow.Node>Node 1</Flow.Node>
-      <Flow.Node>Node 2</Flow.Node>
-    </Flow>,
-  );
-  await Promise.all([
-    expect.element(getByText("Node 1")).toBeVisible(),
-    expect.element(getByText("Node 2")).toBeVisible(),
-  ]);
-});
-
-describe("paths", () => {
-  test("renders a link from node 1 to node 2", async () => {
-    const { container, getByText } = await render(
+describe("Flow Integration", () => {
+  test("renders a sequence of nodes", async () => {
+    const { getByText } = await render(
       <Flow>
-        <Flow.Node id="node-1">Node 1</Flow.Node>
-        <Flow.Node id="node-2">Node 2</Flow.Node>
+        <Flow.Node>Node 1</Flow.Node>
+        <Flow.Node>Node 2</Flow.Node>
       </Flow>,
     );
-
     await Promise.all([
       expect.element(getByText("Node 1")).toBeVisible(),
       expect.element(getByText("Node 2")).toBeVisible(),
     ]);
-
-    assertPathConnects({
-      container,
-      fromNode: getByText("Node 1").element(),
-      toNode: getByText("Node 2").element(),
-      fromId: "node-1",
-      toId: "node-2",
-    });
   });
 
-  test("renders connectors for parallel branches", async () => {
-    const { container, getByText, getByTestId } = await render(
-      <Flow>
-        <Flow.Node id="start">Start</Flow.Node>
-        <Flow.Parallel>
-          <Flow.Node id="branch-a">Branch A</Flow.Node>
-          <Flow.Node id="branch-b">Branch B</Flow.Node>
-        </Flow.Parallel>
-        <Flow.Node id="end">End</Flow.Node>
-      </Flow>,
-    );
+  describe("paths", () => {
+    test("renders a link from node 1 to node 2", async () => {
+      const { container, getByText } = await render(
+        <Flow>
+          <Flow.Node id="node-1">Node 1</Flow.Node>
+          <Flow.Node id="node-2">Node 2</Flow.Node>
+        </Flow>,
+      );
 
-    await Promise.all([
-      expect.element(getByText("Start")).toBeVisible(),
-      expect.element(getByText("Branch A")).toBeVisible(),
-      expect.element(getByText("Branch B")).toBeVisible(),
-      expect.element(getByText("End")).toBeVisible(),
-    ]);
+      await Promise.all([
+        expect.element(getByText("Node 1")).toBeVisible(),
+        expect.element(getByText("Node 2")).toBeVisible(),
+      ]);
 
-    const cases = [
-      { from: "start", to: "branch-a" },
-      { from: "start", to: "branch-b" },
-      { from: "branch-a", to: "end" },
-      { from: "branch-b", to: "end" },
-    ];
-
-    for (const { from, to } of cases) {
-      const [startNode, endNode] = [
-        getByTestId(from).element(),
-        getByTestId(to).element(),
-      ];
       assertPathConnects({
         container,
-        fromNode: startNode,
-        toNode: endNode,
-        fromId: from,
-        toId: to,
+        fromNode: getByText("Node 1").element(),
+        toNode: getByText("Node 2").element(),
+        fromId: "node-1",
+        toId: "node-2",
       });
-    }
+    });
+
+    test("renders connectors for parallel branches", async () => {
+      const { container, getByText, getByTestId } = await render(
+        <Flow>
+          <Flow.Node id="start">Start</Flow.Node>
+          <Flow.Parallel>
+            <Flow.Node id="branch-a">Branch A</Flow.Node>
+            <Flow.Node id="branch-b">Branch B</Flow.Node>
+          </Flow.Parallel>
+          <Flow.Node id="end">End</Flow.Node>
+        </Flow>,
+      );
+
+      await Promise.all([
+        expect.element(getByText("Start")).toBeVisible(),
+        expect.element(getByText("Branch A")).toBeVisible(),
+        expect.element(getByText("Branch B")).toBeVisible(),
+        expect.element(getByText("End")).toBeVisible(),
+      ]);
+
+      const cases = [
+        { from: "start", to: "branch-a" },
+        { from: "start", to: "branch-b" },
+        { from: "branch-a", to: "end" },
+        { from: "branch-b", to: "end" },
+      ];
+
+      for (const { from, to } of cases) {
+        const [startNode, endNode] = [
+          getByTestId(from).element(),
+          getByTestId(to).element(),
+        ];
+        assertPathConnects({
+          container,
+          fromNode: startNode,
+          toNode: endNode,
+          fromId: from,
+          toId: to,
+        });
+      }
+    });
   });
 });
 

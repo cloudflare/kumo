@@ -47,3 +47,6 @@ coverage/
 # Temporary files
 *.tmp
 .cache/
+
+# Codex
+.codex/environments

@@ -8,6 +8,7 @@ import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   TableBasicDemo,
   TableWithCheckboxDemo,
+  TableWithCompactHeaderDemo,
   TableSelectedRowDemo,
   TableFixedLayoutDemo,
   TableFullDemo,
@@ -122,6 +123,37 @@ export default function Example() {
 </Table>`}
         >
           <TableWithCheckboxDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Compact Header</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >variant="compact"</code
+          > on <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >Table.Header</code
+          > for a more condensed header style.
+        </p>
+        <ComponentExample
+          code={`<Table>
+  <Table.Header variant="compact">
+    <Table.Row>
+      <Table.Head>Subject</Table.Head>
+      <Table.Head>From</Table.Head>
+      <Table.Head>Date</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>Email subject</Table.Cell>
+      <Table.Cell>Sender name</Table.Cell>
+      <Table.Cell>Date</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>`}
+        >
+          <TableWithCompactHeaderDemo client:visible />
         </ComponentExample>
       </div>
 

@@ -1,0 +1,200 @@
+"use client";
+
+import { useState, useCallback, useMemo, type ReactNode } from "react";
+import { cn } from "../utils/cn";
+import { Button } from "../components/button";
+import { useShikiHighlighter } from "./use-shiki-highlighter";
+import type { CodeHighlightedProps } from "./types";
+
+/**
+ * Syntax-highlighted code block powered by Shiki.
+ *
+ * Must be used within a ShikiProvider. While Shiki is loading,
+ * displays code as plain text (no layout shift, immediately readable).
+ *
+ * Uses hardcoded themes: `github-light` for light mode, `vesper` for dark mode.
+ *
+ * @example
+ * ```tsx
+ * import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+ *
+ * <ShikiProvider
+ *   engine="javascript"
+ *   languages={['tsx', 'bash']}
+ * >
+ *   <CodeHighlighted
+ *     code={`const greeting = "Hello!";`}
+ *     lang="tsx"
+ *     showLineNumbers
+ *     showCopyButton
+ *   />
+ * </ShikiProvider>
+ * ```
+ */
+export function CodeHighlighted({
+  code,
+  lang,
+  showLineNumbers = false,
+  highlightLines,
+  showCopyButton = false,
+  labels: labelOverrides,
+  className,
+}: CodeHighlightedProps): ReactNode {
+  const {
+    highlight,
+    isLoading,
+    error,
+    labels: providerLabels,
+  } = useShikiHighlighter();
+  const [copied, setCopied] = useState(false);
+
+  // Merge provider labels with component-level overrides
+  const labels = useMemo(
+    () => ({ ...providerLabels, ...labelOverrides }),
+    [providerLabels, labelOverrides],
+  );
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("[Kumo CodeHighlighted] Failed to copy to clipboard:", err);
+    }
+  }, [code]);
+
+  // Get highlighted HTML (or null if not ready/failed)
+  const html = highlight(code, lang);
+
+  // Count lines for line numbers
+  const lineCount = useMemo(() => code.split("\n").length, [code]);
+
+  // Detect single-line code for layout adjustments
+  const isSingleLine = lineCount === 1;
+
+  // Container styles - use flex layout for single-line with copy button
+  const containerClasses = cn(
+    "group relative min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
+    showCopyButton && isSingleLine && "flex items-center",
+    className,
+  );
+
+  // Copy button - inline for single-line, absolute for multi-line
+  // Hidden until hover (or when showing "Copied!" feedback)
+  const copyButton = showCopyButton ? (
+    <div
+      className={cn(
+        isSingleLine ? "shrink-0 px-2" : "absolute right-2 top-2",
+        !copied && "opacity-0 transition-opacity group-hover:opacity-100",
+      )}
+    >
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={handleCopy}
+        aria-label={copied ? labels.copied : labels.copy}
+      >
+        {copied ? labels.copied : labels.copy}
+      </Button>
+    </div>
+  ) : null;
+
+  // Line numbers column
+  const lineNumbers =
+    showLineNumbers && !isSingleLine ? (
+      <div
+        className="kumo-line-numbers shrink-0 select-none py-4 pr-4 text-right font-mono text-sm opacity-40"
+        aria-hidden="true"
+      >
+        {Array.from({ length: lineCount }, (_, i) => (
+          <div key={i + 1} className="leading-relaxed">
+            {i + 1}
+          </div>
+        ))}
+      </div>
+    ) : null;
+
+  // Error state — still show code, just log the error
+  if (error) {
+    console.error("[Kumo CodeHighlighted] Shiki initialization error:", error);
+  }
+
+  // Loading or failed to highlight — show plain text
+  if (isLoading || html === null) {
+    return (
+      <div className={containerClasses}>
+        {lineNumbers && (
+          <div className="flex">
+            {lineNumbers}
+            <pre className="min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+              <code>{code}</code>
+            </pre>
+          </div>
+        )}
+        {!lineNumbers && (
+          <pre className="min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+            <code>{code}</code>
+          </pre>
+        )}
+        {copyButton}
+      </div>
+    );
+  }
+
+  // Highlighted code
+  return (
+    <div className={containerClasses}>
+      {lineNumbers && (
+        <div className="flex">
+          {lineNumbers}
+          <div
+            className="kumo-shiki min-w-0 flex-1 overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
+            dangerouslySetInnerHTML={{
+              __html: processHighlightedHtml(html, highlightLines),
+            }}
+          />
+        </div>
+      )}
+      {!lineNumbers && (
+        <div
+          className="kumo-shiki min-w-0 flex-1 overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
+          dangerouslySetInnerHTML={{
+            __html: processHighlightedHtml(html, highlightLines),
+          }}
+        />
+      )}
+      {copyButton}
+    </div>
+  );
+}
+
+CodeHighlighted.displayName = "CodeHighlighted";
+
+/**
+ * Process Shiki's HTML output to add line highlighting classes.
+ * Does NOT modify Shiki's token structure - only adds classes to line spans.
+ */
+function processHighlightedHtml(
+  html: string,
+  highlightLines?: number[],
+): string {
+  // Line numbers are not yet supported - would require more complex approach
+  // For now, only handle line highlighting which just adds a class
+
+  if (!highlightLines?.length) {
+    return html;
+  }
+
+  const highlightSet = new Set(highlightLines);
+  let lineNumber = 0;
+
+  // Only add the highlight class to lines, don't restructure the HTML
+  return html.replace(/<span class="line">/g, () => {
+    lineNumber++;
+    const isHighlighted = highlightSet.has(lineNumber);
+    return isHighlighted
+      ? '<span class="line line-highlighted">'
+      : '<span class="line">';
+  });
+}

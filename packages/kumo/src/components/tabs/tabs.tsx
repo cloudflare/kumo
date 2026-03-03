@@ -139,7 +139,7 @@ export function Tabs({
   return (
     <TabsPrimitive.Root
       {...rootProps}
-      className={cn("relative min-w-0 font-medium", className)}
+      className={cn("relative isolate min-w-0 font-medium", className)}
       onValueChange={(nextValue) => {
         const stringValue = String(nextValue);
         onValueChange?.(stringValue);
@@ -147,7 +147,7 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 -z-10 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-tint" />
+        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-tint" />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
@@ -163,7 +163,7 @@ export function Tabs({
             key={tab.value}
             value={tab.value}
             className={cn(
-              "relative z-10 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap hover:border-kumo-tint focus-visible:rounded-none focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap hover:border-kumo-tint focus-visible:rounded-none focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
               isSegmented &&
                 "my-px rounded-lg px-2.5 text-kumo-strong aria-selected:text-kumo-default",
               isUnderline &&
@@ -176,7 +176,7 @@ export function Tabs({
         ))}
         <TabsPrimitive.Indicator
           className={cn(
-            "absolute z-0 transition-[left,width,transform] duration-200 ease-out",
+            "absolute z-1 transition-[left,width,transform] duration-200 ease-out",
             "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
             "left-(--active-tab-left) w-(--active-tab-width)",
             isSegmented &&

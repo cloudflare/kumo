@@ -187,8 +187,8 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/date-picker/index.ts",
           ),
-          'components/flow': resolve(__dirname, 'src/components/flow/index.ts'),
-        // PLOP_INJECT_COMPONENT_ENTRY
+          "components/flow": resolve(__dirname, "src/components/flow/index.ts"),
+          // PLOP_INJECT_COMPONENT_ENTRY
           // Utils entry point
           utils: resolve(__dirname, "src/utils/index.ts"),
           // Primitives entry point (base-ui re-exports)
@@ -197,6 +197,9 @@ export default defineConfig(({ mode }) => {
           registry: resolve(__dirname, "src/registry/index.ts"),
           // Catalog module entry point (runtime validation, JSON UI rendering)
           catalog: resolve(__dirname, "src/catalog/index.ts"),
+          // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
+          code: resolve(__dirname, "src/code/index.ts"),
+          "code/server": resolve(__dirname, "src/code/server.ts"),
         },
         formats: ["es"],
         fileName: (format, entryName) => {
