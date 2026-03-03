@@ -102,7 +102,7 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
     usePaginationContext();
 
   const content = children
-    ? children({ page, perPage, totalCount, pageShowingRnge })
+    ? children({ page, perPage, totalCount, pageShowingRange })
     : totalCount && totalCount > 0
       ? (
           <>
