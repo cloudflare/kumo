@@ -353,7 +353,7 @@ export const useOptionalNode = (props: NodeData) => {
         unregisterRef.current = null;
       }
     };
-  }, [id, renderOrder, props, parentContext]);
+  }, [id, renderOrder, props, parentContext?.register]);
 
   if (!parentContext) return null;
 
@@ -426,7 +426,7 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
       start: startAnchor,
       end: endAnchor,
     }),
-    [startAnchor, endAnchor],
+    [JSON.stringify(startAnchor), JSON.stringify(endAnchor)],
   );
 
   // Register with parent context if we're nested (e.g., inside Flow.Parallel)
