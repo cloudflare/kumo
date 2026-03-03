@@ -21,6 +21,9 @@ import {
   SelectLoadingDemo,
   SelectLoadingDataDemo,
   SelectMultipleDemo,
+  SelectMultipleOverflowDemo,
+  SelectMultipleWithIndicatorDemo,
+  SelectGroupedDemo,
   SelectComplexDemo,
 } from "~/components/demos/SelectDemo";
 
@@ -217,6 +220,54 @@ export default function Example() {
 
   <ComponentExample demo="SelectMultipleDemo">
     <SelectMultipleDemo client:load />
+  </ComponentExample>
+
+  <p>
+    Long option names are automatically truncated so the trigger layout stays
+    intact. For a clearer summary, prefer a custom{" "}
+    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+      renderValue
+    </code>{" "}
+    instead of relying on truncation alone.
+  </p>
+
+  <ComponentExample demo="SelectMultipleOverflowDemo">
+    <SelectMultipleOverflowDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Multiple with Custom Indicator</Heading>
+  <p>
+    Use{" "}
+    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+      renderValue
+    </code>{" "}
+    to show a stable summary for multi-select values. This pattern keeps the
+    trigger readable even when the selected labels are long.
+  </p>
+
+  <ComponentExample demo="SelectMultipleWithIndicatorDemo">
+    <SelectMultipleWithIndicatorDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Grouped Items</Heading>
+  <p>
+    Use{" "}
+    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+      Select.Group
+    </code>{" "}
+    and{" "}
+    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+      Select.GroupLabel
+    </code>{" "}
+    to organize large option sets without reaching into Base UI primitives.
+  </p>
+
+  <ComponentExample demo="SelectGroupedDemo">
+    <SelectGroupedDemo client:load />
   </ComponentExample>
 </ComponentSection>
 

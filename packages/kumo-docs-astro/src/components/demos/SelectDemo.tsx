@@ -1,3 +1,9 @@
+/**
+ * [INPUT]: 依赖 react 状态与 @cloudflare/kumo 的 Select/Text/Badge 组件，提供 docs 页面示例所需的交互数据。
+ * [OUTPUT]: 对外提供 Select 各种 demo 组件，包括 grouped items、多选溢出与自定义展示示例。
+ * [POS]: kumo-docs-astro 中 Select 文档的示例源，供页面展示与 demo metadata codegen 消费。
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 import { useState, useEffect } from "react";
 import { Select, Text, Badge } from "@cloudflare/kumo";
 
@@ -264,6 +270,48 @@ export function SelectMultipleWithIndicatorDemo() {
         <Select.Option key={option.value} value={option.value}>
           {option.label}
         </Select.Option>
+      ))}
+    </Select>
+  );
+}
+
+const groupedDevices = [
+  {
+    category: "iPhone",
+    items: ["iPhone 16 Pro", "iPhone 16", "iPhone 15"],
+  },
+  {
+    category: "Android",
+    items: ["Pixel 9 Pro", "Galaxy S25", "Xiaomi 15"],
+  },
+  {
+    category: "iPad",
+    items: ["iPad Pro 13", "iPad Air 11"],
+  },
+] as const;
+
+const shouldShowGroupLabel = groupedDevices.length > 1;
+
+export function SelectGroupedDemo() {
+  const [value, setValue] = useState<string>(groupedDevices[0].items[0]);
+
+  return (
+    <Select
+      className="w-[240px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string)}
+    >
+      {groupedDevices.map((group) => (
+        <Select.Group key={group.category}>
+          {shouldShowGroupLabel && (
+            <Select.GroupLabel>{group.category}</Select.GroupLabel>
+          )}
+          {group.items.map((device) => (
+            <Select.Option key={device} value={device}>
+              {device}
+            </Select.Option>
+          ))}
+        </Select.Group>
       ))}
     </Select>
   );

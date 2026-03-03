@@ -1,3 +1,9 @@
+/**
+ * [INPUT]: 依赖 vitest 与 testing-library/react 渲染 Select 组件，覆盖 label、placeholder 与 grouped API 行为。
+ * [OUTPUT]: 对外提供 Select 单元测试，验证可见标签、占位符与 compound group API。
+ * [POS]: components/select 的行为回归保护网，防止上游同步或重构破坏公开交互。
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { useState } from "react";
@@ -288,6 +294,30 @@ describe("Select", () => {
       );
 
       expect(screen.getByText("Choose a database")).toBeTruthy();
+    });
+  });
+
+  describe("compound group API", () => {
+    it("exposes Group and GroupLabel compound components", () => {
+      expect(Select.Group).toBeDefined();
+      expect(Select.GroupLabel).toBeDefined();
+    });
+
+    it("renders grouped options via Select compound API", () => {
+      expect(() =>
+        render(
+          <Select defaultValue="iphone-16">
+            <Select.Group>
+              <Select.GroupLabel>iPhone</Select.GroupLabel>
+              <Select.Option value="iphone-16">iPhone 16</Select.Option>
+            </Select.Group>
+            <Select.Group>
+              <Select.GroupLabel>Android</Select.GroupLabel>
+              <Select.Option value="pixel-9">Pixel 9</Select.Option>
+            </Select.Group>
+          </Select>,
+        ),
+      ).not.toThrow();
     });
   });
 });

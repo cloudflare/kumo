@@ -1,3 +1,9 @@
+/**
+ * [INPUT]: 依赖 @base-ui/react/select 的选择器原语，依赖 field/button/loader/cn 提供表单包装、样式与加载态。
+ * [OUTPUT]: 对外提供 Select 组件、Select.Option、Select.Group、Select.GroupLabel 以及 Select 样式元数据。
+ * [POS]: components/select 的核心实现，承接 docs、registry 与消费方的选择器 API。
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
 import { Select as SelectBase } from "@base-ui/react/select";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { useId } from "react";
@@ -366,6 +372,29 @@ type OptionProps<T> = {
   value: T;
 };
 
+type GroupProps = SelectBase.Group.Props;
+
+function Group({ className, ...props }: GroupProps & { className?: string }) {
+  return <SelectBase.Group {...props} className={className} />;
+}
+
+type GroupLabelProps = SelectBase.GroupLabel.Props;
+
+function GroupLabel({
+  className,
+  ...props
+}: GroupLabelProps & { className?: string }) {
+  return (
+    <SelectBase.GroupLabel
+      {...props}
+      className={cn(
+        "select-none px-2 py-1.5 text-base font-medium text-kumo-subtle",
+        className,
+      )}
+    />
+  );
+}
+
 function Option<T>({ children, value }: OptionProps<T>) {
   return (
     <SelectBase.Item
@@ -381,3 +410,5 @@ function Option<T>({ children, value }: OptionProps<T>) {
 }
 
 Select.Option = Option;
+Select.Group = Group;
+Select.GroupLabel = GroupLabel;
