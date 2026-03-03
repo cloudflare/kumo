@@ -636,6 +636,8 @@
   display: block;
   width: fit-content;
   min-width: 100%;
+  /* Ensure right padding is preserved when content overflows horizontally */
+  padding-right: 1rem;
 }
 
 .kumo-shiki {
