@@ -111,15 +111,17 @@ export type Action = z.infer<typeof ActionSchema>;
 // =============================================================================
 
 export const BadgePropsSchema = z.object({
-  variant: z.enum(["primary", "secondary", "destructive", "outline", "beta"]).optional(), // Visual style of the badge. - `"primary"` — High-emphasis badge for important labels - `"secondary"` — Subtle badge for secondary information - `"destructive"` — Error or danger state indicator - `"outline"` — Bordered badge with transparent background - `"beta"` — Dashed-border badge for beta/experimental features
+  variant: z.enum(["primary", "secondary", "destructive", "success", "outline", "beta"]).optional(), // Visual style of the badge. - `"primary"` — High-emphasis badge for important labels - `"secondary"` — Subtle badge for secondary information - `"destructive"` — Error or danger state indicator - `"outline"` — Bordered badge with transparent background - `"beta"` — Dashed-border badge for beta/experimental features
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Content rendered inside the badge.
 });
 
 export const BannerPropsSchema = z.object({
-  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
+  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`).
+  title: z.string().optional(), // Primary heading text for the banner. Use for i18n string injection.
+  description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Secondary description text displayed below the title. Use for i18n string injection.
   text: z.string().optional(),
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Banner message content. Accepts strings or custom React elements.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
   variant: z.enum(["default", "alert", "error"]).optional(), // Visual style of the banner. - `"default"` — Informational blue banner for general messages - `"alert"` — Warning yellow banner for cautionary messages - `"error"` — Error red banner for critical issues
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
 });
@@ -585,12 +587,14 @@ export const MeterPropsSchema = z.object({
 });
 
 export const PaginationPropsSchema = z.object({
-  controls: z.enum(["full", "simple"]).optional(),
   setPage: z.unknown(), // Callback when page changes
   page: z.number().optional(), // Current page number (1-indexed).
   perPage: z.number().optional(), // Number of items displayed per page.
   totalCount: z.number().optional(), // Total number of items across all pages.
-  text: z.unknown().optional(), // Method to provide custom pagination text
+  className: z.string().optional(), // Additional CSS classes for the container
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator.
+  controls: z.enum(["full", "simple"]).optional(),
+  text: z.unknown().optional(),
 });
 
 export const PopoverPropsSchema = z.object({
@@ -713,10 +717,9 @@ export const ToastyPropsSchema = z.object({
 });
 
 export const TooltipPropsSchema = z.object({
-  align: z.enum(["start", "center", "end"]).optional(), // Alignment on the axis perpendicular to `side`. - `"start"` — Align to the start edge - `"center"` — Center-aligned - `"end"` — Align to the end edge
-  asChild: z.boolean().optional(), // When `true`, the trigger wraps the child element instead of adding a wrapper.
-  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Preferred side of the trigger to render the tooltip. - `"top"` — Tooltip appears above the trigger - `"bottom"` — Tooltip appears below the trigger - `"left"` — Tooltip appears to the left of the trigger - `"right"` — Tooltip appears to the right of the trigger
+  side: z.enum(["top", "bottom", "left", "right"]).optional(),
+  className: z.string().optional(), // Additional CSS classes
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
   content: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]), // Content to display in the tooltip
 });
 

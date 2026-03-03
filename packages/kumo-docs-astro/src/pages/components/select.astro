@@ -29,9 +29,10 @@ import {
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
         A simple select component. Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> prop
-        to map values to display labels — this controls what text appears in the
-        trigger when an option is selected. Without <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code>,
-        the raw value string is shown in the trigger.
+        to provide options — when <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> is provided without 
+        children, the select automatically renders options. This also controls what text appears in the
+        trigger when an option is selected. For custom option rendering, you can still provide manual 
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Option</code> children.
       </span>
     </p>
 
@@ -47,11 +48,7 @@ function App() {
       value={value}
       onValueChange={(v) => setValue(v ?? "apple")}
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    >
-      <Select.Option value="apple">Apple</Select.Option>
-      <Select.Option value="banana">Banana</Select.Option>
-      <Select.Option value="cherry">Cherry</Select.Option>
-    </Select>
+    />
   )
 }`}
     >
@@ -87,11 +84,7 @@ function App() {
         documentation: "Documentation",
         feature: "Feature",
       }}
-    >
-      <Select.Option value="bug">Bug</Select.Option>
-      <Select.Option value="documentation">Documentation</Select.Option>
-      <Select.Option value="feature">Feature</Select.Option>
-    </Select>
+    />
   )
 }
   
@@ -109,11 +102,7 @@ function App() {
         {value: "documentation", label: "Documentation"},
         {value: "feature", label: "Feature"},
       ]}
-    >
-      <Select.Option value="bug">Bug</Select.Option>
-      <Select.Option value="documentation">Documentation</Select.Option>
-      <Select.Option value="feature">Feature</Select.Option>
-    </Select>
+    />
   )
 }`}
     >
@@ -151,11 +140,7 @@ function App() {
         { value: "documentation", label: "Documentation" },
         { value: "feature", label: "Feature" },
       ]}
-    >
-      <Select.Option value="bug">Bug</Select.Option>
-      <Select.Option value="documentation">Documentation</Select.Option>
-      <Select.Option value="feature">Feature</Select.Option>
-    </Select>
+    />
   )
 }`}
     >

@@ -138,6 +138,10 @@
   box-sizing: border-box;
 }
 
+.rdp-root thead {
+  background: transparent;
+}
+
 /* Day cells */
 .rdp-day {
   width: var(--rdp-day-width);
@@ -593,4 +597,62 @@
 .rdp-caption_before_exit {
   animation: rdp-fade_out var(--rdp-animation_duration)
     var(--rdp-animation_timing) forwards;
+}
+
+/* ============================================
+   Shiki syntax highlighting styles
+   ============================================ */
+
+/* 
+ * Shiki dual-theme support.
+ * Shiki outputs inline styles with light colors directly applied,
+ * and dark colors stored in --shiki-dark CSS variables.
+ * In light mode: use inline styles as-is (no override needed)
+ * In dark mode: override with --shiki-dark variables
+ * !important is needed to override inline styles.
+ */
+[data-mode="dark"] .kumo-shiki {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+[data-mode="dark"] .kumo-shiki span:not(.line-highlighted) {
+  color: var(--shiki-dark) !important;
+  background-color: transparent !important;
+}
+
+[data-mode="dark"] .kumo-shiki .line-highlighted {
+  color: var(--shiki-dark) !important;
+}
+
+/* 
+ * Line highlighting - based on VitePress pattern.
+ * The code element sizes to content (fit-content) but at least 100%,
+ * then highlighted lines extend into the padding with negative margins.
+ */
+.kumo-shiki code {
+  display: block;
+  width: fit-content;
+  min-width: 100%;
+}
+
+.kumo-shiki {
+  --kumo-code-highlight-bg: rgba(0, 0, 0, 0.05);
+}
+
+[data-mode="dark"] .kumo-shiki {
+  --kumo-code-highlight-bg: rgba(255, 255, 255, 0.08);
+}
+
+.kumo-shiki .line.line-highlighted {
+  display: inline-block;
+  width: calc(100% + 2rem);
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  background-color: var(--kumo-code-highlight-bg);
+}
+
+/* Line numbers - positioned alongside code with matching line-height */
+.kumo-line-numbers {
+  padding-left: 0.75rem;
+  line-height: 1.625; /* matches leading-relaxed */
 }

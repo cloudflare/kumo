@@ -40,6 +40,7 @@ const componentItems: NavItem[] = [
   { label: "Clipboard Text", href: "/components/clipboard-text" },
   { label: "Cloudflare Logo", href: "/components/cloudflare-logo" },
   { label: "Code", href: "/components/code" },
+  { label: "CodeHighlighted", href: "/components/code-highlighted" },
   { label: "Collapsible", href: "/components/collapsible" },
   { label: "Combobox", href: "/components/combobox" },
   { label: "Command Palette", href: "/components/command-palette" },
@@ -385,7 +386,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         )}
       >
         <div className="relative h-12 border-b border-kumo-line">
-          <div className="absolute top-2 right-1">
+          <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
               shape="square"

@@ -262,7 +262,7 @@ const List = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "z-10 min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
+        "min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
         className,
       )}
     >

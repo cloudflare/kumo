@@ -20,6 +20,7 @@ Small status label for categorizing or highlighting content.
   - `"primary"`: Default high-emphasis badge for important labels
   - `"secondary"`: Subtle badge for secondary information
   - `"destructive"`: Error or danger state indicator
+  - `"success"`: Success or positive state indicator
   - `"outline"`: Bordered badge with transparent background
   - `"beta"`: Indicates beta or experimental features
 - `className`: string
@@ -29,7 +30,7 @@ Small status label for categorizing or highlighting content.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-contrast`, `bg-kumo-danger`, `bg-kumo-fill`, `border-kumo-brand`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`
+`bg-kumo-contrast`, `bg-kumo-danger`, `bg-kumo-fill`, `bg-kumo-success`, `border-kumo-brand`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`
 
 **Examples:**
 
@@ -38,6 +39,7 @@ Small status label for categorizing or highlighting content.
       <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="success">Success</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
     </div>
@@ -59,7 +61,7 @@ Small status label for categorizing or highlighting content.
 
 ### Banner
 
-Full-width message bar for informational, warning, or error notices.
+Full-width message bar for informational, warning, or error notices. Supports structured title/description for i18n, or simple children for basic usage.
 
 **Type:** component
 
@@ -70,10 +72,13 @@ Full-width message bar for informational, warning, or error notices.
 **Props:**
 
 - `icon`: ReactNode
-  Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
+  Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`).
+- `title`: string
+  Primary heading text for the banner. Use for i18n string injection.
+- `description`: ReactNode
+  Secondary description text displayed below the title. Use for i18n string injection.
 - `text`: string
 - `children`: ReactNode
-  Banner message content. Accepts strings or custom React elements.
 - `variant`: enum [default: default]
   - `"default"`: Informational banner for general messages
   - `"alert"`: Warning banner for cautionary messages
@@ -83,38 +88,70 @@ Full-width message bar for informational, warning, or error notices.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-danger`, `bg-kumo-danger-tint`, `bg-kumo-info`, `bg-kumo-info-tint`, `bg-kumo-warning`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-info`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-link`, `text-kumo-warning`
+`bg-kumo-danger`, `bg-kumo-danger-tint`, `bg-kumo-info`, `bg-kumo-info-tint`, `bg-kumo-warning`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-info`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-info`, `text-kumo-warning`
 
 **Examples:**
 
 ```tsx
 <div className="space-y-3">
-      <Banner>This is an informational banner.</Banner>
-      <Banner variant="alert">This is an alert banner.</Banner>
-      <Banner variant="error">This is an error banner.</Banner>
+      <Banner
+        icon={<Info weight="fill" />}
+        title="Update available"
+        description="A new version is ready to install."
+      />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="alert"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+      />
+      <Banner
+        icon={<WarningCircle weight="fill" />}
+        variant="error"
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
+      />
     </div>
 ```
 
 ```tsx
-<Banner>This is an informational banner.</Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Update available"
+      description="A new version is ready to install."
+    />
 ```
 
 ```tsx
-<Banner variant="alert">Your session will expire soon.</Banner>
+<Banner
+      icon={<Warning weight="fill" />}
+      variant="alert"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+    />
 ```
 
 ```tsx
-<Banner icon={<WarningCircle />} variant="alert">
-      Review your billing information.
-    </Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Your changes have been saved."
+    />
 ```
 
 ```tsx
-<Banner icon={<Info />}>
-      <Text DANGEROUS_className="text-inherit">
-        This banner supports <strong>custom content</strong> with Text.
-      </Text>
-    </Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Custom content supported"
+      description={
+        <Text DANGEROUS_className="text-inherit">
+          This banner supports <strong>custom content</strong> with Text.
+        </Text>
+      }
+    />
+```
+
+```tsx
+<Banner icon={<Info />}>This is a simple banner using children.</Banner>
 ```
 
 
@@ -387,7 +424,7 @@ Checkbox component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-contrast`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -1166,7 +1203,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -1221,17 +1258,7 @@ Group sub-component
 
 #### Combobox.List
 
-A container for combobox items. Supports render prop for custom item rendering. Renders a `<div>` element.
-
-Props:
-- `children`: ReactNode | ((item: T, index: number) => ReactNode) - Items to render, or a function that receives each item and returns a node
-
-Usage:
-```tsx
-<Combobox.List>
-  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}
-</Combobox.List>
-```
+List sub-component
 
 #### Combobox.Collection
 
@@ -2176,7 +2203,7 @@ Close sub-component
 
 ### DropdownMenu
 
-DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.
+DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.
 
 **Type:** component
 
@@ -2225,6 +2252,10 @@ Content sub-component
 #### DropdownMenu.Item
 
 Item sub-component
+
+#### DropdownMenu.LinkItem
+
+LinkItem sub-component
 
 #### DropdownMenu.CheckboxItem
 
@@ -3270,7 +3301,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 
 ### Pagination
 
-Page navigation controls with page count display.
+Pagination component
 
 **Type:** component
 
@@ -3280,9 +3311,6 @@ Page navigation controls with page count display.
 
 **Props:**
 
-- `controls`: enum [default: full]
-  - `"full"`: Full pagination controls with first, previous, page input, next, and last buttons
-  - `"simple"`: Simple pagination controls with only previous and next buttons
 - `setPage`: (page: number) => void (required)
   Callback when page changes
 - `page`: number
@@ -3291,14 +3319,60 @@ Page navigation controls with page count display.
   Number of items displayed per page.
 - `totalCount`: number
   Total number of items across all pages.
+- `className`: string
+  Additional CSS classes for the container
+- `children`: ReactNode
+  Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator.
+- `controls`: enum [default: full]
+  - `"full"`: Full pagination controls with first, previous, page input, next, and last buttons
+  - `"simple"`: Simple pagination controls with only previous and next buttons
 - `text`: object
-  Method to provide custom pagination text
 
 **Colors (kumo tokens used):**
 
-`text-kumo-strong`
+`border-kumo-line`, `text-kumo-strong`
 
 **Styling:**
+
+
+**Sub-Components:**
+
+This is a compound component. Use these sub-components:
+
+#### Pagination.Info
+
+Info sub-component
+
+Props:
+- `children`: (props: {
+- `page`: number (required)
+- `perPage`: number
+- `totalCount`: number
+- `pageShowingRange`: string (required)
+
+#### Pagination.PageSize
+
+PageSize sub-component
+
+Props:
+- `value`: number (required)
+- `options`: number[]
+- `label`: ReactNode
+- `className`: string
+
+#### Pagination.Controls
+
+Controls sub-component
+
+Props:
+- `className`: string
+
+#### Pagination.Separator
+
+Separator sub-component
+
+Props:
+- `className`: string
 
 
 **Examples:**
@@ -3319,12 +3393,77 @@ Page navigation controls with page count display.
 
 ```tsx
 <Pagination
-      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}
+      text={({ perPage }: { perPage?: number }) =>
+        `Page ${page} - showing ${perPage} per page`
+      }
       page={page}
       setPage={setPage}
       perPage={25}
       totalCount={100}
     />
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+      />
+      <Pagination.Controls />
+    </Pagination>
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={200}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+        options={[10, 20, 50]}
+      />
+      <Pagination.Controls />
+    </Pagination>
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <div className="flex items-center gap-2">
+        <Pagination.Controls />
+        <Pagination.Separator />
+        <Pagination.PageSize
+          value={perPage}
+          onChange={(size) => {
+            setPerPage(size);
+            setPage(1);
+          }}
+        />
+      </div>
+    </Pagination>
 ```
 
 
@@ -3702,11 +3841,7 @@ Option sub-component
       value={value}
       onValueChange={(v) => setValue(v ?? "apple")}
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    >
-      <Select.Option value="apple">Apple</Select.Option>
-      <Select.Option value="banana">Banana</Select.Option>
-      <Select.Option value="cherry">Cherry</Select.Option>
-    </Select>
+    />
 ```
 
 ```tsx
@@ -3739,13 +3874,8 @@ Option sub-component
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
       placeholder="Please select"
-    >
-      {data?.map((item) => (
-        <Select.Option key={item} value={item}>
-          {item}
-        </Select.Option>
-      ))}
-    </Select>
+      items={items}
+    />
 ```
 
 ```tsx
@@ -4656,20 +4786,15 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 
 **Props:**
 
-- `align`: enum
-  Alignment on the axis perpendicular to `side`.
-- `"start"` — Align to the start edge
-- `"center"` — Center-aligned
-- `"end"` — Align to the end edge
-- `asChild`: boolean
-  When `true`, the trigger wraps the child element instead of adding a wrapper.
-- `className`: string
-  Additional CSS classes merged via `cn()`.
 - `side`: enum [default: top]
   - `"top"`: Tooltip appears above the trigger
   - `"bottom"`: Tooltip appears below the trigger
   - `"left"`: Tooltip appears to the left of the trigger
   - `"right"`: Tooltip appears to the right of the trigger
+- `className`: string
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
 - `content`: ReactNode (required)
   Content to display in the tooltip
 

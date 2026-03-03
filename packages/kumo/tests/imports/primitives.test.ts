@@ -23,6 +23,12 @@ try {
   );
 }
 
+// Special case mappings where the export name doesn't match simple PascalCase conversion
+const EXPORT_NAME_OVERRIDES: Record<string, string> = {
+  "csp-provider": "CSPProvider", // All caps CSP
+  drawer: "DrawerPreview", // Preview suffix in base-ui 1.2.0
+};
+
 // Exports excluded by generate-primitives.ts
 const EXCLUDED_EXPORTS = new Set([
   "./package.json",
@@ -83,11 +89,13 @@ describe("Primitives Export", () => {
       const missingExports: string[] = [];
 
       for (const exportName of baseUiExports) {
-        // Convert kebab-case to PascalCase (e.g., "alert-dialog" -> "AlertDialog")
-        const pascalName = exportName
-          .split("-")
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join("");
+        // Check for special case overrides first, then fall back to PascalCase conversion
+        const pascalName =
+          EXPORT_NAME_OVERRIDES[exportName] ??
+          exportName
+            .split("-")
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join("");
 
         if (!kumoExportNames.includes(pascalName)) {
           missingExports.push(`${exportName} (expected: ${pascalName})`);

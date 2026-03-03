@@ -130,6 +130,54 @@ export function DialogConfirmationDemo() {
   );
 }
 
+/**
+ * Alert dialog for destructive actions that uses role="alertdialog".
+ * This provides proper accessibility semantics for confirmation flows.
+ */
+export function DialogAlertDemo() {
+  return (
+    <Dialog.Root role="alertdialog">
+      <Dialog.Trigger
+        render={(p) => (
+          <Button {...p} variant="destructive">
+            Delete Account
+          </Button>
+        )}
+      />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
+            <Warning size={20} className="text-kumo-danger" weight="fill" />
+          </div>
+          <Dialog.Title className="text-xl font-semibold">
+            Delete Account?
+          </Dialog.Title>
+        </div>
+        <Dialog.Description className="text-kumo-subtle">
+          This action cannot be undone. All your data will be permanently
+          removed from our servers. Are you sure you want to proceed?
+        </Dialog.Description>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="destructive" {...props}>
+                Delete Account
+              </Button>
+            )}
+          />
+        </div>
+      </Dialog>
+    </Dialog.Root>
+  );
+}
+
 const regions = [
   { value: "us-east", label: "US East" },
   { value: "us-west", label: "US West" },

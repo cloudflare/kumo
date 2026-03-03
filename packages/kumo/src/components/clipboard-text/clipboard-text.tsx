@@ -119,7 +119,7 @@ export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
 function AnchoredToasts() {
   const { toasts } = Toast.useToastManager();
   return (
-    <Toast.Viewport className="pointer-events-none fixed inset-0 z-50">
+    <Toast.Viewport className="pointer-events-none fixed inset-0 isolate">
       {toasts.map((toast) => (
         <Toast.Positioner key={toast.id} toast={toast} className="absolute">
           <Toast.Root

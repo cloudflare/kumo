@@ -63,6 +63,38 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
   );
 }
 
+/**
+ * Auto-generates Select.Option elements from items prop.
+ * Only used when children are not explicitly provided.
+ * Filters out null values (typically used for placeholders).
+ */
+function renderOptionsFromItems<T>(
+  items:
+    | Record<string, ReactNode>
+    | ReadonlyArray<{ label: ReactNode; value: T }>,
+): ReactNode {
+  // Handle object map format: { key: "Label" }
+  if (!Array.isArray(items)) {
+    return Object.entries(items).map(([key, label]) => (
+      <Option key={key} value={key as T}>
+        {label}
+      </Option>
+    ));
+  }
+
+  // Handle array format: [{ value, label }] - filter out null values
+  return items
+    .filter((item) => item.value !== null)
+    .map((item, index) => (
+      <Option
+        key={typeof item.value === "string" ? item.value : `option-${index}`}
+        value={item.value}
+      >
+        {item.label}
+      </Option>
+    ));
+}
+
 type SelectPropsGeneric<
   T,
   Multiple extends boolean | undefined = false,
@@ -207,6 +239,10 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     }
   }
 
+  // Auto-render children from items if children not provided
+  const renderedChildren =
+    children ?? (items ? renderOptionsFromItems(items) : null);
+
   const selectControl = (
     <SelectBase.Root
       {...props}
@@ -243,7 +279,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
               "min-w-[calc(var(--anchor-width)+3px)] p-1.5", // spacing
             )}
           >
-            {children}
+            {renderedChildren}
           </SelectBase.Popup>
         </SelectBase.Positioner>
       </SelectBase.Portal>
@@ -272,15 +308,33 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   }
 
   // Render with standalone label when label is hidden (sr-only)
+  // Still show description/error for accessibility and UX
+  const normalizedError = error
+    ? typeof error === "string"
+      ? { message: error, match: true as const }
+      : error
+    : undefined;
+
   return (
-    <>
+    <div className="grid gap-2">
       {label && (
         <span id={labelId} className="sr-only">
           {label}
         </span>
       )}
       {selectControl}
-    </>
+      {normalizedError ? (
+        <span className="text-sm text-kumo-danger">
+          {normalizedError.message}
+        </span>
+      ) : (
+        description && (
+          <span className="text-sm leading-snug text-kumo-subtle">
+            {description}
+          </span>
+        )
+      )}
+    </div>
   );
 }
 

@@ -1,5 +1,12 @@
-import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  type ComponentPropsWithoutRef,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
+import { AlertDialog as AlertDialogBase } from "@base-ui/react/alert-dialog";
 import { Surface } from "../surface";
 import { cn } from "../../utils/cn";
 
@@ -23,10 +30,22 @@ export const KUMO_DIALOG_VARIANTS = {
       description: "Extra large dialog for detailed views",
     },
   },
+  role: {
+    dialog: {
+      classes: "",
+      description: "Standard dialog for general-purpose modals",
+    },
+    alertdialog: {
+      classes: "",
+      description:
+        "Alert dialog for confirmation flows requiring explicit user acknowledgment",
+    },
+  },
 } as const;
 
 export const KUMO_DIALOG_DEFAULT_VARIANTS = {
   size: "base",
+  role: "dialog",
 } as const;
 
 export const KUMO_DIALOG_STYLING = {
@@ -90,6 +109,7 @@ export const KUMO_DIALOG_STYLING = {
 
 // Derived types from KUMO_DIALOG_VARIANTS
 export type KumoDialogSize = keyof typeof KUMO_DIALOG_VARIANTS.size;
+export type KumoDialogRole = keyof typeof KUMO_DIALOG_VARIANTS.role;
 
 export interface KumoDialogVariantsProps {
   /**
@@ -101,6 +121,16 @@ export interface KumoDialogVariantsProps {
    * @default "base"
    */
   size?: KumoDialogSize;
+}
+
+// ============================================================================
+// Dialog Role Context
+// ============================================================================
+
+const DialogRoleContext = createContext<KumoDialogRole>("dialog");
+
+function useDialogRole() {
+  return useContext(DialogRoleContext);
 }
 
 export function dialogVariants({
@@ -153,6 +183,19 @@ export type DialogProps = KumoDialogVariantsProps & {
  *   </Dialog>
  * </Dialog.Root>
  * ```
+ *
+ * @example Alert Dialog for destructive actions
+ * ```tsx
+ * <Dialog.Root role="alertdialog">
+ *   <Dialog.Trigger render={(p) => <Button variant="destructive" {...p}>Delete Project</Button>} />
+ *   <Dialog className="p-8">
+ *     <Dialog.Title>Delete Project?</Dialog.Title>
+ *     <Dialog.Description>This action cannot be undone.</Dialog.Description>
+ *     <Dialog.Close render={(p) => <Button variant="secondary" {...p}>Cancel</Button>} />
+ *     <Dialog.Close render={(p) => <Button variant="destructive" {...p}>Delete</Button>} />
+ *   </Dialog>
+ * </Dialog.Root>
+ * ```
  */
 function DialogContent({
   className,
@@ -160,11 +203,19 @@ function DialogContent({
   style,
   size = KUMO_DIALOG_DEFAULT_VARIANTS.size,
 }: DialogProps) {
+  const role = useDialogRole();
+  const BasePortal =
+    role === "alertdialog" ? AlertDialogBase.Portal : DialogBase.Portal;
+  const BaseBackdrop =
+    role === "alertdialog" ? AlertDialogBase.Backdrop : DialogBase.Backdrop;
+  const BasePopup =
+    role === "alertdialog" ? AlertDialogBase.Popup : DialogBase.Popup;
+
   return (
-    <DialogBase.Portal>
-      <DialogBase.Backdrop className="fixed inset-0 bg-kumo-overlay opacity-80 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
+    <BasePortal>
+      <BaseBackdrop className="fixed inset-0 bg-kumo-overlay opacity-80 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
       <Surface
-        as={DialogBase.Popup}
+        as={BasePopup}
         className={cn(dialogVariants({ size }), className)}
         style={
           {
@@ -179,7 +230,7 @@ function DialogContent({
       >
         {children}
       </Surface>
-    </DialogBase.Portal>
+    </BasePortal>
   );
 }
 
@@ -189,10 +240,34 @@ function DialogContent({
 
 type BaseDialogRootProps = ComponentPropsWithoutRef<typeof DialogBase.Root>;
 
-export type DialogRootProps = BaseDialogRootProps;
+export type DialogRootProps = BaseDialogRootProps & {
+  /**
+   * The ARIA role for the dialog.
+   * - `"dialog"` — Standard dialog for general-purpose modals. Dismissible via outside click by default.
+   * - `"alertdialog"` — Alert dialog for destructive or confirmation flows. Not dismissible via outside click.
+   *
+   * Use `role="alertdialog"` for:
+   * - Destructive actions (delete, discard, remove)
+   * - Confirmation dialogs requiring explicit user acknowledgment
+   * - Actions that cannot be undone
+   *
+   * @default "dialog"
+   */
+  role?: KumoDialogRole;
+};
 
-function DialogRoot({ children, ...props }: DialogRootProps) {
-  return <DialogBase.Root {...props}>{children}</DialogBase.Root>;
+function DialogRoot({
+  children,
+  role = KUMO_DIALOG_DEFAULT_VARIANTS.role,
+  ...props
+}: DialogRootProps) {
+  const BaseRoot =
+    role === "alertdialog" ? AlertDialogBase.Root : DialogBase.Root;
+  return (
+    <DialogRoleContext.Provider value={role}>
+      <BaseRoot {...props}>{children}</BaseRoot>
+    </DialogRoleContext.Provider>
+  );
 }
 
 DialogRoot.displayName = "Dialog.Root";
@@ -208,7 +283,10 @@ type BaseDialogTriggerProps = ComponentPropsWithoutRef<
 export type DialogTriggerProps = BaseDialogTriggerProps;
 
 function DialogTrigger({ children, ...props }: DialogTriggerProps) {
-  return <DialogBase.Trigger {...props}>{children}</DialogBase.Trigger>;
+  const role = useDialogRole();
+  const BaseTrigger =
+    role === "alertdialog" ? AlertDialogBase.Trigger : DialogBase.Trigger;
+  return <BaseTrigger {...props}>{children}</BaseTrigger>;
 }
 
 DialogTrigger.displayName = "Dialog.Trigger";
@@ -222,7 +300,10 @@ type BaseDialogTitleProps = ComponentPropsWithoutRef<typeof DialogBase.Title>;
 export type DialogTitleProps = BaseDialogTitleProps;
 
 function DialogTitle({ className, ...props }: DialogTitleProps) {
-  return <DialogBase.Title className={className} {...props} />;
+  const role = useDialogRole();
+  const BaseTitle =
+    role === "alertdialog" ? AlertDialogBase.Title : DialogBase.Title;
+  return <BaseTitle className={className} {...props} />;
 }
 
 DialogTitle.displayName = "Dialog.Title";
@@ -238,7 +319,12 @@ type BaseDialogDescriptionProps = ComponentPropsWithoutRef<
 export type DialogDescriptionProps = BaseDialogDescriptionProps;
 
 function DialogDescription({ className, ...props }: DialogDescriptionProps) {
-  return <DialogBase.Description className={className} {...props} />;
+  const role = useDialogRole();
+  const BaseDescription =
+    role === "alertdialog"
+      ? AlertDialogBase.Description
+      : DialogBase.Description;
+  return <BaseDescription className={className} {...props} />;
 }
 
 DialogDescription.displayName = "Dialog.Description";
@@ -252,7 +338,10 @@ type BaseDialogCloseProps = ComponentPropsWithoutRef<typeof DialogBase.Close>;
 export type DialogCloseProps = BaseDialogCloseProps;
 
 function DialogClose({ children, ...props }: DialogCloseProps) {
-  return <DialogBase.Close {...props}>{children}</DialogBase.Close>;
+  const role = useDialogRole();
+  const BaseClose =
+    role === "alertdialog" ? AlertDialogBase.Close : DialogBase.Close;
+  return <BaseClose {...props}>{children}</BaseClose>;
 }
 
 DialogClose.displayName = "Dialog.Close";

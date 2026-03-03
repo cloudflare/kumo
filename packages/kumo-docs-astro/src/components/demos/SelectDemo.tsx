@@ -10,11 +10,7 @@ export function SelectBasicDemo() {
       value={value}
       onValueChange={(v) => setValue(v ?? "apple")}
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    >
-      <Select.Option value="apple">Apple</Select.Option>
-      <Select.Option value="banana">Banana</Select.Option>
-      <Select.Option value="cherry">Cherry</Select.Option>
-    </Select>
+    />
   );
 }
 
@@ -31,11 +27,7 @@ export function SelectLabelValueDemo() {
         documentation: "Documentation",
         feature: "Feature",
       }}
-    >
-      <Select.Option value="bug">Bug</Select.Option>
-      <Select.Option value="documentation">Documentation</Select.Option>
-      <Select.Option value="feature">Feature</Select.Option>
-    </Select>
+    />
   );
 }
 
@@ -53,11 +45,7 @@ export function SelectPlaceholderDemo() {
         { value: "documentation", label: "Documentation" },
         { value: "feature", label: "Feature" },
       ]}
-    >
-      <Select.Option value="bug">Bug</Select.Option>
-      <Select.Option value="documentation">Documentation</Select.Option>
-      <Select.Option value="feature">Feature</Select.Option>
-    </Select>
+    />
   );
 }
 
@@ -111,6 +99,14 @@ export function SelectLoadingDataDemo() {
     return () => clearTimeout(timer);
   }, []);
 
+  const items = data?.reduce(
+    (acc, item) => {
+      acc[item] = item;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
   return (
     <Select
       className="w-[200px]"
@@ -118,13 +114,8 @@ export function SelectLoadingDataDemo() {
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
       placeholder="Please select"
-    >
-      {data?.map((item) => (
-        <Select.Option key={item} value={item}>
-          {item}
-        </Select.Option>
-      ))}
-    </Select>
+      items={items}
+    />
   );
 }
 

@@ -385,3 +385,99 @@ export function ComboboxErrorDemo() {
     </div>
   );
 }
+
+/** Demonstrates the different size variants: xs, sm, base, and lg. */
+export function ComboboxSizesDemo() {
+  const [smValue, setSmValue] = useState<string | null>(null);
+  const [baseValue, setBaseValue] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Combobox
+        size="sm"
+        value={smValue}
+        onValueChange={(v) => setSmValue(v as string | null)}
+        items={fruits.slice(0, 8)}
+      >
+        <Combobox.TriggerInput placeholder="Small (sm)" />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+      <Combobox
+        size="base"
+        value={baseValue}
+        onValueChange={(v) => setBaseValue(v as string | null)}
+        items={fruits.slice(0, 8)}
+      >
+        <Combobox.TriggerInput placeholder="Base (default)" />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
+
+/** Demonstrates size variants with TriggerValue (searchable inside). */
+export function ComboboxSizesSearchableInsideDemo() {
+  const [smValue, setSmValue] = useState<Language>(languages[0]);
+  const [baseValue, setBaseValue] = useState<Language>(languages[1]);
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Combobox
+        size="sm"
+        value={smValue}
+        onValueChange={(v) => setSmValue(v as Language)}
+        items={languages}
+      >
+        <Combobox.TriggerValue className="w-[160px]" />
+        <Combobox.Content>
+          <Combobox.Input placeholder="Search" />
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: Language) => (
+              <Combobox.Item key={item.value} value={item}>
+                {item.emoji} {item.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+      <Combobox
+        size="base"
+        value={baseValue}
+        onValueChange={(v) => setBaseValue(v as Language)}
+        items={languages}
+      >
+        <Combobox.TriggerValue className="w-[180px]" />
+        <Combobox.Content>
+          <Combobox.Input placeholder="Search" />
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: Language) => (
+              <Combobox.Item key={item.value} value={item}>
+                {item.emoji} {item.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
