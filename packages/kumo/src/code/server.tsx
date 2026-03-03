@@ -20,6 +20,7 @@
 
 import type { Highlighter, BundledLanguage } from "shiki";
 import type { ShikiEngine } from "./types";
+import type { ReactNode } from "react";
 
 export interface HighlightCodeOptions {
   /** Highlighting engine (default: "javascript") */
@@ -187,7 +188,7 @@ export interface CodeBlockProps {
  * highlighter.dispose();
  * ```
  */
-export function CodeBlock({ html, className }: CodeBlockProps): JSX.Element {
+export function CodeBlock({ html, className }: CodeBlockProps): ReactNode {
   const containerClass = className
     ? `group relative w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base ${className}`
     : "group relative w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base";
