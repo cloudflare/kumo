@@ -1,0 +1,290 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import {
+  CloudflareLogoBasicDemo,
+  CloudflareLogoGlyphDemo,
+  CloudflareLogoColorVariantsDemo,
+  CloudflareLogoGlyphVariantsDemo,
+  CloudflareLogoSizesDemo,
+  CloudflareLogoCopyDemo,
+  PoweredByCloudflareBasicDemo,
+  PoweredByCloudflareVariantsDemo,
+  PoweredByCloudflareFooterDemo,
+} from "../../components/demos/CloudflareLogoDemo";
+---
+
+<DocLayout
+  title="CloudflareLogo"
+  description="Official Cloudflare logo component with glyph and full logo variants."
+  sourceFile="components/cloudflare-logo"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample code={`<CloudflareLogo className="w-72" />`}>
+      <CloudflareLogoBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { CloudflareLogo } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <CloudflareLogo className="w-36" />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <!-- Glyph Only -->
+    <div class="mb-12">
+      <Heading level={3}>Glyph Only</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Use <code>variant="glyph"</code> to display just the cloud icon without the wordmark.
+      </p>
+      <ComponentExample code={`<CloudflareLogo variant="glyph" className="w-24" />`}>
+        <CloudflareLogoGlyphDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Color Variants (Full) -->
+    <div class="mb-12">
+      <Heading level={3}>Color Variants</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        The logo supports three color schemes: brand colors, black, and white.
+      </p>
+      <ComponentExample
+        code={`<CloudflareLogo color="color" />  {/* Brand colors (default) */}
+<CloudflareLogo color="black" />  {/* Solid black */}
+<CloudflareLogo color="white" />  {/* Solid white */}`}
+      >
+        <CloudflareLogoColorVariantsDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Glyph Color Variants -->
+    <div class="mb-12">
+      <Heading level={3}>Glyph Color Variants</Heading>
+      <ComponentExample
+        code={`<CloudflareLogo variant="glyph" color="color" />
+<CloudflareLogo variant="glyph" color="black" />
+<CloudflareLogo variant="glyph" color="white" />`}
+      >
+        <CloudflareLogoGlyphVariantsDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Sizing -->
+    <div class="mb-12">
+      <Heading level={3}>Sizing</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Size the logo using CSS width classes. The height adjusts automatically to maintain aspect ratio.
+      </p>
+      <ComponentExample
+        code={`<CloudflareLogo className="w-20" />
+<CloudflareLogo className="w-28" />
+<CloudflareLogo className="w-44" />`}
+      >
+        <CloudflareLogoSizesDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Copy as SVG -->
+    <div class="mb-12">
+      <Heading level={3}>Brand Assets Menu</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Combine with DropdownMenu to create a brand assets menu. Use <code>generateCloudflareLogoSvg()</code> to
+        get copy-paste ready SVG markup.
+      </p>
+      <ComponentExample
+        code={`import {
+  CloudflareLogo,
+  DropdownMenu,
+  generateCloudflareLogoSvg,
+} from "@cloudflare/kumo";
+
+<DropdownMenu>
+  <DropdownMenu.Trigger>
+    <button>
+      <CloudflareLogo variant="glyph" color="white" className="w-8" />
+      Logo
+    </button>
+  </DropdownMenu.Trigger>
+  <DropdownMenu.Content>
+    <DropdownMenu.Item
+      onSelect={() => navigator.clipboard.writeText(
+        generateCloudflareLogoSvg({ variant: "glyph" })
+      )}
+    >
+      Copy logo as SVG
+    </DropdownMenu.Item>
+    <DropdownMenu.Item
+      onSelect={() => navigator.clipboard.writeText(
+        generateCloudflareLogoSvg({ variant: "full" })
+      )}
+    >
+      Copy full logo as SVG
+    </DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu>`}
+      >
+        <CloudflareLogoCopyDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <!-- PoweredByCloudflare -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">PoweredByCloudflare</Heading>
+    <p class="mb-6 text-kumo-subtle">
+      A pre-built "Powered by Cloudflare" badge component for footers and attribution.
+    </p>
+
+    <!-- Basic -->
+    <div class="mb-12">
+      <Heading level={3}>Basic Usage</Heading>
+      <ComponentExample code={`<PoweredByCloudflare />`}>
+        <PoweredByCloudflareBasicDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Variants -->
+    <div class="mb-12">
+      <Heading level={3}>Color Variants</Heading>
+      <ComponentExample
+        code={`<PoweredByCloudflare />              {/* color (default) */}
+<PoweredByCloudflare color="black" />
+<PoweredByCloudflare color="white" />`}
+      >
+        <PoweredByCloudflareVariantsDemo client:visible />
+      </ComponentExample>
+    </div>
+
+    <!-- Footer Example -->
+    <div class="mb-12">
+      <Heading level={3}>Footer Example</Heading>
+      <ComponentExample
+        code={`<footer className="flex items-center justify-between px-6 py-4">
+  <span>&copy; 2026 Your Company</span>
+  <PoweredByCloudflare />
+</footer>`}
+      >
+        <PoweredByCloudflareFooterDemo client:visible />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <!-- SVG Generation -->
+  <ComponentSection>
+    <Heading level={2}>SVG Generation</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      Use <code>generateCloudflareLogoSvg()</code> to get copy-paste ready SVG markup for non-React contexts.
+    </p>
+    <CodeBlock
+      code={`import { generateCloudflareLogoSvg } from "@cloudflare/kumo";
+
+// Generate glyph SVG (cloud only)
+const glyphSvg = generateCloudflareLogoSvg({ variant: "glyph" });
+
+// Generate full logo SVG
+const fullSvg = generateCloudflareLogoSvg({ variant: "full" });
+
+// Generate black logo
+const blackSvg = generateCloudflareLogoSvg({ color: "black" });
+
+// Copy to clipboard
+await navigator.clipboard.writeText(
+  generateCloudflareLogoSvg({ variant: "glyph", color: "color" })
+);`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      CloudflareLogo extends <code>SVGSVGElement</code> and accepts all standard SVG attributes.
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="py-3 pr-4 font-medium">Prop</th>
+            <th class="py-3 pr-4 font-medium">Type</th>
+            <th class="py-3 pr-4 font-medium">Default</th>
+            <th class="py-3 font-medium">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-subtle">
+          <tr class="border-b border-kumo-line">
+            <td class="py-3 pr-4 font-mono text-kumo-default">variant</td>
+            <td class="py-3 pr-4 font-mono">"glyph" | "full"</td>
+            <td class="py-3 pr-4 font-mono">"full"</td>
+            <td class="py-3">Logo variant. <code>glyph</code> shows just the cloud icon, <code>full</code> includes the wordmark.</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="py-3 pr-4 font-mono text-kumo-default">color</td>
+            <td class="py-3 pr-4 font-mono">"color" | "black" | "white"</td>
+            <td class="py-3 pr-4 font-mono">"color"</td>
+            <td class="py-3">Color scheme. <code>color</code> uses brand colors, <code>black</code> and <code>white</code> are solid.</td>
+          </tr>
+          <tr>
+            <td class="py-3 pr-4 font-mono text-kumo-default">className</td>
+            <td class="py-3 pr-4 font-mono">string</td>
+            <td class="py-3 pr-4 font-mono">-</td>
+            <td class="py-3">CSS classes for sizing (e.g., <code>w-36</code>). Height adjusts automatically.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PoweredByCloudflare Props -->
+    <Heading level={3} class="mt-12">PoweredByCloudflare</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      Extends <code>HTMLAnchorElement</code> and accepts all standard anchor attributes.
+    </p>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-kumo-line">
+            <th class="py-3 pr-4 font-medium">Prop</th>
+            <th class="py-3 pr-4 font-medium">Type</th>
+            <th class="py-3 pr-4 font-medium">Default</th>
+            <th class="py-3 font-medium">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-kumo-subtle">
+          <tr class="border-b border-kumo-line">
+            <td class="py-3 pr-4 font-mono text-kumo-default">color</td>
+            <td class="py-3 pr-4 font-mono">"color" | "black" | "white"</td>
+            <td class="py-3 pr-4 font-mono">"color"</td>
+            <td class="py-3">Color scheme for the logo and text.</td>
+          </tr>
+          <tr>
+            <td class="py-3 pr-4 font-mono text-kumo-default">href</td>
+            <td class="py-3 pr-4 font-mono">string</td>
+            <td class="py-3 pr-4 font-mono">"https://www.cloudflare.com"</td>
+            <td class="py-3">Link destination. Opens in a new tab by default.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ComponentSection>
+</DocLayout>

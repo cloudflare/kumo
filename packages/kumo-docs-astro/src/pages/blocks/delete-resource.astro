@@ -1,0 +1,194 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import Callout from "../../components/docs/Callout.astro";
+import {
+  DeleteResourceBasicDemo,
+  DeleteResourceErrorDemo,
+  DeleteResourceWorkerDemo,
+} from "../../components/demos/DeleteResourceDemo";
+
+const heroCode = `<DeleteResource
+  open={open}
+  onOpenChange={setOpen}
+  resourceType="Zone"
+  resourceName="example.com"
+  onDelete={handleDelete}
+  isDeleting={isDeleting}
+/>`;
+---
+
+<DocLayout
+  title="Delete Resource"
+  description="A confirmation dialog for safely deleting resources, requiring users to type the resource name to confirm."
+  sourceFile="blocks/delete-resource"
+>
+  <ComponentSection>
+    <ComponentExample code={heroCode}>
+      <DeleteResourceBasicDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <p class="mb-4 text-kumo-strong">
+      DeleteResource is a <strong>block</strong> - a CLI-installed component that
+      you own and can customize. Unlike regular components, blocks are copied into
+      your project so you have full control over the code.
+    </p>
+    <div class="space-y-4">
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">
+          1. Initialize Kumo config (first time only)
+        </p>
+        <CodeBlock code={`npx @cloudflare/kumo init`} lang="bash" />
+      </div>
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">
+          2. Install the block
+        </p>
+        <CodeBlock
+          code={`npx @cloudflare/kumo add DeleteResource`}
+          lang="bash"
+        />
+      </div>
+      <div>
+        <p class="mb-2 text-sm font-medium text-kumo-default">
+          3. Import from your local path
+        </p>
+        <CodeBlock
+          code={`// The path depends on your kumo.json blocksDir setting
+// Default: src/components/kumo/
+import { DeleteResource } from "./components/kumo/delete-resource/delete-resource";`}
+          lang="tsx"
+        />
+      </div>
+    </div>
+    <div class="mt-4">
+      <Callout type="info">
+        <strong>Why blocks?</strong> Blocks give you full ownership of the code,
+        allowing you to customize deletion flows to fit your specific needs. They're
+        ideal for critical actions that often need project-specific modifications.
+      </Callout>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { useState } from "react";
+import { DeleteResource } from "./components/kumo/delete-resource/delete-resource";
+import { Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteZone("example.com");
+      setOpen(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <>
+      <Button variant="destructive" onClick={() => setOpen(true)}>
+        Delete Zone
+      </Button>
+      <DeleteResource
+        open={open}
+        onOpenChange={setOpen}
+        resourceType="Zone"
+        resourceName="example.com"
+        onDelete={handleDelete}
+        isDeleting={isDeleting}
+      />
+    </>
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="mb-12">
+      <Heading level={3}>Worker Deletion</Heading>
+      <p class="mb-4 text-kumo-strong">
+        Works with any resource type - just change the resourceType and
+        resourceName props.
+      </p>
+      <ComponentExample
+        code={`<DeleteResource
+  open={open}
+  onOpenChange={setOpen}
+  resourceType="Worker"
+  resourceName="api-gateway-worker"
+  onDelete={handleDelete}
+  isDeleting={isDeleting}
+/>`}
+      >
+        <DeleteResourceWorkerDemo client:load />
+      </ComponentExample>
+    </div>
+
+    <div class="mb-12">
+      <Heading level={3}>Error State</Heading>
+      <p class="mb-4 text-kumo-strong">
+        Use the errorMessage prop to show an error message.
+      </p>
+      <ComponentExample
+        code={`export default function Example() {
+  const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    setErrorMessage("");
+    try {
+      await deleteZone("example.com");
+      setOpen(false);
+    } catch {
+      setErrorMessage("Failed to delete Zone");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <>
+      <Button variant="destructive" onClick={() => setOpen(true)}>
+        Delete Zone
+      </Button>
+      <DeleteResource
+        open={open}
+        onOpenChange={setOpen}
+        resourceType="Zone"
+        resourceName="example.com"
+        onDelete={handleDelete}
+        isDeleting={isDeleting}
+      />
+    </>
+  );
+}`}
+      >
+        <DeleteResourceErrorDemo client:load />
+      </ComponentExample>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="DeleteResource" />
+  </ComponentSection>
+</DocLayout>

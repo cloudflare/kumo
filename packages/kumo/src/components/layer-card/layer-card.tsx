@@ -1,6 +1,7 @@
 import type { FC, PropsWithChildren } from "react";
 import { cn } from "../../utils/cn";
 
+/** LayerCard variant definitions (currently empty, reserved for future additions). */
 export const KUMO_LAYER_CARD_VARIANTS = {
   // LayerCard currently has no variant options but structure is ready for future additions
 } as const;
@@ -17,10 +18,35 @@ export function layerCardVariants(_props: KumoLayerCardVariantsProps = {}) {
   );
 }
 
+/**
+ * LayerCard component props.
+ *
+ * @example
+ * ```tsx
+ * <LayerCard>
+ *   <LayerCard.Secondary>Next Steps</LayerCard.Secondary>
+ *   <LayerCard.Primary>Get started with Kumo</LayerCard.Primary>
+ * </LayerCard>
+ * ```
+ */
 export type LayerCardProps = PropsWithChildren<
-  KumoLayerCardVariantsProps & { className?: string }
+  KumoLayerCardVariantsProps & {
+    /** Additional CSS classes merged via `cn()`. */
+    className?: string;
+  }
 >;
 
+/**
+ * Elevated card with primary/secondary content layers for dashboard widgets.
+ *
+ * @example
+ * ```tsx
+ * <LayerCard>
+ *   <LayerCard.Secondary>Getting Started</LayerCard.Secondary>
+ *   <LayerCard.Primary>Quick start guide</LayerCard.Primary>
+ * </LayerCard>
+ * ```
+ */
 function LayerCardRoot({ children, className }: LayerCardProps) {
   return <div className={cn(layerCardVariants(), className)}>{children}</div>;
 }

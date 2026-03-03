@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+
+    if: ${{ github.repository_owner == 'cloudflare' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Build @cloudflare/kumo
+        run: pnpm --filter @cloudflare/kumo build
+
+      # changesets/action either:
+      # 1. Creates/updates a "Version Packages" PR (when changesets exist)
+      # 2. Publishes to npm via `pnpm run release` (when Version Packages PR merges)
+      # Note: `pnpm run release` runs `pnpm build:all && changeset publish`,
+      # which rebuilds kumo (redundant but harmless). If this becomes slow,
+      # consider a publish-only script.
+      - name: Create Version PR or Publish to npm
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version
+          publish: pnpm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

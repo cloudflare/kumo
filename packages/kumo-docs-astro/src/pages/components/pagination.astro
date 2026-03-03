@@ -11,6 +11,11 @@ import {
   PaginationFullDemo,
   PaginationMidPageDemo,
   PaginationLargeDatasetDemo,
+  PaginationCustomTextDemo,
+  PaginationPageSizeSelectorDemo,
+  PaginationCustomPageSizeOptionsDemo,
+  PaginationCompoundCustomInfoDemo,
+  PaginationPageSizeRightDemo,
 } from "../../components/demos/PaginationDemo";
 ---
 
@@ -145,6 +150,125 @@ export default function Example() {
 />`}
         >
           <PaginationLargeDatasetDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Text</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          You can set custom pagination text
+        </p>
+        <ComponentExample
+          code={`<Pagination
+  text={({perPage}) => \`Showing $\{perPage\} per page!\`}
+  page={1}
+  setPage={setPage}
+  perPage={25}
+  totalCount={100}
+/>`}
+        >
+          <PaginationCustomTextDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- Compound Components -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Compound Components</Heading>
+    <p class="mb-6 text-kumo-subtle">
+      For more control over layout and features, use the compound component API.
+      This allows you to compose <code class="text-kumo-default">Pagination.Info</code>,
+      <code class="text-kumo-default">Pagination.PageSize</code>,
+      <code class="text-kumo-default">Pagination.Controls</code>, and
+      <code class="text-kumo-default">Pagination.Separator</code> in any order.
+    </p>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Page Size Selector</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Add a dropdown to let users select the number of items per page.
+        </p>
+        <ComponentExample
+          code={`const [page, setPage] = useState(1);
+const [perPage, setPerPage] = useState(25);
+
+<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={500}>
+  <Pagination.Info />
+  <Pagination.Separator />
+  <Pagination.PageSize
+    value={perPage}
+    onChange={(size) => {
+      setPerPage(size);
+      setPage(1);
+    }}
+  />
+  <Pagination.Controls />
+</Pagination>`}
+        >
+          <PaginationPageSizeSelectorDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Page Size Options</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Customize the available page size options with the <code class="text-kumo-default">options</code> prop.
+          Defaults to <code class="text-kumo-default">[25, 50, 100, 250]</code>.
+        </p>
+        <ComponentExample
+          code={`<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={200}>
+  <Pagination.Info />
+  <Pagination.Separator />
+  <Pagination.PageSize
+    value={perPage}
+    onChange={(size) => {
+      setPerPage(size);
+      setPage(1);
+    }}
+    options={[10, 20, 50]}
+  />
+  <Pagination.Controls />
+</Pagination>`}
+        >
+          <PaginationCustomPageSizeOptionsDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Info Text</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use a render function to customize the info text.
+        </p>
+        <ComponentExample
+          code={`<Pagination page={page} setPage={setPage} perPage={25} totalCount={100}>
+  <Pagination.Info>
+    {({ page, totalCount }) => \`Page $\{page\} of $\{Math.ceil((totalCount ?? 1) / 25)\}\`}
+  </Pagination.Info>
+  <Pagination.Controls />
+</Pagination>`}
+        >
+          <PaginationCompoundCustomInfoDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Layout</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Arrange components in any order. Here the page size selector is on the right.
+        </p>
+        <ComponentExample
+          code={`<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={500}>
+  <Pagination.Info />
+  <div className="flex items-center gap-2">
+    <Pagination.Controls />
+    <Pagination.Separator />
+    <Pagination.PageSize value={perPage} onChange={setPerPage} />
+  </div>
+</Pagination>`}
+        >
+          <PaginationPageSizeRightDemo client:visible />
         </ComponentExample>
       </div>
     </div>

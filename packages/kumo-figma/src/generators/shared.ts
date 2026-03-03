@@ -63,6 +63,8 @@ export const VAR_NAMES = {
     warningTint: "color-kumo-warning-tint",
     danger: "color-kumo-danger",
     dangerTint: "color-kumo-danger-tint",
+    success: "color-kumo-success",
+    successTint: "color-kumo-success-tint",
     // Legacy aliases (for gradual migration from old naming convention)
     // Old: "color-{name}" → New: "color-kumo-{name}"
     surface: "color-kumo-base",

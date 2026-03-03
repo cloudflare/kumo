@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { Label } from "../label";
 
+/** Field variant definitions (currently empty, reserved for future additions). */
 export const KUMO_FIELD_VARIANTS = {
   // Field currently has no variant options but structure is ready for future additions
 } as const;
@@ -60,25 +61,54 @@ export type FieldErrorMatch =
   | "valid"
   | "valueMissing";
 
+/**
+ * Field component props — wraps a form control with label, description, and error message.
+ *
+ * @example
+ * ```tsx
+ * <Field label="Email" required>
+ *   <Input placeholder="you@example.com" />
+ * </Field>
+ *
+ * <Field label="Phone" required={false} description="We'll only use this for account recovery.">
+ *   <Input placeholder="+1 555-0000" />
+ * </Field>
+ * ```
+ */
 export interface FieldProps extends KumoFieldVariantsProps {
+  /** The form control element(s) to wrap (Input, Select, Checkbox, etc.). */
   children: ReactNode;
-  /** The label content - can be a string or any React node */
+  /** The label content — can be a string or any React node. */
   label: ReactNode;
   /**
-   * When explicitly false, shows gray "(optional)" text after the label.
-   * When true or undefined, no indicator is shown.
+   * When explicitly `false`, shows gray "(optional)" text after the label.
+   * When `true` or `undefined`, no indicator is shown.
    */
   required?: boolean;
-  /** Tooltip content to display next to the label via an info icon */
+  /** Tooltip content displayed next to the label via an info icon. */
   labelTooltip?: ReactNode;
+  /** Validation error with a message and a browser `ValidityState` match key. */
   error?: {
     message: ReactNode;
     match: FieldErrorMatch;
   };
+  /** Helper text displayed below the control (hidden when `error` is present). */
   description?: ReactNode;
+  /** When `true`, places the control before the label (for checkbox/switch layouts). */
   controlFirst?: boolean;
 }
 
+/**
+ * Form field wrapper that provides a label, optional description, and error display
+ * around any form control. Built on Base UI Field primitives.
+ *
+ * @example
+ * ```tsx
+ * <Field label="Username">
+ *   <Input placeholder="Choose a username" />
+ * </Field>
+ * ```
+ */
 export function Field({
   children,
   label,

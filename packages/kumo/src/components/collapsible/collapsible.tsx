@@ -15,6 +15,16 @@ export function collapsibleVariants(_props: KumoCollapsibleVariantsProps = {}) {
   );
 }
 
+/**
+ * Collapsible component props.
+ *
+ * @example
+ * ```tsx
+ * <Collapsible label="Show details" open={open} onOpenChange={setOpen}>
+ *   <Text>Hidden content revealed when expanded.</Text>
+ * </Collapsible>
+ * ```
+ */
 export type CollapsibleProps = PropsWithChildren<
   KumoCollapsibleVariantsProps & {
     /** Text label displayed in the trigger button */

@@ -29,10 +29,13 @@ export const KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS = {
 type Mode = "masked" | "revealed" | "empty";
 
 /**
- * SensitiveInput component props
- * @property {ReactNode} [label] - Label content for the input (enables Field wrapper)
- * @property {ReactNode} [description] - Helper text displayed below the input
- * @property {string | { message: ReactNode, match: FieldErrorMatch }} [error] - Error message or validation error object
+ * SensitiveInput component props.
+ *
+ * @example
+ * ```tsx
+ * <SensitiveInput label="API Key" defaultValue="sk_live_abc123xyz789" />
+ * <SensitiveInput label="Secret" value={secret} onValueChange={setSecret} />
+ * ```
  */
 export interface SensitiveInputProps
   extends Omit<
@@ -47,9 +50,21 @@ export interface SensitiveInputProps
   onValueChange?: (value: string) => void;
   /** Callback fired after value is copied to clipboard */
   onCopy?: () => void;
-  /** Size variant */
+  /**
+   * Size of the input.
+   * - `"xs"` — Extra small for compact UIs
+   * - `"sm"` — Small for secondary fields
+   * - `"base"` — Default input size
+   * - `"lg"` — Large for prominent fields
+   * @default "base"
+   */
   size?: KumoInputSize;
-  /** Style variant */
+  /**
+   * Style variant of the input.
+   * - `"default"` — Default input appearance
+   * - `"error"` — Error state for validation failures
+   * @default "default"
+   */
   variant?: KumoInputVariant;
   /** Label content for the input (enables Field wrapper and sets masked state label) - can be a string or any React node */
   label?: ReactNode;
@@ -61,6 +76,15 @@ export interface SensitiveInputProps
   error?: string | { message: ReactNode; match: FieldErrorMatch };
 }
 
+/**
+ * Password/secret input that masks its value by default and reveals on click.
+ * Includes a built-in copy-to-clipboard button on hover.
+ *
+ * @example
+ * ```tsx
+ * <SensitiveInput label="API Key" defaultValue="sk_live_abc123xyz789" />
+ * ```
+ */
 export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
   (
     {
@@ -351,10 +375,10 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
                   "group-focus-within/container:invisible group-hover/mask:invisible",
               )}
             >
-              ●●●●●●●●
+              ••••••••
             </span>
             {isMaskedWithValue && !disabled && (
-              <span className="invisible absolute inset-0 text-kumo-subtle group-focus-within/container:visible group-hover/mask:visible">
+              <span className="invisible absolute left-0 top-0 whitespace-nowrap text-kumo-subtle group-focus-within/container:visible group-hover/mask:visible">
                 Click to reveal
               </span>
             )}

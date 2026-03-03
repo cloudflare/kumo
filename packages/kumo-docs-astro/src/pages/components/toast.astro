@@ -11,6 +11,11 @@ import {
   ToastDescriptionOnlyDemo,
   ToastSuccessDemo,
   ToastMultipleDemo,
+  ToastErrorDemo,
+  ToastWarningDemo,
+  ToastCustomContentDemo,
+  ToastActionsDemo,
+  ToastPromiseDemo,
 } from "../../components/demos/ToastDemo";
 ---
 
@@ -40,12 +45,12 @@ import {
     <Heading level={2}>Installation</Heading>
     <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
     <CodeBlock
-      code={`import { Toasty, Toast } from "@cloudflare/kumo";`}
+      code={`import { Toasty, useKumoToastManager } from "@cloudflare/kumo";`}
       lang="tsx"
     />
     <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
     <CodeBlock
-      code={`import { Toasty, Toast } from "@cloudflare/kumo/components/toast";`}
+      code={`import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";`}
       lang="tsx"
     />
   </ComponentSection>
@@ -57,14 +62,14 @@ import {
       The toast system consists of two parts: the <code class="text-kumo-default"
         >Toasty</code
       > provider component and the <code class="text-kumo-default"
-        >Toast.useToastManager()</code
+        >useKumoToastManager()</code
       > hook for triggering toasts.
     </p>
     <CodeBlock
-      code={`import { Toasty, Toast, Button } from "@cloudflare/kumo";
+      code={`import { Toasty, useKumoToastManager, Button } from "@cloudflare/kumo";
 
 function ToastTrigger() {
-  const toastManager = Toast.useToastManager();
+  const toastManager = useKumoToastManager();
 
   return (
     <Button
@@ -192,6 +197,94 @@ toastManager.add({ title: "Third toast" });`}
           <ToastMultipleDemo client:visible />
         </ComponentExample>
       </div>
+
+      <div>
+        <Heading level={3}>Error Variant</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use the error variant for critical issues that need attention.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "Deployment failed",
+  description: "Unable to connect to the server.",
+  variant: "error"
+})`}
+        >
+          <ToastErrorDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Warning Variant</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use the warning variant for cautionary messages.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "Rate limit warning",
+  description: "You're approaching your API quota.",
+  variant: "warning"
+})`}
+        >
+          <ToastWarningDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Content</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use the content prop to render completely custom toast content.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  content: (
+    <div>
+      <div className="flex items-center gap-2">
+        <CheckCircleIcon />
+        <Link href="/">my-first-worker</Link> created!
+      </div>
+    </div>
+  )
+})`}
+        >
+          <ToastCustomContentDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Action Buttons</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Add action buttons to toasts for user interaction.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "Need help?",
+  description: "Get assistance with your deployment.",
+  actions: [
+    { children: "Support", variant: "secondary"},
+    { children: "Ask AI", variant: "primary"}
+  ]
+})`}
+        >
+          <ToastActionsDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Promise</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use the promise method to show loading, success, and error states automatically.
+        </p>
+        <ComponentExample
+          code={`toastManager.promise(deployWorker(), {
+  loading: { title: "Deploying...", description: "Please wait." },
+  success: (data) => ({ title: "Deployed!", description: \`Worker "\${data.name}" is live.\` }),
+  error: (err) => ({ title: "Failed", description: err.message, variant: "error" })
+})`}
+        >
+          <ToastPromiseDemo client:visible />
+        </ComponentExample>
+      </div>
     </div>
   </ComponentSection>
 
@@ -207,21 +300,82 @@ toastManager.add({ title: "Third toast" });`}
       <PropsTable component="Toasty" />
     </div>
 
-    <div>
-      <Heading level={3}>Toast.useToastManager()</Heading>
+    <div class="mb-8">
+      <Heading level={3}>useKumoToastManager()</Heading>
       <p class="mb-4 text-kumo-subtle">
         A hook that returns the toast manager for creating toasts.
       </p>
       <CodeBlock
-        code={`const toastManager = Toast.useToastManager();
+        code={`const toastManager = useKumoToastManager();
 
 // Add a toast
-toastManager.add({
-  title: string,       // Toast title
-  description: string, // Toast description
+toastManager.add(options);
+
+// Promise-based toast
+toastManager.promise(asyncFn(), {
+  loading: options,
+  success: (data) => options,
+  error: (err) => options
 });`}
         lang="tsx"
       />
+    </div>
+
+    <div>
+      <Heading level={3}>Toast Options</Heading>
+      <p class="mb-4 text-kumo-subtle">
+        Options passed to <code class="text-kumo-default">toastManager.add()</code> and promise handlers.
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-kumo-line">
+              <th class="py-3 pr-4 font-semibold text-kumo-default">Prop</th>
+              <th class="py-3 pr-4 font-semibold text-kumo-default">Type</th>
+              <th class="py-3 pr-4 font-semibold text-kumo-default">Default</th>
+              <th class="py-3 font-semibold text-kumo-default">Description</th>
+            </tr>
+          </thead>
+          <tbody class="text-kumo-subtle">
+            <tr class="border-b border-kumo-line">
+              <td class="py-3 pr-4 font-mono text-kumo-default">title</td>
+              <td class="py-3 pr-4 font-mono">string</td>
+              <td class="py-3 pr-4">—</td>
+              <td class="py-3">The toast title displayed prominently.</td>
+            </tr>
+            <tr class="border-b border-kumo-line">
+              <td class="py-3 pr-4 font-mono text-kumo-default">description</td>
+              <td class="py-3 pr-4 font-mono">string</td>
+              <td class="py-3 pr-4">—</td>
+              <td class="py-3">Secondary text displayed below the title.</td>
+            </tr>
+            <tr class="border-b border-kumo-line">
+              <td class="py-3 pr-4 font-mono text-kumo-default">variant</td>
+              <td class="py-3 pr-4 font-mono">"default" | "error" | "warning"</td>
+              <td class="py-3 pr-4 font-mono">"default"</td>
+              <td class="py-3">Visual style of the toast. Use <code class="text-kumo-default">error</code> for failures and <code class="text-kumo-default">warning</code> for cautionary messages.</td>
+            </tr>
+            <tr class="border-b border-kumo-line">
+              <td class="py-3 pr-4 font-mono text-kumo-default">content</td>
+              <td class="py-3 pr-4 font-mono">ReactNode</td>
+              <td class="py-3 pr-4">—</td>
+              <td class="py-3">Custom content to render inside the toast. When provided, overrides <code class="text-kumo-default">title</code> and <code class="text-kumo-default">description</code>.</td>
+            </tr>
+            <tr class="border-b border-kumo-line">
+              <td class="py-3 pr-4 font-mono text-kumo-default">actions</td>
+              <td class="py-3 pr-4 font-mono">ButtonProps[]</td>
+              <td class="py-3 pr-4">—</td>
+              <td class="py-3">Array of button props to render as action buttons.</td>
+            </tr>
+            <tr class="border-b border-kumo-line">
+              <td class="py-3 pr-4 font-mono text-kumo-default">timeout</td>
+              <td class="py-3 pr-4 font-mono">number</td>
+              <td class="py-3 pr-4 font-mono">5000</td>
+              <td class="py-3">Time in milliseconds before the toast auto-dismisses.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </ComponentSection>
 </DocLayout>

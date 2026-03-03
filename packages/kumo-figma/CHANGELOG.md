@@ -1,5 +1,107 @@
 # @cloudflare/figma-plugin
 
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies [23865db]
+- Updated dependencies [89cb5ec]
+- Updated dependencies [68c2f0d]
+  - @cloudflare/kumo@1.9.0
+
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies [0ca3b05]
+- Updated dependencies [f69df6d]
+- Updated dependencies [cf4ff38]
+  - @cloudflare/kumo@1.8.0
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies [d9b6498]
+- Updated dependencies [835a7c0]
+- Updated dependencies [391f13a]
+- Updated dependencies [d0e1d29]
+  - @cloudflare/kumo@1.7.0
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies [c71bd9b]
+- Updated dependencies [50d4251]
+- Updated dependencies [93361ed]
+- Updated dependencies [46ecf42]
+- Updated dependencies [a9167fa]
+- Updated dependencies [f02494d]
+  - @cloudflare/kumo@1.6.0
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies [2c8a5ad]
+- Updated dependencies [31cc2e1]
+- Updated dependencies [1ae7dfd]
+- Updated dependencies [fa3eba3]
+- Updated dependencies [3bc976e]
+- Updated dependencies [752fdf1]
+  - @cloudflare/kumo@1.5.1
+
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies [d7a6da3]
+  - @cloudflare/kumo@1.5.0
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [b64847d]
+- Updated dependencies [ea583d8]
+  - @cloudflare/kumo@1.4.1
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [71d667b]
+- Updated dependencies [262e0e6]
+  - @cloudflare/kumo@1.4.0
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [6a40edf]
+  - @cloudflare/kumo@1.3.0
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [d10c711]
+- Updated dependencies [833ce8b]
+  - @cloudflare/kumo@1.2.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 001f9e7: fixes to figma plugin init + zod v4 in kumo
+
+### Patch Changes
+
+- Updated dependencies [6dc9a73]
+- Updated dependencies [001f9e7]
+  - @cloudflare/kumo@1.1.0
+
 ## 0.2.0
 
 ### Minor Changes

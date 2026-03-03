@@ -7,6 +7,7 @@ import { buttonVariants } from "../button";
 import { SkeletonLine } from "../loader";
 import { Field, type FieldErrorMatch } from "../field/field";
 
+/** Select variant definitions (currently empty, reserved for future additions). */
 export const KUMO_SELECT_VARIANTS = {
   // Select currently has no variant options but structure is ready for future additions
 } as const;
@@ -62,6 +63,38 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
   );
 }
 
+/**
+ * Auto-generates Select.Option elements from items prop.
+ * Only used when children are not explicitly provided.
+ * Filters out null values (typically used for placeholders).
+ */
+function renderOptionsFromItems<T>(
+  items:
+    | Record<string, ReactNode>
+    | ReadonlyArray<{ label: ReactNode; value: T }>,
+): ReactNode {
+  // Handle object map format: { key: "Label" }
+  if (!Array.isArray(items)) {
+    return Object.entries(items).map(([key, label]) => (
+      <Option key={key} value={key as T}>
+        {label}
+      </Option>
+    ));
+  }
+
+  // Handle array format: [{ value, label }] - filter out null values
+  return items
+    .filter((item) => item.value !== null)
+    .map((item, index) => (
+      <Option
+        key={typeof item.value === "string" ? item.value : `option-${index}`}
+        value={item.value}
+      >
+        {item.label}
+      </Option>
+    ));
+}
+
 type SelectPropsGeneric<
   T,
   Multiple extends boolean | undefined = false,
@@ -72,6 +105,7 @@ type SelectPropsGeneric<
     className?: string;
     /** Label content for the select (enables Field wrapper) - can be a string or any React node */
     label?: ReactNode;
+    /** Visually hide the label (sr-only). Set to `false` for a visible label. @default true */
     hideLabel?: boolean;
     placeholder?: string;
     loading?: boolean;
@@ -84,45 +118,65 @@ type SelectPropsGeneric<
   };
 
 /**
- * Props for the Select component.
- * @description A dropdown select component for choosing from a list of options.
- * @property {ReactNode} [label] - Label content for the select (enables Field wrapper)
- * @property {ReactNode} [description] - Helper text displayed below the select
- * @property {string | { message: ReactNode, match: FieldErrorMatch }} [error] - Error message or validation error object
+ * Select component props.
+ *
+ * @example
+ * ```tsx
+ * <Select label="Country" onValueChange={setValue}>
+ *   <Select.Option value="us">United States</Select.Option>
+ *   <Select.Option value="uk">United Kingdom</Select.Option>
+ * </Select>
+ * ```
  */
 export interface SelectProps {
-  /** Additional CSS classes */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Label content for the select (enables Field wrapper) - can be a string or any React node */
+  /** Label content for the select (enables Field wrapper) — can be a string or any React node. */
   label?: ReactNode;
-  /** Whether to visually hide the label (still accessible to screen readers) */
+  /**
+   * Visually hide the label while keeping it accessible to screen readers.
+   * Set to `false` to show a visible label above the select via the Field wrapper.
+   * @default true
+   */
   hideLabel?: boolean;
-  /** Placeholder text when no value is selected */
+  /** Placeholder text shown when no value is selected. */
   placeholder?: string;
-  /** Whether the select is in a loading state */
+  /** When `true`, shows a skeleton loader in place of the selected value. */
   loading?: boolean;
-  /** Whether the select is disabled */
+  /** Whether the select is disabled. */
   disabled?: boolean;
-  /** Whether the select is required */
+  /** Whether the select is required. When `false`, shows "(optional)" text. */
   required?: boolean;
-  /** Tooltip content to display next to the label via an info icon */
+  /** Tooltip content displayed next to the label via an info icon. */
   labelTooltip?: ReactNode;
-  /** The currently selected value */
+  /** Currently selected value (controlled mode). */
   value?: unknown;
-  /** Default value for uncontrolled usage */
+  /** Initial value for uncontrolled mode. */
   defaultValue?: unknown;
-  /** Callback when the value changes */
+  /** Callback fired when the selected value changes. */
   onValueChange?: (value: unknown) => void;
-  /** Whether multiple selection is enabled */
+  /** Enable multi-select mode. */
   multiple?: boolean;
-  /** Child elements (Select.Option components) */
+  /** `Select.Option` elements to render in the dropdown. */
   children?: ReactNode;
-  /** Helper text displayed below the select */
+  /** Helper text displayed below the select. */
   description?: ReactNode;
-  /** Error message or validation error object */
+  /** Error message string or validation error object with `match` key. */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
 }
 
+/**
+ * Dropdown for selecting a value from a list of options.
+ * Wraps Base UI Select with Kumo styling and optional Field integration.
+ *
+ * @example
+ * ```tsx
+ * <Select label="Fruit" onValueChange={setFruit}>
+ *   <Select.Option value="apple">Apple</Select.Option>
+ *   <Select.Option value="banana">Banana</Select.Option>
+ * </Select>
+ * ```
+ */
 export function Select<T, Multiple extends boolean | undefined = false>({
   children,
   className,
@@ -185,6 +239,10 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     }
   }
 
+  // Auto-render children from items if children not provided
+  const renderedChildren =
+    children ?? (items ? renderOptionsFromItems(items) : null);
+
   const selectControl = (
     <SelectBase.Root
       {...props}
@@ -212,16 +270,16 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal>
-        <SelectBase.Positioner className="z-50">
+        <SelectBase.Positioner>
           <SelectBase.Popup
             className={cn(
-              "z-50 overflow-hidden bg-kumo-control text-kumo-default", // background
+              "overflow-hidden bg-kumo-control text-kumo-default", // background
               "rounded-lg shadow-lg ring ring-kumo-line", // border part
               // 3px adjustment to account for padding + border differences
               "min-w-[calc(var(--anchor-width)+3px)] p-1.5", // spacing
             )}
           >
-            {children}
+            {renderedChildren}
           </SelectBase.Popup>
         </SelectBase.Positioner>
       </SelectBase.Portal>
@@ -250,15 +308,33 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   }
 
   // Render with standalone label when label is hidden (sr-only)
+  // Still show description/error for accessibility and UX
+  const normalizedError = error
+    ? typeof error === "string"
+      ? { message: error, match: true as const }
+      : error
+    : undefined;
+
   return (
-    <>
+    <div className="grid gap-2">
       {label && (
         <span id={labelId} className="sr-only">
           {label}
         </span>
       )}
       {selectControl}
-    </>
+      {normalizedError ? (
+        <span className="text-sm text-kumo-danger">
+          {normalizedError.message}
+        </span>
+      ) : (
+        description && (
+          <span className="text-sm leading-snug text-kumo-subtle">
+            {description}
+          </span>
+        )
+      )}
+    </div>
   );
 }
 

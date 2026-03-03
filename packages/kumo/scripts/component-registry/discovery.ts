@@ -395,14 +395,8 @@ export async function discoverFromDir(
     }
 
     // Extract variants from file (may be empty for components without variant props)
-    // Layouts and pages may not have KUMO_*_VARIANTS exports
+    // Some components (like DatePicker) don't have KUMO_*_VARIANTS exports
     const variantsData = extractVariantsFromFile(mainFile);
-    if (!variantsData && type === "component") {
-      console.warn(
-        `Warning: Could not find KUMO_*_VARIANTS exports in ${dirName}, skipping...`,
-      );
-      continue;
-    }
 
     // Determine category
     const category = override.category || CATEGORY_MAP[dirName] || "Other";

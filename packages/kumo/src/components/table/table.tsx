@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { cn } from "../../utils";
 import { Checkbox } from "../checkbox";
 
+/** Table layout and row variant definitions mapping names to their Tailwind classes. */
 export const KUMO_TABLE_VARIANTS = {
   layout: {
     auto: {
@@ -34,9 +35,36 @@ export const KUMO_TABLE_DEFAULT_VARIANTS = {
 export type KumoTableRowVariant = keyof typeof KUMO_TABLE_VARIANTS.variant;
 export type KumoTableLayout = keyof typeof KUMO_TABLE_VARIANTS.layout;
 
+/**
+ * Table root — applies layout, borders, padding, and header styles.
+ *
+ * @example
+ * ```tsx
+ * <Table layout="fixed">
+ *   <Table.Header>
+ *     <Table.Row>
+ *       <Table.Head>Name</Table.Head>
+ *       <Table.Head>Status</Table.Head>
+ *     </Table.Row>
+ *   </Table.Header>
+ *   <Table.Body>
+ *     <Table.Row>
+ *       <Table.Cell>Worker A</Table.Cell>
+ *       <Table.Cell>Active</Table.Cell>
+ *     </Table.Row>
+ *   </Table.Body>
+ * </Table>
+ * ```
+ */
 const TableRoot = forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement> & {
+    /**
+     * Table layout algorithm.
+     * - `"auto"` — columns resize based on content
+     * - `"fixed"` — equal-width columns, controlled via `<colgroup>`
+     * @default "auto"
+     */
     layout?: KumoTableLayout;
   }
 >(({ layout = "auto", ...props }, ref) => {
@@ -136,73 +164,71 @@ const TableCheckCell = forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
+    indeterminate?: boolean;
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
->(({ checked, onValueChange, label, disabled, ...props }, ref) => {
-  return (
-    <TableCell
-      ref={ref}
-      {...props}
-      className={cn(
-        "cursor-pointer p-0 leading-none",
-        disabled && "cursor-default",
-        props.className,
-      )}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (!disabled) {
-          onValueChange?.(!checked);
-        }
-      }}
-    >
-      <Checkbox
-        checked={checked}
-        onClick={(e) => e.stopPropagation()}
-        onCheckedChange={onValueChange}
-        aria-label={label ?? "Select row"}
-        disabled={disabled}
-      />
-    </TableCell>
-  );
-});
+>(
+  (
+    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    ref,
+  ) => {
+    return (
+      <TableCell
+        ref={ref}
+        {...props}
+        className={cn("w-10 leading-none", props.className)}
+      >
+        <Checkbox
+          checked={checked}
+          indeterminate={indeterminate}
+          onCheckedChange={(newChecked) => {
+            onValueChange?.(newChecked);
+          }}
+          aria-label={label ?? "Select row"}
+          disabled={disabled}
+          className="relative before:absolute before:-inset-3 before:content-['']"
+        />
+      </TableCell>
+    );
+  },
+);
 
 const TableCheckHead = forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
+    indeterminate?: boolean;
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
->(({ checked, onValueChange, label, disabled, ...props }, ref) => {
-  return (
-    <TableHead
-      ref={ref}
-      {...props}
-      className={cn(
-        "cursor-pointer p-0 leading-none",
-        disabled && "cursor-default",
-        props.className,
-      )}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (!disabled) {
-          onValueChange?.(!checked);
-        }
-      }}
-    >
-      <Checkbox
-        checked={checked}
-        onClick={(e) => e.stopPropagation()}
-        onCheckedChange={onValueChange}
-        aria-label={label ?? "Select all rows"}
-        disabled={disabled}
-      />
-    </TableHead>
-  );
-});
+>(
+  (
+    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    ref,
+  ) => {
+    return (
+      <TableHead
+        ref={ref}
+        {...props}
+        className={cn("w-10 leading-none", props.className)}
+      >
+        <Checkbox
+          checked={checked}
+          indeterminate={indeterminate}
+          onCheckedChange={(newChecked) => {
+            onValueChange?.(newChecked);
+          }}
+          aria-label={label ?? "Select all rows"}
+          disabled={disabled}
+          className="relative before:absolute before:-inset-3 before:content-['']"
+        />
+      </TableHead>
+    );
+  },
+);
 
 TableRoot.displayName = "Table";
 TableBody.displayName = "Table.Body";
@@ -215,6 +241,32 @@ TableResizeHandle.displayName = "Table.ResizeHandle";
 TableCheckCell.displayName = "Table.CheckCell";
 TableCheckHead.displayName = "Table.CheckHead";
 
+/**
+ * Table — semantic HTML table with styled rows, cells, and selection support.
+ *
+ * Compound component: `Table` (Root), `.Header`, `.Head`, `.Body`, `.Row`,
+ * `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`.
+ *
+ * @example
+ * ```tsx
+ * <Table>
+ *   <Table.Header>
+ *     <Table.Row>
+ *       <Table.CheckHead checked={allSelected} onValueChange={toggleAll} />
+ *       <Table.Head>Name</Table.Head>
+ *     </Table.Row>
+ *   </Table.Header>
+ *   <Table.Body>
+ *     {rows.map((row) => (
+ *       <Table.Row key={row.id} variant={selected.has(row.id) ? "selected" : "default"}>
+ *         <Table.CheckCell checked={selected.has(row.id)} onValueChange={() => toggle(row.id)} />
+ *         <Table.Cell>{row.name}</Table.Cell>
+ *       </Table.Row>
+ *     ))}
+ *   </Table.Body>
+ * </Table>
+ * ```
+ */
 export const Table = Object.assign(TableRoot, {
   Header: TableHeader,
   Head: TableHead,

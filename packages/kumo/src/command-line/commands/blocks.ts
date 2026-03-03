@@ -65,12 +65,12 @@ export function blocks(): void {
     }
 
     // Sort categories and blocks
-    const sortedCategories = [...byCategory.keys()].toSorted();
+    const sortedCategories = [...byCategory.keys()].sort();
 
     console.log(`Kumo Blocks (${blockList.length} total)\n`);
 
     for (const category of sortedCategories) {
-      const categoryBlocks = [...byCategory.get(category)!].toSorted((a, b) =>
+      const categoryBlocks = [...byCategory.get(category)!].sort((a, b) =>
         a.name.localeCompare(b.name),
       );
 
