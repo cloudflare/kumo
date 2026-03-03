@@ -10,8 +10,7 @@ catalog:
   "@types/node": ^22.10.2
   "@types/react": 19.2.4
   "@types/react-dom": 19.2.3
-  "@vitest/browser": ^3.2.4
-  "@vitest/ui": ^3.2.4
+  "@vitest/ui": ^4.0.18
   chokidar: ^4.0.3
   clsx: ^2.1.1
   eslint: ^9.17.0
@@ -30,7 +29,7 @@ catalog:
   vite: ^7.1.7
   vite-plugin-dts: ^4.3.0
   vite-tsconfig-paths: ^5.1.4
-  vitest: ^3.2.4
+  vitest: ^4.0.18
   oxlint: 1.42.0
   oxlint-tsgolint: 0.11.3
   wrangler: ^4.59.1

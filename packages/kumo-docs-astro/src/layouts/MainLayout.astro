@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import { SidebarNav } from "../components/SidebarNav";
-import { ThemeToggle } from "../components/ThemeToggle";
 
 interface Props {
   title?: string;
@@ -16,17 +15,33 @@ const currentPath = Astro.url.pathname;
   <div class="isolate">
     <SidebarNav currentPath={currentPath} client:load />
 
-    <!-- Theme toggle: fixed in top right corner -->
-    <div
-      class="pointer-events-auto fixed top-0 right-2 z-50 flex h-[49px] items-center"
-    >
-      <ThemeToggle client:only="react" />
-    </div>
+    <script is:inline>
+      (function () {
+        const KEY = "kumo-sidebar-scroll";
+        function restore() {
+          try {
+            const raw = sessionStorage.getItem(KEY);
+            if (!raw) return;
+            const pos = Number.parseInt(raw, 10);
+            if (!Number.isFinite(pos)) return;
+            const els = document.querySelectorAll("[data-sidebar-scroll]");
+            for (const el of els) {
+              el.scrollTop = pos;
+            }
+          } catch {
+            // no-op
+          }
+        }
+
+        restore();
+        window.addEventListener("astro:after-swap", restore);
+      })();
+    </script>
 
     <!-- Main content area - margin controlled by CSS :has() based on sidebar state -->
     <div
       id="main-content"
-      class="main-content mt-[49px] md:mt-0 md:ml-12 h-screen overflow-y-auto overscroll-y-none transition-[margin] duration-300"
+      class="main-content mt-12 md:mt-0 md:ml-12 transition-[margin] duration-300"
     >
       <slot />
     </div>
@@ -40,7 +55,7 @@ const currentPath = Astro.url.pathname;
     body:has(aside[data-sidebar-open="true"]) .main-content {
       margin-left: 304px; /* 48px rail + 256px sidebar panel */
     }
-    
+
     /* When sidebar is closed, only rail margin */
     body:has(aside[data-sidebar-open="false"]) .main-content {
       margin-left: 48px; /* w-12 = 3rem = 48px */

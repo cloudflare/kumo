@@ -6,6 +6,9 @@ import {
   CreditCardIcon,
   MoonIcon,
   SignOutIcon,
+  GearIcon,
+  BookOpenIcon,
+  ArrowSquareOutIcon,
 } from "@phosphor-icons/react";
 
 export function DropdownBasicDemo() {
@@ -96,7 +99,10 @@ export function DropdownNestedDemo() {
           <DropdownMenu.SubTrigger>Language</DropdownMenu.SubTrigger>
           <DropdownMenu.SubContent>
             <DropdownMenu.Group>
-              <DropdownMenu.RadioGroup value={language} onValueChange={setLanguage}>
+              <DropdownMenu.RadioGroup
+                value={language}
+                onValueChange={setLanguage}
+              >
                 {languages.map((lang) => (
                   <DropdownMenu.RadioItem key={lang.code} value={lang.code}>
                     {lang.label}
@@ -113,7 +119,10 @@ export function DropdownNestedDemo() {
           <DropdownMenu.SubTrigger>Set Timezone</DropdownMenu.SubTrigger>
           <DropdownMenu.SubContent>
             <DropdownMenu.Group>
-              <DropdownMenu.RadioGroup value={timezone} onValueChange={setTimezone}>
+              <DropdownMenu.RadioGroup
+                value={timezone}
+                onValueChange={setTimezone}
+              >
                 {timezones.map((tz) => (
                   <DropdownMenu.RadioItem key={tz.value} value={tz.value}>
                     {tz.label}
@@ -129,6 +138,34 @@ export function DropdownNestedDemo() {
         <DropdownMenu.Item icon={SignOutIcon} variant="danger">
           Log out
         </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Demonstrates the new LinkItem component for navigation links.
+ * Use LinkItem instead of Item with href for cleaner, more semantic links.
+ */
+export function DropdownLinkItemDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Resources</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.LinkItem href="/settings" icon={GearIcon}>
+          Settings
+        </DropdownMenu.LinkItem>
+        <DropdownMenu.LinkItem href="/docs" icon={BookOpenIcon}>
+          Documentation
+        </DropdownMenu.LinkItem>
+        <DropdownMenu.Separator />
+        <DropdownMenu.LinkItem
+          href="https://developers.cloudflare.com"
+          target="_blank"
+          icon={ArrowSquareOutIcon}
+        >
+          Developer Docs
+        </DropdownMenu.LinkItem>
       </DropdownMenu.Content>
     </DropdownMenu>
   );

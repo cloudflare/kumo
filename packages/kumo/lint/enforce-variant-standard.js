@@ -10,6 +10,12 @@ import { defineRule } from "oxlint";
  */
 
 /**
+ * Components that don't require KUMO_*_VARIANTS exports.
+ * These are typically wrapper components around third-party libraries.
+ */
+const VARIANT_EXEMPT_COMPONENTS = ["DATE_PICKER"];
+
+/**
  * Extract component name from file path.
  * Example: "src/components/button/button.tsx" -> "BUTTON"
  */
@@ -145,6 +151,11 @@ export const enforceVariantStandardRule = defineRule({
       },
       "Program:exit"() {
         if (!shouldCheck) return;
+
+        // Skip variant requirement check for exempt components
+        if (VARIANT_EXEMPT_COMPONENTS.includes(componentName)) {
+          return;
+        }
 
         const expectedVariants = `KUMO_${componentName}_VARIANTS`;
         const expectedDefaultVariants = `KUMO_${componentName}_DEFAULT_VARIANTS`;

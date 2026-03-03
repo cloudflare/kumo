@@ -20,6 +20,7 @@ Small status label for categorizing or highlighting content.
   - `"primary"`: Default high-emphasis badge for important labels
   - `"secondary"`: Subtle badge for secondary information
   - `"destructive"`: Error or danger state indicator
+  - `"success"`: Success or positive state indicator
   - `"outline"`: Bordered badge with transparent background
   - `"beta"`: Indicates beta or experimental features
 - `className`: string
@@ -29,7 +30,7 @@ Small status label for categorizing or highlighting content.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-contrast`, `bg-kumo-danger`, `bg-kumo-fill`, `border-kumo-brand`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`
+`bg-kumo-contrast`, `bg-kumo-danger`, `bg-kumo-fill`, `bg-kumo-success`, `border-kumo-brand`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`
 
 **Examples:**
 
@@ -38,6 +39,7 @@ Small status label for categorizing or highlighting content.
       <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="success">Success</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
     </div>
@@ -59,7 +61,7 @@ Small status label for categorizing or highlighting content.
 
 ### Banner
 
-Full-width message bar for informational, warning, or error notices.
+Full-width message bar for informational, warning, or error notices. Supports structured title/description for i18n, or simple children for basic usage.
 
 **Type:** component
 
@@ -70,10 +72,13 @@ Full-width message bar for informational, warning, or error notices.
 **Props:**
 
 - `icon`: ReactNode
-  Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`).
+  Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`).
+- `title`: string
+  Primary heading text for the banner. Use for i18n string injection.
+- `description`: ReactNode
+  Secondary description text displayed below the title. Use for i18n string injection.
 - `text`: string
 - `children`: ReactNode
-  Banner message content. Accepts strings or custom React elements.
 - `variant`: enum [default: default]
   - `"default"`: Informational banner for general messages
   - `"alert"`: Warning banner for cautionary messages
@@ -83,38 +88,70 @@ Full-width message bar for informational, warning, or error notices.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-danger`, `bg-kumo-danger-tint`, `bg-kumo-info`, `bg-kumo-info-tint`, `bg-kumo-warning`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-info`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-link`, `text-kumo-warning`
+`bg-kumo-danger`, `bg-kumo-danger-tint`, `bg-kumo-info`, `bg-kumo-info-tint`, `bg-kumo-warning`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-info`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-info`, `text-kumo-warning`
 
 **Examples:**
 
 ```tsx
 <div className="space-y-3">
-      <Banner>This is an informational banner.</Banner>
-      <Banner variant="alert">This is an alert banner.</Banner>
-      <Banner variant="error">This is an error banner.</Banner>
+      <Banner
+        icon={<Info weight="fill" />}
+        title="Update available"
+        description="A new version is ready to install."
+      />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="alert"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+      />
+      <Banner
+        icon={<WarningCircle weight="fill" />}
+        variant="error"
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
+      />
     </div>
 ```
 
 ```tsx
-<Banner>This is an informational banner.</Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Update available"
+      description="A new version is ready to install."
+    />
 ```
 
 ```tsx
-<Banner variant="alert">Your session will expire soon.</Banner>
+<Banner
+      icon={<Warning weight="fill" />}
+      variant="alert"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+    />
 ```
 
 ```tsx
-<Banner icon={<WarningCircle />} variant="alert">
-      Review your billing information.
-    </Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Your changes have been saved."
+    />
 ```
 
 ```tsx
-<Banner icon={<Info />}>
-      <Text DANGEROUS_className="text-inherit">
-        This banner supports <strong>custom content</strong> with Text.
-      </Text>
-    </Banner>
+<Banner
+      icon={<Info weight="fill" />}
+      title="Custom content supported"
+      description={
+        <Text DANGEROUS_className="text-inherit">
+          This banner supports <strong>custom content</strong> with Text.
+        </Text>
+      }
+    />
+```
+
+```tsx
+<Banner icon={<Info />}>This is a simple banner using children.</Banner>
 ```
 
 
@@ -387,7 +424,7 @@ Checkbox component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-contrast`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -512,10 +549,14 @@ Read-only text field with a one-click copy-to-clipboard button.
   The text to display and copy to clipboard.
 - `className`: string
   Additional CSS classes merged via `cn()`.
+- `tooltip`: object
+  Tooltip config. Shows tooltip on hover, anchored toast on click.
+- `labels`: object
+  Accessible labels for i18n.
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `border-kumo-line`
+`bg-kumo-base`, `border-kumo-line`, `outline-kumo-fill`, `text-kumo-default`
 
 **Styling:**
 
@@ -567,6 +608,13 @@ Read-only text field with a one-click copy-to-clipboard button.
 
 ```tsx
 <ClipboardText text="0c239dd2" />
+```
+
+```tsx
+<ClipboardText
+      text="npx kumo add button"
+      tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
+    />
 ```
 
 
@@ -1155,7 +1203,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -1210,17 +1258,7 @@ Group sub-component
 
 #### Combobox.List
 
-A container for combobox items. Supports render prop for custom item rendering. Renders a `<div>` element.
-
-Props:
-- `children`: ReactNode | ((item: T, index: number) => ReactNode) - Items to render, or a function that receives each item and returns a node
-
-Usage:
-```tsx
-<Combobox.List>
-  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}
-</Combobox.List>
-```
+List sub-component
 
 #### Combobox.Collection
 
@@ -1641,6 +1679,180 @@ CommandPalette — accessible command palette / spotlight search overlay.  Compo
 
 ---
 
+### DatePicker
+
+DatePicker — a date selection calendar.  Built on [react-day-picker](https://daypicker.dev) with Kumo styling. Supports three selection modes: single, multiple, and range.
+
+**Type:** component
+
+**Import:** `import { DatePicker } from "@cloudflare/kumo";`
+
+**Category:** Other
+
+**Props:**
+
+- `className`: string
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
+
+**Colors (kumo tokens used):**
+
+`bg-kumo-base`
+
+**Examples:**
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker mode="single" selected={date} onChange={d => {
+        if (d) {
+          setDate(d);
+        }
+      }} />
+      <p className="text-sm text-kumo-subtle">
+        Selected: {date ? date.toLocaleDateString() : "None"}
+      </p>
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="multiple"
+        selected={dates}
+        onChange={setDates}
+        max={5}
+      />
+      <p className="text-sm text-kumo-subtle">
+        Selected: {dates?.length ?? 0} date(s)
+      </p>
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="range"
+        selected={range}
+        onChange={setRange}
+        numberOfMonths={2}
+      />
+      <p className="text-sm text-kumo-subtle">
+        Range:{" "}
+        {range?.from
+          ? `${range.from.toLocaleDateString()} - ${range.to?.toLocaleDateString() ?? "..."}`
+          : "None"}
+      </p>
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <DatePicker
+        mode="range"
+        selected={range}
+        onChange={setRange}
+        min={3}
+        max={7}
+        footer={
+          <span className="text-xs text-kumo-subtle">Select 3-7 nights</span>
+        }
+      />
+    </div>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {date ? date.toLocaleDateString() : "Pick a date"}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-3">
+        <DatePicker mode="single" selected={date} onChange={setDate} />
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {formatRange()}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-3">
+        <DatePicker
+          mode="range"
+          selected={range}
+          onChange={setRange}
+          numberOfMonths={2}
+        />
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {formatRange()}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-0">
+        <div className="flex">
+          <div className="flex flex-col gap-1 border-r border-kumo-line p-2 text-sm">
+            {presets.map((preset) => {
+              const isActive = isPresetActive(preset);
+              return (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => handlePresetClick(preset)}
+                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${isActive
+                    ? "bg-kumo-bg-inverse text-kumo-text-inverse"
+                    : "text-kumo-strong hover:bg-kumo-control"
+                    }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-3">
+            <DatePicker
+              mode="range"
+              selected={range}
+              onChange={setRange}
+              month={month}
+              onMonthChange={setMonth}
+              numberOfMonths={2}
+            />
+          </div>
+        </div>
+      </Popover.Content>
+    </Popover>
+```
+
+```tsx
+<DatePicker
+      mode="multiple"
+      selected={dates}
+      onChange={setDates}
+      max={maxDays}
+      disabled={unavailableDates}
+      fixedWeeks
+      footer={
+        <p className="text-xs text-kumo-subtle pt-2 w-full">
+          {selectedCount}/{maxDays} days selected. Grayed dates are unavailable.
+        </p>
+      }
+    />
+```
+
+
+---
+
 ### DateRangePicker
 
 DateRangePicker — dual-calendar date range selector.  Renders two side-by-side month calendars with click-to-select start/end dates, hover preview of the range, a timezone footer, and a reset button.
@@ -1706,94 +1918,6 @@ DateRangePicker — dual-calendar date range selector.  Renders two side-by-side
       - iconSize: 18
       - padding: 20
       - gap: 12
-
-**Examples:**
-
-```tsx
-<div className="flex flex-col gap-4">
-      <DateRangePicker
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-      />
-      <div className="text-sm text-kumo-subtle">
-        {startDate && endDate ? (
-          <span>
-            Selected: {startDate.toLocaleDateString()} -{" "}
-            {endDate.toLocaleDateString()}
-          </span>
-        ) : startDate ? (
-          <span>Start: {startDate.toLocaleDateString()} (select end date)</span>
-        ) : (
-          <span>Select a date range</span>
-        )}
-      </div>
-    </div>
-```
-
-```tsx
-<div className="flex flex-col gap-8">
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">Small</p>
-        <DateRangePicker
-          size="sm"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Base (default)
-        </p>
-        <DateRangePicker
-          size="base"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">Large</p>
-        <DateRangePicker
-          size="lg"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-    </div>
-```
-
-```tsx
-<div className="flex flex-col gap-8">
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Default variant
-        </p>
-        <DateRangePicker
-          variant="default"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-medium text-kumo-default">
-          Subtle variant
-        </p>
-        <DateRangePicker
-          variant="subtle"
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-        />
-      </div>
-    </div>
-```
-
-```tsx
-<DateRangePicker
-      timezone="London, UK (GMT+0)"
-      onStartDateChange={() => {}}
-      onEndDateChange={() => {}}
-    />
-```
-
 
 ---
 
@@ -1970,12 +2094,116 @@ Close sub-component
     </Dialog.Root>
 ```
 
+```tsx
+<Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Create Resource
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-4 text-kumo-subtle">
+          Select a region for your new resource.
+        </Dialog.Description>
+        <Select
+          className="w-full"
+          renderValue={(v) =>
+            regions.find((r) => r.value === v)?.label ?? "Select region..."
+          }
+        >
+          {regions.map((region) => (
+            <Select.Option key={region.value} value={region.value}>
+              {region.label}
+            </Select.Option>
+          ))}
+        </Select>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
+```
+
+```tsx
+<Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Create Resource
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-4 text-kumo-subtle">
+          Search and select a region for your new resource.
+        </Dialog.Description>
+        <Combobox value={value} onValueChange={setValue} items={regions}>
+          <Combobox.TriggerInput
+            className="w-full"
+            placeholder="Search regions..."
+          />
+          <Combobox.Content>
+            <Combobox.Empty>No regions found</Combobox.Empty>
+            <Combobox.List>
+              {(item: { value: string; label: string }) => (
+                <Combobox.Item key={item.value} value={item}>
+                  {item.label}
+                </Combobox.Item>
+              )}
+            </Combobox.List>
+          </Combobox.Content>
+        </Combobox>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
+```
+
 
 ---
 
 ### DropdownMenu
 
-DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.
+DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.
 
 **Type:** component
 
@@ -2024,6 +2252,10 @@ Content sub-component
 #### DropdownMenu.Item
 
 Item sub-component
+
+#### DropdownMenu.LinkItem
+
+LinkItem sub-component
 
 #### DropdownMenu.CheckboxItem
 
@@ -3069,7 +3301,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 
 ### Pagination
 
-Page navigation controls with page count display.
+Pagination component
 
 **Type:** component
 
@@ -3079,9 +3311,6 @@ Page navigation controls with page count display.
 
 **Props:**
 
-- `controls`: enum [default: full]
-  - `"full"`: Full pagination controls with first, previous, page input, next, and last buttons
-  - `"simple"`: Simple pagination controls with only previous and next buttons
 - `setPage`: (page: number) => void (required)
   Callback when page changes
 - `page`: number
@@ -3090,14 +3319,60 @@ Page navigation controls with page count display.
   Number of items displayed per page.
 - `totalCount`: number
   Total number of items across all pages.
+- `className`: string
+  Additional CSS classes for the container
+- `children`: ReactNode
+  Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator.
+- `controls`: enum [default: full]
+  - `"full"`: Full pagination controls with first, previous, page input, next, and last buttons
+  - `"simple"`: Simple pagination controls with only previous and next buttons
 - `text`: object
-  Method to provide custom pagination text
 
 **Colors (kumo tokens used):**
 
-`text-kumo-strong`
+`border-kumo-line`, `text-kumo-strong`
 
 **Styling:**
+
+
+**Sub-Components:**
+
+This is a compound component. Use these sub-components:
+
+#### Pagination.Info
+
+Info sub-component
+
+Props:
+- `children`: (props: {
+- `page`: number (required)
+- `perPage`: number
+- `totalCount`: number
+- `pageShowingRange`: string (required)
+
+#### Pagination.PageSize
+
+PageSize sub-component
+
+Props:
+- `value`: number (required)
+- `options`: number[]
+- `label`: ReactNode
+- `className`: string
+
+#### Pagination.Controls
+
+Controls sub-component
+
+Props:
+- `className`: string
+
+#### Pagination.Separator
+
+Separator sub-component
+
+Props:
+- `className`: string
 
 
 **Examples:**
@@ -3118,12 +3393,77 @@ Page navigation controls with page count display.
 
 ```tsx
 <Pagination
-      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}
+      text={({ perPage }: { perPage?: number }) =>
+        `Page ${page} - showing ${perPage} per page`
+      }
       page={page}
       setPage={setPage}
       perPage={25}
       totalCount={100}
     />
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+      />
+      <Pagination.Controls />
+    </Pagination>
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={200}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+        options={[10, 20, 50]}
+      />
+      <Pagination.Controls />
+    </Pagination>
+```
+
+```tsx
+<Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <div className="flex items-center gap-2">
+        <Pagination.Controls />
+        <Pagination.Separator />
+        <Pagination.PageSize
+          value={perPage}
+          onChange={(size) => {
+            setPerPage(size);
+            setPage(1);
+          }}
+        />
+      </div>
+    </Pagination>
 ```
 
 
@@ -3501,11 +3841,7 @@ Option sub-component
       value={value}
       onValueChange={(v) => setValue(v ?? "apple")}
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    >
-      <Select.Option value="apple">Apple</Select.Option>
-      <Select.Option value="banana">Banana</Select.Option>
-      <Select.Option value="cherry">Cherry</Select.Option>
-    </Select>
+    />
 ```
 
 ```tsx
@@ -3538,13 +3874,8 @@ Option sub-component
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
       placeholder="Please select"
-    >
-      {data?.map((item) => (
-        <Select.Option key={item} value={item}>
-          {item}
-        </Select.Option>
-      ))}
-    </Select>
+      items={items}
+    />
 ```
 
 ```tsx
@@ -3967,16 +4298,27 @@ ResizeHandle sub-component
         <Table>
           <Table.Header>
             <Table.Row>
-              <Table.CheckHead aria-label="Select all rows" />
+              <Table.CheckHead
+                checked={selectedIds.size === rows.length}
+                indeterminate={
+                  selectedIds.size > 0 && selectedIds.size < rows.length
+                }
+                onValueChange={toggleAll}
+                aria-label="Select all rows"
+              />
               <Table.Head>Subject</Table.Head>
               <Table.Head>From</Table.Head>
               <Table.Head>Date</Table.Head>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {emailData.slice(0, 3).map((row) => (
+            {rows.map((row) => (
               <Table.Row key={row.id}>
-                <Table.CheckCell aria-label={`Select ${row.subject}`} />
+                <Table.CheckCell
+                  checked={selectedIds.has(row.id)}
+                  onValueChange={() => toggleRow(row.id)}
+                  aria-label={`Select ${row.subject}`}
+                />
                 <Table.Cell>{row.subject}</Table.Cell>
                 <Table.Cell>{row.from}</Table.Cell>
                 <Table.Cell>{row.date}</Table.Cell>
@@ -4064,7 +4406,8 @@ ResizeHandle sub-component
       <LayerCard.Primary className="w-full overflow-x-auto p-0">
         <Table layout="fixed">
           <colgroup>
-            <col style={{ width: "40px" }} />
+            <col />{" "}
+            {/* Checkbox column - width handled by Table.CheckHead/CheckCell */}
             <col />
             <col style={{ width: "150px" }} />
             <col style={{ width: "120px" }} />
@@ -4117,14 +4460,30 @@ ResizeHandle sub-component
                   <span className="truncate">{row.date}</span>
                 </Table.Cell>
                 <Table.Cell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    shape="square"
-                    aria-label="More options"
-                  >
-                    <DotsThree weight="bold" size={16} />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenu.Trigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          shape="square"
+                          aria-label="More options"
+                        >
+                          <DotsThree weight="bold" size={16} />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item icon={Eye}>View</DropdownMenu.Item>
+                      <DropdownMenu.Item icon={PencilSimple}>
+                        Edit
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item icon={Trash} variant="danger">
+                        Delete
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu>
                 </Table.Cell>
               </Table.Row>
             ))}
@@ -4427,20 +4786,15 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 
 **Props:**
 
-- `align`: enum
-  Alignment on the axis perpendicular to `side`.
-- `"start"` — Align to the start edge
-- `"center"` — Center-aligned
-- `"end"` — Align to the end edge
-- `asChild`: boolean
-  When `true`, the trigger wraps the child element instead of adding a wrapper.
-- `className`: string
-  Additional CSS classes merged via `cn()`.
 - `side`: enum [default: top]
   - `"top"`: Tooltip appears above the trigger
   - `"bottom"`: Tooltip appears below the trigger
   - `"left"`: Tooltip appears to the left of the trigger
   - `"right"`: Tooltip appears to the right of the trigger
+- `className`: string
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
 - `content`: ReactNode (required)
   Content to display in the tooltip
 
@@ -4506,7 +4860,7 @@ Multi-line textarea input with Input variants and InputArea-specific dimensions
 - **Feedback:** Banner, Loader, Toasty
 - **Action:** Button, ClipboardText
 - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, Switch
-- **Other:** CloudflareLogo, Label, Link, SensitiveInput, Table, DeleteResource
+- **Other:** CloudflareLogo, DatePicker, Label, Link, SensitiveInput, Table, DeleteResource
 - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
 - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
 - **Layout:** Grid, Surface, PageHeader, ResourceListPage

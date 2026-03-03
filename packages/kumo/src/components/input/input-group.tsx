@@ -68,7 +68,7 @@ function Root({
           inputVariants({ size, parentFocusIndicator: !isIndividualFocus }),
           "flex w-full gap-0 border-0 px-0",
           isIndividualFocus
-            ? "overflow-visible"
+            ? "isolate overflow-visible"
             : "overflow-hidden shadow-xs ring ring-kumo-line focus-within:ring-kumo-ring",
           className,
         )}
@@ -111,7 +111,7 @@ function Input(props: InputProps) {
         "flex h-full items-center rounded-none border-0 bg-kumo-base font-sans",
         "grow px-2",
         isIndividualFocus
-          ? "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-10 focus:outline"
+          ? "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline"
           : "focus:border-kumo-fill",
         props.className,
       )}
@@ -152,7 +152,7 @@ function Button({
       className={cn(
         "h-full! rounded-none disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
         isIndividualFocus &&
-          "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-10 focus:outline",
+          "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline",
         className,
       )}
     >

@@ -16,6 +16,7 @@
             "primary",
             "secondary",
             "destructive",
+            "success",
             "outline",
             "beta"
           ],
@@ -23,6 +24,7 @@
             "primary": "Default high-emphasis badge for important labels",
             "secondary": "Subtle badge for secondary information",
             "destructive": "Error or danger state indicator",
+            "success": "Success or positive state indicator",
             "outline": "Bordered badge with transparent background",
             "beta": "Indicates beta or experimental features"
           },
@@ -30,6 +32,7 @@
             "primary": "bg-kumo-contrast text-kumo-inverse",
             "secondary": "bg-kumo-fill text-kumo-default",
             "destructive": "bg-kumo-danger text-white",
+            "success": "bg-kumo-success text-white",
             "outline": "border border-kumo-fill bg-transparent text-kumo-default",
             "beta": "border border-dashed border-kumo-brand bg-transparent text-kumo-link"
           },
@@ -47,10 +50,11 @@
         }
       },
       "examples": [
-        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Badge variant=\"primary\">Primary</Badge>\n      <Badge variant=\"secondary\">Secondary</Badge>\n      <Badge variant=\"destructive\">Destructive</Badge>\n      <Badge variant=\"outline\">Outline</Badge>\n      <Badge variant=\"beta\">Beta</Badge>\n    </div>",
+        "<div className=\"flex flex-wrap items-center gap-2\">\n      <Badge variant=\"primary\">Primary</Badge>\n      <Badge variant=\"secondary\">Secondary</Badge>\n      <Badge variant=\"destructive\">Destructive</Badge>\n      <Badge variant=\"success\">Success</Badge>\n      <Badge variant=\"outline\">Outline</Badge>\n      <Badge variant=\"beta\">Beta</Badge>\n    </div>",
         "<Badge variant=\"primary\">Primary</Badge>",
         "<Badge variant=\"secondary\">Secondary</Badge>",
         "<Badge variant=\"destructive\">Destructive</Badge>",
+        "<Badge variant=\"success\">Success</Badge>",
         "<Badge variant=\"outline\">Outline</Badge>",
         "<Badge variant=\"beta\">Beta</Badge>",
         "<p className=\"flex items-center gap-2\">\n      Workers\n      <Badge variant=\"beta\">Beta</Badge>\n    </p>"
@@ -59,6 +63,7 @@
         "bg-kumo-contrast",
         "bg-kumo-danger",
         "bg-kumo-fill",
+        "bg-kumo-success",
         "border-kumo-brand",
         "border-kumo-fill",
         "text-kumo-default",
@@ -70,14 +75,24 @@
     "Banner": {
       "name": "Banner",
       "type": "component",
-      "description": "Full-width message bar for informational, warning, or error notices.",
+      "description": "Full-width message bar for informational, warning, or error notices. Supports structured title/description for i18n, or simple children for basic usage.",
       "importPath": "@cloudflare/kumo",
       "category": "Feedback",
       "props": {
         "icon": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Icon element rendered before the banner text (e.g. from `@phosphor-icons/react`)."
+          "description": "Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`)."
+        },
+        "title": {
+          "type": "string",
+          "optional": true,
+          "description": "Primary heading text for the banner. Use for i18n string injection."
+        },
+        "description": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Secondary description text displayed below the title. Use for i18n string injection."
         },
         "text": {
           "type": "string",
@@ -85,8 +100,7 @@
         },
         "children": {
           "type": "ReactNode",
-          "optional": true,
-          "description": "Banner message content. Accepts strings or custom React elements."
+          "optional": true
         },
         "variant": {
           "type": "enum",
@@ -103,9 +117,9 @@
             "error": "Error banner for critical issues"
           },
           "classes": {
-            "default": "bg-kumo-info/20 border-kumo-info text-kumo-link selection:bg-kumo-info-tint",
-            "alert": "bg-kumo-warning/20 border-kumo-warning text-kumo-warning selection:bg-kumo-warning-tint",
-            "error": "bg-kumo-danger/20 border-kumo-danger text-kumo-danger selection:bg-kumo-danger-tint"
+            "default": "bg-kumo-info/10 border-kumo-info/30 text-kumo-info selection:bg-kumo-info-tint",
+            "alert": "bg-kumo-warning/10 border-kumo-warning/30 text-kumo-warning selection:bg-kumo-warning-tint",
+            "error": "bg-kumo-danger/10 border-kumo-danger/30 text-kumo-danger selection:bg-kumo-danger-tint"
           },
           "default": "default"
         },
@@ -116,12 +130,14 @@
         }
       },
       "examples": [
-        "<div className=\"space-y-3\">\n      <Banner>This is an informational banner.</Banner>\n      <Banner variant=\"alert\">This is an alert banner.</Banner>\n      <Banner variant=\"error\">This is an error banner.</Banner>\n    </div>",
-        "<Banner>This is an informational banner.</Banner>",
-        "<Banner variant=\"alert\">Your session will expire soon.</Banner>",
-        "<Banner variant=\"error\">We couldn't save your changes.</Banner>",
-        "<Banner icon={<WarningCircle />} variant=\"alert\">\n      Review your billing information.\n    </Banner>",
-        "<Banner icon={<Info />}>\n      <Text DANGEROUS_className=\"text-inherit\">\n        This banner supports <strong>custom content</strong> with Text.\n      </Text>\n    </Banner>"
+        "<div className=\"space-y-3\">\n      <Banner\n        icon={<Info weight=\"fill\" />}\n        title=\"Update available\"\n        description=\"A new version is ready to install.\"\n      />\n      <Banner\n        icon={<Warning weight=\"fill\" />}\n        variant=\"alert\"\n        title=\"Session expiring\"\n        description=\"Your session will expire in 5 minutes.\"\n      />\n      <Banner\n        icon={<WarningCircle weight=\"fill\" />}\n        variant=\"error\"\n        title=\"Save failed\"\n        description=\"We couldn't save your changes. Please try again.\"\n      />\n    </div>",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Update available\"\n      description=\"A new version is ready to install.\"\n    />",
+        "<Banner\n      icon={<Warning weight=\"fill\" />}\n      variant=\"alert\"\n      title=\"Session expiring\"\n      description=\"Your session will expire in 5 minutes.\"\n    />",
+        "<Banner\n      icon={<WarningCircle weight=\"fill\" />}\n      variant=\"error\"\n      title=\"Save failed\"\n      description=\"We couldn't save your changes. Please try again.\"\n    />",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Your changes have been saved.\"\n    />",
+        "<Banner\n      icon={<Warning weight=\"fill\" />}\n      variant=\"alert\"\n      title=\"Review required\"\n      description=\"Please review your billing information before proceeding.\"\n    />",
+        "<Banner\n      icon={<Info weight=\"fill\" />}\n      title=\"Custom content supported\"\n      description={\n        <Text DANGEROUS_className=\"text-inherit\">\n          This banner supports <strong>custom content</strong> with Text.\n        </Text>\n      }\n    />",
+        "<Banner icon={<Info />}>This is a simple banner using children.</Banner>"
       ],
       "colors": [
         "bg-kumo-danger",
@@ -134,10 +150,10 @@
         "border-kumo-info",
         "border-kumo-warning",
         "text-kumo-danger",
-        "text-kumo-link",
+        "text-kumo-info",
         "text-kumo-warning"
       ],
-      "baseStyles": "flex w-full items-center gap-2 rounded-lg border px-4 py-1.5 text-base"
+      "baseStyles": "flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-base"
     },
     "Breadcrumbs": {
       "name": "Breadcrumbs",
@@ -509,6 +525,7 @@
         "bg-kumo-base",
         "bg-kumo-contrast",
         "border-kumo-line",
+        "ring-kumo-contrast",
         "ring-kumo-danger",
         "ring-kumo-line",
         "ring-kumo-ring",
@@ -647,17 +664,30 @@
           "type": "string",
           "optional": true,
           "description": "Additional CSS classes merged via `cn()`."
+        },
+        "tooltip": {
+          "type": "object",
+          "optional": true,
+          "description": "Tooltip config. Shows tooltip on hover, anchored toast on click."
+        },
+        "labels": {
+          "type": "object",
+          "optional": true,
+          "description": "Accessible labels for i18n."
         }
       },
       "examples": [
         "<ClipboardText text=\"0c239dd2\" />",
         "<ClipboardText text=\"abc123\" />",
         "<ClipboardText text=\"sk_live_51H8...\" />",
-        "<ClipboardText text=\"https://example.com/very/long/url/path\" />"
+        "<ClipboardText text=\"https://example.com/very/long/url/path\" />",
+        "<ClipboardText\n      text=\"npx kumo add button\"\n      tooltip={{ text: \"Copy\", copiedText: \"Copied!\", side: \"top\" }}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
-        "border-kumo-line"
+        "border-kumo-line",
+        "outline-kumo-fill",
+        "text-kumo-default"
       ],
       "styling": {
         "baseTokens": [
@@ -2090,9 +2120,11 @@
         "bg-kumo-control",
         "bg-kumo-fill-hover",
         "bg-kumo-overlay",
+        "border-kumo-line",
         "fill-kumo-ring",
         "ring-kumo-line",
         "text-kumo-default",
+        "text-kumo-strong",
         "text-kumo-subtle"
       ],
       "subComponents": {
@@ -2169,19 +2201,8 @@
         },
         "List": {
           "name": "List",
-          "description": "A container for combobox items. Supports render prop for custom item rendering.",
-          "props": {
-            "children": {
-              "type": "ReactNode | ((item: T, index: number) => ReactNode)",
-              "description": "Items to render, or a function that receives each item and returns a node"
-            }
-          },
-          "isPassThrough": true,
-          "baseComponent": "ComboboxBase.List",
-          "usageExamples": [
-            "<Combobox.List>\n  {(item) => <Combobox.Item value={item}>{item.label}</Combobox.Item>}\n</Combobox.List>"
-          ],
-          "renderElement": "<div>"
+          "description": "List sub-component",
+          "props": {}
         },
         "Collection": {
           "name": "Collection",
@@ -2234,6 +2255,36 @@
         "text-kumo-default",
         "text-kumo-strong",
         "text-kumo-subtle"
+      ]
+    },
+    "DatePicker": {
+      "name": "DatePicker",
+      "type": "component",
+      "description": "DatePicker — a date selection calendar.  Built on [react-day-picker](https://daypicker.dev) with Kumo styling. Supports three selection modes: single, multiple, and range.",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "description": "Child elements"
+        }
+      },
+      "examples": [
+        "<div className=\"flex flex-col gap-4\">\n      <DatePicker mode=\"single\" selected={date} onChange={d => {\n        if (d) {\n          setDate(d);\n        }\n      }} />\n      <p className=\"text-sm text-kumo-subtle\">\n        Selected: {date ? date.toLocaleDateString() : \"None\"}\n      </p>\n    </div>",
+        "<div className=\"flex flex-col gap-4\">\n      <DatePicker\n        mode=\"multiple\"\n        selected={dates}\n        onChange={setDates}\n        max={5}\n      />\n      <p className=\"text-sm text-kumo-subtle\">\n        Selected: {dates?.length ?? 0} date(s)\n      </p>\n    </div>",
+        "<div className=\"flex flex-col gap-4\">\n      <DatePicker\n        mode=\"range\"\n        selected={range}\n        onChange={setRange}\n        numberOfMonths={2}\n      />\n      <p className=\"text-sm text-kumo-subtle\">\n        Range:{\" \"}\n        {range?.from\n          ? `${range.from.toLocaleDateString()} - ${range.to?.toLocaleDateString() ?? \"...\"}`\n          : \"None\"}\n      </p>\n    </div>",
+        "<div className=\"flex flex-col gap-4\">\n      <DatePicker\n        mode=\"range\"\n        selected={range}\n        onChange={setRange}\n        min={3}\n        max={7}\n        footer={\n          <span className=\"text-xs text-kumo-subtle\">Select 3-7 nights</span>\n        }\n      />\n    </div>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button variant=\"outline\" icon={CalendarDotsIcon}>\n          {date ? date.toLocaleDateString() : \"Pick a date\"}\n        </Button>\n      </Popover.Trigger>\n      <Popover.Content className=\"p-3\">\n        <DatePicker mode=\"single\" selected={date} onChange={setDate} />\n      </Popover.Content>\n    </Popover>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button variant=\"outline\" icon={CalendarDotsIcon}>\n          {formatRange()}\n        </Button>\n      </Popover.Trigger>\n      <Popover.Content className=\"p-3\">\n        <DatePicker\n          mode=\"range\"\n          selected={range}\n          onChange={setRange}\n          numberOfMonths={2}\n        />\n      </Popover.Content>\n    </Popover>",
+        "<Popover>\n      <Popover.Trigger asChild>\n        <Button variant=\"outline\" icon={CalendarDotsIcon}>\n          {formatRange()}\n        </Button>\n      </Popover.Trigger>\n      <Popover.Content className=\"p-0\">\n        <div className=\"flex\">\n          <div className=\"flex flex-col gap-1 border-r border-kumo-line p-2 text-sm\">\n            {presets.map((preset) => {\n              const isActive = isPresetActive(preset);\n              return (\n                <button\n                  key={preset.label}\n                  type=\"button\"\n                  onClick={() => handlePresetClick(preset)}\n                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${isActive\n                    ? \"bg-kumo-bg-inverse text-kumo-text-inverse\"\n                    : \"text-kumo-strong hover:bg-kumo-control\"\n                    }`}\n                >\n                  {preset.label}\n                </button>\n              );\n            })}\n          </div>\n          <div className=\"p-3\">\n            <DatePicker\n              mode=\"range\"\n              selected={range}\n              onChange={setRange}\n              month={month}\n              onMonthChange={setMonth}\n              numberOfMonths={2}\n            />\n          </div>\n        </div>\n      </Popover.Content>\n    </Popover>",
+        "<DatePicker\n      mode=\"multiple\"\n      selected={dates}\n      onChange={setDates}\n      max={maxDays}\n      disabled={unavailableDates}\n      fixedWeeks\n      footer={\n        <p className=\"text-xs text-kumo-subtle pt-2 w-full\">\n          {selectedCount}/{maxDays} days selected. Grayed dates are unavailable.\n        </p>\n      }\n    />"
+      ],
+      "colors": [
+        "bg-kumo-base"
       ]
     },
     "DateRangePicker": {
@@ -2301,13 +2352,7 @@
           "description": "Callback when end date changes"
         }
       },
-      "examples": [
-        "<div className=\"flex flex-col gap-4\">\n      <DateRangePicker\n        onStartDateChange={setStartDate}\n        onEndDateChange={setEndDate}\n      />\n      <div className=\"text-sm text-kumo-subtle\">\n        {startDate && endDate ? (\n          <span>\n            Selected: {startDate.toLocaleDateString()} -{\" \"}\n            {endDate.toLocaleDateString()}\n          </span>\n        ) : startDate ? (\n          <span>Start: {startDate.toLocaleDateString()} (select end date)</span>\n        ) : (\n          <span>Select a date range</span>\n        )}\n      </div>\n    </div>",
-        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">Small</p>\n        <DateRangePicker\n          size=\"sm\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">\n          Base (default)\n        </p>\n        <DateRangePicker\n          size=\"base\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">Large</p>\n        <DateRangePicker\n          size=\"lg\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n    </div>",
-        "<div className=\"flex flex-col gap-8\">\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">\n          Default variant\n        </p>\n        <DateRangePicker\n          variant=\"default\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n      <div>\n        <p className=\"mb-2 text-sm font-medium text-kumo-default\">\n          Subtle variant\n        </p>\n        <DateRangePicker\n          variant=\"subtle\"\n          onStartDateChange={() => {}}\n          onEndDateChange={() => {}}\n        />\n      </div>\n    </div>",
-        "<DateRangePicker\n      timezone=\"London, UK (GMT+0)\"\n      onStartDateChange={() => {}}\n      onEndDateChange={() => {}}\n    />",
-        "<div className=\"flex flex-col gap-4\">\n      <DateRangePicker\n        onStartDateChange={setStartDate}\n        onEndDateChange={setEndDate}\n      />\n      <div className=\"rounded-lg bg-kumo-control p-3 text-sm text-kumo-default\">\n        <strong>Selection:</strong> {formatDateRange()}\n      </div>\n    </div>"
-      ],
+      "examples": [],
       "colors": [
         "bg-kumo-base",
         "bg-kumo-contrast",
@@ -2408,7 +2453,10 @@
       "examples": [
         "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n      </Dialog>\n    </Dialog.Root>",
         "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Modal Title\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>",
-        "<Dialog.Root disablePointerDismissal>\n      <Dialog.Trigger\n        render={(p) => (\n          <Button {...p} variant=\"destructive\">\n            Delete Project\n          </Button>\n        )}\n      />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-center gap-3\">\n          <div className=\"flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20\">\n            <Warning size={20} className=\"text-kumo-danger\" />\n          </div>\n          <Dialog.Title className=\"text-xl font-semibold\">\n            Delete Project?\n          </Dialog.Title>\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          This action cannot be undone. This will permanently delete the project\n          and all associated data.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>"
+        "<Dialog.Root disablePointerDismissal>\n      <Dialog.Trigger\n        render={(p) => (\n          <Button {...p} variant=\"destructive\">\n            Delete Project\n          </Button>\n        )}\n      />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-center gap-3\">\n          <div className=\"flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20\">\n            <Warning size={20} className=\"text-kumo-danger\" />\n          </div>\n          <Dialog.Title className=\"text-xl font-semibold\">\n            Delete Project?\n          </Dialog.Title>\n        </div>\n        <Dialog.Description className=\"text-kumo-subtle\">\n          This action cannot be undone. This will permanently delete the project\n          and all associated data.\n        </Dialog.Description>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"destructive\" {...props}>\n                Delete\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>",
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Create Resource\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"mb-4 text-kumo-subtle\">\n          Select a region for your new resource.\n        </Dialog.Description>\n        <Select\n          className=\"w-full\"\n          renderValue={(v) =>\n            regions.find((r) => r.value === v)?.label ?? \"Select region...\"\n          }\n        >\n          {regions.map((region) => (\n            <Select.Option key={region.value} value={region.value}>\n              {region.label}\n            </Select.Option>\n          ))}\n        </Select>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Button variant=\"primary\">Create</Button>\n        </div>\n      </Dialog>\n    </Dialog.Root>",
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Create Resource\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"mb-4 text-kumo-subtle\">\n          Search and select a region for your new resource.\n        </Dialog.Description>\n        <Combobox value={value} onValueChange={setValue} items={regions}>\n          <Combobox.TriggerInput\n            className=\"w-full\"\n            placeholder=\"Search regions...\"\n          />\n          <Combobox.Content>\n            <Combobox.Empty>No regions found</Combobox.Empty>\n            <Combobox.List>\n              {(item: { value: string; label: string }) => (\n                <Combobox.Item key={item.value} value={item}>\n                  {item.label}\n                </Combobox.Item>\n              )}\n            </Combobox.List>\n          </Combobox.Content>\n        </Combobox>\n        <div className=\"mt-8 flex justify-end gap-2\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Cancel\n              </Button>\n            )}\n          />\n          <Button variant=\"primary\">Create</Button>\n        </div>\n      </Dialog>\n    </Dialog.Root>",
+        "<Dialog.Root>\n      <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />\n      <Dialog className=\"p-8\">\n        <div className=\"mb-4 flex items-start justify-between gap-4\">\n          <Dialog.Title className=\"text-2xl font-semibold\">\n            Resource Actions\n          </Dialog.Title>\n          <Dialog.Close\n            aria-label=\"Close\"\n            render={(props) => (\n              <Button\n                {...props}\n                variant=\"secondary\"\n                shape=\"square\"\n                icon={<X />}\n                aria-label=\"Close\"\n              />\n            )}\n          />\n        </div>\n        <Dialog.Description className=\"mb-4 text-kumo-subtle\">\n          Choose an action for the selected resource.\n        </Dialog.Description>\n        <DropdownMenu>\n          <DropdownMenu.Trigger render={<Button>Actions</Button>} />\n          <DropdownMenu.Content>\n            <DropdownMenu.Item>Edit</DropdownMenu.Item>\n            <DropdownMenu.Item>Duplicate</DropdownMenu.Item>\n            <DropdownMenu.Separator />\n            <DropdownMenu.Item variant=\"danger\">Delete</DropdownMenu.Item>\n          </DropdownMenu.Content>\n        </DropdownMenu>\n        <div className=\"mt-8 flex justify-end\">\n          <Dialog.Close\n            render={(props) => (\n              <Button variant=\"secondary\" {...props}>\n                Close\n              </Button>\n            )}\n          />\n        </div>\n      </Dialog>\n    </Dialog.Root>"
       ],
       "colors": [
         "bg-kumo-base",
@@ -2517,7 +2565,7 @@
     "DropdownMenu": {
       "name": "DropdownMenu",
       "type": "component",
-      "description": "DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.",
+      "description": "DropdownMenu — accessible dropdown menu anchored to a trigger.  Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`, `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`, `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.  Built on `@base-ui/react/menu`.",
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
@@ -2588,6 +2636,11 @@
         "Item": {
           "name": "Item",
           "description": "Item sub-component",
+          "props": {}
+        },
+        "LinkItem": {
+          "name": "LinkItem",
+          "description": "LinkItem sub-component",
           "props": {}
         },
         "CheckboxItem": {
@@ -3410,23 +3463,10 @@
     "Pagination": {
       "name": "Pagination",
       "type": "component",
-      "description": "Page navigation controls with page count display.",
+      "description": "Pagination component",
       "importPath": "@cloudflare/kumo",
       "category": "Navigation",
       "props": {
-        "controls": {
-          "type": "enum",
-          "optional": true,
-          "values": [
-            "full",
-            "simple"
-          ],
-          "descriptions": {
-            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
-            "simple": "Simple pagination controls with only previous and next buttons"
-          },
-          "default": "full"
-        },
         "setPage": {
           "type": "(page: number) => void",
           "required": true,
@@ -3447,10 +3487,32 @@
           "optional": true,
           "description": "Total number of items across all pages."
         },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes for the container"
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Compound component children for custom layouts. Use Pagination.Info, Pagination.PageSize, Pagination.Controls, and Pagination.Separator."
+        },
+        "controls": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "full",
+            "simple"
+          ],
+          "descriptions": {
+            "full": "Full pagination controls with first, previous, page input, next, and last buttons",
+            "simple": "Simple pagination controls with only previous and next buttons"
+          },
+          "default": "full"
+        },
         "text": {
           "type": "object",
-          "optional": true,
-          "description": "Method to provide custom pagination text"
+          "optional": true
         }
       },
       "examples": [
@@ -3459,11 +3521,86 @@
         "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={10}\n      totalCount={100}\n      controls=\"full\"\n    />",
         "<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />",
         "<Pagination page={page} setPage={setPage} perPage={25} totalCount={1250} />",
-        "<Pagination\n      text={({ perPage }) => `Page ${page} - showing ${perPage} per page`}\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />"
+        "<Pagination\n      text={({ perPage }: { perPage?: number }) =>\n        `Page ${page} - showing ${perPage} per page`\n      }\n      page={page}\n      setPage={setPage}\n      perPage={25}\n      totalCount={100}\n    />",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={500}\n    >\n      <Pagination.Info />\n      <Pagination.Separator />\n      <Pagination.PageSize\n        value={perPage}\n        onChange={(size) => {\n          setPerPage(size);\n          setPage(1);\n        }}\n      />\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={200}\n    >\n      <Pagination.Info />\n      <Pagination.Separator />\n      <Pagination.PageSize\n        value={perPage}\n        onChange={(size) => {\n          setPerPage(size);\n          setPage(1);\n        }}\n        options={[10, 20, 50]}\n      />\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination page={page} setPage={setPage} perPage={25} totalCount={100}>\n      <Pagination.Info>\n        {({ page, totalCount }) =>\n          `Page ${page} of ${Math.ceil((totalCount ?? 1) / 25)}`\n        }\n      </Pagination.Info>\n      <Pagination.Controls />\n    </Pagination>",
+        "<Pagination\n      page={page}\n      setPage={setPage}\n      perPage={perPage}\n      totalCount={500}\n    >\n      <Pagination.Info />\n      <div className=\"flex items-center gap-2\">\n        <Pagination.Controls />\n        <Pagination.Separator />\n        <Pagination.PageSize\n          value={perPage}\n          onChange={(size) => {\n            setPerPage(size);\n            setPage(1);\n          }}\n        />\n      </div>\n    </Pagination>"
       ],
       "colors": [
+        "border-kumo-line",
         "text-kumo-strong"
       ],
+      "subComponents": {
+        "Info": {
+          "name": "Info",
+          "description": "Info sub-component",
+          "props": {
+            "children": {
+              "type": "(props: {",
+              "optional": true
+            },
+            "page": {
+              "type": "number",
+              "required": true
+            },
+            "perPage": {
+              "type": "number",
+              "optional": true
+            },
+            "totalCount": {
+              "type": "number",
+              "optional": true
+            },
+            "pageShowingRange": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        "PageSize": {
+          "name": "PageSize",
+          "description": "PageSize sub-component",
+          "props": {
+            "value": {
+              "type": "number",
+              "required": true
+            },
+            "options": {
+              "type": "number[]",
+              "optional": true
+            },
+            "label": {
+              "type": "ReactNode",
+              "optional": true
+            },
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Controls": {
+          "name": "Controls",
+          "description": "Controls sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Separator": {
+          "name": "Separator",
+          "description": "Separator sub-component",
+          "props": {
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        }
+      },
       "styling": {
         "layout": {
           "height": 36,
@@ -3710,12 +3847,12 @@
         }
       },
       "examples": [
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"apple\")}\n      items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n    >\n      <Select.Option value=\"apple\">Apple</Select.Option>\n      <Select.Option value=\"banana\">Banana</Select.Option>\n      <Select.Option value=\"cherry\">Cherry</Select.Option>\n    </Select>",
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    >\n      <Select.Option value=\"bug\">Bug</Select.Option>\n      <Select.Option value=\"documentation\">Documentation</Select.Option>\n      <Select.Option value=\"feature\">Feature</Select.Option>\n    </Select>",
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={[\n        { value: null, label: \"Please select\" },\n        { value: \"bug\", label: \"Bug\" },\n        { value: \"documentation\", label: \"Documentation\" },\n        { value: \"feature\", label: \"Feature\" },\n      ]}\n    >\n      <Select.Option value=\"bug\">Bug</Select.Option>\n      <Select.Option value=\"documentation\">Documentation</Select.Option>\n      <Select.Option value=\"feature\">Feature</Select.Option>\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"apple\")}\n      items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n    />",
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    />",
+        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={[\n        { value: null, label: \"Please select\" },\n        { value: \"bug\", label: \"Bug\" },\n        { value: \"documentation\", label: \"Documentation\" },\n        { value: \"feature\", label: \"Feature\" },\n      ]}\n    />",
         "<Select\n      className=\"w-[200px]\"\n      renderValue={(v) => (\n        <span>\n          {v.emoji} {v.label}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as (typeof languages)[0])}\n    >\n      {languages.map((language) => (\n        <Select.Option key={language.value} value={language}>\n          {language.emoji} {language.label}\n        </Select.Option>\n      ))}\n    </Select>",
         "<Select className=\"w-[200px]\" loading />",
-        "<Select\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Please select\"\n    >\n      {data?.map((item) => (\n        <Select.Option key={item} value={item}>\n          {item}\n        </Select.Option>\n      ))}\n    </Select>",
+        "<Select\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Please select\"\n      items={items}\n    />",
         "<Select\n      className=\"w-[250px]\"\n      multiple\n      renderValue={(value) => {\n        if (value.length > 3) {\n          return (\n            <span className=\"line-clamp-1\">\n              {value.slice(2).join(\", \") + ` and ${value.length - 2} more`}\n            </span>\n          );\n        }\n        return <span>{value.join(\", \")}</span>;\n      }}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"Name\">Name</Select.Option>\n      <Select.Option value=\"Location\">Location</Select.Option>\n      <Select.Option value=\"Size\">Size</Select.Option>\n      <Select.Option value=\"Read\">Read</Select.Option>\n      <Select.Option value=\"Write\">Write</Select.Option>\n      <Select.Option value=\"CreatedAt\">Created At</Select.Option>\n    </Select>",
         "<Select\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Please select author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
       ],
@@ -4160,10 +4297,10 @@
       },
       "examples": [
         "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.slice(0, 3).map((row) => (\n              <Table.Row key={row.id}>\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
-        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead aria-label=\"Select all rows\" />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.slice(0, 3).map((row) => (\n              <Table.Row key={row.id}>\n                <Table.CheckCell aria-label={`Select ${row.subject}`} />\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
+        "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead\n                checked={selectedIds.size === rows.length}\n                indeterminate={\n                  selectedIds.size > 0 && selectedIds.size < rows.length\n                }\n                onValueChange={toggleAll}\n                aria-label=\"Select all rows\"\n              />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {rows.map((row) => (\n              <Table.Row key={row.id}>\n                <Table.CheckCell\n                  checked={selectedIds.has(row.id)}\n                  onValueChange={() => toggleRow(row.id)}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
         "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead\n                checked={selectedIds.size === rows.length}\n                indeterminate={\n                  selectedIds.size > 0 && selectedIds.size < rows.length\n                }\n                onValueChange={toggleAll}\n                aria-label=\"Select all rows\"\n              />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {rows.map((row) => (\n              <Table.Row\n                key={row.id}\n                variant={selectedIds.has(row.id) ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={selectedIds.has(row.id)}\n                  onValueChange={() => toggleRow(row.id)}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
         "<LayerCard>\n      <LayerCard.Primary className=\"p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col />\n            <col className=\"w-[150px]\" />\n            <col className=\"w-[150px]\" />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row) => (\n              <Table.Row key={row.id}>\n                <Table.Cell>{row.subject}</Table.Cell>\n                <Table.Cell>{row.from}</Table.Cell>\n                <Table.Cell>{row.date}</Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>",
-        "<LayerCard>\n      <LayerCard.Primary className=\"w-full overflow-x-auto p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col style={{ width: \"40px\" }} />\n            <col />\n            <col style={{ width: \"150px\" }} />\n            <col style={{ width: \"120px\" }} />\n            <col style={{ width: \"50px\" }} />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead\n                checked={selectedIds.size === emailData.length}\n                indeterminate={\n                  selectedIds.size > 0 && selectedIds.size < emailData.length\n                }\n                onValueChange={toggleAll}\n                aria-label=\"Select all rows\"\n              />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n              <Table.Head></Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row) => (\n              <Table.Row\n                key={row.id}\n                variant={selectedIds.has(row.id) ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={selectedIds.has(row.id)}\n                  onValueChange={() => toggleRow(row.id)}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>\n                  <div className=\"flex items-center gap-2\">\n                    <EnvelopeSimple size={16} />\n                    <span className=\"truncate\">{row.subject}</span>\n                    {row.tags && (\n                      <div className=\"ml-2 inline-flex gap-1\">\n                        {row.tags.map((tag) => (\n                          <Badge key={tag}>{tag}</Badge>\n                        ))}\n                      </div>\n                    )}\n                  </div>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.from}</span>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.date}</span>\n                </Table.Cell>\n                <Table.Cell className=\"text-right\">\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    shape=\"square\"\n                    aria-label=\"More options\"\n                  >\n                    <DotsThree weight=\"bold\" size={16} />\n                  </Button>\n                </Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>"
+        "<LayerCard>\n      <LayerCard.Primary className=\"w-full overflow-x-auto p-0\">\n        <Table layout=\"fixed\">\n          <colgroup>\n            <col />{\" \"}\n            {/* Checkbox column - width handled by Table.CheckHead/CheckCell */}\n            <col />\n            <col style={{ width: \"150px\" }} />\n            <col style={{ width: \"120px\" }} />\n            <col style={{ width: \"50px\" }} />\n          </colgroup>\n          <Table.Header>\n            <Table.Row>\n              <Table.CheckHead\n                checked={selectedIds.size === emailData.length}\n                indeterminate={\n                  selectedIds.size > 0 && selectedIds.size < emailData.length\n                }\n                onValueChange={toggleAll}\n                aria-label=\"Select all rows\"\n              />\n              <Table.Head>Subject</Table.Head>\n              <Table.Head>From</Table.Head>\n              <Table.Head>Date</Table.Head>\n              <Table.Head></Table.Head>\n            </Table.Row>\n          </Table.Header>\n          <Table.Body>\n            {emailData.map((row) => (\n              <Table.Row\n                key={row.id}\n                variant={selectedIds.has(row.id) ? \"selected\" : \"default\"}\n              >\n                <Table.CheckCell\n                  checked={selectedIds.has(row.id)}\n                  onValueChange={() => toggleRow(row.id)}\n                  aria-label={`Select ${row.subject}`}\n                />\n                <Table.Cell>\n                  <div className=\"flex items-center gap-2\">\n                    <EnvelopeSimple size={16} />\n                    <span className=\"truncate\">{row.subject}</span>\n                    {row.tags && (\n                      <div className=\"ml-2 inline-flex gap-1\">\n                        {row.tags.map((tag) => (\n                          <Badge key={tag}>{tag}</Badge>\n                        ))}\n                      </div>\n                    )}\n                  </div>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.from}</span>\n                </Table.Cell>\n                <Table.Cell>\n                  <span className=\"truncate\">{row.date}</span>\n                </Table.Cell>\n                <Table.Cell className=\"text-right\">\n                  <DropdownMenu>\n                    <DropdownMenu.Trigger\n                      render={\n                        <Button\n                          variant=\"ghost\"\n                          size=\"sm\"\n                          shape=\"square\"\n                          aria-label=\"More options\"\n                        >\n                          <DotsThree weight=\"bold\" size={16} />\n                        </Button>\n                      }\n                    />\n                    <DropdownMenu.Content>\n                      <DropdownMenu.Item icon={Eye}>View</DropdownMenu.Item>\n                      <DropdownMenu.Item icon={PencilSimple}>\n                        Edit\n                      </DropdownMenu.Item>\n                      <DropdownMenu.Separator />\n                      <DropdownMenu.Item icon={Trash} variant=\"danger\">\n                        Delete\n                      </DropdownMenu.Item>\n                    </DropdownMenu.Content>\n                  </DropdownMenu>\n                </Table.Cell>\n              </Table.Row>\n            ))}\n          </Table.Body>\n        </Table>\n      </LayerCard.Primary>\n    </LayerCard>"
       ],
       "colors": [
         "bg-kumo-base",
@@ -4524,43 +4661,29 @@
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
-        "align": {
-          "type": "enum",
-          "optional": true,
-          "description": "Alignment on the axis perpendicular to `side`.\n- `\"start\"` — Align to the start edge\n- `\"center\"` — Center-aligned\n- `\"end\"` — Align to the end edge",
-          "values": [
-            "start",
-            "center",
-            "end"
-          ]
-        },
-        "asChild": {
-          "type": "boolean",
-          "optional": true,
-          "description": "When `true`, the trigger wraps the child element instead of adding a wrapper."
-        },
-        "className": {
-          "type": "string",
-          "optional": true,
-          "description": "Additional CSS classes merged via `cn()`."
-        },
         "side": {
           "type": "enum",
-          "optional": true,
-          "description": "Preferred side of the trigger to render the tooltip.\n- `\"top\"` — Tooltip appears above the trigger\n- `\"bottom\"` — Tooltip appears below the trigger\n- `\"left\"` — Tooltip appears to the left of the trigger\n- `\"right\"` — Tooltip appears to the right of the trigger",
           "values": [
             "top",
             "bottom",
             "left",
             "right"
           ],
+          "default": "top",
           "descriptions": {
             "top": "Tooltip appears above the trigger",
             "bottom": "Tooltip appears below the trigger",
             "left": "Tooltip appears to the left of the trigger",
             "right": "Tooltip appears to the right of the trigger"
-          },
-          "default": "top"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "description": "Child elements"
         },
         "content": {
           "type": "ReactNode",
@@ -4859,6 +4982,7 @@
       ],
       "Other": [
         "CloudflareLogo",
+        "DatePicker",
         "Label",
         "Link",
         "SensitiveInput",
@@ -4896,6 +5020,7 @@
       "Collapsible",
       "Combobox",
       "CommandPalette",
+      "DatePicker",
       "DateRangePicker",
       "DeleteResource",
       "Dialog",
@@ -4938,6 +5063,7 @@
         "Collapsible",
         "Combobox",
         "CommandPalette",
+        "DatePicker",
         "DateRangePicker",
         "Dialog",
         "DropdownMenu",

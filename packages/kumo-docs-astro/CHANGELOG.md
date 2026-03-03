@@ -1,5 +1,45 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.5
+
+### Patch Changes
+
+- Updated dependencies [23865db]
+- Updated dependencies [89cb5ec]
+- Updated dependencies [68c2f0d]
+  - @cloudflare/kumo@1.9.0
+
+## 1.3.4
+
+### Patch Changes
+
+- Updated dependencies [0ca3b05]
+- Updated dependencies [f69df6d]
+- Updated dependencies [cf4ff38]
+  - @cloudflare/kumo@1.8.0
+
+## 1.3.3
+
+### Patch Changes
+
+- Updated dependencies [d9b6498]
+- Updated dependencies [835a7c0]
+- Updated dependencies [391f13a]
+- Updated dependencies [d0e1d29]
+  - @cloudflare/kumo@1.7.0
+
+## 1.3.2
+
+### Patch Changes
+
+- Updated dependencies [c71bd9b]
+- Updated dependencies [50d4251]
+- Updated dependencies [93361ed]
+- Updated dependencies [46ecf42]
+- Updated dependencies [a9167fa]
+- Updated dependencies [f02494d]
+  - @cloudflare/kumo@1.6.0
+
 ## 1.3.1
 
 ### Patch Changes

@@ -31,6 +31,8 @@ import {
     <ComponentExample
       code={`<Button variant="secondary">Button</Button>
 <Button variant="secondary" shape="square" icon={PlusIcon} />`}
+      vrSection="basic"
+      vrTitle="Basic"
     >
       <ButtonBasicDemo client:visible />
     </ComponentExample>
@@ -72,7 +74,11 @@ export default function Example() {
       <div class="space-y-8">
         <div>
           <h4 class="mb-3 text-base font-medium">Primary</h4>
-          <ComponentExample code={`<Button variant="primary">Primary</Button>`}>
+          <ComponentExample
+            code={`<Button variant="primary">Primary</Button>`}
+            vrSection="variant-primary"
+            vrTitle="Variant: Primary"
+          >
             <ButtonPrimaryDemo client:visible />
           </ComponentExample>
         </div>
@@ -81,6 +87,8 @@ export default function Example() {
           <h4 class="mb-3 text-base font-medium">Secondary</h4>
           <ComponentExample
             code={`<Button variant="secondary">Secondary</Button>`}
+            vrSection="variant-secondary"
+            vrTitle="Variant: Secondary"
           >
             <ButtonSecondaryDemo client:visible />
           </ComponentExample>
@@ -88,7 +96,11 @@ export default function Example() {
 
         <div>
           <h4 class="mb-3 text-base font-medium">Ghost</h4>
-          <ComponentExample code={`<Button variant="ghost">Ghost</Button>`}>
+          <ComponentExample
+            code={`<Button variant="ghost">Ghost</Button>`}
+            vrSection="variant-ghost"
+            vrTitle="Variant: Ghost"
+          >
             <ButtonGhostDemo client:visible />
           </ComponentExample>
         </div>
@@ -97,6 +109,8 @@ export default function Example() {
           <h4 class="mb-3 text-base font-medium">Destructive</h4>
           <ComponentExample
             code={`<Button variant="destructive">Destructive</Button>`}
+            vrSection="variant-destructive"
+            vrTitle="Variant: Destructive"
           >
             <ButtonDestructiveDemo client:visible />
           </ComponentExample>
@@ -104,7 +118,11 @@ export default function Example() {
 
         <div>
           <h4 class="mb-3 text-base font-medium">Outline</h4>
-          <ComponentExample code={`<Button variant="outline">Outline</Button>`}>
+          <ComponentExample
+            code={`<Button variant="outline">Outline</Button>`}
+            vrSection="variant-outline"
+            vrTitle="Variant: Outline"
+          >
             <ButtonOutlineDemo client:visible />
           </ComponentExample>
         </div>
@@ -113,6 +131,8 @@ export default function Example() {
           <h4 class="mb-3 text-base font-medium">Secondary Destructive</h4>
           <ComponentExample
             code={`<Button variant="secondary-destructive">Secondary Destructive</Button>`}
+            vrSection="variant-secondary-destructive"
+            vrTitle="Variant: Secondary Destructive"
           >
             <ButtonSecondaryDestructiveDemo client:visible />
           </ComponentExample>
@@ -128,6 +148,8 @@ export default function Example() {
 <Button size="sm" variant="secondary">Small</Button>
 <Button size="base" variant="secondary">Base</Button>
 <Button size="lg" variant="secondary">Large</Button>`}
+        vrSection="sizes"
+        vrTitle="Sizes"
       >
         <ButtonSizesDemo client:visible />
       </ComponentExample>
@@ -140,6 +162,8 @@ export default function Example() {
         code={`<Button variant="secondary" icon={PlusIcon}>
   Create Worker
 </Button>`}
+        vrSection="with-icon"
+        vrTitle="With Icon"
       >
         <ButtonWithIconDemo client:visible />
       </ComponentExample>
@@ -158,6 +182,8 @@ export default function Example() {
       <ComponentExample
         code={`<Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add item" />
 <Button variant="secondary" shape="circle" icon={PlusIcon} aria-label="Add item" />`}
+        vrSection="icon-only"
+        vrTitle="Icon Only"
       >
         <ButtonIconOnlyDemo client:visible />
       </ComponentExample>
@@ -170,6 +196,8 @@ export default function Example() {
         code={`<Button variant="primary" loading>
   Loading...
 </Button>`}
+        vrSection="loading"
+        vrTitle="Loading State"
       >
         <ButtonLoadingDemo client:visible />
       </ComponentExample>
@@ -182,6 +210,8 @@ export default function Example() {
         code={`<Button variant="secondary" disabled>
   Disabled
 </Button>`}
+        vrSection="disabled"
+        vrTitle="Disabled State"
       >
         <ButtonDisabledDemo client:visible />
       </ComponentExample>

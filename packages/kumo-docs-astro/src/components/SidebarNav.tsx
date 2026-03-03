@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn, Button } from "@cloudflare/kumo";
 import {
   CaretDownIcon,
@@ -7,10 +7,17 @@ import {
 } from "@phosphor-icons/react";
 import { KumoMenuIcon } from "./KumoMenuIcon";
 import { SearchDialog } from "./SearchDialog";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavItem {
   label: string;
   href: string;
+}
+
+function normalizePathname(pathname: string) {
+  if (!pathname) return "/";
+  if (pathname === "/") return "/";
+  return pathname.replace(/\/+$/, "");
 }
 
 const staticPages: NavItem[] = [
@@ -33,13 +40,15 @@ const componentItems: NavItem[] = [
   { label: "Clipboard Text", href: "/components/clipboard-text" },
   { label: "Cloudflare Logo", href: "/components/cloudflare-logo" },
   { label: "Code", href: "/components/code" },
+  { label: "CodeHighlighted", href: "/components/code-highlighted" },
   { label: "Collapsible", href: "/components/collapsible" },
   { label: "Combobox", href: "/components/combobox" },
   { label: "Command Palette", href: "/components/command-palette" },
-  { label: "Date Range Picker", href: "/components/date-range-picker" },
+  { label: "Date Picker", href: "/components/date-picker" },
   { label: "Dialog", href: "/components/dialog" },
   { label: "Dropdown", href: "/components/dropdown" },
   { label: "Empty", href: "/components/empty" },
+  { label: "Flow", href: "/components/flow" },
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
   { label: "Label", href: "/components/label" },
@@ -91,7 +100,13 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   const [componentsOpen, setComponentsOpen] = useState(true);
   const [blocksOpen, setBlocksOpen] = useState(true);
 
+  const activePath = normalizePathname(currentPath);
+
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Refs for scroll containers
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
   const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
@@ -114,6 +129,50 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     };
   }, []);
 
+  // Save scroll position on scroll and navigation
+  useEffect(() => {
+    const STORAGE_KEY = "kumo-sidebar-scroll";
+
+    // Save scroll position before navigation
+    const handleBeforeUnload = () => {
+      const scrollPosition =
+        mobileScrollRef.current?.scrollTop ||
+        desktopScrollRef.current?.scrollTop ||
+        0;
+      sessionStorage.setItem(STORAGE_KEY, scrollPosition.toString());
+    };
+
+    // Save on scroll for more reliable restoration
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      sessionStorage.setItem(STORAGE_KEY, target.scrollTop.toString());
+    };
+
+    // Listen for navigation events
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Attach scroll listeners to both containers
+    const mobileContainer = mobileScrollRef.current;
+    const desktopContainer = desktopScrollRef.current;
+
+    if (mobileContainer) {
+      mobileContainer.addEventListener("scroll", handleScroll);
+    }
+    if (desktopContainer) {
+      desktopContainer.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      if (mobileContainer) {
+        mobileContainer.removeEventListener("scroll", handleScroll);
+      }
+      if (desktopContainer) {
+        desktopContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
   // Shared nav content for both mobile and desktop
   const navContent = (
     <>
@@ -132,7 +191,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
               href={item.href}
               className={cn(
                 LI_STYLE,
-                currentPath === item.href && LI_ACTIVE_STYLE,
+                activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
               )}
             >
               {item.label}
@@ -172,7 +231,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                 className={cn(
                   LI_STYLE,
                   "pl-4",
-                  currentPath === item.href && LI_ACTIVE_STYLE,
+                  activePath === normalizePathname(item.href) &&
+                    LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
@@ -211,7 +271,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                 className={cn(
                   LI_STYLE,
                   "pl-4",
-                  currentPath === item.href && LI_ACTIVE_STYLE,
+                  activePath === normalizePathname(item.href) &&
+                    LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
@@ -228,7 +289,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-[49px] items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
         )}
       >
         <Button
@@ -240,8 +301,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <KumoMenuIcon />
         </Button>
         <h1 className="text-base font-medium">Kumo</h1>
-        {/* Spacer to center the title */}
-        <div className="size-9" />
+        <ThemeToggle />
       </div>
 
       {/* Mobile slide-out drawer */}
@@ -252,7 +312,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-[49px] flex-none items-center justify-between border-b border-kumo-line px-3">
+        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3">
           <h1 className="text-base font-medium">Kumo</h1>
           <Button
             variant="ghost"
@@ -263,7 +323,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <XIcon size={20} />
           </Button>
         </div>
-        <div className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong">
+        <div
+          ref={mobileScrollRef}
+          data-sidebar-scroll="mobile"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          style={{ scrollBehavior: "auto" }}
+        >
           {navContent}
         </div>
       </aside>
@@ -275,8 +340,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "border-r border-kumo-line",
         )}
       >
-        <div className="relative h-[49px] border-b border-kumo-line">
-          <div className="absolute top-2 right-1">
+        <div className="relative h-12 border-b border-kumo-line">
+          <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
               shape="square"
@@ -291,7 +356,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       </div>
 
       {/* Desktop: Kumo brand label - always visible, panel slides behind it */}
-      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-[49px] items-center px-3 font-medium select-none md:flex">
+      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-12 items-center px-3 font-medium select-none md:flex">
         <h1 className="text-base">Kumo</h1>
       </div>
 
@@ -306,9 +371,13 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             : "-translate-x-full",
         )}
       >
-        <div className="h-[49px] flex-none border-b border-kumo-line" />
+        <div className="h-12 flex-none border-b border-kumo-line" />
 
-        <div className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong">
+        <div
+          ref={desktopScrollRef}
+          data-sidebar-scroll="desktop"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+        >
           {navContent}
         </div>
       </aside>

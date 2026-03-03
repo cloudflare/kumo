@@ -20,12 +20,17 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-danger text-white",
       description: "Error or danger state indicator",
     },
+    success: {
+      classes: "bg-kumo-success text-white",
+      description: "Success or positive state indicator",
+    },
     outline: {
       classes: "border border-kumo-fill bg-transparent text-kumo-default",
       description: "Bordered badge with transparent background",
     },
     beta: {
-      classes: "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
+      classes:
+        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
       description: "Indicates beta or experimental features",
     },
   },
@@ -45,11 +50,13 @@ export interface KumoBadgeVariantsProps {
 export function badgeVariants({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
 }: KumoBadgeVariantsProps = {}) {
+  const variantConfig = KUMO_BADGE_VARIANTS.variant[variant];
   return cn(
     // Base styles (exported as KUMO_BADGE_BASE_STYLES for Figma plugin)
     KUMO_BADGE_BASE_STYLES,
-    // Apply variant styles from KUMO_BADGE_VARIANTS
-    KUMO_BADGE_VARIANTS.variant[variant].classes,
+    // Apply variant styles from KUMO_BADGE_VARIANTS (fallback to primary if variant not found)
+    variantConfig?.classes ??
+      KUMO_BADGE_VARIANTS.variant[KUMO_BADGE_DEFAULT_VARIANTS.variant].classes,
   );
 }
 
