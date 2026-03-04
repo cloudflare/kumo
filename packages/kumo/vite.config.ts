@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       dts({
-        include: ["src/**/*", "ai/**/*"],
+        include: ["src/**/*", "ai/**/*", "scripts/theme-generator/**/*"],
         exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
         rollupTypes: false, // Disabled - causes timeouts with many entry points
         compilerOptions: {
@@ -200,6 +200,17 @@ export default defineConfig(({ mode }) => {
           // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
           code: resolve(__dirname, "src/code/index.ts"),
           "code/server": resolve(__dirname, "src/code/server.ts"),
+          // AI schemas for runtime validation (compiled to avoid consumers type-checking raw .ts)
+          "ai/schemas": resolve(__dirname, "ai/schemas.ts"),
+          // Theme generator utilities for consumers extending the theme
+          "scripts/theme-generator/config": resolve(
+            __dirname,
+            "scripts/theme-generator/config.ts",
+          ),
+          "scripts/theme-generator/types": resolve(
+            __dirname,
+            "scripts/theme-generator/types.ts",
+          ),
         },
         formats: ["es"],
         fileName: (format, entryName) => {
