@@ -204,6 +204,12 @@ export {
 } from "./components/date-picker";
 
 export { Flow } from "./components/flow";
+export {
+  Chart,
+  ChartPalette,
+  TimeseriesChart,
+  ChartLegend,
+} from "./components/chart";
 // PLOP_INJECT_EXPORT
 
 // Utils

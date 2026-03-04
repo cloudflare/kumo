@@ -75,7 +75,7 @@ export function CodeHighlighted({
 
   // Container styles - use flex layout for single-line with copy button
   const containerClasses = cn(
-    "group relative min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
+    "group relative w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
     showCopyButton && isSingleLine && "flex items-center",
     className,
   );
@@ -146,23 +146,27 @@ export function CodeHighlighted({
   return (
     <div className={containerClasses}>
       {lineNumbers && (
-        <div className="flex">
+        <div className="flex w-full">
           {lineNumbers}
+          <div className="min-w-0 flex-1 overflow-x-auto">
+            <div
+              className="kumo-shiki [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: processHighlightedHtml(html, highlightLines),
+              }}
+            />
+          </div>
+        </div>
+      )}
+      {!lineNumbers && (
+        <div className="overflow-x-auto">
           <div
-            className="kumo-shiki min-w-0 flex-1 overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
+            className="kumo-shiki [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed"
             dangerouslySetInnerHTML={{
               __html: processHighlightedHtml(html, highlightLines),
             }}
           />
         </div>
-      )}
-      {!lineNumbers && (
-        <div
-          className="kumo-shiki min-w-0 flex-1 overflow-x-auto [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&>pre]:!bg-transparent"
-          dangerouslySetInnerHTML={{
-            __html: processHighlightedHtml(html, highlightLines),
-          }}
-        />
       )}
       {copyButton}
     </div>
