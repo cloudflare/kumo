@@ -5,12 +5,25 @@ export function SelectBasicDemo() {
   const [value, setValue] = useState("apple");
 
   return (
-    <Select
-      className="w-[200px]"
-      value={value}
-      onValueChange={(v) => setValue(v ?? "apple")}
-      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    />
+    <div className="flex gap-2">
+      <Select
+        className="w-[200px]"
+        value={value}
+        onValueChange={(v) => setValue(v ?? "apple")}
+        items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+      />
+
+      <Select
+        value={value}
+        className="w-[200px]"
+        onValueChange={(v) => setValue(v ?? "apple")}
+        items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+      >
+        <Select.Option value="apple">Apple</Select.Option>
+        <Select.Option value="banana">Banana</Select.Option>
+        <Select.Option value="cherry">Cherry</Select.Option>
+      </Select>
+    </div>
   );
 }
 
@@ -41,6 +54,24 @@ export function SelectPlaceholderDemo() {
       onValueChange={(v) => setValue(v as string | null)}
       items={[
         { value: null, label: "Please select" },
+        { value: "bug", label: "Bug" },
+        { value: "documentation", label: "Documentation" },
+        { value: "feature", label: "Feature" },
+      ]}
+    />
+  );
+}
+
+export function SelectPlaceholderUsingPropDemo() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      className="w-[200px]"
+      value={value}
+      placeholder="Please select"
+      onValueChange={(v) => setValue(v as string | null)}
+      items={[
         { value: "bug", label: "Bug" },
         { value: "documentation", label: "Documentation" },
         { value: "feature", label: "Feature" },

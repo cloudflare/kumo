@@ -335,7 +335,7 @@ function Item<T>({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "group flex w-full items-center gap-3 px-2 py-1.5 text-left transition-colors",
+        "group flex w-full items-center gap-3 px-2 py-1.5 text-left text-base transition-colors",
         "cursor-pointer data-[highlighted]:bg-kumo-overlay",
         "rounded-lg",
         disabled && "cursor-default opacity-50",

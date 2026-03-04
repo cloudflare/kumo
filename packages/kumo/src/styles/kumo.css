@@ -607,12 +607,15 @@
  * Shiki dual-theme support.
  * Shiki outputs inline styles with light colors directly applied,
  * and dark colors stored in --shiki-dark CSS variables.
- * In light mode: use inline styles as-is (no override needed)
- * In dark mode: override with --shiki-dark variables
- * !important is needed to override inline styles.
+ * 
+ * The <pre> background is made transparent so the container's bg-kumo-base
+ * shows through and respects the border-radius.
+ *
+ * In dark mode: override text colors with --shiki-dark variables.
+ * !important is needed to override Shiki's inline styles.
  */
-[data-mode="dark"] .kumo-shiki {
-  background-color: var(--shiki-dark-bg) !important;
+.kumo-shiki pre {
+  background-color: transparent !important;
 }
 
 [data-mode="dark"] .kumo-shiki span:not(.line-highlighted) {
@@ -633,6 +636,8 @@
   display: block;
   width: fit-content;
   min-width: 100%;
+  /* Ensure right padding is preserved when content overflows horizontally */
+  padding-right: 1rem;
 }
 
 .kumo-shiki {

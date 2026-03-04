@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+}
+
+const { title, description, href } = Astro.props;
+---
+
+<div class="rounded-lg border border-kumo-line bg-kumo-elevated">
+  <div class="p-4">
+    <div class="text-kumo-default">{title}</div>
+    <div class="mt-1 text-sm text-kumo-secondary">{description}</div>
+
+    <div class="mt-4">
+      <a
+        href={href}
+        class="inline-flex items-center justify-center rounded-md border border-kumo-line bg-kumo-control px-3 py-1.5 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-recessed"
+      >
+        Learn more
+      </a>
+    </div>
+  </div>
+
+  <div class="border-kumo-line border-t bg-kumo-base p-2">
+    <slot />
+  </div>
+</div>
