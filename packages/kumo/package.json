@@ -368,8 +368,8 @@
       "import": "./dist/code/server.js"
     },
     "./ai/schemas": {
-      "types": "./ai/schemas.ts",
-      "import": "./ai/schemas.ts"
+      "types": "./dist/ai/schemas.d.ts",
+      "import": "./dist/ai/schemas.js"
     },
     "./registry/component-registry.json": "./ai/component-registry.json",
     "./registry/component-registry.md": "./ai/component-registry.md",
@@ -377,8 +377,14 @@
     "./styles/standalone": "./dist/styles/kumo-standalone.css",
     "./styles": "./dist/styles/kumo.css",
     "./styles/*": "./dist/styles/*.css",
-    "./scripts/theme-generator/config": "./scripts/theme-generator/config.ts",
-    "./scripts/theme-generator/types": "./scripts/theme-generator/types.ts"
+    "./scripts/theme-generator/config": {
+      "types": "./dist/scripts/theme-generator/config.d.ts",
+      "import": "./dist/scripts/theme-generator/config.js"
+    },
+    "./scripts/theme-generator/types": {
+      "types": "./dist/scripts/theme-generator/types.d.ts",
+      "import": "./dist/scripts/theme-generator/types.js"
+    }
   },
   "files": [
     "dist",
