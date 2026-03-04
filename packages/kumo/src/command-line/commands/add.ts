@@ -58,7 +58,13 @@ function getBlocksSourcePath(): string {
   const __dirname = dirname(fileURLToPath(import.meta.url));
 
   // Try multiple possible locations to handle different build configurations
+  // Block source files are in dist/blocks-source/ (separate from dist/src/blocks/
+  // which contains .d.ts files) to avoid TypeScript trying to type-check .tsx files
   const possiblePaths = [
+    join(__dirname, "..", "..", "blocks-source"),
+    join(__dirname, "..", "blocks-source"),
+    join(__dirname, "blocks-source"),
+    // Fallback to old location for backwards compatibility during development
     join(__dirname, "..", "..", "src", "blocks"),
     join(__dirname, "..", "src", "blocks"),
     join(__dirname, "src", "blocks"),

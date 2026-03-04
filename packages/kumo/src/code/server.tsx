@@ -9,18 +9,18 @@
  * @example
  * ```tsx
  * // Next.js RSC
- * import { highlightCode } from "@cloudflare/kumo/code/server";
+ * import { highlightCode, CodeBlock } from "@cloudflare/kumo/code/server";
  *
  * export default async function Page() {
  *   const html = await highlightCode(`const x = 1;`, "tsx");
- *
- *   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
+ *   return <CodeBlock html={html} />;
  * }
  * ```
  */
 
 import type { Highlighter, BundledLanguage } from "shiki";
 import type { ShikiEngine } from "./types";
+import type { ReactNode } from "react";
 
 export interface HighlightCodeOptions {
   /** Highlighting engine (default: "javascript") */
@@ -145,4 +145,62 @@ export async function createServerHighlighter(
       highlighter.dispose();
     },
   };
+}
+
+/**
+ * Props for the CodeBlock component.
+ */
+export interface CodeBlockProps {
+  /** Pre-rendered HTML from highlightCode() or createServerHighlighter().highlight() */
+  html: string;
+  /** Additional CSS classes for the container */
+  className?: string;
+}
+
+/**
+ * Server component that wraps highlighted code HTML with proper styling.
+ *
+ * Use this with `highlightCode()` or `createServerHighlighter().highlight()`
+ * to render syntax-highlighted code blocks with consistent Kumo styling.
+ *
+ * @example
+ * ```tsx
+ * import { highlightCode, CodeBlock } from "@cloudflare/kumo/code/server";
+ *
+ * export default async function Page() {
+ *   const html = await highlightCode(`const x = 1;`, "tsx");
+ *   return <CodeBlock html={html} />;
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With createServerHighlighter for multiple blocks
+ * const highlighter = await createServerHighlighter({ languages: ["tsx", "bash"] });
+ *
+ * return (
+ *   <>
+ *     <CodeBlock html={highlighter.highlight(code1, "tsx")} />
+ *     <CodeBlock html={highlighter.highlight(code2, "bash")} />
+ *   </>
+ * );
+ *
+ * highlighter.dispose();
+ * ```
+ */
+export function CodeBlock({ html, className }: CodeBlockProps): ReactNode {
+  const containerClass = className
+    ? `group relative w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base ${className}`
+    : "group relative w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base";
+
+  return (
+    <div className={containerClass}>
+      <div className="overflow-x-auto">
+        <div
+          className="kumo-shiki [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </div>
+    </div>
+  );
 }

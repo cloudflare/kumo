@@ -72,6 +72,12 @@ const componentItems: NavItem[] = [
   { label: "Tooltip", href: "/components/tooltip" },
 ];
 
+const chartItems: NavItem[] = [
+  { label: "Charts", href: "/charts" },
+  { label: "Timeseries", href: "/charts/timeseries" },
+  { label: "Custom Chart", href: "/charts/custom" },
+];
+
 // Blocks are CLI-installed components that you own and can customize
 // Use `npx @cloudflare/kumo blocks` to see available blocks
 // Use `npx @cloudflare/kumo add <block>` to install
@@ -98,6 +104,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [componentsOpen, setComponentsOpen] = useState(true);
+  const [chartsOpen, setChartsOpen] = useState(true);
   const [blocksOpen, setBlocksOpen] = useState(true);
 
   const activePath = normalizePathname(currentPath);
@@ -233,6 +240,44 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                   "pl-4",
                   activePath === normalizePathname(item.href) &&
                     LI_ACTIVE_STYLE,
+                )}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mb-4">
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          onClick={() => setChartsOpen(!chartsOpen)}
+        >
+          <span>Charts</span>
+          <CaretDownIcon
+            size={12}
+            className={cn(
+              "text-kumo-subtle transition-transform duration-200",
+              !chartsOpen && "-rotate-90",
+            )}
+          />
+        </button>
+        <ul
+          className={cn(
+            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          {chartItems.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className={cn(
+                  LI_STYLE,
+                  "pl-4",
+                  currentPath === item.href && LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
