@@ -8,6 +8,10 @@ export interface Connector {
   isBottom?: boolean;
   disabled?: boolean;
   single?: boolean;
+  /** Id of the source node this connector originates from. */
+  fromId?: string;
+  /** Id of the target node this connector points to. */
+  toId?: string;
 }
 
 type ConnectorsProps = {
@@ -200,6 +204,11 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
                   strokeWidth="2"
                   markerEnd={`url(#${id})`}
                   data-index={index}
+                  data-testid={
+                    connector.fromId && connector.toId
+                      ? `${connector.fromId}-${connector.toId}`
+                      : undefined
+                  }
                 />
               </g>
             );

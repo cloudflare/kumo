@@ -261,7 +261,12 @@ export function FlowDiagram({
         onPan={handlePan}
         onPanEnd={handlePanEnd}
       >
-        <motion.div ref={contentRef} className="w-max mx-auto" style={{ x, y }}>
+        <motion.div
+          data-testid="flow-contents"
+          ref={contentRef}
+          className="w-max mx-auto"
+          style={{ x, y }}
+        >
           <FlowNodeList>{children}</FlowNodeList>
         </motion.div>
 
@@ -317,7 +322,8 @@ export type NodeData = {
 
 export const useNodeGroup = () => useDescendants<NodeData>();
 
-export const useNode = (props: NodeData) => useDescendantIndex<NodeData>(props);
+export const useNode = (props: NodeData, id?: string) =>
+  useDescendantIndex<NodeData>(props, id);
 
 /**
  * Hook to optionally register as a node if within a parent descendants context.
@@ -395,6 +401,8 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
           y2: nextRect.top - offsetY + nextRect.height / 2,
           disabled: isDisabled,
           single: true,
+          fromId: currentNode.id,
+          toId: nextNode.id,
         });
       }
     }
