@@ -98,6 +98,14 @@ export function kumoHmrPlugin() {
         return resolve(kumoSrc, "registry/index.ts");
       }
 
+      // Code barrel
+      if (source === "@cloudflare/kumo/code") {
+        return resolve(kumoSrc, "code/index.ts");
+      }
+      if (source === "@cloudflare/kumo/code/server") {
+        return resolve(kumoSrc, "code/server.ts");
+      }
+
       // Catch-all for any other @cloudflare/kumo/styles/* CSS imports
       if (source.startsWith("@cloudflare/kumo/styles/")) {
         const styleName = source.replace("@cloudflare/kumo/styles/", "");

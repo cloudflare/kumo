@@ -1,10 +1,11 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+// Import directly from source to avoid requiring a build step in dev mode
 import {
   THEME_CONFIG,
   AVAILABLE_THEMES,
-} from "@cloudflare/kumo/scripts/theme-generator/config";
-import type { TokenDefinition } from "@cloudflare/kumo/scripts/theme-generator/types";
+} from "../../../kumo/scripts/theme-generator/config.js";
+import type { TokenDefinition } from "../../../kumo/scripts/theme-generator/types.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
