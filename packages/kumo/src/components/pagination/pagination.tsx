@@ -234,6 +234,11 @@ function PaginationControls({
                 setPage(number);
                 setEditingPage(number);
               }}
+              // Prevent password managers from auto-filling
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+              data-form-type="other"
             />
           )}
           <InputGroup.Button

@@ -1,5 +1,105 @@
 # @cloudflare/kumo
 
+## 1.10.0
+
+### Minor Changes
+
+- 5505610: Add Shiki-powered `CodeHighlighted` component for syntax highlighting
+  - **New entry point**: `@cloudflare/kumo/code` - keeps Shiki out of main bundle
+  - **ShikiProvider**: Lazy-loads Shiki on first render, shares instance across all children
+  - **CodeHighlighted**: Syntax highlighting with line numbers, line highlighting, copy button
+  - **Server utilities**: `@cloudflare/kumo/code/server` for SSR/static highlighting
+  - **Themes**: Ships with `github-light` and `vesper` defaults, supports any Shiki theme
+  - **i18n**: Customizable labels via provider or per-component
+  - **CSS customization**: `--kumo-code-highlight-bg` variable for highlight color
+  - **Deprecates**: Legacy `Code` and `CodeBlock` components (will be removed in v2)
+
+- 003128b: feat(combobox): add size prop with xs, sm, base, lg variants matching Input component
+- 1cad157: feat(flow): make nested lists work inside parallel nodes
+- 9d89256: Add `role` prop to Dialog component supporting both `"dialog"` (default) and `"alertdialog"` ARIA roles
+
+  **New Feature:**
+  - `Dialog.Root` now accepts a `role` prop to specify the dialog's ARIA semantics
+  - When `role="alertdialog"` is used, the dialog uses Base UI's AlertDialog primitives for proper accessibility
+  - This provides correct screen reader announcements for confirmation and destructive action dialogs
+
+  **When to use `role="alertdialog"`:**
+  - Destructive actions (delete, discard, remove)
+  - Confirmation flows requiring explicit user acknowledgment
+  - Actions that cannot be undone
+  - Critical warnings or errors
+
+  **Example:**
+
+  ```tsx
+  // Standard dialog (default)
+  <Dialog.Root>
+    <Dialog.Trigger render={(p) => <Button {...p}>Edit</Button>} />
+    <Dialog>...</Dialog>
+  </Dialog.Root>
+
+  // Alert dialog for destructive actions
+  <Dialog.Root role="alertdialog">
+    <Dialog.Trigger render={(p) => <Button variant="destructive" {...p}>Delete</Button>} />
+    <Dialog>...</Dialog>
+  </Dialog.Root>
+  ```
+
+- e6218d2: Add TimeseriesChart component with ECharts integration, supporting legends, gradient fills, custom axis formatting, loading skeleton state, and configurable color palettes.
+- a7eb061: feat(select): auto-render options from items prop when children omitted
+
+  The Select component now automatically renders Select.Option elements from the items prop when children are not explicitly provided.
+
+### Patch Changes
+
+- 5943e77: Add missing `success` background and tint semantic color tokens (`bg-kumo-success`, `bg-kumo-success-tint`) for parity with `info`, `warning`, and `danger`. Fix `text-kumo-success` dark mode contrast by using `green-400` instead of `green-500`. Add new `success` Badge variant for positive state indicators.
+- 35d5c42: fix(breadcrumbs): improve mobile breadcrumb readability
+
+  breadcrumbs now render a compact mobile trail for deeper hierarchies by collapsing early levels to `...` and keeping the trailing path visible. labels in breadcrumb links and the current page now truncate correctly to prevent stacking or overlap on narrow viewports.
+
+- 02d0d65: fix(badge): prevent crash when unknown variant is passed
+
+  Add defensive fallback to primary variant when an unrecognized variant string is provided to Badge component. This prevents "Cannot read properties of undefined (reading 'classes')" errors when consumers use a variant that doesn't exist in their installed version.
+
+- 3170d65: fix(code): Fix CodeHighlighted dark mode, layout, and SSR issues
+  - Fix dark mode: Make `<pre>` background transparent so container's `bg-kumo-base` handles theming and border-radius is respected
+  - Fix layout: Wrap Shiki output in overflow container to prevent line highlight negative margins from being clipped
+  - Fix width: Add `w-full` to container for proper full-width display
+  - Fix SSR: Remove `"use client"` directive from `@cloudflare/kumo/code/server` entry point so server utilities work in RSC/SSR contexts
+
+- 31ce577: fix(CommandPalette): add explicit text-base class to Item component for consistent 14px font size
+- ee5a632: Fix Select to render description and error when hideLabel is true
+
+  Previously, the `description` and `error` props were silently ignored when
+  `hideLabel` was `true` (the default). Now, helper text and error messages
+  display correctly even when the label is visually hidden.
+
+- 409d32b: Fix TypeScript errors when consumers type-check their projects with kumo installed.
+
+  Previously, TypeScript would attempt to type-check raw `.tsx` and `.ts` source files
+  shipped in the package (block sources in `dist/src/blocks/`, `ai/schemas.ts`, and
+  `scripts/theme-generator/*.ts`), causing build failures in downstream projects.
+
+  This change:
+  - Moves block source files to a separate `dist/blocks-source/` directory
+  - Compiles `ai/schemas.ts` and `scripts/theme-generator/*.ts` to JavaScript
+  - Updates package exports to point to compiled `.js` files with proper `.d.ts` types
+
+- 7816318: fix(inputs): expand small control hit areas
+- e7f0c80: Fix pagination component to properly wrap numbers in `tabular-nums` class for consistent number alignment. Both the page range and total count now use tabular numerals.
+- c0341b4: Simplify Select placeholder implementation by using Base UI's native placeholder prop on SelectBase.Value instead of manually injecting placeholder items into the items array. This provides a cleaner, more intuitive API that aligns with standard HTML select behavior while maintaining backward compatibility with the null-value placeholder pattern.
+- 35d5c42: fix(breadcrumbs): enhance mobile breadcrumb display for better readability
+- abb7f8c: Add `variant="compact"` prop to Table.Header for a more condensed header style
+- 8972cc4: Fix Combobox group label styling to use semantic token and correct padding
+- bb49d4b: Standardize z-index usage with isolation containment
+  - Add `isolation: isolate` to components with internal stacking (Tabs, MenuBar, InputGroup, Flow/Parallel)
+  - Simplify internal z-index values to `z-0`/`z-1`/`z-2` instead of arbitrary values like `z-10`/`z-20`
+  - Remove superfluous `z-10` from CommandPalette List
+  - Update Toast viewport to `z-1` (matching Base UI's documented pattern)
+  - Update ClipboardText viewport to use `isolate` instead of `z-50`
+
+  This prevents z-index values from leaking outside component boundaries.
+
 ## 1.9.0
 
 ### Minor Changes
