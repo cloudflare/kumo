@@ -12,21 +12,14 @@ import {
   BellIcon,
   CaretUpDownIcon,
   CheckIcon,
+  RocketIcon,
+  FlaskIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
-function BrandLogo() {
-  return (
-    <>
-      <span className="text-lg font-semibold text-kumo-strong group-data-[state=collapsed]/sidebar:hidden">
-        Acme Inc
-      </span>
-      <span className="text-lg font-semibold text-kumo-strong group-data-[state=expanded]/sidebar:hidden">
-        A
-      </span>
-    </>
-  );
-}
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
 
 function DemoContainer({ children }: { children: React.ReactNode }) {
   return (
@@ -44,10 +37,21 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
   );
 }
 
+function BrandLogo() {
+  return (
+    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]">
+      <div className="size-4 shrink-0 rounded bg-kumo-brand" />
+      <span className="text-sm font-semibold text-kumo-strong truncate group-data-[state=collapsed]/sidebar:hidden">
+        Acme Inc
+      </span>
+    </div>
+  );
+}
+
 const accounts = [
   { id: "1", name: "Acme Inc", icon: CloudIcon },
-  { id: "2", name: "Personal", icon: CloudIcon },
-  { id: "3", name: "Staging", icon: CloudIcon },
+  { id: "2", name: "Personal", icon: RocketIcon },
+  { id: "3", name: "Staging", icon: FlaskIcon },
 ];
 
 function AccountSwitcher() {
@@ -59,115 +63,95 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="flex w-full items-center gap-2 rounded-lg p-2 text-left transition-colors hover:bg-kumo-overlay"
+            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[color,background-color,padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)] group-data-[state=collapsed]/sidebar:px-2"
           >
             <active.icon
-              className="size-5 shrink-0 text-kumo-brand"
+              className="size-4 shrink-0 text-kumo-brand"
               weight="fill"
             />
-            <span className="flex-1 truncate text-sm font-semibold text-kumo-strong group-data-[state=collapsed]/sidebar:hidden">
+            <span className="flex-1 truncate text-left font-semibold text-kumo-strong group-data-[state=collapsed]/sidebar:hidden">
               {active.name}
             </span>
-            <CaretUpDownIcon className="size-4 shrink-0 text-kumo-strong group-data-[state=collapsed]/sidebar:hidden" />
+            <CaretUpDownIcon className="size-4 shrink-0 text-kumo-subtle group-data-[state=collapsed]/sidebar:hidden" />
           </button>
         }
       />
-      <DropdownMenu.Content>
-        <DropdownMenu.Group>
-          <DropdownMenu.Label>Accounts</DropdownMenu.Label>
-          {accounts.map((account) => (
-            <DropdownMenu.Item
-              key={account.id}
-              className="gap-2"
-              onClick={() => setActive(account)}
-            >
-              <account.icon className="size-4 text-kumo-brand" weight="fill" />
-              {account.name}
-              {account.id === active.id && (
-                <CheckIcon className="ml-auto size-4" />
-              )}
-            </DropdownMenu.Item>
-          ))}
-        </DropdownMenu.Group>
+      <DropdownMenu.Content className="w-[var(--anchor-width)]">
+        {accounts.map((account) => (
+          <DropdownMenu.Item
+            key={account.id}
+            className="gap-2"
+            onClick={() => setActive(account)}
+          >
+            <account.icon className="size-4 text-kumo-brand" weight="fill" />
+            {account.name}
+            {account.id === active.id && (
+              <CheckIcon className="ml-auto size-4" />
+            )}
+          </DropdownMenu.Item>
+        ))}
       </DropdownMenu.Content>
     </DropdownMenu>
   );
 }
 
-/** Basic sidebar with navigation groups, collapsible sub-menus, and active state. */
+// ---------------------------------------------------------------------------
+// 1. Basic — absolute minimum: no header, no footer
+// ---------------------------------------------------------------------------
+
+/** Minimal sidebar with groups and active state. No header or footer. */
 export function SidebarBasicDemo() {
   return (
     <DemoContainer>
       <Sidebar.Provider defaultOpen className="min-h-0! h-full">
         <Sidebar>
-          <Sidebar.Header className="p-4">
-            <BrandLogo />
-          </Sidebar.Header>
           <Sidebar.Content>
             <Sidebar.Group>
               <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={HouseIcon} active>
-                      Home
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon}>
-                      Analytics
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GlobeIcon}>
+                  Domains
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
 
             <Sidebar.Group>
               <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.Collapsible defaultOpen>
-                      <Sidebar.CollapsibleTrigger
-                        render={
-                          <Sidebar.MenuButton icon={CodeIcon}>
-                            Compute
-                            <Sidebar.MenuChevron />
-                          </Sidebar.MenuButton>
-                        }
-                      />
-                      <Sidebar.CollapsibleContent>
-                        <Sidebar.MenuSub>
-                          <Sidebar.MenuSubItem>
-                            <Sidebar.MenuSubButton>
-                              Workers & Pages
-                            </Sidebar.MenuSubButton>
-                          </Sidebar.MenuSubItem>
-                          <Sidebar.MenuSubItem>
-                            <Sidebar.MenuSubButton>
-                              Durable Objects
-                            </Sidebar.MenuSubButton>
-                          </Sidebar.MenuSubItem>
-                        </Sidebar.MenuSub>
-                      </Sidebar.CollapsibleContent>
-                    </Sidebar.Collapsible>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={DatabaseIcon}>
-                      Storage
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible defaultOpen>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>
+                          Workers & Pages
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Durable Objects
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
-            <Sidebar.Menu>
-              <Sidebar.MenuItem>
-                <Sidebar.Trigger />
-              </Sidebar.MenuItem>
-            </Sidebar.Menu>
-          </Sidebar.Footer>
         </Sidebar>
         <DemoMain />
       </Sidebar.Provider>
@@ -175,35 +159,31 @@ export function SidebarBasicDemo() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// 2. Collapsible Groups — group-level collapse via label click
+// ---------------------------------------------------------------------------
+
 /** Sidebar with collapsible groups that animate open/closed via the group label. */
 export function SidebarCollapsibleGroupDemo() {
   return (
     <DemoContainer>
       <Sidebar.Provider defaultOpen className="min-h-0! h-full">
         <Sidebar>
-          <Sidebar.Header className="p-4">
-            <BrandLogo />
-          </Sidebar.Header>
           <Sidebar.Content>
+            {/* GroupContent is required for collapsible groups (provides grid-rows animation) */}
             <Sidebar.Group collapsible defaultOpen>
               <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
               <Sidebar.GroupContent>
                 <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={HouseIcon} active>
-                      Home
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon}>
-                      Analytics
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={GlobeIcon}>
-                      Domains
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
+                  <Sidebar.MenuButton icon={HouseIcon} active>
+                    Home
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={ChartBarIcon}>
+                    Analytics
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={GlobeIcon}>
+                    Domains
+                  </Sidebar.MenuButton>
                 </Sidebar.Menu>
               </Sidebar.GroupContent>
             </Sidebar.Group>
@@ -212,16 +192,12 @@ export function SidebarCollapsibleGroupDemo() {
               <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
               <Sidebar.GroupContent>
                 <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={CodeIcon}>
-                      Compute
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={DatabaseIcon}>
-                      Storage
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
+                  <Sidebar.MenuButton icon={CodeIcon}>
+                    Compute
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={DatabaseIcon}>
+                    Storage
+                  </Sidebar.MenuButton>
                 </Sidebar.Menu>
               </Sidebar.GroupContent>
             </Sidebar.Group>
@@ -230,27 +206,16 @@ export function SidebarCollapsibleGroupDemo() {
               <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
               <Sidebar.GroupContent>
                 <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ShieldCheckIcon}>
-                      Security
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={LockIcon}>
-                      Zero Trust
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
+                  <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                    Security
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={LockIcon}>
+                    Zero Trust
+                  </Sidebar.MenuButton>
                 </Sidebar.Menu>
               </Sidebar.GroupContent>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
-            <Sidebar.Menu>
-              <Sidebar.MenuItem>
-                <Sidebar.Trigger />
-              </Sidebar.MenuItem>
-            </Sidebar.Menu>
-          </Sidebar.Footer>
         </Sidebar>
         <DemoMain />
       </Sidebar.Provider>
@@ -258,61 +223,9 @@ export function SidebarCollapsibleGroupDemo() {
   );
 }
 
-/** Sidebar collapsed to icon-only state. */
-export function SidebarCollapsedDemo() {
-  return (
-    <DemoContainer>
-      <Sidebar.Provider defaultOpen={false} className="min-h-0! h-full">
-        <Sidebar>
-          <Sidebar.Header className="p-4">
-            <BrandLogo />
-          </Sidebar.Header>
-          <Sidebar.Content>
-            <Sidebar.Group>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
-                      Home
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
-                      Analytics
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
-                      Compute
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
-                      Storage
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={GlobeIcon} tooltip="Domains">
-                      Domains
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-          </Sidebar.Content>
-          <Sidebar.Footer>
-            <Sidebar.Menu>
-              <Sidebar.MenuItem>
-                <Sidebar.Trigger />
-              </Sidebar.MenuItem>
-            </Sidebar.Menu>
-          </Sidebar.Footer>
-        </Sidebar>
-        <DemoMain />
-      </Sidebar.Provider>
-    </DemoContainer>
-  );
-}
+// ---------------------------------------------------------------------------
+// 3. Toggle — expand/collapse with trigger + tooltips
+// ---------------------------------------------------------------------------
 
 function ToggleButton() {
   const { toggleSidebar, state } = useSidebar();
@@ -327,54 +240,51 @@ function ToggleButton() {
   );
 }
 
-/** Interactive demo showing expand/collapse toggle. */
+/** Interactive demo showing expand/collapse toggle with tooltips in collapsed state. */
 export function SidebarToggleDemo() {
   return (
     <DemoContainer>
       <Sidebar.Provider defaultOpen className="min-h-0! h-full">
         <Sidebar>
-          <Sidebar.Header className="p-4">
+          <Sidebar.Header>
             <BrandLogo />
           </Sidebar.Header>
           <Sidebar.Content>
             <Sidebar.Group>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
-                      Home
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
-                      Analytics
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
-                      Storage
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                  Compute
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
           <Sidebar.Footer>
-            <Sidebar.Menu>
-              <Sidebar.MenuItem>
-                <Sidebar.Trigger />
-              </Sidebar.MenuItem>
-            </Sidebar.Menu>
+            <Sidebar.Trigger />
           </Sidebar.Footer>
         </Sidebar>
         <DemoMain>
           <ToggleButton />
-          <p className="text-sm">Click the button or the rail to toggle</p>
+          <p className="text-sm">
+            Click the button or the sidebar trigger to toggle
+          </p>
         </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>
   );
 }
+
+// ---------------------------------------------------------------------------
+// 4. Full — kitchen sink: header, account switcher, search, badges, footer
+// ---------------------------------------------------------------------------
 
 /** Sidebar with account switcher, search input, badges, and full navigation. */
 export function SidebarFullDemo() {
@@ -382,7 +292,7 @@ export function SidebarFullDemo() {
     <DemoContainer>
       <Sidebar.Provider defaultOpen className="min-h-0! h-full">
         <Sidebar>
-          <Sidebar.Header className="px-2 py-3">
+          <Sidebar.Header>
             <AccountSwitcher />
           </Sidebar.Header>
 
@@ -393,102 +303,74 @@ export function SidebarFullDemo() {
 
             <Sidebar.Group>
               <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={HouseIcon} active>
-                      Home
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon}>
-                      Analytics & Logs
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={GlobeIcon}>
-                      Domains
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics & Logs
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GlobeIcon}>
+                  Domains
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
 
             <Sidebar.Separator />
 
             <Sidebar.Group>
               <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.Collapsible defaultOpen>
-                      <Sidebar.CollapsibleTrigger
-                        render={
-                          <Sidebar.MenuButton icon={CodeIcon}>
-                            Compute
-                            <Sidebar.MenuChevron />
-                          </Sidebar.MenuButton>
-                        }
-                      />
-                      <Sidebar.CollapsibleContent>
-                        <Sidebar.MenuSub>
-                          <Sidebar.MenuSubItem>
-                            <Sidebar.MenuSubButton>
-                              Workers & Pages
-                            </Sidebar.MenuSubButton>
-                          </Sidebar.MenuSubItem>
-                          <Sidebar.MenuSubItem>
-                            <Sidebar.MenuSubButton>
-                              Durable Objects
-                            </Sidebar.MenuSubButton>
-                          </Sidebar.MenuSubItem>
-                          <Sidebar.MenuSubItem>
-                            <Sidebar.MenuSubButton>
-                              Containers
-                              <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
-                            </Sidebar.MenuSubButton>
-                          </Sidebar.MenuSubItem>
-                        </Sidebar.MenuSub>
-                      </Sidebar.CollapsibleContent>
-                    </Sidebar.Collapsible>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={DatabaseIcon}>
-                      Storage
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible defaultOpen>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>
+                          Workers & Pages
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Durable Objects
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Containers
+                          <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
 
             <Sidebar.Group>
               <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ShieldCheckIcon}>
-                      Security
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={LockIcon}>
-                      Zero Trust
-                      <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                  Security
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={LockIcon}>
+                  Zero Trust
+                  <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
 
           <Sidebar.Footer>
-            <Sidebar.Menu>
-              <Sidebar.MenuItem>
-                <Sidebar.MenuButton icon={GearIcon}>
-                  Manage account
-                </Sidebar.MenuButton>
-              </Sidebar.MenuItem>
-            </Sidebar.Menu>
+            <Sidebar.MenuButton icon={GearIcon}>
+              Manage account
+            </Sidebar.MenuButton>
           </Sidebar.Footer>
         </Sidebar>
         <DemoMain />
@@ -496,6 +378,10 @@ export function SidebarFullDemo() {
     </DemoContainer>
   );
 }
+
+// ---------------------------------------------------------------------------
+// 5. Resizable — drag handle with auto-collapse
+// ---------------------------------------------------------------------------
 
 /** Resizable sidebar with drag handle. Drag the right edge to resize. */
 export function SidebarResizableDemo() {
@@ -510,39 +396,27 @@ export function SidebarResizableDemo() {
         className="min-h-0! h-full"
       >
         <Sidebar>
-          <Sidebar.Header className="p-4">
+          <Sidebar.Header>
             <BrandLogo />
           </Sidebar.Header>
           <Sidebar.Content>
             <Sidebar.Group>
               <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={HouseIcon} active>
-                      Home
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon}>
-                      Analytics
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={DatabaseIcon}>
-                      Storage
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
           <Sidebar.Footer>
-            <Sidebar.Menu>
-              <Sidebar.MenuItem>
-                <Sidebar.Trigger />
-              </Sidebar.MenuItem>
-            </Sidebar.Menu>
+            <Sidebar.Trigger />
           </Sidebar.Footer>
           <Sidebar.ResizeHandle />
         </Sidebar>
@@ -554,6 +428,10 @@ export function SidebarResizableDemo() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// 6. Right Side — right-aligned, content only
+// ---------------------------------------------------------------------------
+
 /** Right-side sidebar variant. */
 export function SidebarRightDemo() {
   return (
@@ -561,32 +439,18 @@ export function SidebarRightDemo() {
       <Sidebar.Provider defaultOpen side="right" className="min-h-0! h-full">
         <DemoMain />
         <Sidebar>
-          <Sidebar.Header className="p-4">
-            <span className="text-lg font-semibold text-kumo-strong">
-              Details
-            </span>
-          </Sidebar.Header>
           <Sidebar.Content>
             <Sidebar.Group>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={GearIcon} active>
-                      Properties
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={ChartBarIcon}>
-                      Metrics
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton icon={BellIcon}>
-                      Alerts
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
+              <Sidebar.GroupLabel>Details</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={GearIcon} active>
+                  Properties
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Metrics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={BellIcon}>Alerts</Sidebar.MenuButton>
+              </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
         </Sidebar>
