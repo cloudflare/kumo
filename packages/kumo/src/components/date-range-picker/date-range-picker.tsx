@@ -652,7 +652,7 @@ function DateRangeFooter({
       <button
         type="button"
         onClick={reset}
-        className="cursor-pointer font-semibold text-kumo-default underline underline-offset-2"
+        className="cursor-pointer font-semibold text-kumo-default underline underline-offset-2 transition-colors duration-150 hover:text-kumo-brand"
       >
         Reset Dates
       </button>

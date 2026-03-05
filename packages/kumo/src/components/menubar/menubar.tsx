@@ -46,10 +46,10 @@ const MenuOption = ({
     <Tooltip content={tooltip} asChild>
       <button
         className={cn(
-          "focus:inset-ring-focus relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-fill first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-1 focus:outline-none focus-visible:z-1 focus-visible:inset-ring-[0.5]",
-          {
-            "z-2 bg-kumo-base shadow-xs transition-colors": isActive === id,
-          },
+          "focus:inset-ring-focus relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-fill first:rounded-l-lg last:rounded-r-lg transition-colors duration-150 focus:z-1 focus:outline-none focus-visible:z-1 focus-visible:inset-ring-[0.5]",
+          isActive === id
+            ? "z-2 bg-kumo-base shadow-xs"
+            : "hover:bg-kumo-overlay",
         )}
         onClick={onClick}
       >
