@@ -206,47 +206,14 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   const triggerAriaLabel =
     ariaLabel ?? (!triggerLabelledBy ? fallbackLabel : undefined);
 
-  // Placeholder must be provide via the items props
-  // We need to fake the items or do some transformation
-  let items = props.items;
-  if (placeholder) {
-    if (!items) {
-      items = [
-        {
-          value: null as T,
-          label: placeholder,
-        },
-      ];
-    } else if (typeof items === "object") {
-      items = [
-        {
-          value: null as T,
-          label: placeholder,
-        },
-        ...Object.entries(items).map(([key, value]) => ({
-          value: key as T,
-          label: value,
-        })),
-      ];
-    } else if (Array.isArray(items)) {
-      items = [
-        {
-          value: null as T,
-          label: placeholder,
-        },
-        ...items,
-      ];
-    }
-  }
-
   // Auto-render children from items if children not provided
   const renderedChildren =
-    children ?? (items ? renderOptionsFromItems(items) : null);
+    children ?? (props.items ? renderOptionsFromItems(props.items) : null);
 
   const selectControl = (
     <SelectBase.Root
       {...props}
-      items={items}
+      items={props.items}
       disabled={loading || props.disabled}
     >
       <SelectBase.Trigger
@@ -263,7 +230,9 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         {loading ? (
           <SkeletonLine className="w-32" />
         ) : (
-          <SelectBase.Value>{renderValue}</SelectBase.Value>
+          <SelectBase.Value placeholder={placeholder}>
+            {renderValue}
+          </SelectBase.Value>
         )}
         <SelectBase.Icon className="flex items-center">
           <CaretUpDownIcon />

@@ -14,6 +14,7 @@ import {
   SelectLoadingDataDemo,
   SelectMultipleDemo,
   SelectComplexDemo,
+  SelectPlaceholderUsingPropDemo,
 } from "../../components/demos/SelectDemo";
 ---
 
@@ -28,17 +29,23 @@ import {
     <Heading level={3}>Basic Usage</Heading>
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
-        A simple select component. Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> prop
-        to provide options — when <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> is provided without 
-        children, the select automatically renders options. This also controls what text appears in the
-        trigger when an option is selected. For custom option rendering, you can still provide manual 
-        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Option</code> children.
+        A simple select component. Use the <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code
+        > prop to provide options — when <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code
+        > is provided without children, the select automatically renders options.
+        This also controls what text appears in the trigger when an option is selected.
+        For custom option rendering, you can still provide manual
+        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >Select.Option</code
+        > children.
       </span>
     </p>
 
     <ComponentExample
       code={`import { Select } from "@cloudflare/kumo";
 
+// Option 1
 function App() {
   const [value, setValue] = useState("apple");
 
@@ -50,7 +57,26 @@ function App() {
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
     />
   )
-}`}
+}
+
+// Option 2
+function App() {
+  const [value, setValue] = useState("apple");
+
+  return (
+    <Select
+      value={value}
+      className="w-[200px]"
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    >
+      <Select.Option value="apple">Apple</Select.Option>
+      <Select.Option value="banana">Banana</Select.Option>
+      <Select.Option value="cherry">Cherry</Select.Option>
+    </Select>
+  )
+}
+`}
     >
       <SelectBasicDemo client:load />
     </ComponentExample>
@@ -125,6 +151,7 @@ function App() {
     <ComponentExample
       code={`import { Select } from "@cloudflare/kumo";
 
+// Option 1: Manual placeholder using a null-value item
 function App() {
   const [value, setValue] = useState<string | null>(null);
 
@@ -134,7 +161,6 @@ function App() {
       value={value}
       onValueChange={(v) => setValue(v as any)}
       items={[
-        // Placeholder
         { value: null, label: "Please select" },
         { value: "bug", label: "Bug" },
         { value: "documentation", label: "Documentation" },
@@ -142,9 +168,32 @@ function App() {
       ]}
     />
   )
-}`}
+}
+
+// Option 2: Using the placeholder prop
+function App() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      placeholder="Please select"
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v as any)}
+      items={[
+        { value: "bug", label: "Bug" },
+        { value: "documentation", label: "Documentation" },
+        { value: "feature", label: "Feature" },
+      ]}
+    />
+  )
+}
+`}
     >
-      <SelectPlaceholderDemo client:load />
+      <div class="flex gap-2">
+        <SelectPlaceholderDemo client:load />
+        <SelectPlaceholderUsingPropDemo client:load />
+      </div>
     </ComponentExample>
   </ComponentSection>
 
@@ -245,8 +294,8 @@ function App() {
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
         A select component with loading state. The loading state is passed to
-        the component via the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
-          >loading</code
+        the component via the <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code
         > prop.
       </span>
     </p>

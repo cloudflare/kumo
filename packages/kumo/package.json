@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -51,6 +51,10 @@
     "./components/checkbox": {
       "types": "./dist/src/components/checkbox/index.d.ts",
       "import": "./dist/components/checkbox.js"
+    },
+    "./components/chart": {
+      "types": "./dist/src/components/chart/index.d.ts",
+      "import": "./dist/components/chart.js"
     },
     "./components/clipboard-text": {
       "types": "./dist/src/components/clipboard-text/index.d.ts",
@@ -364,8 +368,8 @@
       "import": "./dist/code/server.js"
     },
     "./ai/schemas": {
-      "types": "./ai/schemas.ts",
-      "import": "./ai/schemas.ts"
+      "types": "./dist/ai/schemas.d.ts",
+      "import": "./dist/ai/schemas.js"
     },
     "./registry/component-registry.json": "./ai/component-registry.json",
     "./registry/component-registry.md": "./ai/component-registry.md",
@@ -373,8 +377,14 @@
     "./styles/standalone": "./dist/styles/kumo-standalone.css",
     "./styles": "./dist/styles/kumo.css",
     "./styles/*": "./dist/styles/*.css",
-    "./scripts/theme-generator/config": "./scripts/theme-generator/config.ts",
-    "./scripts/theme-generator/types": "./scripts/theme-generator/types.ts"
+    "./scripts/theme-generator/config": {
+      "types": "./dist/scripts/theme-generator/config.d.ts",
+      "import": "./dist/scripts/theme-generator/config.js"
+    },
+    "./scripts/theme-generator/types": {
+      "types": "./dist/scripts/theme-generator/types.d.ts",
+      "import": "./dist/scripts/theme-generator/types.js"
+    }
   },
   "files": [
     "dist",
@@ -424,7 +434,8 @@
     "@phosphor-icons/react": "^2.1.10",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "echarts": "^6.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
