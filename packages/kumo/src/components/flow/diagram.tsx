@@ -26,7 +26,7 @@ import {
   type DescendantInfo,
 } from "./use-children";
 
-const PAN_SPACING = {
+const DEFAULT_PADDING = {
   y: 64,
   x: 16,
 };
@@ -65,6 +65,23 @@ interface FlowDiagramProps {
    * - `center`: Nodes are vertically centered
    */
   align?: Align;
+  /**
+   * Whether to render the pannable canvas wrapper.
+   * - `true`: Renders with pannable canvas, scrollbars, and pan gestures (default)
+   * - `false`: Renders only the node list without canvas wrapper
+   */
+  canvas?: boolean;
+  /**
+   * Padding around the diagram content within the canvas.
+   * - `x`: Horizontal padding in pixels (default: 16)
+   * - `y`: Vertical padding in pixels (default: 64)
+   */
+  padding?: { x?: number; y?: number };
+  /**
+   * Callback fired when the overflow state changes.
+   * Called with `{ x: boolean, y: boolean }` indicating overflow in each axis.
+   */
+  onOverflowChange?: (overflow: { x: boolean; y: boolean }) => void;
   className?: string;
   children?: ReactNode;
 }
@@ -72,11 +89,19 @@ interface FlowDiagramProps {
 export function FlowDiagram({
   orientation = "horizontal",
   align = "start",
+  canvas = true,
+  padding: requestedPadding,
+  onOverflowChange,
   className,
   children,
 }: FlowDiagramProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const padding = {
+    x: requestedPadding?.x ?? DEFAULT_PADDING.x,
+    y: requestedPadding?.y ?? DEFAULT_PADDING.y,
+  };
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -92,6 +117,7 @@ export function FlowDiagram({
   const [canPan, setCanPan] = useState(false);
 
   useEffect(() => {
+    if (!canvas) return;
     if (!wrapperRef.current || !contentRef.current) return;
 
     const measureBounds = () => {
@@ -100,8 +126,8 @@ export function FlowDiagram({
       const wrapper = wrapperRef.current.getBoundingClientRect();
       const content = contentRef.current.getBoundingClientRect();
 
-      const availableWidth = wrapper.width - PAN_SPACING.x * 2;
-      const availableHeight = wrapper.height - PAN_SPACING.y * 2;
+      const availableWidth = wrapper.width - padding.x * 2;
+      const availableHeight = wrapper.height - padding.y * 2;
 
       setBounds({
         x: Math.min(0, availableWidth - content.width),
@@ -115,9 +141,11 @@ export function FlowDiagram({
         contentHeight: content.height,
       });
 
-      setCanPan(
-        content.width > availableWidth || content.height > availableHeight,
-      );
+      const isXOverflow = content.width > availableWidth;
+      const isYOverflow = content.height > availableHeight;
+
+      setCanPan(isXOverflow || isYOverflow);
+      onOverflowChange?.({ x: isXOverflow, y: isYOverflow });
     };
 
     measureBounds();
@@ -127,9 +155,10 @@ export function FlowDiagram({
     resizeObserver.observe(contentRef.current);
 
     return () => resizeObserver.disconnect();
-  }, []);
+  }, [padding.x, padding.y, canvas, onOverflowChange]);
 
   useEffect(() => {
+    if (!canvas) return;
     if (!bounds) return;
 
     /**
@@ -143,17 +172,19 @@ export function FlowDiagram({
     if (y.get() < bounds.y) {
       y.set(bounds.y);
     }
-  }, [bounds, x, y]);
+  }, [bounds, x, y, canvas]);
 
   useEffect(() => {
+    if (!canvas) return;
     return () => {
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
     };
-  }, []);
+  }, [canvas]);
 
   // Handle wheel/scroll events for panning
   useEffect(() => {
+    if (!canvas) return;
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
@@ -180,7 +211,7 @@ export function FlowDiagram({
 
     wrapper.addEventListener("wheel", handleWheel, { passive: false });
     return () => wrapper.removeEventListener("wheel", handleWheel);
-  }, [bounds, x, y]);
+  }, [canvas, bounds, x, y]);
 
   const isEventFromNode = (e: PointerEvent) => {
     const target = e.target as HTMLElement;
@@ -272,7 +303,7 @@ export function FlowDiagram({
 
         {/* Vertical scrollbar */}
         {canScrollY && (
-          <div className="absolute right-1 top-4 bottom-4 w-1.5 rounded-full bg-kumo-line/50 opacity-0 group-hover:opacity-100">
+          <div className="absolute right-1 top-1 bottom-1 w-1.5 rounded-full bg-kumo-line/50 opacity-0 group-hover:opacity-100">
             <motion.div
               className="absolute w-full rounded-full bg-kumo-fill"
               style={{
@@ -285,7 +316,7 @@ export function FlowDiagram({
 
         {/* Horizontal scrollbar */}
         {canScrollX && (
-          <div className="absolute bottom-1 left-4 right-4 h-1.5 rounded-full bg-kumo-line/50 opacity-0 group-hover:opacity-100">
+          <div className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full bg-kumo-line/50 opacity-0 group-hover:opacity-100">
             <motion.div
               className="absolute h-full rounded-full bg-kumo-fill"
               style={{
@@ -339,7 +370,7 @@ export const useOptionalNode = (props: NodeData) => {
   const unregisterRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    if (!parentContext) return;
+    if (!parentContext?.register) return;
 
     const { unregister } = parentContext.register(id, renderOrder, props);
 

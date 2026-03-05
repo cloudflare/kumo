@@ -3,6 +3,7 @@ import {
   createContext,
   forwardRef,
   isValidElement,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -12,7 +13,8 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { useNode, type RectLike } from "./diagram";
+import { useNode, type NodeData, type RectLike } from "./diagram";
+import { useDescendantsContext } from "./use-children";
 
 // Utility to merge refs
 function mergeRefs<T>(
@@ -70,6 +72,30 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
       end: RectLike | null;
     }>({ start: null, end: null });
 
+    const { measurementEpoch, notifySizeChange } =
+      useDescendantsContext<NodeData>();
+
+    const remeasure = useCallback(() => {
+      if (!nodeRef.current) return;
+
+      const nodeRect = nodeRef.current.getBoundingClientRect();
+      let startRect: RectLike = nodeRect;
+      let endRect: RectLike = nodeRect;
+
+      if (startAnchorRef.current) {
+        startRect = startAnchorRef.current.getBoundingClientRect();
+      }
+      if (endAnchorRef.current) {
+        endRect = endAnchorRef.current.getBoundingClientRect();
+      }
+
+      setMeasurements((m) => {
+        const newVal = { start: startRect, end: endRect };
+        if (JSON.stringify(m) === JSON.stringify(newVal)) return m;
+        return newVal;
+      });
+    }, []);
+
     const nodeProps = useMemo(
       () => ({
         parallel: false,
@@ -81,46 +107,35 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
 
     const { index, id } = useNode(nodeProps, idProp);
 
-    const remeasure = () => {
-      if (!nodeRef.current) return;
-
-      const nodeRect = nodeRef.current.getBoundingClientRect();
-
-      let startRect: RectLike = nodeRect;
-      let endRect: RectLike = nodeRect;
-
-      if (startAnchorRef.current) {
-        startRect = startAnchorRef.current.getBoundingClientRect();
-      }
-
-      if (endAnchorRef.current) {
-        endRect = endAnchorRef.current.getBoundingClientRect();
-      }
-
-      setMeasurements((m) => {
-        const newVal = { start: startRect, end: endRect };
-        if (JSON.stringify(m) === JSON.stringify(newVal)) return m;
-        return newVal;
-      });
-    };
-
-    /**
-     * This effect intentionally has no dependencies because we want it to run on
-     * every render to ensure measurements are always up to date.
-     */
-    useLayoutEffect(remeasure);
-
     /**
      * Observe the node element for size changes so that connectors update even
      * when FlowNode itself does not re-render (e.g. an expandable render-prop
      * child toggling its own state).
+     *
+     * When this node resizes, we also notify siblings via `notifySizeChange`
+     * so they remeasure their (potentially shifted) positions.
      */
     useLayoutEffect(() => {
       if (!nodeRef.current) return;
-      const observer = new ResizeObserver(remeasure);
+
+      const onResize = () => {
+        remeasure();
+        notifySizeChange();
+      };
+
+      const observer = new ResizeObserver(onResize);
       observer.observe(nodeRef.current);
       return () => observer.disconnect();
-    }, []);
+    }, [remeasure, notifySizeChange]);
+
+    /**
+     * Remeasure when siblings change (enter/exit/resize). The epoch counter
+     * increments on every registration change and every size-change
+     * notification, so this effect picks up cases (2) and (3) from the spec.
+     */
+    useLayoutEffect(() => {
+      remeasure();
+    }, [measurementEpoch, remeasure]);
 
     const mergedRef = mergeRefs(ref, nodeRef);
 

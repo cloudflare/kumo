@@ -192,9 +192,13 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
               single: connector.single,
               ...pathProps,
             });
+            const pathId =
+              connector.fromId && connector.toId
+                ? `${connector.fromId}-${connector.toId}`
+                : `path-${index}`;
             return (
               <g
-                key={index}
+                key={pathId}
                 className={connector.disabled ? "opacity-40" : undefined}
               >
                 <path
@@ -204,11 +208,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
                   strokeWidth="2"
                   markerEnd={`url(#${id})`}
                   data-index={index}
-                  data-testid={
-                    connector.fromId && connector.toId
-                      ? `${connector.fromId}-${connector.toId}`
-                      : undefined
-                  }
+                  data-testid={pathId}
                 />
               </g>
             );

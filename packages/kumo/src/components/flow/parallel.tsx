@@ -1,5 +1,5 @@
 import {
-  useEffect,
+  useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -13,9 +13,10 @@ import {
   useDiagramContext,
   useNode,
   useNodeGroup,
+  type NodeData,
   type RectLike,
 } from "./diagram";
-import { DescendantsProvider } from "./use-children";
+import { DescendantsProvider, useDescendantsContext } from "./use-children";
 
 function getStartAndEndPoints({
   container,
@@ -79,6 +80,9 @@ export function FlowParallelNode({
   const { orientation } = useDiagramContext();
   const descendants = useNodeGroup();
 
+  const { measurementEpoch, notifySizeChange } =
+    useDescendantsContext<NodeData>();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLUListElement>(null);
   const [measurements, setMeasurements] = useState<DOMRect | null>(null);
@@ -90,31 +94,42 @@ export function FlowParallelNode({
     ),
   );
 
-  const remeasure = () => {
+  const remeasure = useCallback(() => {
     if (!contentRef.current) return;
     const rect = contentRef.current.getBoundingClientRect();
     setMeasurements((m) => {
       if (JSON.stringify(m) === JSON.stringify(rect)) return m;
       return rect;
     });
-  };
-
-  /**
-   * This effect intentionally has no dependencies because we want it to run on
-   * every render to ensure measurements are always up to date.
-   */
-  useLayoutEffect(remeasure);
+  }, []);
 
   /**
    * Observe the content element for size changes so that connectors update even
    * when child nodes resize without triggering a FlowParallelNode re-render.
+   *
+   * When this parallel group resizes, notify siblings so they remeasure their
+   * (potentially shifted) positions.
    */
   useLayoutEffect(() => {
     if (!contentRef.current) return;
-    const observer = new ResizeObserver(remeasure);
+
+    const onResize = () => {
+      remeasure();
+      notifySizeChange();
+    };
+
+    const observer = new ResizeObserver(onResize);
     observer.observe(contentRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [remeasure, notifySizeChange]);
+
+  /**
+   * Remeasure when siblings change (enter/exit/resize). Picks up cases (2)
+   * and (3) from the spec.
+   */
+  useLayoutEffect(() => {
+    remeasure();
+  }, [measurementEpoch, remeasure]);
 
   const measure = () => {
     const container = containerRef.current;

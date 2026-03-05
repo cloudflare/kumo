@@ -444,6 +444,7 @@ export const CollapsiblePropsSchema = z.object({
 });
 
 export const ComboboxPropsSchema = z.object({
+  size: z.enum(["xs", "sm", "base", "lg"]).optional(), // Size of the combobox trigger. Matches Input component sizes. - `"xs"` — Extra small for compact UIs (h-5 / 20px) - `"sm"` — Small for secondary fields (h-6.5 / 26px) - `"base"` — Default size (h-9 / 36px) - `"lg"` — Large for prominent fields (h-10 / 40px)
   inputSide: z.enum(["right", "top"]).optional(), // Position of the text input relative to chips in multi-select mode. - `"right"` — Input inline to the right of chips - `"top"` — Input above chips
   items: z.array(z.unknown()), // Array of items to display in the dropdown
   value: z.array(z.unknown()).optional(), // Currently selected value(s)
@@ -717,9 +718,10 @@ export const ToastyPropsSchema = z.object({
 });
 
 export const TooltipPropsSchema = z.object({
-  side: z.enum(["top", "bottom", "left", "right"]).optional(),
-  className: z.string().optional(), // Additional CSS classes
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
+  align: z.enum(["start", "center", "end"]).optional(), // Alignment on the axis perpendicular to `side`. - `"start"` — Align to the start edge - `"center"` — Center-aligned - `"end"` — Align to the end edge
+  asChild: z.boolean().optional(), // When `true`, the trigger wraps the child element instead of adding a wrapper.
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Preferred side of the trigger to render the tooltip. - `"top"` — Tooltip appears above the trigger - `"bottom"` — Tooltip appears below the trigger - `"left"` — Tooltip appears to the left of the trigger - `"right"` — Tooltip appears to the right of the trigger
   content: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]), // Content to display in the tooltip
 });
 
