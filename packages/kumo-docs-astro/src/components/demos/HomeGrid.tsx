@@ -5,7 +5,6 @@ import {
   Button,
   Checkbox,
   ClipboardText,
-  CodeBlock,
   Collapsible,
   Combobox,
   DatePicker,
@@ -36,6 +35,7 @@ import {
   TooltipProvider,
   useKumoToastManager,
 } from "@cloudflare/kumo";
+import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -53,7 +53,7 @@ const componentRoutes: Record<string, string> = {
   button: "/components/button",
   checkbox: "/components/checkbox",
   "clipboard-text": "/components/clipboard-text",
-  code: "/components/code",
+  "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
@@ -319,10 +319,19 @@ export function HomeGrid() {
       ),
     },
     {
-      name: "Code",
-      id: "code",
+      name: "CodeHighlighted",
+      id: "code-highlighted",
       Component: (
-        <CodeBlock lang="ts" code={`const a = callMyFunction("hello")`} />
+        <div className="w-full px-4">
+          <ShikiProvider engine="javascript" languages={["typescript"]}>
+            <CodeHighlighted
+              lang="typescript"
+              code={`const sum = (a: number, b: number) => {
+  return a + b;
+};`}
+            />
+          </ShikiProvider>
+        </div>
       ),
     },
     {

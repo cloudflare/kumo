@@ -115,7 +115,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   checkbox:
     "A control that allows the user to toggle between checked and not checked.",
   "clipboard-text": "A text component with a copy-to-clipboard button.",
-  code: "Syntax-highlighted code blocks with support for multiple languages.",
   collapsible:
     "A vertically stacked set of interactive headings that each reveal content.",
   combobox:
