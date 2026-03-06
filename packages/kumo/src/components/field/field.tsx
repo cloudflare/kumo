@@ -132,7 +132,7 @@ export function Field({
       {error ? (
         <FieldBase.Error
           className={cn(
-            "text-sm text-kumo-danger",
+            "text-sm leading-snug text-kumo-danger",
             // Span full width in horizontal layout
             "col-span-full",
           )}
