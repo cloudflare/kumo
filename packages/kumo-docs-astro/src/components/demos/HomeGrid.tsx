@@ -141,6 +141,7 @@ export function HomeGrid() {
       id: "select",
       Component: (
         <Select
+          aria-label="Select version"
           className="w-[200px]"
           renderValue={(v) => {
             const labels: Record<string, string> = {

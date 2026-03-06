@@ -64,6 +64,26 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
 }
 
 /**
+ * Normalizes items to array format for Base UI.
+ * Object maps are converted to array format so Base UI can properly
+ * handle value matching and placeholder display.
+ */
+function normalizeItems<T>(
+  items:
+    | Record<string, ReactNode>
+    | ReadonlyArray<{ label: ReactNode; value: T }>,
+): ReadonlyArray<{ label: ReactNode; value: T }> {
+  if (Array.isArray(items)) {
+    return items;
+  }
+  // Convert object map to array format
+  return Object.entries(items).map(([key, label]) => ({
+    value: key as T,
+    label,
+  }));
+}
+
+/**
  * Auto-generates Select.Option elements from items prop.
  * Only used when children are not explicitly provided.
  * Filters out null values (typically used for placeholders).
@@ -73,17 +93,10 @@ function renderOptionsFromItems<T>(
     | Record<string, ReactNode>
     | ReadonlyArray<{ label: ReactNode; value: T }>,
 ): ReactNode {
-  // Handle object map format: { key: "Label" }
-  if (!Array.isArray(items)) {
-    return Object.entries(items).map(([key, label]) => (
-      <Option key={key} value={key as T}>
-        {label}
-      </Option>
-    ));
-  }
+  const normalizedItems = normalizeItems(items);
 
-  // Handle array format: [{ value, label }] - filter out null values
-  return items
+  // Filter out null values and render options
+  return normalizedItems
     .filter((item) => item.value !== null)
     .map((item, index) => (
       <Option
@@ -103,9 +116,17 @@ type SelectPropsGeneric<
     multiple?: Multiple;
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
     className?: string;
-    /** Label content for the select (enables Field wrapper) - can be a string or any React node */
+    /**
+     * Label content for the select.
+     * When provided, enables the Field wrapper with a visible label.
+     * For accessibility without a visible label, use `aria-label` instead.
+     */
     label?: ReactNode;
-    /** Visually hide the label (sr-only). Set to `false` for a visible label. @default true */
+    /**
+     * @deprecated Use `aria-label` for hidden labels instead of `label` + `hideLabel={true}`.
+     * When `label` is provided without `hideLabel`, the label is now visible by default (matching Input behavior).
+     * This prop will be removed in a future version.
+     */
     hideLabel?: boolean;
     placeholder?: string;
     loading?: boolean;
@@ -120,23 +141,38 @@ type SelectPropsGeneric<
 /**
  * Select component props.
  *
+ * **Accessible Name Required:** Select should have one of:
+ * 1. `label` prop (recommended) - enables Field wrapper with visible label
+ * 2. `aria-label` - for selects without visible label (accessibility-only)
+ * 3. `aria-labelledby` - for custom label association
+ *
  * @example
  * ```tsx
+ * // With visible label (recommended)
  * <Select label="Country" onValueChange={setValue}>
  *   <Select.Option value="us">United States</Select.Option>
  *   <Select.Option value="uk">United Kingdom</Select.Option>
+ * </Select>
+ *
+ * // Without visible label (use aria-label for accessibility)
+ * <Select aria-label="Select a country" onValueChange={setValue}>
+ *   <Select.Option value="us">United States</Select.Option>
  * </Select>
  * ```
  */
 export interface SelectProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Label content for the select (enables Field wrapper) — can be a string or any React node. */
+  /**
+   * Label content for the select.
+   * When provided, enables the Field wrapper with a visible label above the select.
+   * For accessibility without a visible label, use `aria-label` instead.
+   */
   label?: ReactNode;
   /**
-   * Visually hide the label while keeping it accessible to screen readers.
-   * Set to `false` to show a visible label above the select via the Field wrapper.
-   * @default true
+   * @deprecated Use `aria-label` for hidden labels instead of `label` + `hideLabel={true}`.
+   * When `label` is provided without `hideLabel`, the label is now visible by default (matching Input behavior).
+   * This prop will be removed in a future version.
    */
   hideLabel?: boolean;
   /** Placeholder text shown when no value is selected. */
@@ -182,7 +218,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   className,
   renderValue,
   label,
-  hideLabel = true,
+  hideLabel,
   placeholder,
   loading,
   labelTooltip,
@@ -198,13 +234,28 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // For aria-label, use string label or placeholder (ReactNode labels can't be used for aria-label)
   const fallbackLabel = typeof label === "string" ? label : placeholder;
 
-  // Use Field wrapper when label is provided and not hidden
-  const useFieldWrapper = label && !hideLabel;
+  // Deprecation warning for hideLabel
+  if (process.env.NODE_ENV !== "production" && hideLabel !== undefined) {
+    console.warn(
+      "[Kumo Select]: `hideLabel` is deprecated. For hidden labels, use `aria-label` instead of `label` + `hideLabel={true}`.\n" +
+        "  Migration:\n" +
+        '  - For visible labels: <Select label="Country" /> (hideLabel no longer needed)\n' +
+        '  - For hidden labels: <Select aria-label="Select a country" /> (remove label and hideLabel)',
+    );
+  }
+
+  // New behavior: label presence determines Field wrapper visibility (like Input)
+  // hideLabel is only respected for backward compatibility when explicitly set to true
+  const useFieldWrapper = label && hideLabel !== true;
   const triggerLabelledBy = useFieldWrapper
     ? undefined
     : (ariaLabelledby ?? (label ? labelId : undefined));
   const triggerAriaLabel =
     ariaLabel ?? (!triggerLabelledBy ? fallbackLabel : undefined);
+
+  // Normalize items to array format for Base UI compatibility
+  // This fixes placeholder not showing with object map items
+  const normalizedItems = props.items ? normalizeItems(props.items) : undefined;
 
   // Auto-render children from items if children not provided
   const renderedChildren =
@@ -213,7 +264,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   const selectControl = (
     <SelectBase.Root
       {...props}
-      items={props.items}
+      items={normalizedItems}
       disabled={loading || props.disabled}
     >
       <SelectBase.Trigger

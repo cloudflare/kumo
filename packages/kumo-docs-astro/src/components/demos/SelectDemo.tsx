@@ -1,40 +1,48 @@
 import { useState, useEffect } from "react";
 import { Select, Text } from "@cloudflare/kumo";
 
+/** Basic Select with visible label - the recommended pattern. */
 export function SelectBasicDemo() {
   const [value, setValue] = useState("apple");
 
   return (
-    <div className="flex gap-2">
-      <Select
-        className="w-[200px]"
-        value={value}
-        onValueChange={(v) => setValue(v ?? "apple")}
-        items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-      />
-
-      <Select
-        value={value}
-        className="w-[200px]"
-        onValueChange={(v) => setValue(v ?? "apple")}
-        items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-      >
-        <Select.Option value="apple">Apple</Select.Option>
-        <Select.Option value="banana">Banana</Select.Option>
-        <Select.Option value="cherry">Cherry</Select.Option>
-      </Select>
-    </div>
+    <Select
+      label="Favorite Fruit"
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    />
   );
 }
 
-export function SelectLabelValueDemo() {
-  const [value, setValue] = useState("bug");
+/** Select without visible label - use aria-label for accessibility. */
+export function SelectWithoutLabelDemo() {
+  const [value, setValue] = useState("apple");
 
   return (
     <Select
+      aria-label="Select a fruit"
       className="w-[200px]"
       value={value}
-      onValueChange={(v) => setValue(v as string)}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    />
+  );
+}
+
+/** Select with label, description, and error handling. */
+export function SelectWithFieldDemo() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Issue Type"
+      description="Choose the category that best describes your issue"
+      error={!value ? "Please select an issue type" : undefined}
+      className="w-[280px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
       items={{
         bug: "Bug",
         documentation: "Documentation",
@@ -44,38 +52,44 @@ export function SelectLabelValueDemo() {
   );
 }
 
+/** Select with placeholder text when no value is selected. */
 export function SelectPlaceholderDemo() {
   const [value, setValue] = useState<string | null>(null);
 
   return (
     <Select
+      label="Category"
+      placeholder="Choose a category..."
       className="w-[200px]"
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
-      items={[
-        { value: null, label: "Please select" },
-        { value: "bug", label: "Bug" },
-        { value: "documentation", label: "Documentation" },
-        { value: "feature", label: "Feature" },
-      ]}
+      items={{
+        bug: "Bug",
+        documentation: "Documentation",
+        feature: "Feature",
+      }}
     />
   );
 }
 
-export function SelectPlaceholderUsingPropDemo() {
+/** Select with label tooltip for additional context. */
+export function SelectWithTooltipDemo() {
   const [value, setValue] = useState<string | null>(null);
 
   return (
     <Select
+      label="Priority"
+      labelTooltip="Higher priority issues are addressed first"
+      placeholder="Select priority"
       className="w-[200px]"
       value={value}
-      placeholder="Please select"
       onValueChange={(v) => setValue(v as string | null)}
-      items={[
-        { value: "bug", label: "Bug" },
-        { value: "documentation", label: "Documentation" },
-        { value: "feature", label: "Feature" },
-      ]}
+      items={{
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        critical: "Critical",
+      }}
     />
   );
 }
@@ -89,11 +103,13 @@ const languages = [
   { value: "pt", label: "Portuguese", emoji: "🇵🇹" },
 ];
 
+/** Select with custom rendering for complex option display. */
 export function SelectCustomRenderingDemo() {
   const [value, setValue] = useState(languages[0]);
 
   return (
     <Select
+      label="Language"
       className="w-[200px]"
       renderValue={(v) => (
         <span>
@@ -112,10 +128,12 @@ export function SelectCustomRenderingDemo() {
   );
 }
 
+/** Select in loading state. */
 export function SelectLoadingDemo() {
-  return <Select className="w-[200px]" loading />;
+  return <Select aria-label="Loading select" className="w-[200px]" loading />;
 }
 
+/** Select that loads data asynchronously. */
 export function SelectLoadingDataDemo() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<undefined | string[]>();
@@ -140,28 +158,31 @@ export function SelectLoadingDataDemo() {
 
   return (
     <Select
+      label="Assignee"
       className="w-[200px]"
       loading={loading}
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
-      placeholder="Please select"
+      placeholder="Select assignee"
       items={items}
     />
   );
 }
 
+/** Multi-select for choosing multiple values. */
 export function SelectMultipleDemo() {
   const [value, setValue] = useState<string[]>(["Name", "Location", "Size"]);
 
   return (
     <Select
+      label="Visible Columns"
       className="w-[250px]"
       multiple
       renderValue={(value) => {
         if (value.length > 3) {
           return (
             <span className="line-clamp-1">
-              {value.slice(2).join(", ") + ` and ${value.length - 2} more`}
+              {value.slice(0, 2).join(", ") + ` and ${value.length - 2} more`}
             </span>
           );
         }
@@ -190,17 +211,20 @@ const authors = [
   { id: 7, name: "Laura Kim", title: "Technical Writer" },
 ];
 
+/** Select with complex object values and custom option rendering. */
 export function SelectComplexDemo() {
   const [value, setValue] = useState<(typeof authors)[0] | null>(null);
 
   return (
     <Select
+      label="Author"
+      description="Select the primary author for this document"
       className="w-[200px]"
       onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}
       value={value}
       isItemEqualToValue={(item, value) => item?.id === value?.id}
       renderValue={(author) => {
-        return author?.name ?? "Please select author";
+        return author?.name ?? "Select an author";
       }}
     >
       {authors.map((author) => (
