@@ -9,6 +9,7 @@ import { Button, ButtonProps } from "../../components/button";
 import {
   WarningIcon,
   WarningOctagonIcon,
+  XIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
 /**
@@ -195,13 +196,13 @@ function wrapManagerMethods<
       });
     },
 
-    promise: <T,>(
-      promise: Promise<T>,
+    promise: <TResult,>(
+      promise: Promise<TResult>,
       options: {
         loading: KumoToastManagerAddOptions<any>;
         success:
           | KumoToastManagerAddOptions<any>
-          | ((data: T) => KumoToastManagerAddOptions<any>);
+          | ((data: TResult) => KumoToastManagerAddOptions<any>);
         error:
           | KumoToastManagerAddOptions<any>
           | ((error: Error) => KumoToastManagerAddOptions<any>);
@@ -211,10 +212,10 @@ function wrapManagerMethods<
         loading: { ...options.loading },
         success:
           typeof options.success === "function"
-            ? (data: T) => ({
+            ? (data: TResult) => ({
                 ...(
                   options.success as (
-                    data: T,
+                    data: TResult,
                   ) => KumoToastManagerAddOptions<any>
                 )(data),
               })
@@ -343,22 +344,3 @@ function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   );
 }
 
-function XIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
-}
