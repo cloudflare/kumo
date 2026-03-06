@@ -196,13 +196,13 @@ function wrapManagerMethods<
       });
     },
 
-    promise: <TResult,>(
-      promise: Promise<TResult>,
+    promise: <T,>(
+      promise: Promise<T>,
       options: {
         loading: KumoToastManagerAddOptions<any>;
         success:
           | KumoToastManagerAddOptions<any>
-          | ((data: TResult) => KumoToastManagerAddOptions<any>);
+          | ((data: T) => KumoToastManagerAddOptions<any>);
         error:
           | KumoToastManagerAddOptions<any>
           | ((error: Error) => KumoToastManagerAddOptions<any>);
@@ -212,10 +212,10 @@ function wrapManagerMethods<
         loading: { ...options.loading },
         success:
           typeof options.success === "function"
-            ? (data: TResult) => ({
+            ? (data: T) => ({
                 ...(
                   options.success as (
-                    data: TResult,
+                    data: T,
                   ) => KumoToastManagerAddOptions<any>
                 )(data),
               })
