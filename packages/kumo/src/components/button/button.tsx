@@ -52,7 +52,7 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     secondary: {
       classes:
-        "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+        "bg-kumo-control !text-kumo-default ring not-disabled:hover:ring-kumo-ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
       description: "Default button style for most actions",
     },
     ghost: {
@@ -65,12 +65,12 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+        "bg-kumo-control !text-kumo-danger ring not-disabled:hover:ring-kumo-ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
-      classes: "bg-kumo-base text-kumo-default ring ring-kumo-line",
+      classes: "bg-kumo-base text-kumo-default ring ring-kumo-line not-disabled:hover:ring-kumo-ring not-disabled:hover:bg-kumo-tint",
       description: "Bordered button with transparent background",
     },
   },
