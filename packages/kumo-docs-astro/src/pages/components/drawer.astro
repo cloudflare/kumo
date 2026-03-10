@@ -6,8 +6,10 @@ import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
 import {
-  DrawerBasicDemo,
-  DrawerBottomSheetDemo,
+  DrawerHeroDemo,
+  DrawerHorizontalSheetsDemo,
+  DrawerVerticalSheetsDemo,
+  DrawerResponsiveDemo,
 } from "../../components/demos/DrawerDemo";
 ---
 
@@ -24,10 +26,14 @@ import {
   <Drawer className="p-6">
     <Drawer.Title>Edit Settings</Drawer.Title>
     <Drawer.Description>Configure workspace settings before saving.</Drawer.Description>
+    <Drawer.Actions>
+      <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
+      <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
+    </Drawer.Actions>
   </Drawer>
 </Drawer.Root>`}
     >
-      <DrawerBasicDemo client:load />
+      <DrawerHeroDemo client:load />
     </ComponentExample>
   </ComponentSection>
 
@@ -54,6 +60,10 @@ export default function Example() {
       <Drawer className="p-6">
         <Drawer.Title>Drawer title</Drawer.Title>
         <Drawer.Description>Drawer content</Drawer.Description>
+        <Drawer.Actions>
+          <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
+          <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
+        </Drawer.Actions>
       </Drawer>
     </Drawer.Root>
   );
@@ -66,32 +76,91 @@ export default function Example() {
     <Heading level={2} class="mb-6">Examples</Heading>
     <div class="space-y-8">
       <div>
-        <Heading level={3}>Side Drawer</Heading>
+        <Heading level={3}>Horizontal Sheets (Right + Left)</Heading>
         <ComponentExample
-          code={`<Drawer.Root>
-  <Drawer.Trigger render={(props) => <Button {...props}>Open Drawer</Button>} />
+          code={`<Drawer.Root swipeDirection="left">
+  <Drawer.Trigger render={(props) => <Button {...props}>Open Left Sheet</Button>} />
+  <Drawer swipeDirection="left" className="p-6">
+    <Drawer.Title>Navigation</Drawer.Title>
+    <Drawer.Description>Left-side sheet.</Drawer.Description>
+    <Drawer.Actions>
+      <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
+      <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
+    </Drawer.Actions>
+  </Drawer>
+</Drawer.Root>
+
+<Drawer.Root>
+  <Drawer.Trigger render={(props) => <Button {...props}>Open Right Sheet</Button>} />
   <Drawer className="p-6">
     <Drawer.Title>Edit Settings</Drawer.Title>
-    <Drawer.Description>Configure workspace settings before saving.</Drawer.Description>
+    <Drawer.Description>Right-side sheet.</Drawer.Description>
+    <Drawer.Actions>
+      <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
+      <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
+    </Drawer.Actions>
   </Drawer>
 </Drawer.Root>`}
         >
-          <DrawerBasicDemo client:load />
+          <DrawerHorizontalSheetsDemo client:load />
         </ComponentExample>
       </div>
 
       <div>
-        <Heading level={3}>Bottom Sheet</Heading>
+        <Heading level={3}>Vertical Sheets (Top + Bottom)</Heading>
         <ComponentExample
-          code={`<Drawer.Root swipeDirection="down">
+          code={`<Drawer.Root swipeDirection="up">
+  <Drawer.Trigger render={(props) => <Button {...props}>Open Top Sheet</Button>} />
+  <Drawer swipeDirection="up" className="p-6">
+    <Drawer.Title>Announcement</Drawer.Title>
+    <Drawer.Description>Top sheet for global notices.</Drawer.Description>
+    <Drawer.Actions>
+      <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Dismiss</Button>} />
+      <Drawer.Close render={(props) => <Button {...props}>Acknowledge</Button>} />
+    </Drawer.Actions>
+  </Drawer>
+</Drawer.Root>
+
+<Drawer.Root swipeDirection="down">
   <Drawer.Trigger render={(props) => <Button {...props}>Open Bottom Sheet</Button>} />
-  <Drawer swipeDirection="down" className="p-4">
+  <Drawer swipeDirection="down" className="p-6">
     <Drawer.Title>Filters</Drawer.Title>
-    <Drawer.Description>Use filters to refine the result set.</Drawer.Description>
+    <Drawer.Description>Bottom sheet for focused actions.</Drawer.Description>
+    <Drawer.Actions>
+      <Button variant="secondary">Reset</Button>
+      <Drawer.Close render={(props) => <Button {...props}>Apply</Button>} />
+    </Drawer.Actions>
   </Drawer>
 </Drawer.Root>`}
         >
-          <DrawerBottomSheetDemo client:load />
+          <DrawerVerticalSheetsDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Responsive Sheet (Mobile Bottom, Desktop Right)</Heading>
+        <ComponentExample
+          code={`<Drawer.Root swipeDirection="right">
+  <Drawer.Trigger render={(props) => <Button {...props}>Open Responsive Drawer</Button>} />
+  <Drawer
+    className="
+      [--kumo-drawer-actions-inset:1rem] md:[--kumo-drawer-actions-inset:1.5rem]
+      max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:h-auto max-md:min-h-[50svh] max-md:max-h-[85vh]
+      max-md:max-w-none max-md:rounded-t-xl max-md:rounded-b-none
+      max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full
+      max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0
+    "
+  >
+    <Drawer.Title>Responsive Drawer</Drawer.Title>
+    <Drawer.Description>Bottom sheet on mobile, side drawer on desktop.</Drawer.Description>
+    <Drawer.Actions>
+      <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
+      <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
+    </Drawer.Actions>
+  </Drawer>
+</Drawer.Root>`}
+        >
+          <DrawerResponsiveDemo client:load />
         </ComponentExample>
       </div>
     </div>
