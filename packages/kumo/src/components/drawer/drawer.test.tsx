@@ -18,6 +18,8 @@ describe("Drawer", () => {
     expect(Drawer.Title).toBeDefined();
     expect(Drawer.Description).toBeDefined();
     expect(Drawer.Close).toBeDefined();
+    expect(Drawer.Actions).toBeDefined();
+    expect(Drawer.Footer).toBeDefined();
   });
 
   it("should include default variant values", () => {

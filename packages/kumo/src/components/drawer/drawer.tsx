@@ -18,12 +18,12 @@ export const KUMO_DRAWER_VARIANTS = {
     },
     down: {
       classes:
-        "right-0 bottom-0 left-0 max-h-[85vh] rounded-t-xl data-closed:translate-y-full data-starting-style:translate-y-full",
+        "right-0 bottom-0 left-0 min-h-[50svh] max-h-[85vh] rounded-t-xl data-closed:translate-y-full data-starting-style:translate-y-full",
       description: "Drawer appears from the bottom edge",
     },
     up: {
       classes:
-        "top-0 right-0 left-0 max-h-[85vh] rounded-b-xl data-closed:-translate-y-full data-starting-style:-translate-y-full",
+        "top-0 right-0 left-0 min-h-[50svh] max-h-[85vh] rounded-b-xl data-closed:-translate-y-full data-starting-style:-translate-y-full",
       description: "Drawer appears from the top edge",
     },
   },
@@ -124,6 +124,31 @@ function DrawerClose({ children, ...props }: DrawerCloseProps) {
 
 DrawerClose.displayName = "Drawer.Close";
 
+export type DrawerActionsProps = ComponentPropsWithoutRef<"div">;
+
+function DrawerActions({ className, ...props }: DrawerActionsProps) {
+  return (
+    <div
+      className={cn(
+        "order-last sticky bottom-0 z-10 mt-auto flex items-center justify-end gap-2 border-t border-kumo-fill bg-kumo-base pt-6",
+        "mx-[calc(var(--kumo-drawer-actions-inset,1.5rem)*-1)] px-(--kumo-drawer-actions-inset,1.5rem) pb-(--kumo-drawer-actions-bottom-inset,0)",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+DrawerActions.displayName = "Drawer.Actions";
+
+export type DrawerFooterProps = DrawerActionsProps;
+
+function DrawerFooter(props: DrawerFooterProps) {
+  return <DrawerActions {...props} />;
+}
+
+DrawerFooter.displayName = "Drawer.Footer";
+
 /** Drawer content panel props. */
 export interface DrawerProps extends KumoDrawerVariantsProps {
   /** Additional CSS classes merged via `cn()`. */
@@ -145,7 +170,11 @@ function DrawerContent({
       <DrawerBase.Backdrop className='fixed inset-0 bg-kumo-overlay opacity-80 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0' />
       <Surface
         as={DrawerBase.Popup}
-        className={cn(drawerVariants({ swipeDirection }), className)}
+        className={cn(
+          drawerVariants({ swipeDirection }),
+          "flex flex-col [--kumo-drawer-actions-inset:1.5rem] [--kumo-drawer-actions-bottom-inset:0]",
+          className,
+        )}
         style={style}
       >
         {children}
@@ -162,6 +191,17 @@ const Drawer = Object.assign(DrawerContent, {
   Title: DrawerTitle,
   Description: DrawerDescription,
   Close: DrawerClose,
+  Actions: DrawerActions,
+  Footer: DrawerFooter,
 });
 
-export { Drawer, DrawerRoot, DrawerTrigger, DrawerTitle, DrawerDescription, DrawerClose };
+export {
+  Drawer,
+  DrawerRoot,
+  DrawerTrigger,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerClose,
+  DrawerActions,
+  DrawerFooter,
+};
