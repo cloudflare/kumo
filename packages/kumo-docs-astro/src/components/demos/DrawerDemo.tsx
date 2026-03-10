@@ -67,17 +67,7 @@ function DrawerTopDemo() {
         <Drawer.Description className='mt-2'>
           Use top drawers for global notices and quick actions.
         </Drawer.Description>
-        <Drawer.Actions className='order-2'>
-          <Drawer.Close
-            render={(props) => (
-              <Button variant='secondary' {...props}>
-                Dismiss
-              </Button>
-            )}
-          />
-          <Drawer.Close render={(props) => <Button {...props}>Acknowledge</Button>} />
-        </Drawer.Actions>
-        <Drawer.Handle className='order-3 mb-0 mt-3' />
+        <DrawerContentActions />
       </Drawer>
     </Drawer.Root>
   );
@@ -89,7 +79,6 @@ function DrawerBottomSheetDemo() {
     <Drawer.Root swipeDirection='down'>
       <Drawer.Trigger render={(props) => <Button {...props}>Open Bottom Sheet</Button>} />
       <Drawer swipeDirection='down' className='p-6'>
-        <Drawer.Handle />
         <Drawer.Title>Filters</Drawer.Title>
         <Drawer.Description className='mt-2'>
           Use filters to refine the result set.
@@ -125,7 +114,6 @@ export function DrawerResponsiveDemo() {
           max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full
           max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0'
       >
-        <Drawer.Handle className='md:hidden' />
         <Drawer.Title>Responsive Drawer</Drawer.Title>
         <Drawer.Description className='mt-2'>
           On mobile it behaves like a bottom sheet, and on desktop it opens from the right.
