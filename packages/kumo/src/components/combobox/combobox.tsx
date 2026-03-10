@@ -411,11 +411,22 @@ function Chip(props: ComboboxBase.Chip.Props) {
   return (
     <ComboboxBase.Chip
       {...props}
-      className="flex items-center gap-1 rounded-md bg-kumo-overlay px-2 py-1"
+      className={cn(
+        "flex items-center gap-2.5", // Layout
+        "h-6 pl-2 pr-[3px]", // Dimensions
+        "rounded-sm ring-1 ring-kumo-line", // Border
+        "bg-kumo-overlay", // Background
+        "text-sm", // Typography
+      )}
     >
       {props.children}
-      <ComboboxBase.ChipRemove className="cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover">
-        <XIcon size={12} weight="bold" />
+      <ComboboxBase.ChipRemove
+        className={cn(
+          "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
+          "bg-transparent flex",
+        )}
+      >
+        <XIcon size={10} />
       </ComboboxBase.ChipRemove>
     </ComboboxBase.Chip>
   );
@@ -451,18 +462,21 @@ function TriggerMultipleWithInput<ValueType>({
     <ComboboxBase.Chips
       className={cn(
         inputVariants({ size }),
-        cn("flex flex-col", "gap-1 p-1", sizeToMinHeight[size], "h-auto"),
+        "flex flex-col",
+        "gap-1 py-1 px-1.5",
+        sizeToMinHeight[size],
+        "h-auto",
         className,
       )}
     >
       {inputSide === "top" && (
         <ComboboxBase.Input
           placeholder={placeholder}
-          className="w-full px-2 py-1 outline-none"
+          className="w-full px-2 py-1 outline-none border-0 bg-inherit"
         />
       )}
       {/* Chips container */}
-      <div className="flex flex-wrap gap-1">
+      <div className="flex items-center flex-wrap gap-1.5 flex-1">
         {/* Render chips from controlled value if provided */}
         {chipsToRender !== undefined &&
           chipsToRender.length > 0 &&
@@ -482,7 +496,7 @@ function TriggerMultipleWithInput<ValueType>({
         {inputSide === "right" && (
           <ComboboxBase.Input
             placeholder={placeholder}
-            className="min-w-[100px] flex-1 px-2 py-1 outline-none"
+            className="min-w-[100px] flex-1 px-2 py-1 outline-none border-0 bg-inherit"
           />
         )}
       </div>
