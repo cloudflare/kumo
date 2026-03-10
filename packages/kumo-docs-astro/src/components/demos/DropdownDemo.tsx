@@ -59,18 +59,21 @@ export function DropdownCheckboxDemo() {
         <DropdownMenu.Group>
           <DropdownMenu.Label>Display</DropdownMenu.Label>
           <DropdownMenu.CheckboxItem
+            aria-label="Show sidebar"
             checked={showSidebar}
             onCheckedChange={setShowSidebar}
           >
             Show sidebar
           </DropdownMenu.CheckboxItem>
           <DropdownMenu.CheckboxItem
+            aria-label="Show line numbers"
             checked={showLineNumbers}
             onCheckedChange={setShowLineNumbers}
           >
             Show line numbers
           </DropdownMenu.CheckboxItem>
           <DropdownMenu.CheckboxItem
+            aria-label="Word wrap"
             checked={wordWrap}
             onCheckedChange={setWordWrap}
           >
