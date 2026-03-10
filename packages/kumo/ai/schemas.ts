@@ -485,6 +485,12 @@ export const DialogPropsSchema = z.object({
   size: z.enum(["base", "sm", "lg", "xl"]).optional(), // Dialog width. - `"sm"` — Small (min 288px) for simple confirmations - `"base"` — Default (min 384px) - `"lg"` — Large (min 512px) for complex content - `"xl"` — Extra large (min 768px) for detailed views
 });
 
+export const DrawerPropsSchema = z.object({
+  swipeDirection: z.enum(["right", "left", "down", "up"]).optional(), // Direction used by the drawer for placement and swipe dismissal. - `"right"` — Drawer opens from the right edge - `"left"` — Drawer opens from the left edge - `"down"` — Drawer opens from the bottom edge - `"up"` — Drawer opens from the top edge
+  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Drawer body content.
+});
+
 export const DropdownMenuPropsSchema = z.object({
   variant: z.enum(["default", "danger"]).optional(), // Visual style of the dropdown item. - `"default"` — Standard item appearance - `"danger"` — Destructive action with red text
 });
@@ -617,8 +623,8 @@ export const RadioPropsSchema = z.object({
 
 export const SelectPropsSchema = z.object({
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) — can be a string or any React node.
-  hideLabel: z.boolean().optional(), // Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select. When provided, enables the Field wrapper with a visible label above the select. For accessibility without a visible label, use `aria-label` instead.
+  hideLabel: z.boolean().optional(),
   placeholder: z.string().optional(), // Placeholder text shown when no value is selected.
   loading: z.boolean().optional(), // When `true`, shows a skeleton loader in place of the selected value.
   disabled: z.boolean().optional(), // Whether the select is disabled.
@@ -718,10 +724,9 @@ export const ToastyPropsSchema = z.object({
 });
 
 export const TooltipPropsSchema = z.object({
-  align: z.enum(["start", "center", "end"]).optional(), // Alignment on the axis perpendicular to `side`. - `"start"` — Align to the start edge - `"center"` — Center-aligned - `"end"` — Align to the end edge
-  asChild: z.boolean().optional(), // When `true`, the trigger wraps the child element instead of adding a wrapper.
-  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Preferred side of the trigger to render the tooltip. - `"top"` — Tooltip appears above the trigger - `"bottom"` — Tooltip appears below the trigger - `"left"` — Tooltip appears to the left of the trigger - `"right"` — Tooltip appears to the right of the trigger
+  side: z.enum(["top", "bottom", "left", "right"]).optional(),
+  className: z.string().optional(), // Additional CSS classes
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
   content: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]), // Content to display in the tooltip
 });
 
@@ -732,7 +737,7 @@ export const TooltipPropsSchema = z.object({
 /**
  * All valid component type names
  */
-export type KumoComponentType = "Badge" | "Banner" | "Breadcrumbs" | "Button" | "Checkbox" | "ClipboardText" | "CloudflareLogo" | "Code" | "Collapsible" | "Combobox" | "CommandPalette" | "DatePicker" | "DateRangePicker" | "Dialog" | "DropdownMenu" | "Empty" | "Field" | "Grid" | "Input" | "InputArea" | "Label" | "LayerCard" | "Link" | "Loader" | "MenuBar" | "Meter" | "Pagination" | "Popover" | "Radio" | "Select" | "SensitiveInput" | "Surface" | "Switch" | "Table" | "Tabs" | "Text" | "Toasty" | "Tooltip";
+export type KumoComponentType = "Badge" | "Banner" | "Breadcrumbs" | "Button" | "Checkbox" | "ClipboardText" | "CloudflareLogo" | "Code" | "Collapsible" | "Combobox" | "CommandPalette" | "DatePicker" | "DateRangePicker" | "Dialog" | "Drawer" | "DropdownMenu" | "Empty" | "Field" | "Grid" | "Input" | "InputArea" | "Label" | "LayerCard" | "Link" | "Loader" | "MenuBar" | "Meter" | "Pagination" | "Popover" | "Radio" | "Select" | "SensitiveInput" | "Surface" | "Switch" | "Table" | "Tabs" | "Text" | "Toasty" | "Tooltip";
 
 export const KumoComponentTypeSchema = z.enum([
   "Badge",
@@ -749,6 +754,7 @@ export const KumoComponentTypeSchema = z.enum([
   "DatePicker",
   "DateRangePicker",
   "Dialog",
+  "Drawer",
   "DropdownMenu",
   "Empty",
   "Field",
@@ -793,6 +799,7 @@ export const ComponentPropsSchemas = {
   DatePicker: DatePickerPropsSchema,
   DateRangePicker: DateRangePickerPropsSchema,
   Dialog: DialogPropsSchema,
+  Drawer: DrawerPropsSchema,
   DropdownMenu: DropdownMenuPropsSchema,
   Empty: EmptyPropsSchema,
   Field: FieldPropsSchema,
@@ -873,4 +880,4 @@ export function validateUITree(tree: unknown): SafeParseResult<UITree> {
 /**
  * List of all component names (for catalog generation)
  */
-export const KUMO_COMPONENT_NAMES = ["Badge", "Banner", "Breadcrumbs", "Button", "Checkbox", "ClipboardText", "CloudflareLogo", "Code", "Collapsible", "Combobox", "CommandPalette", "DatePicker", "DateRangePicker", "Dialog", "DropdownMenu", "Empty", "Field", "Grid", "Input", "InputArea", "Label", "LayerCard", "Link", "Loader", "MenuBar", "Meter", "Pagination", "Popover", "Radio", "Select", "SensitiveInput", "Surface", "Switch", "Table", "Tabs", "Text", "Toasty", "Tooltip"] as const;
+export const KUMO_COMPONENT_NAMES = ["Badge", "Banner", "Breadcrumbs", "Button", "Checkbox", "ClipboardText", "CloudflareLogo", "Code", "Collapsible", "Combobox", "CommandPalette", "DatePicker", "DateRangePicker", "Dialog", "Drawer", "DropdownMenu", "Empty", "Field", "Grid", "Input", "InputArea", "Label", "LayerCard", "Link", "Loader", "MenuBar", "Meter", "Pagination", "Popover", "Radio", "Select", "SensitiveInput", "Surface", "Switch", "Table", "Tabs", "Text", "Toasty", "Tooltip"] as const;

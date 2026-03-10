@@ -2571,6 +2571,87 @@
         }
       }
     },
+    "Drawer": {
+      "name": "Drawer",
+      "type": "component",
+      "description": "Drawer component",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "swipeDirection": {
+          "type": "enum",
+          "optional": true,
+          "description": "Direction used by the drawer for placement and swipe dismissal.\n- `\"right\"` — Drawer opens from the right edge\n- `\"left\"` — Drawer opens from the left edge\n- `\"down\"` — Drawer opens from the bottom edge\n- `\"up\"` — Drawer opens from the top edge",
+          "values": [
+            "right",
+            "left",
+            "down",
+            "up"
+          ],
+          "descriptions": {
+            "right": "Drawer appears from the right edge",
+            "left": "Drawer appears from the left edge",
+            "down": "Drawer appears from the bottom edge",
+            "up": "Drawer appears from the top edge"
+          },
+          "classes": {
+            "right": "top-0 right-0 h-full w-full max-w-[32rem] rounded-l-xl data-starting-style:translate-x-full data-ending-style:translate-x-full",
+            "left": "top-0 left-0 h-full w-full max-w-[32rem] rounded-r-xl data-starting-style:-translate-x-full data-ending-style:-translate-x-full",
+            "down": "right-0 bottom-0 left-0 max-h-[85vh] rounded-t-xl data-starting-style:translate-y-full data-ending-style:translate-y-full",
+            "up": "top-0 right-0 left-0 max-h-[85vh] rounded-b-xl data-starting-style:-translate-y-full data-ending-style:-translate-y-full"
+          },
+          "default": "right"
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes merged via `cn()`."
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Drawer body content."
+        }
+      },
+      "examples": [
+        "<Drawer.Root>\n      <Drawer.Trigger render={(props) => <Button {...props}>Open Drawer</Button>} />\n      <Drawer className=\"p-6\">\n        <Drawer.Title>Edit Settings</Drawer.Title>\n        <Drawer.Description className=\"mt-2\">\n          Configure workspace settings before saving.\n        </Drawer.Description>\n        <div className=\"mt-6 flex justify-end gap-2 border-t border-kumo-fill pt-4\">\n          <Drawer.Close render={(props) => <Button variant=\"secondary\" {...props}>Cancel</Button>} />\n          <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />\n        </div>\n      </Drawer>\n    </Drawer.Root>",
+        "<Drawer.Root swipeDirection=\"down\">\n      <Drawer.Trigger render={(props) => <Button {...props}>Open Bottom Sheet</Button>} />\n      <Drawer swipeDirection=\"down\" className=\"p-4\">\n        <div className=\"mx-auto mb-2 h-1.5 w-12 rounded-full bg-kumo-fill\" />\n        <Drawer.Title>Filters</Drawer.Title>\n        <Drawer.Description className=\"mt-1\">\n          Use filters to refine the result set.\n        </Drawer.Description>\n        <div className=\"mt-4 grid gap-2\">\n          <Button variant=\"secondary\">Reset</Button>\n          <Drawer.Close render={(props) => <Button {...props}>Apply</Button>} />\n        </div>\n      </Drawer>\n    </Drawer.Root>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-overlay",
+        "outline-kumo-fill",
+        "text-kumo-default",
+        "text-kumo-subtle"
+      ],
+      "subComponents": {
+        "Root": {
+          "name": "Root",
+          "description": "Root sub-component",
+          "props": {}
+        },
+        "Trigger": {
+          "name": "Trigger",
+          "description": "Trigger sub-component",
+          "props": {}
+        },
+        "Title": {
+          "name": "Title",
+          "description": "Title sub-component",
+          "props": {}
+        },
+        "Description": {
+          "name": "Description",
+          "description": "Description sub-component",
+          "props": {}
+        },
+        "Close": {
+          "name": "Close",
+          "description": "Close sub-component",
+          "props": {}
+        }
+      }
+    },
     "DropdownMenu": {
       "name": "DropdownMenu",
       "type": "component",
@@ -3128,7 +3209,7 @@
         "<Input label=\"Phone Number\" required={false} placeholder=\"+1 555-0000\" />",
         "<Input\n      label=\"API Key\"\n      labelTooltip=\"Find this in your dashboard settings under API > Keys\"\n      placeholder=\"sk_live_...\"\n    />",
         "<Checkbox\n      label={\n        <span>\n          I agree to the <strong>Terms of Service</strong>\n        </span>\n      }\n    />",
-        "<div className=\"flex max-w-md flex-col gap-4\">\n      <Input label=\"Full Name\" placeholder=\"John Doe\" />\n      <Input\n        label=\"Email\"\n        labelTooltip=\"We'll send your receipt here\"\n        placeholder=\"john@example.com\"\n        type=\"email\"\n      />\n      <Input label=\"Company\" required={false} placeholder=\"Acme Inc.\" />\n      <Select label=\"Country\" hideLabel={false} placeholder=\"Select a country\">\n        <Select.Option value=\"us\">United States</Select.Option>\n        <Select.Option value=\"uk\">United Kingdom</Select.Option>\n        <Select.Option value=\"ca\">Canada</Select.Option>\n      </Select>\n    </div>",
+        "<div className=\"flex max-w-md flex-col gap-4\">\n      <Input label=\"Full Name\" placeholder=\"John Doe\" />\n      <Input\n        label=\"Email\"\n        labelTooltip=\"We'll send your receipt here\"\n        placeholder=\"john@example.com\"\n        type=\"email\"\n      />\n      <Input label=\"Company\" required={false} placeholder=\"Acme Inc.\" />\n      <Select label=\"Country\" placeholder=\"Select a country\">\n        <Select.Option value=\"us\">United States</Select.Option>\n        <Select.Option value=\"uk\">United Kingdom</Select.Option>\n        <Select.Option value=\"ca\">Canada</Select.Option>\n      </Select>\n    </div>",
         "<div className=\"flex flex-col gap-3\">\n      <Label>Default</Label>\n      <Label showOptional>Optional</Label>\n      <Label tooltip=\"Important field\">With Tooltip</Label>\n    </div>"
       ],
       "colors": [
@@ -3461,7 +3542,7 @@
         "<Meter label=\"Progress\" value={40} showValue={false} />",
         "<Meter label=\"Quota reached\" value={100} />",
         "<Meter label=\"Memory usage\" value={15} />",
-        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-kumo-success via-kumo-success to-kumo-success\"\n    />"
       ],
       "colors": [
         "bg-kumo-fill",
@@ -3794,12 +3875,11 @@
         "label": {
           "type": "ReactNode",
           "optional": true,
-          "description": "Label content for the select (enables Field wrapper) — can be a string or any React node."
+          "description": "Label content for the select. When provided, enables the Field wrapper with a visible label above the select. For accessibility without a visible label, use `aria-label` instead."
         },
         "hideLabel": {
           "type": "boolean",
-          "optional": true,
-          "description": "Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper."
+          "optional": true
         },
         "placeholder": {
           "type": "string",
@@ -3856,15 +3936,16 @@
         }
       },
       "examples": [
-        "<div className=\"flex gap-2\">\n      <Select\n        className=\"w-[200px]\"\n        value={value}\n        onValueChange={(v) => setValue(v ?? \"apple\")}\n        items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n      />\n\n      <Select\n        value={value}\n        className=\"w-[200px]\"\n        onValueChange={(v) => setValue(v ?? \"apple\")}\n        items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n      >\n        <Select.Option value=\"apple\">Apple</Select.Option>\n        <Select.Option value=\"banana\">Banana</Select.Option>\n        <Select.Option value=\"cherry\">Cherry</Select.Option>\n      </Select>\n    </div>",
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    />",
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={[\n        { value: null, label: \"Please select\" },\n        { value: \"bug\", label: \"Bug\" },\n        { value: \"documentation\", label: \"Documentation\" },\n        { value: \"feature\", label: \"Feature\" },\n      ]}\n    />",
-        "<Select\n      className=\"w-[200px]\"\n      value={value}\n      placeholder=\"Please select\"\n      onValueChange={(v) => setValue(v as string | null)}\n      items={[\n        { value: \"bug\", label: \"Bug\" },\n        { value: \"documentation\", label: \"Documentation\" },\n        { value: \"feature\", label: \"Feature\" },\n      ]}\n    />",
-        "<Select\n      className=\"w-[200px]\"\n      renderValue={(v) => (\n        <span>\n          {v.emoji} {v.label}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as (typeof languages)[0])}\n    >\n      {languages.map((language) => (\n        <Select.Option key={language.value} value={language}>\n          {language.emoji} {language.label}\n        </Select.Option>\n      ))}\n    </Select>",
-        "<Select className=\"w-[200px]\" loading />",
-        "<Select\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Please select\"\n      items={items}\n    />",
-        "<Select\n      className=\"w-[250px]\"\n      multiple\n      renderValue={(value) => {\n        if (value.length > 3) {\n          return (\n            <span className=\"line-clamp-1\">\n              {value.slice(2).join(\", \") + ` and ${value.length - 2} more`}\n            </span>\n          );\n        }\n        return <span>{value.join(\", \")}</span>;\n      }}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"Name\">Name</Select.Option>\n      <Select.Option value=\"Location\">Location</Select.Option>\n      <Select.Option value=\"Size\">Size</Select.Option>\n      <Select.Option value=\"Read\">Read</Select.Option>\n      <Select.Option value=\"Write\">Write</Select.Option>\n      <Select.Option value=\"CreatedAt\">Created At</Select.Option>\n    </Select>",
-        "<Select\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Please select author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
+        "<Select\n      label=\"Favorite Fruit\"\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"apple\")}\n      items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n    />",
+        "<Select\n      aria-label=\"Select a fruit\"\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v ?? \"apple\")}\n      items={{ apple: \"Apple\", banana: \"Banana\", cherry: \"Cherry\" }}\n    />",
+        "<Select\n      label=\"Issue Type\"\n      description=\"Choose the category that best describes your issue\"\n      error={!value ? \"Please select an issue type\" : undefined}\n      className=\"w-[280px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    />",
+        "<Select\n      label=\"Category\"\n      placeholder=\"Choose a category...\"\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={{\n        bug: \"Bug\",\n        documentation: \"Documentation\",\n        feature: \"Feature\",\n      }}\n    />",
+        "<Select\n      label=\"Priority\"\n      labelTooltip=\"Higher priority issues are addressed first\"\n      placeholder=\"Select priority\"\n      className=\"w-[200px]\"\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      items={{\n        low: \"Low\",\n        medium: \"Medium\",\n        high: \"High\",\n        critical: \"Critical\",\n      }}\n    />",
+        "<Select\n      label=\"Language\"\n      className=\"w-[200px]\"\n      renderValue={(v) => (\n        <span>\n          {v.emoji} {v.label}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as (typeof languages)[0])}\n    >\n      {languages.map((language) => (\n        <Select.Option key={language.value} value={language}>\n          {language.emoji} {language.label}\n        </Select.Option>\n      ))}\n    </Select>",
+        "<Select aria-label=\"Loading select\" className=\"w-[200px]\" loading />",
+        "<Select\n      label=\"Assignee\"\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Select assignee\"\n      items={items}\n    />",
+        "<Select\n      label=\"Visible Columns\"\n      className=\"w-[250px]\"\n      multiple\n      renderValue={(value) => {\n        if (value.length > 3) {\n          return (\n            <span className=\"line-clamp-1\">\n              {value.slice(0, 2).join(\", \") + ` and ${value.length - 2} more`}\n            </span>\n          );\n        }\n        return <span>{value.join(\", \")}</span>;\n      }}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"Name\">Name</Select.Option>\n      <Select.Option value=\"Location\">Location</Select.Option>\n      <Select.Option value=\"Size\">Size</Select.Option>\n      <Select.Option value=\"Read\">Read</Select.Option>\n      <Select.Option value=\"Write\">Write</Select.Option>\n      <Select.Option value=\"CreatedAt\">Created At</Select.Option>\n    </Select>",
+        "<Select\n      label=\"Author\"\n      description=\"Select the primary author for this document\"\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Select an author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
       ],
       "colors": [
         "bg-kumo-control",
@@ -4676,43 +4757,29 @@
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
-        "align": {
-          "type": "enum",
-          "optional": true,
-          "description": "Alignment on the axis perpendicular to `side`.\n- `\"start\"` — Align to the start edge\n- `\"center\"` — Center-aligned\n- `\"end\"` — Align to the end edge",
-          "values": [
-            "start",
-            "center",
-            "end"
-          ]
-        },
-        "asChild": {
-          "type": "boolean",
-          "optional": true,
-          "description": "When `true`, the trigger wraps the child element instead of adding a wrapper."
-        },
-        "className": {
-          "type": "string",
-          "optional": true,
-          "description": "Additional CSS classes merged via `cn()`."
-        },
         "side": {
           "type": "enum",
-          "optional": true,
-          "description": "Preferred side of the trigger to render the tooltip.\n- `\"top\"` — Tooltip appears above the trigger\n- `\"bottom\"` — Tooltip appears below the trigger\n- `\"left\"` — Tooltip appears to the left of the trigger\n- `\"right\"` — Tooltip appears to the right of the trigger",
           "values": [
             "top",
             "bottom",
             "left",
             "right"
           ],
+          "default": "top",
           "descriptions": {
             "top": "Tooltip appears above the trigger",
             "bottom": "Tooltip appears below the trigger",
             "left": "Tooltip appears to the left of the trigger",
             "right": "Tooltip appears to the right of the trigger"
-          },
-          "default": "top"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "description": "Child elements"
         },
         "content": {
           "type": "ReactNode",
@@ -5012,6 +5079,7 @@
       "Other": [
         "CloudflareLogo",
         "DatePicker",
+        "Drawer",
         "Label",
         "Link",
         "SensitiveInput",
@@ -5053,6 +5121,7 @@
       "DateRangePicker",
       "DeleteResource",
       "Dialog",
+      "Drawer",
       "DropdownMenu",
       "Empty",
       "Field",
@@ -5095,6 +5164,7 @@
         "DatePicker",
         "DateRangePicker",
         "Dialog",
+        "Drawer",
         "DropdownMenu",
         "Empty",
         "Field",
