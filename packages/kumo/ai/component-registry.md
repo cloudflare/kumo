@@ -2367,16 +2367,26 @@ Close sub-component
 
 ```tsx
 <Drawer.Root>
-      <Drawer.Trigger render={(props) => <Button {...props}>Open Drawer</Button>} />
+      <Drawer.Trigger render={(props) => <Button {...props}>Open Right Drawer</Button>} />
       <Drawer className="p-6">
         <Drawer.Title>Edit Settings</Drawer.Title>
         <Drawer.Description className="mt-2">
           Configure workspace settings before saving.
         </Drawer.Description>
-        <div className="mt-6 flex justify-end gap-2 border-t border-kumo-fill pt-4">
-          <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
-          <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
-        </div>
+        <DrawerContentActions />
+      </Drawer>
+    </Drawer.Root>
+```
+
+```tsx
+<Drawer.Root swipeDirection="left">
+      <Drawer.Trigger render={(props) => <Button {...props}>Open Left Drawer</Button>} />
+      <Drawer swipeDirection="left" className="p-6">
+        <Drawer.Title>Navigation</Drawer.Title>
+        <Drawer.Description className="mt-2">
+          Use this layout for contextual navigation panels.
+        </Drawer.Description>
+        <DrawerContentActions />
       </Drawer>
     </Drawer.Root>
 ```
@@ -2394,6 +2404,27 @@ Close sub-component
           <Button variant="secondary">Reset</Button>
           <Drawer.Close render={(props) => <Button {...props}>Apply</Button>} />
         </div>
+      </Drawer>
+    </Drawer.Root>
+```
+
+```tsx
+<Drawer.Root swipeDirection="right">
+      <Drawer.Trigger
+        render={(props) => <Button {...props}>Open Responsive Drawer</Button>}
+      />
+      <Drawer
+        className="p-4 md:p-6
+          max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:max-h-[85vh] max-md:max-w-none max-md:rounded-t-xl max-md:rounded-l-none
+          max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full
+          max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0"
+      >
+        <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-kumo-fill md:hidden" />
+        <Drawer.Title>Responsive Drawer</Drawer.Title>
+        <Drawer.Description className="mt-2">
+          On mobile it behaves like a bottom sheet, and on desktop it opens from the right.
+        </Drawer.Description>
+        <DrawerContentActions />
       </Drawer>
     </Drawer.Root>
 ```
