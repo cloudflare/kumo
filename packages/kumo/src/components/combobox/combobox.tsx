@@ -252,7 +252,7 @@ function TriggerValue({
       <ComboboxBase.Value>{props.children}</ComboboxBase.Value>
       <ComboboxBase.Icon
         className={cn(
-          "absolute top-1/2 -translate-y-1/2",
+          "absolute top-1/2 -translate-y-1/2 flex items-center",
           iconStyles.iconRight,
         )}
       >
