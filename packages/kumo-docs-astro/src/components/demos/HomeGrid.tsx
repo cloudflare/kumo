@@ -8,6 +8,7 @@ import {
   Collapsible,
   Combobox,
   DatePicker,
+  Drawer,
   Dialog,
   DropdownMenu,
   Grid,
@@ -58,6 +59,7 @@ const componentRoutes: Record<string, string> = {
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
   "date-picker": "/components/date-picker",
+  drawer: "/components/drawer",
   dialog: "/components/dialog",
   dropdown: "/components/dropdown",
   empty: "/components/empty",
@@ -104,9 +106,7 @@ function ToastTriggerButton() {
 export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
-  const [value, setValue] = useState<{ id: string; value: string } | null>(
-    null,
-  );
+  const [value, setValue] = useState<{ id: string; value: string } | null>(null);
 
   const components: Array<{
     name: string;
@@ -117,9 +117,9 @@ export function HomeGrid() {
       name: "Button",
       id: "button",
       Component: (
-        <div className="grid gap-3">
+        <div className='grid gap-3'>
           <Button icon={PlusIcon}>Create Worker</Button>
-          <Button variant="primary" icon={PlusIcon}>
+          <Button variant='primary' icon={PlusIcon}>
             Create Worker
           </Button>
           <Button loading>Create Worker</Button>
@@ -130,9 +130,9 @@ export function HomeGrid() {
       name: "Input",
       id: "input",
       Component: (
-        <div className="grid gap-3">
-          <Input placeholder="Type something..." />
-          <Input variant="error" value="Invalid!" />
+        <div className='grid gap-3'>
+          <Input placeholder='Type something...' />
+          <Input variant='error' value='Invalid!' />
         </div>
       ),
     },
@@ -141,8 +141,8 @@ export function HomeGrid() {
       id: "select",
       Component: (
         <Select
-          aria-label="Select version"
-          className="w-[200px]"
+          aria-label='Select version'
+          className='w-[200px]'
           renderValue={(v) => {
             const labels: Record<string, string> = {
               all: "All deployed versions",
@@ -153,9 +153,9 @@ export function HomeGrid() {
             return labels[v as string];
           }}
         >
-          <Select.Option value="all">All deployed versions</Select.Option>
-          <Select.Option value="active">Active versions</Select.Option>
-          <Select.Option value="specific">Specific versions</Select.Option>
+          <Select.Option value='all'>All deployed versions</Select.Option>
+          <Select.Option value='active'>Active versions</Select.Option>
+          <Select.Option value='specific'>Specific versions</Select.Option>
         </Select>
       ),
     },
@@ -174,7 +174,7 @@ export function HomeGrid() {
           onValueChange={setValue}
           value={value}
         >
-          <Combobox.TriggerInput placeholder="Select an issue..." />
+          <Combobox.TriggerInput placeholder='Select an issue...' />
           <Combobox.Content>
             <Combobox.List>
               {(item: { id: string; value: string }) => (
@@ -204,16 +204,41 @@ export function HomeGrid() {
       id: "input",
       Component: (
         <Input
-          label="Email"
-          placeholder="name@example.com"
-          type="email"
-          variant="error"
+          label='Email'
+          placeholder='name@example.com'
+          type='email'
+          variant='error'
           error={{
             message: "Please enter a valid email.",
             match: "typeMismatch",
           }}
-          description="The email to send notifications to."
+          description='The email to send notifications to.'
         />
+      ),
+    },
+    {
+      name: "Drawer",
+      id: "drawer",
+      Component: (
+        <Drawer.Root>
+          <Drawer.Trigger render={(p) => <Button {...p}>Open Drawer</Button>} />
+          <Drawer className='p-6'>
+            <Drawer.Title>Edit Settings</Drawer.Title>
+            <Drawer.Description className='mt-2'>
+              Configure workspace settings before saving.
+            </Drawer.Description>
+            <Drawer.Actions>
+              <Drawer.Close
+                render={(p) => (
+                  <Button variant='secondary' {...p}>
+                    Cancel
+                  </Button>
+                )}
+              />
+              <Drawer.Close render={(p) => <Button {...p}>Save</Button>} />
+            </Drawer.Actions>
+          </Drawer>
+        </Drawer.Root>
       ),
     },
     {
@@ -234,16 +259,12 @@ export function HomeGrid() {
       id: "tooltip",
       Component: (
         <TooltipProvider>
-          <div className="flex gap-2">
-            <Tooltip content="Add" asChild open>
-              <Button shape="square" icon={PlusIcon} aria-label="Add" />
+          <div className='flex gap-2'>
+            <Tooltip content='Add' asChild open>
+              <Button shape='square' icon={PlusIcon} aria-label='Add' />
             </Tooltip>
-            <Tooltip content="Change language" asChild>
-              <Button
-                shape="square"
-                icon={TranslateIcon}
-                aria-label="Change language"
-              />
+            <Tooltip content='Change language' asChild>
+              <Button shape='square' icon={TranslateIcon} aria-label='Change language' />
             </Tooltip>
           </div>
         </TooltipProvider>
@@ -266,9 +287,7 @@ export function HomeGrid() {
       name: "Collapsible",
       id: "collapsible",
       Component: (
-        <Collapsible label="What is Kumo?">
-          Kumo is Cloudflare's component library.
-        </Collapsible>
+        <Collapsible label='What is Kumo?'>Kumo is Cloudflare's component library.</Collapsible>
       ),
     },
     {
@@ -276,7 +295,7 @@ export function HomeGrid() {
       id: "checkbox",
       Component: (
         <Checkbox
-          label="Max bandwidth"
+          label='Max bandwidth'
           checked={checked}
           onValueChange={(checked) => {
             setChecked(checked);
@@ -288,7 +307,7 @@ export function HomeGrid() {
       name: "LayerCard",
       id: "layer-card",
       Component: (
-        <LayerCard className="w-[200px]">
+        <LayerCard className='w-[200px]'>
           <LayerCard.Secondary>Next Steps</LayerCard.Secondary>
           <LayerCard.Primary>Hello</LayerCard.Primary>
         </LayerCard>
@@ -303,7 +322,7 @@ export function HomeGrid() {
       name: "SkeletonLine",
       id: "skeleton-line",
       Component: (
-        <div className="flex w-[200px] flex-col gap-2">
+        <div className='flex w-[200px] flex-col gap-2'>
           <SkeletonLine minWidth={50} maxWidth={100} />
           <SkeletonLine minWidth={100} />
           <SkeletonLine minWidth={50} maxWidth={150} />
@@ -314,7 +333,7 @@ export function HomeGrid() {
       name: "Surface",
       id: "surface",
       Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-base text-sm text-kumo-subtle">
+        <Surface className='flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-base text-sm text-kumo-subtle'>
           <em>To put things over.</em>
         </Surface>
       ),
@@ -323,10 +342,10 @@ export function HomeGrid() {
       name: "CodeHighlighted",
       id: "code-highlighted",
       Component: (
-        <div className="w-full px-4">
-          <ShikiProvider engine="javascript" languages={["typescript"]}>
+        <div className='w-full px-4'>
+          <ShikiProvider engine='javascript' languages={["typescript"]}>
             <CodeHighlighted
-              lang="typescript"
+              lang='typescript'
               code={`const sum = (a: number, b: number) => {
   return a + b;
 };`}
@@ -339,17 +358,17 @@ export function HomeGrid() {
       name: "Banner",
       id: "banner",
       Component: (
-        <div className="flex flex-col gap-2">
-          <Banner text="This is a default banner." />
+        <div className='flex flex-col gap-2'>
+          <Banner text='This is a default banner.' />
           <Banner
-            icon={<WarningIcon weight="fill" />}
-            text="This is an alert banner."
-            variant="alert"
+            icon={<WarningIcon weight='fill' />}
+            text='This is an alert banner.'
+            variant='alert'
           />
           <Banner
-            icon={<WarningOctagonIcon weight="fill" />}
-            text="This is an error banner."
-            variant="error"
+            icon={<WarningOctagonIcon weight='fill' />}
+            text='This is an error banner.'
+            variant='error'
           />
         </div>
       ),
@@ -371,12 +390,12 @@ export function HomeGrid() {
       name: "Badge",
       id: "badge",
       Component: (
-        <div className="flex flex-col gap-2">
-          <Badge variant="primary">Primary</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="beta">Beta</Badge>
-          <Badge variant="destructive">Destructive</Badge>
+        <div className='flex flex-col gap-2'>
+          <Badge variant='primary'>Primary</Badge>
+          <Badge variant='secondary'>Secondary</Badge>
+          <Badge variant='outline'>Outline</Badge>
+          <Badge variant='beta'>Beta</Badge>
+          <Badge variant='destructive'>Destructive</Badge>
         </div>
       ),
     },
@@ -392,21 +411,19 @@ export function HomeGrid() {
     {
       name: "Pagination",
       id: "pagination",
-      Component: (
-        <Pagination page={1} perPage={10} totalCount={100} setPage={() => {}} />
-      ),
+      Component: <Pagination page={1} perPage={10} totalCount={100} setPage={() => {}} />,
     },
     {
       name: "InputArea",
       id: "input-area",
-      Component: <InputArea placeholder="Enter your name" />,
+      Component: <InputArea placeholder='Enter your name' />,
     },
     {
       name: "Meter",
       id: "meter",
       Component: (
-        <div className="w-full px-4">
-          <Meter value={75} label="My meter" customValue="100 / 5,000" />
+        <div className='w-full px-4'>
+          <Meter value={75} label='My meter' customValue='100 / 5,000' />
         </div>
       ),
     },
@@ -427,8 +444,8 @@ export function HomeGrid() {
       name: "DatePicker",
       id: "date-picker",
       Component: (
-        <div className="scale-90">
-          <DatePicker mode="single" />
+        <div className='scale-90'>
+          <DatePicker mode='single' />
         </div>
       ),
     },
@@ -436,36 +453,32 @@ export function HomeGrid() {
       name: "Breadcrumbs",
       id: "breadcrumbs",
       Component: (
-        <div className="flex items-center gap-1 text-sm">
-          <span className="text-kumo-subtle">Home</span>
-          <span className="text-kumo-inactive">/</span>
-          <span className="text-kumo-subtle">Docs</span>
-          <span className="text-kumo-inactive">/</span>
-          <span className="font-medium">Page</span>
+        <div className='flex items-center gap-1 text-sm'>
+          <span className='text-kumo-subtle'>Home</span>
+          <span className='text-kumo-inactive'>/</span>
+          <span className='text-kumo-subtle'>Docs</span>
+          <span className='text-kumo-inactive'>/</span>
+          <span className='font-medium'>Page</span>
         </div>
       ),
     },
     {
       name: "ClipboardText",
       id: "clipboard-text",
-      Component: <ClipboardText text="npx kumo add button" />,
+      Component: <ClipboardText text='npx kumo add button' />,
     },
     {
       name: "CommandPalette",
       id: "command-palette",
-      Component: (
-        <Button icon={MagnifyingGlassIcon}>Open Command Palette</Button>
-      ),
+      Component: <Button icon={MagnifyingGlassIcon}>Open Command Palette</Button>,
     },
     {
       name: "Empty",
       id: "empty",
       Component: (
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-sm font-medium">No results</span>
-          <span className="text-xs text-kumo-subtle">
-            Try a different search
-          </span>
+        <div className='flex flex-col items-center gap-1 text-center'>
+          <span className='text-sm font-medium'>No results</span>
+          <span className='text-xs text-kumo-subtle'>Try a different search</span>
         </div>
       ),
     },
@@ -473,19 +486,11 @@ export function HomeGrid() {
       name: "Grid",
       id: "grid",
       Component: (
-        <Grid variant="side-by-side" gap="sm" className="w-[140px]">
-          <GridItem className="rounded bg-kumo-control p-3 text-center text-xs">
-            1
-          </GridItem>
-          <GridItem className="rounded bg-kumo-control p-3 text-center text-xs">
-            2
-          </GridItem>
-          <GridItem className="rounded bg-kumo-control p-3 text-center text-xs">
-            3
-          </GridItem>
-          <GridItem className="rounded bg-kumo-control p-3 text-center text-xs">
-            4
-          </GridItem>
+        <Grid variant='side-by-side' gap='sm' className='w-[140px]'>
+          <GridItem className='rounded bg-kumo-control p-3 text-center text-xs'>1</GridItem>
+          <GridItem className='rounded bg-kumo-control p-3 text-center text-xs'>2</GridItem>
+          <GridItem className='rounded bg-kumo-control p-3 text-center text-xs'>3</GridItem>
+          <GridItem className='rounded bg-kumo-control p-3 text-center text-xs'>4</GridItem>
         </Grid>
       ),
     },
@@ -493,10 +498,10 @@ export function HomeGrid() {
       name: "Label",
       id: "label",
       Component: (
-        <div className="flex flex-col gap-2">
+        <div className='flex flex-col gap-2'>
           <Label>Default Label</Label>
           <Label showOptional>Optional Field</Label>
-          <Label tooltip="More info">With Tooltip</Label>
+          <Label tooltip='More info'>With Tooltip</Label>
         </div>
       ),
     },
@@ -517,22 +522,22 @@ export function HomeGrid() {
       name: "Radio",
       id: "radio",
       Component: (
-        <Radio.Group legend="Select option" defaultValue="option1">
-          <Radio.Item value="option1" label="Option 1" />
-          <Radio.Item value="option2" label="Option 2" />
+        <Radio.Group legend='Select option' defaultValue='option1'>
+          <Radio.Item value='option1' label='Option 1' />
+          <Radio.Item value='option2' label='Option 2' />
         </Radio.Group>
       ),
     },
     {
       name: "SensitiveInput",
       id: "sensitive-input",
-      Component: <SensitiveInput value="super-secret-api-key" readOnly />,
+      Component: <SensitiveInput value='super-secret-api-key' readOnly />,
     },
     {
       name: "Table",
       id: "table",
       Component: (
-        <Table className="w-[200px] text-sm">
+        <Table className='w-[200px] text-sm'>
           <Table.Header>
             <Table.Row>
               <Table.Head>Name</Table.Head>
@@ -560,12 +565,12 @@ export function HomeGrid() {
       name: "Text",
       id: "text",
       Component: (
-        <div className="flex flex-col gap-1">
-          <Text size="lg" bold>
+        <div className='flex flex-col gap-1'>
+          <Text size='lg' bold>
             Large Bold Text
           </Text>
-          <Text size="base">Regular text content</Text>
-          <Text size="sm" color="subtle">
+          <Text size='base'>Regular text content</Text>
+          <Text size='sm' color='subtle'>
             Small subtle text
           </Text>
         </div>
@@ -574,29 +579,27 @@ export function HomeGrid() {
   ];
 
   return (
-    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-line md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className='grid auto-rows-min grid-cols-1 gap-px bg-kumo-line md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
       {components.map((c) => {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-elevated"
+            className='relative flex aspect-square items-center justify-center bg-kumo-elevated'
             key={c.name}
           >
             {route ? (
               <a
                 href={route}
-                className="absolute top-4 left-4 text-base font-medium text-kumo-subtle hover:text-kumo-default"
+                className='absolute top-4 left-4 text-base font-medium text-kumo-subtle hover:text-kumo-default'
               >
                 {c.name}
               </a>
             ) : (
-              <span className="absolute top-4 left-4 text-base font-medium text-kumo-subtle italic">
+              <span className='absolute top-4 left-4 text-base font-medium text-kumo-subtle italic'>
                 {c.name}
               </span>
             )}
-            {c.Component ?? (
-              <p className="text-base font-medium text-kumo-subtle">TBD</p>
-            )}
+            {c.Component ?? <p className='text-base font-medium text-kumo-subtle'>TBD</p>}
           </li>
         );
       })}
