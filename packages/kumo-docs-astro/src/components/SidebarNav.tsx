@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { cn, Button } from "@cloudflare/kumo";
-import {
-  CaretDownIcon,
-  MagnifyingGlassIcon,
-  XIcon,
-} from "@phosphor-icons/react";
+import { CaretDownIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { KumoMenuIcon } from "./KumoMenuIcon";
 import { SearchDialog } from "./SearchDialog";
 import { ThemeToggle } from "./ThemeToggle";
@@ -45,6 +41,7 @@ const componentItems: NavItem[] = [
   { label: "Command Palette", href: "/components/command-palette" },
   { label: "Date Picker", href: "/components/date-picker" },
   { label: "Dialog", href: "/components/dialog" },
+  { label: "Drawer", href: "/components/drawer" },
   { label: "Dropdown", href: "/components/dropdown" },
   { label: "Empty", href: "/components/empty" },
   { label: "Flow", href: "/components/flow" },
@@ -142,9 +139,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     // Save scroll position before navigation
     const handleBeforeUnload = () => {
       const scrollPosition =
-        mobileScrollRef.current?.scrollTop ||
-        desktopScrollRef.current?.scrollTop ||
-        0;
+        mobileScrollRef.current?.scrollTop || desktopScrollRef.current?.scrollTop || 0;
       sessionStorage.setItem(STORAGE_KEY, scrollPosition.toString());
     };
 
@@ -184,13 +179,13 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     <>
       <button
         onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-ring"
+        className='mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-ring'
       >
-        <MagnifyingGlassIcon size={16} className="shrink-0" />
+        <MagnifyingGlassIcon size={16} className='shrink-0' />
         <span>Search...</span>
       </button>
 
-      <ul className="flex flex-col gap-px">
+      <ul className='flex flex-col gap-px'>
         {staticPages.map((item) => (
           <li key={item.href}>
             <a
@@ -206,13 +201,13 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         ))}
       </ul>
 
-      <div className="my-4 border-b border-kumo-line" />
+      <div className='my-4 border-b border-kumo-line' />
 
-      <div className="mb-4">
+      <div className='mb-4'>
         {/* Components Section */}
         <button
-          type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          type='button'
+          className='flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint'
           onClick={() => setComponentsOpen(!componentsOpen)}
         >
           <span>Components</span>
@@ -237,8 +232,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                 className={cn(
                   LI_STYLE,
                   "pl-4",
-                  activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
+                  activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
@@ -248,10 +242,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </ul>
       </div>
 
-      <div className="mb-4">
+      <div className='mb-4'>
         <button
-          type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          type='button'
+          className='flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint'
           onClick={() => setChartsOpen(!chartsOpen)}
         >
           <span>Charts</span>
@@ -273,11 +267,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
-                className={cn(
-                  LI_STYLE,
-                  "pl-4",
-                  currentPath === item.href && LI_ACTIVE_STYLE,
-                )}
+                className={cn(LI_STYLE, "pl-4", currentPath === item.href && LI_ACTIVE_STYLE)}
               >
                 {item.label}
               </a>
@@ -289,8 +279,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div>
         {/* Blocks Section */}
         <button
-          type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          type='button'
+          className='flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint'
           onClick={() => setBlocksOpen(!blocksOpen)}
         >
           <span>Blocks</span>
@@ -315,8 +305,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                 className={cn(
                   LI_STYLE,
                   "pl-4",
-                  activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
+                  activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
@@ -336,15 +325,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
         )}
       >
-        <Button
-          variant="ghost"
-          shape="square"
-          aria-label="Open menu"
-          onClick={toggleMobileMenu}
-        >
+        <Button variant='ghost' shape='square' aria-label='Open menu' onClick={toggleMobileMenu}>
           <KumoMenuIcon />
         </Button>
-        <h1 className="text-base font-medium">Kumo</h1>
+        <h1 className='text-base font-medium'>Kumo</h1>
         <ThemeToggle />
       </div>
 
@@ -356,21 +340,16 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3">
-          <h1 className="text-base font-medium">Kumo</h1>
-          <Button
-            variant="ghost"
-            shape="square"
-            aria-label="Close menu"
-            onClick={toggleMobileMenu}
-          >
+        <div className='flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3'>
+          <h1 className='text-base font-medium'>Kumo</h1>
+          <Button variant='ghost' shape='square' aria-label='Close menu' onClick={toggleMobileMenu}>
             <XIcon size={20} />
           </Button>
         </div>
         <div
           ref={mobileScrollRef}
-          data-sidebar-scroll="mobile"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          data-sidebar-scroll='mobile'
+          className='min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong'
           style={{ scrollBehavior: "auto" }}
         >
           {navContent}
@@ -384,12 +363,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "border-r border-kumo-line",
         )}
       >
-        <div className="relative h-12 border-b border-kumo-line">
-          <div className="absolute inset-0 grid place-items-center">
+        <div className='relative h-12 border-b border-kumo-line'>
+          <div className='absolute inset-0 grid place-items-center'>
             <Button
-              variant="ghost"
-              shape="square"
-              aria-label="Toggle sidebar"
+              variant='ghost'
+              shape='square'
+              aria-label='Toggle sidebar'
               aria-pressed={sidebarOpen}
               onClick={toggleSidebar}
             >
@@ -400,8 +379,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       </div>
 
       {/* Desktop: Kumo brand label - always visible, panel slides behind it */}
-      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-12 items-center px-3 font-medium select-none md:flex">
-        <h1 className="text-base">Kumo</h1>
+      <div className='pointer-events-none fixed top-0 left-12 z-50 hidden h-12 items-center px-3 font-medium select-none md:flex'>
+        <h1 className='text-base'>Kumo</h1>
       </div>
 
       {/* Desktop: Sliding panel that opens to the right of the rail */}
@@ -410,17 +389,15 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         className={cn(
           "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-elevated md:flex",
           "transition-transform duration-300 ease-out will-change-transform",
-          sidebarOpen
-            ? "translate-x-0 border-r border-kumo-line"
-            : "-translate-x-full",
+          sidebarOpen ? "translate-x-0 border-r border-kumo-line" : "-translate-x-full",
         )}
       >
-        <div className="h-12 flex-none border-b border-kumo-line" />
+        <div className='h-12 flex-none border-b border-kumo-line' />
 
         <div
           ref={desktopScrollRef}
-          data-sidebar-scroll="desktop"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          data-sidebar-scroll='desktop'
+          className='min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong'
         >
           {navContent}
         </div>

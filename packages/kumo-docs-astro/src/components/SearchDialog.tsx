@@ -58,8 +58,7 @@ const STATIC_PAGES: Array<{
   },
   {
     name: "Accessibility",
-    description:
-      "Accessibility standards and best practices in Kumo components.",
+    description: "Accessibility standards and best practices in Kumo components.",
     url: "/accessibility",
     category: "Getting Started",
   },
@@ -77,8 +76,7 @@ const STATIC_PAGES: Array<{
   },
   {
     name: "CLI",
-    description:
-      "Use the Kumo CLI to add components and blocks to your project.",
+    description: "Use the Kumo CLI to add components and blocks to your project.",
     url: "/cli",
     category: "Guides",
   },
@@ -105,49 +103,38 @@ const STATIC_PAGES: Array<{
 /** Better descriptions from the Astro doc pages */
 const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   badge: "Displays a small label for status, categorization, or metadata.",
-  "command-palette":
-    "A keyboard-driven command menu for searching and navigating.",
+  "command-palette": "A keyboard-driven command menu for searching and navigating.",
   meter: "A visual indicator showing a value within a known range.",
   pagination: "Navigation controls for paginated content.",
-  banner:
-    "Displays contextual inline messages for informational, alert, or error states.",
+  banner: "Displays contextual inline messages for informational, alert, or error states.",
   button: "Displays a button or a component that looks like a button.",
-  checkbox:
-    "A control that allows the user to toggle between checked and not checked.",
+  checkbox: "A control that allows the user to toggle between checked and not checked.",
   "clipboard-text": "A text component with a copy-to-clipboard button.",
-  collapsible:
-    "A vertically stacked set of interactive headings that each reveal content.",
-  combobox:
-    "A searchable select component for filtering and selecting from options.",
+  collapsible: "A vertically stacked set of interactive headings that each reveal content.",
+  combobox: "A searchable select component for filtering and selecting from options.",
   dialog: "A modal window overlaid on the primary window or another dialog.",
+  drawer: "Sliding panel for side sheets and bottom-sheet interactions.",
   dropdown: "Displays a menu of actions or functions triggered by a button.",
-  input:
-    "A text input field with built-in label, description, and error support.",
+  input: "A text input field with built-in label, description, and error support.",
   label: "A label component for form fields with required/optional indicators.",
-  "layer-card":
-    "A card with a layered visual effect for navigation or highlights.",
+  "layer-card": "A card with a layered visual effect for navigation or highlights.",
   loader: "A loading spinner to indicate loading state.",
   menubar: "A horizontal menu bar with icon buttons for toolbars.",
   popover: "An accessible popup anchored to a trigger element.",
   radio: "A control that allows selecting one option from a set.",
   select: "Displays a list of options for the user to pick from.",
-  "sensitive-input":
-    "A masked input for sensitive values like API keys and passwords.",
+  "sensitive-input": "A masked input for sensitive values like API keys and passwords.",
   "skeleton-line": "A skeleton loading placeholder for text content.",
   surface: "A container component that provides a styled surface for content.",
   switch: "A two-state toggle button that can be either on or off.",
-  table:
-    "A table component for displaying tabular data with selection support.",
+  table: "A table component for displaying tabular data with selection support.",
   tabs: "Layered sections of content displayed one at a time.",
   text: "A typography component for various heading and copy styles.",
   tooltip: "A popup that displays information on hover or focus.",
-  breadcrumbs:
-    "Shows the current page's location within a navigational hierarchy.",
-  empty:
-    "A placeholder component for empty states with illustration and actions.",
+  breadcrumbs: "Shows the current page's location within a navigational hierarchy.",
+  empty: "A placeholder component for empty states with illustration and actions.",
   "page-header": "Combines breadcrumbs and tabs for page navigation.",
-  "resource-list":
-    "A layout for displaying resource lists with title and sidebar.",
+  "resource-list": "A layout for displaying resource lists with title and sidebar.",
 };
 
 interface ComponentRegistryEntry {
@@ -183,9 +170,7 @@ interface SearchDialogProps {
 
 /** Build URL path from component type and name */
 function getComponentUrl(type: string, name: string): string {
-  const slug =
-    SLUG_OVERRIDES[name] ??
-    name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+  const slug = SLUG_OVERRIDES[name] ?? name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 
   switch (type) {
     case "block":
@@ -199,9 +184,7 @@ function getComponentUrl(type: string, name: string): string {
 
 /** Get better description from mapping, falling back to registry */
 function getDescription(name: string, registryDescription: string): string {
-  const slug =
-    SLUG_OVERRIDES[name] ??
-    name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+  const slug = SLUG_OVERRIDES[name] ?? name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
   return COMPONENT_DESCRIPTIONS[slug] || registryDescription;
 }
 
@@ -267,30 +250,27 @@ function asSearchResults(items: SearchItem[]): SearchGroup[] {
 function getTypeIcon(type: "component" | "block" | "layout" | "page") {
   switch (type) {
     case "block":
-      return <StackIcon size={16} weight="duotone" />;
+      return <StackIcon size={16} weight='duotone' />;
     case "layout":
-      return <SquaresFourIcon size={16} weight="duotone" />;
+      return <SquaresFourIcon size={16} weight='duotone' />;
     case "page":
-      return <BookOpenIcon size={16} weight="duotone" />;
+      return <BookOpenIcon size={16} weight='duotone' />;
     default:
-      return <CubeIcon size={16} weight="duotone" />;
+      return <CubeIcon size={16} weight='duotone' />;
   }
 }
 
 /** Get badge for item type (only shown when searching, not when grouped by category) */
-function getTypeBadge(
-  type: "component" | "block" | "layout" | "page",
-  isSearching: boolean,
-) {
+function getTypeBadge(type: "component" | "block" | "layout" | "page", isSearching: boolean) {
   if (!isSearching) return null; // Don't show badge when grouped - category label is enough
 
   switch (type) {
     case "block":
-      return <Badge variant="secondary">Block</Badge>;
+      return <Badge variant='secondary'>Block</Badge>;
     case "layout":
-      return <Badge variant="secondary">Layout</Badge>;
+      return <Badge variant='secondary'>Layout</Badge>;
     case "page":
-      return <Badge variant="secondary">Guide</Badge>;
+      return <Badge variant='secondary'>Guide</Badge>;
     default:
       return null;
   }
@@ -397,10 +377,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   }, [open]);
 
   const hasResults = filteredGroups.some((g) => g.items.length > 0);
-  const totalResults = filteredGroups.reduce(
-    (sum, g) => sum + g.items.length,
-    0,
-  );
+  const totalResults = filteredGroups.reduce((sum, g) => sum + g.items.length, 0);
   const isSearching = query.trim().length > 0;
 
   return (
@@ -416,34 +393,25 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       filter={() => true}
     >
       <CommandPalette.Input
-        placeholder="Search docs..."
-        leading={
-          <MagnifyingGlassIcon
-            className="h-4 w-4 text-kumo-subtle"
-            weight="bold"
-          />
-        }
+        placeholder='Search docs...'
+        leading={<MagnifyingGlassIcon className='h-4 w-4 text-kumo-subtle' weight='bold' />}
       />
       <CommandPalette.List>
         {loading ? (
           <CommandPalette.Loading />
         ) : error ? (
-          <div className="p-8 text-center">
-            <p className="text-kumo-subtle">{error}</p>
+          <div className='p-8 text-center'>
+            <p className='text-kumo-subtle'>{error}</p>
           </div>
         ) : !hasResults ? (
           <CommandPalette.Empty>
-            {query.trim()
-              ? `No results found for "${query}"`
-              : "Type to search docs"}
+            {query.trim() ? `No results found for "${query}"` : "Type to search docs"}
           </CommandPalette.Empty>
         ) : (
           <CommandPalette.Results>
             {(group: SearchGroup) => (
               <CommandPalette.Group key={group.label} items={group.items}>
-                <CommandPalette.GroupLabel>
-                  {group.label}
-                </CommandPalette.GroupLabel>
+                <CommandPalette.GroupLabel>{group.label}</CommandPalette.GroupLabel>
                 <CommandPalette.Items>
                   {(item: SearchItem) => (
                     <CommandPalette.Item<SearchItem>
@@ -454,26 +422,23 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                         handleSelect(item, { newTab });
                       }}
                     >
-                      <div className="flex w-full items-center gap-3">
-                        <div className="flex-shrink-0 text-kumo-subtle">
+                      <div className='flex w-full items-center gap-3'>
+                        <div className='flex-shrink-0 text-kumo-subtle'>
                           {getTypeIcon(item.type)}
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
+                        <div className='min-w-0 flex-1'>
+                          <div className='flex items-center gap-2'>
                             <CommandPalette.HighlightedText
                               text={item.name}
                               highlights={findHighlightRanges(item.name, query)}
-                              className="text-base font-medium text-kumo-default"
+                              className='text-base font-medium text-kumo-default'
                             />
                             {getTypeBadge(item.type, isSearching)}
                           </div>
                           <CommandPalette.HighlightedText
                             text={item.description}
-                            highlights={findHighlightRanges(
-                              item.description,
-                              query,
-                            )}
-                            className="block truncate text-sm text-kumo-subtle"
+                            highlights={findHighlightRanges(item.description, query)}
+                            className='block truncate text-sm text-kumo-subtle'
                           />
                         </div>
                       </div>
@@ -486,37 +451,25 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         )}
       </CommandPalette.List>
       <CommandPalette.Footer>
-        <span className="text-kumo-subtle">
-          {hasResults
-            ? `${totalResults} result${totalResults === 1 ? "" : "s"}`
-            : ""}
+        <span className='text-kumo-subtle'>
+          {hasResults ? `${totalResults} result${totalResults === 1 ? "" : "s"}` : ""}
         </span>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
-              ↑
-            </kbd>
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
-              ↓
-            </kbd>
+        <div className='flex items-center gap-4'>
+          <span className='flex items-center gap-1'>
+            <kbd className='rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5'>↑</kbd>
+            <kbd className='rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5'>↓</kbd>
             <span>navigate</span>
           </span>
-          <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
-              ↵
-            </kbd>
+          <span className='flex items-center gap-1'>
+            <kbd className='rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5'>↵</kbd>
             <span>open</span>
           </span>
-          <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
-              ⌘↵
-            </kbd>
+          <span className='flex items-center gap-1'>
+            <kbd className='rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5'>⌘↵</kbd>
             <span>new tab</span>
           </span>
-          <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
-              esc
-            </kbd>
+          <span className='flex items-center gap-1'>
+            <kbd className='rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5'>esc</kbd>
             <span>close</span>
           </span>
         </div>
