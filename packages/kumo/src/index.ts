@@ -210,6 +210,7 @@ export {
   TimeseriesChart,
   ChartLegend,
 } from "./components/chart";
+export { Drawer, type DrawerProps } from "./components/drawer";
 // PLOP_INJECT_EXPORT
 
 // Utils
