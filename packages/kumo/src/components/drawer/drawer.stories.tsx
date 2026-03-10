@@ -39,7 +39,6 @@ export const BottomSheet: Story = {
     <Drawer.Root swipeDirection='down'>
       <Drawer.Trigger render={(props) => <Button {...props}>Open Bottom Sheet</Button>} />
       <Drawer swipeDirection='down' className='p-6'>
-        <Drawer.Handle />
         <Drawer.Title>Filters</Drawer.Title>
         <Drawer.Description className='mt-2'>
           Use filters to refine the result set.
