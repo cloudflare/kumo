@@ -8,7 +8,7 @@ export const KUMO_DRAWER_VARIANTS = {
   swipeDirection: {
     right: {
       classes:
-        "top-0 right-0 h-full w-full max-w-[32rem] rounded-l-xl data-closed:translate-x-full data-starting-style:translate-x-full",
+        "top-0 right-0 h-full w-full max-w-[32rem] rounded-l-xl data-closed:translate-x-full data-starting-style:translate-x-full max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:h-auto max-md:min-h-[50svh] max-md:max-h-[85vh] max-md:max-w-none max-md:rounded-t-xl max-md:rounded-b-none max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0",
       description: "Drawer appears from the right edge",
     },
     left: {
