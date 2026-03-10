@@ -19,7 +19,7 @@ function DrawerContentActions() {
 function DrawerRightDemo() {
   return (
     <Drawer.Root>
-      <Drawer.Trigger render={(props) => <Button {...props}>Open Right Drawer</Button>} />
+      <Drawer.Trigger render={(props) => <Button {...props}>Open Drawer</Button>} />
       <Drawer className='p-6'>
         <Drawer.Title>Edit Settings</Drawer.Title>
         <Drawer.Description className='mt-2'>
@@ -65,7 +65,7 @@ function DrawerTopDemo() {
       <Drawer swipeDirection='up' className='p-6'>
         <Drawer.Title>Announcement</Drawer.Title>
         <Drawer.Description className='mt-2'>
-          Use top drawers for global notices and quick actions.
+          Use top sheets for global notices and quick actions.
         </Drawer.Description>
         <DrawerContentActions />
       </Drawer>
@@ -99,28 +99,6 @@ export function DrawerVerticalSheetsDemo() {
       <DrawerTopDemo />
       <DrawerBottomSheetDemo />
     </div>
-  );
-}
-
-/** Responsive pattern: bottom-sheet on mobile, side drawer on desktop. */
-export function DrawerResponsiveDemo() {
-  return (
-    <Drawer.Root swipeDirection='right'>
-      <Drawer.Trigger render={(props) => <Button {...props}>Open Responsive Drawer</Button>} />
-      <Drawer
-        className='p-4 md:p-6
-          [--kumo-drawer-actions-inset:1rem] md:[--kumo-drawer-actions-inset:1.5rem]
-          max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:h-auto max-md:min-h-[50svh] max-md:max-h-[85vh] max-md:max-w-none max-md:rounded-t-xl max-md:rounded-b-none
-          max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full
-          max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0'
-      >
-        <Drawer.Title>Responsive Drawer</Drawer.Title>
-        <Drawer.Description className='mt-2'>
-          On mobile it behaves like a bottom sheet, and on desktop it opens from the right.
-        </Drawer.Description>
-        <DrawerContentActions />
-      </Drawer>
-    </Drawer.Root>
   );
 }
 

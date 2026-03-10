@@ -9,7 +9,6 @@ import {
   DrawerHeroDemo,
   DrawerHorizontalSheetsDemo,
   DrawerVerticalSheetsDemo,
-  DrawerResponsiveDemo,
 } from "../../components/demos/DrawerDemo";
 ---
 
@@ -113,7 +112,7 @@ export default function Example() {
   <Drawer.Trigger render={(props) => <Button {...props}>Open Top Sheet</Button>} />
   <Drawer swipeDirection="up" className="p-6">
     <Drawer.Title>Announcement</Drawer.Title>
-    <Drawer.Description>Top sheet for global notices.</Drawer.Description>
+    <Drawer.Description>Top sheet for global notices and quick actions.</Drawer.Description>
     <Drawer.Actions>
       <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Dismiss</Button>} />
       <Drawer.Close render={(props) => <Button {...props}>Acknowledge</Button>} />
@@ -137,32 +136,6 @@ export default function Example() {
         </ComponentExample>
       </div>
 
-      <div>
-        <Heading level={3}>Responsive Sheet (Mobile Bottom, Desktop Right)</Heading>
-        <ComponentExample
-          code={`<Drawer.Root swipeDirection="right">
-  <Drawer.Trigger render={(props) => <Button {...props}>Open Responsive Drawer</Button>} />
-  <Drawer
-    className="
-      [--kumo-drawer-actions-inset:1rem] md:[--kumo-drawer-actions-inset:1.5rem]
-      max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:h-auto max-md:min-h-[50svh] max-md:max-h-[85vh]
-      max-md:max-w-none max-md:rounded-t-xl max-md:rounded-b-none
-      max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full
-      max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0
-    "
-  >
-    <Drawer.Title>Responsive Drawer</Drawer.Title>
-    <Drawer.Description>Bottom sheet on mobile, side drawer on desktop.</Drawer.Description>
-    <Drawer.Actions>
-      <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Cancel</Button>} />
-      <Drawer.Close render={(props) => <Button {...props}>Save</Button>} />
-    </Drawer.Actions>
-  </Drawer>
-</Drawer.Root>`}
-        >
-          <DrawerResponsiveDemo client:load />
-        </ComponentExample>
-      </div>
     </div>
   </ComponentSection>
 
