@@ -126,6 +126,23 @@ DrawerClose.displayName = "Drawer.Close";
 
 export type DrawerActionsProps = ComponentPropsWithoutRef<"div">;
 
+export type DrawerHandleProps = ComponentPropsWithoutRef<"div">;
+
+function DrawerHandle({ className, ...props }: DrawerHandleProps) {
+  return (
+    <div
+      aria-hidden='true'
+      className={cn(
+        "mx-auto mb-2 h-1.5 w-12 rounded-full bg-kumo-fill pointer-events-none",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+DrawerHandle.displayName = "Drawer.Handle";
+
 function DrawerActions({ className, ...props }: DrawerActionsProps) {
   return (
     <div
@@ -191,6 +208,7 @@ const Drawer = Object.assign(DrawerContent, {
   Title: DrawerTitle,
   Description: DrawerDescription,
   Close: DrawerClose,
+  Handle: DrawerHandle,
   Actions: DrawerActions,
   Footer: DrawerFooter,
 });
@@ -202,6 +220,7 @@ export {
   DrawerTitle,
   DrawerDescription,
   DrawerClose,
+  DrawerHandle,
   DrawerActions,
   DrawerFooter,
 };
