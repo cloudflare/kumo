@@ -2336,7 +2336,7 @@ Drawer component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-overlay`, `outline-kumo-fill`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-fill`, `bg-kumo-overlay`, `border-kumo-fill`, `outline-kumo-fill`, `text-kumo-default`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -2362,66 +2362,41 @@ Description sub-component
 
 Close sub-component
 
+#### Drawer.Handle
+
+Handle sub-component
+
+#### Drawer.Actions
+
+Actions sub-component
+
+#### Drawer.Footer
+
+Footer sub-component
+
 
 **Examples:**
 
 ```tsx
-<Drawer.Root>
-      <Drawer.Trigger render={(props) => <Button {...props}>Open Right Drawer</Button>} />
-      <Drawer className="p-6">
-        <Drawer.Title>Edit Settings</Drawer.Title>
-        <Drawer.Description className="mt-2">
-          Configure workspace settings before saving.
-        </Drawer.Description>
-        <DrawerContentActions />
-      </Drawer>
-    </Drawer.Root>
+<div className='flex flex-wrap gap-2'>
+      <DrawerLeftDemo />
+      <DrawerRightDemo />
+    </div>
 ```
 
 ```tsx
-<Drawer.Root swipeDirection="left">
-      <Drawer.Trigger render={(props) => <Button {...props}>Open Left Drawer</Button>} />
-      <Drawer swipeDirection="left" className="p-6">
-        <Drawer.Title>Navigation</Drawer.Title>
-        <Drawer.Description className="mt-2">
-          Use this layout for contextual navigation panels.
-        </Drawer.Description>
-        <DrawerContentActions />
-      </Drawer>
-    </Drawer.Root>
-```
-
-```tsx
-<Drawer.Root swipeDirection="down">
-      <Drawer.Trigger render={(props) => <Button {...props}>Open Bottom Sheet</Button>} />
-      <Drawer swipeDirection="down" className="p-4">
-        <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-kumo-fill" />
-        <Drawer.Title>Filters</Drawer.Title>
-        <Drawer.Description className="mt-1">
-          Use filters to refine the result set.
-        </Drawer.Description>
-        <div className="mt-4 grid gap-2">
-          <Button variant="secondary">Reset</Button>
-          <Drawer.Close render={(props) => <Button {...props}>Apply</Button>} />
-        </div>
-      </Drawer>
-    </Drawer.Root>
-```
-
-```tsx
-<Drawer.Root swipeDirection="right">
-      <Drawer.Trigger
-        render={(props) => <Button {...props}>Open Responsive Drawer</Button>}
-      />
+<Drawer.Root swipeDirection='right'>
+      <Drawer.Trigger render={(props) => <Button {...props}>Open Responsive Drawer</Button>} />
       <Drawer
-        className="p-4 md:p-6
-          max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:max-h-[85vh] max-md:max-w-none max-md:rounded-t-xl max-md:rounded-l-none
+        className='p-4 md:p-6
+          [--kumo-drawer-actions-inset:1rem] md:[--kumo-drawer-actions-inset:1.5rem]
+          max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:top-auto max-md:h-auto max-md:min-h-[50svh] max-md:max-h-[85vh] max-md:max-w-none max-md:rounded-t-xl max-md:rounded-b-none
           max-md:data-starting-style:translate-y-full max-md:data-closed:translate-y-full
-          max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0"
+          max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0'
       >
-        <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-kumo-fill md:hidden" />
+        <Drawer.Handle className='md:hidden' />
         <Drawer.Title>Responsive Drawer</Drawer.Title>
-        <Drawer.Description className="mt-2">
+        <Drawer.Description className='mt-2'>
           On mobile it behaves like a bottom sheet, and on desktop it opens from the right.
         </Drawer.Description>
         <DrawerContentActions />
