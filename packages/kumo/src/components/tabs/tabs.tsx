@@ -163,11 +163,11 @@ export function Tabs({
             key={tab.value}
             value={tab.value}
             className={cn(
-              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap hover:border-kumo-tint focus-visible:rounded-none focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
               isSegmented &&
-                "my-px rounded-lg px-2.5 text-kumo-strong aria-selected:text-kumo-default",
+                "my-px rounded-lg px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset aria-selected:focus-visible:ring-0",
               isUnderline &&
-                "mb-2 text-kumo-strong hover:text-kumo-subtle aria-selected:font-medium aria-selected:text-kumo-default",
+                "px-2 py-2.5 text-kumo-strong hover:bg-kumo-tint/50 hover:text-kumo-subtle aria-selected:hover:bg-transparent aria-selected:font-medium aria-selected:text-kumo-default",
               tab.className,
             )}
           >
