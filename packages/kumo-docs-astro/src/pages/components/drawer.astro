@@ -114,16 +114,18 @@ export default function Example() {
   <Drawer swipeDirection="up" className="p-6">
     <Drawer.Title>Announcement</Drawer.Title>
     <Drawer.Description>Top sheet for global notices.</Drawer.Description>
-    <Drawer.Actions>
+    <Drawer.Actions className="order-2">
       <Drawer.Close render={(props) => <Button variant="secondary" {...props}>Dismiss</Button>} />
       <Drawer.Close render={(props) => <Button {...props}>Acknowledge</Button>} />
     </Drawer.Actions>
+    <Drawer.Handle className="order-3 mb-0 mt-3" />
   </Drawer>
 </Drawer.Root>
 
 <Drawer.Root swipeDirection="down">
   <Drawer.Trigger render={(props) => <Button {...props}>Open Bottom Sheet</Button>} />
   <Drawer swipeDirection="down" className="p-6">
+    <Drawer.Handle />
     <Drawer.Title>Filters</Drawer.Title>
     <Drawer.Description>Bottom sheet for focused actions.</Drawer.Description>
     <Drawer.Actions>
@@ -151,6 +153,7 @@ export default function Example() {
       max-md:data-starting-style:translate-x-0 max-md:data-closed:translate-x-0
     "
   >
+    <Drawer.Handle className="md:hidden" />
     <Drawer.Title>Responsive Drawer</Drawer.Title>
     <Drawer.Description>Bottom sheet on mobile, side drawer on desktop.</Drawer.Description>
     <Drawer.Actions>
