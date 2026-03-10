@@ -712,7 +712,7 @@ export const TextPropsSchema = z.object({
 });
 
 export const ToastyPropsSchema = z.object({
-  variant: z.enum(["default", "error", "warning"]).optional(),
+  variant: z.enum(["default", "success", "error", "warning", "info"]).optional(),
   className: z.string().optional(), // Additional CSS classes
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
 });

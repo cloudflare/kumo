@@ -13,6 +13,7 @@ import {
   ToastMultipleDemo,
   ToastErrorDemo,
   ToastWarningDemo,
+  ToastInfoDemo,
   ToastCustomContentDemo,
   ToastActionsDemo,
   ToastPromiseDemo,
@@ -169,14 +170,15 @@ export function Layout({ children }) {
       </div>
 
       <div>
-        <Heading level={3}>Success Action</Heading>
+        <Heading level={3}>Success Variant</Heading>
         <p class="mb-4 text-kumo-subtle">
-          Toasts work well for confirming user actions.
+          Use the success variant to confirm completed actions with a green accent and check icon.
         </p>
         <ComponentExample
           code={`toastManager.add({
-  title: "Success!",
-  description: "Your Worker has been deployed."
+  title: "Deployed successfully",
+  description: "Your Worker is now live.",
+  variant: "success"
 })`}
         >
           <ToastSuccessDemo client:visible />
@@ -227,6 +229,22 @@ toastManager.add({ title: "Third toast" });`}
 })`}
         >
           <ToastWarningDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Info Variant</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use the info variant for neutral informational messages with a blue accent.
+        </p>
+        <ComponentExample
+          code={`toastManager.add({
+  title: "New version available",
+  description: "Kumo v4.2 includes performance improvements.",
+  variant: "info"
+})`}
+        >
+          <ToastInfoDemo client:visible />
         </ComponentExample>
       </div>
 
@@ -351,9 +369,9 @@ toastManager.promise(asyncFn(), {
             </tr>
             <tr class="border-b border-kumo-line">
               <td class="py-3 pr-4 font-mono text-kumo-default">variant</td>
-              <td class="py-3 pr-4 font-mono">"default" | "error" | "warning"</td>
+              <td class="py-3 pr-4 font-mono">"default" | "success" | "error" | "warning" | "info"</td>
               <td class="py-3 pr-4 font-mono">"default"</td>
-              <td class="py-3">Visual style of the toast. Use <code class="text-kumo-default">error</code> for failures and <code class="text-kumo-default">warning</code> for cautionary messages.</td>
+              <td class="py-3">Visual style of the toast. Use <code class="text-kumo-default">success</code> for confirmations, <code class="text-kumo-default">error</code> for failures, <code class="text-kumo-default">warning</code> for cautionary messages, and <code class="text-kumo-default">info</code> for informational notices.</td>
             </tr>
             <tr class="border-b border-kumo-line">
               <td class="py-3 pr-4 font-mono text-kumo-default">content</td>

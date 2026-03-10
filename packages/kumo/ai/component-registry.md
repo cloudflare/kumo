@@ -3403,7 +3403,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-green-500 via-green-500 to-green-500"
+      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
     />
 ```
 
@@ -4934,8 +4934,10 @@ Toasty — toast notification provider and viewport.  Renders a `Toast.Provider`
 
 - `variant`: enum [default: default]
   - `"default"`: Default toast style
+  - `"success"`: Success toast for confirmations and positive outcomes
   - `"error"`: Error toast for critical issues
   - `"warning"`: Warning toast for cautionary messages
+  - `"info"`: Info toast for neutral informational messages
 - `className`: string
   Additional CSS classes
 - `children`: ReactNode
@@ -4943,7 +4945,7 @@ Toasty — toast notification provider and viewport.  Renders a `Toast.Provider`
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-contrast`, `bg-kumo-control`, `bg-kumo-fill-hover`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-contrast`, `bg-kumo-control`, `bg-kumo-danger-tint`, `bg-kumo-fill-hover`, `bg-kumo-info-tint`, `bg-kumo-success-tint`, `bg-kumo-warning-tint`, `border-kumo-fill`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-info`, `text-kumo-strong`, `text-kumo-subtle`, `text-kumo-success`, `text-kumo-warning`
 
 **Styling:**
 
