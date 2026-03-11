@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithRef, ReactElement, ReactNode } from "react";
+import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
 
@@ -54,8 +55,13 @@ export type TabsItem = {
   label: ReactNode;
   /** Additional CSS classes for this tab trigger. */
   className?: string;
-  /** Custom render function to replace the tab element (e.g. for link-based tabs). */
-  render?: (props: Record<string, unknown>) => React.ReactElement;
+  /**
+   * Custom render function or element to replace the tab element (e.g. for link-based tabs).
+   * When using a function, it receives the props to spread on the element and the tab's state.
+   */
+  render?:
+    | ReactElement
+    | ((props: ComponentPropsWithRef<"button">, state: TabsTab.State) => ReactElement);
 };
 
 /**
@@ -162,6 +168,7 @@ export function Tabs({
           <TabsPrimitive.Tab
             key={tab.value}
             value={tab.value}
+            render={tab.render}
             className={cn(
               "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap hover:border-kumo-tint focus-visible:rounded-none focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
               isSegmented &&
