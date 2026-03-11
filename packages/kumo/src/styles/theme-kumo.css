@@ -194,3 +194,79 @@
   --text-lg: 16px;
   --text-lg--line-height: calc(1.25 / 1);
 }
+
+@layer base {
+  :root, [data-theme="kumo"] {
+    --text-color-kumo-default: var(--color-neutral-900, oklch(21% 0.006 285.885));
+    --text-color-kumo-inverse: var(--color-neutral-100, oklch(97% 0 0));
+    --text-color-kumo-strong: var(--color-neutral-600, oklch(43.9% 0 0));
+    --text-color-kumo-subtle: var(--color-neutral-500, oklch(55.6% 0 0));
+    --text-color-kumo-inactive: var(--color-neutral-400, oklch(70.8% 0 0));
+    --text-color-kumo-brand: #f6821f;
+    --text-color-kumo-link: var(--color-blue-800, oklch(42.4% 0.199 265.638));
+    --text-color-kumo-success: var(--color-green-500, oklch(72.3% 0.219 149.579));
+    --text-color-kumo-danger: var(--color-red-500, oklch(63.7% 0.237 25.331));
+    --text-color-kumo-warning: var(--color-yellow-800, oklch(47.6% 0.114 61.907));
+    --color-kumo-base: var(--color-white, #fff);
+    --color-kumo-elevated: var(--color-neutral-25, oklch(0.99 0 0));
+    --color-kumo-recessed: var(--color-neutral-250, oklch(0.9 0 0));
+    --color-kumo-overlay: var(--color-neutral-50, oklch(98.5% 0 0));
+    --color-kumo-contrast: var(--color-neutral-900, oklch(20.5% 0 0));
+    --color-kumo-control: var(--color-white, #fff);
+    --color-kumo-tint: var(--color-neutral-150, oklch(0.96 0 0));
+    --color-kumo-interact: var(--color-neutral-300, oklch(87% 0 0));
+    --color-kumo-fill: var(--color-neutral-200, oklch(92.2% 0 0));
+    --color-kumo-fill-hover: var(--color-neutral-200, oklch(92.2% 0 0));
+    --color-kumo-brand: oklch(0.5772 0.2324 260);
+    --color-kumo-brand-hover: var(--color-blue-700, oklch(48.8% 0.243 264.376));
+    --color-kumo-line: oklch(14.5% 0 0 / 0.1);
+    --color-kumo-ring: var(--color-neutral-400, oklch(70.8% 0 0));
+    --color-kumo-tip-shadow: var(--color-gray-200, oklch(92.8% 0.006 264.531));
+    --color-kumo-tip-stroke: transparent;
+    --color-kumo-info: var(--color-blue-500, oklch(62.3% 0.214 259.815));
+    --color-kumo-info-tint: var(--color-blue-300, oklch(80.9% 0.105 251.813));
+    --color-kumo-warning: var(--color-yellow-500, oklch(79.5% 0.184 86.047));
+    --color-kumo-warning-tint: var(--color-yellow-300, oklch(90.5% 0.182 98.111));
+    --color-kumo-danger: var(--color-red-500, oklch(63.7% 0.237 25.331));
+    --color-kumo-danger-tint: var(--color-red-300, oklch(80.8% 0.114 19.571));
+    --color-kumo-success: var(--color-green-500, oklch(72.3% 0.219 149.579));
+    --color-kumo-success-tint: var(--color-green-300, oklch(87.1% 0.15 154.449));
+  }
+  
+  :root[data-mode="dark"], [data-mode="dark"]:not([data-theme]), [data-mode="dark"] [data-theme="kumo"], [data-theme="kumo"][data-mode="dark"], [data-theme="kumo"] [data-mode="dark"] {
+    --text-color-kumo-default: var(--color-neutral-100, oklch(97% 0 0));
+    --text-color-kumo-inverse: var(--color-neutral-900, oklch(20.5% 0 0));
+    --text-color-kumo-strong: var(--color-neutral-400, oklch(70.8% 0 0));
+    --text-color-kumo-subtle: var(--color-neutral-50, oklch(98.5% 0 0));
+    --text-color-kumo-inactive: var(--color-neutral-600, oklch(70.8% 0 0));
+    --text-color-kumo-brand: #f6821f;
+    --text-color-kumo-link: var(--color-blue-400, oklch(70.7% 0.165 254.624));
+    --text-color-kumo-success: var(--color-green-400, oklch(79.2% 0.209 151.711));
+    --text-color-kumo-danger: var(--color-red-400, oklch(70.4% 0.191 22.216));
+    --text-color-kumo-warning: var(--color-yellow-400, oklch(85.2% 0.199 91.936));
+    --color-kumo-base: var(--color-black, #000);
+    --color-kumo-elevated: var(--color-neutral-950, oklch(14.5% 0 0));
+    --color-kumo-recessed: var(--color-neutral-750, oklch(0.31 0 0));
+    --color-kumo-overlay: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-contrast: var(--color-neutral-100, oklch(97% 0 0));
+    --color-kumo-control: var(--color-neutral-900, oklch(21% 0.006 285.885));
+    --color-kumo-tint: var(--color-neutral-850, oklch(0.23 0 0));
+    --color-kumo-interact: var(--color-neutral-700, oklch(37.1% 0 0));
+    --color-kumo-fill: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-fill-hover: var(--color-neutral-700, oklch(37.1% 0 0));
+    --color-kumo-brand: oklch(0.5772 0.2324 260);
+    --color-kumo-brand-hover: var(--color-blue-700, oklch(48.8% 0.243 264.376));
+    --color-kumo-line: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-ring: var(--color-neutral-600, oklch(43.9% 0 0));
+    --color-kumo-tip-shadow: transparent;
+    --color-kumo-tip-stroke: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-info: var(--color-blue-700, oklch(48.8% 0.243 264.376));
+    --color-kumo-info-tint: var(--color-blue-900, oklch(37.9% 0.146 265.522));
+    --color-kumo-warning: var(--color-yellow-700, oklch(55.4% 0.135 66.442));
+    --color-kumo-warning-tint: var(--color-yellow-900, oklch(42.1% 0.095 57.708));
+    --color-kumo-danger: var(--color-red-700, oklch(50.5% 0.213 27.518));
+    --color-kumo-danger-tint: var(--color-red-900, oklch(39.6% 0.141 25.723));
+    --color-kumo-success: var(--color-green-700, oklch(52.7% 0.154 150.069));
+    --color-kumo-success-tint: var(--color-green-900, oklch(39.3% 0.095 152.535));
+  }
+}

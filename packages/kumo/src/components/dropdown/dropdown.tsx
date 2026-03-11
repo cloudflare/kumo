@@ -2,9 +2,9 @@ import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
-import { Checkbox } from "../checkbox";
 import {
   CaretRightIcon as CaretRight,
+  CheckIcon,
   CheckIcon as Check,
   type Icon,
 } from "@phosphor-icons/react";
@@ -310,9 +310,9 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-inherit">
-      <Checkbox checked={checked} />
-    </span>
+    <DropdownMenuPrimitive.CheckboxItemIndicator className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-inherit">
+      <CheckIcon weight="bold" size={12} />
+    </DropdownMenuPrimitive.CheckboxItemIndicator>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
