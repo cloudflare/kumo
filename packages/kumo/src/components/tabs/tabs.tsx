@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ReactElement, ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
@@ -59,9 +59,7 @@ export type TabsItem = {
    * Custom render function or element to replace the tab element (e.g. for link-based tabs).
    * When using a function, it receives the props to spread on the element and the tab's state.
    */
-  render?:
-    | ReactElement
-    | ((props: ComponentPropsWithRef<"button">, state: TabsTab.State) => ReactElement);
+  render?: TabsTab.Props["render"];
 };
 
 /**
