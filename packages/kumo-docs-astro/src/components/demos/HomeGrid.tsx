@@ -104,6 +104,7 @@ function ToastTriggerButton() {
 export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
+  const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const [value, setValue] = useState<{ id: string; value: string } | null>(
     null,
   );
@@ -266,7 +267,11 @@ export function HomeGrid() {
       name: "Collapsible",
       id: "collapsible",
       Component: (
-        <Collapsible label="What is Kumo?">
+        <Collapsible
+          label="What is Kumo?"
+          open={collapsibleOpen}
+          onOpenChange={setCollapsibleOpen}
+        >
           Kumo is Cloudflare's component library.
         </Collapsible>
       ),
