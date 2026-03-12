@@ -128,14 +128,14 @@ export function CodeHighlighted({
         {lineNumbers && (
           <div className="flex">
             {lineNumbers}
-            <pre className="m-0 min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
-              <code className="m-0 p-0">{code}</code>
+            <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+              <code className="!m-0 !p-0">{code}</code>
             </pre>
           </div>
         )}
         {!lineNumbers && (
-          <pre className="m-0 min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
-            <code className="m-0 p-0">{code}</code>
+          <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+            <code className="!m-0 !p-0">{code}</code>
           </pre>
         )}
         {copyButton}
@@ -151,7 +151,7 @@ export function CodeHighlighted({
           {lineNumbers}
           <div className="min-w-0 flex-1 overflow-x-auto">
             <div
-              className="kumo-shiki [&>pre]:m-0 [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&_code]:m-0 [&_code]:p-0"
+              className="kumo-shiki [&>pre]:!m-0 [&>pre]:!border-0 [&>pre]:!rounded-none [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&_code]:!m-0 [&_code]:!p-0 [&_code]:!bg-transparent [&_code]:!border-0"
               dangerouslySetInnerHTML={{
                 __html: processHighlightedHtml(html, highlightLines),
               }}
@@ -162,7 +162,7 @@ export function CodeHighlighted({
       {!lineNumbers && (
         <div className="overflow-x-auto">
           <div
-            className="kumo-shiki [&>pre]:m-0 [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&_code]:m-0 [&_code]:p-0"
+            className="kumo-shiki [&>pre]:!m-0 [&>pre]:!border-0 [&>pre]:!rounded-none [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&_code]:!m-0 [&_code]:!p-0 [&_code]:!bg-transparent [&_code]:!border-0"
             dangerouslySetInnerHTML={{
               __html: processHighlightedHtml(html, highlightLines),
             }}
