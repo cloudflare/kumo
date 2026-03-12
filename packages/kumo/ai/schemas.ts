@@ -617,8 +617,8 @@ export const RadioPropsSchema = z.object({
 
 export const SelectPropsSchema = z.object({
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) — can be a string or any React node.
-  hideLabel: z.boolean().optional(), // Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select. When provided, enables the Field wrapper with a visible label above the select. For accessibility without a visible label, use `aria-label` instead.
+  hideLabel: z.boolean().optional(),
   placeholder: z.string().optional(), // Placeholder text shown when no value is selected.
   loading: z.boolean().optional(), // When `true`, shows a skeleton loader in place of the selected value.
   disabled: z.boolean().optional(), // Whether the select is disabled.
