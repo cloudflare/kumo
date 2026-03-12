@@ -112,8 +112,10 @@ export function TabsRenderPropDemo() {
         },
         {
           value: "tab3",
-          label: "Another Link",
-          render: (props) => <a {...props} href="#tab3" />,
+          label: "Cloudflare",
+          render: (props) => (
+            <a {...props} href="https://cloudflare.com" target="_blank" />
+          ),
         },
       ]}
       selectedValue="tab1"
