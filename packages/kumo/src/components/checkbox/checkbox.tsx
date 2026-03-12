@@ -297,7 +297,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       <FieldBase.Root className="inline-flex">
         <FieldBase.Label
           className={cn(
-            "inline-flex items-center gap-2",
+            "m-0 inline-flex items-center gap-2",
             controlFirst ? "flex-row" : "flex-row-reverse justify-end",
             disabled ? "cursor-not-allowed" : "cursor-pointer",
           )}
@@ -346,7 +346,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
     return (
       <label
         className={cn(
-          "relative inline-flex items-center gap-2",
+          "m-0 relative inline-flex items-center gap-2",
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",

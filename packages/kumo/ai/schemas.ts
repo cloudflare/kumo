@@ -617,8 +617,8 @@ export const RadioPropsSchema = z.object({
 
 export const SelectPropsSchema = z.object({
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) — can be a string or any React node.
-  hideLabel: z.boolean().optional(), // Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select. When provided, enables the Field wrapper with a visible label above the select. For accessibility without a visible label, use `aria-label` instead.
+  hideLabel: z.boolean().optional(),
   placeholder: z.string().optional(), // Placeholder text shown when no value is selected.
   loading: z.boolean().optional(), // When `true`, shows a skeleton loader in place of the selected value.
   disabled: z.boolean().optional(), // Whether the select is disabled.
@@ -718,10 +718,9 @@ export const ToastyPropsSchema = z.object({
 });
 
 export const TooltipPropsSchema = z.object({
-  align: z.enum(["start", "center", "end"]).optional(), // Alignment on the axis perpendicular to `side`. - `"start"` — Align to the start edge - `"center"` — Center-aligned - `"end"` — Align to the end edge
-  asChild: z.boolean().optional(), // When `true`, the trigger wraps the child element instead of adding a wrapper.
-  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Preferred side of the trigger to render the tooltip. - `"top"` — Tooltip appears above the trigger - `"bottom"` — Tooltip appears below the trigger - `"left"` — Tooltip appears to the left of the trigger - `"right"` — Tooltip appears to the right of the trigger
+  side: z.enum(["top", "bottom", "left", "right"]).optional(),
+  className: z.string().optional(), // Additional CSS classes
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
   content: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]), // Content to display in the tooltip
 });
 

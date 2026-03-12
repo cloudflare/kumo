@@ -171,7 +171,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
     return (
       <label
         className={cn(
-          "group relative inline-flex items-center gap-2",
+          "m-0 group relative inline-flex items-center gap-2",
           // "start" (default): radio before label
           // "end": label before radio using flex-row-reverse
           controlPosition === "end" && "flex-row-reverse justify-end",
@@ -245,7 +245,9 @@ function RadioGroup({
             {children}
           </div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
-          {description && <p className="text-sm text-kumo-subtle">{description}</p>}
+          {description && (
+            <p className="text-sm text-kumo-subtle">{description}</p>
+          )}
         </Fieldset.Root>
       </BaseRadioGroup>
     </RadioGroupContext.Provider>
