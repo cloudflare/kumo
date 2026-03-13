@@ -1,5 +1,102 @@
 # @cloudflare/kumo
 
+## 1.11.0
+
+### Minor Changes
+
+- 140f4ab: **Select: Improved label API to match Input component pattern**
+  - `hideLabel` is now deprecated. When `label` is provided, the label is **visible by default** (previously hidden by default).
+    - For visible labels: `<Select label="Country" />` (no changes needed if you were using `hideLabel={false}`)
+    - For hidden labels: Use `<Select aria-label="Select a country" />` instead of `<Select label="Country" hideLabel={true} />`
+  - **Bug fix**: Placeholder text now displays correctly when using object map `items` format (e.g., `items={{ a: "Option A" }}`). Previously, placeholders only worked with array format items.
+
+  **Backward compatibility**: `hideLabel={true}` still works but shows a deprecation warning in development. Existing code using `hideLabel={false}` requires no changes.
+
+  **Migration guide:**
+
+  ```tsx
+  // Before (label hidden by default)
+  <Select label="Country" />                    // label was sr-only
+  <Select label="Country" hideLabel={false} />  // label was visible
+
+  // After (label visible by default, matching Input)
+  <Select label="Country" />                    // label is now visible
+  <Select aria-label="Country" />               // use aria-label for hidden labels
+  ```
+
+- f1c6392: Add optional `id` prop to `Flow.Node` for stable node identification and connector test IDs
+- da03394: Avoid adding multiple toasts with the same ID. Use a subtle bump animation when a toast with an existing ID is added.
+
+### Patch Changes
+
+- a53ec1b: Fix theme token flicker by generating stable light/dark fallback variables with safer scope and layer precedence.
+- cb121bc: fix: add defensive styles to prevent global CSS pollution
+
+  ## Problem
+
+  When Kumo components are used in applications with aggressive global styles (e.g., Stratus's `cfBaseStyles` layer), certain elements get polluted:
+  - `label { margin-bottom: 1rem }` adds unwanted margins to all labels
+  - `button { background: gray }` affects unstyled button wrappers (e.g., tooltip triggers)
+  - `a { color: var(--text-color-primary) }` can override link colors if the consuming app defines `--text-color-primary` differently
+
+  ## Solution
+
+  Add defensive Tailwind utility classes directly to components. These:
+  1. Reset commonly-polluted properties to safe defaults
+  2. Use `cn()` (tailwind-merge) so consumer styles via `className` still override them
+  3. Are no-ops in clean CSS environments (no visual change in Kumo docs)
+
+  ## Changes
+
+  ### Label margins (`m-0`)
+  - **Label**: `labelVariants()` now includes `m-0`
+  - **Field**: `FieldBase.Label` gets `m-0`
+  - **Checkbox**: label wrapper gets `m-0`
+  - **Radio**: label wrapper gets `m-0`
+  - **Switch**: label wrapper gets `m-0`
+
+  ### Button trigger resets
+  - **Tooltip trigger** (when `!asChild`): `bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0] inline-flex items-center`
+  - **Collapsible trigger**: `bg-transparent border-none shadow-none p-0 m-0`
+
+  ### Link color namespace fix
+  - **Link**: Changed from `text-primary` to `text-kumo-link` to avoid collision with consuming apps that define `--text-color-primary` differently
+
+  ### Label tooltip composition
+  - **Label**: Tooltip trigger now uses `<Button variant="ghost" size="xs" shape="square">` with `asChild`, leveraging composition instead of relying on defensive resets
+
+  ## Docs
+
+  Added "Custom Trigger" section to Tooltip docs demonstrating that `className` can fully override defensive styles when not using `asChild`.
+
+- c6a3fb3: fix(dropdown): use Base UI CheckboxItemIndicator for proper accessibility
+
+  Replace custom Checkbox component with Base UI's CheckboxItemIndicator in DropdownMenuCheckboxItem. The previous implementation nested an interactive Checkbox inside the menuitemcheckbox role, causing duplicate accessibility labels. CheckboxItemIndicator is automatically aria-hidden and only renders when checked, following the standard Base UI pattern.
+
+- 1bfffaa: Fix Field error message line height by adding `leading-snug` for consistent text spacing
+- 5d16fdb: Improve info banner dark mode contrast for WCAG AA compliance. Changes `kumo-info` from `blue-700` (L=48.8%) to `blue-400` (L=70.7%), achieving 7.97:1 contrast ratio against the banner background.
+- 8b964f5: Fix Combobox.TriggerValue icon misalignment caused by inherited line-height
+
+  The caret icon span was inheriting `line-height` from the parent button's `text-base` class, causing the span's height to exceed the icon's height (e.g., 21.5px vs 16px). The icon sits at the top of the span by default, so when the span is centered via `top-1/2 -translate-y-1/2`, the icon appears offset.
+
+  Added `flex items-center` to the icon wrapper to ensure proper vertical centering regardless of inherited styles. This matches the pattern used in TriggerInput.
+
+- 529274d: fix(Pagination): use aria-label instead of label for PageSize select
+
+  The Select component now shows visible labels by default. Since Pagination.PageSize
+  already displays "Per page:" text next to the select, the internal Select should use
+  `aria-label` for accessibility without showing a duplicate visible label.
+
+- 2f0e572: chore(toast): replace inline XIcon with Phosphor icon
+- ee1099d: Prevent password managers autofilling Pagination input field
+- 6dc952f: fix(tabs): improve focus ring and hover styling
+  - Fixed focus ring to use proper `ring-kumo-ring` token instead of browser default blue
+  - Segmented variant: inset focus ring to avoid overlap with adjacent tabs, hidden on active tab
+  - Underline variant: added padding for better focus ring spacing around text
+  - Added subtle hover states for both variants
+
+- 2352344: fix(Tabs): pass TabItem render prop through to Base UI for custom tab rendering (e.g., link-based tabs)
+
 ## 1.10.0
 
 ### Minor Changes

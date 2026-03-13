@@ -120,7 +120,14 @@ export function Tooltip({
   return (
     <TooltipBase.Root {...props}>
       <TooltipBase.Trigger
-        className={className}
+        className={cn(
+          // Defensive resets when rendering as button wrapper (not asChild)
+          // These prevent global button styles from polluting the trigger
+          // Consumer styles passed via className will override these (tailwind-merge)
+          !asChild &&
+            "inline-flex items-center bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0]",
+          className,
+        )}
         render={asChild ? (children as TriggerProps["render"]) : undefined}
       >
         {asChild ? undefined : (children as ReactNode)}

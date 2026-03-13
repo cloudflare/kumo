@@ -74,8 +74,9 @@ export function CodeHighlighted({
   const isSingleLine = lineCount === 1;
 
   // Container styles - use flex layout for single-line with copy button
+  // Includes defensive resets (m-0, p-0) to prevent global CSS pollution
   const containerClasses = cn(
-    "group relative w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base",
+    "group relative m-0 w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base p-0",
     showCopyButton && isSingleLine && "flex items-center",
     className,
   );
@@ -127,14 +128,14 @@ export function CodeHighlighted({
         {lineNumbers && (
           <div className="flex">
             {lineNumbers}
-            <pre className="min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
-              <code>{code}</code>
+            <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+              <code className="!m-0 !p-0">{code}</code>
             </pre>
           </div>
         )}
         {!lineNumbers && (
-          <pre className="min-w-0 flex-1 overflow-x-auto p-4 font-mono text-sm leading-relaxed text-kumo-strong">
-            <code>{code}</code>
+          <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+            <code className="!m-0 !p-0">{code}</code>
           </pre>
         )}
         {copyButton}
@@ -150,7 +151,7 @@ export function CodeHighlighted({
           {lineNumbers}
           <div className="min-w-0 flex-1 overflow-x-auto">
             <div
-              className="kumo-shiki [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed"
+              className="kumo-shiki [&>pre]:!m-0 [&>pre]:!border-0 [&>pre]:!rounded-none [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&_code]:!m-0 [&_code]:!p-0 [&_code]:!bg-transparent [&_code]:!border-0"
               dangerouslySetInnerHTML={{
                 __html: processHighlightedHtml(html, highlightLines),
               }}
@@ -161,7 +162,7 @@ export function CodeHighlighted({
       {!lineNumbers && (
         <div className="overflow-x-auto">
           <div
-            className="kumo-shiki [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed"
+            className="kumo-shiki [&>pre]:!m-0 [&>pre]:!border-0 [&>pre]:!rounded-none [&>pre]:!bg-transparent [&>pre]:!p-4 [&>pre]:font-mono [&>pre]:text-sm [&>pre]:leading-relaxed [&_code]:!m-0 [&_code]:!p-0 [&_code]:!bg-transparent [&_code]:!border-0"
             dangerouslySetInnerHTML={{
               __html: processHighlightedHtml(html, highlightLines),
             }}

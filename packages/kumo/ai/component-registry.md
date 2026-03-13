@@ -1077,6 +1077,27 @@ Props:
 - `lang`: CodeLang
 
 
+**Examples:**
+
+```tsx
+<CodeBlock
+      lang="tsx"
+      code={`const greeting = "Hello, World!";
+console.log(greeting);`}
+    />
+```
+
+```tsx
+<Code
+      lang="bash"
+      code="export API_KEY={{apiKey}}"
+      values={{
+        apiKey: { value: "sk_live_123", highlight: true },
+      }}
+    />
+```
+
+
 ---
 
 ### Collapsible
@@ -3259,10 +3280,6 @@ Link component
   - `"inline"`: Inline text link that flows with content
   - `"current"`: Link that inherits color from parent text
   - `"plain"`: Link without underline decoration
-
-  **State Classes:**
-  - `"plain"`:
-    - `hover`: `hover:text-primary/70`
 - `to`: string
 - `children`: ReactNode
 - `className`: string
@@ -3281,6 +3298,10 @@ Link component
   Allows you to replace the component’s HTML element with a different tag, or compose it with another component.
 
 Accepts a `ReactElement` or a function that returns the element to render.
+
+**Colors (kumo tokens used):**
+
+`text-kumo-link`
 
 **Sub-Components:**
 
@@ -4815,7 +4836,7 @@ Tab navigation component with segmented or underline style. Built on Base UI Tab
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `border-kumo-tint`, `ring-kumo-fill-hover`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-brand`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-fill-hover`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -4908,8 +4929,10 @@ Tab navigation component with segmented or underline style. Built on Base UI Tab
         },
         {
           value: "tab3",
-          label: "Another Link",
-          render: (props) => <a {...props} href="#tab3" />,
+          label: "Cloudflare",
+          render: (props) => (
+            <a {...props} href="https://cloudflare.com" target="_blank" />
+          ),
         },
       ]}
       selectedValue="tab1"
