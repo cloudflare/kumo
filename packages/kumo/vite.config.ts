@@ -252,7 +252,11 @@ export default defineConfig(({ mode }) => {
           // This avoids nested node_modules/.pnpm/ paths in dist that break Jest
           preserveModules: false,
           // Chunk filenames without double-dashes (fixes Jest resolution issues)
-          chunkFileNames: "chunks/[name]-[hash].js",
+          // Use a function to strip trailing dashes from chunk names
+          chunkFileNames: (chunkInfo) => {
+            const name = chunkInfo.name.replace(/-+$/, "") || "chunk";
+            return `chunks/${name}-[hash].js`;
+          },
           // Hoist "use client" directives to the top of chunks
           hoistTransitiveImports: false,
           // Add "use client" directive to all output chunks

@@ -2,7 +2,33 @@
 
 import { useState, useEffect, useMemo, type ReactNode } from "react";
 import { ShikiContext, type ShikiContextValue } from "./context";
-import type { ShikiProviderProps, BundledLanguage } from "./types";
+import type { ShikiProviderProps, SupportedLanguage } from "./types";
+
+/**
+ * Pre-bundled languages - only these languages are included in the Kumo bundle.
+ * Using fine-grained imports from @shikijs/langs to minimize bundle size.
+ */
+const BUNDLED_LANGS: Record<
+  SupportedLanguage,
+  () => Promise<{ default: unknown }>
+> = {
+  javascript: () => import("@shikijs/langs/javascript"),
+  typescript: () => import("@shikijs/langs/typescript"),
+  jsx: () => import("@shikijs/langs/jsx"),
+  tsx: () => import("@shikijs/langs/tsx"),
+  json: () => import("@shikijs/langs/json"),
+  jsonc: () => import("@shikijs/langs/jsonc"),
+  html: () => import("@shikijs/langs/html"),
+  css: () => import("@shikijs/langs/css"),
+  python: () => import("@shikijs/langs/python"),
+  yaml: () => import("@shikijs/langs/yaml"),
+  markdown: () => import("@shikijs/langs/markdown"),
+  graphql: () => import("@shikijs/langs/graphql"),
+  sql: () => import("@shikijs/langs/sql"),
+  bash: () => import("@shikijs/langs/bash"),
+  shell: () => import("@shikijs/langs/shellscript"),
+  diff: () => import("@shikijs/langs/diff"),
+};
 
 /**
  * Provider component that initializes and manages Shiki highlighting.
@@ -55,8 +81,8 @@ export function ShikiProvider({
 
     async function initializeShiki() {
       try {
-        // Dynamic import — Shiki is only loaded when this effect runs
-        const { createHighlighter } = await import("shiki");
+        // Dynamic import of shiki/core — only loads the core, not all languages
+        const { createHighlighterCore } = await import("shiki/core");
 
         // Load the appropriate engine
         const engineInstance =
@@ -68,9 +94,25 @@ export function ShikiProvider({
                 m.createJavaScriptRegexEngine(),
               );
 
-        const highlighter = await createHighlighter({
-          themes: ["github-light", "vesper"],
-          langs: languages,
+        // Load themes
+        const [githubLight, vesper] = await Promise.all([
+          import("@shikijs/themes/github-light"),
+          import("@shikijs/themes/vesper"),
+        ]);
+
+        // Load only the requested languages from our bundled set
+        const validLanguages = languages.filter(
+          (lang): lang is SupportedLanguage => lang in BUNDLED_LANGS,
+        );
+
+        const langModules = await Promise.all(
+          validLanguages.map((lang) => BUNDLED_LANGS[lang]()),
+        );
+
+        const highlighter = await createHighlighterCore({
+          themes: [githubLight.default, vesper.default],
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          langs: langModules.map((m) => m.default) as any,
           engine: engineInstance,
         });
 
@@ -110,7 +152,7 @@ export function ShikiProvider({
       highlighter: state.highlighter,
       isLoading: state.isLoading,
       error: state.error,
-      languages: languages as BundledLanguage[],
+      languages: languages as SupportedLanguage[],
       labels: mergedLabels,
     }),
     [state.highlighter, state.isLoading, state.error, languages, mergedLabels],

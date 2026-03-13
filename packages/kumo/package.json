@@ -444,6 +444,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
+    "@shikijs/langs": "^4.0.0",
+    "@shikijs/themes": "^4.0.0",
     "clsx": "^2.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",

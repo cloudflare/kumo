@@ -18,9 +18,35 @@
  * ```
  */
 
-import type { Highlighter, BundledLanguage } from "shiki";
-import type { ShikiEngine } from "./types";
+import type { HighlighterCore } from "shiki/core";
+import type { ShikiEngine, SupportedLanguage } from "./types";
 import type { ReactNode } from "react";
+
+/**
+ * Pre-bundled languages - only these languages are included in the Kumo bundle.
+ * Using fine-grained imports from @shikijs/langs to minimize bundle size.
+ */
+const BUNDLED_LANGS: Record<
+  SupportedLanguage,
+  () => Promise<{ default: unknown }>
+> = {
+  javascript: () => import("@shikijs/langs/javascript"),
+  typescript: () => import("@shikijs/langs/typescript"),
+  jsx: () => import("@shikijs/langs/jsx"),
+  tsx: () => import("@shikijs/langs/tsx"),
+  json: () => import("@shikijs/langs/json"),
+  jsonc: () => import("@shikijs/langs/jsonc"),
+  html: () => import("@shikijs/langs/html"),
+  css: () => import("@shikijs/langs/css"),
+  python: () => import("@shikijs/langs/python"),
+  yaml: () => import("@shikijs/langs/yaml"),
+  markdown: () => import("@shikijs/langs/markdown"),
+  graphql: () => import("@shikijs/langs/graphql"),
+  sql: () => import("@shikijs/langs/sql"),
+  bash: () => import("@shikijs/langs/bash"),
+  shell: () => import("@shikijs/langs/shellscript"),
+  diff: () => import("@shikijs/langs/diff"),
+};
 
 export interface HighlightCodeOptions {
   /** Highlighting engine (default: "javascript") */
@@ -31,12 +57,12 @@ export interface CreateHighlighterOptions {
   /** Highlighting engine (default: "javascript") */
   engine?: ShikiEngine;
   /** Languages to support */
-  languages: BundledLanguage[];
+  languages: SupportedLanguage[];
 }
 
 export interface ServerHighlighter {
   /** Highlight code and return HTML string */
-  highlight: (code: string, lang: BundledLanguage) => string;
+  highlight: (code: string, lang: SupportedLanguage) => string;
   /** Dispose the highlighter when done */
   dispose: () => void;
 }
@@ -56,10 +82,10 @@ export interface ServerHighlighter {
  */
 export async function highlightCode(
   code: string,
-  lang: BundledLanguage,
+  lang: SupportedLanguage,
   options: HighlightCodeOptions = {},
 ): Promise<string> {
-  const { createHighlighter } = await import("shiki");
+  const { createHighlighterCore } = await import("shiki/core");
 
   const engine = options.engine ?? "javascript";
   const engineInstance =
@@ -71,9 +97,19 @@ export async function highlightCode(
           m.createJavaScriptRegexEngine(),
         );
 
-  const highlighter = await createHighlighter({
-    themes: ["github-light", "vesper"],
-    langs: [lang],
+  // Load themes
+  const [githubLight, vesper] = await Promise.all([
+    import("@shikijs/themes/github-light"),
+    import("@shikijs/themes/vesper"),
+  ]);
+
+  // Load only the requested language
+  const langModule = await BUNDLED_LANGS[lang]();
+
+  const highlighter = await createHighlighterCore({
+    themes: [githubLight.default, vesper.default],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    langs: [langModule.default] as any,
     engine: engineInstance,
   });
 
@@ -113,7 +149,7 @@ export async function highlightCode(
 export async function createServerHighlighter(
   options: CreateHighlighterOptions,
 ): Promise<ServerHighlighter> {
-  const { createHighlighter } = await import("shiki");
+  const { createHighlighterCore } = await import("shiki/core");
 
   const engine = options.engine ?? "javascript";
   const engineInstance =
@@ -125,14 +161,30 @@ export async function createServerHighlighter(
           m.createJavaScriptRegexEngine(),
         );
 
-  const highlighter: Highlighter = await createHighlighter({
-    themes: ["github-light", "vesper"],
-    langs: options.languages,
+  // Load themes
+  const [githubLight, vesper] = await Promise.all([
+    import("@shikijs/themes/github-light"),
+    import("@shikijs/themes/vesper"),
+  ]);
+
+  // Load only the requested languages from our bundled set
+  const validLanguages = options.languages.filter(
+    (lang): lang is SupportedLanguage => lang in BUNDLED_LANGS,
+  );
+
+  const langModules = await Promise.all(
+    validLanguages.map((lang) => BUNDLED_LANGS[lang]()),
+  );
+
+  const highlighter: HighlighterCore = await createHighlighterCore({
+    themes: [githubLight.default, vesper.default],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    langs: langModules.map((m) => m.default) as any,
     engine: engineInstance,
   });
 
   return {
-    highlight: (code: string, lang: BundledLanguage): string => {
+    highlight: (code: string, lang: SupportedLanguage): string => {
       return highlighter.codeToHtml(code, {
         lang,
         themes: {
