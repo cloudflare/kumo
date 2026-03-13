@@ -405,7 +405,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "prepublish": "pnpm run clean && pnpm run codegen:registry && pnpm run build && pnpm run test:unit",
+    "prepublishOnly": "pnpm run build && pnpm run test:unit",
     "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",
@@ -414,7 +414,7 @@
     "codegen:themes": "tsx scripts/theme-generator/index.ts",
     "migrate:tokens": "tsx scripts/theme-generator/migrate.ts",
     "codegen:primitives": "tsx scripts/generate-primitives.ts",
-    "codegen:registry": "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos && tsx scripts/component-registry/index.ts",
+    "codegen:registry": "tsx scripts/component-registry/index.ts",
     "lint": "pnpm run lint:oxlint && pnpm run lint:eslint",
     "lint:oxlint": "oxlint --config .oxlintrc.json src/** --type-aware",
     "lint:eslint": "eslint src/",
