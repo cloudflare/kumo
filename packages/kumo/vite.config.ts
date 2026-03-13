@@ -251,6 +251,8 @@ export default defineConfig(({ mode }) => {
           // Don't preserve modules - bundle dependencies into flat output
           // This avoids nested node_modules/.pnpm/ paths in dist that break Jest
           preserveModules: false,
+          // Chunk filenames without double-dashes (fixes Jest resolution issues)
+          chunkFileNames: "chunks/[name]-[hash].js",
           // Hoist "use client" directives to the top of chunks
           hoistTransitiveImports: false,
           // Add "use client" directive to all output chunks
