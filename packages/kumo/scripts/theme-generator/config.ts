@@ -53,7 +53,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-500, oklch(55.6% 0 0))",
-          dark: "var(--color-neutral-50, oklch(98.5% 0 0))",
+          dark: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
         },
       },
     },
@@ -119,12 +119,12 @@ export const THEME_CONFIG: ThemeConfig = {
    * CSS variable: --color-{token}
    */
   color: {
-    "kumo-base": {
+    "kumo-surface": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-white, #fff)",
-          dark: "var(--color-black, #000)",
+          light: "var(--color-kumo-neutral-25, oklch(99% 0 0))",
+          dark: "var(--color-kumo-neutral-975, oklch(8.5% 0 0))",
         },
         fedramp: {
           light: "#5b697c",
@@ -132,30 +132,34 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-elevated": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-neutral-25, oklch(0.99 0 0))",
-          dark: "var(--color-neutral-950, oklch(14.5% 0 0))",
-        },
-      },
-    },
     "kumo-recessed": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-250, oklch(0.9 0 0))",
-          dark: "var(--color-neutral-750, oklch(0.31 0 0))",
+          light: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
+          dark: "var(--color-kumo-neutral-925, oklch(18% 0 0))",
         },
       },
     },
-    "kumo-overlay": {
+    "kumo-base": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-50, oklch(98.5% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          light: "var(--color-white, #fff)",
+          dark: "var(--color-kumo-neutral-850, oklch(22.4% 0 0))",
+        },
+        fedramp: {
+          light: "#5b697c",
+          dark: "#5b697c",
+        },
+      },
+    },
+    "kumo-tint": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-75, oklch(96.7% 0 0))",
+          dark: "var(--color-kumo-neutral-800, oklch(26.9% 0 0))",
         },
       },
     },
@@ -163,8 +167,30 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-900, oklch(20.5% 0 0))",
-          dark: "var(--color-neutral-100, oklch(97% 0 0))",
+          light: "var(--color-kumo-neutral-975, oklch(8.5% 0 0))",
+          dark: "var(--color-kumo-neutral-25, oklch(99% 0 0))",
+        },
+      },
+    },
+    /**
+   * TO DEPRECIATE
+   * In an effort to reduce the amount of greyscale tokens used in Kumo & Stratus, these tokens will be replaced and depreciated
+   */
+    "kumo-elevated": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-25, oklch(98.5% 0 0))",
+          dark: "var(--color-neutral-950, oklch(14.5% 0 0))",
+        },
+      },
+    },
+    "kumo-overlay": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
+          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
         },
       },
     },
@@ -174,15 +200,6 @@ export const THEME_CONFIG: ThemeConfig = {
         kumo: {
           light: "var(--color-white, #fff)",
           dark: "var(--color-neutral-900, oklch(21% 0.006 285.885))",
-        },
-      },
-    },
-    "kumo-tint": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-neutral-150, oklch(0.96 0 0))",
-          dark: "var(--color-neutral-850, oklch(0.23 0 0))",
         },
       },
     },
@@ -244,8 +261,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-600, oklch(43.9% 0 0))",
+          light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
+          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
         },
         fedramp: {
           light: "#c8d4e5",
