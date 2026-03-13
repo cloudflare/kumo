@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 1.12.1
+
+### Patch Changes
+
+- eda8362: Fix combobox caret icon visibility by using fill-kumo-subtle instead of fill-kumo-ring
+
 ## 1.12.0
 
 ### Minor Changes
