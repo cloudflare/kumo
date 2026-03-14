@@ -2,7 +2,7 @@
 
 import { useContext, useCallback } from "react";
 import { ShikiContext } from "./context";
-import type { UseShikiHighlighterResult, BundledLanguage } from "./types";
+import type { UseShikiHighlighterResult, SupportedLanguage } from "./types";
 
 /**
  * Hook for accessing Shiki highlighting in custom implementations.
@@ -50,7 +50,7 @@ export function useShikiHighlighter(): UseShikiHighlighterResult {
   const { highlighter, isLoading, error, languages, labels } = context;
 
   const highlight = useCallback(
-    (code: string, lang: BundledLanguage): string | null => {
+    (code: string, lang: SupportedLanguage): string | null => {
       if (!highlighter) {
         return null;
       }

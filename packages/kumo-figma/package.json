@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo-figma",
-  "version": "0.3.12",
+  "version": "0.3.14",
   "private": true,
   "type": "module",
   "description": "Figma plugin for generating Kumo UI Kit components",

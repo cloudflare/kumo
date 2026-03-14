@@ -256,7 +256,10 @@ function TriggerValue({
           iconStyles.iconRight,
         )}
       >
-        <CaretDownIcon size={iconStyles.iconSize} className="fill-kumo-ring" />
+        <CaretDownIcon
+          size={iconStyles.iconSize}
+          className="fill-kumo-subtle"
+        />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
   );
@@ -324,7 +327,7 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
         >
           <CaretDownIcon
             size={iconStyles.iconSize}
-            className="fill-kumo-ring"
+            className="fill-kumo-subtle"
           />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
