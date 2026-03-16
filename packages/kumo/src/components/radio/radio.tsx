@@ -4,12 +4,7 @@ import { Fieldset } from "@base-ui/react/fieldset";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
 import { Radio as BaseRadio } from "@base-ui/react/radio";
 
-/**
- * Radio variant definitions mapping variant names to their Tailwind classes.
- * Note: `appearance.card.classes` is metadata for registry codegen and Figma tooling.
- * The card rendering uses inline classes in RadioItem due to structural differences
- * (label wrapping, has-[] selectors for parent-level checked/disabled state).
- */
+/** Radio variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_RADIO_VARIANTS = {
   variant: {
     default: {
