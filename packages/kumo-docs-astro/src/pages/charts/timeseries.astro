@@ -5,7 +5,7 @@ import ComponentExample from "../../components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
   BarChartDemo,
-  CustomXAxisLabelFormatDemo,
+  CustomAxisLabelFormatDemo,
   GradientLineChartDemo,
   IncompleteDataChartDemo,
   LoadingChartDemo,
@@ -68,12 +68,19 @@ const data = [
   </ComponentSection>
 
   <ComponentSection>
-    <Heading level={3} class="mb-4">Custom X-Axis Label Format</Heading>
+    <Heading level={3} class="mb-4">Custom Axis & Tooltip Formats</Heading>
 
     <p class="my-4">
-      Use the <code>xAxisTickLabelFormat</code> prop to control how x-axis tick labels
-      are rendered. The formatter receives the raw timestamp in milliseconds and
-      returns a display string, overriding ECharts' built-in time formatting.
+      Use <code>xAxisTickFormat</code> and <code>yAxisTickFormat</code> to
+      control how axis tick labels are rendered. The x-axis formatter receives the raw
+      timestamp in milliseconds; the y-axis formatter receives the raw numeric value.
+      Both return a display string.
+    </p>
+
+    <p class="my-4">
+      Use <code>tooltipValueFormat</code> to control how values appear in the
+      hover tooltip. It receives the raw y-value and returns a display string.
+      When omitted, the raw value is shown.
     </p>
 
     <ComponentExample
@@ -84,12 +91,22 @@ const data = [
   isDarkMode={isDarkMode}
   data={data}
   xAxisName="Time (UTC)"
-  yAxisTickLabelFormat={(value) => {
-    return Math.round(value).toString() + " requests";
+  yAxisName="Requests"
+  xAxisTickFormat={(ts) => {
+    const d = new Date(ts);
+    return d.getHours().toString().padStart(2, "0")
+      + ":" + d.getMinutes().toString().padStart(2, "0");
   }}
+  yAxisTickFormat={(value) => {
+    if (value >= 1000) return value / 1000 + "k";
+    return value.toString();
+  }}
+  tooltipValueFormat={(value) =>
+    (value / 1000).toFixed(1) + "k requests"
+  }
 />`}
     >
-      <CustomXAxisLabelFormatDemo client:visible />
+      <CustomAxisLabelFormatDemo client:visible />
     </ComponentExample>
   </ComponentSection>
 

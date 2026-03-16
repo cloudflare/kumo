@@ -1,5 +1,27 @@
 # @cloudflare/kumo
 
+## 1.13.0
+
+### Minor Changes
+
+- 56a8b35: add xAxisTickFormat, yAxisTickFormat, and tooltipValueFormat props to TimeseriesChart; deprecate yAxisTickLabelFormat
+
+  ## Deprecation: yAxisTickLabelFormat is deprecated
+
+  If you were using `yAxisTickLabelFormat` to customize tooltip output, switch to `tooltipValueFormat`.
+
+  **Before:**
+
+  ```tsx
+  <TimeseriesChart yAxisTickLabelFormat={(v) => `${v} req/s`} />
+  ```
+
+  **After:**
+
+  ```tsx
+  <TimeseriesChart tooltipValueFormat={(v) => `${v} req/s`} />
+  ```
+
 ## 1.12.1
 
 ### Patch Changes
