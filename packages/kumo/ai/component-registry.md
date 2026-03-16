@@ -3800,7 +3800,7 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 
   **State Classes:**
   - `"card"`:
-    - `hover`: `hover:bg-kumo-elevated`
+    - `hover`: `hover:bg-kumo-tint`
 - `error`: string
   Error message for the group
 - `description`: ReactNode
@@ -3818,7 +3818,7 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-elevated`, `bg-kumo-recessed`, `border-kumo-danger`, `border-kumo-interact`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-tint`, `border-kumo-danger`, `border-kumo-interact`, `border-kumo-line`, `border-kumo-ring`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 

@@ -23,7 +23,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-recessed",
+        "rounded-lg border border-kumo-ring bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
@@ -236,12 +236,16 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
       return (
         <label
           className={cn(
-            "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-recessed",
+            "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-ring bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
             variant === "error" &&
-              "border-kumo-danger has-[[data-checked]]:border-kumo-danger",
+              "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
             disabled
               ? "cursor-not-allowed opacity-50"
-              : "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50 cursor-pointer",
+              : cn(
+                  "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50 cursor-pointer",
+                  variant !== "error" &&
+                    "hover:not-has-[[data-disabled]]:bg-kumo-tint",
+                ),
             className,
           )}
         >
@@ -261,11 +265,18 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
               "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring",
               variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
               !disabled &&
+                variant !== "error" &&
                 "group-hover:ring-kumo-ring focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+              !disabled &&
+                variant === "error" &&
+                "focus-visible:ring-kumo-danger focus-visible:outline-offset-3",
               "data-[checked]:bg-kumo-contrast",
             )}
           >
-            <BaseRadio.Indicator className="flex items-center justify-center">
+            <BaseRadio.Indicator
+              keepMounted
+              className="flex items-center justify-center"
+            >
               <span className="h-2 w-2 rounded-full bg-kumo-base" />
             </BaseRadio.Indicator>
           </BaseRadio.Root>
@@ -292,11 +303,18 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             "relative flex h-4 w-4 items-center justify-center rounded-full border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
+              variant !== "error" &&
               "group-hover:ring-kumo-ring focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+            !disabled &&
+              variant === "error" &&
+              "focus-visible:ring-kumo-danger focus-visible:outline-offset-3",
             "data-[checked]:bg-kumo-contrast",
           )}
         >
-          <BaseRadio.Indicator className="flex items-center justify-center">
+          <BaseRadio.Indicator
+            keepMounted
+            className="flex items-center justify-center"
+          >
             <span className="h-2 w-2 rounded-full bg-kumo-base" />
           </BaseRadio.Indicator>
         </BaseRadio.Root>
