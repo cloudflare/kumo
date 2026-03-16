@@ -23,7 +23,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-elevated",
+        "rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-recessed",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
@@ -236,7 +236,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
       return (
         <label
           className={cn(
-            "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-elevated",
+            "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-recessed",
             variant === "error" &&
               "border-kumo-danger has-[[data-checked]]:border-kumo-danger",
             disabled

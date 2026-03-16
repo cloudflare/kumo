@@ -3725,7 +3725,12 @@
             "card": "Choice card appearance with border, padding, and highlighted selection state"
           },
           "classes": {
-            "card": "rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-recessed"
+            "card": "rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-recessed"
+          },
+          "stateClasses": {
+            "card": {
+              "hover": "hover:bg-kumo-elevated"
+            }
           },
           "default": "default"
         },
@@ -3783,6 +3788,7 @@
       "colors": [
         "bg-kumo-base",
         "bg-kumo-contrast",
+        "bg-kumo-elevated",
         "bg-kumo-recessed",
         "border-kumo-danger",
         "border-kumo-interact",

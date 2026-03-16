@@ -3797,6 +3797,10 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 - `appearance`: enum [default: default]
   - `"default"`: Standard inline radio item
   - `"card"`: Choice card appearance with border, padding, and highlighted selection state
+
+  **State Classes:**
+  - `"card"`:
+    - `hover`: `hover:bg-kumo-elevated`
 - `error`: string
   Error message for the group
 - `description`: ReactNode
@@ -3814,7 +3818,7 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-recessed`, `border-kumo-danger`, `border-kumo-interact`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-elevated`, `bg-kumo-recessed`, `border-kumo-danger`, `border-kumo-interact`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
