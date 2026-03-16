@@ -1,5 +1,12 @@
 # @cloudflare/kumo
 
+## 1.13.1
+
+### Patch Changes
+
+- c272f6a: Fix combobox caret icon to use text-kumo-subtle with fill-current instead of invalid fill-kumo-subtle token
+- 5e12c15: fix TimeseriesChart brush cursor not activating when loading prop transitions from true to false
+
 ## 1.13.0
 
 ### Minor Changes

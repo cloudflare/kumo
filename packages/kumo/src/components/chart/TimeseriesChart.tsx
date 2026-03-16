@@ -352,7 +352,10 @@ export function TimeseriesChart({
         });
       };
     }
-  }, [chartRef, hasTimeRangeCallback]);
+    // `loading` controls whether <Chart> is mounted. When it flips to false,
+    // chartRef.current becomes available and the brush cursor must be activated.
+    // Without this dep, the effect won't re-run after Chart mounts.
+  }, [chartRef, hasTimeRangeCallback, loading]);
 
   return (
     <div className="relative w-full" style={{ height }}>
