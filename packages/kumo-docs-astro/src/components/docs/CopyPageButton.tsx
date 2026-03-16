@@ -16,8 +16,10 @@ export function CopyPageButton() {
 
   const getMarkdownUrl = () => {
     const url = new URL(window.location.href);
+
     // /components/badge/ -> /components/badge.md
     const path = url.pathname.replace(/\/+$/, "");
+
     return `${url.origin}${path}.md`;
   };
 
@@ -60,13 +62,11 @@ export function CopyPageButton() {
     return `${baseUrl}?q=${prompt}`;
   };
 
-  const handleOpenInClaude = () => {
+  const handleOpenInClaude = () =>
     window.open(getAIPromptUrl("https://claude.ai/new"), "_blank");
-  };
 
-  const handleOpenInChatGPT = () => {
+  const handleOpenInChatGPT = () =>
     window.open(getAIPromptUrl("https://chatgpt.com"), "_blank");
-  };
 
   const ButtonIcon = copied ? CheckIcon : CopySimpleIcon;
 
@@ -98,12 +98,15 @@ export function CopyPageButton() {
         <DropdownMenu>
           <DropdownMenu.Trigger
             render={
-              <button
-                className="cursor-pointer text-kumo-subtle transition-colors hover:text-kumo-strong"
+              <Button
                 aria-label="Page options"
+                className="text-kumo-subtle hover:text-kumo-strong"
+                shape="square"
+                size="lg"
+                variant="ghost"
               >
-                <FileMdIcon size={32} weight="duotone" />
-              </button>
+                <FileMdIcon size={30} weight="duotone" />
+              </Button>
             }
           />
           <DropdownMenu.Content align="end">
