@@ -112,7 +112,7 @@ export interface ChartProps {
    * Additional options passed as the second argument to `chart.setOption()`.
    * Defaults to `{ notMerge: false, lazyUpdate: true }`.
    */
-  setOptionOpts?: SetOptionOpts;
+  optionUpdateBehavior?: SetOptionOpts;
   /** Additional CSS classes applied to the chart container `<div>` */
   className?: string;
   /**
@@ -155,7 +155,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   {
     echarts,
     options,
-    setOptionOpts,
+    optionUpdateBehavior,
     className,
     isDarkMode,
     height = 350,
@@ -212,9 +212,9 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     chart.setOption(options, {
       notMerge: false,
       lazyUpdate: true,
-      ...setOptionOpts,
+      ...optionUpdateBehavior,
     });
-  }, [isDarkMode, options, setOptionOpts]);
+  }, [isDarkMode, optionUpdateBehavior, options]);
 
   // Keep handlersRef in sync so wrapper closures always call the latest handler
   // without needing to re-bind listeners on every render
