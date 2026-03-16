@@ -94,19 +94,18 @@ export function CopyPageButton() {
   return (
     <>
       {/* Mobile: single icon button with all options in dropdown */}
-      <div className="md:hidden size-8" data-copy-ignore>
+      <div className="md:hidden size-7" data-copy-ignore>
         <DropdownMenu>
           <DropdownMenu.Trigger
             render={
               <Button
                 aria-label="Page options"
-                className="text-kumo-subtle hover:text-kumo-strong"
+                className="text-kumo-subtle hover:text-kumo-strong size-7"
                 shape="square"
                 size="lg"
                 variant="ghost"
-              >
-                <FileMdIcon size={30} weight="duotone" />
-              </Button>
+                icon={<FileMdIcon size={28} weight="duotone" />}
+              />
             }
           />
           <DropdownMenu.Content align="end">
@@ -124,12 +123,12 @@ export function CopyPageButton() {
       {/* Desktop: split button pushed to far right */}
       <div className="hidden md:ml-auto md:flex items-center" data-copy-ignore>
         <Button
-          variant="secondary"
-          size="sm"
-          className={cn("rounded-r-none border-r-0")}
+          className="rounded-r-none border-r-0 gap-1.5"
+          icon={<ButtonIcon size={16} />}
           onClick={handleCopyMarkdown}
+          size="sm"
+          variant="secondary"
         >
-          <ButtonIcon size={16} />
           <span>Copy page</span>
         </Button>
         <DropdownMenu>
