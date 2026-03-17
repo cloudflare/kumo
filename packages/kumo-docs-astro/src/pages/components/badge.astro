@@ -10,6 +10,7 @@ import {
   BadgePrimaryDemo,
   BadgeSecondaryDemo,
   BadgeDestructiveDemo,
+  BadgeSuccessDemo,
   BadgeOutlineDemo,
   BadgeBetaDemo,
   BadgeInSentenceDemo,
@@ -27,6 +28,7 @@ import {
       code={`<Badge variant="primary">Primary</Badge>
 <Badge variant="secondary">Secondary</Badge>
 <Badge variant="destructive">Destructive</Badge>
+<Badge variant="success">Success</Badge>
 <Badge variant="outline">Outline</Badge>
 <Badge variant="beta">Beta</Badge>`}
     >
@@ -79,6 +81,13 @@ export default function Example() {
           <h4 class="mb-3 text-base font-medium">Destructive</h4>
           <ComponentExample code={`<Badge variant="destructive">Destructive</Badge>`}>
             <BadgeDestructiveDemo client:visible />
+          </ComponentExample>
+        </div>
+
+        <div>
+          <h4 class="mb-3 text-base font-medium">Success</h4>
+          <ComponentExample code={`<Badge variant="success">Success</Badge>`}>
+            <BadgeSuccessDemo client:visible />
           </ComponentExample>
         </div>
 
