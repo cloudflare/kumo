@@ -33,6 +33,11 @@
     var(--color-neutral-600, oklch(70.8% 0 0))
   );
 
+  --text-color-kumo-placeholder: light-dark(
+    var(--color-neutral-400, oklch(70.8% 0 0)),
+    var(--color-neutral-500, oklch(55.6% 0 0))
+  );
+
   --text-color-kumo-brand: light-dark(
     #f6821f,
     #f6821f
@@ -207,6 +212,7 @@
     --text-color-kumo-strong: var(--color-neutral-600, oklch(43.9% 0 0));
     --text-color-kumo-subtle: var(--color-neutral-500, oklch(55.6% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-400, oklch(70.8% 0 0));
+    --text-color-kumo-placeholder: var(--color-neutral-400, oklch(70.8% 0 0));
     --text-color-kumo-brand: #f6821f;
     --text-color-kumo-link: var(--color-blue-800, oklch(42.4% 0.199 265.638));
     --text-color-kumo-success: var(--color-green-500, oklch(72.3% 0.219 149.579));
@@ -245,6 +251,7 @@
     --text-color-kumo-strong: var(--color-neutral-400, oklch(70.8% 0 0));
     --text-color-kumo-subtle: var(--color-kumo-neutral-50, oklch(97.5% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-600, oklch(70.8% 0 0));
+    --text-color-kumo-placeholder: var(--color-neutral-500, oklch(55.6% 0 0));
     --text-color-kumo-brand: #f6821f;
     --text-color-kumo-link: var(--color-blue-400, oklch(70.7% 0.165 254.624));
     --text-color-kumo-success: var(--color-green-400, oklch(79.2% 0.209 151.711));

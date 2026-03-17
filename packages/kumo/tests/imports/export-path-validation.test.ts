@@ -200,14 +200,19 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       expect(existsSync(nodeModulesDir)).toBe(false);
 
       // Verify chunk files exist instead (bundled dependencies)
-      const distFiles = require("fs").readdirSync(
-        join(__dirname, "../../dist"),
-      );
-      const hasChunkFiles = distFiles.some(
-        (file: string) =>
-          file.endsWith(".js") &&
-          (file.includes(".parts-") || file.startsWith("vendor-")),
-      );
+      // Chunks are in dist/chunks/ subdirectory
+      const chunksDir = join(__dirname, "../../dist/chunks");
+      const hasChunksDir = existsSync(chunksDir);
+      let hasChunkFiles = false;
+
+      if (hasChunksDir) {
+        const chunkFiles = require("fs").readdirSync(chunksDir);
+        hasChunkFiles = chunkFiles.some(
+          (file: string) =>
+            file.endsWith(".js") &&
+            (file.includes("-") || file.startsWith("vendor-")),
+        );
+      }
 
       if (!hasChunkFiles) {
         console.error(

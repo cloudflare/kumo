@@ -1,0 +1,3 @@
+# Ensure .md files are served with UTF-8 charset
+/*.md
+  Content-Type: text/markdown; charset=utf-8

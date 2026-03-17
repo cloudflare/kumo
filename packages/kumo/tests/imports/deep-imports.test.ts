@@ -8,13 +8,11 @@ describe("Deep Import Patterns", () => {
   describe("Components with configured exports", () => {
     componentsWithExports.forEach((componentName: string) => {
       it(`should import from @cloudflare/kumo/components/${componentName}`, async () => {
-        expect(async () => {
-          const module = await import(
-            `../../src/components/${componentName}/index.ts`
-          );
-          expect(module).toBeDefined();
-          expect(Object.keys(module).length).toBeGreaterThan(0);
-        }).not.toThrow();
+        const module = await import(
+          `../../src/components/${componentName}/index.ts`
+        );
+        expect(module).toBeDefined();
+        expect(Object.keys(module).length).toBeGreaterThan(0);
       });
     });
   });
@@ -43,9 +41,10 @@ describe("Deep Import Patterns", () => {
   describe("All components should have index.ts", () => {
     allComponents.forEach((componentName: string) => {
       it(`${componentName} should have an index.ts file`, async () => {
-        expect(async () => {
-          await import(`../../src/components/${componentName}/index.ts`);
-        }).not.toThrow();
+        const module = await import(
+          `../../src/components/${componentName}/index.ts`
+        );
+        expect(module).toBeDefined();
       });
     });
   });

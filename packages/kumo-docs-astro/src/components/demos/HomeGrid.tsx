@@ -105,6 +105,8 @@ export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
+  const [menuBarActive, setMenuBarActive] = useState<number | undefined>(0);
+  const [paginationPage, setPaginationPage] = useState(1);
   const [value, setValue] = useState<{ id: string; value: string } | null>(
     null,
   );
@@ -398,7 +400,12 @@ export function HomeGrid() {
       name: "Pagination",
       id: "pagination",
       Component: (
-        <Pagination page={1} perPage={10} totalCount={100} setPage={() => {}} />
+        <Pagination
+          page={paginationPage}
+          perPage={10}
+          totalCount={100}
+          setPage={setPaginationPage}
+        />
       ),
     },
     {
@@ -420,10 +427,20 @@ export function HomeGrid() {
       id: "menubar",
       Component: (
         <MenuBar
-          isActive={0}
+          isActive={menuBarActive}
           options={[
-            { icon: <TextBolderIcon />, onClick: () => {}, tooltip: "Bold" },
-            { icon: <TextItalicIcon />, onClick: () => {}, tooltip: "Italic" },
+            {
+              icon: <TextBolderIcon />,
+              onClick: () =>
+                setMenuBarActive(menuBarActive === 0 ? undefined : 0),
+              tooltip: "Bold",
+            },
+            {
+              icon: <TextItalicIcon />,
+              onClick: () =>
+                setMenuBarActive(menuBarActive === 1 ? undefined : 1),
+              tooltip: "Italic",
+            },
           ]}
         />
       ),

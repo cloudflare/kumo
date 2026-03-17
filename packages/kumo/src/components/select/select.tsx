@@ -281,11 +281,14 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         {loading ? (
           <SkeletonLine className="w-32" />
         ) : (
-          <SelectBase.Value placeholder={placeholder}>
+          <SelectBase.Value
+            placeholder={placeholder}
+            className="min-w-0 truncate"
+          >
             {renderValue}
           </SelectBase.Value>
         )}
-        <SelectBase.Icon className="flex items-center">
+        <SelectBase.Icon className="flex shrink-0 items-center">
           <CaretUpDownIcon />
         </SelectBase.Icon>
       </SelectBase.Trigger>

@@ -1,5 +1,5 @@
 import type * as echarts from "echarts/core";
-import type { EChartsOption } from "echarts";
+import type { EChartsOption, SetOptionOpts } from "echarts";
 import { forwardRef, useEffect, useRef } from "react";
 import { cn } from "../../utils";
 import { CHART_DARK_COLORS, CHART_LIGHT_COLORS } from "./Color";
@@ -106,8 +106,13 @@ export interface ChartProps {
    * ECharts modules are bundled (tree-shaking).
    */
   echarts: typeof echarts;
-  /** ECharts option object — passed through to `chart.setOption()` with `notMerge: true` */
+  /** ECharts option object — passed through to `chart.setOption()` */
   options: EChartsOption;
+  /**
+   * Additional options passed as the second argument to `chart.setOption()`.
+   * Defaults to `{ notMerge: false, lazyUpdate: true }`.
+   */
+  optionUpdateBehavior?: SetOptionOpts;
   /** Additional CSS classes applied to the chart container `<div>` */
   className?: string;
   /**
@@ -150,6 +155,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   {
     echarts,
     options,
+    optionUpdateBehavior,
     className,
     isDarkMode,
     height = 350,
@@ -203,8 +209,12 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const chart = chartRef.current;
     if (!chart) return;
 
-    chart.setOption(options, { notMerge: true, lazyUpdate: true });
-  }, [isDarkMode, options]);
+    chart.setOption(options, {
+      notMerge: false,
+      lazyUpdate: true,
+      ...optionUpdateBehavior,
+    });
+  }, [isDarkMode, optionUpdateBehavior, options]);
 
   // Keep handlersRef in sync so wrapper closures always call the latest handler
   // without needing to re-bind listeners on every render

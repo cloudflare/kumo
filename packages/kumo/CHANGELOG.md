@@ -1,5 +1,69 @@
 # @cloudflare/kumo
 
+## 1.13.1
+
+### Patch Changes
+
+- c272f6a: Fix combobox caret icon to use text-kumo-subtle with fill-current instead of invalid fill-kumo-subtle token
+- 5e12c15: fix TimeseriesChart brush cursor not activating when loading prop transitions from true to false
+
+## 1.13.0
+
+### Minor Changes
+
+- 56a8b35: add xAxisTickFormat, yAxisTickFormat, and tooltipValueFormat props to TimeseriesChart; deprecate yAxisTickLabelFormat
+
+  ## Deprecation: yAxisTickLabelFormat is deprecated
+
+  If you were using `yAxisTickLabelFormat` to customize tooltip output, switch to `tooltipValueFormat`.
+
+  **Before:**
+
+  ```tsx
+  <TimeseriesChart yAxisTickLabelFormat={(v) => `${v} req/s`} />
+  ```
+
+  **After:**
+
+  ```tsx
+  <TimeseriesChart tooltipValueFormat={(v) => `${v} req/s`} />
+  ```
+
+## 1.12.1
+
+### Patch Changes
+
+- eda8362: Fix combobox caret icon visibility by using fill-kumo-subtle instead of fill-kumo-ring
+
+## 1.12.0
+
+### Minor Changes
+
+- 4d6de27: reorganize greyscale tokens and update color preferences
+
+### Patch Changes
+
+- 2ff49b7: updated button styles for outline and secondary
+- 59f7935: Fix Jest module resolution failures and reduce Shiki bundle size
+
+  **Jest Fix:**
+  - Add `chunkFileNames` config to prevent double-dash filenames (e.g., `combobox--ec3iibR.js`) that Jest cannot resolve
+  - Move chunks to `dist/chunks/` subdirectory for cleaner structure
+
+  **Bundle Size Reduction:**
+  - Switch from full Shiki bundle to fine-grained imports via `shiki/core`
+  - Reduce from ~300 language/theme chunks to ~16 bundled languages
+  - Total JS files reduced from 358 to ~163 (54% reduction)
+
+  **Supported Languages:**
+  `javascript`, `typescript`, `jsx`, `tsx`, `json`, `jsonc`, `html`, `css`, `python`, `yaml`, `markdown`, `graphql`, `sql`, `bash`, `shell`, `diff`
+
+  **Breaking Change:**
+  - `BundledLanguage` type is now deprecated, use `SupportedLanguage` instead
+  - Only the languages listed above are bundled; other Shiki languages are no longer available out of the box
+
+- 9eaf584: Fix npm publish failure by removing cross-package dependency from prepublish hook
+
 ## 1.11.0
 
 ### Minor Changes

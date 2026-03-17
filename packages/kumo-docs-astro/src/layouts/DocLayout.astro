@@ -1,8 +1,9 @@
 ---
 import MainLayout from "./MainLayout.astro";
 import { StickyDocHeader } from "../components/docs/StickyDocHeader";
+import { CopyPageButton } from "../components/docs/CopyPageButton";
 import { BaseUIIcon } from "../components/docs/icons/BaseUIIcon";
-import { GithubLogo } from "@phosphor-icons/react";
+import { GithubLogoIcon } from "@phosphor-icons/react";
 
 interface Props {
   title: string;
@@ -12,26 +13,29 @@ interface Props {
   sourceFile?: string;
 }
 
-const { title, description, baseUIComponent, sourceFile } =
-  Astro.props;
+const { title, description, baseUIComponent, sourceFile } = Astro.props;
 
 const baseUIUrl = baseUIComponent
   ? `https://base-ui.com/react/components/${baseUIComponent}`
   : null;
 
 // Extract the component name from the path (e.g., "components/button" -> "button")
-// and construct the direct file URL (e.g., "components/button/button.tsx")
+// and construct the direct file URL (e.g., "components/button/button.tsx").
+// If sourceFile already has a file extension, use it as-is.
 const githubSourceUrl = sourceFile
   ? (() => {
+      const base = `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/`;
+      if (/\.\w+$/.test(sourceFile)) {
+        return `${base}${sourceFile}`;
+      }
       const componentName = sourceFile.split("/").pop();
-      return `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/${sourceFile}/${componentName}.tsx`;
+      return `${base}${sourceFile}/${componentName}.tsx`;
     })()
   : null;
 ---
 
 <MainLayout title={`${title} - Kumo`} description={description}>
   <div class="flex flex-col">
-    
     <StickyDocHeader
       title={title}
       githubSourceUrl={githubSourceUrl}
@@ -40,14 +44,13 @@ const githubSourceUrl = sourceFile
     />
 
     <!-- Page Header -->
-    <div
-      id="page-header"
-      class="border-b border-kumo-line md:pr-12"
-    >
-      <div
-        class="mx-auto md:border-r md:border-kumo-line"
-      >
+    <div id="page-header" class="border-b border-kumo-line md:pr-12">
+      <div class="mx-auto md:border-r md:border-kumo-line">
         <div class="mx-auto max-w-5xl px-8 py-12">
+          <!-- Mobile: Copy page button above title -->
+          <div class="mb-3 md:hidden">
+            <CopyPageButton align="center" client:idle />
+          </div>
           <div class="mb-3 flex items-center gap-3">
             <h1 class="text-4xl font-bold text-kumo-default">{title}</h1>
             {
@@ -60,7 +63,7 @@ const githubSourceUrl = sourceFile
                   title="View source on GitHub"
                   aria-label="View source on GitHub"
                 >
-                  <GithubLogo size={28} weight="fill" />
+                  <GithubLogoIcon size={28} weight="fill" />
                 </a>
               )
             }
@@ -78,6 +81,10 @@ const githubSourceUrl = sourceFile
                 </a>
               )
             }
+            <!-- Desktop: Copy page button on far right -->
+            <div class="hidden md:block md:ml-auto">
+              <CopyPageButton client:idle />
+            </div>
           </div>
           <p class="text-lg text-kumo-strong">
             {description}
@@ -88,9 +95,7 @@ const githubSourceUrl = sourceFile
 
     <!-- Content -->
     <main class="flex grow flex-col md:pr-12">
-      <div
-        class="mx-auto w-full grow md:border-r md:border-kumo-line"
-      >
+      <div class="mx-auto w-full grow md:border-r md:border-kumo-line">
         <div class="mx-auto max-w-5xl px-8 py-12">
           <div class="max-w-none">
             <slot />

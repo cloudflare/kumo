@@ -15,6 +15,8 @@ import {
   SelectLoadingDemo,
   SelectLoadingDataDemo,
   SelectMultipleDemo,
+  SelectMultipleOverflowDemo,
+  SelectMultipleWithIndicatorDemo,
   SelectComplexDemo,
 } from "../../components/demos/SelectDemo";
 ---
@@ -369,6 +371,100 @@ function App() {
 }`}
     >
       <SelectMultipleDemo client:load />
+    </ComponentExample>
+
+    <p class="my-4 text-kumo-strong">
+      Long option names are automatically truncated to prevent the chevron from being pushed outside the select.
+      For a better user experience, consider using <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to
+      display a custom summary like a count badge (see example below) instead of relying on truncation:
+    </p>
+
+    <ComponentExample
+      code={`function App() {
+  const [value, setValue] = useState<string[]>([
+    "European Union Privacy Regulation",
+    "California Consumer Protection Act",
+  ]);
+
+  return (
+    <Select
+      label="Compliance Frameworks"
+      className="w-[280px]"
+      multiple
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      <Select.Option value="European Union Privacy Regulation">
+        European Union Privacy Regulation
+      </Select.Option>
+      <Select.Option value="California Consumer Protection Act">
+        California Consumer Protection Act
+      </Select.Option>
+      <Select.Option value="Health Insurance Portability Act">
+        Health Insurance Portability Act
+      </Select.Option>
+      <Select.Option value="Payment Card Industry Standard">
+        Payment Card Industry Standard
+      </Select.Option>
+    </Select>
+  );
+}`}
+    >
+      <SelectMultipleOverflowDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Multiple with Custom Indicator -->
+  <ComponentSection>
+    <Heading level={3}>Multiple with Custom Indicator</Heading>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-kumo-strong">
+        Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to create
+        a custom display for multi-select. This example shows a static label with a badge
+        indicating the selection count—useful when listing all selected items would overflow.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select, Badge } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState<string[]>(["bug", "feature"]);
+
+  const allOptions = [
+    { value: "bug", label: "Bug" },
+    { value: "feature", label: "Feature Request" },
+    { value: "docs", label: "Documentation" },
+    { value: "performance", label: "Performance Issue" },
+    { value: "security", label: "Security Vulnerability" },
+  ];
+
+  return (
+    <Select
+      label="Issue Types"
+      className="w-[220px]"
+      multiple
+      renderValue={(selected) => (
+        <span className="flex items-center gap-2">
+          <span>Issue Types</span>
+          {selected.length > 0 && (
+            <Badge variant="secondary">{selected.length}</Badge>
+          )}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      {allOptions.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}`}
+    >
+      <SelectMultipleWithIndicatorDemo client:load />
     </ComponentExample>
   </ComponentSection>
 
