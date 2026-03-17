@@ -1938,7 +1938,13 @@
           "description": "Additional CSS classes merged via `cn()`."
         }
       },
-      "examples": [],
+      "examples": [
+        "<CodeBlock\n      lang=\"tsx\"\n      code={`const greeting = \"Hello, World!\";\nconsole.log(greeting);`}\n    />",
+        "<CodeBlock\n      lang=\"tsx\"\n      code={`interface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\nconst user: User = {\n  id: \"1\",\n  name: \"John Doe\",\n  email: \"john@example.com\"\n};`}\n    />",
+        "<CodeBlock\n      lang=\"bash\"\n      code={`npm install @cloudflare/kumo\npnpm add @cloudflare/kumo`}\n    />",
+        "<CodeBlock\n      lang=\"jsonc\"\n      code={`{\n  \"name\": \"kumo\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"react\": \"^19.0.0\"\n  }\n}`}\n    />",
+        "<Code\n      lang=\"bash\"\n      code=\"export API_KEY={{apiKey}}\"\n      values={{\n        apiKey: { value: \"sk_live_123\", highlight: true },\n      }}\n    />"
+      ],
       "colors": [
         "bg-kumo-base",
         "border-kumo-fill",
@@ -2128,7 +2134,6 @@
         "bg-kumo-fill-hover",
         "bg-kumo-overlay",
         "border-kumo-line",
-        "fill-kumo-subtle",
         "ring-kumo-line",
         "text-kumo-default",
         "text-kumo-strong",
@@ -2260,6 +2265,7 @@
         "bg-kumo-warning",
         "ring-kumo-line",
         "text-kumo-default",
+        "text-kumo-placeholder",
         "text-kumo-strong",
         "text-kumo-subtle"
       ]
@@ -3031,6 +3037,7 @@
         "ring-kumo-line",
         "ring-kumo-ring",
         "text-kumo-default",
+        "text-kumo-placeholder",
         "text-kumo-subtle"
       ],
       "styling": {
@@ -3455,7 +3462,7 @@
         "<Meter label=\"Progress\" value={40} showValue={false} />",
         "<Meter label=\"Quota reached\" value={100} />",
         "<Meter label=\"Memory usage\" value={15} />",
-        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-kumo-success via-kumo-success to-kumo-success\"\n    />"
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
       ],
       "colors": [
         "bg-kumo-fill",
@@ -4078,6 +4085,7 @@
         "bg-kumo-control",
         "outline-kumo-ring",
         "text-kumo-default",
+        "text-kumo-placeholder",
         "text-kumo-subtle"
       ]
     },

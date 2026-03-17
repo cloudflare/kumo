@@ -1077,6 +1077,27 @@ Props:
 - `lang`: CodeLang
 
 
+**Examples:**
+
+```tsx
+<CodeBlock
+      lang="tsx"
+      code={`const greeting = "Hello, World!";
+console.log(greeting);`}
+    />
+```
+
+```tsx
+<Code
+      lang="bash"
+      code="export API_KEY={{apiKey}}"
+      values={{
+        apiKey: { value: "sk_live_123", highlight: true },
+      }}
+    />
+```
+
+
 ---
 
 ### Collapsible
@@ -1188,7 +1209,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `fill-kumo-subtle`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -1528,7 +1549,7 @@ CommandPalette — accessible command palette / spotlight search overlay.  Compo
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-overlay`, `bg-kumo-warning`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-overlay`, `bg-kumo-warning`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-placeholder`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -2883,7 +2904,7 @@ Input component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-control`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-placeholder`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -3403,7 +3424,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
+      indicatorClassName="from-green-500 via-green-500 to-green-500"
     />
 ```
 
@@ -4264,7 +4285,7 @@ Password/secret input that masks its value by default and reveals on click. Incl
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `text-kumo-default`, `text-kumo-placeholder`, `text-kumo-subtle`
 
 **Examples:**
 

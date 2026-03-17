@@ -66,6 +66,15 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-placeholder": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-neutral-400, oklch(70.8% 0 0))",
+          dark: "var(--color-neutral-500, oklch(55.6% 0 0))",
+        },
+      },
+    },
     "kumo-brand": {
       newName: "",
       theme: {
@@ -173,9 +182,9 @@ export const THEME_CONFIG: ThemeConfig = {
       },
     },
     /**
-   * TO DEPRECIATE
-   * In an effort to reduce the amount of greyscale tokens used in Kumo & Stratus, these tokens will be replaced and depreciated
-   */
+     * TO DEPRECIATE
+     * In an effort to reduce the amount of greyscale tokens used in Kumo & Stratus, these tokens will be replaced and depreciated
+     */
     "kumo-elevated": {
       newName: "",
       theme: {
