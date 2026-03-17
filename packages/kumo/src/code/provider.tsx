@@ -111,7 +111,7 @@ export function ShikiProvider({
 
         const highlighter = await createHighlighterCore({
           themes: [githubLight.default, vesper.default],
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      
           langs: langModules.map((m) => m.default) as any,
           engine: engineInstance,
         });

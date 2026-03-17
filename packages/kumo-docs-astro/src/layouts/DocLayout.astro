@@ -20,11 +20,16 @@ const baseUIUrl = baseUIComponent
   : null;
 
 // Extract the component name from the path (e.g., "components/button" -> "button")
-// and construct the direct file URL (e.g., "components/button/button.tsx")
+// and construct the direct file URL (e.g., "components/button/button.tsx").
+// If sourceFile already has a file extension, use it as-is.
 const githubSourceUrl = sourceFile
   ? (() => {
+      const base = `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/`;
+      if (/\.\w+$/.test(sourceFile)) {
+        return `${base}${sourceFile}`;
+      }
       const componentName = sourceFile.split("/").pop();
-      return `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/${sourceFile}/${componentName}.tsx`;
+      return `${base}${sourceFile}/${componentName}.tsx`;
     })()
   : null;
 ---

@@ -322,7 +322,7 @@
             "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
             "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
             "secondary-destructive": "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
-            "outline": "text-kumo-default ring-2 ring-kumo-ring"
+            "outline": "bg-transparent text-kumo-default ring-2 ring-kumo-ring"
           },
           "stateClasses": {
             "primary": {
@@ -1938,13 +1938,7 @@
           "description": "Additional CSS classes merged via `cn()`."
         }
       },
-      "examples": [
-        "<CodeBlock\n      lang=\"tsx\"\n      code={`const greeting = \"Hello, World!\";\nconsole.log(greeting);`}\n    />",
-        "<CodeBlock\n      lang=\"tsx\"\n      code={`interface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\nconst user: User = {\n  id: \"1\",\n  name: \"John Doe\",\n  email: \"john@example.com\"\n};`}\n    />",
-        "<CodeBlock\n      lang=\"bash\"\n      code={`npm install @cloudflare/kumo\npnpm add @cloudflare/kumo`}\n    />",
-        "<CodeBlock\n      lang=\"jsonc\"\n      code={`{\n  \"name\": \"kumo\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"react\": \"^19.0.0\"\n  }\n}`}\n    />",
-        "<Code\n      lang=\"bash\"\n      code=\"export API_KEY={{apiKey}}\"\n      values={{\n        apiKey: { value: \"sk_live_123\", highlight: true },\n      }}\n    />"
-      ],
+      "examples": [],
       "colors": [
         "bg-kumo-base",
         "border-kumo-fill",
@@ -2134,7 +2128,7 @@
         "bg-kumo-fill-hover",
         "bg-kumo-overlay",
         "border-kumo-line",
-        "fill-kumo-ring",
+        "fill-kumo-subtle",
         "ring-kumo-line",
         "text-kumo-default",
         "text-kumo-strong",
@@ -3817,6 +3811,28 @@
             "horizontal"
           ]
         },
+        "appearance": {
+          "type": "enum",
+          "optional": true,
+          "description": "Visual appearance applied to all Radio.Item children.\n- `\"default\"` — Standard inline radio items\n- `\"card\"` — Choice card with border, padding, and highlighted selection state\n\nIndividual items can override this with their own `appearance` prop.",
+          "values": [
+            "default",
+            "card"
+          ],
+          "descriptions": {
+            "default": "Standard inline radio item",
+            "card": "Choice card appearance with border, padding, and highlighted selection state"
+          },
+          "classes": {
+            "card": "rounded-lg border border-kumo-ring bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint"
+          },
+          "stateClasses": {
+            "card": {
+              "hover": "hover:bg-kumo-tint"
+            }
+          },
+          "default": "default"
+        },
         "error": {
           "type": "string",
           "optional": true,
@@ -3840,7 +3856,7 @@
         "controlPosition": {
           "type": "enum",
           "optional": true,
-          "description": "Position of radio control relative to label: \"start\" (default) puts radio before label, \"end\" puts label before radio",
+          "description": "Position of radio control relative to label: \"start\" (default) puts radio before label, \"end\" puts label before radio. Note: In card appearance, the control is always positioned at the end.",
           "values": [
             "start",
             "end"
@@ -3862,14 +3878,20 @@
         "<Radio.Group legend=\"Account type\" value={value} onValueChange={setValue}>\n      <Radio.Item label=\"Personal\" value=\"personal\" />\n      <Radio.Item label=\"Business\" value=\"business\" />\n      <Radio.Item label=\"Enterprise\" value=\"enterprise\" />\n    </Radio.Group>",
         "<Radio.Group\n      legend=\"Size\"\n      orientation=\"horizontal\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Small\" value=\"sm\" />\n      <Radio.Item label=\"Medium\" value=\"md\" />\n      <Radio.Item label=\"Large\" value=\"lg\" />\n    </Radio.Group>",
         "<Radio.Group\n      legend=\"Shipping method\"\n      description=\"Choose how you'd like to receive your order\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Standard (5-7 days)\" value=\"standard\" />\n      <Radio.Item label=\"Express (2-3 days)\" value=\"express\" />\n      <Radio.Item label=\"Overnight\" value=\"overnight\" />\n    </Radio.Group>",
-        "<Radio.Group\n      legend=\"Payment method\"\n      error=\"Please select a payment method to continue\"\n    >\n      <Radio.Item label=\"Credit Card\" value=\"card\" variant=\"error\" />\n      <Radio.Item label=\"PayPal\" value=\"paypal\" variant=\"error\" />\n      <Radio.Item label=\"Bank Transfer\" value=\"bank\" variant=\"error\" />\n    </Radio.Group>",
-        "<div className=\"flex flex-col gap-6\">\n      <Radio.Group legend=\"Disabled group\" disabled defaultValue=\"a\">\n        <Radio.Item label=\"Option A\" value=\"a\" />\n        <Radio.Item label=\"Option B\" value=\"b\" />\n      </Radio.Group>\n      <Radio.Group legend=\"Individual disabled\" defaultValue=\"available\">\n        <Radio.Item label=\"Available\" value=\"available\" />\n        <Radio.Item label=\"Unavailable\" value=\"unavailable\" disabled />\n      </Radio.Group>\n    </div>",
-        "<Radio.Group legend=\"Preferences\" controlPosition=\"end\" defaultValue=\"a\">\n      <Radio.Item label=\"Label before radio\" value=\"a\" />\n      <Radio.Item label=\"Another option\" value=\"b\" />\n    </Radio.Group>"
+        "<div className=\"grid grid-cols-2 gap-6\">\n      <Radio.Group\n        legend=\"Payment method\"\n        error=\"Please select a payment method to continue\"\n      >\n        <Radio.Item label=\"Credit Card\" value=\"card\" variant=\"error\" />\n        <Radio.Item label=\"PayPal\" value=\"paypal\" variant=\"error\" />\n      </Radio.Group>\n      <Radio.Group\n        legend=\"Payment method\"\n        appearance=\"card\"\n        error=\"Please select a payment method to continue\"\n      >\n        <Radio.Item\n          label=\"Credit Card\"\n          description=\"Pay with Visa, Mastercard, American Express, or Elo.\"\n          value=\"card\"\n          variant=\"error\"\n        />\n        <Radio.Item\n          label=\"PayPal\"\n          description=\"Pay with your PayPal account.\"\n          value=\"paypal\"\n          variant=\"error\"\n        />\n      </Radio.Group>\n    </div>",
+        "<div className=\"grid grid-cols-2 gap-6\">\n      <Radio.Group legend=\"Disabled group\" disabled defaultValue=\"a\">\n        <Radio.Item label=\"Option A\" value=\"a\" />\n        <Radio.Item label=\"Option B\" value=\"b\" />\n      </Radio.Group>\n      <Radio.Group legend=\"Individual disabled\" defaultValue=\"available\">\n        <Radio.Item label=\"Available\" value=\"available\" />\n        <Radio.Item label=\"Unavailable\" value=\"unavailable\" disabled />\n      </Radio.Group>\n      <Radio.Group\n        legend=\"Disabled card group\"\n        appearance=\"card\"\n        disabled\n        defaultValue=\"a\"\n      >\n        <Radio.Item\n          label=\"Option A\"\n          description=\"This option is disabled.\"\n          value=\"a\"\n        />\n        <Radio.Item\n          label=\"Option B\"\n          description=\"This option is disabled.\"\n          value=\"b\"\n        />\n      </Radio.Group>\n      <Radio.Group\n        legend=\"Individual disabled card\"\n        appearance=\"card\"\n        defaultValue=\"available\"\n      >\n        <Radio.Item\n          label=\"Available\"\n          description=\"This option can be selected.\"\n          value=\"available\"\n        />\n        <Radio.Item\n          label=\"Unavailable\"\n          description=\"This option is not available.\"\n          value=\"unavailable\"\n          disabled\n        />\n      </Radio.Group>\n    </div>",
+        "<Radio.Group legend=\"Preferences\" controlPosition=\"end\" defaultValue=\"a\">\n      <Radio.Item label=\"Label before radio\" value=\"a\" />\n      <Radio.Item label=\"Another option\" value=\"b\" />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Choose a plan\"\n      appearance=\"card\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item\n        label=\"Free\"\n        description=\"For personal or hobby projects that aren't business-critical.\"\n        value=\"free\"\n      />\n      <Radio.Item\n        label=\"Pro\"\n        description=\"For professional websites that aren't business-critical.\"\n        value=\"pro\"\n      />\n      <Radio.Item\n        label=\"Business\"\n        description=\"For small businesses operating online.\"\n        value=\"business\"\n      />\n      <Radio.Item\n        label=\"Contract\"\n        description=\"For mission-critical applications that are core to your business.\"\n        value=\"contract\"\n      />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Choose a plan\"\n      appearance=\"card\"\n      orientation=\"horizontal\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item\n        label=\"Free\"\n        description=\"For personal or hobby projects that aren't business-critical.\"\n        value=\"free\"\n      />\n      <Radio.Item\n        label=\"Pro\"\n        description=\"For professional websites that aren't business-critical.\"\n        value=\"pro\"\n      />\n      <Radio.Item\n        label=\"Business\"\n        description=\"For small businesses operating online.\"\n        value=\"business\"\n      />\n      <Radio.Item\n        label=\"Contract\"\n        description=\"For mission-critical applications that are core to your business.\"\n        value=\"contract\"\n      />\n    </Radio.Group>"
       ],
       "colors": [
         "bg-kumo-base",
         "bg-kumo-contrast",
+        "bg-kumo-tint",
+        "border-kumo-danger",
+        "border-kumo-interact",
         "border-kumo-line",
+        "border-kumo-ring",
         "ring-kumo-danger",
         "ring-kumo-line",
         "ring-kumo-ring",
@@ -4807,7 +4829,8 @@
       "examples": [
         "<TooltipProvider>\n      <Tooltip content=\"Add new item\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add new item\" />\n      </Tooltip>\n    </TooltipProvider>",
         "<TooltipProvider>\n      <Tooltip content=\"Add\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n      </Tooltip>\n    </TooltipProvider>",
-        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button\n            shape=\"square\"\n            icon={TranslateIcon}\n            aria-label=\"Change language\"\n          />\n        </Tooltip>\n      </div>\n    </TooltipProvider>"
+        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button\n            shape=\"square\"\n            icon={TranslateIcon}\n            aria-label=\"Change language\"\n          />\n        </Tooltip>\n      </div>\n    </TooltipProvider>",
+        "<TooltipProvider>\n      <Tooltip\n        content=\"Click to learn more\"\n        className=\"inline-flex items-center gap-1.5 rounded-full bg-kumo-brand px-3 py-1.5 text-sm font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95\"\n      >\n        <Info className=\"size-4\" />\n        <span>Help</span>\n      </Tooltip>\n    </TooltipProvider>"
       ],
       "colors": [
         "bg-kumo-base",

@@ -8,6 +8,7 @@ export {
   type RadioItemProps,
   type RadioControlPosition,
   type KumoRadioVariant,
+  type KumoRadioAppearance,
   type KumoRadioVariantsProps,
   type RadioVariant,
 } from "./radio";

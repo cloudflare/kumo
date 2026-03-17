@@ -31,20 +31,33 @@ export interface TimeseriesChartProps {
   /** Number of ticks to display on the x-axis */
   xAxisTickCount?: number;
   /**
+   * Custom formatter for x-axis tick labels.
+   * Receives the raw timestamp in milliseconds and returns a display string,
+   * overriding ECharts' built-in time formatting.
+   */
+  xAxisTickFormat?: (value: number) => string;
+  /**
    * Custom formatter for y-axis tick labels.
    * Receives the raw value and returns a display string.
    * When omitted, ECharts' built-in formatter is used.
-   *
-   * @example
-   * ```ts
-   * yAxisTickLabelFormat={(value) => `${value}%`}
-   * ```
+   */
+  yAxisTickFormat?: (value: number) => string;
+  /**
+   * @deprecated Use `tooltipValueFormat` instead. This prop formats tooltip
+   * values, not y-axis tick labels. It will be removed in a future major version.
    */
   yAxisTickLabelFormat?: (value: number) => string;
   /** Label for the y-axis (value axis) */
   yAxisName?: string;
   /** Number of ticks to display on the y-axis */
   yAxisTickCount?: number;
+  /**
+   * Custom formatter for tooltip values.
+   * Receives the raw y-value and returns a display string.
+   * When omitted, the raw value is shown. Takes precedence over the
+   * deprecated `yAxisTickLabelFormat` prop.
+   */
+  tooltipValueFormat?: (value: number) => string;
   /** Indicates incomplete data periods with optional before/after timestamps in ms */
   incomplete?: { before?: number; after?: number };
   /** Height of the chart in pixels. Defaults to `350`. */
@@ -88,8 +101,10 @@ export interface TimeseriesChartProps {
  *   echarts={echarts}
  *   data={[{ name: "Requests", data: [[Date.now(), 42]], color: "#086FFF" }]}
  *   xAxisName="Time"
- *   xAxisTickLabelFormat={(value) => new Date(value).toLocaleTimeString()}
+ *   xAxisTickFormat={(ts) => new Date(ts).toLocaleTimeString()}
  *   yAxisName="Count"
+ *   yAxisTickFormat={(value) => `${value / 1000}k`}
+ *   tooltipValueFormat={(value) => `${value.toFixed(2)} req/s`}
  *   onTimeRangeChange={(from, to) => setRange([from, to])}
  * />
  * ```
@@ -100,9 +115,12 @@ export function TimeseriesChart({
   data,
   xAxisName,
   xAxisTickCount,
+  xAxisTickFormat,
+  yAxisTickFormat,
   yAxisTickLabelFormat,
   yAxisName,
   yAxisTickCount,
+  tooltipValueFormat,
   onTimeRangeChange,
   height = 350,
   incomplete,
@@ -228,7 +246,8 @@ export function TimeseriesChart({
           const rows = filteredParams
             .map((param: any) => {
               const value = param?.value?.[1];
-              return `${param.marker} ${param.seriesName}: <strong>${yAxisTickLabelFormat ? yAxisTickLabelFormat(value) : value}</strong>`;
+              const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
+              return `${param.marker} ${param.seriesName}: <strong>${formatFn ? formatFn(value) : value}</strong>`;
             })
             .join("<br/>");
 
@@ -247,6 +266,11 @@ export function TimeseriesChart({
         },
         axisLine: { show: false },
         splitNumber: xAxisTickCount ?? 5,
+        ...(xAxisTickFormat && {
+          axisLabel: {
+            formatter: (value: number) => xAxisTickFormat(value),
+          },
+        }),
       },
       yAxis: {
         name: yAxisName,
@@ -256,6 +280,9 @@ export function TimeseriesChart({
         axisTick: { show: true },
         axisLabel: {
           margin: 15,
+          ...(yAxisTickFormat && {
+            formatter: (value: number) => yAxisTickFormat(value),
+          }),
         },
         splitLine: {
           show: true,
@@ -275,9 +302,12 @@ export function TimeseriesChart({
     data,
     xAxisName,
     xAxisTickCount,
+    xAxisTickFormat,
+    yAxisTickFormat,
     yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
+    tooltipValueFormat,
     incompleteBefore,
     incompleteAfter,
     type,
@@ -322,7 +352,10 @@ export function TimeseriesChart({
         });
       };
     }
-  }, [chartRef, hasTimeRangeCallback]);
+    // `loading` controls whether <Chart> is mounted. When it flips to false,
+    // chartRef.current becomes available and the brush cursor must be activated.
+    // Without this dep, the effect won't re-run after Chart mounts.
+  }, [chartRef, hasTimeRangeCallback, loading]);
 
   return (
     <div className="relative w-full" style={{ height }}>
