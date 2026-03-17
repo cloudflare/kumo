@@ -1,5 +1,5 @@
 import { Tooltip, TooltipProvider, Button } from "@cloudflare/kumo";
-import { PlusIcon, TranslateIcon } from "@phosphor-icons/react";
+import { Info, PlusIcon, TranslateIcon } from "@phosphor-icons/react";
 
 export function TooltipHeroDemo() {
   return (
@@ -36,6 +36,25 @@ export function TooltipMultipleDemo() {
           />
         </Tooltip>
       </div>
+    </TooltipProvider>
+  );
+}
+
+/**
+ * Without `asChild`, Tooltip wraps children in an internal button element.
+ * Defensive styles are applied by default, but you can fully customize
+ * the trigger by passing className - your styles override the defaults.
+ */
+export function TooltipCustomTriggerDemo() {
+  return (
+    <TooltipProvider>
+      <Tooltip
+        content="Click to learn more"
+        className="inline-flex items-center gap-1.5 rounded-full bg-kumo-brand px-3 py-1.5 text-sm font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95"
+      >
+        <Info className="size-4" />
+        <span>Help</span>
+      </Tooltip>
     </TooltipProvider>
   );
 }

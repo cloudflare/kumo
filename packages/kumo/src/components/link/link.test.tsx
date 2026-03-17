@@ -16,7 +16,9 @@ describe("Link", () => {
   });
 
   it("should apply inline variant classes", () => {
-    expect(KUMO_LINK_VARIANTS.variant.inline.classes).toContain("text-primary");
+    expect(KUMO_LINK_VARIANTS.variant.inline.classes).toContain(
+      "text-kumo-link",
+    );
     expect(KUMO_LINK_VARIANTS.variant.inline.classes).toContain("underline");
     expect(KUMO_LINK_VARIANTS.variant.inline.classes).toContain("link-current");
   });
@@ -32,7 +34,9 @@ describe("Link", () => {
   });
 
   it("should apply plain variant classes", () => {
-    expect(KUMO_LINK_VARIANTS.variant.plain.classes).toContain("text-primary");
+    expect(KUMO_LINK_VARIANTS.variant.plain.classes).toContain(
+      "text-kumo-link",
+    );
     expect(KUMO_LINK_VARIANTS.variant.plain.classes).not.toContain("underline");
   });
 
@@ -73,13 +77,13 @@ describe("Link", () => {
   });
 
   it("should generate variant classes via linkVariants helper", () => {
-    expect(linkVariants({ variant: "inline" })).toContain("text-primary");
+    expect(linkVariants({ variant: "inline" })).toContain("text-kumo-link");
     expect(linkVariants({ variant: "current" })).toContain("text-current");
-    expect(linkVariants({ variant: "plain" })).toContain("text-primary");
+    expect(linkVariants({ variant: "plain" })).toContain("text-kumo-link");
   });
 
   it("should default to inline variant", () => {
-    expect(linkVariants()).toContain("text-primary");
+    expect(linkVariants()).toContain("text-kumo-link");
     expect(linkVariants()).toContain("underline");
   });
 

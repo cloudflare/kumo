@@ -9,6 +9,10 @@
 
 @layer base {
   [data-theme="fedramp"] {
+    --color-kumo-surface: light-dark(
+    #5b697c,
+    #5b697c
+  );
     --color-kumo-base: light-dark(
     #5b697c,
     #5b697c
@@ -22,11 +26,13 @@
 
 @layer base {
   [data-theme="fedramp"] {
+    --color-kumo-surface: #5b697c;
     --color-kumo-base: #5b697c;
     --color-kumo-ring: #c8d4e5;
   }
   
   [data-mode="dark"] [data-theme="fedramp"], [data-theme="fedramp"][data-mode="dark"], [data-theme="fedramp"] [data-mode="dark"] {
+    --color-kumo-surface: #5b697c;
     --color-kumo-base: #5b697c;
     --color-kumo-ring: #c8d4e5;
   }

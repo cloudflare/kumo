@@ -271,3 +271,14 @@ When contributing to Kumo, please refer to the [`STYLEGUIDE.md file`](STYLEGUIDE
 ## Releases
 
 We generally cut Kumo releases on every weekday. If you need a release cut outside of the regular cadence, please reach out to the [kumo-maintainers](https://github.com/orgs/cloudflare/teams/kumo-maintainers) team.
+
+### How Releases Work
+
+Releases are automated through the [Changesets](https://github.com/changesets/changesets) bot:
+
+1. When changesets are merged into `main`, the bot automatically opens (or updates) a PR titled **"Version Packages"**.
+2. This PR aggregates all pending changesets, updates package versions, and generates changelog entries.
+3. To trigger a release, a maintainer reviews and merges the "Version Packages" PR.
+4. Once merged, the CI pipeline automatically publishes the updated packages to npm.
+
+If you don't see a "Version Packages" PR, it means there are no unreleased changesets on `main`.

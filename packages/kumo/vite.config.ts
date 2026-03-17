@@ -251,6 +251,16 @@ export default defineConfig(({ mode }) => {
           // Don't preserve modules - bundle dependencies into flat output
           // This avoids nested node_modules/.pnpm/ paths in dist that break Jest
           preserveModules: false,
+          // Chunk filenames without double-dashes (fixes Jest resolution issues)
+          // Use a function to sanitize chunk names
+          chunkFileNames: (chunkInfo) => {
+            // Strip trailing dashes/underscores from chunk name
+            const name = chunkInfo.name.replace(/[-_]+$/, "") || "chunk";
+            // Use hashCharacters to avoid dashes in hash (Rollup 4.8+)
+            return `chunks/${name}-[hash:16].js`;
+          },
+          // Use only alphanumeric characters in hashes to avoid filename issues
+          hashCharacters: "base36",
           // Hoist "use client" directives to the top of chunks
           hoistTransitiveImports: false,
           // Add "use client" directive to all output chunks

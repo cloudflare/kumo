@@ -13,6 +13,8 @@ import {
   RadioErrorDemo,
   RadioDisabledDemo,
   RadioControlPositionDemo,
+  RadioCardDemo,
+  RadioCardHorizontalDemo,
 } from "../../components/demos/RadioDemo";
 ---
 
@@ -128,47 +130,6 @@ export default function Example() {
       </div>
 
       <div>
-        <Heading level={3}>With Error</Heading>
-        <p class="mb-4 text-sm text-kumo-strong">
-          Show validation errors at the group level using the <code
-            class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code
-          > prop.
-        </p>
-        <ComponentExample
-          code={`<Radio.Group
-  legend="Payment method"
-  error="Please select a payment method to continue"
->
-  <Radio.Item label="Credit Card" value="card" variant="error" />
-  <Radio.Item label="PayPal" value="paypal" variant="error" />
-  <Radio.Item label="Bank Transfer" value="bank" variant="error" />
-</Radio.Group>`}
-        >
-          <RadioErrorDemo client:visible />
-        </ComponentExample>
-      </div>
-
-      <div>
-        <Heading level={3}>Disabled</Heading>
-        <p class="mb-4 text-sm text-kumo-strong">
-          Disable the entire group or individual items.
-        </p>
-        <ComponentExample
-          code={`<Radio.Group legend="Disabled group" disabled defaultValue="a">
-  <Radio.Item label="Option A" value="a" />
-  <Radio.Item label="Option B" value="b" />
-</Radio.Group>
-
-<Radio.Group legend="Individual disabled" defaultValue="available">
-  <Radio.Item label="Available" value="available" />
-  <Radio.Item label="Unavailable" value="unavailable" disabled />
-</Radio.Group>`}
-        >
-          <RadioDisabledDemo client:visible />
-        </ComponentExample>
-      </div>
-
-      <div>
         <Heading level={3}>Control Position</Heading>
         <p class="mb-4 text-sm text-kumo-strong">
           Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
@@ -182,6 +143,151 @@ export default function Example() {
 </Radio.Group>`}
         >
           <RadioControlPositionDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Radio Card</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >appearance="card"</code
+          > on the group to display each option as a selectable card. Combine with
+          the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">description</code
+          > prop on each item for richer content.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group legend="Choose a plan" appearance="card" defaultValue="free">
+  <Radio.Item
+    label="Free"
+    description="For personal or hobby projects that aren't business-critical."
+    value="free"
+  />
+  <Radio.Item
+    label="Pro"
+    description="For professional websites that aren't business-critical."
+    value="pro"
+  />
+  <Radio.Item
+    label="Business"
+    description="For small businesses operating online."
+    value="business"
+  />
+  <Radio.Item
+    label="Contract"
+    description="For mission-critical applications that are core to your business."
+    value="contract"
+  />
+</Radio.Group>`}
+        >
+          <RadioCardDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Radio Card (Horizontal)</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Combine <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >appearance="card"</code
+          > with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+            >orientation="horizontal"</code
+          > for a side-by-side card layout.
+        </p>
+        <ComponentExample
+          code={`<Radio.Group
+  legend="Choose a plan"
+  appearance="card"
+  orientation="horizontal"
+  defaultValue="free"
+>
+  <Radio.Item
+    label="Free"
+    description="For personal or hobby projects that aren't business-critical."
+    value="free"
+  />
+  <Radio.Item
+    label="Pro"
+    description="For professional websites that aren't business-critical."
+    value="pro"
+  />
+  <Radio.Item
+    label="Business"
+    description="For small businesses operating online."
+    value="business"
+  />
+  <Radio.Item
+    label="Contract"
+    description="For mission-critical applications that are core to your business."
+    value="contract"
+  />
+</Radio.Group>`}
+        >
+          <RadioCardHorizontalDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>With Error</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Show validation errors at the group level using the <code
+            class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code
+          > prop. Works with both default and card appearances.
+        </p>
+        <ComponentExample
+          code={`{/* Default */}
+<Radio.Group
+  legend="Payment method"
+  error="Please select a payment method to continue"
+>
+  <Radio.Item label="Credit Card" value="card" variant="error" />
+  <Radio.Item label="PayPal" value="paypal" variant="error" />
+</Radio.Group>
+
+{/* Card */}
+<Radio.Group
+  legend="Payment method"
+  appearance="card"
+  error="Please select a payment method to continue"
+>
+  <Radio.Item label="Credit Card" description="Pay with Visa, Mastercard, American Express, or Elo." value="card" variant="error" />
+  <Radio.Item label="PayPal" description="Pay with your PayPal account." value="paypal" variant="error" />
+</Radio.Group>`}
+        >
+          <RadioErrorDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Disabled</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Disable the entire group or individual items. Works with both default
+          and card appearances.
+        </p>
+        <ComponentExample
+          code={`{/* Disabled group */}
+<Radio.Group legend="Disabled group" disabled defaultValue="a">
+  <Radio.Item label="Option A" value="a" />
+  <Radio.Item label="Option B" value="b" />
+</Radio.Group>
+
+{/* Individual disabled */}
+<Radio.Group legend="Individual disabled" defaultValue="available">
+  <Radio.Item label="Available" value="available" />
+  <Radio.Item label="Unavailable" value="unavailable" disabled />
+</Radio.Group>
+
+{/* Disabled card group */}
+<Radio.Group legend="Disabled card group" appearance="card" disabled defaultValue="a">
+  <Radio.Item label="Option A" description="This option is disabled." value="a" />
+  <Radio.Item label="Option B" description="This option is disabled." value="b" />
+</Radio.Group>
+
+{/* Individual disabled card */}
+<Radio.Group legend="Individual disabled card" appearance="card" defaultValue="available">
+  <Radio.Item label="Available" description="This option can be selected." value="available" />
+  <Radio.Item label="Unavailable" description="This option is not available." value="unavailable" disabled />
+</Radio.Group>`}
+        >
+          <RadioDisabledDemo client:visible />
         </ComponentExample>
       </div>
     </div>
