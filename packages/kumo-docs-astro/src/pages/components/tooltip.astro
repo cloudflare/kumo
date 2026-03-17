@@ -5,7 +5,7 @@ import ComponentSection from "../../components/docs/ComponentSection.astro";
 import ComponentExample from "../../components/docs/ComponentExample.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
-import { TooltipHeroDemo, TooltipBasicDemo, TooltipMultipleDemo } from "../../components/demos/TooltipDemo";
+import { TooltipHeroDemo, TooltipBasicDemo, TooltipMultipleDemo, TooltipCustomTriggerDemo } from "../../components/demos/TooltipDemo";
 ---
 
 <DocLayout
@@ -78,6 +78,24 @@ export default function Example() {
         </ComponentExample>
       </div>
     </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Custom Trigger</Heading>
+    <p class="mb-4 text-sm text-kumo-subtle">
+      We recommend using <code>asChild</code> with a Kumo Button (as shown above). However, when <code>asChild</code> is omitted, 
+      Tooltip wraps children in an internal button element. Defensive styles are applied to protect this element from 
+      global CSS pollution. You can override these defaults via <code>className</code>.
+    </p>
+    <ComponentExample code={`<Tooltip
+  content="Click to learn more"
+  className="inline-flex items-center gap-1.5 rounded-full bg-kumo-brand px-3 py-1.5 text-sm font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95"
+>
+  <Info className="size-4" />
+  <span>Help</span>
+</Tooltip>`}>
+      <TooltipCustomTriggerDemo client:load />
+    </ComponentExample>
   </ComponentSection>
 
   <ComponentSection>

@@ -10,6 +10,8 @@ export interface KumoCollapsibleVariantsProps {}
 
 export function collapsibleVariants(_props: KumoCollapsibleVariantsProps = {}) {
   return cn(
+    // Defensive resets to prevent global button styles from polluting the trigger
+    "bg-transparent border-none shadow-none p-0 m-0",
     // Base styles for the trigger
     "flex cursor-pointer items-center gap-1 text-sm text-kumo-link select-none",
   );
