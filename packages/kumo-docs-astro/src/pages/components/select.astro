@@ -7,14 +7,17 @@ import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   SelectBasicDemo,
-  SelectLabelValueDemo,
+  SelectWithoutLabelDemo,
+  SelectWithFieldDemo,
   SelectPlaceholderDemo,
+  SelectWithTooltipDemo,
   SelectCustomRenderingDemo,
   SelectLoadingDemo,
   SelectLoadingDataDemo,
   SelectMultipleDemo,
+  SelectMultipleOverflowDemo,
+  SelectMultipleWithIndicatorDemo,
   SelectComplexDemo,
-  SelectPlaceholderUsingPropDemo,
 } from "../../components/demos/SelectDemo";
 ---
 
@@ -24,87 +27,92 @@ import {
   sourceFile="components/select"
   baseUIComponent="select"
 >
-  <!-- Basic Usage -->
+  <!-- Basic Usage with Label -->
   <ComponentSection>
     <Heading level={3}>Basic Usage</Heading>
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
-        A simple select component. Use the <code
-          class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code
-        > prop to provide options — when <code
-          class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code
-        > is provided without children, the select automatically renders options.
-        This also controls what text appears in the trigger when an option is selected.
-        For custom option rendering, you can still provide manual
-        <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
-          >Select.Option</code
-        > children.
+        A select with a visible label. When you provide the <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code
+        > prop, the select automatically renders inside a Field wrapper with the label displayed above it.
       </span>
     </p>
 
     <ComponentExample
       code={`import { Select } from "@cloudflare/kumo";
 
-// Option 1
 function App() {
   const [value, setValue] = useState("apple");
 
   return (
     <Select
+      label="Favorite Fruit"
       className="w-[200px]"
       value={value}
       onValueChange={(v) => setValue(v ?? "apple")}
       items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
     />
   )
-}
-
-// Option 2
-function App() {
-  const [value, setValue] = useState("apple");
-
-  return (
-    <Select
-      value={value}
-      className="w-[200px]"
-      onValueChange={(v) => setValue(v ?? "apple")}
-      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-    >
-      <Select.Option value="apple">Apple</Select.Option>
-      <Select.Option value="banana">Banana</Select.Option>
-      <Select.Option value="cherry">Cherry</Select.Option>
-    </Select>
-  )
-}
-`}
+}`}
     >
       <SelectBasicDemo client:load />
     </ComponentExample>
   </ComponentSection>
 
-  <!-- Basic Label and Value -->
+  <!-- Without Visible Label -->
   <ComponentSection>
-    <Heading level={3}>Basic Label and Value</Heading>
+    <Heading level={3}>Without Visible Label</Heading>
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
-        A select component where the internal value differs from the displayed
-        text. Useful when you need to store identifiers while showing
-        user-friendly labels.
+        When a visible label isn't needed (e.g., in compact UIs or when context is clear),
+        use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">aria-label</code> for accessibility.
       </span>
     </p>
 
     <ComponentExample
       code={`import { Select } from "@cloudflare/kumo";
 
-// Option 1: Using object map
 function App() {
-  const [value, setValue] = useState("bug");
+  const [value, setValue] = useState("apple");
 
   return (
     <Select
+      aria-label="Select a fruit"
       className="w-[200px]"
       value={value}
-      onValueChange={(v) => setValue(v ?? "bug")}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    />
+  )
+}`}
+    >
+      <SelectWithoutLabelDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- With Description and Error -->
+  <ComponentSection>
+    <Heading level={3}>With Description and Error</Heading>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-kumo-strong">
+        Select integrates with the Field wrapper to show description text and validation errors.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Issue Type"
+      description="Choose the category that best describes your issue"
+      error={!value ? "Please select an issue type" : undefined}
+      className="w-[280px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
       items={{
         bug: "Bug",
         documentation: "Documentation",
@@ -112,27 +120,9 @@ function App() {
       }}
     />
   )
-}
-  
-// Option 2: Using array of objects
-function App() {
-  const [value, setValue] = useState("bug");
-
-  return (
-    <Select
-      className="w-[200px]"
-      value={value}
-      onValueChange={(v) => setValue(v as any)}
-      items={[
-        {value: "bug", label: "Bug"},
-        {value: "documentation", label: "Documentation"},
-        {value: "feature", label: "Feature"},
-      ]}
-    />
-  )
 }`}
     >
-      <SelectLabelValueDemo client:load />
+      <SelectWithFieldDemo client:load />
     </ComponentExample>
   </ComponentSection>
 
@@ -141,59 +131,72 @@ function App() {
     <Heading level={3}>Placeholder</Heading>
     <p class="mb-4 flex flex-col gap-4">
       <span class="text-kumo-strong">
-        A select component with a placeholder option. The empty value must be <strong
-          >null</strong
-        >, not an empty string or undefined. Using undefined will cause the
-        component to behave as uncontrolled.
+        Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> prop
+        to show text when no value is selected.
       </span>
     </p>
 
     <ComponentExample
       code={`import { Select } from "@cloudflare/kumo";
 
-// Option 1: Manual placeholder using a null-value item
 function App() {
   const [value, setValue] = useState<string | null>(null);
 
   return (
     <Select
+      label="Category"
+      placeholder="Choose a category..."
       className="w-[200px]"
       value={value}
-      onValueChange={(v) => setValue(v as any)}
-      items={[
-        { value: null, label: "Please select" },
-        { value: "bug", label: "Bug" },
-        { value: "documentation", label: "Documentation" },
-        { value: "feature", label: "Feature" },
-      ]}
+      onValueChange={(v) => setValue(v as string | null)}
+      items={{
+        bug: "Bug",
+        documentation: "Documentation",
+        feature: "Feature",
+      }}
     />
   )
-}
-
-// Option 2: Using the placeholder prop
-function App() {
-  const [value, setValue] = useState<string | null>(null);
-
-  return (
-    <Select
-      placeholder="Please select"
-      className="w-[200px]"
-      value={value}
-      onValueChange={(v) => setValue(v as any)}
-      items={[
-        { value: "bug", label: "Bug" },
-        { value: "documentation", label: "Documentation" },
-        { value: "feature", label: "Feature" },
-      ]}
-    />
-  )
-}
-`}
+}`}
     >
-      <div class="flex gap-2">
-        <SelectPlaceholderDemo client:load />
-        <SelectPlaceholderUsingPropDemo client:load />
-      </div>
+      <SelectPlaceholderDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Label Tooltip -->
+  <ComponentSection>
+    <Heading level={3}>Label with Tooltip</Heading>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-kumo-strong">
+        Add a tooltip icon next to the label for additional context using <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Priority"
+      labelTooltip="Higher priority issues are addressed first"
+      placeholder="Select priority"
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+      items={{
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        critical: "Critical",
+      }}
+    />
+  )
+}`}
+    >
+      <SelectWithTooltipDemo client:load />
     </ComponentExample>
   </ComponentSection>
 
@@ -368,6 +371,100 @@ function App() {
 }`}
     >
       <SelectMultipleDemo client:load />
+    </ComponentExample>
+
+    <p class="my-4 text-kumo-strong">
+      Long option names are automatically truncated to prevent the chevron from being pushed outside the select.
+      For a better user experience, consider using <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to
+      display a custom summary like a count badge (see example below) instead of relying on truncation:
+    </p>
+
+    <ComponentExample
+      code={`function App() {
+  const [value, setValue] = useState<string[]>([
+    "European Union Privacy Regulation",
+    "California Consumer Protection Act",
+  ]);
+
+  return (
+    <Select
+      label="Compliance Frameworks"
+      className="w-[280px]"
+      multiple
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      <Select.Option value="European Union Privacy Regulation">
+        European Union Privacy Regulation
+      </Select.Option>
+      <Select.Option value="California Consumer Protection Act">
+        California Consumer Protection Act
+      </Select.Option>
+      <Select.Option value="Health Insurance Portability Act">
+        Health Insurance Portability Act
+      </Select.Option>
+      <Select.Option value="Payment Card Industry Standard">
+        Payment Card Industry Standard
+      </Select.Option>
+    </Select>
+  );
+}`}
+    >
+      <SelectMultipleOverflowDemo client:load />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Multiple with Custom Indicator -->
+  <ComponentSection>
+    <Heading level={3}>Multiple with Custom Indicator</Heading>
+    <p class="mb-4 flex flex-col gap-4">
+      <span class="text-kumo-strong">
+        Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to create
+        a custom display for multi-select. This example shows a static label with a badge
+        indicating the selection count—useful when listing all selected items would overflow.
+      </span>
+    </p>
+
+    <ComponentExample
+      code={`import { Select, Badge } from "@cloudflare/kumo";
+
+function App() {
+  const [value, setValue] = useState<string[]>(["bug", "feature"]);
+
+  const allOptions = [
+    { value: "bug", label: "Bug" },
+    { value: "feature", label: "Feature Request" },
+    { value: "docs", label: "Documentation" },
+    { value: "performance", label: "Performance Issue" },
+    { value: "security", label: "Security Vulnerability" },
+  ];
+
+  return (
+    <Select
+      label="Issue Types"
+      className="w-[220px]"
+      multiple
+      renderValue={(selected) => (
+        <span className="flex items-center gap-2">
+          <span>Issue Types</span>
+          {selected.length > 0 && (
+            <Badge variant="secondary">{selected.length}</Badge>
+          )}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      {allOptions.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}`}
+    >
+      <SelectMultipleWithIndicatorDemo client:load />
     </ComponentExample>
   </ComponentSection>
 

@@ -271,17 +271,17 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         {...props}
       >
         <BaseCheckbox.Indicator
-          className="flex items-center justify-center text-kumo-inverse"
-          render={(renderProps, state) => {
-            const Icon = state.indeterminate ? MinusIcon : CheckIcon;
-            return (
-              <span {...renderProps}>
-                {(state.checked || state.indeterminate) && (
-                  <Icon weight="bold" size={12} />
-                )}
-              </span>
-            );
-          }}
+          keepMounted
+          className="flex items-center justify-center text-kumo-inverse data-[unchecked]:invisible"
+          render={(renderProps, state) => (
+            <span {...renderProps}>
+              {state.indeterminate ? (
+                <MinusIcon weight="bold" size={12} />
+              ) : (
+                <CheckIcon weight="bold" size={12} />
+              )}
+            </span>
+          )}
         />
       </BaseCheckbox.Root>
     );
@@ -297,7 +297,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       <FieldBase.Root className="inline-flex">
         <FieldBase.Label
           className={cn(
-            "inline-flex items-center gap-2",
+            "!m-0 !min-h-0 !text-base inline-flex items-center gap-2",
             controlFirst ? "flex-row" : "flex-row-reverse justify-end",
             disabled ? "cursor-not-allowed" : "cursor-pointer",
           )}
@@ -346,7 +346,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
     return (
       <label
         className={cn(
-          "relative inline-flex items-center gap-2",
+          "m-0 relative inline-flex items-center gap-2",
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
@@ -371,17 +371,17 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           )}
         >
           <BaseCheckbox.Indicator
-            className="flex items-center justify-center text-kumo-inverse"
-            render={(props, state) => {
-              const Icon = state.indeterminate ? MinusIcon : CheckIcon;
-              return (
-                <span {...props}>
-                  {(state.checked || state.indeterminate) && (
-                    <Icon weight="bold" size={12} />
-                  )}
-                </span>
-              );
-            }}
+            keepMounted
+            className="flex items-center justify-center text-kumo-inverse data-[unchecked]:invisible"
+            render={(renderProps, state) => (
+              <span {...renderProps}>
+                {state.indeterminate ? (
+                  <MinusIcon weight="bold" size={12} />
+                ) : (
+                  <CheckIcon weight="bold" size={12} />
+                )}
+              </span>
+            )}
           />
         </BaseCheckbox.Root>
         <span className="text-base font-medium text-kumo-default">{label}</span>

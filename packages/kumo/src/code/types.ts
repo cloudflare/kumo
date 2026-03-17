@@ -1,4 +1,28 @@
-import type { BundledLanguage } from "shiki";
+/**
+ * Supported languages for syntax highlighting.
+ *
+ * Kumo bundles a curated subset of Shiki languages to keep bundle size small.
+ * These cover the most common use cases for documentation and code snippets.
+ *
+ * If you need additional languages, use Shiki directly with fine-grained imports.
+ */
+export type SupportedLanguage =
+  | "javascript"
+  | "typescript"
+  | "jsx"
+  | "tsx"
+  | "json"
+  | "jsonc"
+  | "html"
+  | "css"
+  | "python"
+  | "yaml"
+  | "markdown"
+  | "graphql"
+  | "sql"
+  | "bash"
+  | "shell"
+  | "diff";
 
 /**
  * Shiki engine choice for syntax highlighting.
@@ -30,9 +54,10 @@ export interface ShikiProviderProps {
 
   /**
    * Languages to support. Only these languages will be loaded.
+   * Must be from the supported language set.
    * @example ['tsx', 'typescript', 'bash', 'json']
    */
-  languages: BundledLanguage[];
+  languages: SupportedLanguage[];
 
   /**
    * Localized labels for UI elements (copy button, etc.).
@@ -54,7 +79,7 @@ export interface UseShikiHighlighterResult {
    * Returns `null` if highlighter is not ready or highlighting fails.
    * When `null` is returned, render the code as plain text.
    */
-  highlight: (code: string, lang: BundledLanguage) => string | null;
+  highlight: (code: string, lang: SupportedLanguage) => string | null;
 
   /** True while Shiki is loading */
   isLoading: boolean;
@@ -80,7 +105,7 @@ export interface CodeHighlightedProps {
    * Language identifier for syntax highlighting.
    * Must be included in the ShikiProvider's `languages` array.
    */
-  lang: BundledLanguage;
+  lang: SupportedLanguage;
 
   /** Display line numbers */
   showLineNumbers?: boolean;
@@ -104,5 +129,6 @@ export interface CodeHighlightedProps {
   className?: string;
 }
 
-// Re-export useful Shiki types for consumers
-export type { BundledLanguage } from "shiki";
+// Re-export for backwards compatibility (deprecated, use SupportedLanguage instead)
+/** @deprecated Use SupportedLanguage instead */
+export type BundledLanguage = SupportedLanguage;

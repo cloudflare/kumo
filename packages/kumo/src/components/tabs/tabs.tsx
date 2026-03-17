@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
 
@@ -54,8 +55,11 @@ export type TabsItem = {
   label: ReactNode;
   /** Additional CSS classes for this tab trigger. */
   className?: string;
-  /** Custom render function to replace the tab element (e.g. for link-based tabs). */
-  render?: (props: Record<string, unknown>) => React.ReactElement;
+  /**
+   * Custom render function or element to replace the tab element (e.g. for link-based tabs).
+   * When using a function, it receives the props to spread on the element and the tab's state.
+   */
+  render?: TabsTab.Props["render"];
 };
 
 /**
@@ -162,12 +166,13 @@ export function Tabs({
           <TabsPrimitive.Tab
             key={tab.value}
             value={tab.value}
+            render={tab.render}
             className={cn(
-              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap hover:border-kumo-tint focus-visible:rounded-none focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
               isSegmented &&
-                "my-px rounded-lg px-2.5 text-kumo-strong aria-selected:text-kumo-default",
+                "my-px rounded-lg px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
               isUnderline &&
-                "mb-2 text-kumo-strong hover:text-kumo-subtle aria-selected:font-medium aria-selected:text-kumo-default",
+                "px-2 py-2.5 text-kumo-strong hover:bg-kumo-tint/50 hover:text-kumo-subtle aria-selected:hover:bg-transparent aria-selected:font-medium aria-selected:text-kumo-default",
               tab.className,
             )}
           >

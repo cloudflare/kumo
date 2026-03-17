@@ -750,7 +750,7 @@ function PanelInput({
       <Autocomplete.Input
         placeholder={placeholder}
         className={cn(
-          "flex-1 border-none bg-transparent text-base placeholder:text-kumo-subtle",
+          "flex-1 border-none bg-transparent text-base kumo-input-placeholder",
           "outline-none focus-visible:outline-none",
           className,
         )}

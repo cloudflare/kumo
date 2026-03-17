@@ -101,16 +101,14 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
   const { page, perPage, totalCount, pageShowingRange } =
     usePaginationContext();
 
-  const content = children
-    ? children({ page, perPage, totalCount, pageShowingRange })
-    : totalCount && totalCount > 0
-      ? (
-          <>
-            Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
-            <span className="tabular-nums">{totalCount}</span>
-          </>
-        )
-      : null;
+  const content = children ? (
+    children({ page, perPage, totalCount, pageShowingRange })
+  ) : totalCount && totalCount > 0 ? (
+    <>
+      Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
+      <span className="tabular-nums">{totalCount}</span>
+    </>
+  ) : null;
 
   return (
     <div
@@ -155,7 +153,7 @@ function PaginationPageSize({
     >
       {label && <span className="text-sm text-kumo-strong">{label}</span>}
       <Select
-        label="Page size"
+        aria-label="Page size"
         value={value}
         onValueChange={(v) => onChange(v as number)}
       >

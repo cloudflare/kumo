@@ -73,7 +73,7 @@ const TableRoot = forwardRef<
     KUMO_TABLE_VARIANTS.layout[layout].classes,
     "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
-    "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold", // Header styles
+    "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold [&_th]:text-base", // Header styles
     "[&_th]:bg-kumo-base", // Header background color
     "text-left text-kumo-default",
     props.className,

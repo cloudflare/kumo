@@ -291,17 +291,17 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
     - `focus`: `focus:bg-kumo-brand-hover`
     - `disabled`: `disabled:bg-kumo-brand/50`
   - `"secondary"`:
-    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control`
-    - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-default/70`
-    - `data-state`: `data-[state=open]:bg-kumo-control`
+    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint`
+    - `disabled`: `disabled:bg-kumo-base/50 disabled:!text-kumo-default/70`
+    - `data-state`: `data-[state=open]:bg-kumo-base`
   - `"ghost"`:
     - `hover`: `hover:bg-kumo-tint`
   - `"destructive"`:
     - `hover`: `hover:bg-kumo-danger/70`
   - `"secondary-destructive"`:
-    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control`
-    - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70`
-    - `data-state`: `data-[state=open]:bg-kumo-control`
+    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base`
+    - `disabled`: `disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70`
+    - `data-state`: `data-[state=open]:bg-kumo-base`
 - `children`: ReactNode
 - `className`: string
 - `icon`: ReactNode
@@ -318,7 +318,7 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-control`, `bg-kumo-danger`, `bg-kumo-tint`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-danger`, `bg-kumo-tint`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -1077,6 +1077,27 @@ Props:
 - `lang`: CodeLang
 
 
+**Examples:**
+
+```tsx
+<CodeBlock
+      lang="tsx"
+      code={`const greeting = "Hello, World!";
+console.log(greeting);`}
+    />
+```
+
+```tsx
+<Code
+      lang="bash"
+      code="export API_KEY={{apiKey}}"
+      values={{
+        apiKey: { value: "sk_live_123", highlight: true },
+      }}
+    />
+```
+
+
 ---
 
 ### Collapsible
@@ -1188,7 +1209,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `fill-kumo-ring`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -3050,7 +3071,7 @@ Label component for form fields.  Provides a standardized way to display labels 
         type="email"
       />
       <Input label="Company" required={false} placeholder="Acme Inc." />
-      <Select label="Country" hideLabel={false} placeholder="Select a country">
+      <Select label="Country" placeholder="Select a country">
         <Select.Option value="us">United States</Select.Option>
         <Select.Option value="uk">United Kingdom</Select.Option>
         <Select.Option value="ca">Canada</Select.Option>
@@ -3164,10 +3185,6 @@ Link component
   - `"inline"`: Inline text link that flows with content
   - `"current"`: Link that inherits color from parent text
   - `"plain"`: Link without underline decoration
-
-  **State Classes:**
-  - `"plain"`:
-    - `hover`: `hover:text-primary/70`
 - `to`: string
 - `children`: ReactNode
 - `className`: string
@@ -3186,6 +3203,10 @@ Link component
   Allows you to replace the component’s HTML element with a different tag, or compose it with another component.
 
 Accepts a `ReactElement` or a function that returns the element to render.
+
+**Colors (kumo tokens used):**
+
+`text-kumo-link`
 
 **Sub-Components:**
 
@@ -3794,6 +3815,13 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
   Child Radio.Item components
 - `orientation`: enum
   Layout direction of the radio items
+- `appearance`: enum [default: default]
+  - `"default"`: Standard inline radio item
+  - `"card"`: Choice card appearance with border, padding, and highlighted selection state
+
+  **State Classes:**
+  - `"card"`:
+    - `hover`: `hover:bg-kumo-tint`
 - `error`: string
   Error message for the group
 - `description`: ReactNode
@@ -3803,7 +3831,7 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 - `disabled`: boolean
   Whether all radios in the group are disabled
 - `controlPosition`: enum
-  Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio
+  Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio. Note: In card appearance, the control is always positioned at the end.
 - `name`: string
   Form submission name for the radio group
 - `className`: string
@@ -3811,7 +3839,7 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `border-kumo-line`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-tint`, `border-kumo-danger`, `border-kumo-interact`, `border-kumo-line`, `border-kumo-ring`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -3854,18 +3882,37 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 ```
 
 ```tsx
-<Radio.Group
-      legend="Payment method"
-      error="Please select a payment method to continue"
-    >
-      <Radio.Item label="Credit Card" value="card" variant="error" />
-      <Radio.Item label="PayPal" value="paypal" variant="error" />
-      <Radio.Item label="Bank Transfer" value="bank" variant="error" />
-    </Radio.Group>
+<div className="grid grid-cols-2 gap-6">
+      <Radio.Group
+        legend="Payment method"
+        error="Please select a payment method to continue"
+      >
+        <Radio.Item label="Credit Card" value="card" variant="error" />
+        <Radio.Item label="PayPal" value="paypal" variant="error" />
+      </Radio.Group>
+      <Radio.Group
+        legend="Payment method"
+        appearance="card"
+        error="Please select a payment method to continue"
+      >
+        <Radio.Item
+          label="Credit Card"
+          description="Pay with Visa, Mastercard, American Express, or Elo."
+          value="card"
+          variant="error"
+        />
+        <Radio.Item
+          label="PayPal"
+          description="Pay with your PayPal account."
+          value="paypal"
+          variant="error"
+        />
+      </Radio.Group>
+    </div>
 ```
 
 ```tsx
-<div className="flex flex-col gap-6">
+<div className="grid grid-cols-2 gap-6">
       <Radio.Group legend="Disabled group" disabled defaultValue="a">
         <Radio.Item label="Option A" value="a" />
         <Radio.Item label="Option B" value="b" />
@@ -3874,6 +3921,40 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
         <Radio.Item label="Available" value="available" />
         <Radio.Item label="Unavailable" value="unavailable" disabled />
       </Radio.Group>
+      <Radio.Group
+        legend="Disabled card group"
+        appearance="card"
+        disabled
+        defaultValue="a"
+      >
+        <Radio.Item
+          label="Option A"
+          description="This option is disabled."
+          value="a"
+        />
+        <Radio.Item
+          label="Option B"
+          description="This option is disabled."
+          value="b"
+        />
+      </Radio.Group>
+      <Radio.Group
+        legend="Individual disabled card"
+        appearance="card"
+        defaultValue="available"
+      >
+        <Radio.Item
+          label="Available"
+          description="This option can be selected."
+          value="available"
+        />
+        <Radio.Item
+          label="Unavailable"
+          description="This option is not available."
+          value="unavailable"
+          disabled
+        />
+      </Radio.Group>
     </div>
 ```
 
@@ -3881,6 +3962,67 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 <Radio.Group legend="Preferences" controlPosition="end" defaultValue="a">
       <Radio.Item label="Label before radio" value="a" />
       <Radio.Item label="Another option" value="b" />
+    </Radio.Group>
+```
+
+```tsx
+<Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+      <Radio.Item
+        label="Business"
+        description="For small businesses operating online."
+        value="business"
+      />
+      <Radio.Item
+        label="Contract"
+        description="For mission-critical applications that are core to your business."
+        value="contract"
+      />
+    </Radio.Group>
+```
+
+```tsx
+<Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      orientation="horizontal"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+      <Radio.Item
+        label="Business"
+        description="For small businesses operating online."
+        value="business"
+      />
+      <Radio.Item
+        label="Contract"
+        description="For mission-critical applications that are core to your business."
+        value="contract"
+      />
     </Radio.Group>
 ```
 
@@ -3902,9 +4044,8 @@ Select component
 - `className`: string
   Additional CSS classes merged via `cn()`.
 - `label`: ReactNode
-  Label content for the select (enables Field wrapper) — can be a string or any React node.
+  Label content for the select. When provided, enables the Field wrapper with a visible label above the select. For accessibility without a visible label, use `aria-label` instead.
 - `hideLabel`: boolean
-  Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
 - `placeholder`: string
   Placeholder text shown when no value is selected.
 - `loading`: boolean
@@ -3947,32 +4088,23 @@ Option sub-component
 **Examples:**
 
 ```tsx
-<div className="flex gap-2">
-      <Select
-        className="w-[200px]"
-        value={value}
-        onValueChange={(v) => setValue(v ?? "apple")}
-        items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-      />
-
-      <Select
-        value={value}
-        className="w-[200px]"
-        onValueChange={(v) => setValue(v ?? "apple")}
-        items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-      >
-        <Select.Option value="apple">Apple</Select.Option>
-        <Select.Option value="banana">Banana</Select.Option>
-        <Select.Option value="cherry">Cherry</Select.Option>
-      </Select>
-    </div>
+<Select
+      label="Favorite Fruit"
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    />
 ```
 
 ```tsx
 <Select
-      className="w-[200px]"
+      label="Issue Type"
+      description="Choose the category that best describes your issue"
+      error={!value ? "Please select an issue type" : undefined}
+      className="w-[280px]"
       value={value}
-      onValueChange={(v) => setValue(v as string)}
+      onValueChange={(v) => setValue(v as string | null)}
       items={{
         bug: "Bug",
         documentation: "Documentation",
@@ -3983,20 +4115,39 @@ Option sub-component
 
 ```tsx
 <Select
+      label="Category"
+      placeholder="Choose a category..."
       className="w-[200px]"
       value={value}
-      placeholder="Please select"
       onValueChange={(v) => setValue(v as string | null)}
-      items={[
-        { value: "bug", label: "Bug" },
-        { value: "documentation", label: "Documentation" },
-        { value: "feature", label: "Feature" },
-      ]}
+      items={{
+        bug: "Bug",
+        documentation: "Documentation",
+        feature: "Feature",
+      }}
     />
 ```
 
 ```tsx
 <Select
+      label="Priority"
+      labelTooltip="Higher priority issues are addressed first"
+      placeholder="Select priority"
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+      items={{
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        critical: "Critical",
+      }}
+    />
+```
+
+```tsx
+<Select
+      label="Language"
       className="w-[200px]"
       renderValue={(v) => (
         <span>
@@ -4015,29 +4166,31 @@ Option sub-component
 ```
 
 ```tsx
-<Select className="w-[200px]" loading />
+<Select aria-label="Loading select" className="w-[200px]" loading />
 ```
 
 ```tsx
 <Select
+      label="Assignee"
       className="w-[200px]"
       loading={loading}
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
-      placeholder="Please select"
+      placeholder="Select assignee"
       items={items}
     />
 ```
 
 ```tsx
 <Select
+      label="Visible Columns"
       className="w-[250px]"
       multiple
       renderValue={(value) => {
         if (value.length > 3) {
           return (
             <span className="line-clamp-1">
-              {value.slice(2).join(", ") + ` and ${value.length - 2} more`}
+              {value.slice(0, 2).join(", ") + ` and ${value.length - 2} more`}
             </span>
           );
         }
@@ -4057,12 +4210,38 @@ Option sub-component
 
 ```tsx
 <Select
+      label="Issue Types"
+      className="w-[220px]"
+      multiple
+      renderValue={(selected) => (
+        <span className="flex items-center gap-2">
+          <span>Issue Types</span>
+          {selected.length > 0 && (
+            <Badge variant="secondary">{selected.length}</Badge>
+          )}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      {allOptions.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
+    </Select>
+```
+
+```tsx
+<Select
+      label="Author"
+      description="Select the primary author for this document"
       className="w-[200px]"
       onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}
       value={value}
       isItemEqualToValue={(item, value) => item?.id === value?.id}
       renderValue={(author) => {
-        return author?.name ?? "Please select author";
+        return author?.name ?? "Select an author";
       }}
     >
       {authors.map((author) => (
@@ -4707,7 +4886,7 @@ Tab navigation component with segmented or underline style. Built on Base UI Tab
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `border-kumo-tint`, `ring-kumo-fill-hover`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-brand`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-fill-hover`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -4800,8 +4979,10 @@ Tab navigation component with segmented or underline style. Built on Base UI Tab
         },
         {
           value: "tab3",
-          label: "Another Link",
-          render: (props) => <a {...props} href="#tab3" />,
+          label: "Cloudflare",
+          render: (props) => (
+            <a {...props} href="https://cloudflare.com" target="_blank" />
+          ),
         },
       ]}
       selectedValue="tab1"
@@ -4962,20 +5143,15 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
 
 **Props:**
 
-- `align`: enum
-  Alignment on the axis perpendicular to `side`.
-- `"start"` — Align to the start edge
-- `"center"` — Center-aligned
-- `"end"` — Align to the end edge
-- `asChild`: boolean
-  When `true`, the trigger wraps the child element instead of adding a wrapper.
-- `className`: string
-  Additional CSS classes merged via `cn()`.
 - `side`: enum [default: top]
   - `"top"`: Tooltip appears above the trigger
   - `"bottom"`: Tooltip appears below the trigger
   - `"left"`: Tooltip appears to the left of the trigger
   - `"right"`: Tooltip appears to the right of the trigger
+- `className`: string
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
 - `content`: ReactNode (required)
   Content to display in the tooltip
 
@@ -5007,6 +5183,18 @@ Accessible popup that shows additional information on hover/focus. Wrap your app
           />
         </Tooltip>
       </div>
+    </TooltipProvider>
+```
+
+```tsx
+<TooltipProvider>
+      <Tooltip
+        content="Click to learn more"
+        className="inline-flex items-center gap-1.5 rounded-full bg-kumo-brand px-3 py-1.5 text-sm font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95"
+      >
+        <Info className="size-4" />
+        <span>Help</span>
+      </Tooltip>
     </TooltipProvider>
 ```
 

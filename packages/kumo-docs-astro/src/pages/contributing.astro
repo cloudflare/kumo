@@ -3,66 +3,206 @@ import DocLayout from "../layouts/DocLayout.astro";
 import Heading from "../components/docs/Heading.astro";
 import ComponentSection from "../components/docs/ComponentSection.astro";
 import CodeBlock from "../components/docs/CodeBlock.astro";
-import Callout from "../components/docs/Callout.astro";
 ---
 
 <DocLayout
   title="Contributing"
-  description="Learn how to contribute to Kumo by adding new components and features."
+  description="Learn how to contribute to Kumo, including workflow for adding components, blocks and layouts."
 >
-  <!-- Overview -->
+  <!-- Repository Contribution Workflow -->
   <ComponentSection>
-    <Heading level={2}>Contributing to Kumo</Heading>
+    <Heading level={2}>Repository Contribution Workflow</Heading>
     <p class="mb-4 text-kumo-strong">
-      We welcome contributions to Kumo! This guide will help you get started
-      with adding new components and blocks to the library.
+      Useful commands for developing Kumo (run from repository root):
     </p>
+    <ul class="list-inside list-disc space-y-2 text-kumo-default">
+      <li>
+        Build everything once: <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >pnpm i; pnpm build</code
+        >
+      </li>
+      <li>
+        Use watch mode while developing: <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >pnpm dev</code
+        >
+      </li>
+      <li>
+        Before opening a PR, add a changeset: <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">pnpm changeset</code
+        >
+      </li>
+      <li>Do not squash commits after review feedback starts.</li>
+    </ul>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Before Getting Started</h3>
+    <p class="mb-4 text-kumo-strong">
+      For non-trivial changes, engage on an issue first (or open a discussion or
+      feature request) before writing code. For trivial changes, opening a PR
+      directly is fine.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Set Up Your Environment</h3>
+    <ul class="list-inside list-disc space-y-2 text-kumo-default">
+      <li>
+        Install the latest LTS version of <a
+          href="https://nodejs.dev/"
+          class="text-kumo-link hover:underline">Node.js</a
+        > (we recommend a version manager like <a
+          href="https://github.com/nvm-sh/nvm"
+          class="text-kumo-link hover:underline">nvm</a
+        >).
+      </li>
+      <li>
+        Install a code editor (we recommend <a
+          href="https://code.visualstudio.com/"
+          class="text-kumo-link hover:underline">VS Code</a
+        >) and project-recommended extensions.
+      </li>
+      <li>
+        Install <a
+          href="https://git-scm.com/"
+          class="text-kumo-link hover:underline">git</a
+        >.
+      </li>
+      <li>
+        Install dependencies from the repository root with <code
+          class="rounded bg-kumo-control px-1 py-0.5 text-sm">pnpm install</code
+        >.
+      </li>
+    </ul>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Fork and Clone</h3>
+    <p class="mb-4 text-kumo-strong">
+      External contributors should fork first and add <code
+        class="rounded bg-kumo-control px-1 py-0.5 text-sm">cloudflare/kumo</code
+      > as upstream. Cloudflare employees can clone the main repository directly.
+    </p>
+    <CodeBlock
+      code={`# External contributors
+git clone https://github.com/<your-github-username>/kumo
+cd kumo
+git remote add upstream https://github.com/cloudflare/kumo
+
+# Keep your local main current
+git switch main
+git pull upstream main
+
+# Cloudflare employees can clone directly
+git clone https://github.com/cloudflare/kumo.git`}
+      lang="bash"
+    />
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Create and Push Your Branch</h3>
+    <CodeBlock
+      code={`git switch main
+git pull upstream main
+git checkout -b <new-branch-name> main
+
+git add <paths-to-changed-files>
+git commit
+git push -u origin <new-branch-name>`}
+      lang="bash"
+    />
   </ComponentSection>
 
-  <!-- Components vs Blocks vs Layouts -->
+  <!-- Quality Checks -->
   <ComponentSection>
-    <Heading level={2}>Components vs Blocks vs Layouts</Heading>
-    <div class="mb-4 grid gap-6 md:grid-cols-3">
-      <div class="rounded-lg border border-kumo-line bg-kumo-base p-4">
-        <Heading level={3} class="mb-2 text-lg">Components</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">Atomic, reusable UI elements</p>
-        <ul class="list-inside list-disc space-y-1 text-sm text-kumo-default">
-          <li>Single responsibility</li>
-          <li>Highly reusable</li>
-          <li>Minimal dependencies</li>
-          <li>Style-focused</li>
-        </ul>
-        <p class="mt-3 text-xs text-kumo-subtle">
-          Examples: Button, Input, Badge, Tabs
-        </p>
-      </div>
-      <div class="rounded-lg border border-kumo-line bg-kumo-base p-4">
-        <Heading level={3} class="mb-2 text-lg">Blocks</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">Composed patterns for page layouts</p>
-        <ul class="list-inside list-disc space-y-1 text-sm text-kumo-default">
-          <li>Compose multiple components</li>
-          <li>Implement common patterns</li>
-          <li>Layout-focused</li>
-          <li>May include business logic</li>
-        </ul>
-        <p class="mt-3 text-xs text-kumo-subtle">
-          Examples: Breadcrumbs, PageHeader, Empty
-        </p>
-      </div>
-      <div class="rounded-lg border border-kumo-line bg-kumo-base p-4">
-        <Heading level={3} class="mb-2 text-lg">Layouts</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">Page-level structure patterns</p>
-        <ul class="list-inside list-disc space-y-1 text-sm text-kumo-default">
-          <li>Full-page composition</li>
-          <li>Consistent structure</li>
-          <li>Responsive patterns</li>
-          <li>Application-wide use</li>
-        </ul>
-        <p class="mt-3 text-xs text-kumo-subtle">
-          Examples: DashboardPage
-        </p>
-      </div>
-    </div>
+    <Heading level={2}>Quality Checks Before PR</Heading>
+    <p class="mb-4 text-kumo-strong">
+      Run the same core checks from <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+        >CONTRIBUTING.md</code
+      > before opening or updating a PR.
+    </p>
+    <CodeBlock
+      code={`pnpm run typecheck
+pnpm run lint
+pnpm run format
+pnpm run test`}
+      lang="bash"
+    />
+    <p class="mt-4 text-kumo-strong">
+      If you recently rebased on <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+        >main</code
+      >, run <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+        >pnpm i</code
+      > first.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">PR Expectations</h3>
+    <ul class="list-inside list-disc space-y-2 text-kumo-default">
+      <li>
+        PR title format: <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >[package name] description</code
+        >
+      </li>
+      <li>Fill out the full PR template with implementation details.</li>
+      <li>
+        Keep commit history clean before first review; after review starts,
+        address feedback in follow-up commits instead of force-pushing rewrites.
+      </li>
+      <li>Include tests for new behavior.</li>
+    </ul>
+  </ComponentSection>
+
+  <!-- PR, Changesets, and Releases -->
+  <ComponentSection>
+    <Heading level={2}>PRs, Changesets, and Releases</Heading>
+
+    <h3 class="mb-3 mt-2 text-xl font-semibold">PR Review and Previews</h3>
+    <ul class="list-inside list-disc space-y-2 text-kumo-default">
+      <li>PR review is required for all changes.</li>
+      <li>
+        Every PR has package pre-release links via <a
+          href="https://github.com/stackblitz-labs/pkg.pr.new"
+          class="text-kumo-link hover:underline">pkg.pr.new</a
+        > in an automated PR comment.
+      </li>
+    </ul>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Changesets</h3>
+    <p class="mb-4 text-kumo-strong">
+      Every non-trivial change that should appear in changelogs needs a
+      changeset.
+    </p>
+    <CodeBlock
+      code={`pnpm changeset
+git add .changeset/*.md`}
+      lang="bash"
+    />
+    <p class="mt-4 text-kumo-strong">
+      See <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+        >.changeset/README.md</code
+      > for detailed guidance.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Styleguide</h3>
+    <p class="mb-4 text-kumo-strong">
+      Follow <a
+        href="https://github.com/cloudflare/kumo/blob/main/STYLEGUIDE.md"
+        class="text-kumo-link hover:underline">STYLEGUIDE.md</a
+      > to keep contributions consistent.
+    </p>
+
+    <h3 class="mb-3 mt-6 text-xl font-semibold">Release Process</h3>
+    <p class="mb-4 text-kumo-strong">
+      Kumo releases are typically cut on weekdays. For out-of-band releases,
+      contact the <a
+        href="https://github.com/orgs/cloudflare/teams/kumo-maintainers"
+        class="text-kumo-link hover:underline">kumo-maintainers</a
+      > team.
+    </p>
+    <ol class="list-inside list-decimal space-y-2 text-kumo-default">
+      <li>
+        Merged changesets on <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+          >main</code
+        > cause the Changesets bot to open or update a <strong>Version Packages</strong>
+        PR.
+      </li>
+      <li>
+        That PR bumps versions and aggregates changelog entries.
+      </li>
+      <li>Maintainers merge that PR to trigger publication to npm.</li>
+    </ol>
   </ComponentSection>
 
   <!-- Component Scaffolding -->

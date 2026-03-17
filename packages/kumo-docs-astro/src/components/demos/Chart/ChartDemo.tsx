@@ -104,22 +104,17 @@ export function BasicLineChartDemo() {
 }
 
 /**
- * Timeseries chart with a custom x-axis tick label format showing only the time (HH:MM).
+ * Timeseries chart with custom axis tick label formats for both x-axis (HH:MM) and y-axis (compact numbers).
  */
-export function CustomXAxisLabelFormatDemo() {
+export function CustomAxisLabelFormatDemo() {
   const isDarkMode = useIsDarkMode();
 
   const data = useMemo(
     () => [
       {
         name: "Requests",
-        data: buildSeriesData(0, 50, 60_000, 1),
+        data: buildSeriesData(0, 50, 60_000, 1000),
         color: ChartPalette.semantic("Neutral", isDarkMode),
-      },
-      {
-        name: "Errors",
-        data: buildSeriesData(1, 50, 60_000, 0.3),
-        color: ChartPalette.semantic("Attention", isDarkMode),
       },
     ],
     [isDarkMode],
@@ -131,10 +126,16 @@ export function CustomXAxisLabelFormatDemo() {
       isDarkMode={isDarkMode}
       data={data}
       xAxisName="Time (UTC)"
-      yAxisName="Count"
-      yAxisTickLabelFormat={(value) => {
-        return Math.round(value).toString() + " requests";
+      yAxisName="Requests"
+      xAxisTickFormat={(ts) => {
+        const d = new Date(ts);
+        return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
       }}
+      yAxisTickFormat={(value) => {
+        if (value >= 1000) return `${value / 1000}k`;
+        return value.toString();
+      }}
+      tooltipValueFormat={(value) => `${(value / 1000).toFixed(1)}k requests`}
     />
   );
 }

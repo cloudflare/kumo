@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Select } from "./select";
 
 describe("Select", () => {
-  describe("description with hideLabel", () => {
-    it("renders description when hideLabel is true (default)", () => {
+  describe("label visibility (new behavior)", () => {
+    it("shows visible label by default when label prop is provided", () => {
       render(
         <Select label="Database" description="Select your preferred database">
           <Select.Option value="postgres">PostgreSQL</Select.Option>
@@ -13,10 +13,12 @@ describe("Select", () => {
         </Select>,
       );
 
+      // Label should be visible (in Field wrapper)
+      expect(screen.getByText("Database")).toBeTruthy();
       expect(screen.getByText("Select your preferred database")).toBeTruthy();
     });
 
-    it("renders description when hideLabel is explicitly true", () => {
+    it("hides label when hideLabel={true} (backward compatibility)", () => {
       render(
         <Select
           label="Database"
@@ -27,49 +29,42 @@ describe("Select", () => {
         </Select>,
       );
 
+      // Label should exist but be visually hidden (sr-only class)
+      const srOnlyLabel = document.querySelector(".sr-only");
+      expect(srOnlyLabel).toBeTruthy();
+      expect(srOnlyLabel?.textContent).toBe("Database");
       expect(
         screen.getByText("Helper text for database selection"),
       ).toBeTruthy();
     });
 
-    it("renders description when hideLabel is false", () => {
+    it("uses aria-label for accessibility when no visible label needed", () => {
       render(
-        <Select
-          label="Database"
-          hideLabel={false}
-          description="Visible label with description"
-        >
+        <Select aria-label="Select a database">
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      const trigger = document.querySelector('[role="combobox"]');
+      expect(trigger?.getAttribute("aria-label")).toBe("Select a database");
+    });
+  });
+
+  describe("description and error", () => {
+    it("renders description with visible label", () => {
+      render(
+        <Select label="Database" description="Visible label with description">
           <Select.Option value="postgres">PostgreSQL</Select.Option>
         </Select>,
       );
 
       expect(screen.getByText("Visible label with description")).toBeTruthy();
-      // Label should also be visible
       expect(screen.getByText("Database")).toBeTruthy();
     });
 
-    it("keeps label accessible via sr-only when hideLabel is true", () => {
+    it("renders error message", () => {
       render(
-        <Select label="Database" hideLabel={true} description="Helper text">
-          <Select.Option value="postgres">PostgreSQL</Select.Option>
-        </Select>,
-      );
-
-      // Label should exist but be visually hidden (sr-only class)
-      const srOnlyLabel = document.querySelector(".sr-only");
-      expect(srOnlyLabel).toBeTruthy();
-      expect(srOnlyLabel?.textContent).toBe("Database");
-    });
-  });
-
-  describe("error with hideLabel", () => {
-    it("renders error message when hideLabel is true", () => {
-      render(
-        <Select
-          label="Database"
-          hideLabel={true}
-          error="Please select a database"
-        >
+        <Select label="Database" error="Please select a database">
           <Select.Option value="postgres">PostgreSQL</Select.Option>
         </Select>,
       );
@@ -77,11 +72,10 @@ describe("Select", () => {
       expect(screen.getByText("Please select a database")).toBeTruthy();
     });
 
-    it("renders error object when hideLabel is true", () => {
+    it("renders error object", () => {
       render(
         <Select
           label="Database"
-          hideLabel={true}
           error={{ message: "Database is required", match: true }}
         >
           <Select.Option value="postgres">PostgreSQL</Select.Option>
@@ -95,7 +89,6 @@ describe("Select", () => {
       render(
         <Select
           label="Database"
-          hideLabel={true}
           description="Select your preferred database"
           error="Please select a database"
         >
@@ -251,12 +244,24 @@ describe("Select", () => {
         />,
       );
 
-      // Since there's no item with value=null, Base UI falls back to placeholder
-      // However, Base UI treats the object map differently - it doesn't find a match
-      // for null value, but also doesn't show the placeholder text in the span
-      const trigger = document.querySelector('[role="combobox"]');
-      expect(trigger).toBeTruthy();
-      expect(trigger?.getAttribute("aria-label")).toBe("Choose one");
+      // Placeholder should be visible in the trigger
+      expect(screen.getByText("Choose one")).toBeTruthy();
+    });
+
+    it("shows placeholder with object map items format", () => {
+      // Object map format should work the same as array format for placeholders
+      render(
+        <Select
+          placeholder="Select a fruit"
+          value={null}
+          items={{
+            apple: "Apple",
+            banana: "Banana",
+          }}
+        />,
+      );
+
+      expect(screen.getByText("Select a fruit")).toBeTruthy();
     });
 
     it("works with items as array format", () => {
