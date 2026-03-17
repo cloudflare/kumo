@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, type ReactNode } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { cn } from "../utils/cn";
 import { Button } from "../components/button";
 import { useShikiHighlighter } from "./use-shiki-highlighter";
@@ -39,7 +39,7 @@ export function CodeHighlighted({
   showCopyButton = false,
   labels: labelOverrides,
   className,
-}: CodeHighlightedProps): ReactNode {
+}: CodeHighlightedProps): React.JSX.Element {
   const {
     highlight,
     isLoading,
