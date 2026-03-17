@@ -1,0 +1,244 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import {
+  InputAreaBasicDemo,
+  InputAreaWithLabelDemo,
+  InputAreaErrorStringDemo,
+  InputAreaErrorObjectDemo,
+  InputAreaSizesDemo,
+  InputAreaDisabledDemo,
+  InputAreaBareDemo,
+  InputAreaRowsDemo,
+  InputAreaOptionalFieldDemo,
+  InputAreaLabelTooltipDemo,
+  InputAreaReactNodeLabelDemo,
+} from "../../components/demos/InputAreaDemo";
+---
+
+<DocLayout
+  title="InputArea"
+  description="A multi-line text input for longer content with built-in label, description, and error support."
+  sourceFile="components/input"
+>
+  <!-- Demo -->
+  <ComponentSection>
+    <ComponentExample
+      code={`<InputArea 
+  label="Description" 
+  placeholder="Enter a description..."
+  description="Provide details about your project"
+/>`}
+    >
+      <InputAreaBasicDemo client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <!-- Installation -->
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { InputArea } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { InputArea } from "@cloudflare/kumo/components/input";`}
+      lang="tsx"
+    />
+    <p class="mt-4 text-sm text-kumo-strong">
+      <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Textarea</code> is also exported as an alias for <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">InputArea</code> for discoverability when migrating from other libraries.
+    </p>
+  </ComponentSection>
+
+  <!-- Usage -->
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <Heading level={3} class="mb-2 text-lg">With Built-in Field (Recommended)</Heading>
+    <p class="mb-4 text-sm text-kumo-strong">
+      Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop
+      to enable the built-in Field wrapper with label, description, and error support.
+    </p>
+    <CodeBlock
+      code={`import { InputArea } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <InputArea 
+      label="Description" 
+      placeholder="Enter a description..."
+      description="Provide details about your project"
+    />
+  );
+}`}
+      lang="tsx"
+    />
+
+    <h3 class="mb-2 mt-6 text-lg font-semibold">Bare InputArea (Custom Layouts)</h3>
+    <p class="mb-4 text-sm text-kumo-strong">
+      For custom form layouts, use InputArea without <code
+        class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code
+      >. Must provide <code class="rounded bg-kumo-control px-1 py-0.5 text-sm"
+        >aria-label</code
+      > or <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">aria-labelledby</code
+      > for accessibility.
+    </p>
+    <CodeBlock
+      code={`import { InputArea } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <InputArea placeholder="Add notes..." aria-label="Notes" rows={3} />;
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <!-- Examples -->
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3} class="mb-2 text-lg">With Label</Heading>
+        <ComponentExample
+          code={`<InputArea
+  label="Bio"
+  placeholder="Tell us about yourself"
+  description="Max 500 characters"
+/>`}
+        >
+          <InputAreaWithLabelDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Custom Row Count</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">rows</code> prop to control the initial height.
+        </p>
+        <ComponentExample
+          code={`<InputArea label="2 rows" placeholder="Small area" rows={2} />
+<InputArea label="4 rows (default)" placeholder="Medium area" rows={4} />
+<InputArea label="8 rows" placeholder="Large area" rows={8} />`}
+        >
+          <InputAreaRowsDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Error State (String)</Heading>
+        <ComponentExample
+          code={`<InputArea
+  label="Message"
+  placeholder="Enter your message"
+  value="Hi"
+  variant="error"
+  error="Message must be at least 10 characters"
+/>`}
+        >
+          <InputAreaErrorStringDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Error State (Object)</Heading>
+        <p class="mb-4 text-sm text-kumo-strong">
+          Use an error object with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">match</code> for constraint validation.
+        </p>
+        <ComponentExample
+          code={`<InputArea
+  label="Feedback"
+  value="Bad"
+  variant="error"
+  error={{
+    message: "Feedback must be at least 20 characters",
+    match: "tooShort",
+  }}
+  minLength={20}
+/>`}
+        >
+          <InputAreaErrorObjectDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Sizes</Heading>
+        <ComponentExample
+          code={`<InputArea size="xs" label="Extra Small" placeholder="Extra small textarea" />
+<InputArea size="sm" label="Small" placeholder="Small textarea" />
+<InputArea label="Base" placeholder="Base textarea (default)" />
+<InputArea size="lg" label="Large" placeholder="Large textarea" />`}
+        >
+          <InputAreaSizesDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Disabled</Heading>
+        <ComponentExample code={`<InputArea label="Disabled field" placeholder="Cannot edit" disabled />`}>
+          <InputAreaDisabledDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Bare InputArea</Heading>
+        <ComponentExample code={`<InputArea placeholder="Add notes..." aria-label="Notes" rows={3} />`}>
+          <InputAreaBareDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Optional Field</Heading>
+        <ComponentExample
+          code={`<InputArea
+  label="Additional Notes"
+  required={false}
+  placeholder="Any additional information..."
+/>`}
+        >
+          <InputAreaOptionalFieldDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">Label with Tooltip</Heading>
+        <ComponentExample
+          code={`<InputArea
+  label="Worker Script"
+  labelTooltip="Enter your Cloudflare Worker script code here"
+  placeholder="export default { async fetch(request) { ... } }"
+  rows={4}
+/>`}
+        >
+          <InputAreaLabelTooltipDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3} class="mb-2 text-lg">React Node Label</Heading>
+        <ComponentExample
+          code={`<InputArea
+  label={
+    <span>
+      Notes for <strong>review</strong>
+    </span>
+  }
+  required
+  placeholder="Add notes for the reviewer..."
+  rows={3}
+/>`}
+        >
+          <InputAreaReactNodeLabelDemo client:visible />
+        </ComponentExample>
+      </div>
+    </div>
+  </ComponentSection>
+
+  <!-- API Reference -->
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="InputArea" />
+  </ComponentSection>
+</DocLayout>
