@@ -17,3 +17,8 @@ export function LoaderSizesDemo() {
 export function LoaderCustomSizeDemo() {
   return <Loader size={24} />;
 }
+
+/** Shows how to change the loader color using className */
+export function LoaderCustomColorDemo() {
+  return <Loader className="text-kumo-subtle" />;
+}

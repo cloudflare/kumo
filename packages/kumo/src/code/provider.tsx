@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, type ReactNode } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ShikiContext, type ShikiContextValue } from "./context";
 import type { ShikiProviderProps, SupportedLanguage } from "./types";
 
@@ -65,7 +65,7 @@ export function ShikiProvider({
   languages,
   labels,
   children,
-}: ShikiProviderProps): ReactNode {
+}: ShikiProviderProps): React.JSX.Element {
   const [state, setState] = useState<{
     highlighter: ShikiContextValue["highlighter"];
     isLoading: boolean;
@@ -111,7 +111,7 @@ export function ShikiProvider({
 
         const highlighter = await createHighlighterCore({
           themes: [githubLight.default, vesper.default],
-      
+
           langs: langModules.map((m) => m.default) as any,
           engine: engineInstance,
         });
