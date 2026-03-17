@@ -43,25 +43,25 @@ export const KUMO_TOAST_VARIANTS = {
     },
     success: {
       classes:
-        "border-l-[3px] border-l-kumo-success border-kumo-fill bg-kumo-control [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
+        "border-kumo-success bg-kumo-control [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
       description: "Success toast for confirmations and positive outcomes",
       icon: CheckCircleIcon,
     },
     error: {
       classes:
-        "border-l-[3px] border-l-kumo-danger border-kumo-fill bg-kumo-control [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
+        "border-kumo-danger bg-kumo-control [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
       description: "Error toast for critical issues",
       icon: WarningOctagonIcon,
     },
     warning: {
       classes:
-        "border-l-[3px] border-l-kumo-warning border-kumo-fill bg-kumo-control [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
+        "border-kumo-warning bg-kumo-control [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
       description: "Warning toast for cautionary messages",
       icon: WarningIcon,
     },
     info: {
       classes:
-        "border-l-[3px] border-l-kumo-info border-kumo-fill bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
+        "border-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
       description: "Info toast for neutral informational messages",
       icon: InfoIcon,
     },
