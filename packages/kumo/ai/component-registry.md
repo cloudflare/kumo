@@ -1549,7 +1549,7 @@ CommandPalette — accessible command palette / spotlight search overlay.  Compo
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-overlay`, `bg-kumo-warning`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-placeholder`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-overlay`, `bg-kumo-warning`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -2904,7 +2904,7 @@ Input component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-placeholder`, `text-kumo-subtle`
+`bg-kumo-control`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -4210,6 +4210,30 @@ Option sub-component
 
 ```tsx
 <Select
+      label="Issue Types"
+      className="w-[220px]"
+      multiple
+      renderValue={(selected) => (
+        <span className="flex items-center gap-2">
+          <span>Issue Types</span>
+          {selected.length > 0 && (
+            <Badge variant="secondary">{selected.length}</Badge>
+          )}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      {allOptions.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
+    </Select>
+```
+
+```tsx
+<Select
       label="Author"
       description="Select the primary author for this document"
       className="w-[200px]"
@@ -4285,7 +4309,7 @@ Password/secret input that masks its value by default and reveals on click. Incl
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `text-kumo-default`, `text-kumo-placeholder`, `text-kumo-subtle`
+`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
