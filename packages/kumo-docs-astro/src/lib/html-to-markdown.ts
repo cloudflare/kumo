@@ -1,4 +1,6 @@
 import TurndownService from "turndown";
+// @ts-expect-error no type declarations available
+import { gfm } from "turndown-plugin-gfm";
 
 /**
  * Shared turndown configuration used by both the build-time Astro integration
@@ -10,6 +12,9 @@ export function createTurndownService(): TurndownService {
     codeBlockStyle: "fenced",
     bulletListMarker: "-",
   });
+
+  // GitHub Flavored Markdown support (tables, strikethrough, task lists)
+  turndown.use(gfm);
 
   // Remove script/style tags
   turndown.remove(["script", "style"]);

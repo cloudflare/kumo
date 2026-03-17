@@ -11,7 +11,11 @@ import { OpenAiLogo } from "@phosphor-icons/react";
 import { ClaudeIcon } from "./icons/ClaudeIcon";
 import { cn } from "@cloudflare/kumo";
 
-export function CopyPageButton() {
+interface CopyPageButtonProps {
+  align?: "start" | "center" | "end";
+}
+
+export function CopyPageButton({ align = "end" }: CopyPageButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const getMarkdownUrl = () => {
@@ -92,64 +96,34 @@ export function CopyPageButton() {
   );
 
   return (
-    <>
-      {/* Mobile: single icon button with all options in dropdown */}
-      <div className="md:hidden size-7" data-copy-ignore>
-        <DropdownMenu>
-          <DropdownMenu.Trigger
-            render={
-              <Button
-                aria-label="Page options"
-                className="text-kumo-subtle hover:text-kumo-strong size-7"
-                shape="square"
-                size="lg"
-                variant="ghost"
-                icon={<FileMdIcon size={28} weight="duotone" />}
-              />
-            }
-          />
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item
-              icon={CopySimpleIcon}
-              onClick={handleCopyMarkdown}
+    <div className="flex items-center" data-copy-ignore>
+      <Button
+        className="rounded-r-none border-r-0 gap-1.5"
+        icon={<ButtonIcon size={16} />}
+        onClick={handleCopyMarkdown}
+        size="sm"
+        variant="secondary"
+      >
+        <span>Copy page</span>
+      </Button>
+      <DropdownMenu>
+        <DropdownMenu.Trigger
+          render={
+            <Button
+              variant="secondary"
+              size="sm"
+              shape="square"
+              aria-label="Copy page options"
+              className={cn("rounded-l-none")}
             >
-              Copy page as Markdown
-            </DropdownMenu.Item>
-            {dropdownItems}
-          </DropdownMenu.Content>
-        </DropdownMenu>
-      </div>
-
-      {/* Desktop: split button pushed to far right */}
-      <div className="hidden md:ml-auto md:flex items-center" data-copy-ignore>
-        <Button
-          className="rounded-r-none border-r-0 gap-1.5"
-          icon={<ButtonIcon size={16} />}
-          onClick={handleCopyMarkdown}
-          size="sm"
-          variant="secondary"
-        >
-          <span>Copy page</span>
-        </Button>
-        <DropdownMenu>
-          <DropdownMenu.Trigger
-            render={
-              <Button
-                variant="secondary"
-                size="sm"
-                shape="square"
-                aria-label="Copy page options"
-                className={cn("rounded-l-none")}
-              >
-                <CaretDownIcon size={12} />
-              </Button>
-            }
-          />
-          <DropdownMenu.Content align="end">
-            {dropdownItems}
-          </DropdownMenu.Content>
-        </DropdownMenu>
-      </div>
-    </>
+              <CaretDownIcon size={12} />
+            </Button>
+          }
+        />
+        <DropdownMenu.Content align={align}>
+          {dropdownItems}
+        </DropdownMenu.Content>
+      </DropdownMenu>
+    </div>
   );
 }

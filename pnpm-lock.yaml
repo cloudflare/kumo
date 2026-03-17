@@ -300,6 +300,9 @@ importers:
       turndown:
         specifier: 7.2.2
         version: 7.2.2
+      turndown-plugin-gfm:
+        specifier: 1.0.2
+        version: 1.0.2
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.4
@@ -5050,6 +5053,9 @@ packages:
     resolution: {integrity: sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
+
+  turndown-plugin-gfm@1.0.2:
+    resolution: {integrity: sha512-vwz9tfvF7XN/jE0dGoBei3FXWuvll78ohzCZQuOb+ZjWrs3a0XhQVomJEb2Qh4VHTPNRO4GPZh0V7VRbiWwkRg==}
 
   turndown@7.2.2:
     resolution: {integrity: sha512-1F7db8BiExOKxjSMU2b7if62D/XOyQyZbPKq/nUwopfgnHlqXHqQ0lvfUTeUIr1lZJzOPFn43dODyMSIfvWRKQ==}
@@ -10987,6 +10993,8 @@ snapshots:
       get-tsconfig: 4.13.0
     optionalDependencies:
       fsevents: 2.3.3
+
+  turndown-plugin-gfm@1.0.2: {}
 
   turndown@7.2.2:
     dependencies:
