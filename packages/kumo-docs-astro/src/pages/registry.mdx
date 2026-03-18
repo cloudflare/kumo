@@ -1,0 +1,59 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Component Registry"
+description: "AI-readable component metadata for LLMs and code generation tools. Auto-generated from TypeScript types and component variants."
+---
+
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Callout from "~/components/docs/Callout.astro";
+import { ComponentRegistryView } from "~/components/demos/RegistryDemo";
+
+## Overview
+
+The component registry is a machine-readable JSON file that describes all Kumo components, their props, variants, examples, and semantic tokens. It's designed for AI agents, code generators, and other tooling.
+
+[View JSON API](/api/component-registry)
+
+## Accessing the Registry
+
+### Via CLI
+
+<CodeBlock
+  code={`# List all components
+npx @cloudflare/kumo ls
+
+# Get docs for a specific component
+
+npx @cloudflare/kumo doc Button`}
+lang="bash"
+/>
+
+### Via HTTP API
+
+<CodeBlock
+  code={`# JSON endpoint
+curl https://kumo-ui.com/api/component-registry`}
+  lang="bash"
+/>
+
+### Via jq (Local)
+
+<CodeBlock
+  code={`# Get Button props
+jq '.components.Button.props' packages/kumo/ai/component-registry.json
+
+# List components by category
+
+jq '.search.byCategory' packages/kumo/ai/component-registry.json`}
+lang="bash"
+/>
+
+## Registry Contents
+
+<Callout type="info">
+  The registry includes: component props with types and defaults, variant
+  options with descriptions, real code examples from stories, semantic color
+  tokens used, and sub-components for compound patterns.
+</Callout>
+
+<ComponentRegistryView client:load />

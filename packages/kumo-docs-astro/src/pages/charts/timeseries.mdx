@@ -1,0 +1,234 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Timeseries Chart"
+description: "A specialized chart for displaying time-based data."
+sourceFile: "components/chart"
+---
+
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import {
+  BasicLineChartDemo,
+  BarChartDemo,
+  CustomAxisLabelFormatDemo,
+  GradientLineChartDemo,
+  IncompleteDataChartDemo,
+  LoadingChartDemo,
+  TimeRangeSelectionChartDemo,
+} from "~/components/demos/Chart/ChartDemo";
+import Heading from "~/components/docs/Heading.astro";
+
+<p>
+  The timeseries chart is a specialized chart for displaying time-based data.
+  Each data point is a tuple of <code>[timestamp_in_ms, value]</code>.
+</p>
+
+<ComponentSection>
+  <Heading level={3}>Basic Line Chart</Heading>
+
+<p>A simple line chart displaying multiple data series over time.</p>
+
+  <ComponentExample
+    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+const data = [
+{
+name: "Requests",
+color: ChartPalette.semantic("Neutral", isDarkMode),
+data: [
+[timestamp_in_ms, value],
+[timestamp_in_ms, value],
+...
+],
+},
+{
+name: "Errors",
+color: ChartPalette.semantic("Attention", isDarkMode),
+data: [
+[timestamp_in_ms, value],
+[timestamp_in_ms, value],
+...
+],
+},
+];
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Count"
+/>`}
+  >
+    <BasicLineChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Custom X-Axis Label Format</Heading>
+
+<p>
+  Use the <code>xAxisTickLabelFormat</code> prop to control how x-axis tick
+  labels are rendered. The formatter receives the raw timestamp in milliseconds
+  and returns a display string, overriding ECharts' built-in time formatting.
+</p>
+
+  <ComponentExample
+    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisTickLabelFormat={(value) => {
+    return Math.round(value).toString() + " requests";
+  }}
+/>`}
+  >
+    <CustomAxisLabelFormatDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Gradient Fill</Heading>
+
+<p>
+  Set <code>gradient</code> to <code>true</code> to render a vertical gradient
+  fill beneath each line series. The fill fades from the series color at the top
+  to transparent at the bottom, giving the chart a polished area-chart look
+  without losing the clarity of individual lines.
+</p>
+
+  <ComponentExample
+    code={`<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Count"
+  gradient
+/>`}
+  >
+    <GradientLineChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Incomplete Data</Heading>
+
+<p>
+  Use the <code>incomplete</code> prop to indicate regions where data may be
+  incomplete or still being collected.
+</p>
+
+  <ComponentExample
+    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+const data = [
+{
+name: "Bandwidth",
+color: ChartPalette.color(0, isDarkMode),
+data: [
+[timestamp_in_ms, value],
+[timestamp_in_ms, value],
+...
+],
+},
+];
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Mbps"
+  incomplete={{ after: timestamp_in_ms }}
+/>`}
+  >
+    <IncompleteDataChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Time Range Selection</Heading>
+
+<p>
+  Enable time range selection by providing the <code>onTimeRangeChange</code>
+  callback. Users can click and drag on the chart to select a time range.
+</p>
+
+  <ComponentExample
+    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
+
+const data = [
+{
+name: "CPU Usage",
+color: ChartPalette.color(0, isDarkMode),
+data: [
+[timestamp_in_ms, value],
+[timestamp_in_ms, value],
+...
+],
+},
+];
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="%"
+  onTimeRangeChange={(from, to) => {
+    alert("Selected range: " + from + " - " + to);
+  }}
+/>`}
+  >
+    <TimeRangeSelectionChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Bar Chart</Heading>
+
+<p>
+  Set <code>type="bar"</code> to render series as stacked bars instead of lines.
+  All other props — axes, tooltips, colors — work identically.
+</p>
+
+  <ComponentExample
+    code={`<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  type="bar"
+  data={data}
+  xAxisName="Time (UTC)"
+  yAxisName="Count"
+/>`}
+  >
+    <BarChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Loading State</Heading>
+
+<p>
+  Set <code>loading</code> to <code>true</code> to display an animated sine-wave
+  skeleton while data is being fetched. The chart canvas is hidden until loading
+  completes; swap back to <code>loading={`{false}`}</code> to reveal the chart.
+</p>
+
+  <ComponentExample
+    code={`const [isLoading, setIsLoading] = useState(true);
+
+<TimeseriesChart
+  echarts={echarts}
+  isDarkMode={isDarkMode}
+  data={data}
+  loading={isLoading}
+/>`}
+  >
+    <LoadingChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>

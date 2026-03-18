@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
@@ -9,7 +10,6 @@ import { fileURLToPath } from "url";
 import { kumoColorsPlugin } from "./src/lib/vite-plugin-kumo-colors.js";
 import { kumoRegistryPlugin } from "./src/lib/vite-plugin-kumo-registry.js";
 import { kumoHmrPlugin } from "./src/lib/vite-plugin-kumo-hmr.js";
-import { markdownPages } from "./src/lib/astro-markdown-pages.js";
 
 import sitemap from "@astrojs/sitemap";
 
@@ -70,7 +70,7 @@ const kumoSrc = resolve(__dirname, "../kumo/src");
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), sitemap(), markdownPages()],
+  integrations: [mdx(), react(), sitemap()],
   site: "https://kumo-ui.com/",
   vite: {
     plugins: [
