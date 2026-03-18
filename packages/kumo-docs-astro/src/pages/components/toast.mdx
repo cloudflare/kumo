@@ -14,6 +14,7 @@ import {
   ToastBasicDemo,
   ToastTitleOnlyDemo,
   ToastDescriptionOnlyDemo,
+  ToastPositionDemo,
   ToastSuccessDemo,
   ToastMultipleDemo,
   ToastErrorDemo,
@@ -160,6 +161,30 @@ description: "Your changes have been saved successfully."
 <ToastDescriptionOnlyDemo client:visible />
 </ComponentExample>
 
+  <Heading level={3}>Position</Heading>
+  <p>
+    Use the `position` prop on `Toasty` to control where toast notifications appear by default. The default value is `bottom-right`.
+  </p>
+  <ComponentExample
+    code={`<Toasty position="top-right">
+  <Button
+    onClick={() =>
+      toastManager.add({
+        title: "Toast positioned",
+        description: "This toast uses the Toasty provider position.",
+      })
+    }
+  >
+    Show top-right toast
+  </Button>
+</Toasty>`}
+  >
+    <ToastPositionDemo client:visible />
+  </ComponentExample>
+  <p>
+    Supported values are `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, and `bottom-right`. Individual toasts can also override the provider default by passing `position` to `toastManager.add()`, so different toasts can render in different lanes at the same time.
+  </p>
+
   <Heading level={3}>Success Action</Heading>
   <p>
     Toasts work well for confirming user actions.
@@ -280,6 +305,9 @@ error: (err) => ({ title: "Failed", description: err.message, variant: "error" }
 <Heading level={3}>Toasty</Heading>
 <p>The provider component that wraps your app and manages the toast system.</p>
 <PropsTable component="Toasty" />
+<p>
+  <code class="text-kumo-default">Toasty</code> also accepts a <code class="text-kumo-default">position</code> prop to control the default toast viewport placement. Supported values are <code class="text-kumo-default">"top-left"</code>, <code class="text-kumo-default">"top-center"</code>, <code class="text-kumo-default">"top-right"</code>, <code class="text-kumo-default">"bottom-left"</code>, <code class="text-kumo-default">"bottom-center"</code>, and <code class="text-kumo-default">"bottom-right"</code>. The default is <code class="text-kumo-default">"bottom-right"</code>. Individual toasts can override that default with their own <code class="text-kumo-default">position</code> value.
+</p>
 
   <Heading level={3}>useKumoToastManager()</Heading>
   <p>

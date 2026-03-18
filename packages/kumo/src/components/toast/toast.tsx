@@ -96,6 +96,74 @@ export const KUMO_TOAST_STYLING = {
 
 // Derived types from KUMO_TOAST_VARIANTS
 export type KumoToastVariant = keyof typeof KUMO_TOAST_VARIANTS.variant;
+export type KumoToastPosition =
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right";
+
+const KUMO_TOAST_POSITIONS = [
+  "top-left",
+  "top-center",
+  "top-right",
+  "bottom-left",
+  "bottom-center",
+  "bottom-right",
+] as const satisfies ReadonlyArray<KumoToastPosition>;
+
+const TOAST_VIEWPORT_BASE_CLASSES =
+  "fixed z-1 flex w-[calc(100%-2rem)] sm:w-[340px]";
+
+const TOAST_VIEWPORT_POSITION_CLASSES: Record<KumoToastPosition, string> = {
+  "top-left": "top-4 left-4 sm:top-8 sm:left-8",
+  "top-center":
+    "top-4 right-4 left-4 mx-auto sm:top-8 sm:right-auto sm:left-1/2 sm:-translate-x-1/2",
+  "top-right": "top-4 right-4 sm:top-8 sm:right-8",
+  "bottom-left": "bottom-4 left-4 sm:bottom-8 sm:left-8",
+  "bottom-center":
+    "right-4 bottom-4 left-4 mx-auto sm:right-auto sm:bottom-8 sm:left-1/2 sm:-translate-x-1/2",
+  "bottom-right": "right-4 bottom-4 sm:right-8 sm:bottom-8",
+};
+
+const TOAST_ROOT_POSITION_CLASSES: Record<KumoToastPosition, string> = {
+  "top-left": "left-0 right-auto top-0 bottom-auto origin-top",
+  "top-center": "left-0 right-0 top-0 bottom-auto mx-auto origin-top",
+  "top-right": "right-0 left-auto top-0 bottom-auto origin-top",
+  "bottom-left": "left-0 right-auto bottom-0 top-auto origin-bottom",
+  "bottom-center": "left-0 right-0 bottom-0 top-auto mx-auto origin-bottom",
+  "bottom-right": "right-0 left-auto bottom-0 top-auto origin-bottom",
+};
+
+type ToastVerticalEdge = "top" | "bottom";
+type AnyKumoToast = KumoToastOptions<any>;
+type ToastLanes = Record<KumoToastPosition, Array<AnyKumoToast>>;
+
+function getToastVerticalEdge(position: KumoToastPosition): ToastVerticalEdge {
+  return position.startsWith("top") ? "top" : "bottom";
+}
+
+function groupToastsByPosition(
+  toasts: Array<AnyKumoToast>,
+  defaultPosition: KumoToastPosition,
+): ToastLanes {
+  const lanes: ToastLanes = {
+    "top-left": [],
+    "top-center": [],
+    "top-right": [],
+    "bottom-left": [],
+    "bottom-center": [],
+    "bottom-right": [],
+  };
+
+  for (const toast of toasts) {
+    const resolvedPosition = toast.position ?? defaultPosition;
+    lanes[resolvedPosition].push(toast);
+  }
+
+  return lanes;
+}
 
 export interface KumoToastVariantsProps {
   variant?: KumoToastVariant;
@@ -133,10 +201,14 @@ export function toastVariants({
 export interface ToastyProps extends KumoToastVariantsProps {
   /** Application content. Toasts render via a portal above this. */
   children: React.ReactNode;
+  /** Default position used for toasts unless overridden per toast. @default "bottom-right" */
+  position?: KumoToastPosition;
 }
 
 type KumoToastOptionsBase = {
   variant?: KumoToastVariant;
+  /** Optional per-toast placement override. */
+  position?: KumoToastPosition;
   content?: React.ReactNode;
   actions?: Array<ButtonProps>;
   bump?: boolean;
@@ -250,7 +322,7 @@ export const createKumoToastManager = () => {
 /**
  * Toasty — toast notification provider and viewport.
  *
- * Renders a `Toast.Provider` with a fixed-position viewport in the bottom-right corner.
+ * Renders a `Toast.Provider` with fixed-position viewport lanes.
  * Toasts stack with smooth enter/exit animations, swipe-to-dismiss, and expand-on-hover.
  *
  * Built on `@base-ui/react/toast`.
@@ -262,14 +334,12 @@ export const createKumoToastManager = () => {
  * </Toasty>
  * ```
  */
-export function Toasty({ children }: ToastyProps) {
+export function Toasty({ children, position = "bottom-right" }: ToastyProps) {
   return (
     <Toast.Provider>
       {children}
       <Toast.Portal>
-        <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
-          <ToastList />
-        </Toast.Viewport>
+        <ToastViewports defaultPosition={position} />
       </Toast.Portal>
     </Toast.Provider>
   );
@@ -278,24 +348,78 @@ export function Toasty({ children }: ToastyProps) {
 /** Alias for Toasty — provided for discoverability when migrating from other libraries */
 export const ToastProvider = Toasty;
 
-function ToastList() {
+function ToastViewports({
+  defaultPosition,
+}: {
+  defaultPosition: KumoToastPosition;
+}) {
   const { toasts } = useKumoToastManager();
+  const lanes = groupToastsByPosition(toasts, defaultPosition);
+
+  return KUMO_TOAST_POSITIONS.map((position) => {
+    return (
+      <ToastViewportLane
+        key={position}
+        position={position}
+        toasts={lanes[position]}
+      />
+    );
+  });
+}
+
+function ToastViewportLane({
+  position,
+  toasts,
+}: {
+  position: KumoToastPosition;
+  toasts: Array<AnyKumoToast>;
+}) {
+  if (toasts.length === 0) return null;
+
+  return (
+    <Toast.Viewport
+      data-kumo-toast-viewport="true"
+      data-kumo-toast-position={position}
+      className={cn(
+        TOAST_VIEWPORT_BASE_CLASSES,
+        TOAST_VIEWPORT_POSITION_CLASSES[position],
+      )}
+    >
+      <ToastList position={position} toasts={toasts} />
+    </Toast.Viewport>
+  );
+}
+
+function ToastList({
+  position,
+  toasts,
+}: {
+  position: KumoToastPosition;
+  toasts: Array<AnyKumoToast>;
+}) {
+  const verticalEdge = getToastVerticalEdge(position);
+
   return toasts.map((toast) => (
     <Toast.Root
       key={toast.id}
       toast={toast}
       className={cn(
-        "absolute right-0 bottom-0 left-auto z-[calc(1000-var(--toast-index))] mr-0 h-[var(--height)] w-full origin-bottom select-none",
+        "absolute z-[calc(1000-var(--toast-index))] h-[var(--height)] w-full select-none",
+        TOAST_ROOT_POSITION_CLASSES[position],
         toastVariants({ variant: toast.variant }),
-        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
-        "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
-        "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
-        "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
+        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
+        verticalEdge === "top"
+          ? "[--offset-y:calc(var(--toast-offset-y)+calc(var(--toast-index)*var(--gap))+var(--toast-swipe-movement-y))] [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)+(var(--toast-index)*var(--peek))+(var(--shrink)*var(--height))))_scale(var(--scale))] data-[starting-style]:[transform:translateY(-150%)] [&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(-150%)]"
+          : "[--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] data-[starting-style]:[transform:translateY(150%)] [&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
+        "[transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
+        verticalEdge === "top"
+          ? "after:absolute after:bottom-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']"
+          : "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
+        "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0",
         "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
         "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
         "data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
         "data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
-        "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
         toast.bump && "animate-toast-bump",
       )}
     >

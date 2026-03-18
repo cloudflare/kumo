@@ -304,3 +304,28 @@ export function ToastPromiseDemo() {
     </Toasty>
   );
 }
+
+function ToastPositionButton() {
+  const toastManager = useKumoToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toastManager.add({
+          title: "Toast positioned",
+          description: "This toast uses the Toasty provider position.",
+        })
+      }
+    >
+      Show top-right toast
+    </Button>
+  );
+}
+
+export function ToastPositionDemo() {
+  return (
+    <Toasty position="top-right">
+      <ToastPositionButton />
+    </Toasty>
+  );
+}
