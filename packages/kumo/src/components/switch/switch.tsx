@@ -296,12 +296,16 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           // Default variant: original pill-shaped switch
           const mergedClassName = cn(
-            "interactive flex items-center gap-2 rounded-full border border-transparent p-1 transition-colors",
-            // Off state: visible gray background with border for accessibility
-            "bg-neutral-200 ring ring-neutral-300 dark:bg-neutral-700 dark:ring-neutral-600",
+            "interactive flex items-center gap-2 rounded-full border border-transparent p-1 transition-colors ring",
             switchVariants({ size, variant }),
+            // Off state: visible gray background with border for accessibility
+            !state.checked &&
+              "bg-neutral-200 ring-neutral-300 dark:bg-neutral-700 dark:ring-neutral-600",
+            // Checked state: brand blue
+            state.checked &&
+              !disabled &&
+              "bg-kumo-brand ring-kumo-brand dark:bg-kumo-brand dark:ring-kumo-brand",
             {
-              "bg-kumo-brand ring-kumo-brand": state.checked && !disabled,
               "hover:bg-kumo-brand-hover hover:ring-kumo-brand-hover":
                 state.checked && !transitioning && !disabled,
               "hover:bg-neutral-300 hover:ring-neutral-400 dark:hover:bg-neutral-600 dark:hover:ring-neutral-500":
@@ -478,12 +482,16 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             // Default variant: original pill-shaped switch
             const mergedClassName = cn(
-              "interactive flex items-center gap-2 rounded-full border border-transparent p-1 transition-colors",
-              // Off state: visible gray background with border for accessibility
-              "bg-neutral-200 ring ring-neutral-300 dark:bg-neutral-700 dark:ring-neutral-600",
+              "interactive flex items-center gap-2 rounded-full border border-transparent p-1 transition-colors ring",
               switchVariants({ size, variant }),
+              // Off state: visible gray background with border for accessibility
+              !state.checked &&
+                "bg-neutral-200 ring-neutral-300 dark:bg-neutral-700 dark:ring-neutral-600",
+              // Checked state: brand blue
+              state.checked &&
+                !disabled &&
+                "bg-kumo-brand ring-kumo-brand dark:bg-kumo-brand dark:ring-kumo-brand",
               {
-                "bg-kumo-brand ring-kumo-brand": state.checked && !disabled,
                 "hover:bg-kumo-brand-hover hover:ring-kumo-brand-hover":
                   state.checked && !transitioning && !disabled,
                 "hover:bg-neutral-300 hover:ring-neutral-400 dark:hover:bg-neutral-600 dark:hover:ring-neutral-500":
