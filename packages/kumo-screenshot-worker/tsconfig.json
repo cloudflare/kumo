@@ -4,10 +4,10 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ES2021", "DOM"],
-    "types": ["@cloudflare/workers-types"],
+    "types": [],
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "worker-configuration.d.ts"]
 }
