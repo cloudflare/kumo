@@ -2,6 +2,7 @@ import { inputVariants } from "./input";
 import { cn } from "../../utils/cn";
 import { useCallback, type ReactNode } from "react";
 import * as React from "react";
+import { Field as FieldBase } from "@base-ui/react/field";
 import { Field as KumoField, type FieldErrorMatch } from "../field/field";
 
 export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
@@ -29,20 +30,15 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       [onChange, onValueChange],
     );
 
-    const textarea = (
-      <textarea
-        ref={ref}
-        className={cn(
-          inputVariants({ size, variant, focusIndicator: true }),
-          "h-auto py-2", // Input variant always come with size, but it does not apply for textarea
-          className,
-        )}
-        onChange={handleChange}
-        {...inputProps}
-      />
+    const textareaClassName = cn(
+      inputVariants({ size, variant, focusIndicator: true }),
+      "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
+      className,
     );
 
     // Render with Field wrapper if label is provided
+    // Use FieldBase.Control with render callback to ensure proper label-textarea association.
+    // The render callback receives props with the correct id/aria-labelledby from Field context.
     if (label) {
       return (
         <KumoField
@@ -58,13 +54,30 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
               : undefined
           }
         >
-          {textarea}
+          <FieldBase.Control
+            render={(controlProps) => (
+              <textarea
+                {...controlProps}
+                ref={ref}
+                className={textareaClassName}
+                onChange={handleChange}
+                {...inputProps}
+              />
+            )}
+          />
         </KumoField>
       );
     }
 
     // Render bare textarea without Field wrapper
-    return textarea;
+    return (
+      <textarea
+        ref={ref}
+        className={textareaClassName}
+        onChange={handleChange}
+        {...inputProps}
+      />
+    );
   },
 );
 
