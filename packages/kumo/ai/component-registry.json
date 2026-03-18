@@ -318,11 +318,11 @@
           },
           "classes": {
             "primary": "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
-            "secondary": "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+            "secondary": "bg-kumo-base !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-ring data-[state=open]:bg-kumo-base",
             "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
             "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
-            "secondary-destructive": "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
-            "outline": "bg-kumo-base text-kumo-default ring ring-kumo-line"
+            "secondary-destructive": "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
+            "outline": "bg-transparent text-kumo-default ring-2 ring-kumo-ring"
           },
           "stateClasses": {
             "primary": {
@@ -331,9 +331,9 @@
               "disabled": "disabled:bg-kumo-brand/50"
             },
             "secondary": {
-              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control",
-              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-default/70",
-              "data-state": "data-[state=open]:bg-kumo-control"
+              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint",
+              "disabled": "disabled:bg-kumo-base/50 disabled:!text-kumo-default/70",
+              "data-state": "data-[state=open]:bg-kumo-base"
             },
             "ghost": {
               "hover": "hover:bg-kumo-tint"
@@ -342,9 +342,9 @@
               "hover": "hover:bg-kumo-danger/70"
             },
             "secondary-destructive": {
-              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control",
-              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70",
-              "data-state": "data-[state=open]:bg-kumo-control"
+              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base",
+              "disabled": "disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70",
+              "data-state": "data-[state=open]:bg-kumo-base"
             }
           },
           "default": "secondary"
@@ -419,7 +419,6 @@
         "bg-kumo-base",
         "bg-kumo-brand",
         "bg-kumo-brand-hover",
-        "bg-kumo-control",
         "bg-kumo-danger",
         "bg-kumo-tint",
         "ring-kumo-line",
@@ -2135,7 +2134,6 @@
         "bg-kumo-fill-hover",
         "bg-kumo-overlay",
         "border-kumo-line",
-        "fill-kumo-ring",
         "ring-kumo-line",
         "text-kumo-default",
         "text-kumo-strong",
@@ -3134,7 +3132,7 @@
         "<Input label=\"Phone Number\" required={false} placeholder=\"+1 555-0000\" />",
         "<Input\n      label=\"API Key\"\n      labelTooltip=\"Find this in your dashboard settings under API > Keys\"\n      placeholder=\"sk_live_...\"\n    />",
         "<Checkbox\n      label={\n        <span>\n          I agree to the <strong>Terms of Service</strong>\n        </span>\n      }\n    />",
-        "<div className=\"flex max-w-md flex-col gap-4\">\n      <Input label=\"Full Name\" placeholder=\"John Doe\" />\n      <Input\n        label=\"Email\"\n        labelTooltip=\"We'll send your receipt here\"\n        placeholder=\"john@example.com\"\n        type=\"email\"\n      />\n      <Input label=\"Company\" required={false} placeholder=\"Acme Inc.\" />\n      <Select label=\"Country\" hideLabel={false} placeholder=\"Select a country\">\n        <Select.Option value=\"us\">United States</Select.Option>\n        <Select.Option value=\"uk\">United Kingdom</Select.Option>\n        <Select.Option value=\"ca\">Canada</Select.Option>\n      </Select>\n    </div>",
+        "<div className=\"flex max-w-md flex-col gap-4\">\n      <Input label=\"Full Name\" placeholder=\"John Doe\" />\n      <Input\n        label=\"Email\"\n        labelTooltip=\"We'll send your receipt here\"\n        placeholder=\"john@example.com\"\n        type=\"email\"\n      />\n      <Input label=\"Company\" required={false} placeholder=\"Acme Inc.\" />\n      <Select label=\"Country\" placeholder=\"Select a country\">\n        <Select.Option value=\"us\">United States</Select.Option>\n        <Select.Option value=\"uk\">United Kingdom</Select.Option>\n        <Select.Option value=\"ca\">Canada</Select.Option>\n      </Select>\n    </div>",
         "<div className=\"flex flex-col gap-3\">\n      <Label>Default</Label>\n      <Label showOptional>Optional</Label>\n      <Label tooltip=\"Important field\">With Tooltip</Label>\n    </div>"
       ],
       "colors": [
@@ -3228,14 +3226,7 @@
             "plain": "Link without underline decoration"
           },
           "classes": {
-            "inline": "text-primary underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors",
-            "current": "text-current underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors",
-            "plain": "text-primary hover:text-primary/70 transition-colors"
-          },
-          "stateClasses": {
-            "plain": {
-              "hover": "hover:text-primary/70"
-            }
+            "current": "text-current underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors"
           },
           "default": "inline"
         },
@@ -3319,7 +3310,9 @@
         "<p className=\"text-base text-kumo-danger\">\n      This error message contains a{\" \"}\n      <Link href=\"#\" variant=\"current\">\n        link\n      </Link>{\" \"}\n      that inherits the red color from its parent.\n    </p>",
         "<div className=\"flex flex-col gap-x-6 gap-y-4 text-base md:flex-row\">\n      <Link render={<CustomRouterLink href=\"/dashboard\" />} variant=\"inline\">\n        Dashboard (via render)\n      </Link>\n      <Link\n        render={\n          <CustomRouterLink\n            href=\"https://developers.cloudflare.com\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n          />\n        }\n        variant=\"inline\"\n      >\n        Cloudflare Docs <Link.ExternalIcon />\n      </Link>\n    </div>"
       ],
-      "colors": [],
+      "colors": [
+        "text-kumo-link"
+      ],
       "subComponents": {
         "ExternalIcon": {
           "name": "ExternalIcon",
@@ -3724,6 +3717,28 @@
             "horizontal"
           ]
         },
+        "appearance": {
+          "type": "enum",
+          "optional": true,
+          "description": "Visual appearance applied to all Radio.Item children.\n- `\"default\"` — Standard inline radio items\n- `\"card\"` — Choice card with border, padding, and highlighted selection state\n\nIndividual items can override this with their own `appearance` prop.",
+          "values": [
+            "default",
+            "card"
+          ],
+          "descriptions": {
+            "default": "Standard inline radio item",
+            "card": "Choice card appearance with border, padding, and highlighted selection state"
+          },
+          "classes": {
+            "card": "rounded-lg border border-kumo-ring bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint"
+          },
+          "stateClasses": {
+            "card": {
+              "hover": "hover:bg-kumo-tint"
+            }
+          },
+          "default": "default"
+        },
         "error": {
           "type": "string",
           "optional": true,
@@ -3747,7 +3762,7 @@
         "controlPosition": {
           "type": "enum",
           "optional": true,
-          "description": "Position of radio control relative to label: \"start\" (default) puts radio before label, \"end\" puts label before radio",
+          "description": "Position of radio control relative to label: \"start\" (default) puts radio before label, \"end\" puts label before radio. Note: In card appearance, the control is always positioned at the end.",
           "values": [
             "start",
             "end"
@@ -3769,14 +3784,20 @@
         "<Radio.Group legend=\"Account type\" value={value} onValueChange={setValue}>\n      <Radio.Item label=\"Personal\" value=\"personal\" />\n      <Radio.Item label=\"Business\" value=\"business\" />\n      <Radio.Item label=\"Enterprise\" value=\"enterprise\" />\n    </Radio.Group>",
         "<Radio.Group\n      legend=\"Size\"\n      orientation=\"horizontal\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Small\" value=\"sm\" />\n      <Radio.Item label=\"Medium\" value=\"md\" />\n      <Radio.Item label=\"Large\" value=\"lg\" />\n    </Radio.Group>",
         "<Radio.Group\n      legend=\"Shipping method\"\n      description=\"Choose how you'd like to receive your order\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item label=\"Standard (5-7 days)\" value=\"standard\" />\n      <Radio.Item label=\"Express (2-3 days)\" value=\"express\" />\n      <Radio.Item label=\"Overnight\" value=\"overnight\" />\n    </Radio.Group>",
-        "<Radio.Group\n      legend=\"Payment method\"\n      error=\"Please select a payment method to continue\"\n    >\n      <Radio.Item label=\"Credit Card\" value=\"card\" variant=\"error\" />\n      <Radio.Item label=\"PayPal\" value=\"paypal\" variant=\"error\" />\n      <Radio.Item label=\"Bank Transfer\" value=\"bank\" variant=\"error\" />\n    </Radio.Group>",
-        "<div className=\"flex flex-col gap-6\">\n      <Radio.Group legend=\"Disabled group\" disabled defaultValue=\"a\">\n        <Radio.Item label=\"Option A\" value=\"a\" />\n        <Radio.Item label=\"Option B\" value=\"b\" />\n      </Radio.Group>\n      <Radio.Group legend=\"Individual disabled\" defaultValue=\"available\">\n        <Radio.Item label=\"Available\" value=\"available\" />\n        <Radio.Item label=\"Unavailable\" value=\"unavailable\" disabled />\n      </Radio.Group>\n    </div>",
-        "<Radio.Group legend=\"Preferences\" controlPosition=\"end\" defaultValue=\"a\">\n      <Radio.Item label=\"Label before radio\" value=\"a\" />\n      <Radio.Item label=\"Another option\" value=\"b\" />\n    </Radio.Group>"
+        "<div className=\"grid grid-cols-2 gap-6\">\n      <Radio.Group\n        legend=\"Payment method\"\n        error=\"Please select a payment method to continue\"\n      >\n        <Radio.Item label=\"Credit Card\" value=\"card\" variant=\"error\" />\n        <Radio.Item label=\"PayPal\" value=\"paypal\" variant=\"error\" />\n      </Radio.Group>\n      <Radio.Group\n        legend=\"Payment method\"\n        appearance=\"card\"\n        error=\"Please select a payment method to continue\"\n      >\n        <Radio.Item\n          label=\"Credit Card\"\n          description=\"Pay with Visa, Mastercard, American Express, or Elo.\"\n          value=\"card\"\n          variant=\"error\"\n        />\n        <Radio.Item\n          label=\"PayPal\"\n          description=\"Pay with your PayPal account.\"\n          value=\"paypal\"\n          variant=\"error\"\n        />\n      </Radio.Group>\n    </div>",
+        "<div className=\"grid grid-cols-2 gap-6\">\n      <Radio.Group legend=\"Disabled group\" disabled defaultValue=\"a\">\n        <Radio.Item label=\"Option A\" value=\"a\" />\n        <Radio.Item label=\"Option B\" value=\"b\" />\n      </Radio.Group>\n      <Radio.Group legend=\"Individual disabled\" defaultValue=\"available\">\n        <Radio.Item label=\"Available\" value=\"available\" />\n        <Radio.Item label=\"Unavailable\" value=\"unavailable\" disabled />\n      </Radio.Group>\n      <Radio.Group\n        legend=\"Disabled card group\"\n        appearance=\"card\"\n        disabled\n        defaultValue=\"a\"\n      >\n        <Radio.Item\n          label=\"Option A\"\n          description=\"This option is disabled.\"\n          value=\"a\"\n        />\n        <Radio.Item\n          label=\"Option B\"\n          description=\"This option is disabled.\"\n          value=\"b\"\n        />\n      </Radio.Group>\n      <Radio.Group\n        legend=\"Individual disabled card\"\n        appearance=\"card\"\n        defaultValue=\"available\"\n      >\n        <Radio.Item\n          label=\"Available\"\n          description=\"This option can be selected.\"\n          value=\"available\"\n        />\n        <Radio.Item\n          label=\"Unavailable\"\n          description=\"This option is not available.\"\n          value=\"unavailable\"\n          disabled\n        />\n      </Radio.Group>\n    </div>",
+        "<Radio.Group legend=\"Preferences\" controlPosition=\"end\" defaultValue=\"a\">\n      <Radio.Item label=\"Label before radio\" value=\"a\" />\n      <Radio.Item label=\"Another option\" value=\"b\" />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Choose a plan\"\n      appearance=\"card\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item\n        label=\"Free\"\n        description=\"For personal or hobby projects that aren't business-critical.\"\n        value=\"free\"\n      />\n      <Radio.Item\n        label=\"Pro\"\n        description=\"For professional websites that aren't business-critical.\"\n        value=\"pro\"\n      />\n      <Radio.Item\n        label=\"Business\"\n        description=\"For small businesses operating online.\"\n        value=\"business\"\n      />\n      <Radio.Item\n        label=\"Contract\"\n        description=\"For mission-critical applications that are core to your business.\"\n        value=\"contract\"\n      />\n    </Radio.Group>",
+        "<Radio.Group\n      legend=\"Choose a plan\"\n      appearance=\"card\"\n      orientation=\"horizontal\"\n      value={value}\n      onValueChange={setValue}\n    >\n      <Radio.Item\n        label=\"Free\"\n        description=\"For personal or hobby projects that aren't business-critical.\"\n        value=\"free\"\n      />\n      <Radio.Item\n        label=\"Pro\"\n        description=\"For professional websites that aren't business-critical.\"\n        value=\"pro\"\n      />\n      <Radio.Item\n        label=\"Business\"\n        description=\"For small businesses operating online.\"\n        value=\"business\"\n      />\n      <Radio.Item\n        label=\"Contract\"\n        description=\"For mission-critical applications that are core to your business.\"\n        value=\"contract\"\n      />\n    </Radio.Group>"
       ],
       "colors": [
         "bg-kumo-base",
         "bg-kumo-contrast",
+        "bg-kumo-tint",
+        "border-kumo-danger",
+        "border-kumo-interact",
         "border-kumo-line",
+        "border-kumo-ring",
         "ring-kumo-danger",
         "ring-kumo-line",
         "ring-kumo-ring",
@@ -3870,6 +3891,8 @@
         "<Select aria-label=\"Loading select\" className=\"w-[200px]\" loading />",
         "<Select\n      label=\"Assignee\"\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Select assignee\"\n      items={items}\n    />",
         "<Select\n      label=\"Visible Columns\"\n      className=\"w-[250px]\"\n      multiple\n      renderValue={(value) => {\n        if (value.length > 3) {\n          return (\n            <span className=\"line-clamp-1\">\n              {value.slice(0, 2).join(\", \") + ` and ${value.length - 2} more`}\n            </span>\n          );\n        }\n        return <span>{value.join(\", \")}</span>;\n      }}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"Name\">Name</Select.Option>\n      <Select.Option value=\"Location\">Location</Select.Option>\n      <Select.Option value=\"Size\">Size</Select.Option>\n      <Select.Option value=\"Read\">Read</Select.Option>\n      <Select.Option value=\"Write\">Write</Select.Option>\n      <Select.Option value=\"CreatedAt\">Created At</Select.Option>\n    </Select>",
+        "<Select\n      label=\"Compliance Frameworks\"\n      className=\"w-[280px]\"\n      multiple\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"European Union Privacy Regulation\">\n        European Union Privacy Regulation\n      </Select.Option>\n      <Select.Option value=\"California Consumer Protection Act\">\n        California Consumer Protection Act\n      </Select.Option>\n      <Select.Option value=\"Health Insurance Portability Act\">\n        Health Insurance Portability Act\n      </Select.Option>\n      <Select.Option value=\"Payment Card Industry Standard\">\n        Payment Card Industry Standard\n      </Select.Option>\n    </Select>",
+        "<Select\n      label=\"Issue Types\"\n      className=\"w-[220px]\"\n      multiple\n      renderValue={(selected) => (\n        <span className=\"flex items-center gap-2\">\n          <span>Issue Types</span>\n          {selected.length > 0 && (\n            <Badge variant=\"secondary\">{selected.length}</Badge>\n          )}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      {allOptions.map((option) => (\n        <Select.Option key={option.value} value={option.value}>\n          {option.label}\n        </Select.Option>\n      ))}\n    </Select>",
         "<Select\n      label=\"Author\"\n      description=\"Select the primary author for this document\"\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Select an author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
       ],
       "colors": [
@@ -4108,17 +4131,14 @@
         "variant": {
           "type": "enum",
           "optional": true,
-          "description": "Visual variant: \"default\" or \"error\" for validation failures (visual only, no error text)",
+          "description": "Visual variant: \"default\" (pill, brand color) or \"neutral\" (squircle, monochrome)",
           "values": [
             "default",
-            "error"
+            "neutral"
           ],
           "descriptions": {
-            "default": "Default switch appearance",
-            "error": "Error state for validation failures"
-          },
-          "classes": {
-            "error": "ring-kumo-danger"
+            "default": "Default switch with squircle shape and brand blue color",
+            "neutral": "Monochrome switch with squircle shape for subtle toggles"
           },
           "default": "default"
         },
@@ -4217,16 +4237,15 @@
         "<Switch label=\"Switch\" checked={checked} onCheckedChange={setChecked} />",
         "<Switch label=\"Switch\" checked={false} onCheckedChange={() => {}} />",
         "<Switch label=\"Switch\" checked={true} onCheckedChange={() => {}} />",
-        "<Switch label=\"Disabled\" checked={false} disabled />"
+        "<Switch label=\"Disabled\" checked={false} disabled />",
+        "<Switch\n      label=\"Neutral switch\"\n      variant=\"neutral\"\n      checked={checked}\n      onCheckedChange={setChecked}\n    />",
+        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Neutral off\"\n        variant=\"neutral\"\n        checked={false}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral on\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral disabled\"\n        variant=\"neutral\"\n        checked={false}\n        disabled\n      />\n    </div>",
+        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Default variant\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral variant\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n    </div>"
       ],
       "colors": [
-        "bg-kumo-brand",
-        "bg-kumo-brand-hover",
-        "bg-kumo-danger",
-        "bg-kumo-interact",
-        "bg-kumo-recessed",
+        "bg-kumo-base",
         "border-kumo-line",
-        "ring-kumo-danger",
+        "ring-kumo-line",
         "text-kumo-danger",
         "text-kumo-default",
         "text-kumo-subtle"
@@ -4441,14 +4460,13 @@
         "<Tabs\n      variant=\"underline\"\n      tabs={[\n        { value: \"tab1\", label: \"Tab 1\" },\n        { value: \"tab2\", label: \"Tab 2\" },\n        { value: \"tab3\", label: \"Tab 3\" },\n      ]}\n      selectedValue=\"tab1\"\n    />",
         "<div className=\"space-y-4\">\n      <Tabs\n        tabs={[\n          { value: \"tab1\", label: \"Tab 1\" },\n          { value: \"tab2\", label: \"Tab 2\" },\n          { value: \"tab3\", label: \"Tab 3\" },\n        ]}\n        value={activeTab}\n        onValueChange={setActiveTab}\n      />\n      <p className=\"text-sm text-kumo-subtle\">\n        Active tab: <code className=\"text-sm\">{activeTab}</code>\n      </p>\n    </div>",
         "<Tabs\n      tabs={[\n        { value: \"overview\", label: \"Overview\" },\n        { value: \"analytics\", label: \"Analytics\" },\n        { value: \"reports\", label: \"Reports\" },\n        { value: \"notifications\", label: \"Notifications\" },\n        { value: \"settings\", label: \"Settings\" },\n        { value: \"billing\", label: \"Billing\" },\n      ]}\n      selectedValue=\"overview\"\n    />",
-        "<Tabs\n      tabs={[\n        {\n          value: \"tab1\",\n          label: \"Regular Tab\",\n        },\n        {\n          value: \"tab2\",\n          label: \"Link Tab\",\n          render: (props) => <a {...props} href=\"#tab2\" />,\n        },\n        {\n          value: \"tab3\",\n          label: \"Another Link\",\n          render: (props) => <a {...props} href=\"#tab3\" />,\n        },\n      ]}\n      selectedValue=\"tab1\"\n    />"
+        "<Tabs\n      tabs={[\n        {\n          value: \"tab1\",\n          label: \"Regular Tab\",\n        },\n        {\n          value: \"tab2\",\n          label: \"Link Tab\",\n          render: (props) => <a {...props} href=\"#tab2\" />,\n        },\n        {\n          value: \"tab3\",\n          label: \"Cloudflare\",\n          render: (props) => (\n            <a {...props} href=\"https://cloudflare.com\" target=\"_blank\" />\n          ),\n        },\n      ]}\n      selectedValue=\"tab1\"\n    />"
       ],
       "colors": [
         "bg-kumo-brand",
         "bg-kumo-overlay",
         "bg-kumo-tint",
         "border-kumo-line",
-        "border-kumo-tint",
         "ring-kumo-fill-hover",
         "ring-kumo-ring",
         "text-kumo-default",
@@ -4682,43 +4700,29 @@
       "importPath": "@cloudflare/kumo",
       "category": "Overlay",
       "props": {
-        "align": {
-          "type": "enum",
-          "optional": true,
-          "description": "Alignment on the axis perpendicular to `side`.\n- `\"start\"` — Align to the start edge\n- `\"center\"` — Center-aligned\n- `\"end\"` — Align to the end edge",
-          "values": [
-            "start",
-            "center",
-            "end"
-          ]
-        },
-        "asChild": {
-          "type": "boolean",
-          "optional": true,
-          "description": "When `true`, the trigger wraps the child element instead of adding a wrapper."
-        },
-        "className": {
-          "type": "string",
-          "optional": true,
-          "description": "Additional CSS classes merged via `cn()`."
-        },
         "side": {
           "type": "enum",
-          "optional": true,
-          "description": "Preferred side of the trigger to render the tooltip.\n- `\"top\"` — Tooltip appears above the trigger\n- `\"bottom\"` — Tooltip appears below the trigger\n- `\"left\"` — Tooltip appears to the left of the trigger\n- `\"right\"` — Tooltip appears to the right of the trigger",
           "values": [
             "top",
             "bottom",
             "left",
             "right"
           ],
+          "default": "top",
           "descriptions": {
             "top": "Tooltip appears above the trigger",
             "bottom": "Tooltip appears below the trigger",
             "left": "Tooltip appears to the left of the trigger",
             "right": "Tooltip appears to the right of the trigger"
-          },
-          "default": "top"
+          }
+        },
+        "className": {
+          "type": "string",
+          "description": "Additional CSS classes"
+        },
+        "children": {
+          "type": "ReactNode",
+          "description": "Child elements"
         },
         "content": {
           "type": "ReactNode",
@@ -4729,7 +4733,8 @@
       "examples": [
         "<TooltipProvider>\n      <Tooltip content=\"Add new item\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add new item\" />\n      </Tooltip>\n    </TooltipProvider>",
         "<TooltipProvider>\n      <Tooltip content=\"Add\" asChild>\n        <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n      </Tooltip>\n    </TooltipProvider>",
-        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button\n            shape=\"square\"\n            icon={TranslateIcon}\n            aria-label=\"Change language\"\n          />\n        </Tooltip>\n      </div>\n    </TooltipProvider>"
+        "<TooltipProvider>\n      <div className=\"flex gap-2\">\n        <Tooltip content=\"Add\" asChild>\n          <Button shape=\"square\" icon={PlusIcon} aria-label=\"Add\" />\n        </Tooltip>\n        <Tooltip content=\"Change language\" asChild>\n          <Button\n            shape=\"square\"\n            icon={TranslateIcon}\n            aria-label=\"Change language\"\n          />\n        </Tooltip>\n      </div>\n    </TooltipProvider>",
+        "<TooltipProvider>\n      <Tooltip\n        content=\"Click to learn more\"\n        className=\"inline-flex items-center gap-1.5 rounded-full bg-kumo-brand px-3 py-1.5 text-sm font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95\"\n      >\n        <Info className=\"size-4\" />\n        <span>Help</span>\n      </Tooltip>\n    </TooltipProvider>"
       ],
       "colors": [
         "bg-kumo-base",

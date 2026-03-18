@@ -19,6 +19,7 @@ import {
   SwitchNeutralDemo,
   SwitchNeutralStatesDemo,
   SwitchVariantsDemo,
+  SwitchSizesDemo,
 } from "~/components/demos/SwitchDemo";
 
 {/* Demo */}
@@ -118,6 +119,18 @@ The neutral variant uses monochrome colors and a squircle shape, ideal for subtl
 <Switch label="Neutral disabled" variant="neutral" checked={false} disabled />`}
 >
   <SwitchNeutralStatesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Sizes</Heading>
+
+Three sizes available: `sm`, `base` (default), and `lg`.
+
+<ComponentExample
+  code={`<Switch label="Small" size="sm" checked={true} onCheckedChange={() => {}} />
+<Switch label="Base (default)" size="base" checked={true} onCheckedChange={() => {}} />
+<Switch label="Large" size="lg" checked={true} onCheckedChange={() => {}} />`}
+>
+  <SwitchSizesDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>

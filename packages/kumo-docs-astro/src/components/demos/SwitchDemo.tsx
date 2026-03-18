@@ -77,3 +77,29 @@ export function SwitchVariantsDemo() {
     </div>
   );
 }
+
+/** All sizes comparison */
+export function SwitchSizesDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Switch
+        label="Small"
+        size="sm"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Base (default)"
+        size="base"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Large"
+        size="lg"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+    </div>
+  );
+}
