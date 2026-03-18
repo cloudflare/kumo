@@ -200,7 +200,7 @@ function Content({
   return (
     <ComboboxBase.Portal>
       <ComboboxBase.Positioner
-        className="outline-none"
+        className=""
         align={align}
         sideOffset={sideOffset}
         alignOffset={alignOffset}
