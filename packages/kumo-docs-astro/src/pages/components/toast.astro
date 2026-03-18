@@ -16,6 +16,7 @@ import {
   ToastCustomContentDemo,
   ToastActionsDemo,
   ToastPromiseDemo,
+  ToastPositionDemo,
 } from "../../components/demos/ToastDemo";
 ---
 
@@ -169,6 +170,45 @@ export function Layout({ children }) {
       </div>
 
       <div>
+        <Heading level={3}>Position</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use the <code class="text-kumo-default">position</code> prop on <code
+            class="text-kumo-default">Toasty</code
+          > to control where toast notifications appear by default. The default
+          value is <code class="text-kumo-default">"bottom-right"</code>.
+        </p>
+        <ComponentExample
+          code={`<Toasty position="top-right">
+  <Button
+    onClick={() =>
+      toastManager.add({
+        title: "Toast positioned",
+        description: "This toast uses the Toasty provider position.",
+      })
+    }
+  >
+    Show top-right toast
+  </Button>
+</Toasty>`}
+        >
+          <ToastPositionDemo client:visible />
+        </ComponentExample>
+        <p class="mt-4 text-kumo-subtle">
+          Supported values are <code class="text-kumo-default">"top-left"</code>, <code
+            class="text-kumo-default">"top-center"</code
+          >, <code class="text-kumo-default">"top-right"</code>, <code
+            class="text-kumo-default">"bottom-left"</code
+          >, <code class="text-kumo-default">"bottom-center"</code>, and <code
+            class="text-kumo-default">"bottom-right"</code
+          >. Individual toasts can also override the provider default by passing{" "}
+          <code class="text-kumo-default">position</code> to <code
+            class="text-kumo-default">toastManager.add()</code
+          >, so different toasts can render in different lanes at the same
+          time.
+        </p>
+      </div>
+
+      <div>
         <Heading level={3}>Success Action</Heading>
         <p class="mb-4 text-kumo-subtle">
           Toasts work well for confirming user actions.
@@ -285,6 +325,7 @@ toastManager.add({ title: "Third toast" });`}
           <ToastPromiseDemo client:visible />
         </ComponentExample>
       </div>
+
     </div>
   </ComponentSection>
 
@@ -298,6 +339,21 @@ toastManager.add({ title: "Third toast" });`}
         The provider component that wraps your app and manages the toast system.
       </p>
       <PropsTable component="Toasty" />
+      <p class="mt-4 text-kumo-subtle">
+        <code class="text-kumo-default">Toasty</code> also accepts a <code
+          class="text-kumo-default">position</code
+        > prop to control the default toast viewport placement. Supported
+        values are <code class="text-kumo-default">"top-left"</code>, <code
+          class="text-kumo-default">"top-center"</code
+        >, <code class="text-kumo-default">"top-right"</code>, <code
+          class="text-kumo-default">"bottom-left"</code
+        >, <code class="text-kumo-default">"bottom-center"</code>, and <code
+          class="text-kumo-default">"bottom-right"</code>. The default is <code
+          class="text-kumo-default">"bottom-right"</code
+        >. Individual toasts can override that default with their own <code
+          class="text-kumo-default">position</code
+        > value.
+      </p>
     </div>
 
     <div class="mb-8">
@@ -377,5 +433,6 @@ toastManager.promise(asyncFn(), {
         </table>
       </div>
     </div>
+
   </ComponentSection>
 </DocLayout>
