@@ -1,5 +1,33 @@
 # @cloudflare/kumo
 
+## 1.14.0
+
+### Minor Changes
+
+- 8b2d6a0: Add radio card appearance via `appearance="card"` prop on Radio.Group and Radio.Item. Cards display a bordered, selectable container with title and description. Also adds `description` prop to Radio.Item for helper text. Supports vertical and horizontal orientations, error state, and disabled state.
+- abbf586: Expose Chart `optionUpdateBehavior` to control how ECharts applies option updates; `notMerge` now defaults to `false`.
+- c6aa554: Add neutral variant to Switch component and improve accessibility
+  - New `variant="neutral"` option: monochrome switch with squircle shape, matching the design from stratus
+  - Improved off-state visibility for default variant with darker background/ring colors
+  - Removed `error` variant (not useful for toggle switches)
+  - Added defensive fallback so invalid variant values don't cause runtime crashes
+
+### Patch Changes
+
+- f2e17d7: removed `outline-none` to bring back focus states on all buttons
+- eba693e: Fix flaky vitest "Closing rpc while fetch was pending" error in deep-imports test
+- db91f50: Fix InputArea label click not focusing textarea. Use FieldBase.Control with render callback to properly associate the label with the textarea element.
+- 80afd4d: Fix TypeScript return types for ShikiProvider and CodeHighlighted components.
+
+  Changed return type from `ReactNode` to `React.JSX.Element` to resolve JSX compatibility errors. This fixes issues when consuming these components in projects with stricter TypeScript configurations (e.g., `skipLibCheck: false`), where `ReactNode` was incorrectly inferred as a valid JSX element return type.
+
+- dc9742d: Fix table header font size to ensure consistent rendering across dashboards with different default font sizes
+- f94fee7: Add dedicated `kumo-placeholder` text color token and use it for Input, InputArea, SensitiveInput, and CommandPalette placeholder text. The new token provides better visual distinction between placeholder and active text in both light and dark modes.
+- 66012b7: Replace the package-level ESLint pass with Oxlint JS plugin coverage for the remaining jsx-a11y rules, and pin the library build to `es2022` with a post-build browser-compat test that blocks newer runtime APIs from shipping in `dist`.
+- e8acdd8: fix(Select): prevent chevron overflow with long multi-select values
+
+  Added `min-w-0 truncate` to the value element and `shrink-0` to the chevron icon so that long option names truncate gracefully instead of pushing the chevron outside the select bounds.
+
 ## 1.13.1
 
 ### Patch Changes

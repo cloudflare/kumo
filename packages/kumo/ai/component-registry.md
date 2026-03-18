@@ -1209,7 +1209,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -2035,7 +2035,7 @@ Dialog component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-overlay`, `text-kumo-default`
+`bg-kumo-base`, `text-kumo-default`
 
 **Styling:**
 
@@ -3100,7 +3100,7 @@ LayerCard component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-elevated`, `ring-kumo-fill`, `ring-kumo-line`, `text-kumo-strong`
+`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-recessed`, `ring-kumo-fill`, `ring-kumo-line`, `text-kumo-strong`
 
 **Styling:**
 
@@ -4071,7 +4071,7 @@ Select component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-overlay`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-tint`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -4957,7 +4957,7 @@ Tab navigation component with segmented or underline style. Built on Base UI Tab
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-fill-hover`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-recessed`, `bg-kumo-surface`, `bg-kumo-tint`, `border-kumo-ring`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 

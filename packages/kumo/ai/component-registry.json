@@ -2130,9 +2130,10 @@
         "<div className=\"flex flex-wrap items-center gap-4\">\n      <Combobox\n        size=\"sm\"\n        value={smValue}\n        onValueChange={(v) => setSmValue(v as Language)}\n        items={languages}\n      >\n        <Combobox.TriggerValue className=\"w-[160px]\" />\n        <Combobox.Content>\n          <Combobox.Input placeholder=\"Search\" />\n          <Combobox.Empty />\n          <Combobox.List>\n            {(item: Language) => (\n              <Combobox.Item key={item.value} value={item}>\n                {item.emoji} {item.label}\n              </Combobox.Item>\n            )}\n          </Combobox.List>\n        </Combobox.Content>\n      </Combobox>\n      <Combobox\n        size=\"base\"\n        value={baseValue}\n        onValueChange={(v) => setBaseValue(v as Language)}\n        items={languages}\n      >\n        <Combobox.TriggerValue className=\"w-[180px]\" />\n        <Combobox.Content>\n          <Combobox.Input placeholder=\"Search\" />\n          <Combobox.Empty />\n          <Combobox.List>\n            {(item: Language) => (\n              <Combobox.Item key={item.value} value={item}>\n                {item.emoji} {item.label}\n              </Combobox.Item>\n            )}\n          </Combobox.List>\n        </Combobox.Content>\n      </Combobox>\n    </div>"
       ],
       "colors": [
-        "bg-kumo-control",
+        "bg-kumo-base",
         "bg-kumo-fill-hover",
         "bg-kumo-overlay",
+        "bg-kumo-tint",
         "border-kumo-line",
         "ring-kumo-line",
         "text-kumo-default",
@@ -2473,7 +2474,6 @@
       ],
       "colors": [
         "bg-kumo-base",
-        "bg-kumo-overlay",
         "text-kumo-default"
       ],
       "subComponents": {
@@ -3165,6 +3165,7 @@
       "colors": [
         "bg-kumo-base",
         "bg-kumo-elevated",
+        "bg-kumo-recessed",
         "ring-kumo-fill",
         "ring-kumo-line",
         "text-kumo-strong"
@@ -3896,9 +3897,8 @@
         "<Select\n      label=\"Author\"\n      description=\"Select the primary author for this document\"\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Select an author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
       ],
       "colors": [
-        "bg-kumo-control",
-        "bg-kumo-overlay",
-        "ring-kumo-line",
+        "bg-kumo-base",
+        "bg-kumo-tint",
         "ring-kumo-ring",
         "text-kumo-danger",
         "text-kumo-default",
@@ -4463,11 +4463,12 @@
         "<Tabs\n      tabs={[\n        {\n          value: \"tab1\",\n          label: \"Regular Tab\",\n        },\n        {\n          value: \"tab2\",\n          label: \"Link Tab\",\n          render: (props) => <a {...props} href=\"#tab2\" />,\n        },\n        {\n          value: \"tab3\",\n          label: \"Cloudflare\",\n          render: (props) => (\n            <a {...props} href=\"https://cloudflare.com\" target=\"_blank\" />\n          ),\n        },\n      ]}\n      selectedValue=\"tab1\"\n    />"
       ],
       "colors": [
+        "bg-kumo-base",
         "bg-kumo-brand",
-        "bg-kumo-overlay",
+        "bg-kumo-recessed",
+        "bg-kumo-surface",
         "bg-kumo-tint",
-        "border-kumo-line",
-        "ring-kumo-fill-hover",
+        "border-kumo-ring",
         "ring-kumo-ring",
         "text-kumo-default",
         "text-kumo-strong",

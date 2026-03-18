@@ -95,24 +95,31 @@ export async function generateButtonComponents(
 
 ALL magic numbers and constants MUST live here:
 
-| Category   | Constants                                                 |
-| ---------- | --------------------------------------------------------- |
-| Layout     | `SECTION_PADDING`, `SECTION_GAP`, `GRID_LAYOUT.*`         |
-| Spacing    | `SPACING.xs/sm/base/lg`                                   |
-| Typography | `FONT_SIZE.xs/sm/base/lg`, `FALLBACK_VALUES.fontWeight.*` |
-| Borders    | `BORDER_RADIUS.xs/sm/base/lg/full`                        |
-| Effects    | `SHADOWS.xs/sm/lg/dialog`                                 |
-| Opacity    | `OPACITY.disabled/backdrop/shortcut`                      |
-| Colors     | `COLORS.placeholder/spinner/border` (RGB fallbacks)       |
-| Variables  | `VAR_NAMES.*` (semantic variable name mapping)            |
+| Category   | Constants                                                         |
+| ---------- | ----------------------------------------------------------------- |
+| Layout     | `SECTION_PADDING`, `SECTION_GAP`, `SECTION_LAYOUT`, `GRID_LAYOUT` |
+| Spacing    | `SPACING.xs/sm/base/lg`                                           |
+| Typography | `FONT_SIZE.xs/sm/base/lg`, `FALLBACK_VALUES.fontWeight.*`         |
+| Borders    | `BORDER_RADIUS.xs/sm/md/lg/xl/full`                               |
+| Effects    | `SHADOWS.xs/sm/lg/dialog/subtle` (via `getShadowLayer()`)         |
+| Opacity    | `OPACITY.disabled/backdrop/shortcut`                              |
+| Colors     | `COLORS.placeholder/spinner/border` (RGB fallbacks)               |
+| Variables  | `VAR_NAMES.text.*`, `VAR_NAMES.color.*` (semantic mapping)        |
+| Dash       | `DASH_PATTERN.standard` ([4, 4])                                  |
 
 Key utilities:
 
 - `createAutoLayoutFrame(config)` - Creates frame with auto-layout
-- `createTextNode(text, fontSize, fontWeight)` - Styled text with Inter font
+- `createTextNode(text, fontSize, fontWeight)` - Styled text with Inter font (async)
 - `createModeSection(page, name, "light"|"dark")` - Creates mode-scoped section
+- `createComponentSectionPair(page, name, startY, width, height)` - Light+dark pair
+- `createRowLabel(text, x, y)` - Styled label for grids
+- `createColumnHeaders(headers, y, frame)` - Header row for grids
 - `bindFillToVariable(node, variableId)` - Binds fill to Figma variable
-- `getVariableByName(name)` - Looks up variable from kumo-colors collection
+- `bindFillToVariableWithOpacity(node, varName)` - Handles `"color/20"` opacity suffix
+- `getVariableByName(name)` - Looks up variable from kumo-colors collection (cached)
+- `getOrCreateVariableWithOpacity(nameWithOpacity)` - Creates opacity variants at runtime
+- `applyCornerRadius(node, radius)` - Apply radius by key or number
 
 ## ADDING A GENERATOR
 
@@ -120,7 +127,7 @@ Key utilities:
 2. Add testable exports (pure functions)
 3. Register in `code.ts` GENERATORS array:
    ```typescript
-   { name: "YourComponent", generate: async (page, y) => await generateYourComponentComponents(page, y) }
+   { name: "YourComponent", execute: async (page, y) => ({ nextY: await generateYourComponentComponents(page, y) }) }
    ```
 4. Either:
    - Create `yourcomponent.test.ts` OR
@@ -136,6 +143,9 @@ Key utilities:
 4. **No magic numbers**: Catches local redeclaration of shared.ts constants
 5. **Import validation**: Constants must be imported, not copied
 6. **Shadow centralization**: No hardcoded shadow effects
+7. **Opacity centralization**: No hardcoded `opacity = 0.5`
+8. **RGB centralization**: No hardcoded RGB color objects
+9. **Font size usage**: Must use `FONT_SIZE` or `FIGMA-SPECIFIC` comment
 
 Excluded components (with reasons): Field, Grid, PageHeader, Popover
 
@@ -156,3 +166,4 @@ Excluded components (with reasons): Field, Grid, PageHeader, Popover
 - **Component coverage**: Badge, Banner, Button, Checkbox, Combobox, Dialog, Input, Select, Table, etc.
 - **Variable binding**: `getVariableByName()` + `bindFillToVariable()` for theme-aware colors
 - **Opacity variants**: Created at runtime via `getOrCreateVariableWithOpacity("color/20")`
+- **Component variant naming**: `"variant=primary, size=base, disabled=false"` format

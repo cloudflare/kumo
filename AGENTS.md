@@ -1,24 +1,25 @@
 # KUMO KNOWLEDGE BASE
 
-**Generated:** 2026-03-18 | **Commit:** adfc9ab9 | **Branch:** main
+**Generated:** 2026-03-18 | **Commit:** 38518e34 | **Branch:** rozenmd/fix-preview
 
 ## OVERVIEW
 
-Cloudflare's React component library (`@cloudflare/kumo`). pnpm monorepo: component library (Base UI + Tailwind v4), Astro docs site, Figma plugin. ESM-only, Node 24+.
+Cloudflare's React component library (`@cloudflare/kumo`). pnpm monorepo: component library (Base UI + Tailwind v4), Astro docs site, Figma plugin, screenshot worker. ESM-only, Node 24+.
 
 ## STRUCTURE
 
 ```
 kumo/
 ├── packages/
-│   ├── kumo/                  # Component library → see packages/kumo/AGENTS.md
-│   ├── kumo-docs-astro/       # Astro docs site → see packages/kumo-docs-astro/AGENTS.md
-│   └── kumo-figma/            # Figma plugin → see packages/kumo-figma/AGENTS.md
-├── ci/                        # CI/CD scripts → see ci/AGENTS.md
-├── lint/                      # Custom oxlint rules (4 rules, shared by kumo + docs)
-├── .changeset/                # Changeset files
-├── .github/workflows/         # 6 workflow YAMLs (release, pullrequest, preview, etc.)
-└── lefthook.yml               # Pre-push changeset validation
+│   ├── kumo/                     # Component library → see packages/kumo/AGENTS.md
+│   ├── kumo-docs-astro/          # Astro docs site → see packages/kumo-docs-astro/AGENTS.md
+│   ├── kumo-figma/               # Figma plugin → see packages/kumo-figma/AGENTS.md
+│   └── kumo-screenshot-worker/   # Visual regression Worker → see packages/kumo-screenshot-worker/AGENTS.md
+├── ci/                           # CI/CD scripts → see ci/AGENTS.md
+├── lint/                         # Custom oxlint rules (5 rules in package, 4 at root)
+├── .changeset/                   # Changeset files
+├── .github/workflows/            # 6 workflow YAMLs (release, pullrequest, preview, etc.)
+└── lefthook.yml                  # Pre-push changeset validation
 ```
 
 ## WHERE TO LOOK
@@ -29,10 +30,10 @@ kumo/
 | Component source     | `packages/kumo/src/components/{name}/{name}.tsx` | Standard pattern                                         |
 | Blocks (installable) | `packages/kumo/src/blocks/`                      | NOT library exports; installed via CLI                   |
 | Semantic tokens      | `packages/kumo/src/styles/theme-kumo.css`        | AUTO-GENERATED; edit `scripts/theme-generator/config.ts` |
-| Custom lint rules    | `lint/` and `packages/kumo/lint/`                | Two copies; package copy adds `no-deprecated-props`      |
+| Custom lint rules    | `lint/` (4 rules) + `packages/kumo/lint/` (+1)   | Package copy adds `no-deprecated-props`                  |
 | Demo examples        | `packages/kumo-docs-astro/src/components/demos/` | Feed into registry codegen                               |
 | CI scripts           | `ci/`                                            | Reporter system, versioning, deployment                  |
-| Figma generators     | `packages/kumo-figma/src/generators/`            | 35+ component generators                                 |
+| Figma generators     | `packages/kumo-figma/src/generators/`            | 37 component generators                                  |
 
 ## CONVENTIONS
 

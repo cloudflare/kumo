@@ -12,11 +12,13 @@ kumo-figma/
 │   ├── code.ts                    # Plugin entry: GENERATORS array, page management
 │   ├── ui.html                    # Plugin UI
 │   ├── manifest.json              # Figma manifest (main: "code.js")
+│   ├── build.sh                   # Build script: codegen → esbuild (ES2017, IIFE)
 │   ├── generators/                # → see src/generators/AGENTS.md
 │   │   ├── shared.ts              # ALL constants + utilities (~1544 lines, critical)
+│   │   ├── icon-utils.ts          # Icon creation, placeholder, color binding (308 lines)
 │   │   ├── _test-utils.ts         # Shared test assertions
-│   │   ├── drift-detection.test.ts  # Meta-test: registry ↔ generator sync
-│   │   └── {component}.ts         # 35+ component generators
+│   │   ├── drift-detection.test.ts  # Meta-test: registry ↔ generator sync (1733 lines)
+│   │   └── {component}.ts         # 37 component generators
 │   ├── parsers/
 │   │   ├── tailwind-to-figma.ts   # Core: Tailwind classes → Figma values
 │   │   ├── opacity-extractor.ts   # `bg-kumo-brand/70` → opacity data
@@ -25,7 +27,7 @@ kumo-figma/
 │   └── generated/                 # BUILD OUTPUT (gitignored): theme-data.json, etc.
 ├── scripts/
 │   ├── sync-tokens-to-figma.ts    # CSS → Figma Variables API (unidirectional)
-│   ├── figma-api.ts               # Low-level Figma REST client
+│   ├── figma-api.ts               # Low-level Figma REST client (723 lines)
 │   ├── color-utils.ts             # oklch → sRGB conversion (uses culori)
 │   └── maybe-sync.ts              # Conditional sync gate (skips if no FIGMA_TOKEN)
 └── vitest.config.ts               # Node env (no DOM)
@@ -37,6 +39,7 @@ kumo-figma/
 | ------------------------ | ---------------------------------------------------- | ---------------------------------- |
 | Add generator            | `src/generators/` + register in `code.ts` GENERATORS | Also update drift-detection        |
 | Centralized constants    | `src/generators/shared.ts`                           | ALL magic numbers must live here   |
+| Icon utilities           | `src/generators/icon-utils.ts`                       | createIconInstance, bindIconColor  |
 | Tailwind → Figma parsing | `src/parsers/tailwind-to-figma.ts`                   | Scale lookups from theme-data.json |
 | Token sync to Figma      | `scripts/sync-tokens-to-figma.ts`                    | Requires FIGMA_TOKEN               |
 | Drift detection          | `src/generators/drift-detection.test.ts`             | Meta-test enforcing sync           |
@@ -74,6 +77,7 @@ pnpm build =
 | `.toBe(16)` for font sizes in tests        | Fragile assertions      | Use `FONT_SIZE.*` or registry values |
 | `.toBe(600)` for font weights              | Fragile assertions      | Use `FALLBACK_VALUES.fontWeight.*`   |
 | Redeclaring constants from shared.ts       | Drift detection catches | Always import                        |
+| `??` operator                              | ES2017 doesn't support  | Use `if (x === undefined)` pattern   |
 
 ## NOTES
 
@@ -85,3 +89,4 @@ pnpm build =
 - **Component name mapping** in drift-detection: `DropdownMenu→dropdown`, `Toasty→toast`, `Switch.Group→switch`
 - **`VAR_NAMES`** in shared.ts has legacy aliases (both `color.surface` and `color.base` map to same variable)
 - **Font**: Inter is required (default Figma font). `createTextNode()` handles async loading.
+- **26 `@ts-ignore` instances**: All for `figma.combineAsVariants()` type mismatch at runtime

@@ -1,5 +1,23 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.12
+
+### Patch Changes
+
+- 70a7443: Updated the Contributing docs with content from `CONTRIBUTING.md` so there's a single source of truth for our contribution workflow and repository guidance.
+- Updated dependencies [f2e17d7]
+- Updated dependencies [eba693e]
+- Updated dependencies [db91f50]
+- Updated dependencies [80afd4d]
+- Updated dependencies [dc9742d]
+- Updated dependencies [f94fee7]
+- Updated dependencies [66012b7]
+- Updated dependencies [8b2d6a0]
+- Updated dependencies [e8acdd8]
+- Updated dependencies [abbf586]
+- Updated dependencies [c6aa554]
+  - @cloudflare/kumo@1.14.0
+
 ## 1.3.11
 
 ### Patch Changes

@@ -210,7 +210,7 @@ function Content({
           className={cn(
             "flex flex-col", // flexbox layout for sticky input + scrollable list
             "max-h-[min(var(--available-height),24rem)] max-w-(--available-width) min-w-(--anchor-width) py-1.5",
-            "bg-kumo-control text-kumo-default", // background
+            "bg-kumo-base text-kumo-default", // background
             "rounded-lg shadow-lg ring ring-kumo-line", // border part
             className,
           )}
@@ -333,7 +333,7 @@ function Item({ children, ...props }: ComboboxBase.Item.Props) {
   return (
     <ComboboxBase.Item
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
+      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
     >
       <div className="col-start-1">{children}</div>
       <ComboboxBase.ItemIndicator className="col-start-2 flex items-center">
