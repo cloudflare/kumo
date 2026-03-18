@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - "opencode/**"
+      - "changeset-release/main"
 
 permissions:
   contents: write
@@ -55,6 +56,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -77,6 +80,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -88,6 +93,9 @@ jobs:
 
       - name: Build docs
         run: pnpm --filter @cloudflare/kumo-docs-astro build
+
+      - name: Test docs
+        run: pnpm --filter @cloudflare/kumo-docs-astro test
 
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4
@@ -137,9 +145,6 @@ jobs:
           name: docs-preview-dist
           path: packages/kumo-docs-astro/dist/
 
-      - name: Install wrangler
-        run: npm install -g wrangler
-
       - name: Deploy docs preview
         id: deploy
         working-directory: packages/kumo-docs-astro
@@ -152,7 +157,7 @@ jobs:
 
           # "wrangler versions upload" creates a preview version without
           # routing production traffic. Safe to run on every PR.
-          VERSION_OUTPUT=$(wrangler versions upload --env="" --message "PR #${PR_NUMBER} (${COMMIT_SHORT})" 2>&1) || true
+          VERSION_OUTPUT=$(npx wrangler versions upload --env="" --message "PR #${PR_NUMBER} (${COMMIT_SHORT})" 2>&1) || true
           echo "$VERSION_OUTPUT"
 
           # Verify upload succeeded
@@ -234,7 +239,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies

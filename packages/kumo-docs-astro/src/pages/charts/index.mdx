@@ -1,0 +1,140 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Charts"
+description: "Charts built on ECharts."
+sourceFile: "components/chart"
+---
+
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import {
+  PieChartPreviewDemo,
+  TimeseriesChartPreviewDemo,
+  LegendDefaultDemo,
+  LegendCompactDemo,
+  ChartExampleDemo,
+} from "~/components/demos/Chart/ChartDemo";
+import { ColorDemo } from "~/components/demos/Chart/ColorDemo";
+import ChartCard from "~/components/demos/Chart/ChartCard.astro";
+import Heading from "~/components/docs/Heading.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+
+<ComponentSection>
+  <p class="mb-4">
+    Chart components are built on ECharts. Install it as a dependency:
+  </p>
+
+<CodeBlock code={"npm install echarts"} lang="bash" />
+
+<p class="my-4">
+  For optimal bundle size, import only the ECharts components you need. The
+  examples below show the minimum required imports for our use cases.
+</p>
+
+  <CodeBlock
+    code={`import * as echarts from "echarts/core";
+import { BarChart, LineChart, PieChart } from "echarts/charts";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AriaComponent,
+  AxisPointerComponent,
+  BrushComponent,
+  GridComponent,
+  TooltipComponent,
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+
+echarts.use([
+BarChart,
+LineChart,
+PieChart,
+AxisPointerComponent,
+BrushComponent,
+GridComponent,
+TooltipComponent,
+CanvasRenderer,
+AriaComponent,
+]);`}
+lang="tsx"
+/>
+
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={2}>Available Charts</Heading>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <ChartCard
+      title="Timeseries Chart"
+      description="A specialized chart for displaying time-based data."
+      href="/charts/timeseries"
+    >
+      <TimeseriesChartPreviewDemo client:visible />
+    </ChartCard>
+
+    <ChartCard
+      title="Custom Chart"
+      description="Examples like pie charts."
+      href="/charts/custom"
+    >
+      <PieChartPreviewDemo client:visible />
+    </ChartCard>
+
+  </div>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={2}>Coloring</Heading>
+
+  <div class="space-y-6">
+    <p>
+      Use semantic colors for meaning (errors, warnings) and categorical
+      colors for differentiating arbitrary series.
+    </p>
+
+    <CodeBlock
+      code={`import { ChartPalette } from "@cloudflare/kumo";
+
+const attention = ChartPalette.semantic("Attention", isDarkMode);
+const series0 = ChartPalette.color(0, isDarkMode);`}
+lang="tsx"
+/>
+
+    <ColorDemo />
+
+  </div>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={2}>Legend</Heading>
+
+<p class="mb-6">
+  Use <code>LegendItem</code> to display chart series information with color
+  indicators.
+</p>
+
+<Heading level={3}>LargeItem</Heading>
+<ComponentExample
+  code={`<ChartLegend.LargeItem
+  name="Requests"
+  color={ChartPalette.semantic("Neutral", isDarkMode)}
+  value="1,234"
+  unit="req/s"
+/>`}
+>
+  <LegendDefaultDemo client:visible />
+</ComponentExample>
+
+  <Heading level={3}>SmallItem</Heading>
+  <ComponentExample
+    code={`<ChartLegend.SmallItem
+  name="Series A"
+  color={ChartPalette.color(0, isDarkMode)}
+  value="45%"
+/>`}
+  >
+    <LegendCompactDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ChartExampleDemo client:visible />

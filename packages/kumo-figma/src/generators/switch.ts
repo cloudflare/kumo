@@ -57,7 +57,6 @@ const switchProps = registry.components.Switch.props;
 
 const variantProp = switchProps.variant as {
   values: string[];
-  classes: Record<string, string>;
   descriptions: Record<string, string>;
   default: string;
 };
@@ -914,7 +913,6 @@ export async function generateSwitchGroupComponents(
 export function getSwitchVariantConfig() {
   return {
     values: variantProp.values,
-    classes: variantProp.classes,
     descriptions: variantProp.descriptions,
     default: variantProp.default,
   };

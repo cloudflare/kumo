@@ -11,7 +11,7 @@ dist/
 .wrangler/
 .dev.vars
 wrangler.toml.local
-worker-configuration.d.ts
+
 
 # Environment variables
 .env

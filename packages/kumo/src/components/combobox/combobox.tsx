@@ -200,7 +200,7 @@ function Content({
   return (
     <ComboboxBase.Portal>
       <ComboboxBase.Positioner
-        className="outline-none"
+        className=""
         align={align}
         sideOffset={sideOffset}
         alignOffset={alignOffset}
@@ -210,7 +210,7 @@ function Content({
           className={cn(
             "flex flex-col", // flexbox layout for sticky input + scrollable list
             "max-h-[min(var(--available-height),24rem)] max-w-(--available-width) min-w-(--anchor-width) py-1.5",
-            "bg-kumo-control text-kumo-default", // background
+            "bg-kumo-base text-kumo-default", // background
             "rounded-lg shadow-lg ring ring-kumo-line", // border part
             className,
           )}
@@ -256,10 +256,7 @@ function TriggerValue({
           iconStyles.iconRight,
         )}
       >
-        <CaretDownIcon
-          size={iconStyles.iconSize}
-          className="fill-current"
-        />
+        <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
   );
@@ -325,10 +322,7 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
             iconStyles.caretRight,
           )}
         >
-          <CaretDownIcon
-            size={iconStyles.iconSize}
-            className="fill-current"
-          />
+          <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
     </div>
@@ -339,7 +333,7 @@ function Item({ children, ...props }: ComboboxBase.Item.Props) {
   return (
     <ComboboxBase.Item
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
+      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
     >
       <div className="col-start-1">{children}</div>
       <ComboboxBase.ItemIndicator className="col-start-2 flex items-center">
@@ -475,7 +469,7 @@ function TriggerMultipleWithInput<ValueType>({
       {inputSide === "top" && (
         <ComboboxBase.Input
           placeholder={placeholder}
-          className="w-full px-2 py-1 outline-none border-0 bg-inherit"
+          className="w-full px-2 py-1 border-0 bg-inherit"
         />
       )}
       {/* Chips container */}
@@ -499,7 +493,7 @@ function TriggerMultipleWithInput<ValueType>({
         {inputSide === "right" && (
           <ComboboxBase.Input
             placeholder={placeholder}
-            className="min-w-[100px] flex-1 px-2 py-1 outline-none border-0 bg-inherit"
+            className="min-w-[100px] flex-1 px-2 py-1 border-0 bg-inherit"
           />
         )}
       </div>

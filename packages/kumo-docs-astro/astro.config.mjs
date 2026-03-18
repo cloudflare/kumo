@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
@@ -70,7 +71,7 @@ const kumoSrc = resolve(__dirname, "../kumo/src");
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), sitemap(), markdownPages()],
+  integrations: [mdx(), react(), sitemap(), markdownPages()],
   site: "https://kumo-ui.com/",
   vite: {
     plugins: [

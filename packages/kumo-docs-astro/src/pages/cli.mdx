@@ -1,0 +1,58 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "CLI"
+description: "Access component documentation and install blocks from your terminal."
+---
+
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import { CLITerminal } from "~/components/demos/CLIDemo";
+
+## Installation
+
+The Kumo CLI is available via npx. No installation required.
+
+<CodeBlock code="npx @cloudflare/kumo help" lang="bash" />
+
+## Commands
+
+### Blocks
+
+Install copy-paste blocks into your project for full customization.
+
+<CodeBlock
+  code={`# Initialize kumo.json configuration
+npx @cloudflare/kumo init
+
+# List all available blocks
+
+npx @cloudflare/kumo blocks
+
+# Install a block to your project
+
+npx @cloudflare/kumo add PageHeader`}
+lang="bash"
+/>
+
+### Component Registry
+
+Access component documentation directly from your terminal.
+
+<CodeBlock
+  code={`# List all Kumo components with categories
+npx @cloudflare/kumo ls
+
+# Get detailed documentation for a component
+
+npx @cloudflare/kumo doc Button
+
+# Get documentation for all components
+
+npx @cloudflare/kumo docs`}
+lang="bash"
+/>
+
+## Try it out
+
+Type commands in the interactive terminal below to explore the CLI.
+
+<CLITerminal client:load />

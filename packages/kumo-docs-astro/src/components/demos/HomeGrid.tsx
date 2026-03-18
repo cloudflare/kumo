@@ -63,7 +63,7 @@ const componentRoutes: Record<string, string> = {
   empty: "/components/empty",
   grid: "/components/grid",
   input: "/components/input",
-  "input-area": "/components/input",
+  "input-area": "/components/input-area",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   loader: "/components/loader",
@@ -601,7 +601,7 @@ export function HomeGrid() {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-elevated"
+            className="relative flex aspect-square items-center justify-center bg-kumo-surface"
             key={c.name}
           >
             {route ? (

@@ -240,7 +240,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
+          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
