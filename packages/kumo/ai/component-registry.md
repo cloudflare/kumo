@@ -5004,7 +5004,7 @@ Text component
 
 **Colors (kumo tokens used):**
 
-`text-kumo-danger`, `text-kumo-default`, `text-kumo-link`, `text-kumo-subtle`
+`text-kumo-danger`, `text-kumo-default`, `text-kumo-link`, `text-kumo-subtle`, `text-kumo-success`
 
 **Styling:**
 

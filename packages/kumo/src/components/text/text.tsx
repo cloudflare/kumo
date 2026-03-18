@@ -33,7 +33,7 @@ export const KUMO_TEXT_VARIANTS = {
       description: "Muted text for secondary information",
     },
     success: {
-      classes: "text-kumo-link",
+      classes: "text-kumo-success",
       description: "Success state text",
     },
     error: {

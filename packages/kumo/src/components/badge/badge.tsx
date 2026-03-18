@@ -79,6 +79,7 @@ export interface BadgeProps {
    * - `"primary"` — High-emphasis badge for important labels
    * - `"secondary"` — Subtle badge for secondary information
    * - `"destructive"` — Error or danger state indicator
+   * - `"success"` — Success or positive state indicator
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
    * @default "primary"

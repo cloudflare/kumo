@@ -11,7 +11,7 @@
         "variant": {
           "type": "enum",
           "optional": true,
-          "description": "Visual style of the badge.\n- `\"primary\"` — High-emphasis badge for important labels\n- `\"secondary\"` — Subtle badge for secondary information\n- `\"destructive\"` — Error or danger state indicator\n- `\"outline\"` — Bordered badge with transparent background\n- `\"beta\"` — Dashed-border badge for beta/experimental features",
+          "description": "Visual style of the badge.\n- `\"primary\"` — High-emphasis badge for important labels\n- `\"secondary\"` — Subtle badge for secondary information\n- `\"destructive\"` — Error or danger state indicator\n- `\"success\"` — Success or positive state indicator\n- `\"outline\"` — Bordered badge with transparent background\n- `\"beta\"` — Dashed-border badge for beta/experimental features",
           "values": [
             "primary",
             "secondary",
@@ -4541,7 +4541,7 @@
             "heading3": "text-lg font-semibold",
             "body": "text-kumo-default",
             "secondary": "text-kumo-subtle",
-            "success": "text-kumo-link",
+            "success": "text-kumo-success",
             "error": "text-kumo-danger",
             "mono": "font-mono",
             "mono-secondary": "font-mono text-kumo-subtle"
@@ -4595,7 +4595,8 @@
         "text-kumo-danger",
         "text-kumo-default",
         "text-kumo-link",
-        "text-kumo-subtle"
+        "text-kumo-subtle",
+        "text-kumo-success"
       ],
       "styling": {
         "fontSizes": {
@@ -4616,7 +4617,7 @@
         "variantColors": {
           "body": "text-kumo-default",
           "secondary": "text-kumo-subtle",
-          "success": "text-kumo-link",
+          "success": "text-kumo-success",
           "error": "text-kumo-danger",
           "mono": "text-kumo-default",
           "mono-secondary": "text-kumo-subtle"

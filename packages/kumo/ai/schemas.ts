@@ -111,7 +111,7 @@ export type Action = z.infer<typeof ActionSchema>;
 // =============================================================================
 
 export const BadgePropsSchema = z.object({
-  variant: z.enum(["primary", "secondary", "destructive", "success", "outline", "beta"]).optional(), // Visual style of the badge. - `"primary"` — High-emphasis badge for important labels - `"secondary"` — Subtle badge for secondary information - `"destructive"` — Error or danger state indicator - `"outline"` — Bordered badge with transparent background - `"beta"` — Dashed-border badge for beta/experimental features
+  variant: z.enum(["primary", "secondary", "destructive", "success", "outline", "beta"]).optional(), // Visual style of the badge. - `"primary"` — High-emphasis badge for important labels - `"secondary"` — Subtle badge for secondary information - `"destructive"` — Error or danger state indicator - `"success"` — Success or positive state indicator - `"outline"` — Bordered badge with transparent background - `"beta"` — Dashed-border badge for beta/experimental features
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Content rendered inside the badge.
 });

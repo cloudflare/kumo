@@ -97,7 +97,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-green-500, oklch(72.3% 0.219 149.579))",
+          light: "var(--color-green-700, oklch(52.7% 0.154 150.069))",
           dark: "var(--color-green-400, oklch(79.2% 0.209 151.711))",
         },
       },
@@ -355,7 +355,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-green-500, oklch(72.3% 0.219 149.579))",
+          light: "var(--color-green-700, oklch(52.7% 0.154 150.069))",
           dark: "var(--color-green-700, oklch(52.7% 0.154 150.069))",
         },
       },
