@@ -9,9 +9,9 @@ React component library: Base UI + Tailwind v4 + Vite library mode. ESM-only, tr
 ```
 kumo/
 ├── src/
-│   ├── components/          # 35 UI components (button/, dialog/, input/, ...)
+│   ├── components/          # 39 UI components → see src/components/AGENTS.md
 │   ├── blocks/              # Installable blocks (NOT library exports; via CLI `kumo add`)
-│   ├── primitives/          # AUTO-GENERATED Base UI re-exports (37 files)
+│   ├── primitives/          # AUTO-GENERATED Base UI re-exports (40 files)
 │   ├── catalog/             # JSON-UI rendering runtime (DynamicValue, visibility conditions)
 │   ├── command-line/        # CLI: ls, doc, add, blocks, init, migrate
 │   ├── styles/              # CSS: kumo-binding.css + theme files (AUTO-GENERATED)
@@ -20,7 +20,7 @@ kumo/
 │   └── index.ts             # Main barrel export (PLOP_INJECT_EXPORT marker)
 ├── ai/                      # AUTO-GENERATED: component-registry.{json,md}, schemas.ts
 ├── scripts/
-│   ├── component-registry/  # Registry codegen (13 sub-modules, 875+ lines orchestrator)
+│   ├── component-registry/  # Registry codegen (13 sub-modules, 930+ lines orchestrator)
 │   ├── theme-generator/     # Theme CSS codegen from config.ts
 │   ├── generate-primitives.ts
 │   └── css-build.ts         # Post-Vite CSS processing
@@ -57,13 +57,7 @@ kumo/
 
 ### Component File Pattern
 
-Each `src/components/{name}/{name}.tsx` must:
-
-1. Export `KUMO_{NAME}_VARIANTS` + `KUMO_{NAME}_DEFAULT_VARIANTS` (lint-enforced)
-2. Use `forwardRef` when wrapping DOM elements
-3. Set `.displayName` on the forwardRef component
-4. Use `cn()` for all className composition
-5. Use Base UI primitives (`@base-ui/react`) for interactive behavior
+See `src/components/AGENTS.md` for detailed component conventions.
 
 ### Registry Codegen Pipeline
 
@@ -99,6 +93,24 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 | Creating component files manually                    | Misses index/vite/package.json updates | `pnpm new:component`          |
 | `as any` in component code                           | 3 existing instances; don't add more   | Model types correctly         |
 | Dynamic Tailwind class construction                  | JIT can't detect `leading-[${val}]`    | Use static class strings      |
+
+## DEPRECATED COMPONENTS/PROPS
+
+### Components
+
+| Component         | Replacement                          |
+| ----------------- | ------------------------------------ |
+| `DateRangePicker` | Use `DatePicker` with `mode="range"` |
+
+### Props (lint-enforced via `no-deprecated-props`)
+
+| Component           | Prop                                | Replacement                                              |
+| ------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `Select`            | `hideLabel`                         | Use `aria-label` instead of `label` + `hideLabel={true}` |
+| `DropdownMenu.Item` | `href`                              | Use `DropdownMenu.LinkItem` for navigation               |
+| `Checkbox`          | `onChange`, `onIndeterminateChange` | Use `onCheckedChange`                                    |
+| `Banner`            | `children`                          | Use `title` and `description` props                      |
+| `TimeseriesChart`   | `formatValue`                       | Use `tooltipValueFormat`                                 |
 
 ## NOTES
 

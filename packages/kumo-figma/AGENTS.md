@@ -12,24 +12,22 @@ kumo-figma/
 │   ├── code.ts                    # Plugin entry: GENERATORS array, page management
 │   ├── ui.html                    # Plugin UI
 │   ├── manifest.json              # Figma manifest (main: "code.js")
-│   ├── generators/
-│   │   ├── shared.ts              # ALL constants + utilities (~1540 lines, critical file)
+│   ├── generators/                # → see src/generators/AGENTS.md
+│   │   ├── shared.ts              # ALL constants + utilities (~1544 lines, critical)
 │   │   ├── _test-utils.ts         # Shared test assertions
-│   │   ├── drift-detection.test.ts  # Meta-test: registry ↔ generator sync (1733 lines)
-│   │   ├── button.ts              # Example generator
-│   │   └── ...                    # 35+ component generators
+│   │   ├── drift-detection.test.ts  # Meta-test: registry ↔ generator sync
+│   │   └── {component}.ts         # 35+ component generators
 │   ├── parsers/
 │   │   ├── tailwind-to-figma.ts   # Core: Tailwind classes → Figma values
 │   │   ├── opacity-extractor.ts   # `bg-kumo-brand/70` → opacity data
 │   │   ├── component-registry.ts  # Type-safe registry wrapper
-│   │   ├── loader-parser.ts       # SVG circle data for Loader
 │   │   └── tailwind-theme-parser.ts  # Parses tailwindcss/theme.css (test-only)
 │   └── generated/                 # BUILD OUTPUT (gitignored): theme-data.json, etc.
 ├── scripts/
 │   ├── sync-tokens-to-figma.ts    # CSS → Figma Variables API (unidirectional)
 │   ├── figma-api.ts               # Low-level Figma REST client
 │   ├── color-utils.ts             # oklch → sRGB conversion (uses culori)
-│   └── maybe-sync.ts             # Conditional sync gate (skips if no FIGMA_TOKEN)
+│   └── maybe-sync.ts              # Conditional sync gate (skips if no FIGMA_TOKEN)
 └── vitest.config.ts               # Node env (no DOM)
 ```
 
@@ -44,22 +42,6 @@ kumo-figma/
 | Drift detection          | `src/generators/drift-detection.test.ts`             | Meta-test enforcing sync           |
 
 ## CONVENTIONS
-
-### Generator Pattern (Canonical)
-
-Each generator file follows 4 steps:
-
-1. **Import**: registry + `shared.ts` utilities + `parseTailwindClasses`
-2. **Extract**: Component data from `registry.components.YourComponent.props` (NEVER hardcode)
-3. **Testable exports**: Pure `get*Config()`/`get*ParsedStyles()` functions (no Figma API)
-4. **Generator entry**: `async generateYourComponentComponents(page, startY) → nextY`
-   - Creates components → `figma.combineAsVariants()` → light/dark section pair
-
-### Adding a Generator (3 Steps)
-
-1. Create `generators/yourcomponent.ts` with testable exports + generator function
-2. Register in `code.ts` GENERATORS array (with wrapper lambda)
-3. Either create test file OR add to `EXCLUDED_COMPONENTS` in drift-detection.test.ts
 
 ### Build Pipeline (Sequential, Order Matters)
 
@@ -79,7 +61,7 @@ pnpm build =
 - **Test structure, NOT values**: `"DO NOT test specific colors, sizes, or variant names"`
 - Tests validate against registry as source of truth
 - `_test-utils.ts`: `expectValidRegistryProp()`, `expectAllClassesParsable()`, `expectValidParsedTypes()`
-- Drift detection enforces: every registry component has generator, no magic numbers, no hardcoded assertions
+- Drift detection enforces: every registry component has generator, no magic numbers
 
 ## ANTI-PATTERNS
 
