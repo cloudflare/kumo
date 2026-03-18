@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kumo-screenshot-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "browser": {
+    "binding": "BROWSER",
+  },
+  // Secrets (never commit values here — use `wrangler secret put` or .dev.vars for local dev):
+  //   API_KEY  — shared secret sent as X-API-Key header by callers
+}

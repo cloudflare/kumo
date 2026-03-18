@@ -1,0 +1,636 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "CodeHighlighted"
+description: "Shiki-powered syntax highlighting with VS Code-quality highlighting, theming, and lazy loading."
+sourceFile: "code"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
+import {
+  CodeHighlightedBasicDemo,
+  CodeHighlightedTypeScriptDemo,
+  CodeHighlightedReactDemo,
+  CodeHighlightedBashDemo,
+  CodeHighlightedJsonDemo,
+  CodeHighlightedHighlightLinesDemo,
+  CodeHighlightedLineNumbersDemo,
+  CodeHighlightedCopyButtonDemo,
+  CodeHighlightedFullFeaturedDemo,
+  CodeHighlightedSharedProviderDemo,
+  CodeHighlightedCssDemo,
+  CodeHighlightedCustomHighlightDemo,
+} from "~/components/demos/CodeHighlightedDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <div class="mb-4 rounded-md border border-kumo-brand/20 bg-kumo-brand/5 p-4">
+    <p class="text-sm text-kumo-strong">
+      <strong>New in v1.10:</strong> Shiki-powered syntax highlighting with lazy
+      loading. Import from
+      `@cloudflare/kumo/code`
+      to use.
+    </p>
+  </div>
+  <ComponentExample
+    code={`<ShikiProvider
+  engine="javascript"
+  languages={["tsx", "bash", "json"]}
+>
+  <CodeHighlighted code={code} lang="tsx" />
+</ShikiProvider>`}
+  >
+    <CodeHighlightedBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Overview */}
+
+<ComponentSection>
+  <Heading level={2}>Overview</Heading>
+  <p>
+    A Shiki-powered syntax highlighter. Supports 200+ languages with TextMate
+    grammars, dual light/dark themes, and lazy loading. Exported from a separate
+    entry point (
+    `@cloudflare/kumo/code`
+    ) to avoid bundling Shiki for apps that don't need it.
+  </p>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <p>
+    CodeHighlighted is exported from a separate entry point to avoid bundling Shiki for apps that don't need it.
+  </p>
+  <CodeBlock code={`import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";`} lang="tsx" />
+
+  <div class="mt-4 rounded-md border border-kumo-warning/20 bg-kumo-warning/5 p-4">
+    <p class="text-sm text-kumo-strong">
+      <strong>Important:</strong> Do NOT import from the main `@cloudflare/kumo` entry.
+      That would pull Shiki into your bundle even if you don't use it.
+    </p>
+  </div>
+</ComponentSection>
+
+{/* Basic Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Basic Usage</Heading>
+  <p>
+    Wrap your app with `ShikiProvider` to configure Shiki once.
+    All `CodeHighlighted` components inside share the same Shiki instance.
+  </p>
+  <CodeBlock code={`import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+
+export function App() {
+  return (
+    <ShikiProvider
+      engine="javascript"
+      languages={["tsx", "typescript", "bash", "json"]}
+    >
+      {/* All CodeHighlighted components share the same Shiki instance */}
+      <CodeHighlighted code="const x = 1;" lang="typescript" />
+    </ShikiProvider>
+  );
+}`} lang="tsx" />
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Languages</Heading>
+<p>
+  CodeHighlighted supports 200+ languages through Shiki. Only load the languages
+  you need.
+</p>
+
+<h4 class="mb-3 text-base font-medium">TypeScript</h4>
+<ComponentExample code={`<CodeHighlighted code={code} lang="typescript" />`}>
+  <CodeHighlightedTypeScriptDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">React / TSX</h4>
+<ComponentExample code={`<CodeHighlighted code={code} lang="tsx" />`}>
+  <CodeHighlightedReactDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Bash / Shell</h4>
+<ComponentExample code={`<CodeHighlighted code={code} lang="bash" />`}>
+  <CodeHighlightedBashDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">JSON</h4>
+<ComponentExample code={`<CodeHighlighted code={code} lang="json" />`}>
+  <CodeHighlightedJsonDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">CSS</h4>
+<ComponentExample code={`<CodeHighlighted code={code} lang="css" />`}>
+  <CodeHighlightedCssDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Highlight Lines</Heading>
+<p>
+  Emphasize specific lines with
+  `highlightLines`
+  (1-indexed).
+</p>
+<ComponentExample
+  code={`<CodeHighlighted code={code} lang="typescript" highlightLines={[5, 6]} />`}
+>
+  <CodeHighlightedHighlightLinesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom Highlight Color</Heading>
+<p>
+  Customize the highlight color with the
+  `--kumo-code-highlight-bg`
+  CSS variable.
+</p>
+<CodeHighlightedCustomHighlightDemo client:load />
+
+<Heading level={3}>Line Numbers</Heading>
+<p>
+  Display line numbers with
+  `showLineNumbers`
+  .
+</p>
+<ComponentExample
+  code={`<CodeHighlighted code={code} lang="typescript" showLineNumbers />`}
+>
+  <CodeHighlightedLineNumbersDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Copy Button</Heading>
+<p>
+  Add a copy-to-clipboard button with
+  `showCopyButton`
+  .
+</p>
+<ComponentExample
+  code={`<CodeHighlighted code={code} lang="bash" showCopyButton />`}
+>
+  <CodeHighlightedCopyButtonDemo client:visible />
+</ComponentExample>
+
+  <Heading level={3}>Full Featured</Heading>
+  <p>
+    Combine all features for a complete code display experience.
+  </p>
+  <ComponentExample code={`<CodeHighlighted
+
+code={code}
+lang="tsx"
+showCopyButton
+highlightLines={[7, 8, 9, 10, 11]}
+/>`}>
+
+<CodeHighlightedFullFeaturedDemo client:visible />
+</ComponentExample>
+
+  <Heading level={3}>Shared Provider</Heading>
+  <p>
+    Multiple code blocks can share a single `ShikiProvider`.
+    Shiki loads once and is reused for all blocks.
+  </p>
+  <ComponentExample code={`<ShikiProvider>
+
+  <CodeHighlighted code={tsCode} lang="typescript" />
+  <CodeHighlighted code={bashCode} lang="bash" />
+  <CodeHighlighted code={jsonCode} lang="json" />
+</ShikiProvider>`}>
+    <CodeHighlightedSharedProviderDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Themes */}
+
+<ComponentSection>
+  <Heading level={2}>Themes</Heading>
+  <p>
+    CodeHighlighted uses hardcoded themes for consistent styling across all Kumo
+    applications:
+  </p>
+  <ul class="mb-4 list-disc pl-6 text-kumo-strong">
+    <li>
+      <strong>Light mode:</strong>
+      `github-light`
+    </li>
+    <li>
+      <strong>Dark mode:</strong>
+      `vesper`
+    </li>
+  </ul>
+  <p class="text-sm text-kumo-subtle">
+    Theme customization is not supported. This ensures visual consistency across
+    all code blocks in your application.
+  </p>
+</ComponentSection>
+
+{/* Server-Side Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Server-Side Usage</Heading>
+  <p>
+    For SSR frameworks (Next.js RSC, Astro, Remix), use the server utilities to highlight at build time.
+  </p>
+
+  <h4 class="mb-3 text-base font-medium">One-off highlighting</h4>
+  <CodeBlock code={`// Next.js RSC or Astro
+import { highlightCode } from "@cloudflare/kumo/code/server";
+
+export default async function Page() {
+  const html = await highlightCode(\`const x = 1;\`, "typescript");
+
+return <pre dangerouslySetInnerHTML={{ __html: html }} />;
+}`} lang="tsx" />
+
+  <h4 class="mb-3 text-base font-medium">Reusable highlighter</h4>
+  <CodeBlock code={`// For multiple highlights, reuse the highlighter
+
+import { createServerHighlighter } from "@cloudflare/kumo/code/server";
+
+const highlighter = await createServerHighlighter({
+languages: ["tsx", "bash", "json"],
+});
+
+const html1 = highlighter.highlight(code1, "tsx");
+const html2 = highlighter.highlight(code2, "bash");
+
+highlighter.dispose(); // Clean up when done`} lang="tsx" />
+
+</ComponentSection>
+
+{/* Custom Hook */}
+
+<ComponentSection>
+  <Heading level={2}>Custom Hook</Heading>
+  <p>
+    Use `useShikiHighlighter` for custom implementations.
+  </p>
+  <CodeBlock code={`import { useShikiHighlighter } from "@cloudflare/kumo/code";
+
+function CustomCodeBlock({ code, lang }) {
+const { highlight, isLoading, isReady, error } = useShikiHighlighter();
+
+if (error) {
+return <div className="text-red-500">Failed to load highlighter</div>;
+}
+
+if (isLoading) {
+return <pre className="animate-pulse"><code>{code}</code></pre>;
+}
+
+const html = highlight(code, lang);
+
+// null means highlighting failed — render plain text
+if (html === null) {
+return <pre><code>{code}</code></pre>;
+}
+
+return <pre dangerouslySetInnerHTML={{ __html: html }} />;
+}`} lang="tsx" />
+
+</ComponentSection>
+
+{/* Internationalization */}
+
+<ComponentSection>
+  <Heading level={2}>Internationalization</Heading>
+  <p>
+    Customize button labels at the provider level for all code blocks, or override per-component.
+  </p>
+  <CodeBlock code={`// Set labels at the provider level for all code blocks
+<ShikiProvider
+  engine="javascript"
+  languages={["tsx", "bash"]}
+  labels={{ copy: "Copier", copied: "Copié!" }}
+>
+  <App />
+</ShikiProvider>
+
+// Or override at the component level
+
+<CodeHighlighted
+  code={code}
+  lang="tsx"
+  showCopyButton
+  labels={{ copy: "Copy code", copied: "Done!" }}
+/>`} lang="tsx" />
+</ComponentSection>
+
+{/* Framework Integration */}
+
+<ComponentSection>
+  <Heading level={2}>Framework Integration</Heading>
+
+  <Heading level={3}>Next.js App Router</Heading>
+  <CodeBlock code={`// app/providers.tsx
+"use client";
+
+import { ShikiProvider } from "@cloudflare/kumo/code";
+
+export function Providers({ children }) {
+  return (
+    <ShikiProvider engine="javascript" languages={["tsx", "bash", "json"]}>
+      {children}
+    </ShikiProvider>
+  );
+}
+
+// app/layout.tsx
+import { Providers } from "./providers";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}`} lang="tsx" />
+
+  <Heading level={3}>Astro (Static)</Heading>
+  <p>
+    For static sites, use server-side highlighting for zero client-side JavaScript.
+  </p>
+  <CodeBlock code={`---
+
+// src/components/CodeBlock.astro
+import { highlightCode } from "@cloudflare/kumo/code/server";
+
+const { code, lang } = Astro.props;
+const html = await highlightCode(code, lang);
+
+---
+
+<div class="code-block" set:html={html} />`} lang="tsx" />
+</ComponentSection>
+
+{/* Bundle Size */}
+
+<ComponentSection>
+  <Heading level={2}>Bundle Size</Heading>
+  <p>
+    Shiki is lazy-loaded on first render. The size depends on your
+    configuration:
+  </p>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-kumo-line">
+          <th class="py-2 pr-4 text-left font-medium">Scenario</th>
+          <th class="py-2 pr-4 text-left font-medium">Languages</th>
+          <th class="py-2 pr-4 text-left font-medium">Engine</th>
+          <th class="py-2 text-left font-medium">Lazy Load Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-kumo-line/50">
+          <td class="py-2 pr-4">Minimal</td>
+          <td class="py-2 pr-4">tsx, json</td>
+          <td class="py-2 pr-4">JS</td>
+          <td class="py-2">~75 KB</td>
+        </tr>
+        <tr class="border-b border-kumo-line/50">
+          <td class="py-2 pr-4">Standard</td>
+          <td class="py-2 pr-4">tsx, ts, bash, json, css, yaml</td>
+          <td class="py-2 pr-4">JS</td>
+          <td class="py-2">~95 KB</td>
+        </tr>
+        <tr>
+          <td class="py-2 pr-4">Full</td>
+          <td class="py-2 pr-4">15+ languages</td>
+          <td class="py-2 pr-4">WASM</td>
+          <td class="py-2">~250 KB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-4 text-sm text-kumo-subtle">
+    Teams that don't import from
+    `@cloudflare/kumo/code`
+    pay 0 KB.
+  </p>
+</ComponentSection>
+
+{/* Migration */}
+
+<ComponentSection>
+  <Heading level={2}>Migration from Code/CodeBlock</Heading>
+  <p>
+    The legacy `Code` and `CodeBlock` components are deprecated.
+    They will be removed in v2.0.
+  </p>
+  <CodeBlock code={`// Before (deprecated)
+import { Code, CodeBlock } from "@cloudflare/kumo";
+<CodeBlock code="const x = 1;" lang="ts" />
+
+// After
+import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+
+// Once at app root
+
+<ShikiProvider engine="javascript" languages={["tsx"]}>
+  <App />
+</ShikiProvider>
+
+// In components
+
+<CodeHighlighted code="const x = 1;" lang="tsx" />`} lang="tsx" />
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+
+<Heading level={3}>ShikiProvider Props</Heading>
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-line">
+        <th class="py-2 pr-4 text-left font-medium">Prop</th>
+        <th class="py-2 pr-4 text-left font-medium">Type</th>
+        <th class="py-2 pr-4 text-left font-medium">Required</th>
+        <th class="py-2 text-left font-medium">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>engine</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>"javascript" | "wasm"</code>
+        </td>
+        <td class="py-2 pr-4">Yes</td>
+        <td class="py-2">
+          JS is smaller (~50KB), WASM is more accurate (~180KB)
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>languages</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>string[]</code>
+        </td>
+        <td class="py-2 pr-4">Yes</td>
+        <td class="py-2">Languages to support (e.g., ["tsx", "bash"])</td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>labels</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>{"{ copy?: string, copied?: string }"}</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Localized labels for copy button</td>
+      </tr>
+      <tr>
+        <td class="py-2 pr-4">
+          <code>children</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>ReactNode</code>
+        </td>
+        <td class="py-2 pr-4">Yes</td>
+        <td class="py-2">App content</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<Heading level={3}>CodeHighlighted Props</Heading>
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-line">
+        <th class="py-2 pr-4 text-left font-medium">Prop</th>
+        <th class="py-2 pr-4 text-left font-medium">Type</th>
+        <th class="py-2 pr-4 text-left font-medium">Required</th>
+        <th class="py-2 text-left font-medium">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>code</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>string</code>
+        </td>
+        <td class="py-2 pr-4">Yes</td>
+        <td class="py-2">Source code to display</td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>lang</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>string</code>
+        </td>
+        <td class="py-2 pr-4">Yes</td>
+        <td class="py-2">
+          Language identifier (must be in provider's languages)
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>showLineNumbers</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>boolean</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Display line numbers</td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>highlightLines</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>number[]</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Lines to emphasize (1-indexed)</td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>showCopyButton</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>boolean</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Show copy-to-clipboard button</td>
+      </tr>
+      <tr class="border-b border-kumo-line/50">
+        <td class="py-2 pr-4">
+          <code>labels</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>{"{ copy?: string, copied?: string }"}</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Override provider labels for this instance</td>
+      </tr>
+      <tr>
+        <td class="py-2 pr-4">
+          <code>className</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>string</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Additional CSS classes</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <Heading level={3}>useShikiHighlighter Return Value</Heading>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-kumo-line">
+          <th class="py-2 pr-4 text-left font-medium">Property</th>
+          <th class="py-2 pr-4 text-left font-medium">Type</th>
+          <th class="py-2 text-left font-medium">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-kumo-line/50">
+          <td class="py-2 pr-4"><code>highlight</code></td>
+          <td class="py-2 pr-4"><code>(code, lang, options?) =&gt; string | null</code></td>
+          <td class="py-2">Returns highlighted HTML, or null if not ready</td>
+        </tr>
+        <tr class="border-b border-kumo-line/50">
+          <td class="py-2 pr-4"><code>isLoading</code></td>
+          <td class="py-2 pr-4"><code>boolean</code></td>
+          <td class="py-2">True while Shiki is loading</td>
+        </tr>
+        <tr class="border-b border-kumo-line/50">
+          <td class="py-2 pr-4"><code>isReady</code></td>
+          <td class="py-2 pr-4"><code>boolean</code></td>
+          <td class="py-2">True when highlight() is safe to call</td>
+        </tr>
+        <tr>
+          <td class="py-2 pr-4"><code>error</code></td>
+          <td class="py-2 pr-4"><code>Error | null</code></td>
+          <td class="py-2">Error if Shiki initialization failed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ComponentSection>

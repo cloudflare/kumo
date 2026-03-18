@@ -59,7 +59,7 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants(),
     "justify-between font-normal",
-    "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
+    "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
   );
 }
 
@@ -271,7 +271,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         className={cn(
           buttonVariants(),
           "justify-between font-normal",
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
+          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
           props.disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -281,11 +281,14 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         {loading ? (
           <SkeletonLine className="w-32" />
         ) : (
-          <SelectBase.Value placeholder={placeholder}>
+          <SelectBase.Value
+            placeholder={placeholder}
+            className="min-w-0 truncate"
+          >
             {renderValue}
           </SelectBase.Value>
         )}
-        <SelectBase.Icon className="flex items-center">
+        <SelectBase.Icon className="flex shrink-0 items-center">
           <CaretUpDownIcon />
         </SelectBase.Icon>
       </SelectBase.Trigger>

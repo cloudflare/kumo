@@ -2265,7 +2265,6 @@
         "bg-kumo-warning",
         "ring-kumo-line",
         "text-kumo-default",
-        "text-kumo-placeholder",
         "text-kumo-strong",
         "text-kumo-subtle"
       ]
@@ -3037,7 +3036,6 @@
         "ring-kumo-line",
         "ring-kumo-ring",
         "text-kumo-default",
-        "text-kumo-placeholder",
         "text-kumo-subtle"
       ],
       "styling": {
@@ -3893,6 +3891,8 @@
         "<Select aria-label=\"Loading select\" className=\"w-[200px]\" loading />",
         "<Select\n      label=\"Assignee\"\n      className=\"w-[200px]\"\n      loading={loading}\n      value={value}\n      onValueChange={(v) => setValue(v as string | null)}\n      placeholder=\"Select assignee\"\n      items={items}\n    />",
         "<Select\n      label=\"Visible Columns\"\n      className=\"w-[250px]\"\n      multiple\n      renderValue={(value) => {\n        if (value.length > 3) {\n          return (\n            <span className=\"line-clamp-1\">\n              {value.slice(0, 2).join(\", \") + ` and ${value.length - 2} more`}\n            </span>\n          );\n        }\n        return <span>{value.join(\", \")}</span>;\n      }}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"Name\">Name</Select.Option>\n      <Select.Option value=\"Location\">Location</Select.Option>\n      <Select.Option value=\"Size\">Size</Select.Option>\n      <Select.Option value=\"Read\">Read</Select.Option>\n      <Select.Option value=\"Write\">Write</Select.Option>\n      <Select.Option value=\"CreatedAt\">Created At</Select.Option>\n    </Select>",
+        "<Select\n      label=\"Compliance Frameworks\"\n      className=\"w-[280px]\"\n      multiple\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      <Select.Option value=\"European Union Privacy Regulation\">\n        European Union Privacy Regulation\n      </Select.Option>\n      <Select.Option value=\"California Consumer Protection Act\">\n        California Consumer Protection Act\n      </Select.Option>\n      <Select.Option value=\"Health Insurance Portability Act\">\n        Health Insurance Portability Act\n      </Select.Option>\n      <Select.Option value=\"Payment Card Industry Standard\">\n        Payment Card Industry Standard\n      </Select.Option>\n    </Select>",
+        "<Select\n      label=\"Issue Types\"\n      className=\"w-[220px]\"\n      multiple\n      renderValue={(selected) => (\n        <span className=\"flex items-center gap-2\">\n          <span>Issue Types</span>\n          {selected.length > 0 && (\n            <Badge variant=\"secondary\">{selected.length}</Badge>\n          )}\n        </span>\n      )}\n      value={value}\n      onValueChange={(v) => setValue(v as string[])}\n    >\n      {allOptions.map((option) => (\n        <Select.Option key={option.value} value={option.value}>\n          {option.label}\n        </Select.Option>\n      ))}\n    </Select>",
         "<Select\n      label=\"Author\"\n      description=\"Select the primary author for this document\"\n      className=\"w-[200px]\"\n      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}\n      value={value}\n      isItemEqualToValue={(item, value) => item?.id === value?.id}\n      renderValue={(author) => {\n        return author?.name ?? \"Select an author\";\n      }}\n    >\n      {authors.map((author) => (\n        <Select.Option key={author.id} value={author}>\n          <div className=\"flex w-[300px] items-center justify-between gap-2\">\n            <Text>{author.name}</Text>\n            <Text variant=\"secondary\">{author.title}</Text>\n          </div>\n        </Select.Option>\n      ))}\n    </Select>"
       ],
       "colors": [
@@ -4085,7 +4085,6 @@
         "bg-kumo-control",
         "outline-kumo-ring",
         "text-kumo-default",
-        "text-kumo-placeholder",
         "text-kumo-subtle"
       ]
     },
@@ -4132,17 +4131,14 @@
         "variant": {
           "type": "enum",
           "optional": true,
-          "description": "Visual variant: \"default\" or \"error\" for validation failures (visual only, no error text)",
+          "description": "Visual variant: \"default\" (pill, brand color) or \"neutral\" (squircle, monochrome)",
           "values": [
             "default",
-            "error"
+            "neutral"
           ],
           "descriptions": {
-            "default": "Default switch appearance",
-            "error": "Error state for validation failures"
-          },
-          "classes": {
-            "error": "ring-kumo-danger"
+            "default": "Default switch with squircle shape and brand blue color",
+            "neutral": "Monochrome switch with squircle shape for subtle toggles"
           },
           "default": "default"
         },
@@ -4241,16 +4237,15 @@
         "<Switch label=\"Switch\" checked={checked} onCheckedChange={setChecked} />",
         "<Switch label=\"Switch\" checked={false} onCheckedChange={() => {}} />",
         "<Switch label=\"Switch\" checked={true} onCheckedChange={() => {}} />",
-        "<Switch label=\"Disabled\" checked={false} disabled />"
+        "<Switch label=\"Disabled\" checked={false} disabled />",
+        "<Switch\n      label=\"Neutral switch\"\n      variant=\"neutral\"\n      checked={checked}\n      onCheckedChange={setChecked}\n    />",
+        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Neutral off\"\n        variant=\"neutral\"\n        checked={false}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral on\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral disabled\"\n        variant=\"neutral\"\n        checked={false}\n        disabled\n      />\n    </div>",
+        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Default variant\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral variant\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n    </div>"
       ],
       "colors": [
-        "bg-kumo-brand",
-        "bg-kumo-brand-hover",
-        "bg-kumo-danger",
-        "bg-kumo-interact",
-        "bg-kumo-recessed",
+        "bg-kumo-base",
         "border-kumo-line",
-        "ring-kumo-danger",
+        "ring-kumo-line",
         "text-kumo-danger",
         "text-kumo-default",
         "text-kumo-subtle"

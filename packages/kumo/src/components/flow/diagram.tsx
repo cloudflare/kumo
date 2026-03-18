@@ -31,6 +31,10 @@ const DEFAULT_PADDING = {
   x: 16,
 };
 
+function isEventFromNode(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest("[data-node-id]") !== null;
+}
+
 /** Minimum scrollbar thumb size in percentage to ensure visibility */
 const MIN_SCROLLBAR_THUMB_SIZE = 10;
 
@@ -213,13 +217,8 @@ export function FlowDiagram({
     return () => wrapper.removeEventListener("wheel", handleWheel);
   }, [canvas, bounds, x, y]);
 
-  const isEventFromNode = (e: PointerEvent) => {
-    const target = e.target as HTMLElement;
-    return target.closest("[data-node-id]") !== null;
-  };
-
   const handlePanStart = (e: PointerEvent) => {
-    if (isEventFromNode(e)) return;
+    if (isEventFromNode(e.target)) return;
     setIsPanning(true);
     document.body.style.cursor = "grabbing";
     document.body.style.userSelect = "none";

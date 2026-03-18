@@ -15,7 +15,7 @@ kumo-docs-astro/
 │   │   ├── blocks/{name}.astro      # 2 block doc pages
 │   │   └── api/                     # JSON endpoints (version, component-registry)
 │   ├── components/
-│   │   ├── demos/                   # 40 *Demo.tsx files + 2 non-demo (feed into registry codegen!)
+│   │   ├── demos/                   # 47 files: *Demo.tsx + 2 non-demo (feed into registry!)
 │   │   └── docs/                    # Doc components (PropsTable, CodeBlock, etc.)
 │   ├── layouts/                     # BaseLayout → MainLayout → DocLayout
 │   ├── lib/

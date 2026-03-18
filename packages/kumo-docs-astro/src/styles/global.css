@@ -2,6 +2,7 @@
 @source "../../../kumo/src/**/*.{ts,tsx}";
 @import "@cloudflare/kumo/styles";
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
@@ -20,4 +21,125 @@
 /* Prevent CLS from font loading */
 html {
   font-display: optional;
+}
+
+/* ==========================================================================
+   Kumo Prose — Tailwind Typography overrides using kumo semantic tokens
+   Used on .kumo-prose wrapper in DocLayout and MdxDocLayout
+   ========================================================================== */
+
+.kumo-prose {
+  /* Base typography token overrides */
+  --tw-prose-body: var(--color-kumo-strong);
+  --tw-prose-headings: var(--color-kumo-default);
+  --tw-prose-lead: var(--color-kumo-strong);
+  --tw-prose-links: var(--color-kumo-link);
+  --tw-prose-bold: var(--color-kumo-default);
+  --tw-prose-counters: var(--color-kumo-subtle);
+  --tw-prose-bullets: var(--color-kumo-line);
+  --tw-prose-hr: var(--color-kumo-line);
+  --tw-prose-quotes: var(--color-kumo-default);
+  --tw-prose-quote-borders: var(--color-kumo-line);
+  --tw-prose-captions: var(--color-kumo-subtle);
+  --tw-prose-kbd: var(--color-kumo-default);
+  --tw-prose-kbd-shadows: transparent;
+  --tw-prose-code: var(--color-kumo-default);
+  --tw-prose-pre-code: var(--color-kumo-default);
+  --tw-prose-pre-bg: var(--color-kumo-recessed);
+  --tw-prose-th-borders: var(--color-kumo-line);
+  --tw-prose-td-borders: var(--color-kumo-line);
+
+  /* Dark mode — same tokens, they auto-adapt via light-dark() */
+  --tw-prose-invert-body: var(--color-kumo-strong);
+  --tw-prose-invert-headings: var(--color-kumo-default);
+  --tw-prose-invert-lead: var(--color-kumo-strong);
+  --tw-prose-invert-links: var(--color-kumo-link);
+  --tw-prose-invert-bold: var(--color-kumo-default);
+  --tw-prose-invert-counters: var(--color-kumo-subtle);
+  --tw-prose-invert-bullets: var(--color-kumo-line);
+  --tw-prose-invert-hr: var(--color-kumo-line);
+  --tw-prose-invert-quotes: var(--color-kumo-default);
+  --tw-prose-invert-quote-borders: var(--color-kumo-line);
+  --tw-prose-invert-captions: var(--color-kumo-subtle);
+  --tw-prose-invert-kbd: var(--color-kumo-default);
+  --tw-prose-invert-kbd-shadows: transparent;
+  --tw-prose-invert-code: var(--color-kumo-default);
+  --tw-prose-invert-pre-code: var(--color-kumo-default);
+  --tw-prose-invert-pre-bg: var(--color-kumo-recessed);
+  --tw-prose-invert-th-borders: var(--color-kumo-line);
+  --tw-prose-invert-td-borders: var(--color-kumo-line);
+}
+
+/* Inline code styling — match existing site style */
+.kumo-prose :where(code):not(:where(pre code)) {
+  font-weight: 500;
+  font-size: 0.875em;
+  background-color: var(--color-kumo-recessed);
+  border: 1px solid var(--color-kumo-line);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+/* Remove backtick decoration from inline code */
+.kumo-prose :where(code):not(:where(pre code))::before,
+.kumo-prose :where(code):not(:where(pre code))::after {
+  content: none;
+}
+
+/* Links — underline on hover only */
+.kumo-prose :where(a) {
+  text-decoration: none;
+}
+.kumo-prose :where(a):hover {
+  text-decoration: underline;
+}
+
+/* Headings — use Heading component anchor style where possible */
+.kumo-prose :where(h2, h3, h4) {
+  scroll-margin-top: 6rem;
+}
+
+/* kbd styling */
+.kumo-prose :where(kbd) {
+  background-color: var(--color-kumo-control);
+  border: 1px solid var(--color-kumo-line);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875em;
+  box-shadow: none;
+}
+
+/* Pre / code blocks — don't interfere with our CodeBlock component */
+.kumo-prose :where(pre) {
+  border-radius: 0.5rem;
+}
+
+/* Table styling */
+.kumo-prose :where(table) {
+  width: 100%;
+}
+.kumo-prose :where(thead) {
+  border-bottom-color: var(--color-kumo-line);
+}
+.kumo-prose :where(thead th) {
+  color: var(--color-kumo-default);
+  font-weight: 600;
+}
+
+/* Blockquote */
+.kumo-prose :where(blockquote) {
+  border-left-color: var(--color-kumo-brand);
+  color: var(--color-kumo-strong);
+  font-style: normal;
+}
+
+/* Non-prose sections inside prose (ComponentExample, Callout, etc.)
+   These opt out of prose styling via not-prose */
+.kumo-prose :where(.not-prose) {
+  /* Reset any inherited typography transforms */
+  font-size: inherit;
+  line-height: inherit;
 }

@@ -1,6 +1,6 @@
 # KUMO KNOWLEDGE BASE
 
-**Generated:** 2026-02-09 | **Commit:** d10c711 | **Branch:** rozenmd/agents-init
+**Generated:** 2026-03-18 | **Commit:** adfc9ab9 | **Branch:** main
 
 ## OVERVIEW
 
@@ -15,8 +15,9 @@ kumo/
 │   ├── kumo-docs-astro/       # Astro docs site → see packages/kumo-docs-astro/AGENTS.md
 │   └── kumo-figma/            # Figma plugin → see packages/kumo-figma/AGENTS.md
 ├── ci/                        # CI/CD scripts → see ci/AGENTS.md
-├── lint/                      # Custom oxlint rules (shared by kumo + docs)
+├── lint/                      # Custom oxlint rules (4 rules, shared by kumo + docs)
 ├── .changeset/                # Changeset files
+├── .github/workflows/         # 6 workflow YAMLs (release, pullrequest, preview, etc.)
 └── lefthook.yml               # Pre-push changeset validation
 ```
 
@@ -125,9 +126,9 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 ## NOTES
 
 - `ai/component-registry.json`, `ai/schemas.ts` are auto-generated but committed to git (shipped in npm package)
-- `src/primitives/` (37 files) are auto-generated Base UI re-exports
+- `src/primitives/` (40 files) are auto-generated Base UI re-exports
 - Blocks in `src/blocks/` are NOT exported from package index; installed via CLI `kumo add`
 - `src/catalog/` is a runtime JSON-UI rendering module (separate concern from component library)
-- No GitHub Actions workflows checked into repo; CI scripts exist but orchestration is external
-- Dual linter: oxlint (fast, custom rules) + ESLint (7 jsx-a11y rules only)
+- Dual linter: oxlint (fast, custom rules) + ESLint (7 jsx-a11y rules only via oxlint JS plugin)
 - `PLOP_INJECT_EXPORT` and `PLOP_INJECT_COMPONENT_ENTRY` markers in source for scaffolding
+- 6 GitHub Actions workflows exist in `.github/workflows/` (release, pullrequest, preview, preview-deploy, bonk, reviewer)

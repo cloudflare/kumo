@@ -46,6 +46,8 @@ export default defineConfig(({ mode }) => {
       rebuildSignalPlugin(),
     ],
     build: {
+      // Runtime APIs like toSorted are guarded by tests/build/browser-compat.test.ts.
+      target: "es2022",
       lib: {
         entry: {
           // Main entry point

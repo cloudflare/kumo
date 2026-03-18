@@ -1,0 +1,216 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Button"
+description: "Displays a button or a component that looks like a button."
+sourceFile: "components/button"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import Heading from "~/components/docs/Heading.astro";
+import {
+  ButtonBasicDemo,
+  ButtonPrimaryDemo,
+  ButtonSecondaryDemo,
+  ButtonGhostDemo,
+  ButtonDestructiveDemo,
+  ButtonOutlineDemo,
+  ButtonSecondaryDestructiveDemo,
+  ButtonSizesDemo,
+  ButtonWithIconDemo,
+  ButtonIconOnlyDemo,
+  ButtonLoadingDemo,
+  ButtonDisabledDemo,
+} from "~/components/demos/ButtonDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample
+    code={`<Button variant="secondary">Button</Button>
+<Button variant="secondary" shape="square" icon={PlusIcon} />`}
+    vrSection="basic"
+    vrTitle="Basic"
+  >
+    <ButtonBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Button } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Button } from "@cloudflare/kumo/components/button";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+  <CodeBlock
+    code={`import { Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Button variant="secondary">Click me</Button>;
+}`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+{/* Variants */}
+
+<Heading level={3}>Variants</Heading>
+
+<h4 class="mb-3 text-base font-medium">Primary</h4>
+<ComponentExample
+  code={`<Button variant="primary">Primary</Button>`}
+  vrSection="variant-primary"
+  vrTitle="Variant: Primary"
+>
+  <ButtonPrimaryDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Secondary</h4>
+<ComponentExample
+  code={`<Button variant="secondary">Secondary</Button>`}
+  vrSection="variant-secondary"
+  vrTitle="Variant: Secondary"
+>
+  <ButtonSecondaryDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Ghost</h4>
+<ComponentExample
+  code={`<Button variant="ghost">Ghost</Button>`}
+  vrSection="variant-ghost"
+  vrTitle="Variant: Ghost"
+>
+  <ButtonGhostDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Destructive</h4>
+<ComponentExample
+  code={`<Button variant="destructive">Destructive</Button>`}
+  vrSection="variant-destructive"
+  vrTitle="Variant: Destructive"
+>
+  <ButtonDestructiveDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Outline</h4>
+<ComponentExample
+  code={`<Button variant="outline">Outline</Button>`}
+  vrSection="variant-outline"
+  vrTitle="Variant: Outline"
+>
+  <ButtonOutlineDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Secondary Destructive</h4>
+<ComponentExample
+  code={`<Button variant="secondary-destructive">Secondary Destructive</Button>`}
+  vrSection="variant-secondary-destructive"
+  vrTitle="Variant: Secondary Destructive"
+>
+  <ButtonSecondaryDestructiveDemo client:visible />
+</ComponentExample>
+
+{/* Sizes */}
+
+<Heading level={3}>Sizes</Heading>
+<ComponentExample
+  code={`<Button size="xs" variant="secondary">Extra Small</Button>
+<Button size="sm" variant="secondary">Small</Button>
+<Button size="base" variant="secondary">Base</Button>
+<Button size="lg" variant="secondary">Large</Button>`}
+  vrSection="sizes"
+  vrTitle="Sizes"
+>
+  <ButtonSizesDemo client:visible />
+</ComponentExample>
+
+{/* With Icon */}
+
+<Heading level={3}>With Icon</Heading>
+<ComponentExample
+  code={`<Button variant="secondary" icon={PlusIcon}>
+  Create Worker
+</Button>`}
+  vrSection="with-icon"
+  vrTitle="With Icon"
+>
+  <ButtonWithIconDemo client:visible />
+</ComponentExample>
+
+{/* Icon Only */}
+
+<Heading level={3}>Icon Only</Heading>
+<p>
+  For icon-only buttons, use
+  `shape="square"`
+  or
+  `shape="circle"`
+  with the
+  `icon` prop.
+  <strong>
+    Always include
+    `aria-label`
+  </strong>
+  for accessibility — without visible text, screen readers need the label to
+  convey the button's purpose.
+</p>
+<ComponentExample
+  code={`<Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add item" />
+<Button variant="secondary" shape="circle" icon={PlusIcon} aria-label="Add item" />`}
+  vrSection="icon-only"
+  vrTitle="Icon Only"
+>
+  <ButtonIconOnlyDemo client:visible />
+</ComponentExample>
+
+{/* Loading State */}
+
+<Heading level={3}>Loading State</Heading>
+<ComponentExample
+  code={`<Button variant="primary" loading>
+  Loading...
+</Button>`}
+  vrSection="loading"
+  vrTitle="Loading State"
+>
+  <ButtonLoadingDemo client:visible />
+</ComponentExample>
+
+{/* Disabled State */}
+
+  <Heading level={3}>Disabled State</Heading>
+  <ComponentExample
+    code={`<Button variant="secondary" disabled>
+  Disabled
+</Button>`}
+    vrSection="disabled"
+    vrTitle="Disabled State"
+  >
+    <ButtonDisabledDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Button" />
+</ComponentSection>

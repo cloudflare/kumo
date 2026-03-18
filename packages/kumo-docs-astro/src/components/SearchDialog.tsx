@@ -24,7 +24,6 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
-  "InputArea",
   "Toasty",
 ]);
 
@@ -134,6 +133,8 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   dropdown: "Displays a menu of actions or functions triggered by a button.",
   input:
     "A text input field with built-in label, description, and error support.",
+  "input-area":
+    "A multi-line text input for longer content with built-in label, description, and error support.",
   label: "A label component for form fields with required/optional indicators.",
   "layer-card":
     "A card with a layered visual effect for navigation or highlights.",

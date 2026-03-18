@@ -63,7 +63,7 @@ const componentRoutes: Record<string, string> = {
   empty: "/components/empty",
   grid: "/components/grid",
   input: "/components/input",
-  "input-area": "/components/input",
+  "input-area": "/components/input-area",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   loader: "/components/loader",

@@ -1,0 +1,220 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "InputArea"
+description: "A multi-line text input for longer content with built-in label, description, and error support."
+sourceFile: "components/input"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  InputAreaBasicDemo,
+  InputAreaWithLabelDemo,
+  InputAreaErrorStringDemo,
+  InputAreaErrorObjectDemo,
+  InputAreaSizesDemo,
+  InputAreaDisabledDemo,
+  InputAreaBareDemo,
+  InputAreaRowsDemo,
+  InputAreaOptionalFieldDemo,
+  InputAreaLabelTooltipDemo,
+  InputAreaReactNodeLabelDemo,
+} from "~/components/demos/InputAreaDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample
+    code={`<InputArea 
+  label="Description" 
+  placeholder="Enter a description..."
+  description="Provide details about your project"
+/>`}
+  >
+    <InputAreaBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { InputArea } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock code={`import { InputArea } from "@cloudflare/kumo/components/input";`} lang="tsx" />
+
+`Textarea` is also exported as an alias for `InputArea` for discoverability when migrating from other libraries.
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+  <Heading level={3}>With Built-in Field (Recommended)</Heading>
+
+Use the `label` prop to enable the built-in Field wrapper with label, description, and error support.
+
+  <CodeBlock
+    code={`import { InputArea } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <InputArea 
+      label="Description" 
+      placeholder="Enter a description..."
+      description="Provide details about your project"
+    />
+  );
+}`}
+    lang="tsx"
+  />
+
+<Heading level={3}>Bare InputArea (Custom Layouts)</Heading>
+
+For custom form layouts, use InputArea without `label`. Must provide `aria-label` or `aria-labelledby` for accessibility.
+
+  <CodeBlock
+    code={`import { InputArea } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <InputArea placeholder="Add notes..." aria-label="Notes" rows={3} />;
+}`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>With Label</Heading>
+<ComponentExample
+  code={`<InputArea label="Bio" placeholder="Tell us about yourself" description="Max 500 characters" />`}
+>
+  <InputAreaWithLabelDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom Row Count</Heading>
+
+Use the `rows` prop to control the initial height.
+
+<ComponentExample
+  code={`<InputArea label="2 rows" placeholder="Small area" rows={2} />
+<InputArea label="4 rows (default)" placeholder="Medium area" rows={4} />
+<InputArea label="8 rows" placeholder="Large area" rows={8} />`}
+>
+  <InputAreaRowsDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Error State (String)</Heading>
+<ComponentExample
+  code={`<InputArea label="Message" placeholder="Enter your message" value="Hi" variant="error" error="Message must be at least 10 characters" />`}
+>
+  <InputAreaErrorStringDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Error State (Object)</Heading>
+
+Use an error object with `match` for constraint validation.
+
+<ComponentExample
+  code={`<InputArea label="Feedback" value="Bad" variant="error" error={{ message: "Feedback must be at least 20 characters", match: "tooShort" }} minLength={20} />`}
+>
+  <InputAreaErrorObjectDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Sizes</Heading>
+
+Four sizes available: `xs`, `sm`, `base` (default), `lg`.
+
+<ComponentExample
+  code={`<InputArea size="xs" label="Extra Small" placeholder="Extra small textarea" />
+<InputArea size="sm" label="Small" placeholder="Small textarea" />
+<InputArea label="Base" placeholder="Base textarea (default)" />
+<InputArea size="lg" label="Large" placeholder="Large textarea" />`}
+>
+  <InputAreaSizesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Disabled</Heading>
+<ComponentExample
+  code={`<InputArea label="Disabled field" placeholder="Cannot edit" disabled />`}
+>
+  <InputAreaDisabledDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Bare InputArea</Heading>
+
+InputArea without `label` renders as a bare textarea. Must provide `aria-label` for accessibility.
+
+<ComponentExample
+  code={`<InputArea placeholder="Add notes..." aria-label="Notes" rows={3} />`}
+>
+  <InputAreaBareDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Optional Field</Heading>
+
+Set `required={false}` to show "(optional)" text after the label.
+
+<ComponentExample
+  code={`<InputArea label="Additional Notes" required={false} placeholder="Any additional information..." />`}
+>
+  <InputAreaOptionalFieldDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Label with Tooltip</Heading>
+
+Use `labelTooltip` to add an info icon with additional context on hover.
+
+<ComponentExample
+  code={`<InputArea label="Worker Script" labelTooltip="Enter your Cloudflare Worker script code here" placeholder="export default { async fetch(request) { ... } }" rows={4} />`}
+>
+  <InputAreaLabelTooltipDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>React Node Label</Heading>
+
+The `label` prop accepts ReactNode for rich formatting.
+
+  <ComponentExample code={`<InputArea label={<span>Notes for <strong>review</strong></span>} required placeholder="Add notes for the reviewer..." rows={3} />`}>
+    <InputAreaReactNodeLabelDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+
+InputArea accepts all standard HTML textarea attributes plus the following:
+
+  <PropsTable component="InputArea" />
+</ComponentSection>
+
+{/* Accessibility */}
+
+<ComponentSection>
+  <Heading level={2}>Accessibility</Heading>
+
+### Label Requirement
+
+InputArea requires an accessible name via one of:
+
+- `label` prop (recommended)
+- `placeholder` + `aria-label` for bare textareas
+- `aria-labelledby` for custom label association
+
+Missing accessible names trigger console warnings in development.
+
+### Error Association
+
+Error messages are automatically associated with the textarea via ARIA attributes for screen reader announcement.
+
+</ComponentSection>
