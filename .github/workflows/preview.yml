@@ -94,6 +94,9 @@ jobs:
       - name: Build docs
         run: pnpm --filter @cloudflare/kumo-docs-astro build
 
+      - name: Test docs
+        run: pnpm --filter @cloudflare/kumo-docs-astro test
+
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4
         with:

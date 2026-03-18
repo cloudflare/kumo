@@ -13,6 +13,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro check",
+    "test": "vitest run",
     "lint": "oxlint src/ && node ../../lint/lint-astro-colors.js src/",
     "lint:oxlint": "oxlint src/",
     "lint:astro": "node ../../lint/lint-astro-colors.js src/"
@@ -46,6 +47,7 @@
     "tailwindcss": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
+    "vitest": "catalog:",
     "wrangler": "catalog:"
   }
 }
