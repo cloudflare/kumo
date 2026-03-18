@@ -66,6 +66,10 @@ Returns `{ results: ScreenshotResult[] }` where each result has a base64-encoded
 
 **Limits:** max 50 pages per batch, max 64 KB per `css`/`js` action payload.
 
+### Section Capture
+
+When `captureSections: true`, the worker looks for elements with `data-vr-demo`, `data-vr-section`, and `data-vr-title` attributes in the DOM. These are set via `vrSection` and `vrTitle` props on `ComponentExample.astro` in the docs site.
+
 ## SECURITY NOTES
 
 - **URL validation**: all URLs are validated as `https://` (or `http://localhost`). Private IP ranges and cloud-metadata endpoints are blocked to prevent SSRF.
@@ -87,3 +91,4 @@ pnpm --filter @cloudflare/kumo-screenshot-worker lint       # oxlint
 - `tsconfig.json` includes `"DOM"` in `lib` — required so TypeScript understands the DOM code inside `page.evaluate()` callbacks, even though the Worker host has no DOM.
 - `Buffer` usage requires `nodejs_compat` flag in `wrangler.toml` (already set).
 - A fresh browser page is created per URL to prevent cookie/localStorage/style bleed between pages.
+- External endpoint: `kumo-screenshot-worker.design-engineering.workers.dev`

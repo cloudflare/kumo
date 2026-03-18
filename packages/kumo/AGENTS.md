@@ -13,6 +13,7 @@ kumo/
 │   ├── blocks/              # Installable blocks (NOT library exports; via CLI `kumo add`)
 │   ├── primitives/          # AUTO-GENERATED Base UI re-exports (40 files)
 │   ├── catalog/             # JSON-UI rendering runtime (DynamicValue, visibility conditions)
+│   ├── code/                # Shiki-based code highlighting (lazy-loaded, 16 bundled languages)
 │   ├── command-line/        # CLI: ls, doc, add, blocks, init, migrate
 │   ├── styles/              # CSS: kumo-binding.css + theme files (AUTO-GENERATED)
 │   ├── utils/               # cn(), safeRandomId, LinkProvider
@@ -39,6 +40,7 @@ kumo/
 | Variant definitions      | `KUMO_{NAME}_VARIANTS` export in component file | Machine-readable + lint-enforced                                           |
 | CLI commands             | `src/command-line/commands/`                    | `ls`, `doc`, `add`, `blocks`, `init`, `migrate`                            |
 | Catalog runtime          | `src/catalog/`                                  | JSON pointer resolution, visibility conditions                             |
+| Code highlighting        | `src/code/`                                     | ShikiProvider, lazy-loaded highlighter, 16 bundled languages               |
 | Blocks source            | `src/blocks/{name}/`                            | Installed to consumers via CLI, not exported                               |
 | Scaffold new component   | `plopfile.js`                                   | Injects into index.ts, vite.config.ts, package.json                        |
 | Token definitions        | `scripts/theme-generator/config.ts`             | Source of truth; generates theme CSS                                       |
@@ -81,7 +83,7 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 - **Vitest** with `happy-dom`, globals enabled
 - **Path aliases**: `@/` → `src/`, `@cloudflare/kumo` → `src/index.ts`
 - **Structural tests** in `tests/imports/`: validate all export paths resolve, package.json matches vite entries
-- **Sparse component tests**: Only 3/35 components have unit tests; emphasis on infrastructure testing
+- **Sparse component tests**: Only ~6 components have unit tests; emphasis on infrastructure testing
 - **`describe.skipIf(!isBuilt)`**: Export validation tests skip gracefully when `dist/` missing
 
 ## ANTI-PATTERNS
@@ -109,14 +111,17 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 | `Select`            | `hideLabel`                         | Use `aria-label` instead of `label` + `hideLabel={true}` |
 | `DropdownMenu.Item` | `href`                              | Use `DropdownMenu.LinkItem` for navigation               |
 | `Checkbox`          | `onChange`, `onIndeterminateChange` | Use `onCheckedChange`                                    |
-| `Banner`            | `children`                          | Use `title` and `description` props                      |
+| `Banner`            | `text`, `children`                  | Use `title` and `description` props                      |
 | `TimeseriesChart`   | `formatValue`                       | Use `tooltipValueFormat`                                 |
+| `Code`              | `CodeLanguage` type                 | Use `CodeLang` type                                      |
 
 ## NOTES
 
 - **Compound components**: CommandPalette (14 sub-components), Dialog, Select use two-level contexts
+- **13 components use createContext**: SwitchGroup, PaginationContext, RadioGroup, FlowNodeAnchor, Diagram, Descendants, InputGroup, DialogRole, ComboboxSize, Grid, CheckboxGroup, CommandPalette (2)
 - **DateRangePicker**: Contains 150 lines of duplicated ternary logic (refactoring target)
 - **Catalog `initCatalog`**: Appears to have race condition with async schema loading
 - **CLI path inconsistency**: `ls`/`doc` read from `catalog/`, `blocks` from `ai/` directory
 - **`PLOP_INJECT_EXPORT`** in `src/index.ts` and `PLOP_INJECT_COMPONENT_ENTRY` in `vite.config.ts` are scaffolding markers
 - **5th lint rule** (`no-deprecated-props`): Only in `packages/kumo/lint/`, reads deprecation data from registry
+- **LinkProvider**: Framework-agnostic link abstraction; wrap app with custom Link component (e.g., Next.js)

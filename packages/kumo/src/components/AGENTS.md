@@ -11,12 +11,12 @@ Each component follows: `{name}/{name}.tsx` + optional `{name}.test.tsx`, `{name
 ```
 components/
 ├── button/button.tsx           # Simple component
-├── dialog/dialog.tsx           # Compound (14+ sub-components)
-├── command-palette/            # Complex: 865 lines, 14 sub-components
-├── date-range-picker/          # Complex: 667 lines (refactoring target)
-├── combobox/                   # Complex: 561 lines
+├── dialog/dialog.tsx           # Compound (Root, Trigger, Title, Description, Close)
+├── command-palette/            # Complex: 865 lines, 14 sub-components, 2 contexts
+├── date-range-picker/          # Complex: 667 lines (DEPRECATED, refactoring target)
+├── combobox/                   # Complex: 561 lines (Root, Content, TriggerValue, TriggerInput, Item, Chip)
 ├── flow/                       # 8 files, descendants tracking system
-├── chart/                      # 5 files, timeseries + sparkline
+├── chart/                      # 5 files, ECharts wrapper + timeseries + sparkline
 └── ...
 ```
 
@@ -66,10 +66,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
-Button.displayName = "Button";  // REQUIRED
+Button.displayName = "Button";  // REQUIRED (77 total across codebase)
 ```
 
 ### Compound Component (Object.assign)
+
+13 components use this pattern:
 
 ```typescript
 const DialogRoot = forwardRef<...>(...);
@@ -82,18 +84,25 @@ export const Dialog = Object.assign(DialogRoot, {
   Title: DialogTitle,
   // ...
 });
+
+// displayName with dot notation
+DialogRoot.displayName = "Dialog";
+DialogTrigger.displayName = "Dialog.Trigger";
 ```
 
-### Context Hierarchy
+### Context Hierarchy (13 contexts total)
 
 ```typescript
 // Multi-level context for compound components
 const DialogRoleContext = createContext<"dialog" | "alertdialog">("dialog");
 const ComboboxSizeContext = createContext<Size>("base");
 const FlowNodeAnchorContext = createContext<AnchorRegistration | null>(null);
+const SwitchGroupContext = createContext<{ controlFirst: boolean }>({
+  controlFirst: true,
+});
 ```
 
-### Base UI Adaptation
+### Base UI Adaptation (36 imports)
 
 ```typescript
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
@@ -108,9 +117,29 @@ const DialogContent = forwardRef<...>(({ className, ...props }, ref) => (
 ));
 ```
 
+### Field Wrapper Integration
+
+Input, Select, Combobox auto-wrap with Field when `label` prop provided:
+
+```typescript
+if (label) {
+  return <Field label={label} description={description} error={error}>{input}</Field>;
+}
+return input;
+```
+
+### Type Derivation from Variants
+
+```typescript
+export type KumoButtonVariant = keyof typeof KUMO_BUTTON_VARIANTS.variant;
+export type KumoButtonSize = keyof typeof KUMO_BUTTON_VARIANTS.size;
+// Legacy alias for backwards compatibility
+export type ButtonVariant = KumoButtonVariant;
+```
+
 ## STYLING CONVENTIONS
 
-### cn() Always
+### cn() Always (43 files import it)
 
 ```typescript
 // CORRECT
@@ -118,19 +147,6 @@ className={cn("base-classes", conditional && "extra", className)}
 
 // WRONG - loses passthrough className
 className="base-classes"
-```
-
-### Variant Function
-
-```typescript
-function buttonVariants({ variant, size, shape }: ButtonVariantProps) {
-  return cn(
-    KUMO_BUTTON_STYLING.baseClasses,
-    KUMO_BUTTON_VARIANTS.variant[variant].classes,
-    KUMO_BUTTON_VARIANTS.size[size].classes,
-    KUMO_BUTTON_VARIANTS.shape[shape].classes,
-  );
-}
 ```
 
 ### State Classes (for Figma extraction)
@@ -157,14 +173,16 @@ classes: "bg-kumo-elevated hover:bg-kumo-base focus:ring-kumo-ring disabled:opac
 | Component           | Lines   | Notes                                              |
 | ------------------- | ------- | -------------------------------------------------- |
 | `command-palette`   | 865     | 14 sub-components, two-level context, keyboard nav |
-| `date-range-picker` | 667     | 150 lines duplicated ternary (refactor target)     |
+| `date-range-picker` | 667     | 150 lines duplicated ternary (DEPRECATED)          |
 | `combobox`          | 561     | Complex async filtering                            |
 | `pagination`        | 510     | Multiple layout modes                              |
 | `flow`              | 8 files | Descendants tracking, connector drawing            |
+| `chart`             | 5 files | ECharts passed externally to avoid bundling        |
 
 ## NOTES
 
-- **Field wrapper integration**: Input, Select, Combobox auto-wrap with Field when `label` prop provided
-- **Base UI primitives**: `@base-ui/react` for Dialog, Select, Menu, etc. Styled layer on top
-- **Descendants hook**: `flow/use-children.tsx` tracks render order for connector positioning
-- **Measurement epoch**: Flow diagram uses counter to coordinate sibling remeasurement
+- **64 forwardRef usages**: All interactive components use forwardRef
+- **Discriminated union props**: ButtonWithTextProps vs IconOnlyButtonProps pattern for conditional required props
+- **A11y dev warnings**: Components log console.warn in dev if missing accessible name
+- **Descendants hook**: `flow/use-children.tsx` uses `claimRenderOrder()` and `measurementEpoch` for deterministic connector drawing
+- **LinkProvider**: `utils/link-provider.tsx` abstracts framework-specific links (wrap app with custom Link component)
