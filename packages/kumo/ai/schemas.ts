@@ -606,19 +606,20 @@ export const RadioPropsSchema = z.object({
   legend: z.string(), // Legend text for the group (required for accessibility)
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child Radio.Item components
   orientation: z.enum(["vertical", "horizontal"]).optional(), // Layout direction of the radio items
+  appearance: z.enum(["default", "card"]).optional(), // Visual appearance applied to all Radio.Item children. - `"default"` — Standard inline radio items - `"card"` — Choice card with border, padding, and highlighted selection state Individual items can override this with their own `appearance` prop.
   error: z.string().optional(), // Error message for the group
   description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text for the group
   value: z.string().optional(), // Value of the radio that should be selected (controlled)
   disabled: z.boolean().optional(), // Whether all radios in the group are disabled
-  controlPosition: z.enum(["start", "end"]).optional(), // Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio
+  controlPosition: z.enum(["start", "end"]).optional(), // Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio. Note: In card appearance, the control is always positioned at the end.
   name: z.string().optional(), // Form submission name for the radio group
   className: z.string().optional(), // Additional CSS classes
 });
 
 export const SelectPropsSchema = z.object({
   className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select (enables Field wrapper) — can be a string or any React node.
-  hideLabel: z.boolean().optional(), // Visually hide the label while keeping it accessible to screen readers. Set to `false` to show a visible label above the select via the Field wrapper.
+  label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the select. When provided, enables the Field wrapper with a visible label above the select. For accessibility without a visible label, use `aria-label` instead.
+  hideLabel: z.boolean().optional(),
   placeholder: z.string().optional(), // Placeholder text shown when no value is selected.
   loading: z.boolean().optional(), // When `true`, shows a skeleton loader in place of the selected value.
   disabled: z.boolean().optional(), // Whether the select is disabled.
@@ -718,10 +719,9 @@ export const ToastyPropsSchema = z.object({
 });
 
 export const TooltipPropsSchema = z.object({
-  align: z.enum(["start", "center", "end"]).optional(), // Alignment on the axis perpendicular to `side`. - `"start"` — Align to the start edge - `"center"` — Center-aligned - `"end"` — Align to the end edge
-  asChild: z.boolean().optional(), // When `true`, the trigger wraps the child element instead of adding a wrapper.
-  className: z.string().optional(), // Additional CSS classes merged via `cn()`.
-  side: z.enum(["top", "bottom", "left", "right"]).optional(), // Preferred side of the trigger to render the tooltip. - `"top"` — Tooltip appears above the trigger - `"bottom"` — Tooltip appears below the trigger - `"left"` — Tooltip appears to the left of the trigger - `"right"` — Tooltip appears to the right of the trigger
+  side: z.enum(["top", "bottom", "left", "right"]).optional(),
+  className: z.string().optional(), // Additional CSS classes
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
   content: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]), // Content to display in the tooltip
 });
 

@@ -13,7 +13,6 @@ catalog:
   "@vitest/ui": ^4.0.18
   chokidar: ^4.0.3
   clsx: ^2.1.1
-  eslint: ^9.17.0
   eslint-plugin-jsx-a11y: ^6.10.2
   happy-dom: ^20.0.2
   isbot: ^5.1.31

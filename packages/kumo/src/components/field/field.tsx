@@ -123,7 +123,7 @@ export function Field({
 
   return (
     <FieldBase.Root className={fieldVariants({ controlFirst })}>
-      <FieldBase.Label className="text-base font-medium text-kumo-default">
+      <FieldBase.Label className="m-0 text-base font-medium text-kumo-default">
         <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
           {label}
         </Label>
@@ -132,7 +132,7 @@ export function Field({
       {error ? (
         <FieldBase.Error
           className={cn(
-            "text-sm text-kumo-danger",
+            "text-sm leading-snug text-kumo-danger",
             // Span full width in horizontal layout
             "col-span-full",
           )}

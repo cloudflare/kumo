@@ -330,7 +330,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           autoComplete={autoComplete}
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
-            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none placeholder:text-kumo-subtle disabled:cursor-not-allowed disabled:text-kumo-subtle",
+            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none kumo-input-placeholder disabled:cursor-not-allowed disabled:text-kumo-subtle",
             size === "xs" && "pr-5",
             size === "sm" && "pr-6",
             size === "base" && "pr-8",

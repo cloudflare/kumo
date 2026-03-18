@@ -31,6 +31,90 @@ function lightDark(light: string, dark: string): string {
   return `light-dark(\n    ${light},\n    ${dark}\n  )`;
 }
 
+function pushModeScopedBaseVariables(
+  lines: string[],
+  config: ThemeConfig,
+  themeName: string,
+  useNewNames: boolean,
+  options: {
+    wrapInBaseLayer?: boolean;
+  } = {},
+): void {
+  const textEntries: Array<{ name: string; light: string; dark: string }> = [];
+  const colorEntries: Array<{ name: string; light: string; dark: string }> = [];
+
+  for (const [tokenName, def] of Object.entries(config.text)) {
+    const themeColors = def.theme[themeName];
+    if (!themeColors) continue;
+    const name = useNewNames ? def.newName : tokenName;
+    textEntries.push({
+      name,
+      light: themeColors.light,
+      dark: themeColors.dark,
+    });
+  }
+
+  for (const [tokenName, def] of Object.entries(config.color)) {
+    const themeColors = def.theme[themeName];
+    if (!themeColors) continue;
+    const name = useNewNames ? def.newName : tokenName;
+    colorEntries.push({
+      name,
+      light: themeColors.light,
+      dark: themeColors.dark,
+    });
+  }
+
+  if (textEntries.length === 0 && colorEntries.length === 0) {
+    return;
+  }
+
+  const themeSelector = `[data-theme="${themeName}"]`;
+  const lightSelector =
+    themeName === "kumo" ? `:root, ${themeSelector}` : `${themeSelector}`;
+  const darkSelector =
+    themeName === "kumo"
+      ? `:root[data-mode="dark"], [data-mode="dark"]:not([data-theme]), [data-mode="dark"] ${themeSelector}, ${themeSelector}[data-mode="dark"], ${themeSelector} [data-mode="dark"]`
+      : `[data-mode="dark"] ${themeSelector}, ${themeSelector}[data-mode="dark"], ${themeSelector} [data-mode="dark"]`;
+
+  const ruleLines: string[] = [];
+  ruleLines.push(`${lightSelector} {`);
+
+  for (const entry of textEntries) {
+    ruleLines.push(`  --text-color-${entry.name}: ${entry.light};`);
+  }
+
+  for (const entry of colorEntries) {
+    ruleLines.push(`  --color-${entry.name}: ${entry.light};`);
+  }
+
+  ruleLines.push("}");
+  ruleLines.push("");
+  ruleLines.push(`${darkSelector} {`);
+
+  for (const entry of textEntries) {
+    ruleLines.push(`  --text-color-${entry.name}: ${entry.dark};`);
+  }
+
+  for (const entry of colorEntries) {
+    ruleLines.push(`  --color-${entry.name}: ${entry.dark};`);
+  }
+
+  ruleLines.push("}");
+
+  lines.push("");
+  if (options.wrapInBaseLayer) {
+    lines.push("@layer base {");
+    for (const line of ruleLines) {
+      lines.push(`  ${line}`);
+    }
+    lines.push("}");
+    return;
+  }
+
+  lines.push(...ruleLines);
+}
+
 /**
  * Generate the base kumo theme CSS
  * This contains all tokens with their kumo theme values
@@ -88,6 +172,12 @@ export function generateKumoThemeCSS(
     lines.push("}");
   }
 
+  // Explicit runtime vars avoid transient unresolved light-dark() values
+  // during class/DOM mutations in some browser style recalculation paths.
+  pushModeScopedBaseVariables(lines, config, "kumo", useNewNames, {
+    wrapInBaseLayer: true,
+  });
+
   return lines.join("\n");
 }
 
@@ -143,12 +233,20 @@ export function generateThemeOverrideCSS(
     return `${GENERATED_FILE_HEADER}/* No overrides for ${themeName} theme */\n`;
   }
 
-  return `${GENERATED_FILE_HEADER}@layer base {
-  [data-theme="${themeName}"] {
-${overrides.join("\n")}
-  }
-}
-`;
+  const lines = [
+    GENERATED_FILE_HEADER,
+    "@layer base {",
+    `  [data-theme="${themeName}"] {`,
+    ...overrides,
+    "  }",
+    "}",
+  ];
+
+  pushModeScopedBaseVariables(lines, config, themeName, useNewNames, {
+    wrapInBaseLayer: true,
+  });
+
+  return `${lines.join("\n")}\n`;
 }
 
 /**

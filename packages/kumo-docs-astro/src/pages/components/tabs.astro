@@ -11,6 +11,7 @@ import {
   TabsUnderlineDemo,
   TabsControlledDemo,
   TabsManyDemo,
+  TabsRenderPropDemo,
 } from "../../components/demos/TabsDemo";
 ---
 
@@ -172,6 +173,37 @@ export default function Example() {
         <TabsManyDemo client:visible />
       </ComponentExample>
     </div>
+
+    <!-- Custom Render -->
+    <div class="mb-12">
+      <Heading level={3}>Custom Render (Link Tabs)</Heading>
+      <p class="text-kumo-subtle mb-4">
+        Use the <code class="text-sm">render</code> prop to customize how tabs are rendered.
+        This is useful for rendering tabs as links for navigation.
+      </p>
+      <ComponentExample
+        code={`<Tabs
+  tabs={[
+    { value: "tab1", label: "Regular Tab" },
+    {
+      value: "tab2",
+      label: "Link Tab",
+      render: (props) => <a {...props} href="#tab2" />,
+    },
+    {
+      value: "tab3",
+      label: "Cloudflare",
+      render: (props) => (
+        <a {...props} href="https://cloudflare.com" target="_blank" />
+      ),
+    },
+  ]}
+  selectedValue="tab1"
+/>`}
+      >
+        <TabsRenderPropDemo client:visible />
+      </ComponentExample>
+    </div>
   </ComponentSection>
 
   <!-- API Reference -->
@@ -203,6 +235,11 @@ export default function Example() {
           <tr class="border-b border-kumo-line">
             <td class="px-4 py-3 font-mono text-xs">className</td>
             <td class="px-4 py-3 font-mono text-xs">string</td>
+            <td class="px-4 py-3 font-mono text-xs">No</td>
+          </tr>
+          <tr class="border-b border-kumo-line">
+            <td class="px-4 py-3 font-mono text-xs">render</td>
+            <td class="px-4 py-3 font-mono text-xs">ReactElement | ((props, state) =&gt; ReactElement)</td>
             <td class="px-4 py-3 font-mono text-xs">No</td>
           </tr>
         </tbody>

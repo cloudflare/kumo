@@ -9,6 +9,7 @@ import {
   LoaderBasicDemo,
   LoaderSizesDemo,
   LoaderCustomSizeDemo,
+  LoaderCustomColorDemo,
 } from "../../components/demos/LoaderDemo";
 ---
 
@@ -65,6 +66,13 @@ export default function Example() {
         <Heading level={3}>Custom Size</Heading>
         <ComponentExample code={`<Loader size={24} />`}>
           <LoaderCustomSizeDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Color</Heading>
+        <ComponentExample code={`<Loader className="text-kumo-subtle" />`}>
+          <LoaderCustomColorDemo client:visible />
         </ComponentExample>
       </div>
     </div>
