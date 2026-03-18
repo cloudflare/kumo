@@ -27,7 +27,6 @@ const componentData = registry.components.Switch;
 const props = componentData.props;
 const variantProp = props.variant as {
   values: string[];
-  classes: Record<string, string>;
   descriptions: Record<string, string>;
   default: string;
 };
@@ -43,17 +42,6 @@ describe("Switch Generator - Registry Validation", () => {
     // Don't hardcode expected variants - verify structure
     expect(Array.isArray(variantProp.values)).toBe(true);
     expect(variantProp.values.length).toBeGreaterThan(0);
-  });
-
-  it("should have classes defined for all variants", () => {
-    for (const variant of variantProp.values) {
-      // Note: Only "error" variant has classes defined in registry
-      // "default" variant has no classes (uses default styles)
-      if (variant === "error") {
-        expect(variantProp.classes[variant]).toBeDefined();
-        expect(typeof variantProp.classes[variant]).toBe("string");
-      }
-    }
   });
 
   it("should have descriptions defined for all variants", () => {
@@ -103,8 +91,7 @@ describe("Switch Generator - Variant Configuration", () => {
     const config = getSwitchVariantConfig();
     expect(config.values).toBeDefined();
     expect(Array.isArray(config.values)).toBe(true);
-    expect(config.classes).toBeDefined();
-    expect(typeof config.classes).toBe("object");
+    // Note: Switch variants don't use CSS classes - behavior is logic-based
     expect(config.descriptions).toBeDefined();
     expect(typeof config.descriptions).toBe("object");
     expect(config.default).toBeDefined();
