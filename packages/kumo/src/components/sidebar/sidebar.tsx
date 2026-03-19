@@ -1046,13 +1046,13 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg outline-none",
+      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg outline-none cursor-pointer",
       // Sizing
       size === "base" && "min-h-[34px] px-3 py-1.5 text-sm font-medium",
       size === "sm" && "min-h-[28px] px-2 py-1 text-sm",
       // Default state — transition includes padding so collapsed centering animates smoothly
       "text-kumo-default",
-      "transition-[color,background-color,padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
+      "transition-[color,background-color,padding] duration-0 ease-[cubic-bezier(0.77,0,0.175,1)]",
       // Icon color
       "[&>svg]:text-kumo-subtle",
       !active && "hover:bg-kumo-tint",
