@@ -3348,8 +3348,7 @@
       "examples": [
         "<Loader />",
         "<div className=\"flex items-center gap-4\">\n      <Loader size=\"sm\" />\n      <Loader size=\"base\" />\n      <Loader size=\"lg\" />\n    </div>",
-        "<Loader size={24} />",
-        "<Loader className=\"text-kumo-subtle\" />"
+        "<Loader size={24} />"
       ],
       "colors": []
     },
@@ -4728,7 +4727,11 @@
         "bg-kumo-info-tint",
         "bg-kumo-success-tint",
         "bg-kumo-warning-tint",
+        "border-kumo-danger",
         "border-kumo-fill",
+        "border-kumo-info",
+        "border-kumo-success",
+        "border-kumo-warning",
         "text-kumo-danger",
         "text-kumo-default",
         "text-kumo-info",

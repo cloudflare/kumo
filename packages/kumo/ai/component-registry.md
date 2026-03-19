@@ -3295,10 +3295,6 @@ Animated circular spinner for indicating loading states.
 <Loader size={24} />
 ```
 
-```tsx
-<Loader className="text-kumo-subtle" />
-```
-
 
 ---
 
@@ -5231,7 +5227,7 @@ Toasty — toast notification provider and viewport.  Renders a `Toast.Provider`
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-contrast`, `bg-kumo-control`, `bg-kumo-danger-tint`, `bg-kumo-fill-hover`, `bg-kumo-info-tint`, `bg-kumo-success-tint`, `bg-kumo-warning-tint`, `border-kumo-fill`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-info`, `text-kumo-strong`, `text-kumo-subtle`, `text-kumo-success`, `text-kumo-warning`
+`bg-kumo-contrast`, `bg-kumo-control`, `bg-kumo-danger-tint`, `bg-kumo-fill-hover`, `bg-kumo-info-tint`, `bg-kumo-success-tint`, `bg-kumo-warning-tint`, `border-kumo-danger`, `border-kumo-fill`, `border-kumo-info`, `border-kumo-success`, `border-kumo-warning`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-info`, `text-kumo-strong`, `text-kumo-subtle`, `text-kumo-success`, `text-kumo-warning`
 
 **Styling:**
 
