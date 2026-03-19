@@ -292,16 +292,18 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
     - `disabled`: `disabled:bg-kumo-brand/50`
   - `"secondary"`:
     - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint`
-    - `disabled`: `disabled:bg-kumo-base/50 disabled:!text-kumo-default/70`
-    - `data-state`: `data-[state=open]:bg-kumo-base`
+    - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-default/70`
+    - `data-state`: `data-[state=open]:bg-kumo-control`
   - `"ghost"`:
     - `hover`: `hover:bg-kumo-tint`
   - `"destructive"`:
     - `hover`: `hover:bg-kumo-danger/70`
   - `"secondary-destructive"`:
-    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base`
-    - `disabled`: `disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70`
-    - `data-state`: `data-[state=open]:bg-kumo-base`
+    - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint`
+    - `disabled`: `disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70`
+    - `data-state`: `data-[state=open]:bg-kumo-control`
+  - `"outline"`:
+    - `hover`: `hover:bg-kumo-tint`
 - `children`: ReactNode
 - `className`: string
 - `icon`: ReactNode
@@ -318,7 +320,7 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-danger`, `bg-kumo-tint`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-control`, `bg-kumo-danger`, `bg-kumo-tint`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -1952,7 +1954,7 @@ DateRangePicker — dual-calendar date range selector.  Renders two side-by-side
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-fill`, `bg-kumo-interact`, `bg-kumo-overlay`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-fill`, `bg-kumo-interact`, `bg-kumo-overlay`, `text-kumo-default`, `text-kumo-inverse`, `text-kumo-link`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -3295,10 +3297,6 @@ Animated circular spinner for indicating loading states.
 <Loader size={24} />
 ```
 
-```tsx
-<Loader className="text-kumo-subtle" />
-```
-
 
 ---
 
@@ -3325,7 +3323,7 @@ MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-fill`, `border-kumo-fill`
+`bg-kumo-base`, `bg-kumo-fill`, `bg-kumo-overlay`, `border-kumo-fill`
 
 **Styling:**
 
@@ -4343,7 +4341,7 @@ Password/secret input that masks its value by default and reveals on click. Incl
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-control`, `outline-kumo-ring`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -5229,7 +5227,7 @@ Toasty — toast notification provider and viewport.  Renders a `Toast.Provider`
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-contrast`, `bg-kumo-control`, `bg-kumo-fill-hover`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-control`, `bg-kumo-fill-hover`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 

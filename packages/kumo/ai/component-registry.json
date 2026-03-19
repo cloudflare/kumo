@@ -318,11 +318,11 @@
           },
           "classes": {
             "primary": "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
-            "secondary": "bg-kumo-base !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-ring data-[state=open]:bg-kumo-base",
+            "secondary": "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
             "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
             "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
-            "secondary-destructive": "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
-            "outline": "bg-transparent text-kumo-default ring-2 ring-kumo-ring"
+            "secondary-destructive": "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+            "outline": "bg-kumo-base text-kumo-default ring ring-kumo-line hover:bg-kumo-tint"
           },
           "stateClasses": {
             "primary": {
@@ -332,8 +332,8 @@
             },
             "secondary": {
               "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint",
-              "disabled": "disabled:bg-kumo-base/50 disabled:!text-kumo-default/70",
-              "data-state": "data-[state=open]:bg-kumo-base"
+              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-default/70",
+              "data-state": "data-[state=open]:bg-kumo-control"
             },
             "ghost": {
               "hover": "hover:bg-kumo-tint"
@@ -342,9 +342,12 @@
               "hover": "hover:bg-kumo-danger/70"
             },
             "secondary-destructive": {
-              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base",
-              "disabled": "disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70",
-              "data-state": "data-[state=open]:bg-kumo-base"
+              "not-disabled": "not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint",
+              "disabled": "disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70",
+              "data-state": "data-[state=open]:bg-kumo-control"
+            },
+            "outline": {
+              "hover": "hover:bg-kumo-tint"
             }
           },
           "default": "secondary"
@@ -419,6 +422,7 @@
         "bg-kumo-base",
         "bg-kumo-brand",
         "bg-kumo-brand-hover",
+        "bg-kumo-control",
         "bg-kumo-danger",
         "bg-kumo-tint",
         "ring-kumo-line",
@@ -2368,6 +2372,7 @@
         "bg-kumo-overlay",
         "text-kumo-default",
         "text-kumo-inverse",
+        "text-kumo-link",
         "text-kumo-strong",
         "text-kumo-subtle"
       ],
@@ -3348,8 +3353,7 @@
       "examples": [
         "<Loader />",
         "<div className=\"flex items-center gap-4\">\n      <Loader size=\"sm\" />\n      <Loader size=\"base\" />\n      <Loader size=\"lg\" />\n    </div>",
-        "<Loader size={24} />",
-        "<Loader className=\"text-kumo-subtle\" />"
+        "<Loader size={24} />"
       ],
       "colors": []
     },
@@ -3389,6 +3393,7 @@
       "colors": [
         "bg-kumo-base",
         "bg-kumo-fill",
+        "bg-kumo-overlay",
         "border-kumo-fill"
       ],
       "styling": {
@@ -4142,6 +4147,7 @@
       ],
       "colors": [
         "bg-kumo-brand",
+        "bg-kumo-brand-hover",
         "bg-kumo-control",
         "outline-kumo-ring",
         "ring-kumo-ring",
@@ -4717,7 +4723,6 @@
       },
       "examples": [],
       "colors": [
-        "bg-kumo-contrast",
         "bg-kumo-control",
         "bg-kumo-fill-hover",
         "border-kumo-fill",
