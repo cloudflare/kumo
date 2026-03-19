@@ -1532,7 +1532,6 @@ const SidebarResizeHandle = forwardRef<
     setWidth,
     setOpen,
     open,
-    state,
     minWidth,
   } = useSidebar();
   const startX = useRef(0);
