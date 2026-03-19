@@ -606,11 +606,12 @@ export const RadioPropsSchema = z.object({
   legend: z.string(), // Legend text for the group (required for accessibility)
   children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child Radio.Item components
   orientation: z.enum(["vertical", "horizontal"]).optional(), // Layout direction of the radio items
+  appearance: z.enum(["default", "card"]).optional(), // Visual appearance applied to all Radio.Item children. - `"default"` — Standard inline radio items - `"card"` — Choice card with border, padding, and highlighted selection state Individual items can override this with their own `appearance` prop.
   error: z.string().optional(), // Error message for the group
   description: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Helper text for the group
   value: z.string().optional(), // Value of the radio that should be selected (controlled)
   disabled: z.boolean().optional(), // Whether all radios in the group are disabled
-  controlPosition: z.enum(["start", "end"]).optional(), // Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio
+  controlPosition: z.enum(["start", "end"]).optional(), // Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio. Note: In card appearance, the control is always positioned at the end.
   name: z.string().optional(), // Form submission name for the radio group
   className: z.string().optional(), // Additional CSS classes
 });
@@ -665,7 +666,7 @@ export const SurfacePropsSchema = z.object({
 });
 
 export const SwitchPropsSchema = z.object({
-  variant: z.enum(["default", "error"]).optional(), // Visual variant: "default" or "error" for validation failures (visual only, no error text)
+  variant: z.enum(["default", "neutral"]).optional(), // Visual variant: "default" (pill, brand color) or "neutral" (squircle, monochrome)
   label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes.
   labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
   required: z.boolean().optional(), // Whether the switch is required. When explicitly false, shows "(optional)" text after the label.

@@ -19,10 +19,11 @@ import {
  * 3. Add its description to COMPONENT_DESCRIPTIONS below
  */
 const COMPONENTS_WITHOUT_DOCS = new Set([
+  "Code", // Deprecated: use CodeHighlighted from @cloudflare/kumo/code
+  "CodeBlock", // Deprecated: use CodeHighlighted from @cloudflare/kumo/code
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
-  "InputArea",
   "Toasty",
 ]);
 
@@ -31,6 +32,7 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
  * Only needed when the name doesn't match the standard kebab-case conversion.
  */
 const SLUG_OVERRIDES: Record<string, string> = {
+  CodeHighlighted: "code-highlighted",
   DropdownMenu: "dropdown",
 };
 
@@ -43,6 +45,7 @@ const STATIC_PAGES: Array<{
   description: string;
   url: string;
   category: string;
+  type?: "component" | "block" | "layout" | "page";
 }> = [
   {
     name: "Installation",
@@ -100,6 +103,13 @@ const STATIC_PAGES: Array<{
     url: "/registry",
     category: "Guides",
   },
+  {
+    name: "CodeHighlighted",
+    description: "Syntax-highlighted code blocks powered by Shiki.",
+    url: "/components/code-highlighted",
+    category: "Components",
+    type: "component",
+  },
 ];
 
 /** Better descriptions from the Astro doc pages */
@@ -123,6 +133,8 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   dropdown: "Displays a menu of actions or functions triggered by a button.",
   input:
     "A text input field with built-in label, description, and error support.",
+  "input-area":
+    "A multi-line text input for longer content with built-in label, description, and error support.",
   label: "A label component for form fields with required/optional indicators.",
   "layer-card":
     "A card with a layered visual effect for navigation or highlights.",
@@ -332,7 +344,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     // Always include static pages
     const staticItems: SearchItem[] = STATIC_PAGES.map((page) => ({
       name: page.name,
-      type: "page" as const,
+      type: page.type ?? "page",
       description: page.description,
       category: page.category,
       url: page.url,

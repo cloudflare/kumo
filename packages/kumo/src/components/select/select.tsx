@@ -59,7 +59,7 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants(),
     "justify-between font-normal",
-    "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
+    "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
   );
 }
 
@@ -271,7 +271,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         className={cn(
           buttonVariants(),
           "justify-between font-normal",
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
+          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
           props.disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -281,11 +281,14 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         {loading ? (
           <SkeletonLine className="w-32" />
         ) : (
-          <SelectBase.Value placeholder={placeholder}>
+          <SelectBase.Value
+            placeholder={placeholder}
+            className="min-w-0 truncate"
+          >
             {renderValue}
           </SelectBase.Value>
         )}
-        <SelectBase.Icon className="flex items-center">
+        <SelectBase.Icon className="flex shrink-0 items-center">
           <CaretUpDownIcon />
         </SelectBase.Icon>
       </SelectBase.Trigger>
@@ -293,8 +296,8 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         <SelectBase.Positioner>
           <SelectBase.Popup
             className={cn(
-              "overflow-hidden bg-kumo-control text-kumo-default", // background
-              "rounded-lg shadow-lg ring ring-kumo-line", // border part
+              "overflow-hidden bg-kumo-base text-kumo-default", // background
+              "rounded-lg shadow-lg ring ring-kumo-ring", // border part
               // 3px adjustment to account for padding + border differences
               "min-w-[calc(var(--anchor-width)+3px)] p-1.5", // spacing
             )}
@@ -367,7 +370,7 @@ function Option<T>({ children, value }: OptionProps<T>) {
   return (
     <SelectBase.Item
       value={value}
-      className="group flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
+      className="group flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
     >
       <SelectBase.ItemText>{children}</SelectBase.ItemText>
       <SelectBase.ItemIndicator>

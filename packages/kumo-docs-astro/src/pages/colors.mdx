@@ -1,0 +1,133 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Colors"
+description: "Kumo uses semantic color tokens that automatically adapt to light and dark mode. Use these classes in your Tailwind CSS instead of raw color values."
+---
+
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Callout from "~/components/docs/Callout.astro";
+import { TailwindColorTokens } from "~/components/demos/ColorsDemo";
+
+## Usage
+
+Always use semantic tokens instead of raw Tailwind colors. This ensures your UI automatically adapts to light and dark mode.
+
+**Correct**
+
+<CodeBlock
+  code={`<div className="bg-kumo-base text-kumo-default border-kumo-line">
+  <button className="bg-kumo-brand text-white">Primary</button>
+  <button className="bg-kumo-control text-kumo-default">Secondary</button>
+</div>`}
+  lang="tsx"
+/>
+
+**Incorrect**
+
+<CodeBlock
+  code={`{/* Never use raw Tailwind colors */}
+<div className="bg-white dark:bg-gray-900 text-black dark:text-white">
+  <button className="bg-blue-500">Primary</button>
+</div>`}
+  lang="tsx"
+/>
+
+<Callout type="warning">
+  **Lint rules enforce this:** The `no-primitive-colors` rule will flag any raw
+  Tailwind colors like `bg-blue-500`.
+</Callout>
+
+## Mode
+
+Set `data-mode` on a parent element to control light/dark mode. Never use Tailwind's `dark:` variant — semantic tokens handle dark mode automatically via CSS `light-dark()`.
+
+<CodeBlock
+  code={`// Set mode on html or body
+<html data-mode="light">  // Light mode
+<html data-mode="dark">   // Dark mode
+
+// Components automatically adapt - no dark: variants needed
+
+<div className="bg-kumo-base text-kumo-default" />
+`} lang="tsx" />
+
+## Themes
+
+Themes override semantic token values while preserving the same token names. Set `data-theme` on a parent element to apply a theme.
+
+### Available Themes
+
+- `kumo` — Default theme (no attribute needed)
+- `fedramp` — Government compliance styling
+
+<CodeBlock
+  code={`// Apply a theme to a section or the whole app
+<div data-theme="fedramp">
+  {/* All Kumo components inside use fedramp token overrides */}
+  <Button>FedRAMP Styled</Button>
+</div>
+
+// Themes work with both light and dark mode
+
+<html data-mode="dark" data-theme="fedramp">`}
+  lang="tsx"
+/>
+
+### Theme Generator
+
+Themes are defined in a centralized config and generated as CSS files. The theme generator ensures consistency across all themes.
+
+<CodeBlock
+  code={`# List all tokens and their theme overrides
+pnpm --filter @cloudflare/kumo codegen:themes --list
+
+# Generate theme CSS files
+
+pnpm --filter @cloudflare/kumo codegen:themes
+
+# Preview changes without writing files
+
+pnpm --filter @cloudflare/kumo codegen:themes --dry-run`}
+lang="bash"
+/>
+
+Theme config: `packages/kumo/scripts/theme-generator/config.ts`
+
+### Creating a New Theme
+
+Add theme overrides in the config file. Only override tokens that need to change — all other tokens inherit from the base kumo theme.
+
+<CodeBlock
+  code={`// In scripts/theme-generator/config.ts
+export const THEME_CONFIG: ThemeConfig = {
+  color: {
+    "kumo-base": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-white, #fff)",
+          dark: "var(--color-black, #000)",
+        },
+        // Add your theme override
+        myTheme: {
+          light: "#f0f4f8",
+          dark: "#1a1f2e",
+        },
+      },
+    },
+    // ... other tokens
+  },
+};
+
+// Add to available themes
+export const AVAILABLE_THEMES = ["kumo", "fedramp", "myTheme"] as const;`}
+lang="ts"
+/>
+
+Then run `pnpm codegen:themes` to generate the CSS.
+
+## Token Reference
+
+Toggle the theme in the header to see how tokens adapt. Tokens marked as "global" are explicit opt-in classes available regardless of theme.
+
+<TailwindColorTokens client:load />

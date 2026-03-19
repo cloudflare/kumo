@@ -1,0 +1,143 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Switch"
+description: "A two-state button that can be either on or off."
+sourceFile: "components/switch"
+baseUIComponent: "switch"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  SwitchBasicDemo,
+  SwitchOffDemo,
+  SwitchOnDemo,
+  SwitchDisabledDemo,
+  SwitchNeutralDemo,
+  SwitchNeutralStatesDemo,
+  SwitchVariantsDemo,
+  SwitchSizesDemo,
+} from "~/components/demos/SwitchDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample
+    code={`<Switch label="Switch" checked={false} onCheckedChange={() => {}} />`}
+  >
+    <SwitchBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Switch } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Switch } from "@cloudflare/kumo/components/switch";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+  <CodeBlock
+    code={`import { Switch } from "@cloudflare/kumo";
+import { useState } from "react";
+
+export default function Example() {
+  const [checked, setChecked] = useState(false);
+  
+  return (
+    <Switch 
+      checked={checked} 
+      onCheckedChange={(val) => setChecked(val)} 
+    />
+  );
+}`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Off State</Heading>
+<ComponentExample
+  code={`<Switch label="Switch" checked={false} onCheckedChange={() => {}} />`}
+>
+  <SwitchOffDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>On State</Heading>
+<ComponentExample
+  code={`<Switch label="Switch" checked={true} onCheckedChange={() => {}} />`}
+>
+  <SwitchOnDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Disabled</Heading>
+<ComponentExample code={`<Switch label="Disabled" checked={false} disabled />`}>
+  <SwitchDisabledDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Variants</Heading>
+
+The Switch supports two variants: `default` (pill shape, blue when on) and `neutral` (squircle shape, monochrome).
+
+<ComponentExample
+  code={`<Switch label="Default variant" checked={true} onCheckedChange={() => {}} />
+<Switch label="Neutral variant" variant="neutral" checked={true} onCheckedChange={() => {}} />`}
+>
+  <SwitchVariantsDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Neutral Variant</Heading>
+
+The neutral variant uses monochrome colors and a squircle shape, ideal for subtle, less prominent toggles.
+
+<ComponentExample
+  code={`<Switch label="Neutral switch" variant="neutral" checked={checked} onCheckedChange={setChecked} />`}
+>
+  <SwitchNeutralDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Neutral States</Heading>
+<ComponentExample
+  code={`<Switch label="Neutral off" variant="neutral" checked={false} onCheckedChange={() => {}} />
+<Switch label="Neutral on" variant="neutral" checked={true} onCheckedChange={() => {}} />
+<Switch label="Neutral disabled" variant="neutral" checked={false} disabled />`}
+>
+  <SwitchNeutralStatesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Sizes</Heading>
+
+Three sizes available: `sm`, `base` (default), and `lg`.
+
+<ComponentExample
+  code={`<Switch label="Small" size="sm" checked={true} onCheckedChange={() => {}} />
+<Switch label="Base (default)" size="base" checked={true} onCheckedChange={() => {}} />
+<Switch label="Large" size="lg" checked={true} onCheckedChange={() => {}} />`}
+>
+  <SwitchSizesDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Switch" />
+</ComponentSection>

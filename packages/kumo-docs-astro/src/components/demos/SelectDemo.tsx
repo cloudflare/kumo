@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Select, Text } from "@cloudflare/kumo";
+import { Select, Text, Badge } from "@cloudflare/kumo";
 
 /** Basic Select with visible label - the recommended pattern. */
 export function SelectBasicDemo() {
@@ -197,6 +197,74 @@ export function SelectMultipleDemo() {
       <Select.Option value="Read">Read</Select.Option>
       <Select.Option value="Write">Write</Select.Option>
       <Select.Option value="CreatedAt">Created At</Select.Option>
+    </Select>
+  );
+}
+
+/** Multi-select with long option names to test overflow handling. */
+export function SelectMultipleOverflowDemo() {
+  const [value, setValue] = useState<string[]>([
+    "European Union Privacy Regulation",
+    "California Consumer Protection Act",
+  ]);
+
+  return (
+    <Select
+      label="Compliance Frameworks"
+      className="w-[280px]"
+      multiple
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      <Select.Option value="European Union Privacy Regulation">
+        European Union Privacy Regulation
+      </Select.Option>
+      <Select.Option value="California Consumer Protection Act">
+        California Consumer Protection Act
+      </Select.Option>
+      <Select.Option value="Health Insurance Portability Act">
+        Health Insurance Portability Act
+      </Select.Option>
+      <Select.Option value="Payment Card Industry Standard">
+        Payment Card Industry Standard
+      </Select.Option>
+    </Select>
+  );
+}
+
+/** Multi-select with a custom indicator badge showing selection count. */
+export function SelectMultipleWithIndicatorDemo() {
+  const [value, setValue] = useState<string[]>(["bug", "feature"]);
+
+  const allOptions = [
+    { value: "bug", label: "Bug" },
+    { value: "feature", label: "Feature Request" },
+    { value: "docs", label: "Documentation" },
+    { value: "performance", label: "Performance Issue" },
+    { value: "security", label: "Security Vulnerability" },
+  ];
+
+  return (
+    <Select
+      label="Issue Types"
+      className="w-[220px]"
+      multiple
+      renderValue={(selected) => (
+        <span className="flex items-center gap-2">
+          <span>Issue Types</span>
+          {selected.length > 0 && (
+            <Badge variant="secondary">{selected.length}</Badge>
+          )}
+        </span>
+      )}
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      {allOptions.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
     </Select>
   );
 }

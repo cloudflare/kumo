@@ -215,3 +215,8 @@
 [data-mode="dark"] .kumo-popover-popup {
   outline-offset: -1px;
 }
+
+/* Input placeholder color - vanilla CSS to avoid Tailwind parsing issues */
+.kumo-input-placeholder::placeholder {
+  color: var(--text-color-kumo-placeholder);
+}
