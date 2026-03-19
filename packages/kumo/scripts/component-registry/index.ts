@@ -317,11 +317,54 @@ function generatePropsFromType(
 
     // Follow $ref chain to get the actual definition
     // This handles cases like: ExpandableProps -> React.PropsWithChildren<...>
-    while (mainDef.$ref && !mainDef.properties && !mainDef.allOf) {
+    while (
+      mainDef.$ref &&
+      !mainDef.properties &&
+      !mainDef.allOf &&
+      !mainDef.anyOf &&
+      !mainDef.oneOf
+    ) {
       const refName = decodeURIComponent(mainDef.$ref.split("/").pop()!);
       const refDef = schema.definitions?.[refName] as Definition;
       if (!refDef) break;
       mainDef = refDef;
+    }
+
+    // Helper: collect properties and required fields from a schema part
+    // biome-ignore lint/suspicious/noExplicitAny: JSON Schema types are complex
+    function collectFromParts(parts: Definition[]): {
+      // biome-ignore lint/suspicious/noExplicitAny: JSON Schema types are complex
+      properties: Record<string, any>;
+      required: string[];
+    } {
+      // biome-ignore lint/suspicious/noExplicitAny: JSON Schema types are complex
+      let properties: Record<string, any> = {};
+      let required: string[] = [];
+
+      for (const part of parts) {
+        if (part.$ref) {
+          const refName = decodeURIComponent(part.$ref.split("/").pop()!);
+          const refDef = schema.definitions?.[refName] as Definition;
+          if (refDef?.properties) {
+            properties = { ...properties, ...refDef.properties };
+          }
+          if (refDef?.required) {
+            required = [...required, ...(refDef.required as string[])];
+          }
+          // Recursively handle nested allOf/anyOf in referenced definitions
+          if (refDef?.allOf) {
+            const nested = collectFromParts(refDef.allOf as Definition[]);
+            properties = { ...properties, ...nested.properties };
+            required = [...required, ...nested.required];
+          }
+        } else if (part.properties) {
+          properties = { ...properties, ...part.properties };
+          if (part.required) {
+            required = [...required, ...(part.required as string[])];
+          }
+        }
+      }
+      return { properties, required };
     }
 
     // Handle intersection types (allOf) - merge all properties
@@ -330,23 +373,36 @@ function generatePropsFromType(
     let allRequired: string[] = [];
 
     if (mainDef.allOf) {
-      for (const part of mainDef.allOf as Definition[]) {
-        if (part.$ref) {
-          const refName = part.$ref.split("/").pop()!;
-          const refDef = schema.definitions?.[refName] as Definition;
-          if (refDef?.properties) {
-            allProperties = { ...allProperties, ...refDef.properties };
-          }
-          if (refDef?.required) {
-            allRequired = [...allRequired, ...(refDef.required as string[])];
-          }
-        } else if (part.properties) {
-          allProperties = { ...allProperties, ...part.properties };
-          if (part.required) {
-            allRequired = [...allRequired, ...(part.required as string[])];
-          }
-        }
+      const result = collectFromParts(mainDef.allOf as Definition[]);
+      allProperties = result.properties;
+      allRequired = result.required;
+    } else if (mainDef.anyOf || mainDef.oneOf) {
+      // Handle union types (anyOf/oneOf) — e.g. discriminated unions like ButtonProps
+      // Merge properties from all union members. Properties that only appear in
+      // some members are marked as optional.
+      const unionMembers = (mainDef.anyOf || mainDef.oneOf) as Definition[];
+      // biome-ignore lint/suspicious/noExplicitAny: JSON Schema types are complex
+      const memberProps: Array<{
+        // biome-ignore lint/suspicious/noExplicitAny: JSON Schema types are complex
+        properties: Record<string, any>;
+        required: string[];
+      }> = [];
+
+      for (const member of unionMembers) {
+        const collected = collectFromParts([member]);
+        memberProps.push(collected);
       }
+
+      // Merge all member properties
+      for (const mp of memberProps) {
+        allProperties = { ...allProperties, ...mp.properties };
+      }
+
+      // A prop is required only if it's required in ALL union members
+      const allPropNames = Object.keys(allProperties);
+      allRequired = allPropNames.filter((prop) =>
+        memberProps.every((mp) => mp.required.includes(prop)),
+      );
     } else if (mainDef.properties) {
       allProperties = mainDef.properties;
       allRequired = (mainDef.required as string[]) || [];

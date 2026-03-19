@@ -1,0 +1,458 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Streaming UI"
+description: "Render AI-generated UI from JSON using Kumo's auto-generated schemas. Enable progressive rendering as LLM responses stream in."
+---
+
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Callout from "~/components/docs/Callout.astro";
+
+## Overview
+
+The Kumo catalog module enables rendering UI from JSON structures, designed specifically for AI-generated interfaces. It provides runtime validation, data binding, conditional rendering, and action handling for JSON-based UI trees.
+
+**Schemas Derived from Your Codebase**
+
+Unlike approaches that require maintaining separate schema definitions, Kumo automatically derives validation schemas from your actual component TypeScript types. When you update a component's props, the validation schemas update automatically via the component registry codegen process. No manual synchronization required — your schemas are always in sync with your components.
+
+<Callout type="info">
+  Schemas are auto-generated in `@cloudflare/kumo/ai/schemas` from component
+  TypeScript types. Run `pnpm codegen:registry` after modifying component props
+  to regenerate.
+</Callout>
+
+## How It Works
+
+The catalog module uses a pipeline that extracts component metadata from your TypeScript source code:
+
+`Component TSX` → `TypeScript Types` → `Codegen Script` → `Zod Schemas`
+
+The generated schemas in `ai/schemas.ts` include:
+
+- Props schemas for each component (e.g., `ButtonPropsSchema`)
+- Enum values for variant props
+- UI element and tree structure schemas
+- Dynamic value, visibility, and action schemas
+
+## Installation
+
+<CodeBlock
+  code={`import {
+  createKumoCatalog,
+  initCatalog,
+  resolveProps,
+  evaluateVisibility,
+} from "@cloudflare/kumo/catalog";`}
+  lang="ts"
+/>
+
+## Creating a Catalog
+
+Create a catalog instance that validates AI-generated JSON against the auto-generated schemas:
+
+<CodeBlock
+  code={`import { createKumoCatalog, initCatalog } from "@cloudflare/kumo/catalog";
+
+// Create a catalog with optional actions
+const catalog = createKumoCatalog({
+actions: {
+submit_form: { description: "Submit the current form" },
+delete_item: { description: "Delete the selected item" },
+},
+});
+
+// Initialize schemas (required before sync validation)
+await initCatalog(catalog);
+
+// Validate AI-generated JSON
+const result = catalog.validateTree(aiGeneratedJson);
+if (result.success) {
+// Render the validated tree
+renderTree(result.data);
+}`}
+lang="ts"
+/>
+
+## UI Tree Format
+
+The UI tree uses a flat structure optimized for LLM generation and streaming. Elements reference each other by key rather than nesting, enabling progressive rendering as elements stream in.
+
+<CodeBlock
+  code={`{
+  "root": "card-1",
+  "elements": {
+    "card-1": {
+      "key": "card-1",
+      "type": "Surface",
+      "props": { "className": "p-4" },
+      "children": ["heading-1", "text-1", "button-1"]
+    },
+    "heading-1": {
+      "key": "heading-1",
+      "type": "Text",
+      "props": { 
+        "variant": "heading2",
+        "children": "Welcome"
+      },
+      "parentKey": "card-1"
+    },
+    "text-1": {
+      "key": "text-1",
+      "type": "Text",
+      "props": { 
+        "children": { "path": "/user/name" }
+      },
+      "parentKey": "card-1"
+    },
+    "button-1": {
+      "key": "button-1",
+      "type": "Button",
+      "props": { 
+        "variant": "primary",
+        "children": "Get Started"
+      },
+      "parentKey": "card-1",
+      "action": {
+        "name": "submit_form"
+      }
+    }
+  }
+}`}
+  lang="json"
+/>
+
+**Why a flat structure?**
+
+- Elements can be rendered as soon as they arrive (streaming)
+- Easy updates without deep tree traversal
+- Simple serialization/deserialization
+- Natural fit for how LLMs generate token-by-token
+
+## Dynamic Values (Data Binding)
+
+Props can reference values from a data model using JSON Pointer paths. This allows the AI to declare data bindings that your application resolves at render time.
+
+<CodeBlock
+  code={`import { resolveProps, resolveDynamicValue } from "@cloudflare/kumo/catalog";
+
+// Data model backing the UI
+const dataModel = {
+user: {
+name: "Alice",
+isAdmin: true,
+},
+items: [
+{ id: 1, title: "First Item" },
+{ id: 2, title: "Second Item" },
+],
+};
+
+// AI-generated props with dynamic references
+const props = {
+children: { path: "/user/name" },
+disabled: false,
+};
+
+// Resolve all dynamic values
+const resolved = resolveProps(props, dataModel);
+// { children: "Alice", disabled: false }
+
+// Or resolve individual values
+const name = resolveDynamicValue({ path: "/user/name" }, dataModel);
+// "Alice"`}
+lang="ts"
+/>
+
+## Visibility Conditions
+
+Elements can be conditionally rendered based on data values, authentication state, or complex logic expressions.
+
+<CodeBlock
+  code={`import { 
+  evaluateVisibility, 
+  createVisibilityContext 
+} from "@cloudflare/kumo/catalog";
+
+const ctx = createVisibilityContext(
+// Data model
+{ user: { isAdmin: true, role: "editor" } },
+// Auth state
+{ isSignedIn: true }
+);
+
+// Simple boolean
+evaluateVisibility(true, ctx); // true
+
+// Path check (truthy test)
+evaluateVisibility({ path: "/user/isAdmin" }, ctx); // true
+
+// Auth check
+evaluateVisibility({ auth: "signedIn" }, ctx); // true
+evaluateVisibility({ auth: "signedOut" }, ctx); // false
+
+// Equality check
+evaluateVisibility({
+eq: [{ path: "/user/role" }, "editor"]
+}, ctx); // true
+
+// Complex logic
+evaluateVisibility({
+and: [
+{ path: "/user/isAdmin" },
+{ auth: "signedIn" },
+{ gt: [{ path: "/items/length" }, 0] }
+]
+}, ctx);`}
+lang="ts"
+/>
+
+### Available Operators
+
+| Operator             | Description                          |
+| -------------------- | ------------------------------------ |
+| `path`               | Truthy check on data path            |
+| `auth`               | "signedIn" or "signedOut"            |
+| `eq` / `neq`         | Equality / inequality comparison     |
+| `gt` / `gte`         | Greater than / greater than or equal |
+| `lt` / `lte`         | Less than / less than or equal       |
+| `and` / `or` / `not` | Boolean logic combinators            |
+
+## Actions
+
+Elements can declare actions that your application handles. The AI describes the intent, and your handlers execute the logic.
+
+<CodeBlock
+  code={`// In your UI tree element
+{
+  "key": "delete-btn",
+  "type": "Button",
+  "props": {
+    "variant": "destructive",
+    "children": "Delete"
+  },
+  "action": {
+    "name": "delete_item",
+    "params": {
+      "itemId": { "path": "/selected/id" }
+    },
+    "confirm": {
+      "title": "Delete Item",
+      "message": "Are you sure you want to delete this item?",
+      "variant": "danger",
+      "confirmLabel": "Delete",
+      "cancelLabel": "Cancel"
+    },
+    "onSuccess": {
+      "set": { "/selected": null }
+    }
+  }
+}
+
+// Register actions when creating the catalog
+const catalog = createKumoCatalog({
+actions: {
+delete_item: {
+description: "Delete an item by ID",
+params: {
+itemId: { type: "string", description: "Item ID to delete" }
+}
+}
+}
+});`}
+lang="ts"
+/>
+
+## Validation
+
+The catalog validates AI-generated JSON against auto-generated Zod schemas derived from component TypeScript types.
+
+<CodeBlock
+  code={`// Validate a complete tree
+const result = catalog.validateTree(aiJson);
+
+if (result.success) {
+console.log("Valid tree:", result.data);
+} else {
+console.error("Validation errors:", result.error);
+// [{ message: "Invalid enum value", path: ["elements", "btn-1", "props", "variant"] }]
+}
+
+// Validate a single element
+const elementResult = catalog.validateElement({
+key: "btn-1",
+type: "Button",
+props: { variant: "primary" }
+});
+
+// Check available components
+catalog.hasComponent("Button"); // true
+catalog.hasComponent("Foobar"); // false
+
+// List all component names
+console.log(catalog.componentNames);
+// ["Badge", "Banner", "Button", ...]`}
+lang="ts"
+/>
+
+## AI Prompt Generation
+
+Generate prompts describing the catalog for AI models:
+
+<CodeBlock
+  code={`const prompt = catalog.generatePrompt();
+
+// Returns markdown describing:
+// - Available components
+// - Available actions (if any)
+// - Output format (UITree schema)
+// - Dynamic value syntax
+
+// Use in your LLM prompt
+const systemPrompt = \`
+You are a UI generation assistant.
+
+\${catalog.generatePrompt()}
+
+Generate UI based on the user's request.
+\`;`}
+lang="ts"
+/>
+
+## Type Exports
+
+All types are exported for TypeScript integration:
+
+<CodeBlock
+  code={`import type {
+  // Core types
+  UIElement,
+  UITree,
+  DynamicValue,
+  DynamicString,
+  DynamicNumber,
+  DynamicBoolean,
+
+// Visibility
+VisibilityCondition,
+LogicExpression,
+
+// Actions
+Action,
+ActionConfirm,
+ActionHandler,
+ActionHandlers,
+ActionDefinition,
+
+// Auth & Data
+AuthState,
+DataModel,
+
+// Catalog
+KumoCatalog,
+CatalogConfig,
+ValidationResult,
+} from "@cloudflare/kumo/catalog";`}
+lang="ts"
+/>
+
+## Full Example
+
+A complete example showing catalog creation, validation, and rendering:
+
+<CodeBlock
+  code={`import {
+  createKumoCatalog,
+  initCatalog,
+  resolveProps,
+  evaluateVisibility,
+  createVisibilityContext,
+} from "@cloudflare/kumo/catalog";
+import { Button, Text, Surface } from "@cloudflare/kumo";
+
+// 1. Create and initialize catalog
+const catalog = createKumoCatalog({
+actions: {
+greet: { description: "Show a greeting" }
+}
+});
+await initCatalog(catalog);
+
+// 2. Validate AI-generated JSON
+const aiJson = {
+root: "container",
+elements: {
+container: {
+key: "container",
+type: "Surface",
+props: { className: "p-4 space-y-4" },
+children: ["greeting", "action-btn"]
+},
+greeting: {
+key: "greeting",
+type: "Text",
+props: {
+variant: "heading2",
+children: { path: "/user/name" }
+},
+parentKey: "container",
+visible: { auth: "signedIn" }
+},
+"action-btn": {
+key: "action-btn",
+type: "Button",
+props: {
+variant: "primary",
+children: "Say Hello"
+},
+parentKey: "container",
+action: { name: "greet" }
+}
+}
+};
+
+const result = catalog.validateTree(aiJson);
+if (!result.success) {
+throw new Error("Invalid UI tree");
+}
+
+// 3. Set up rendering context
+const dataModel = {
+user: { name: "Alice", preferences: { theme: "dark" } }
+};
+const visibilityCtx = createVisibilityContext(dataModel, { isSignedIn: true });
+
+// 4. Render function
+function renderElement(element, elements) {
+// Check visibility
+if (!evaluateVisibility(element.visible, visibilityCtx)) {
+return null;
+}
+
+// Resolve dynamic props
+const props = resolveProps(element.props, dataModel);
+
+// Render children
+const children = element.children?.map(
+key => renderElement(elements[key], elements)
+);
+
+// Map to components
+const Component = { Surface, Text, Button }[element.type];
+return <Component {...props}>{children}</Component>;
+}
+
+// 5. Render the tree
+const tree = result.data;
+const ui = renderElement(tree.elements[tree.root], tree.elements);`}
+lang="tsx"
+/>
+
+## Key Benefits
+
+**Auto-Generated Schemas** — Validation schemas are derived directly from component TypeScript types. No separate schema definitions to maintain.
+
+**Always in Sync** — When you update component props, the schemas update automatically via the component registry codegen process.
+
+**Streaming-Friendly** — Flat tree structure enables progressive rendering as LLM responses stream in token-by-token.
+
+**Type Safety** — Full TypeScript support with exported types for UIElement, UITree, DynamicValue, and more.

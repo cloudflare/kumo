@@ -5,7 +5,12 @@ export function ButtonBasicDemo() {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button variant="secondary">Button</Button>
-      <Button variant="secondary" shape="square" icon={PlusIcon} />
+      <Button
+        variant="secondary"
+        shape="square"
+        icon={PlusIcon}
+        aria-label="Add"
+      />
     </div>
   );
 }
@@ -64,8 +69,18 @@ export function ButtonWithIconDemo() {
 export function ButtonIconOnlyDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button variant="secondary" shape="square" icon={PlusIcon} />
-      <Button variant="secondary" shape="circle" icon={PlusIcon} />
+      <Button
+        variant="secondary"
+        shape="square"
+        icon={PlusIcon}
+        aria-label="Add item"
+      />
+      <Button
+        variant="secondary"
+        shape="circle"
+        icon={PlusIcon}
+        aria-label="Add item"
+      />
     </div>
   );
 }

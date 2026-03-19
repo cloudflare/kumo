@@ -57,7 +57,9 @@ export function getComponentData(componentName: string): {
   }
 
   // Regular component lookup
-  const component = typedRegistry.components[componentName];
+  const component =
+    typedRegistry.components[componentName] ||
+    typedRegistry.blocks?.[componentName];
   if (!component) {
     return null;
   }

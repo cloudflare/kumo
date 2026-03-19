@@ -4,6 +4,7 @@ import { Loader } from "../loader/loader";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 
+/** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
 export const KUMO_BUTTON_VARIANTS = {
   shape: {
     base: {
@@ -51,7 +52,7 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     secondary: {
       classes:
-        "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+        "bg-kumo-base !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-ring data-[state=open]:bg-kumo-base",
       description: "Default button style for most actions",
     },
     ghost: {
@@ -64,12 +65,12 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
-      classes: "bg-kumo-base text-kumo-default ring ring-kumo-line",
+      classes: "bg-transparent text-kumo-default ring-2 ring-kumo-ring",
       description: "Bordered button with transparent background",
     },
   },
@@ -87,8 +88,33 @@ export type KumoButtonSize = keyof typeof KUMO_BUTTON_VARIANTS.size;
 export type KumoButtonVariant = keyof typeof KUMO_BUTTON_VARIANTS.variant;
 
 export interface KumoButtonVariantsProps {
+  /**
+   * Button shape.
+   * - `"base"` — Default rectangular button
+   * - `"square"` — Square button for icon-only actions
+   * - `"circle"` — Circular button for icon-only actions
+   * @default "base"
+   */
   shape?: KumoButtonShape;
+  /**
+   * Button size.
+   * - `"xs"` — Extra small for compact UIs
+   * - `"sm"` — Small for secondary actions
+   * - `"base"` — Default size
+   * - `"lg"` — Large for primary CTAs
+   * @default "base"
+   */
   size?: KumoButtonSize;
+  /**
+   * Visual style of the button.
+   * - `"primary"` — High-emphasis, brand-colored for primary actions
+   * - `"secondary"` — Default style with border for most actions
+   * - `"ghost"` — Minimal, no background for tertiary actions
+   * - `"destructive"` — Danger button for destructive actions
+   * - `"secondary-destructive"` — Secondary style with destructive text
+   * - `"outline"` — Bordered with transparent background
+   * @default "secondary"
+   */
   variant?: KumoButtonVariant;
 }
 
@@ -122,23 +148,77 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   return <Comp />;
 };
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
-  KumoButtonVariantsProps & {
-    children?: React.ReactNode;
-    className?: string;
-    icon?: Icon | React.ReactNode;
-    loading?: boolean;
-  };
+/**
+ * Button component props.
+ *
+ * Uses a discriminated union on `shape` so that icon-only buttons
+ * (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary">Save</Button>
+ * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add" />
+ * <Button variant="destructive" loading>Deleting...</Button>
+ * ```
+ */
+type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Content rendered inside the button. */
+  children?: React.ReactNode;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+  /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
+  icon?: Icon | React.ReactNode;
+  /** Shows a loading spinner and disables interaction. */
+  loading?: boolean;
+};
 
+type ButtonWithTextProps = ButtonBaseProps & {
+  shape?: "base";
+  size?: KumoButtonSize;
+  variant?: KumoButtonVariant;
+};
+
+type IconOnlyButtonProps = ButtonBaseProps & {
+  shape: "square" | "circle";
+  size?: KumoButtonSize;
+  variant?: KumoButtonVariant;
+  /** Required for icon-only buttons to provide accessible label for screen readers */
+  "aria-label": string;
+};
+
+export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
+
+/**
+ * LinkButton component props — renders an anchor styled as a button.
+ *
+ * @example
+ * ```tsx
+ * <LinkButton href="/docs" variant="ghost" icon={BookIcon}>Docs</LinkButton>
+ * <LinkButton href="https://example.com" external>Visit Site</LinkButton>
+ * ```
+ */
 export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
   KumoButtonVariantsProps & {
+    /** Content rendered inside the link button. */
     children?: React.ReactNode;
+    /** Additional CSS classes merged via `cn()`. */
     className?: string;
+    /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
     icon?: Icon | React.ReactNode;
+    /** When `true`, opens in a new tab with `rel="noopener noreferrer"`. */
     external?: boolean;
     linksExternal?: boolean;
   };
 
+/**
+ * Primary action trigger. Supports multiple variants, sizes, shapes, icons, and loading state.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary">Save</Button>
+ * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
+ * ```
+ */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -160,7 +240,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
+          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -179,6 +259,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = "Button";
 
+/**
+ * Square button with a rotating arrows icon, used to trigger data refresh actions.
+ *
+ * @example
+ * ```tsx
+ * <RefreshButton loading={isRefreshing} onClick={refresh} />
+ * ```
+ */
 export const RefreshButton = ({
   "aria-label": ariaLabel = "Refresh",
   loading,
@@ -196,6 +284,14 @@ export const RefreshButton = ({
   </Button>
 );
 
+/**
+ * Anchor element styled as a button. Integrates with `LinkProvider` for framework routing.
+ *
+ * @example
+ * ```tsx
+ * <LinkButton href="/settings" variant="ghost">Settings</LinkButton>
+ * ```
+ */
 export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
   (
     {

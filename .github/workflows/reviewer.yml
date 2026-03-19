@@ -1,0 +1,81 @@
+name: Reviewer
+
+on:
+  pull_request_review_comment:
+    types: [created]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reviewer:
+    if: github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Get PR number
+        id: pr-number
+        run: |
+          echo "number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
+      - name: Verify PR exists
+        id: verify-pr
+        run: |
+          if gh api /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::warning::PR #${{ github.event.pull_request.number }} not found, skipping review"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository
+        if: steps.verify-pr.outputs.exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get PR details
+        if: steps.verify-pr.outputs.exists == 'true'
+        id: pr-details
+        run: |
+          gh api /repos/${{ github.repository }}/pulls/${{ steps.pr-number.outputs.number }} > /tmp/pr_data.json
+          echo "title=$(jq -r .title /tmp/pr_data.json)" >> $GITHUB_OUTPUT
+          echo "sha=$(jq -r .head.sha /tmp/pr_data.json)" >> $GITHUB_OUTPUT
+          {
+            echo 'body<<EOF'
+            jq -r .body /tmp/pr_data.json
+            echo EOF
+          } >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Reviewer
+        if: steps.verify-pr.outputs.exists == 'true'
+        uses: ask-bonk/ask-bonk/github@main
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
+          CLOUDFLARE_GATEWAY_ID: ${{ secrets.CF_AI_GATEWAY_NAME }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
+        with:
+          model: "cloudflare-ai-gateway/anthropic/claude-opus-4-6"
+          mentions: "/review"
+          permissions: write
+          # agent: reviewer
+          prompt: |
+            Review PR "${{ steps.pr-details.outputs.title }}" against this repo's conventions. Read AGENTS.md (repo root and packages/kumo/) before reviewing. Read full files for context — diffs alone are not enough. Run `pnpm lint` and `pnpm typecheck` to validate changes. Focus on: semantic token usage (kumo-* only, never raw Tailwind colors or dark: variants), cn() for className composition, forwardRef/displayName patterns, and ESM-only imports.
+
+            Use the gh CLI to leave inline comments on specific files and lines. Use code suggestions where you have high confidence in the fix — ensure they account for surrounding code (braces, indentation). ALWAYS leave the final "review" comment empty. Separate "Needs Fix" (bugs, type errors, broken conventions, security) from "Style" (suggestions, minor improvements). Flag only real problems — not formatting the linter handles, pre-existing issues, or hypothetical edge cases. If the PR is clean, say "LGTM!".
+
+            <pr_number>
+            ${{ steps.pr-number.outputs.number }}
+            </pr_number>
+            <pr_description>
+            ${{ steps.pr-details.outputs.body }}
+            </pr_description>

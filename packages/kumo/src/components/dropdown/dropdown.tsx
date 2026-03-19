@@ -2,13 +2,14 @@ import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
-import { Checkbox } from "../checkbox";
 import {
   CaretRightIcon as CaretRight,
+  CheckIcon,
   CheckIcon as Check,
   type Icon,
 } from "@phosphor-icons/react";
 
+/** Dropdown item variant definitions (default and danger styles). */
 export const KUMO_DROPDOWN_VARIANTS = {
   variant: {
     default: {
@@ -31,6 +32,12 @@ export const KUMO_DROPDOWN_DEFAULT_VARIANTS = {
 export type KumoDropdownVariant = keyof typeof KUMO_DROPDOWN_VARIANTS.variant;
 
 export interface KumoDropdownVariantsProps {
+  /**
+   * Visual style of the dropdown item.
+   * - `"default"` — Standard item appearance
+   * - `"danger"` — Destructive action with red text
+   * @default "default"
+   */
   variant?: KumoDropdownVariant;
 }
 
@@ -82,7 +89,7 @@ const DropdownMenuContent = React.forwardRef<
     >
       <DropdownMenuPrimitive.Popup
         className={cn(
-          "z-50 overflow-hidden bg-kumo-control text-kumo-default", // background
+          "overflow-hidden bg-kumo-control text-kumo-default", // background
           "rounded-lg shadow-lg ring ring-kumo-line", // border part
           "min-w-36 p-1.5", // spacing
           "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
@@ -107,12 +114,28 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   return <Comp className="mr-2 h-4 w-4" />;
 };
 
+/**
+ * DropdownMenuItem — a single actionable item within a dropdown menu.
+ *
+ * For navigation links, use `DropdownMenu.LinkItem` instead.
+ *
+ * @example
+ * ```tsx
+ * <DropdownMenu.Item>Edit</DropdownMenu.Item>
+ * <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+ * <DropdownMenu.Item variant="danger">Delete</DropdownMenu.Item>
+ * ```
+ */
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
     icon?: Icon | React.ReactNode;
     selected?: boolean;
+    /**
+     * @deprecated Use `DropdownMenu.LinkItem` instead for navigation links.
+     * This prop will be removed in a future major version.
+     */
     href?: string;
     variant?: "default" | "danger";
   }
@@ -132,8 +155,10 @@ const DropdownMenuItem = React.forwardRef<
     ref,
   ) => {
     const LinkComponent = useLinkComponent();
-    const content = React.useMemo(() => {
-      const innerContent = (
+
+    // Build the inner content with icon, children, and selected indicator
+    const innerContent = React.useMemo(
+      () => (
         <>
           {IconComponent && renderIconNode(IconComponent)}
           {children}
@@ -143,11 +168,16 @@ const DropdownMenuItem = React.forwardRef<
             </span>
           )}
         </>
-      );
+      ),
+      [IconComponent, children, selected],
+    );
 
-      if (!href) return innerContent;
+    // Legacy href support (deprecated)
+    const linkContent = React.useMemo(() => {
+      if (!href) return undefined;
 
-      const isExternal = href.startsWith("https://");
+      // Matches http://, https://, or protocol-relative //
+      const isExternal = /^(https?:)?\/\//.test(href);
       const styles = cn(
         "flex items-center",
         variant === "danger" &&
@@ -160,11 +190,6 @@ const DropdownMenuItem = React.forwardRef<
             href={href}
             target="_blank"
             rel="noreferrer"
-            /**
-             * For some reason we need this here to prevent the outer link
-             * from being clicked (thereby going to the worker details
-             * instead of visiting the link)
-             */
             onClick={(e) => e.stopPropagation()}
           >
             {innerContent}
@@ -176,21 +201,15 @@ const DropdownMenuItem = React.forwardRef<
           className={cn(styles, "w-full text-inherit! no-underline!")}
           href={href}
           to={href}
-          /**
-           * For some reason we need this here to prevent the outer link
-           * from being clicked (thereby going to the worker details
-           * instead of visiting the link)
-           */
           onClick={(e) => e.stopPropagation()}
         >
           {innerContent}
         </LinkComponent>
       );
-    }, [href, IconComponent, children, selected, variant, LinkComponent]);
+    }, [href, innerContent, variant, LinkComponent]);
 
-    // When href is provided, content already contains children via innerContent
+    // When href is provided, use linkContent as render prop
     // When render prop is provided, caller controls children rendering
-    // Only pass children directly when neither href nor render is used
     const useRenderProp = href || render;
 
     return (
@@ -202,16 +221,81 @@ const DropdownMenuItem = React.forwardRef<
           dropdownVariants({ variant }),
           className,
         )}
-        render={href ? content : render}
+        render={href ? linkContent : render}
         {...props}
       >
-        {useRenderProp ? undefined : children}
+        {useRenderProp ? undefined : innerContent}
       </DropdownMenuPrimitive.Item>
     );
   },
 );
 
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
+
+/**
+ * DropdownMenuLinkItem — a menu item that navigates to a URL.
+ *
+ * Use this instead of `DropdownMenu.Item` with `href` for navigation links.
+ * Provides full control over link attributes like `target` and `rel`.
+ *
+ * @example
+ * ```tsx
+ * // External link
+ * <DropdownMenu.LinkItem href="https://example.com" target="_blank">
+ *   Documentation
+ * </DropdownMenu.LinkItem>
+ *
+ * // Internal link
+ * <DropdownMenu.LinkItem href="/settings">
+ *   Settings
+ * </DropdownMenu.LinkItem>
+ *
+ * // With icon
+ * <DropdownMenu.LinkItem href="/profile" icon={UserIcon}>
+ *   Profile
+ * </DropdownMenu.LinkItem>
+ * ```
+ */
+const DropdownMenuLinkItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.LinkItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.LinkItem> & {
+    inset?: boolean;
+    icon?: Icon | React.ReactNode;
+    variant?: "default" | "danger";
+  }
+>(
+  (
+    {
+      className,
+      inset,
+      icon: IconComponent,
+      children,
+      variant = "default",
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <DropdownMenuPrimitive.LinkItem
+        ref={ref}
+        className={cn(
+          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
+          "focus:text-kumo-default data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          "text-inherit no-underline",
+          inset && "pl-8",
+          dropdownVariants({ variant }),
+          className,
+        )}
+        {...props}
+      >
+        {IconComponent && renderIconNode(IconComponent)}
+        {children}
+      </DropdownMenuPrimitive.LinkItem>
+    );
+  },
+);
+
+DropdownMenuLinkItem.displayName = "DropdownMenuLinkItem";
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
@@ -226,9 +310,9 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-inherit">
-      <Checkbox checked={checked} />
-    </span>
+    <DropdownMenuPrimitive.CheckboxItemIndicator className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-inherit">
+      <CheckIcon weight="bold" size={12} />
+    </DropdownMenuPrimitive.CheckboxItemIndicator>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
@@ -322,7 +406,7 @@ DropdownMenuRadioItemIndicator.displayName = "DropdownMenuRadioItemIndicator";
  * to avoid nested button issues with base-ui's Menu.Trigger.
  */
 const DropdownMenuTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
 >(({ children, render, ...props }, ref) => {
   // If render prop is provided, use it directly
@@ -345,6 +429,33 @@ const DropdownMenuTrigger = React.forwardRef<
 });
 DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
 
+/**
+ * DropdownMenu — accessible dropdown menu anchored to a trigger.
+ *
+ * Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`,
+ * `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`,
+ * `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.
+ *
+ * Built on `@base-ui/react/menu`.
+ *
+ * @example
+ * ```tsx
+ * <DropdownMenu>
+ *   <DropdownMenu.Trigger>
+ *     <Button>Actions</Button>
+ *   </DropdownMenu.Trigger>
+ *   <DropdownMenu.Content>
+ *     <DropdownMenu.Item>Edit</DropdownMenu.Item>
+ *     <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+ *     <DropdownMenu.LinkItem href="/settings" icon={GearIcon}>Settings</DropdownMenu.LinkItem>
+ *     <DropdownMenu.Separator />
+ *     <DropdownMenu.Item variant="danger">Delete</DropdownMenu.Item>
+ *   </DropdownMenu.Content>
+ * </DropdownMenu>
+ * ```
+ *
+ * @see https://base-ui.com/react/components/menu
+ */
 export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   Trigger: DropdownMenuTrigger,
   Portal: DropdownMenuPrimitive.Portal,
@@ -353,6 +464,7 @@ export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   SubContent: DropdownMenuContent,
   Content: DropdownMenuContent,
   Item: DropdownMenuItem,
+  LinkItem: DropdownMenuLinkItem,
   CheckboxItem: DropdownMenuCheckboxItem,
   RadioGroup: DropdownMenuPrimitive.RadioGroup,
   RadioItem: DropdownMenuRadioItem,

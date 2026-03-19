@@ -2,6 +2,7 @@ import { Popover as PopoverBase } from "@base-ui/react/popover";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
+/** Popover side variant definitions mapping positions to their Tailwind classes. */
 export const KUMO_POPOVER_VARIANTS = {
   side: {
     top: {
@@ -31,6 +32,14 @@ export const KUMO_POPOVER_DEFAULT_VARIANTS = {
 export type KumoPopoverSide = keyof typeof KUMO_POPOVER_VARIANTS.side;
 
 export interface KumoPopoverVariantsProps {
+  /**
+   * Which side of the trigger the popover appears on.
+   * - `"top"` — Above the trigger
+   * - `"bottom"` — Below the trigger
+   * - `"left"` — Left of the trigger
+   * - `"right"` — Right of the trigger
+   * @default "bottom"
+   */
   side?: KumoPopoverSide;
 }
 
@@ -89,16 +98,41 @@ PopoverTrigger.displayName = "Popover.Trigger";
 /** Alignment options for popover positioning */
 type PopoverAlign = "start" | "center" | "end";
 
+/**
+ * Popover content panel props.
+ *
+ * @example
+ * ```tsx
+ * <Popover.Content side="top" align="start" sideOffset={12}>
+ *   <p>Popover body</p>
+ * </Popover.Content>
+ * ```
+ */
 export type PopoverContentProps = KumoPopoverVariantsProps & {
-  /** How to align the popover relative to the trigger */
+  /**
+   * How to align the popover relative to the trigger.
+   * @default "center"
+   */
   align?: PopoverAlign;
-  /** Distance between the trigger and the popover in pixels */
+  /**
+   * Distance between the trigger and the popover in pixels.
+   * @default 8
+   */
   sideOffset?: number;
-  /** Additional offset along the alignment axis in pixels */
+  /**
+   * Additional offset along the alignment axis in pixels.
+   * @default 0
+   */
   alignOffset?: number;
-  /** Additional class name for the popup */
+  /**
+   * Determines which CSS `position` property to use.
+   * Use "fixed" when the popover needs to escape stacking contexts (e.g., inside sticky headers).
+   * @default "absolute"
+   */
+  positionMethod?: "absolute" | "fixed";
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Content to render inside the popover */
+  /** Content to render inside the popover. */
   children?: ReactNode;
 };
 
@@ -108,6 +142,7 @@ function PopoverContent({
   align = "center",
   sideOffset = 8,
   alignOffset = 0,
+  positionMethod = "absolute",
   className,
 }: PopoverContentProps) {
   return (
@@ -117,6 +152,7 @@ function PopoverContent({
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
+        positionMethod={positionMethod}
       >
         <PopoverBase.Popup
           className={cn(

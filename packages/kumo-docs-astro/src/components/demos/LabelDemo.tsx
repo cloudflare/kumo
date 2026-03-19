@@ -51,7 +51,7 @@ export function LabelFormMixedDemo() {
         type="email"
       />
       <Input label="Company" required={false} placeholder="Acme Inc." />
-      <Select label="Country" hideLabel={false} placeholder="Select a country">
+      <Select label="Country" placeholder="Select a country">
         <Select.Option value="us">United States</Select.Option>
         <Select.Option value="uk">United Kingdom</Select.Option>
         <Select.Option value="ca">Canada</Select.Option>

@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.0.0",
+  "version": "1.14.1",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -21,7 +21,7 @@
   "module": "./dist/index.js",
   "types": "./dist/src/index.d.ts",
   "bin": {
-    "kumo": "./dist/command-line/cli.js"
+    "kumo": "./bin/kumo.js"
   },
   "exports": {
     ".": {
@@ -44,9 +44,17 @@
       "types": "./dist/src/components/date-range-picker/index.d.ts",
       "import": "./dist/components/date-range-picker.js"
     },
+    "./components/date-picker": {
+      "types": "./dist/src/components/date-picker/index.d.ts",
+      "import": "./dist/components/date-picker.js"
+    },
     "./components/checkbox": {
       "types": "./dist/src/components/checkbox/index.d.ts",
       "import": "./dist/components/checkbox.js"
+    },
+    "./components/chart": {
+      "types": "./dist/src/components/chart/index.d.ts",
+      "import": "./dist/components/chart.js"
     },
     "./components/clipboard-text": {
       "types": "./dist/src/components/clipboard-text/index.d.ts",
@@ -175,9 +183,13 @@
       "types": "./dist/src/components/cloudflare-logo/index.d.ts",
       "import": "./dist/components/cloudflare-logo.js"
     },
+    "./components/flow": {
+      "types": "./dist/src/components/flow/index.d.ts",
+      "import": "./dist/components/flow.js"
+    },
     "./components/sidebar": {
-      "types": "./dist/src/components/sidebar/index.d.ts",
-      "import": "./dist/components/sidebar.js"
+        "types": "./dist/src/components/sidebar/index.d.ts",
+        "import": "./dist/components/sidebar.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
@@ -227,6 +239,10 @@
       "types": "./dist/src/primitives/context-menu.d.ts",
       "import": "./dist/primitives/context-menu.js"
     },
+    "./primitives/csp-provider": {
+      "types": "./dist/src/primitives/csp-provider.d.ts",
+      "import": "./dist/primitives/csp-provider.js"
+    },
     "./primitives/dialog": {
       "types": "./dist/src/primitives/dialog.d.ts",
       "import": "./dist/primitives/dialog.js"
@@ -234,6 +250,10 @@
     "./primitives/direction-provider": {
       "types": "./dist/src/primitives/direction-provider.d.ts",
       "import": "./dist/primitives/direction-provider.js"
+    },
+    "./primitives/drawer": {
+      "types": "./dist/src/primitives/drawer.d.ts",
+      "import": "./dist/primitives/drawer.js"
     },
     "./primitives/field": {
       "types": "./dist/src/primitives/field.d.ts",
@@ -343,9 +363,17 @@
       "types": "./dist/src/catalog/index.d.ts",
       "import": "./dist/catalog.js"
     },
+    "./code": {
+      "types": "./dist/src/code/index.d.ts",
+      "import": "./dist/code.js"
+    },
+    "./code/server": {
+      "types": "./dist/src/code/server.d.ts",
+      "import": "./dist/code/server.js"
+    },
     "./ai/schemas": {
-      "types": "./ai/schemas.ts",
-      "import": "./ai/schemas.ts"
+      "types": "./dist/ai/schemas.d.ts",
+      "import": "./dist/ai/schemas.js"
     },
     "./registry/component-registry.json": "./ai/component-registry.json",
     "./registry/component-registry.md": "./ai/component-registry.md",
@@ -353,11 +381,18 @@
     "./styles/standalone": "./dist/styles/kumo-standalone.css",
     "./styles": "./dist/styles/kumo.css",
     "./styles/*": "./dist/styles/*.css",
-    "./scripts/theme-generator/config": "./scripts/theme-generator/config.ts",
-    "./scripts/theme-generator/types": "./scripts/theme-generator/types.ts"
+    "./scripts/theme-generator/config": {
+      "types": "./dist/scripts/theme-generator/config.d.ts",
+      "import": "./dist/scripts/theme-generator/config.js"
+    },
+    "./scripts/theme-generator/types": {
+      "types": "./dist/scripts/theme-generator/types.d.ts",
+      "import": "./dist/scripts/theme-generator/types.js"
+    }
   },
   "files": [
     "dist",
+    "bin",
     "ai",
     "templates",
     "scripts",
@@ -374,7 +409,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "prepublish": "pnpm run clean && pnpm run build && pnpm run test:unit",
+    "prepublishOnly": "pnpm run build && pnpm run test:unit",
     "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",
@@ -384,24 +419,26 @@
     "migrate:tokens": "tsx scripts/theme-generator/migrate.ts",
     "codegen:primitives": "tsx scripts/generate-primitives.ts",
     "codegen:registry": "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos && tsx scripts/component-registry/index.ts",
-    "lint": "pnpm run lint:oxlint && pnpm run lint:eslint",
-    "lint:oxlint": "oxlint src/** --type-aware",
-    "lint:eslint": "eslint src/",
+    "lint": "pnpm run lint:oxlint",
+    "lint:oxlint": "oxlint --config .oxlintrc.json src/** --type-aware",
     "test": "CI=true vitest run --project=unit",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:unit": "vitest run --project=unit",
     "test:coverage": "vitest run --coverage",
     "test:exports": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
+    "test:watch": "vitest run --project=unit --watch",
     "typecheck": "tsc --noEmit",
     "validate:build": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
-    "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts"
+    "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts",
+    "test:browser": "vitest --config=vitest.browser.config.ts"
   },
   "peerDependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "zod": "^3.24.0"
+    "zod": "^4.0.0",
+    "echarts": "^6.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
@@ -409,8 +446,13 @@
     }
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
+    "@base-ui/react": "^1.2.0",
+    "@shikijs/langs": "^4.0.0",
+    "@shikijs/themes": "^4.0.0",
     "clsx": "^2.1.1",
+    "motion": "^12.34.1",
+    "react-day-picker": "^9.13.2",
+    "shiki": "^4.0.0",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
@@ -422,10 +464,11 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitest/browser": "catalog:",
+    "@types/svg-path-parser": "^1.1.6",
+    "@vitejs/plugin-react": "^5.1.4",
+    "@vitest/browser-playwright": "^4.0.18",
     "@vitest/ui": "catalog:",
     "esbuild": "0.27.2",
-    "eslint": "catalog:",
     "eslint-plugin-jsx-a11y": "catalog:",
     "glob": "13.0.0",
     "happy-dom": "catalog:",
@@ -434,15 +477,16 @@
     "playwright": "catalog:",
     "plop": "4.0.4",
     "rollup-plugin-preserve-directives": "0.4.0",
+    "svg-path-parser": "^1.1.0",
     "tailwindcss": "catalog:",
     "ts-json-schema-generator": "2.4.0",
     "tsx": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.18.1",
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",
     "vitest": "catalog:",
+    "vitest-browser-react": "^2.0.5",
     "wrangler": "catalog:",
-    "zod": "^3.24.0"
+    "zod": "^4.0.0"
   }
 }

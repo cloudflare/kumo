@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "../../components/button";
 import { cn } from "../../utils/cn";
 
+/** Empty state size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_EMPTY_VARIANTS = {
   size: {
     sm: {
@@ -27,6 +28,13 @@ export const KUMO_EMPTY_DEFAULT_VARIANTS = {
 export type KumoEmptySize = keyof typeof KUMO_EMPTY_VARIANTS.size;
 
 export interface KumoEmptyVariantsProps {
+  /**
+   * Size of the empty state container.
+   * - `"sm"` — Compact empty state for smaller containers
+   * - `"base"` — Default empty state size
+   * - `"lg"` — Large empty state for prominent placement
+   * @default "base"
+   */
   size?: KumoEmptySize;
 }
 
@@ -39,15 +47,42 @@ export function emptyVariants({
   );
 }
 
+/**
+ * Empty state component props.
+ *
+ * @example
+ * ```tsx
+ * <Empty
+ *   icon={<PackageIcon size={48} />}
+ *   title="No packages found"
+ *   description="Get started by installing your first package."
+ *   commandLine="npm install @cloudflare/kumo"
+ * />
+ * ```
+ */
 export interface EmptyProps extends KumoEmptyVariantsProps {
+  /** Decorative icon displayed above the title (e.g. from `@phosphor-icons/react`). */
   icon?: React.ReactNode;
+  /** Primary heading text for the empty state. */
   title: string;
+  /** Secondary description text displayed below the title. */
   description?: string;
+  /** Shell command displayed in a copyable code block. */
   commandLine?: string;
+  /** Additional content (buttons, links) rendered below the description. */
   contents?: React.ReactNode;
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
 
+/**
+ * Placeholder shown when a list, table, or page has no content to display.
+ *
+ * @example
+ * ```tsx
+ * <Empty title="No results found" description="Try adjusting your search." />
+ * ```
+ */
 export function Empty({
   icon,
   title,

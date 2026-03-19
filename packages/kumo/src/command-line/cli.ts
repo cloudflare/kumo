@@ -16,6 +16,7 @@ import { init } from "./commands/init.js";
 import { blocks } from "./commands/blocks.js";
 import { add } from "./commands/add.js";
 import { migrate } from "./commands/migrate.js";
+import { ai } from "./commands/ai.js";
 
 const HELP = `
 Kumo CLI - Component registry and blocks distribution
@@ -34,6 +35,9 @@ MIGRATION:
   kumo migrate         Export token rename map for codebase migration
   kumo migrate --classes  Show class-level mappings (bg-kumo-base -> bg-kumo-base)
   kumo migrate --help     Show migration help
+
+AI:
+  kumo ai              Print the AI usage guide (component API reference)
 
 GENERAL:
   kumo help            Show this help message
@@ -82,6 +86,11 @@ async function main(): Promise<void> {
     case "migrate":
       // Export token rename map for migration
       migrate(args.slice(1));
+      break;
+
+    case "ai":
+      // Print AI usage guide
+      ai();
       break;
 
     case "help":

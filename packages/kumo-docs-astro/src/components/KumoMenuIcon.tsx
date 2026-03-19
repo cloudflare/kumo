@@ -65,7 +65,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
             className={cn(
               "origin-center-top transition-all duration-800",
               isHovered
-                ? "-translate-y-[49px] scale-y-[0.01]"
+                ? "-translate-y-12px scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
             )}
             style={{

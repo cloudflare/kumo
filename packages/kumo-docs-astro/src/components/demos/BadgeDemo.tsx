@@ -6,6 +6,7 @@ export function BadgeVariantsDemo() {
       <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="success">Success</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
     </div>
@@ -22,6 +23,10 @@ export function BadgeSecondaryDemo() {
 
 export function BadgeDestructiveDemo() {
   return <Badge variant="destructive">Destructive</Badge>;
+}
+
+export function BadgeSuccessDemo() {
+  return <Badge variant="success">Success</Badge>;
 }
 
 export function BadgeOutlineDemo() {

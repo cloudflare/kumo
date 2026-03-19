@@ -1,0 +1,206 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Tabs"
+description: "A set of layered sections of content, known as tab panels, displayed one at a time."
+sourceFile: "components/tabs"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TabsDefaultDemo,
+  TabsSegmentedDemo,
+  TabsUnderlineDemo,
+  TabsControlledDemo,
+  TabsManyDemo,
+} from "~/components/demos/TabsDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample
+    code={`{/* Segmented (default) */}
+<Tabs
+  variant="segmented"
+  tabs={[
+    { value: "tab1", label: "Tab 1" },
+    { value: "tab2", label: "Tab 2" },
+    { value: "tab3", label: "Tab 3" },
+  ]}
+  selectedValue="tab1"
+/>
+
+{/* Underline */}
+
+<Tabs
+  variant="underline"
+  tabs={[
+    { value: "tab1", label: "Tab 1" },
+    { value: "tab2", label: "Tab 2" },
+    { value: "tab3", label: "Tab 3" },
+  ]}
+  selectedValue="tab1"
+/>`}
+  >
+    <TabsDefaultDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+  <CodeBlock
+    code={`import { Tabs } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Tabs
+      tabs={[
+        { value: "overview", label: "Overview" },
+        { value: "settings", label: "Settings" },
+      ]}
+      selectedValue="overview"
+    />
+  );
+}`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+{/* Variants */}
+
+<Heading level={3}>Variants</Heading>
+<h4 class="mb-3 text-base font-medium">Segmented (Default)</h4>
+<p>A pill-shaped indicator slides between tabs on a subtle background.</p>
+<ComponentExample
+  code={`<Tabs
+  variant="segmented"
+  tabs={[
+    { value: "tab1", label: "Tab 1" },
+    { value: "tab2", label: "Tab 2" },
+    { value: "tab3", label: "Tab 3" },
+  ]}
+  selectedValue="tab1"
+/>`}
+>
+  <TabsSegmentedDemo client:visible />
+</ComponentExample>
+
+  <h4 class="mb-3 text-base font-medium">Underline</h4>
+  <p>
+    A bottom border with a primary-colored indicator. The active tab
+    has bolder text for emphasis.
+  </p>
+  <ComponentExample
+    code={`<Tabs
+
+variant="underline"
+tabs={[
+{ value: "tab1", label: "Tab 1" },
+{ value: "tab2", label: "Tab 2" },
+{ value: "tab3", label: "Tab 3" },
+]}
+selectedValue="tab1"
+/>`} >
+
+<TabsUnderlineDemo client:visible />
+</ComponentExample>
+
+{/* Controlled */}
+
+  <Heading level={3}>Controlled</Heading>
+  <p>
+    Use the <code class="text-sm">value</code> and
+    <code class="text-sm">onValueChange</code> props for controlled state.
+  </p>
+  <ComponentExample
+    code={`const [activeTab, setActiveTab] = useState("tab1");
+
+<Tabs
+  tabs={[
+    { value: "tab1", label: "Tab 1" },
+    { value: "tab2", label: "Tab 2" },
+    { value: "tab3", label: "Tab 3" },
+  ]}
+  value={activeTab}
+  onValueChange={setActiveTab}
+/>`}
+  >
+    <TabsControlledDemo client:visible />
+  </ComponentExample>
+
+{/* Many Tabs */}
+
+  <Heading level={3}>Many Tabs</Heading>
+  <p>
+    Tabs automatically scroll horizontally when there are many items.
+  </p>
+  <ComponentExample
+    code={`<Tabs
+  tabs={[
+    { value: "overview", label: "Overview" },
+    { value: "analytics", label: "Analytics" },
+    { value: "reports", label: "Reports" },
+    { value: "notifications", label: "Notifications" },
+    { value: "settings", label: "Settings" },
+    { value: "billing", label: "Billing" },
+  ]}
+  selectedValue="overview"
+/>`}
+  >
+    <TabsManyDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Tabs" />
+
+  <Heading level={3}>TabsItem</Heading>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-kumo-line">
+          <th class="px-4 py-3 text-left font-semibold">Property</th>
+          <th class="px-4 py-3 text-left font-semibold">Type</th>
+          <th class="px-4 py-3 text-left font-semibold">Required</th>
+        </tr>
+      </thead>
+      <tbody class="text-kumo-subtle">
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">value</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3 font-mono text-xs">Yes</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">label</td>
+          <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+          <td class="px-4 py-3 font-mono text-xs">Yes</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">className</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3 font-mono text-xs">No</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ComponentSection>

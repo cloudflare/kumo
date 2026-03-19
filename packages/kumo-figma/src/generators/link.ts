@@ -192,7 +192,6 @@ async function createLinkComponent(
     const underlineHeight = 1;
 
     // Set underline to fill width of text
-    underline.layoutSizingHorizontal = "FILL";
     underline.resize(textNode.width, underlineHeight);
 
     // Apply color with opacity
@@ -219,6 +218,8 @@ async function createLinkComponent(
     component.itemSpacing = -2; // Pull underline up 2px to match offset
 
     component.appendChild(underline);
+    // Must be set AFTER appending to an auto-layout parent
+    underline.layoutSizingHorizontal = "FILL";
   } else if (variantData.hasUnderline) {
     // For underlined variants without .link-current, use standard decoration
     textNode.textDecoration = "UNDERLINE";

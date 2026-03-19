@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
@@ -8,6 +9,10 @@ import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { kumoColorsPlugin } from "./src/lib/vite-plugin-kumo-colors.js";
 import { kumoRegistryPlugin } from "./src/lib/vite-plugin-kumo-registry.js";
+import { kumoHmrPlugin } from "./src/lib/vite-plugin-kumo-hmr.js";
+import { markdownPages } from "./src/lib/astro-markdown-pages.js";
+
+import sitemap from "@astrojs/sitemap";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -58,12 +63,52 @@ function getBuildInfo() {
 
 const buildInfo = getBuildInfo();
 
+// Detect dev mode: `astro dev` sets this in process.argv
+const isDev = process.argv.includes("dev");
+
+// Path to kumo source (used for dev mode CSS aliases)
+const kumoSrc = resolve(__dirname, "../kumo/src");
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
+  integrations: [mdx(), react(), sitemap(), markdownPages()],
+  site: "https://kumo-ui.com/",
   vite: {
-    // @ts-expect-error - Vite version mismatch between Astro and @tailwindcss/vite
-    plugins: [tailwindcss(), kumoColorsPlugin(), kumoRegistryPlugin()],
+    plugins: [
+      // In dev mode, resolve @cloudflare/kumo imports to raw source files
+      // for instant HMR. In production builds, the normal package.json
+      // exports (dist/) are used — preserving the real consumer experience.
+      // IMPORTANT: Must come BEFORE tailwindcss() so CSS @import statements
+      // like `@import "@cloudflare/kumo/styles"` are aliased to source files
+      // before Tailwind processes them.
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
+      ...(isDev ? [kumoHmrPlugin()] : []),
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @tailwindcss/vite (Vite 7)
+      tailwindcss(),
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
+      kumoColorsPlugin(),
+      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
+      kumoRegistryPlugin(),
+    ],
+
+    // In dev mode, add resolve.alias for CSS @import statements that may bypass
+    // Vite plugins. This ensures `@import "@cloudflare/kumo/styles"` resolves
+    // to source files without requiring a build step.
+    resolve: isDev
+      ? {
+          alias: {
+            "@cloudflare/kumo/styles/tailwind": resolve(
+              kumoSrc,
+              "styles/kumo.css",
+            ),
+            "@cloudflare/kumo/styles/standalone": resolve(
+              kumoSrc,
+              "styles/kumo-standalone.css",
+            ),
+            "@cloudflare/kumo/styles": resolve(kumoSrc, "styles/kumo.css"),
+          },
+        }
+      : undefined,
 
     define: {
       __KUMO_VERSION__: JSON.stringify(buildInfo.kumoVersion),
