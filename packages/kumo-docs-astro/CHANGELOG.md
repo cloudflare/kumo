@@ -1,5 +1,14 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.13
+
+### Patch Changes
+
+- 839b0cb: fix: update styling for mostly-used components with new greyscale tokens (combobox, dialog, input, layerCard, select & tabs) as well as homegrid and component preview backgrounds.
+- Updated dependencies [839b0cb]
+- Updated dependencies [7083a17]
+  - @cloudflare/kumo@1.14.1
+
 ## 1.3.12
 
 ### Patch Changes

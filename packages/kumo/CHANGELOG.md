@@ -1,5 +1,12 @@
 # @cloudflare/kumo
 
+## 1.14.1
+
+### Patch Changes
+
+- 839b0cb: fix: update styling for mostly-used components with new greyscale tokens (combobox, dialog, input, layerCard, select & tabs) as well as homegrid and component preview backgrounds.
+- 7083a17: Remove es2022 build target that caused Jest/babel-jest test failures in stratus
+
 ## 1.14.0
 
 ### Minor Changes
