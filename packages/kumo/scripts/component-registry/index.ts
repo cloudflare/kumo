@@ -394,10 +394,18 @@ function generatePropsFromVariantsOnly(
   for (const [propName, variantDef] of Object.entries(config.variants)) {
     const values = Object.keys(variantDef);
     const descriptions: Record<string, string> = {};
+    const classes: Record<string, string> = {};
+    const stateClassesMap: Record<string, Record<string, string>> = {};
 
     for (const [key, val] of Object.entries(variantDef)) {
       if (val.description) {
         descriptions[key] = val.description;
+      }
+      if (val.classes) {
+        classes[key] = val.classes;
+      }
+      if (val.stateClasses) {
+        stateClassesMap[key] = val.stateClasses;
       }
     }
 
@@ -406,6 +414,10 @@ function generatePropsFromVariantsOnly(
       values,
       ...(config.defaults[propName] && { default: config.defaults[propName] }),
       ...(Object.keys(descriptions).length > 0 && { descriptions }),
+      ...(Object.keys(classes).length > 0 && { classes }),
+      ...(Object.keys(stateClassesMap).length > 0 && {
+        stateClasses: stateClassesMap,
+      }),
     };
   }
 
