@@ -1,0 +1,157 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Components vs Blocks"
+description: "Understanding how Kumo delivers different types of building blocks: versioned components you import, and copy-paste blocks you own."
+---
+
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Callout from "~/components/docs/Callout.astro";
+
+## The Building Block Spectrum
+
+Not everything belongs in a design system library. Kumo distinguishes between **components** (shared, versioned primitives) and **blocks** (patterns you copy and own). Understanding this distinction helps you build applications faster while maintaining the right level of ownership.
+
+This isn't just organizational preference — it's about responsibility. Components are primitives we maintain, test, and version. Blocks are helpful starting points that you extend and adapt to your needs.
+
+## Components
+
+Components are the atomic, reusable UI elements that form the foundation of your application. Button, Input, Dialog, Badge — these are content-agnostic, context-agnostic building blocks designed for maximum reuse across any product.
+
+**Characteristics**
+
+- **Versioned & maintained** — We own the API, fix bugs, and ship updates
+- **Tree-shakeable** — Import only what you use, no bloat
+- **Accessible by default** — Built on Base UI primitives with proper ARIA support
+- **Design-system compliant** — Semantic tokens, consistent variants, predictable APIs
+- **Agnostic** — No business logic, no product-specific assumptions
+
+### How to Use
+
+Import directly from the package:
+
+<CodeBlock
+  code={`import { Button, Input, Dialog, Badge } from "@cloudflare/kumo";
+
+// Or use granular imports for better tree-shaking
+import { Button } from "@cloudflare/kumo/components/button";`}
+lang="tsx"
+/>
+
+When Kumo ships a new version, you get bug fixes and improvements automatically. Your code doesn't change — just bump the version.
+
+## Blocks
+
+Blocks are compositions of components that solve common patterns, but aren't agnostic enough to live in the core library. `PageHeader`, `ResourceList` — these are valuable, reusable patterns, but they may only apply to certain products or need product-specific customization.
+
+**Characteristics**
+
+- **You own it** — Code lives in your project, you control the implementation
+- **Fully customizable** — Modify anything beyond what props allow
+- **Composition-first** — Built from Kumo components, not raw HTML
+- **Starting points** — Patterns to extend, not constraints to work around
+- **Product-aware** — Can include business logic, layout assumptions, specific compositions
+
+### How to Use
+
+Install via CLI, then import from your project:
+
+<CodeBlock
+  code={`# Initialize config (first time only)
+npx @cloudflare/kumo init
+
+# List available blocks
+
+npx @cloudflare/kumo blocks
+
+# Install a block to your project
+
+npx @cloudflare/kumo add PageHeader`}
+lang="bash"
+/>
+
+After installation, import from your local path:
+
+<CodeBlock
+  code={`// Path depends on your kumo.json blocksDir setting
+// Default: src/components/kumo/
+import { PageHeader } from "./components/kumo/page-header/page-header";`}
+  lang="tsx"
+/>
+
+The block code is now yours. Customize it, extend it, break it apart — whatever your product needs.
+
+## A Practical Example
+
+Consider a `ProductCard`. It's a specific arrangement of components for a specific use case:
+
+<CodeBlock
+  code={`// This is a "block" or "recipe" - a specific composition
+// of design system components for a particular pattern
+
+<Surface className="rounded-lg p-4">
+  <img src={imgSrc} alt={imgAlt} className="rounded-md" />
+  <div className="mt-3">
+    <Text size="lg" weight="semibold">
+      {title}
+    </Text>
+    <Text className="text-kumo-subtle">{description}</Text>
+    <StarRating rating={rating} />
+  </div>
+  <div className="mt-4">
+    <Button variant="primary">Add to cart</Button>
+  </div>
+</Surface>
+`} lang="tsx" />
+
+All those components (`Surface`, `Text`, `Button`) come from Kumo. But the specific arrangement? That's a pattern you own and customize.
+
+## Decision Framework
+
+Asking "is this a component or a block?" really means asking about ownership and reuse:
+
+**Use a Component when...**
+
+- It's content-agnostic (works with any data)
+- It's context-agnostic (works in any layout)
+- Multiple products need the exact same thing
+- Accessibility and consistency matter most
+- You want automatic updates and maintenance
+
+**Use a Block when...**
+
+- You need to customize beyond props
+- The pattern is product-specific
+- It includes business logic or layout assumptions
+- You want full control over implementation
+- You prefer copy-paste over package dependency
+
+<Callout type="info">
+  **Default to thinking "component first."** Even when building something
+  specific, ask yourself: "Can I build this from existing components?" The
+  answer is usually yes. Components compose into blocks, and blocks can always
+  be broken apart again.
+</Callout>
+
+## Movement Between Levels
+
+Things can move between these categories. A pattern that starts as a one-off in your application might become widely used enough to warrant extraction into a block. A block that proves universally useful might graduate to a full component.
+
+**The key principle:** Things should move _down_ into the design system rather than cluttering it with too-specific patterns that need to be weeded out later. Wait for reuse to prove itself before promoting something to a shared component.
+
+This is why blocks exist as a middle ground. They're patterns worth sharing, but without the commitment of maintaining a versioned API. You get the starting point; you own the evolution.
+
+## Summary
+
+|                   | Components                   | Blocks                       |
+| ----------------- | ---------------------------- | ---------------------------- |
+| **Delivery**      | NPM package import           | CLI copy to your project     |
+| **Ownership**     | Kumo maintains               | You own & customize          |
+| **Updates**       | Automatic via version bump   | Manual (re-install or merge) |
+| **Customization** | Props & className only       | Full source code access      |
+| **Examples**      | Button, Input, Dialog, Badge | PageHeader, ResourceList     |
+
+## Related
+
+- [Installation](/installation) — Get started with Kumo
+- [CLI](/cli) — Install blocks and access documentation
+- [Contributing](/contributing) — Add new components and blocks

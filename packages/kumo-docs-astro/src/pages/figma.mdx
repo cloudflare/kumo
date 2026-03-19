@@ -1,0 +1,206 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Figma Resources"
+description: "Generate Figma components from Kumo definitions using the Figma plugin."
+---
+
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Callout from "~/components/docs/Callout.astro";
+
+## Kumo Figma Plugin
+
+The Kumo Figma plugin generates production-quality Figma components directly from Kumo component definitions. This keeps design and code in sync — components in Figma are generated from the same source of truth as the React components you use in code.
+
+The plugin reads from `component-registry.json` and creates Figma ComponentSets with proper auto-layout, semantic color variable bindings, and all variant combinations.
+
+## Local Development Setup
+
+Follow these steps to build and test the Figma plugin locally on any Figma file.
+
+### 1. Build the Plugin
+
+From the repository root, run:
+
+<CodeBlock code={`pnpm --filter @cloudflare/kumo-figma build`} lang="bash" />
+
+This generates theme data, loader data, and icons, then bundles the plugin code into `src/code.js`.
+
+### 2. Import the Plugin in Figma
+
+Open Figma Desktop (plugin development requires the desktop app, not the web version).
+
+1. Go to **Plugins** in the menu bar
+2. Select **Development** → **Import plugin from manifest...**
+3. Navigate to `packages/kumo-figma/src/manifest.json` in your local kumo repository
+
+### 3. Run the Plugin
+
+Once imported, the plugin appears in your development plugins list.
+
+1. Open any Figma file (or the Kumo design file if you have access)
+2. Go to **Plugins** → **Development** → **Kumo UI Kit Generator**
+
+### 4. Use the Plugin UI
+
+The plugin opens a panel where you can select which components to generate. Click the component buttons to generate their Figma equivalents.
+
+<Callout type="info">
+  **Note:** For components to bind to semantic color variables correctly, the
+  target Figma file must have the `kumo-colors` variable collection. Run the
+  token sync script first if you're setting up a new file.
+</Callout>
+
+## Environment Variables
+
+The token sync script requires environment variables to authenticate with the Figma API and target the correct file.
+
+### Setup
+
+1. Get a [Figma personal access token](https://www.figma.com/developers/api#authentication) from Figma Settings → Personal Access Tokens
+2. Copy the environment template:
+
+<CodeBlock
+  code={`cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env`}
+  lang="bash"
+/>
+
+3. Configure the environment variables in `.env`
+
+### Required Variables
+
+| Variable                | Required | Description                                                       |
+| ----------------------- | -------- | ----------------------------------------------------------------- |
+| `FIGMA_TOKEN`           | Yes      | Your Figma personal access token for API authentication           |
+| `FIGMA_FILE_KEY`        | Yes      | The file key from your Figma URL: `figma.com/file/{FILE_KEY}/...` |
+| `FIGMA_COLLECTION_NAME` | No       | Variable collection name in Figma. Defaults to `kumo-colors`      |
+
+<CodeBlock
+  code={`# packages/kumo-figma/scripts/.env
+FIGMA_TOKEN=figd_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+FIGMA_FILE_KEY=sKKZc6pC6W1TtzWBLxDGSU
+FIGMA_COLLECTION_NAME=kumo-colors`}
+  lang="bash"
+/>
+
+<Callout type="warning">
+  **Security:** Never commit your Figma token. The `.env` file is gitignored.
+</Callout>
+
+## Token Sync
+
+Before generating components, sync Kumo's semantic color tokens to Figma. This creates the `kumo-colors` variable collection that components bind to for consistent theming.
+
+### Run Token Sync
+
+<CodeBlock
+  code={`pnpm --filter @cloudflare/kumo-figma figma:sync`}
+  lang="bash"
+/>
+
+This parses tokens from `theme-kumo.css`, resolves `light-dark()` values for both modes, and pushes them to Figma via the Variables API.
+
+## What Gets Generated
+
+The Kumo Figma workflow produces two types of output in your target Figma file:
+
+### 1. Figma Variables (Token Sync)
+
+The token sync script creates a `kumo-colors` variable collection containing:
+
+- **Color variables** — All semantic tokens like `color-primary`, `color-surface`, `text-color-muted`
+- **Light and dark modes** — Each variable has values for both color schemes
+- **Theme overrides** — Extended modes like FedRAMP with their specific color overrides
+
+Variables appear in Figma's Variables panel and can be used throughout your design file. When you switch modes, all bound colors update automatically.
+
+### 2. Figma Components (Plugin)
+
+The plugin generates a **"ui kit"** page containing ComponentSets for each Kumo component:
+
+- **ComponentSets with variants** — Each component (Button, Badge, Input, etc.) becomes a ComponentSet with all its variant combinations
+- **Variable bindings** — Fills, strokes, and text colors are bound to `kumo-colors` variables, not hardcoded values
+- **Auto-layout** — Components use Figma auto-layout matching the CSS flexbox behavior
+- **Proper sizing** — Spacing, padding, border-radius, and font sizes match the code implementation
+
+**Currently Generated Components (30+)**
+
+Badge, Banner, Breadcrumbs, Button, Checkbox, ClipboardText, Code, CodeBlock, Collapsible, Combobox, CommandPalette, Dialog, Dropdown, Empty, Input, InputArea, Label, LayerCard, LinkButton, Loader, MenuBar, Meter, Pagination, Radio, RefreshButton, Select, SensitiveInput, Surface, Switch, Table, Tabs, Text, Toast, Tooltip
+
+### Destructive Sync
+
+The plugin uses **destructive sync** — it purges all existing generated content and recreates everything fresh on each run. This ensures the Figma file always matches the current state of the codebase. Don't manually edit generated components; your changes will be overwritten on the next sync.
+
+## Complete Workflow
+
+The typical workflow when updating components:
+
+<CodeBlock
+  code={`# 1. Make changes to Kumo components
+# ...edit packages/kumo/src/components/...
+
+# 2. Regenerate component registry
+
+pnpm --filter @cloudflare/kumo codegen:registry
+
+# 3. Sync tokens to Figma (if colors changed)
+
+pnpm --filter @cloudflare/kumo-figma figma:sync
+
+# 4. Build the plugin
+
+pnpm --filter @cloudflare/kumo-figma build
+
+# 5. Run in Figma: Plugins > Development > Kumo UI Kit Generator`}
+
+lang="bash"
+/>
+
+## Plugin Architecture
+
+| Directory         | Purpose                                              |
+| ----------------- | ---------------------------------------------------- |
+| `src/code.ts`     | Main plugin entry point, orchestrates generators     |
+| `src/ui.html`     | Plugin UI (component selection panel)                |
+| `src/generators/` | 30+ component generators (badge.ts, button.ts, etc.) |
+| `src/parsers/`    | Tailwind-to-Figma converters, registry parsing       |
+| `scripts/`        | Token sync script for Figma Variables API            |
+
+## Adding a New Component Generator
+
+When you add a new component to Kumo, create a corresponding Figma generator:
+
+1. Create `src/generators/yourcomponent.ts`
+2. Import shared utilities from `shared.ts`
+3. Register in the `GENERATORS` array in `code.ts`
+4. Run `pnpm --filter @cloudflare/kumo-figma validate` to verify drift detection passes
+
+If a component doesn't need Figma representation (utility or layout-only), add it to `EXCLUDED_COMPONENTS` in `drift-detection.test.ts`.
+
+## Troubleshooting
+
+### "kumo-colors collection not found"
+
+The target Figma file needs the variable collection. Run the token sync script first:
+
+<CodeBlock
+  code={`pnpm --filter @cloudflare/kumo-figma figma:sync`}
+  lang="bash"
+/>
+
+### "Variable not found: color-primary"
+
+Variable names must match the kumo-colors collection. Verify tokens synced correctly by checking the Variables panel in Figma.
+
+### "Font not found"
+
+The plugin uses Inter font, which is a default Figma font. Ensure you have it available in your Figma fonts.
+
+### Plugin not appearing in menu
+
+Make sure you're using Figma Desktop (not web) and that you imported the manifest from the correct path: `packages/kumo-figma/src/manifest.json`
+
+## Related
+
+- [Colors](/colors) — Semantic color token reference
+- [Registry](/registry) — Component registry that the plugin reads from
+- [Contributing](/contributing) — Adding new components and generators

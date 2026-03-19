@@ -30,11 +30,11 @@ export const KUMO_SWITCH_VARIANTS = {
   variant: {
     default: {
       classes: "",
-      description: "Default switch appearance",
+      description: "Default switch with squircle shape and brand blue color",
     },
-    error: {
-      classes: "ring-kumo-danger",
-      description: "Error state for validation failures",
+    neutral: {
+      classes: "",
+      description: "Monochrome switch with squircle shape for subtle toggles",
     },
   },
 } as const;
@@ -70,10 +70,13 @@ export function switchVariants({
   size = KUMO_SWITCH_DEFAULT_VARIANTS.size,
   variant = KUMO_SWITCH_DEFAULT_VARIANTS.variant,
 }: KumoSwitchVariantsProps = {}) {
-  return cn(
-    KUMO_SWITCH_VARIANTS.size[size].classes,
-    KUMO_SWITCH_VARIANTS.variant[variant].classes,
-  );
+  // Fallback to defaults if invalid size/variant passed
+  const sizeConfig =
+    KUMO_SWITCH_VARIANTS.size[size] ?? KUMO_SWITCH_VARIANTS.size.base;
+  const variantConfig =
+    KUMO_SWITCH_VARIANTS.variant[variant] ??
+    KUMO_SWITCH_VARIANTS.variant.default;
+  return cn(sizeConfig.classes, variantConfig.classes);
 }
 
 // Legacy type aliases for backwards compatibility
@@ -100,9 +103,9 @@ const SwitchGroupContext = createContext<{ controlFirst: boolean }>({
  * <Switch label="Dark mode" checked={false} onCheckedChange={setChecked} controlFirst={false} />
  * ```
  *
- * Error variant (visual only, no error text):
+ * Neutral variant (monochrome, squircle shape):
  * ```tsx
- * <Switch label="Required setting" variant="error" checked={false} onCheckedChange={setChecked} />
+ * <Switch label="Setting" variant="neutral" checked={false} onCheckedChange={setChecked} />
  * ```
  *
  * @property {string} label - Label text for the switch (Field wrapper is built-in)
@@ -112,7 +115,7 @@ export type SwitchProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   "children"
 > & {
-  /** Visual variant: "default" or "error" for validation failures (visual only, no error text) */
+  /** Visual variant: "default" (pill, brand color) or "neutral" (squircle, monochrome) */
   variant?: SwitchVariant;
   /** Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes. */
   label?: ReactNode;
@@ -224,31 +227,57 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             "aria-pressed"?: boolean;
           };
 
-          const mergedClassName = cn(
-            "interactive flex items-center gap-2 rounded-full border border-transparent bg-kumo-recessed p-1 transition-colors",
-            switchVariants({ size, variant }),
-            {
-              "bg-kumo-brand":
-                state.checked && !disabled && variant !== "error",
-              "bg-kumo-danger":
-                state.checked && !disabled && variant === "error",
-              "hover:bg-kumo-brand-hover":
-                state.checked &&
-                !transitioning &&
-                !disabled &&
-                variant !== "error",
-              "hover:bg-kumo-danger/90":
-                state.checked &&
-                !transitioning &&
-                !disabled &&
-                variant === "error",
-              "hover:bg-kumo-interact":
-                !state.checked && !transitioning && !disabled,
-              "cursor-not-allowed opacity-50": disabled,
-            },
-            transitioning ? "cursor-wait" : !disabled ? "cursor-pointer" : "",
+          const isNeutral = variant === "neutral";
+
+          // Squircle-aware border-radius (used by both variants)
+          const squircleRadius =
+            "rounded-[5px] supports-[corner-shape:squircle]:rounded-[10px] [corner-shape:squircle]";
+
+          // Size styles matching Kyle's stratus implementation
+          const sizeStyles = {
+            sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
+            base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
+            lg: { track: "h-5 w-10", thumb: "w-5", slide: "left-5" },
+          };
+          const s = sizeStyles[size];
+
+          // Track colors based on variant
+          const trackColors = isNeutral
+            ? state.checked
+              ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
+              : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+            : state.checked
+              ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
+              : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+
+          // Thumb colors based on variant
+          const thumbColors = isNeutral
+            ? state.checked
+              ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
+              : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+            : state.checked
+              ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
+              : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+
+          const trackClassName = cn(
+            "relative inline-flex items-center ring cursor-pointer border-none p-0",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+            "transition-colors duration-150 ease-out motion-reduce:transition-none",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            s.track,
+            squircleRadius,
+            trackColors,
             className,
             baseClassName,
+          );
+
+          const thumbClassName = cn(
+            "absolute top-0 bottom-0 shadow-sm ring-1",
+            s.thumb,
+            squircleRadius,
+            thumbColors,
+            "transition-all duration-150 ease-out motion-reduce:transition-none",
+            state.checked ? s.slide : "left-0",
           );
 
           const role =
@@ -268,16 +297,9 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
               {...checkedA11yProps}
               aria-busy={transitioning || undefined}
               aria-label={props["aria-label"] ?? ariaLabelFallback}
-              className={mergedClassName}
+              className={trackClassName}
             >
-              <BaseSwitch.Thumb
-                className={cn(
-                  "pointer-events-none aspect-square h-full rounded-full bg-white transition-all",
-                  {
-                    "translate-x-full rtl:translate-x-[-100%]": state.checked,
-                  },
-                )}
-              />
+              <div className={thumbClassName} />
             </button>
           );
         }}
@@ -355,30 +377,56 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               "aria-pressed"?: boolean;
             };
 
-            const mergedClassName = cn(
-              "interactive flex items-center gap-2 rounded-full border border-transparent bg-kumo-recessed p-1 transition-colors",
-              switchVariants({ size, variant }),
-              {
-                "bg-kumo-brand":
-                  state.checked && !disabled && variant !== "error",
-                "bg-kumo-danger":
-                  state.checked && !disabled && variant === "error",
-                "hover:bg-kumo-brand-hover":
-                  state.checked &&
-                  !transitioning &&
-                  !disabled &&
-                  variant !== "error",
-                "hover:bg-kumo-danger/90":
-                  state.checked &&
-                  !transitioning &&
-                  !disabled &&
-                  variant === "error",
-                "hover:bg-kumo-interact":
-                  !state.checked && !transitioning && !disabled,
-                "cursor-not-allowed opacity-50": disabled,
-              },
-              transitioning ? "cursor-wait" : !disabled ? "cursor-pointer" : "",
+            const isNeutral = variant === "neutral";
+
+            // Squircle-aware border-radius (used by both variants)
+            const squircleRadius =
+              "rounded-[5px] supports-[corner-shape:squircle]:rounded-[10px] [corner-shape:squircle]";
+
+            // Size styles matching Kyle's stratus implementation
+            const sizeStyles = {
+              sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
+              base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
+              lg: { track: "h-5 w-10", thumb: "w-5", slide: "left-5" },
+            };
+            const s = sizeStyles[size];
+
+            // Track colors based on variant
+            const trackColors = isNeutral
+              ? state.checked
+                ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
+                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+              : state.checked
+                ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
+                : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+
+            // Thumb colors based on variant
+            const thumbColors = isNeutral
+              ? state.checked
+                ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
+                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+              : state.checked
+                ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
+                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+
+            const trackClassName = cn(
+              "relative inline-flex items-center ring cursor-pointer border-none p-0",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+              "transition-colors duration-150 ease-out motion-reduce:transition-none",
+              "disabled:cursor-not-allowed disabled:opacity-50",
+              s.track,
+              squircleRadius,
+              trackColors,
               baseClassName,
+            );
+
+            const thumbClassName = cn(
+              "absolute top-0 bottom-0 shadow-sm ring-1",
+              s.thumb,
+              squircleRadius,
+              thumbColors,
+              "transition-all duration-150 ease-out motion-reduce:transition-none",
+              state.checked ? s.slide : "left-0",
             );
 
             const role = baseRole ?? "switch";
@@ -395,16 +443,9 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
                 role={role}
                 {...checkedA11yProps}
                 aria-busy={transitioning || undefined}
-                className={mergedClassName}
+                className={trackClassName}
               >
-                <BaseSwitch.Thumb
-                  className={cn(
-                    "pointer-events-none aspect-square h-full rounded-full bg-white transition-all",
-                    {
-                      "translate-x-full rtl:translate-x-[-100%]": state.checked,
-                    },
-                  )}
-                />
+                <div className={thumbClassName} />
               </button>
             );
           }}

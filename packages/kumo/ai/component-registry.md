@@ -1077,27 +1077,6 @@ Props:
 - `lang`: CodeLang
 
 
-**Examples:**
-
-```tsx
-<CodeBlock
-      lang="tsx"
-      code={`const greeting = "Hello, World!";
-console.log(greeting);`}
-    />
-```
-
-```tsx
-<Code
-      lang="bash"
-      code="export API_KEY={{apiKey}}"
-      values={{
-        apiKey: { value: "sk_live_123", highlight: true },
-      }}
-    />
-```
-
-
 ---
 
 ### Collapsible
@@ -1209,7 +1188,7 @@ Combobox — autocomplete input with filterable dropdown list.  Compound compone
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-fill-hover`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -2035,7 +2014,7 @@ Dialog component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-overlay`, `text-kumo-default`
+`bg-kumo-base`, `text-kumo-default`
 
 **Styling:**
 
@@ -3100,7 +3079,7 @@ LayerCard component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-elevated`, `ring-kumo-fill`, `ring-kumo-line`, `text-kumo-strong`
+`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-recessed`, `ring-kumo-fill`, `ring-kumo-line`, `text-kumo-strong`
 
 **Styling:**
 
@@ -3316,6 +3295,10 @@ Animated circular spinner for indicating loading states.
 <Loader size={24} />
 ```
 
+```tsx
+<Loader className="text-kumo-subtle" />
+```
+
 
 ---
 
@@ -3351,20 +3334,20 @@ MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  
 
 ```tsx
 <MenuBar
-      isActive="bold"
+      isActive={active}
       optionIds
       options={[
         {
           icon: <TextBolderIcon />,
           id: "bold",
           tooltip: "Bold",
-          onClick: () => {},
+          onClick: () => setActive(active === "bold" ? undefined : "bold"),
         },
         {
           icon: <TextItalicIcon />,
           id: "italic",
           tooltip: "Italic",
-          onClick: () => {},
+          onClick: () => setActive(active === "italic" ? undefined : "italic"),
         },
       ]}
     />
@@ -3841,6 +3824,34 @@ Radio — radio button group for single-select choices.  Compound component: `Ra
 
 `bg-kumo-base`, `bg-kumo-contrast`, `bg-kumo-tint`, `border-kumo-danger`, `border-kumo-interact`, `border-kumo-line`, `border-kumo-ring`, `ring-kumo-danger`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
+**Sub-Components:**
+
+This is a compound component. Use these sub-components:
+
+#### Radio.Item
+
+Item sub-component
+
+#### Radio.Group
+
+Group sub-component
+
+Props:
+- `legend`: string (required)
+- `children`: ReactNode (required)
+- `orientation`: "vertical" | "horizontal"
+- `appearance`: KumoRadioAppearance
+- `error`: string
+- `description`: ReactNode
+- `value`: string
+- `disabled`: boolean
+- `label`: "start" (default) puts radio before label (required)
+- `Note`: In card appearance (required)
+- `controlPosition`: RadioControlPosition
+- `name`: string
+- `className`: string
+
+
 **Examples:**
 
 ```tsx
@@ -4071,7 +4082,7 @@ Select component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-control`, `bg-kumo-overlay`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-tint`, `ring-kumo-ring`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Styling:**
 
@@ -4210,6 +4221,29 @@ Option sub-component
 
 ```tsx
 <Select
+      label="Compliance Frameworks"
+      className="w-[280px]"
+      multiple
+      value={value}
+      onValueChange={(v) => setValue(v as string[])}
+    >
+      <Select.Option value="European Union Privacy Regulation">
+        European Union Privacy Regulation
+      </Select.Option>
+      <Select.Option value="California Consumer Protection Act">
+        California Consumer Protection Act
+      </Select.Option>
+      <Select.Option value="Health Insurance Portability Act">
+        Health Insurance Portability Act
+      </Select.Option>
+      <Select.Option value="Payment Card Industry Standard">
+        Payment Card Industry Standard
+      </Select.Option>
+    </Select>
+```
+
+```tsx
+<Select
       label="Issue Types"
       className="w-[220px]"
       multiple
@@ -4309,7 +4343,7 @@ Password/secret input that masks its value by default and reveals on click. Incl
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-brand`, `bg-kumo-control`, `outline-kumo-ring`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-subtle`
 
 **Examples:**
 
@@ -4461,8 +4495,8 @@ Switch component
 **Props:**
 
 - `variant`: enum [default: default]
-  - `"default"`: Default switch appearance
-  - `"error"`: Error state for validation failures
+  - `"default"`: Default switch with squircle shape and brand blue color
+  - `"neutral"`: Monochrome switch with squircle shape for subtle toggles
 - `label`: ReactNode
   Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes.
 - `labelTooltip`: ReactNode
@@ -4490,7 +4524,7 @@ Switch component
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-brand-hover`, `bg-kumo-danger`, `bg-kumo-interact`, `bg-kumo-recessed`, `border-kumo-line`, `ring-kumo-danger`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
+`bg-kumo-base`, `border-kumo-line`, `ring-kumo-line`, `text-kumo-danger`, `text-kumo-default`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -4522,6 +4556,77 @@ Props:
 
 ```tsx
 <Switch label="Disabled" checked={false} disabled />
+```
+
+```tsx
+<Switch
+      label="Neutral switch"
+      variant="neutral"
+      checked={checked}
+      onCheckedChange={setChecked}
+    />
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <Switch
+        label="Neutral off"
+        variant="neutral"
+        checked={false}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Neutral on"
+        variant="neutral"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Neutral disabled"
+        variant="neutral"
+        checked={false}
+        disabled
+      />
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <Switch
+        label="Default variant"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Neutral variant"
+        variant="neutral"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <Switch
+        label="Small"
+        size="sm"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Base (default)"
+        size="base"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Large"
+        size="lg"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+    </div>
 ```
 
 
@@ -4886,7 +4991,7 @@ Tab navigation component with segmented or underline style. Built on Base UI Tab
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-brand`, `bg-kumo-overlay`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-fill-hover`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-recessed`, `bg-kumo-surface`, `bg-kumo-tint`, `border-kumo-ring`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Styling:**
 

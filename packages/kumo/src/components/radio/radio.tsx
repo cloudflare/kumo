@@ -402,7 +402,7 @@ export { RadioGroup };
  * </Radio.Group>
  * ```
  */
-export const Radio = {
+export const Radio = Object.assign(RadioGroup, {
   Item: RadioItem,
   Group: RadioGroup,
-};
+});

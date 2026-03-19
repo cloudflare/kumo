@@ -13,32 +13,70 @@ on:
       - "*.md"
       - ".changeset/**"
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check:
-    timeout-minutes: 10
+  build:
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
-
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
       - run: pnpm --filter @cloudflare/kumo build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
+          retention-days: 1
+
+  lint:
+    needs: build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
       - run: pnpm lint
+
+  typecheck:
+    needs: build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
       - run: pnpm typecheck
 
   test:
-    timeout-minutes: 10
+    needs: build
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
-
-      - run: pnpm --filter @cloudflare/kumo build
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
       - run: pnpm --filter @cloudflare/kumo test

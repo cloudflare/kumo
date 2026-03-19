@@ -666,7 +666,7 @@ export const SurfacePropsSchema = z.object({
 });
 
 export const SwitchPropsSchema = z.object({
-  variant: z.enum(["default", "error"]).optional(), // Visual variant: "default" or "error" for validation failures (visual only, no error text)
+  variant: z.enum(["default", "neutral"]).optional(), // Visual variant: "default" (pill, brand color) or "neutral" (squircle, monochrome)
   label: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes.
   labelTooltip: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Tooltip content to display next to the label via an info icon
   required: z.boolean().optional(), // Whether the switch is required. When explicitly false, shows "(optional)" text after the label.

@@ -1,0 +1,6 @@
+# Copy this file to .dev.vars (gitignored) and fill in values for local development.
+# Production secrets are managed via `wrangler secret put <NAME>`.
+#
+# API_KEY — shared secret that callers must send as the X-API-Key request header.
+# Generate a strong random value, e.g.: openssl rand -hex 32
+API_KEY=your-secret-key-here

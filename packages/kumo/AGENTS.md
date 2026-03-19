@@ -9,10 +9,11 @@ React component library: Base UI + Tailwind v4 + Vite library mode. ESM-only, tr
 ```
 kumo/
 ├── src/
-│   ├── components/          # 35 UI components (button/, dialog/, input/, ...)
+│   ├── components/          # 39 UI components → see src/components/AGENTS.md
 │   ├── blocks/              # Installable blocks (NOT library exports; via CLI `kumo add`)
-│   ├── primitives/          # AUTO-GENERATED Base UI re-exports (37 files)
+│   ├── primitives/          # AUTO-GENERATED Base UI re-exports (40 files)
 │   ├── catalog/             # JSON-UI rendering runtime (DynamicValue, visibility conditions)
+│   ├── code/                # Shiki-based code highlighting (lazy-loaded, 16 bundled languages)
 │   ├── command-line/        # CLI: ls, doc, add, blocks, init, migrate
 │   ├── styles/              # CSS: kumo-binding.css + theme files (AUTO-GENERATED)
 │   ├── utils/               # cn(), safeRandomId, LinkProvider
@@ -20,7 +21,7 @@ kumo/
 │   └── index.ts             # Main barrel export (PLOP_INJECT_EXPORT marker)
 ├── ai/                      # AUTO-GENERATED: component-registry.{json,md}, schemas.ts
 ├── scripts/
-│   ├── component-registry/  # Registry codegen (13 sub-modules, 875+ lines orchestrator)
+│   ├── component-registry/  # Registry codegen (13 sub-modules, 930+ lines orchestrator)
 │   ├── theme-generator/     # Theme CSS codegen from config.ts
 │   ├── generate-primitives.ts
 │   └── css-build.ts         # Post-Vite CSS processing
@@ -39,6 +40,7 @@ kumo/
 | Variant definitions      | `KUMO_{NAME}_VARIANTS` export in component file | Machine-readable + lint-enforced                                           |
 | CLI commands             | `src/command-line/commands/`                    | `ls`, `doc`, `add`, `blocks`, `init`, `migrate`                            |
 | Catalog runtime          | `src/catalog/`                                  | JSON pointer resolution, visibility conditions                             |
+| Code highlighting        | `src/code/`                                     | ShikiProvider, lazy-loaded highlighter, 16 bundled languages               |
 | Blocks source            | `src/blocks/{name}/`                            | Installed to consumers via CLI, not exported                               |
 | Scaffold new component   | `plopfile.js`                                   | Injects into index.ts, vite.config.ts, package.json                        |
 | Token definitions        | `scripts/theme-generator/config.ts`             | Source of truth; generates theme CSS                                       |
@@ -57,13 +59,7 @@ kumo/
 
 ### Component File Pattern
 
-Each `src/components/{name}/{name}.tsx` must:
-
-1. Export `KUMO_{NAME}_VARIANTS` + `KUMO_{NAME}_DEFAULT_VARIANTS` (lint-enforced)
-2. Use `forwardRef` when wrapping DOM elements
-3. Set `.displayName` on the forwardRef component
-4. Use `cn()` for all className composition
-5. Use Base UI primitives (`@base-ui/react`) for interactive behavior
+See `src/components/AGENTS.md` for detailed component conventions.
 
 ### Registry Codegen Pipeline
 
@@ -87,7 +83,7 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 - **Vitest** with `happy-dom`, globals enabled
 - **Path aliases**: `@/` → `src/`, `@cloudflare/kumo` → `src/index.ts`
 - **Structural tests** in `tests/imports/`: validate all export paths resolve, package.json matches vite entries
-- **Sparse component tests**: Only 3/35 components have unit tests; emphasis on infrastructure testing
+- **Sparse component tests**: Only ~6 components have unit tests; emphasis on infrastructure testing
 - **`describe.skipIf(!isBuilt)`**: Export validation tests skip gracefully when `dist/` missing
 
 ## ANTI-PATTERNS
@@ -100,11 +96,32 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 | `as any` in component code                           | 3 existing instances; don't add more   | Model types correctly         |
 | Dynamic Tailwind class construction                  | JIT can't detect `leading-[${val}]`    | Use static class strings      |
 
+## DEPRECATED COMPONENTS/PROPS
+
+### Components
+
+| Component         | Replacement                          |
+| ----------------- | ------------------------------------ |
+| `DateRangePicker` | Use `DatePicker` with `mode="range"` |
+
+### Props (lint-enforced via `no-deprecated-props`)
+
+| Component           | Prop                                | Replacement                                              |
+| ------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `Select`            | `hideLabel`                         | Use `aria-label` instead of `label` + `hideLabel={true}` |
+| `DropdownMenu.Item` | `href`                              | Use `DropdownMenu.LinkItem` for navigation               |
+| `Checkbox`          | `onChange`, `onIndeterminateChange` | Use `onCheckedChange`                                    |
+| `Banner`            | `text`, `children`                  | Use `title` and `description` props                      |
+| `TimeseriesChart`   | `formatValue`                       | Use `tooltipValueFormat`                                 |
+| `Code`              | `CodeLanguage` type                 | Use `CodeLang` type                                      |
+
 ## NOTES
 
 - **Compound components**: CommandPalette (14 sub-components), Dialog, Select use two-level contexts
+- **13 components use createContext**: SwitchGroup, PaginationContext, RadioGroup, FlowNodeAnchor, Diagram, Descendants, InputGroup, DialogRole, ComboboxSize, Grid, CheckboxGroup, CommandPalette (2)
 - **DateRangePicker**: Contains 150 lines of duplicated ternary logic (refactoring target)
 - **Catalog `initCatalog`**: Appears to have race condition with async schema loading
 - **CLI path inconsistency**: `ls`/`doc` read from `catalog/`, `blocks` from `ai/` directory
 - **`PLOP_INJECT_EXPORT`** in `src/index.ts` and `PLOP_INJECT_COMPONENT_ENTRY` in `vite.config.ts` are scaffolding markers
 - **5th lint rule** (`no-deprecated-props`): Only in `packages/kumo/lint/`, reads deprecation data from registry
+- **LinkProvider**: Framework-agnostic link abstraction; wrap app with custom Link component (e.g., Next.js)

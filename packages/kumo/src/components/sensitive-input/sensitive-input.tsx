@@ -330,7 +330,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           autoComplete={autoComplete}
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
-            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none kumo-input-placeholder disabled:cursor-not-allowed disabled:text-kumo-subtle",
+            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 kumo-input-placeholder disabled:cursor-not-allowed disabled:text-kumo-subtle",
             size === "xs" && "pr-5",
             size === "sm" && "pr-6",
             size === "base" && "pr-8",
@@ -393,7 +393,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           aria-label={mode === "revealed" ? "Hide value" : "Reveal value"}
           tabIndex={showEyeButton ? 0 : -1}
           className={cn(
-            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle outline-none hover:text-kumo-default focus:text-kumo-default",
+            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus-visible:ring-1 focus-visible:ring-kumo-ring focus-visible:rounded-sm",
             // Match right padding from inputVariants
             size === "xs" && "right-1.5",
             size === "sm" && "right-2",

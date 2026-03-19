@@ -3,6 +3,7 @@ packages:
 
 catalog:
   "@cloudflare/vite-plugin": ^1.15.3
+  "@cloudflare/workers-types": ^4.20240909.0
   "@phosphor-icons/react": ^2.1.10
   "@react-router/dev": ^7.9.6
   "@tailwindcss/cli": ^4.1.17
