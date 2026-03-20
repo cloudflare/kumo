@@ -4,8 +4,18 @@
 # (preview.yml docs-build job) and produces a static HTML artifact.
 # This workflow runs in the base repo context with secrets, but NEVER
 # checks out or executes fork code — it only deploys the built artifact.
-# The wrangler config is checked out from the PR head (JSON only, not
-# executable) so that preview deploys match the PR's infrastructure changes.
+#
+# IMPORTANT: ALL checkouts in this workflow use ref: main (or no ref, which
+# also defaults to main via the workflow_run base context). The wrangler.jsonc
+# was previously checked out from the fork's SHA, but wrangler supports a
+# build.command field that executes arbitrary shell commands — meaning a
+# malicious wrangler.jsonc from a fork could exfiltrate CLOUDFLARE_API_TOKEN.
+# We always deploy using the wrangler config from main.
+#
+# The visual-regression job always checks out ci/visual-regression from main
+# (never the fork's SHA) before running it with secrets. The fork's component
+# changes are captured via the deployed preview URL (AFTER_URL), not via
+# executing the fork's copy of the script.
 #
 # For internal PRs, deployment happens directly in preview.yml (docs-deploy job).
 
@@ -41,11 +51,15 @@ jobs:
       preview_url: ${{ steps.deploy.outputs.preview_url }}
       pr_number: ${{ steps.metadata.outputs.pr_number }}
     steps:
-      - name: Checkout (wrangler config only)
+      # Always check out wrangler config from main — never from the fork's SHA.
+      # wrangler.jsonc supports a build.command field that executes arbitrary
+      # shell commands; checking out the fork's version with CLOUDFLARE_API_TOKEN
+      # in env would allow secret exfiltration via a malicious config.
+      - name: Checkout wrangler config from main
         uses: actions/checkout@v4
         with:
           sparse-checkout: packages/kumo-docs-astro/wrangler.jsonc
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: main
 
       - name: Resolve PR metadata
         id: metadata
@@ -179,12 +193,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
+      # Always check out the VR script from main — never from the fork's SHA.
+      # The fork's component changes are captured via AFTER_URL (the deployed
+      # preview), not by running the fork's copy of run-visual-regression.ts.
+      # Running untrusted code from a fork with secrets in env is the exact
+      # attack vector demonstrated in PR #279.
+      - name: Checkout VR script from main
         uses: actions/checkout@v4
         with:
-          # Checkout the fork's PR head so git diff can compare against main
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
+          ref: main
+          sparse-checkout: |
+            ci/visual-regression
+            .github/actions/install-dependencies
+
+      # Fetch the fork's HEAD so git diff works for changed-file detection.
+      - name: Fetch fork HEAD for git diff
+        run: git fetch --depth=1 origin ${{ github.event.workflow_run.head_sha }}
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -199,7 +223,6 @@ jobs:
           GITHUB_BASE_REF: main
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.deploy.outputs.preview_url }}
-          SCREENSHOT_WORKER_URL: ${{ secrets.SCREENSHOT_WORKER_URL }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
         run: pnpm tsx ci/visual-regression/run-visual-regression.ts
 

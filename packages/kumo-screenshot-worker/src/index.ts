@@ -3,7 +3,7 @@ import puppeteer, { ElementHandle } from "@cloudflare/puppeteer";
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const MAX_PAGES = 50;
-const MAX_ACTION_PAYLOAD_BYTES = 64_000; // 64 KB per css/js action payload
+const MAX_ACTION_PAYLOAD_BYTES = 64_000; // 64 KB per css action payload
 
 // Selectors for sections to skip in captureSections mode.
 const SKIP_SECTION_IDS = [
@@ -21,11 +21,26 @@ const HIDE_SIDEBAR_CSS = `
   .main-content { margin-left: 0 !important; }
 `;
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
-};
+// Allowed origins for CORS. Restricted to known Cloudflare hosts — the worker
+// is internal tooling and should never be called from arbitrary origins.
+const ALLOWED_ORIGINS = [
+  "https://kumo-ui.com",
+  /^https:\/\/[a-z0-9-]+-kumo-docs\.design-engineering\.workers\.dev$/,
+  /^https:\/\/[a-z0-9-]+\.kumo-docs\.pages\.dev$/,
+];
+
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowed =
+    origin !== null &&
+    ALLOWED_ORIGINS.some((o) =>
+      typeof o === "string" ? o === origin : o.test(origin),
+    );
+  return {
+    "Access-Control-Allow-Origin": allowed ? origin! : "null",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
+  };
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,15 +50,11 @@ interface Env {
 }
 
 interface PageAction {
-  type: "click" | "wait" | "hover" | "css" | "js";
+  type: "click" | "wait" | "hover" | "css";
   selector?: string;
   // For "wait": how long to pause (ms). For other types: extra delay after the action (ms).
   waitAfter?: number;
   css?: string;
-  // NOTE: "js" actions execute arbitrary JavaScript in the browser context.
-  // This is intentional — callers are trusted via the API_KEY secret.
-  // Never expose this worker publicly without the auth check.
-  js?: string;
   timeout?: number;
 }
 
@@ -137,34 +148,41 @@ function validateUrl(
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const origin = request.headers.get("Origin");
+    const cors = getCorsHeaders(origin);
+
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: CORS_HEADERS });
+      return new Response(null, { headers: cors });
     }
 
     const apiKey = request.headers.get("X-API-Key");
     if (!apiKey || apiKey !== env.API_KEY) {
       return Response.json(
         { error: "Unauthorized" },
-        { status: 401, headers: CORS_HEADERS },
+        { status: 401, headers: cors },
       );
     }
 
     const url = new URL(request.url);
 
     if (url.pathname === "/batch" && request.method === "POST") {
-      return handleBatch(request, env);
+      return handleBatch(request, env, cors);
     }
 
     return Response.json(
       { error: "Not found" },
-      { status: 404, headers: CORS_HEADERS },
+      { status: 404, headers: cors },
     );
   },
 };
 
 // ─── Batch handler ───────────────────────────────────────────────────────────
 
-async function handleBatch(request: Request, env: Env): Promise<Response> {
+async function handleBatch(
+  request: Request,
+  env: Env,
+  cors: Record<string, string>,
+): Promise<Response> {
   const body = (await request.json()) as BatchRequest;
   const {
     baseUrl,
@@ -178,14 +196,14 @@ async function handleBatch(request: Request, env: Env): Promise<Response> {
   if (!Array.isArray(pages) || pages.length === 0) {
     return Response.json(
       { error: "pages must be a non-empty array" },
-      { status: 400, headers: CORS_HEADERS },
+      { status: 400, headers: cors },
     );
   }
 
   if (pages.length > MAX_PAGES) {
     return Response.json(
       { error: `Too many pages: max ${MAX_PAGES}, got ${pages.length}` },
-      { status: 400, headers: CORS_HEADERS },
+      { status: 400, headers: cors },
     );
   }
 
@@ -197,24 +215,18 @@ async function handleBatch(request: Request, env: Env): Promise<Response> {
     if (!baseCheck.ok) {
       return Response.json(
         { error: `Invalid baseUrl: ${baseCheck.error}` },
-        { status: 400, headers: CORS_HEADERS },
+        { status: 400, headers: cors },
       );
     }
   }
 
-  // Validate per-page action payloads to avoid giant JS/CSS strings.
+  // Validate per-page action payloads to avoid oversized CSS strings.
   for (const pageConfig of pages) {
     for (const action of pageConfig.actions ?? []) {
       if (action.css && action.css.length > MAX_ACTION_PAYLOAD_BYTES) {
         return Response.json(
           { error: "css action payload exceeds 64 KB limit" },
-          { status: 400, headers: CORS_HEADERS },
-        );
-      }
-      if (action.js && action.js.length > MAX_ACTION_PAYLOAD_BYTES) {
-        return Response.json(
-          { error: "js action payload exceeds 64 KB limit" },
-          { status: 400, headers: CORS_HEADERS },
+          { status: 400, headers: cors },
         );
       }
     }
@@ -430,11 +442,11 @@ async function handleBatch(request: Request, env: Env): Promise<Response> {
       }
     }
 
-    return Response.json({ results }, { headers: CORS_HEADERS });
+    return Response.json({ results }, { headers: cors });
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : String(error) },
-      { status: 500, headers: CORS_HEADERS },
+      { status: 500, headers: cors },
     );
   } finally {
     if (browser) {
@@ -480,15 +492,6 @@ async function executeAction(
     case "css":
       if (action.css) {
         await page.addStyleTag({ content: action.css });
-      }
-      break;
-
-    case "js":
-      // Executes arbitrary JS supplied by the caller. This is intentional —
-      // callers are trusted via the API_KEY secret. Never expose the worker
-      // publicly without the auth check in place.
-      if (action.js) {
-        await page.evaluate(action.js);
       }
       break;
   }
