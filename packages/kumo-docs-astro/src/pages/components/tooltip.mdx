@@ -19,11 +19,9 @@ import {
 
 <ComponentSection>
   <ComponentExample
-    code={`<TooltipProvider>
-  <Tooltip content="Add new item" asChild>
-    <Button shape="square" icon={PlusIcon} />
-  </Tooltip>
-</TooltipProvider>`}
+    code={`<Tooltip content="Add new item" asChild>
+  <Button shape="square" icon={PlusIcon} />
+</Tooltip>`}
   >
     <TooltipHeroDemo client:load />
   </ComponentExample>
@@ -45,17 +43,16 @@ import {
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock code={`import { Tooltip, TooltipProvider, Button } from "@cloudflare/kumo";
+  <CodeBlock code={`import { Tooltip, Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
-    <TooltipProvider>
-      <Tooltip content="Tooltip text" asChild>
-        <Button>Hover me</Button>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content="Tooltip text" asChild>
+      <Button>Hover me</Button>
+    </Tooltip>
   );
 }`} lang="tsx" />
+  For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovider).
 </ComponentSection>
 
 <ComponentSection>
@@ -63,18 +60,15 @@ export default function Example() {
 
 <Heading level={3}>Basic Tooltip</Heading>
 <ComponentExample
-  code={`<TooltipProvider>
-  <Tooltip content="Add" asChild>
-    <Button shape="square" icon={PlusIcon} />
-  </Tooltip>
-</TooltipProvider>`}
+  code={`<Tooltip content="Add" asChild>
+  <Button shape="square" icon={PlusIcon} />
+</Tooltip>`}
 >
   <TooltipBasicDemo client:load />
 </ComponentExample>
 
   <Heading level={3}>Multiple Tooltips</Heading>
   <ComponentExample code={`<TooltipProvider>
-
   <div className="flex gap-2">
     <Tooltip content="Add" asChild>
       <Button shape="square" icon={PlusIcon} />
@@ -86,6 +80,23 @@ export default function Example() {
 </TooltipProvider>`}>
     <TooltipMultipleDemo client:load />
   </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={2} id="tooltipprovider">TooltipProvider</Heading>
+
+`TooltipProvider` groups multiple tooltips so that after the first tooltip has been shown, switching to another skips the open delay. Place it once at your app root or layout — not around each individual `Tooltip`.
+
+  <CodeBlock code={`// Wrap your app or layout once
+<TooltipProvider>
+  <App />
+</TooltipProvider>
+
+// Then use Tooltip anywhere inside
+
+<Tooltip content="Add" asChild>
+  <Button shape="square" icon={PlusIcon} />
+</Tooltip>`} lang="tsx" />
 </ComponentSection>
 
 <ComponentSection>
