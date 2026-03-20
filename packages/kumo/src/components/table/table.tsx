@@ -198,9 +198,7 @@ const TableFooter = forwardRef<
 const TableResizeHandle = forwardRef<
   HTMLButtonElement,
   React.HTMLAttributes<HTMLButtonElement>
->(({ onMouseDown, onTouchStart, ...props }, ref) => {
-  const didDrag = useRef(false);
-
+>((props, ref) => {
   return (
     <button
       ref={ref}
@@ -216,38 +214,6 @@ const TableResizeHandle = forwardRef<
         "m-0 bg-kumo-base p-0", // Override the stratus button styles
         props.className,
       )}
-      onMouseDown={(e) => {
-        didDrag.current = false;
-        const onMouseMove = () => {
-          didDrag.current = true;
-        };
-        const onMouseUp = () => {
-          window.removeEventListener("mousemove", onMouseMove);
-          window.removeEventListener("mouseup", onMouseUp);
-        };
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-        onMouseDown?.(e);
-      }}
-      onTouchStart={(e) => {
-        didDrag.current = false;
-        const onTouchMove = () => {
-          didDrag.current = true;
-        };
-        const onTouchEnd = () => {
-          e.target.removeEventListener("touchmove", onTouchMove);
-          e.target.removeEventListener("touchend", onTouchEnd);
-        };
-        e.target.addEventListener("touchmove", onTouchMove);
-        e.target.addEventListener("touchend", onTouchEnd);
-        onTouchStart?.(e);
-      }}
-      onClick={(e) => {
-        // Prevent the click from reaching Table.Head's sort handler after a drag
-        if (didDrag.current) {
-          e.stopPropagation();
-        }
-      }}
     >
       <span className="h-5 w-[2px] rounded bg-kumo-ring" />
     </button>

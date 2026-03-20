@@ -423,16 +423,16 @@ export function TableTanStackSortableResizableDemo() {
                   return (
                     <Table.Head
                       key={header.id}
-                      onClick={
-                        canSort
-                          ? header.column.getToggleSortingHandler()
-                          : undefined
-                      }
                       aria-label={
                         canSort ? `Sort by ${header.column.id}` : undefined
                       }
                       className={
                         canSort ? "cursor-pointer select-none" : undefined
+                      }
+                      onClick={
+                        canSort
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
                       }
                     >
                       <div className="flex items-center gap-1">
@@ -447,8 +447,15 @@ export function TableTanStackSortableResizableDemo() {
                         )}
                       </div>
                       <Table.ResizeHandle
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        onMouseDown={(e) => {
+                          header.getResizeHandler()(e);
+                        }}
+                        onTouchStart={(e) => {
+                          header.getResizeHandler()(e);
+                        }}
                       />
                     </Table.Head>
                   );

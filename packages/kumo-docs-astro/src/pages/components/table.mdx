@@ -264,30 +264,6 @@ import {
 } from "@tanstack/react-table";
 import { Badge, LayerCard, Table } from "@cloudflare/kumo";
 
-type Worker = {
-  id: string;
-  name: string;
-  requests: number;
-  errors: number;
-  cpuMs: number;
-  status: "Active" | "Inactive" | "Degraded";
-};
-
-const workerData: Worker[] = [
-  { id: "1", name: "api-gateway", requests: 142_830, errors: 12, cpuMs: 4.2, status: "Active" },
-  { id: "2", name: "auth-service", requests: 98_210, errors: 0, cpuMs: 2.1, status: "Active" },
-  { id: "3", name: "image-resizer", requests: 34_560, errors: 87, cpuMs: 18.9, status: "Degraded" },
-  { id: "4", name: "cache-purger", requests: 6_120, errors: 0, cpuMs: 0.8, status: "Active" },
-  { id: "5", name: "log-drain", requests: 0, errors: 0, cpuMs: 0, status: "Inactive" },
-  { id: "6", name: "edge-router", requests: 215_400, errors: 3, cpuMs: 1.5, status: "Active" },
-];
-
-const variantMap: Record<Worker["status"], "secondary" | "destructive" | "success"> = {
-  Active: "success",
-  Degraded: "destructive",
-  Inactive: "secondary",
-};
-
 const columns: ColumnDef<Worker>[] = [
   { accessorKey: "name", header: "Worker", size: 200, minSize: 120 },
   {
@@ -331,71 +307,112 @@ export function DataTable() {
   });
 
   return (
-    <LayerCard>
-      <LayerCard.Primary className="w-full overflow-x-auto p-0">
-        <Table layout="fixed">
-          <colgroup>
-            {table.getAllColumns().map((col) => (
-              <col
-                key={col.id}
-                style={{ width: col.getSize() }}
-                className={col.getIsResizing() ? "border-r border-kumo-ring" : undefined}
-              />
-            ))}
-            {/* Filler column — absorbs remaining space so fixed columns don't stretch */}
-            <col />
-          </colgroup>
-          <Table.Header>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Table.Row key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  const isSorted = header.column.getIsSorted();
-                  const canSort = header.column.getCanSort();
-                  return (
-                    <Table.Head
-                      key={header.id}
-                      onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
-                      aria-label={canSort ? \`Sort by \${header.column.id}\` : undefined}
-                      className={canSort ? "cursor-pointer select-none" : undefined}
-                    >
-                      <div className="flex items-center gap-1">
-                        {header.isPlaceholder ? null : (
-                          <>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {canSort && <Table.SortIcon direction={isSorted} />}
-                          </>
+    <Table layout="fixed">
+      <colgroup>
+        {table.getAllColumns().map((col) => (
+          <col
+            key={col.id}
+            style={{ width: col.getSize() }}
+            className={
+              col.getIsResizing() ? "border-r border-kumo-ring" : undefined
+            }
+          />
+        ))}
+        {/* Filler column — absorbs remaining space so fixed columns don't stretch */}
+        <col />
+      </colgroup>
+      <Table.Header>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <Table.Row key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              const isSorted = header.column.getIsSorted();
+              const canSort = header.column.getCanSort();
+              return (
+                <Table.Head
+                  key={header.id}
+                  aria-label={
+                    canSort ? \`Sort by \${header.column.id}\` : undefined
+                  }
+                  className={
+                    canSort ? "cursor-pointer select-none" : undefined
+                  }
+                  onClick={
+                    canSort
+                      ? header.column.getToggleSortingHandler()
+                      : undefined
+                  }
+                >
+                  <div className="flex items-center gap-1">
+                    {header.isPlaceholder ? null : (
+                      <>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
                         )}
-                      </div>
-                      <Table.ResizeHandle
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                      />
-                    </Table.Head>
-                  );
-                })}
-                {/* Filler header cell matching the filler col */}
-                <Table.Head />
-              </Table.Row>
+                        {canSort && <Table.SortIcon direction={isSorted} />}
+                      </>
+                    )}
+                  </div>
+                  <Table.ResizeHandle
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onMouseDown={(e) => {
+                      header.getResizeHandler()(e);
+                    }}
+                    onTouchStart={(e) => {
+                      header.getResizeHandler()(e);
+                    }}
+                  />
+                </Table.Head>
+              );
+            })}
+            {/* Filler header cell matching the filler col */}
+            <Table.Head />
+          </Table.Row>
+        ))}
+      </Table.Header>
+      <Table.Body>
+        {table.getRowModel().rows.map((row) => (
+          <Table.Row key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <Table.Cell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Table.Cell>
             ))}
-          </Table.Header>
-          <Table.Body>
-            {table.getRowModel().rows.map((row) => (
-              <Table.Row key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <Table.Cell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </Table.Cell>
-                ))}
-                {/* Filler cell matching the filler col */}
-                <Table.Cell />
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </LayerCard.Primary>
-    </LayerCard>
+            {/* Filler cell matching the filler col */}
+            <Table.Cell />
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
   );
-}`}
+}
+
+type Worker = {
+  id: string;
+  name: string;
+  requests: number;
+  errors: number;
+  cpuMs: number;
+  status: "Active" | "Inactive" | "Degraded";
+};
+
+const workerData: Worker[] = [
+  { id: "1", name: "api-gateway", requests: 142_830, errors: 12, cpuMs: 4.2, status: "Active" },
+  { id: "2", name: "auth-service", requests: 98_210, errors: 0, cpuMs: 2.1, status: "Active" },
+  { id: "3", name: "image-resizer", requests: 34_560, errors: 87, cpuMs: 18.9, status: "Degraded" },
+  { id: "4", name: "cache-purger", requests: 6_120, errors: 0, cpuMs: 0.8, status: "Active" },
+  { id: "5", name: "log-drain", requests: 0, errors: 0, cpuMs: 0, status: "Inactive" },
+  { id: "6", name: "edge-router", requests: 215_400, errors: 3, cpuMs: 1.5, status: "Active" },
+];
+
+const variantMap: Record<Worker["status"], "secondary" | "destructive" | "success"> = {
+  Active: "success",
+  Degraded: "destructive",
+  Inactive: "secondary",
+};
+`}
   >
     <TableTanStackSortableResizableDemo client:visible />
   </ComponentExample>
@@ -447,68 +464,6 @@ Body cell. Renders `<td>`.
     Draggable handle for column resizing. Use with TanStack Table or
     custom resize logic.
   </p>
-</ComponentSection>
-
-{/* TanStack Table Integration */}
-
-<ComponentSection>
-  <Heading level={2}>TanStack Table Integration</Heading>
-  <p>
-    For advanced features like sorting, filtering, and resizable columns,
-    integrate with <a
-      href="https://tanstack.com/table"
-      class="text-kumo-link hover:underline"
-      target="_blank"
-      rel="noopener noreferrer">TanStack Table</a>. The Table component is designed to work seamlessly with TanStack's
-    headless API. See the live <strong>Sortable &amp; Resizable</strong> example in the Examples section above for a complete working implementation.
-  </p>
-  <Heading level={3}>Installation</Heading>
-  <CodeBlock code={`npm install @tanstack/react-table`} lang="bash" />
-  <Heading level={3}>Key patterns</Heading>
-  <CodeBlock
-    code={`// 1. Use layout="fixed" so column widths from TanStack are respected
-<Table layout="fixed">
-
-  {/* 2. Drive colgroup widths from table state */}
-  <colgroup>
-    {table.getAllColumns().map((col) => (
-      <col key={col.id} style={{ width: col.getSize() }} />
-    ))}
-    {/* Filler column — absorbs remaining space so fixed columns don't stretch */}
-    <col />
-  </colgroup>
-
-  <Table.Header>
-    <Table.Row>
-      {headerGroup.headers.map((header) => {
-        const isSorted = header.column.getIsSorted();
-        const canSort = header.column.getCanSort();
-        return (
-          {/* 3. Wire sorting toggle directly on Table.Head */}
-          <Table.Head
-            key={header.id}
-            onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
-            className={canSort ? "cursor-pointer select-none" : undefined}
-          >
-            <div className="flex items-center gap-1">
-              {flexRender(header.column.columnDef.header, header.getContext())}
-              {/* 4. Use Table.SortIcon — pass isSorted directly, no conversion needed */}
-              {canSort && <Table.SortIcon direction={isSorted} />}
-            </div>
-            {/* 5. Attach resize handlers to Table.ResizeHandle */}
-            <Table.ResizeHandle
-              onMouseDown={header.getResizeHandler()}
-              onTouchStart={header.getResizeHandler()}
-            />
-          </Table.Head>
-        );
-      })}
-      {/* Filler header cell matching the filler col */}
-      <Table.Head />
-    </Table.Row>
-  </Table.Header>
-
-</Table>`} lang="tsx" />
 </ComponentSection>
 
 {/* Accessibility */}
