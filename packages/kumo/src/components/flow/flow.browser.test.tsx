@@ -160,6 +160,80 @@ describe("Flow Integration", () => {
       }
     });
 
+    test("connectors stay aligned after a scroll event shifts the container", async () => {
+      // Render the flow inside a fixed-height scrollable wrapper so that the
+      // Flow container sits below the visible area when scrolled.
+      const { container, getByTestId } = await render(
+        <div style={{ height: "200px", overflow: "auto" }}>
+          <div style={{ height: "100px" }} /> {/* spacer to push flow down */}
+          <Flow>
+            <Flow.Node id="a">Node A</Flow.Node>
+            <Flow.Parallel>
+              <Flow.Node id="b">Branch B</Flow.Node>
+              <Flow.Node id="c">Branch C</Flow.Node>
+            </Flow.Parallel>
+            <Flow.Node id="d">Node D</Flow.Node>
+          </Flow>
+        </div>,
+      );
+
+      await Promise.all([
+        expect.element(getByTestId("a")).toBeVisible(),
+        expect.element(getByTestId("d")).toBeVisible(),
+      ]);
+
+      // Capture connector positions before scroll
+      const beforeScroll = {
+        ab: getPathEndpointsForConnector(container, "a", "b"),
+        ac: getPathEndpointsForConnector(container, "a", "c"),
+      };
+
+      // Scroll the wrapper down, shifting the Flow container in the viewport
+      const wrapper = container.querySelector(
+        "[style*='overflow']",
+      ) as HTMLElement;
+      wrapper.scrollTop = 60;
+      wrapper.dispatchEvent(new Event("scroll", { bubbles: true }));
+
+      await waitForNextFrame();
+      await waitForNextFrame();
+
+      // Connectors must still connect the correct nodes after the scroll
+      assertPathConnects({
+        container,
+        fromNode: getByTestId("a").element(),
+        toNode: getByTestId("b").element(),
+        fromId: "a",
+        toId: "b",
+      });
+      assertPathConnects({
+        container,
+        fromNode: getByTestId("a").element(),
+        toNode: getByTestId("c").element(),
+        fromId: "a",
+        toId: "c",
+      });
+      assertPathConnects({
+        container,
+        fromNode: getByTestId("b").element(),
+        toNode: getByTestId("d").element(),
+        fromId: "b",
+        toId: "d",
+      });
+      assertPathConnects({
+        container,
+        fromNode: getByTestId("c").element(),
+        toNode: getByTestId("d").element(),
+        fromId: "c",
+        toId: "d",
+      });
+
+      // beforeScroll captured above is still valid for a reference comparison;
+      // the key assertion is that assertPathConnects above did not throw,
+      // meaning the paths still connect the correct nodes after the scroll.
+      void beforeScroll; // suppress unused variable warning
+    });
+
     test("does not render incoming connectors when there is no node before a parallel group", async () => {
       const { container, getByText } = await render(
         <Flow>
