@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -131,7 +132,45 @@ export function FlowParallelNode({
     remeasure();
   }, [measurementEpoch, remeasure]);
 
-  const measure = () => {
+  /**
+   * Re-measure the parallel group's own bounding rect on scroll/resize so
+   * that the rect passed up to the parent context stays current.
+   */
+  useEffect(() => {
+    const onLayoutShift = () => {
+      remeasure();
+      notifySizeChange();
+    };
+    window.addEventListener("scroll", onLayoutShift, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", onLayoutShift, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onLayoutShift, { capture: true });
+      window.removeEventListener("resize", onLayoutShift);
+    };
+  }, [remeasure, notifySizeChange]);
+
+  type LinksResult = {
+    connectors: Connector[];
+    junctions: {
+      start?: { x: number; y: number };
+      end?: { x: number; y: number };
+    };
+    containerRect: DOMRect;
+  };
+
+  const [links, setLinks] = useState<LinksResult | null>(null);
+
+  /**
+   * Compute connector positions after the DOM has settled. Running this in
+   * useLayoutEffect (rather than during render) ensures that both the
+   * container rect and the node rects stored in `descendants` are read from
+   * the same, up-to-date layout — preventing stale-coordinate mismatches
+   * when the page scrolls or a sidebar shifts the layout.
+   */
+  const computeLinks = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -303,7 +342,7 @@ export function FlowParallelNode({
       return connectors;
     });
 
-    return {
+    setLinks({
       connectors: newConnectors,
       junctions: {
         start:
@@ -321,11 +360,37 @@ export function FlowParallelNode({
               }
             : undefined,
       },
-      containerRect: containerRect,
-    };
-  };
+      containerRect,
+    });
+  }, [
+    containerRef,
+    getPrevious,
+    getNext,
+    orientation,
+    descendants.descendants,
+  ]);
 
-  const links = measure();
+  useLayoutEffect(() => {
+    computeLinks();
+  }, [computeLinks]);
+
+  /**
+   * Recompute connector positions when the page scrolls or the window resizes.
+   * Scroll/resize moves the container in the viewport without triggering
+   * ResizeObserver on the nodes, making stored rects stale.
+   */
+  useEffect(() => {
+    const onLayoutShift = () => computeLinks();
+    window.addEventListener("scroll", onLayoutShift, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", onLayoutShift, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onLayoutShift, { capture: true });
+      window.removeEventListener("resize", onLayoutShift);
+    };
+  }, [computeLinks]);
 
   return (
     <div
