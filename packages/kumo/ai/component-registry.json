@@ -322,7 +322,7 @@
             "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
             "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
             "secondary-destructive": "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
-            "outline": "bg-transparent text-kumo-default ring-2 ring-kumo-ring"
+            "outline": "bg-transparent text-kumo-default ring ring-kumo-ring"
           },
           "stateClasses": {
             "primary": {
@@ -1938,7 +1938,13 @@
           "description": "Additional CSS classes merged via `cn()`."
         }
       },
-      "examples": [],
+      "examples": [
+        "<CodeBlock\n      lang=\"tsx\"\n      code={`const greeting = \"Hello, World!\";\nconsole.log(greeting);`}\n    />",
+        "<CodeBlock\n      lang=\"tsx\"\n      code={`interface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\nconst user: User = {\n  id: \"1\",\n  name: \"John Doe\",\n  email: \"john@example.com\"\n};`}\n    />",
+        "<CodeBlock\n      lang=\"bash\"\n      code={`npm install @cloudflare/kumo\npnpm add @cloudflare/kumo`}\n    />",
+        "<CodeBlock\n      lang=\"jsonc\"\n      code={`{\n  \"name\": \"kumo\",\n  \"version\": \"1.0.0\",\n  \"dependencies\": {\n    \"react\": \"^19.0.0\"\n  }\n}`}\n    />",
+        "<Code\n      lang=\"bash\"\n      code=\"export API_KEY={{apiKey}}\"\n      values={{\n        apiKey: { value: \"sk_live_123\", highlight: true },\n      }}\n    />"
+      ],
       "colors": [
         "bg-kumo-base",
         "border-kumo-fill",
@@ -3381,9 +3387,9 @@
         }
       },
       "examples": [
-        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />"
+        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive=\"\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3455,7 +3461,7 @@
         "<Meter label=\"Progress\" value={40} showValue={false} />",
         "<Meter label=\"Quota reached\" value={100} />",
         "<Meter label=\"Memory usage\" value={15} />",
-        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-kumo-success via-kumo-success to-kumo-success\"\n    />"
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
       ],
       "colors": [
         "bg-kumo-fill",
@@ -4300,8 +4306,7 @@
         "<Switch label=\"Disabled\" checked={false} disabled />",
         "<Switch\n      label=\"Neutral switch\"\n      variant=\"neutral\"\n      checked={checked}\n      onCheckedChange={setChecked}\n    />",
         "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Neutral off\"\n        variant=\"neutral\"\n        checked={false}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral on\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral disabled\"\n        variant=\"neutral\"\n        checked={false}\n        disabled\n      />\n    </div>",
-        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Default variant\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral variant\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n    </div>",
-        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Small\"\n        size=\"sm\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Base (default)\"\n        size=\"base\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Large\"\n        size=\"lg\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n    </div>"
+        "<div className=\"flex flex-col gap-4\">\n      <Switch\n        label=\"Default variant\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n      <Switch\n        label=\"Neutral variant\"\n        variant=\"neutral\"\n        checked={true}\n        onCheckedChange={() => {}}\n      />\n    </div>"
       ],
       "colors": [
         "bg-kumo-base",
