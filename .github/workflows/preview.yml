@@ -232,7 +232,7 @@ jobs:
   visual-regression:
     name: Visual Regression
     needs: docs-deploy
-    if: ${{ needs.docs-deploy.outputs.preview_url }}
+    if: always() && needs.docs-deploy.result == 'success' && needs.docs-deploy.outputs.preview_url != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
