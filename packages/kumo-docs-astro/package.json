@@ -24,6 +24,7 @@
     "@cloudflare/kumo": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/typography": "^0.5.19",
+    "@tanstack/react-table": "^8.21.3",
     "@types/turndown": "5.0.6",
     "astro": "^5.16.7",
     "clsx": "catalog:",

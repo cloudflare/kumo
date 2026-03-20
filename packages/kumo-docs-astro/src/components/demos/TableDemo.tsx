@@ -13,6 +13,14 @@ import {
   PencilSimple,
   Trash,
 } from "@phosphor-icons/react";
+import {
+  type ColumnDef,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 // Sample data for demos
 const emailData = [
@@ -255,6 +263,213 @@ export function TableFixedLayoutDemo() {
                 <Table.Cell>{row.subject}</Table.Cell>
                 <Table.Cell>{row.from}</Table.Cell>
                 <Table.Cell>{row.date}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// TanStack Table integration data + demo
+// ---------------------------------------------------------------------------
+
+type Worker = {
+  id: string;
+  name: string;
+  requests: number;
+  errors: number;
+  cpuMs: number;
+  status: "Active" | "Inactive" | "Degraded";
+};
+
+const workerData: Worker[] = [
+  {
+    id: "1",
+    name: "api-gateway",
+    requests: 142_830,
+    errors: 12,
+    cpuMs: 4.2,
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "auth-service",
+    requests: 98_210,
+    errors: 0,
+    cpuMs: 2.1,
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "image-resizer",
+    requests: 34_560,
+    errors: 87,
+    cpuMs: 18.9,
+    status: "Degraded",
+  },
+  {
+    id: "4",
+    name: "cache-purger",
+    requests: 6_120,
+    errors: 0,
+    cpuMs: 0.8,
+    status: "Active",
+  },
+  {
+    id: "5",
+    name: "log-drain",
+    requests: 0,
+    errors: 0,
+    cpuMs: 0,
+    status: "Inactive",
+  },
+  {
+    id: "6",
+    name: "edge-router",
+    requests: 215_400,
+    errors: 3,
+    cpuMs: 1.5,
+    status: "Active",
+  },
+];
+
+const workerColumns: ColumnDef<Worker>[] = [
+  {
+    accessorKey: "name",
+    header: "Worker",
+    size: 200,
+    minSize: 120,
+  },
+  {
+    accessorKey: "requests",
+    header: "Requests",
+    size: 130,
+    minSize: 90,
+    cell: ({ getValue }) => (getValue() as number).toLocaleString(),
+  },
+  {
+    accessorKey: "errors",
+    header: "Errors",
+    size: 100,
+    minSize: 70,
+  },
+  {
+    accessorKey: "cpuMs",
+    header: "CPU (ms)",
+    size: 110,
+    minSize: 80,
+    cell: ({ getValue }) => `${getValue() as number} ms`,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    size: 110,
+    minSize: 80,
+    cell: ({ getValue }) => {
+      const status = getValue() as Worker["status"];
+      const variantMap: Record<
+        Worker["status"],
+        "secondary" | "destructive" | "success"
+      > = {
+        Active: "success",
+        Degraded: "destructive",
+        Inactive: "secondary",
+      };
+      return <Badge variant={variantMap[status]}>{status}</Badge>;
+    },
+  },
+];
+
+/** TanStack Table with sortable columns and resizable column widths using Table.ResizeHandle */
+export function TableTanStackSortableResizableDemo() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const table = useReactTable({
+    data: workerData,
+    columns: workerColumns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    columnResizeMode: "onChange",
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  return (
+    <LayerCard>
+      <LayerCard.Primary className="w-full overflow-x-auto p-0">
+        <Table layout="fixed">
+          <colgroup>
+            {table.getAllColumns().map((col) => (
+              <col
+                key={col.id}
+                style={{ width: col.getSize() }}
+                className={
+                  col.getIsResizing() ? "border-r border-kumo-ring" : undefined
+                }
+              />
+            ))}
+            {/* Filler column — absorbs remaining space so fixed columns don't stretch */}
+            <col />
+          </colgroup>
+          <Table.Header>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Table.Row key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  const isSorted = header.column.getIsSorted();
+                  const canSort = header.column.getCanSort();
+                  return (
+                    <Table.Head
+                      key={header.id}
+                      onClick={
+                        canSort
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      aria-label={
+                        canSort ? `Sort by ${header.column.id}` : undefined
+                      }
+                      className={
+                        canSort ? "cursor-pointer select-none" : undefined
+                      }
+                    >
+                      <div className="flex items-center gap-1">
+                        {header.isPlaceholder ? null : (
+                          <>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {canSort && (
+                              <Table.SortIcon direction={isSorted || "none"} />
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <Table.ResizeHandle
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                      />
+                    </Table.Head>
+                  );
+                })}
+                {/* Filler header cell matching the filler col */}
+                <Table.Head />
+              </Table.Row>
+            ))}
+          </Table.Header>
+          <Table.Body>
+            {table.getRowModel().rows.map((row) => (
+              <Table.Row key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Cell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Cell>
+                ))}
+                {/* Filler cell matching the filler col */}
+                <Table.Cell />
               </Table.Row>
             ))}
           </Table.Body>

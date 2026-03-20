@@ -4,4 +4,5 @@ export {
   KUMO_TABLE_VARIANTS,
   type KumoTableLayout,
   type KumoTableRowVariant,
+  type KumoTableSortDirection,
 } from "./table";

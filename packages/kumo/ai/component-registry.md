@@ -1077,6 +1077,27 @@ Props:
 - `lang`: CodeLang
 
 
+**Examples:**
+
+```tsx
+<CodeBlock
+      lang="tsx"
+      code={`const greeting = "Hello, World!";
+console.log(greeting);`}
+    />
+```
+
+```tsx
+<Code
+      lang="bash"
+      code="export API_KEY={{apiKey}}"
+      values={{
+        apiKey: { value: "sk_live_123", highlight: true },
+      }}
+    />
+```
+
+
 ---
 
 ### Collapsible
@@ -3330,20 +3351,20 @@ MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  
 
 ```tsx
 <MenuBar
-      isActive={active}
+      isActive="bold"
       optionIds
       options={[
         {
           icon: <TextBolderIcon />,
           id: "bold",
           tooltip: "Bold",
-          onClick: () => setActive(active === "bold" ? undefined : "bold"),
+          onClick: () => {},
         },
         {
           icon: <TextItalicIcon />,
           id: "italic",
           tooltip: "Italic",
-          onClick: () => setActive(active === "italic" ? undefined : "italic"),
+          onClick: () => {},
         },
       ]}
     />
@@ -3403,7 +3424,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
+      indicatorClassName="from-green-500 via-green-500 to-green-500"
     />
 ```
 
@@ -4630,7 +4651,7 @@ Props:
 
 ### Table
 
-Table — semantic HTML table with styled rows, cells, and selection support.  Compound component: `Table` (Root), `.Header`, `.Head`, `.Body`, `.Row`, `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`.
+Table — semantic HTML table with styled rows, cells, and selection support.  Compound component: `Table` (Root), `.Header`, `.Head`, `.Body`, `.Row`, `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`, `.SortIcon`.
 
 **Type:** component
 
@@ -4653,7 +4674,7 @@ Table — semantic HTML table with styled rows, cells, and selection support.  C
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-ring`, `bg-kumo-tint`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`
+`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-ring`, `bg-kumo-tint`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
 
 **Sub-Components:**
 
@@ -4694,6 +4715,10 @@ Footer sub-component
 #### Table.ResizeHandle
 
 ResizeHandle sub-component
+
+#### Table.SortIcon
+
+SortIcon sub-component
 
 
 **Examples:**
@@ -4849,6 +4874,87 @@ ResizeHandle sub-component
                 <Table.Cell>{row.subject}</Table.Cell>
                 <Table.Cell>{row.from}</Table.Cell>
                 <Table.Cell>{row.date}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </LayerCard.Primary>
+    </LayerCard>
+```
+
+```tsx
+<LayerCard>
+      <LayerCard.Primary className="w-full overflow-x-auto p-0">
+        <Table layout="fixed">
+          <colgroup>
+            {table.getAllColumns().map((col) => (
+              <col
+                key={col.id}
+                style={{ width: col.getSize() }}
+                className={
+                  col.getIsResizing() ? "border-r border-kumo-ring" : undefined
+                }
+              />
+            ))}
+            {/* Filler column — absorbs remaining space so fixed columns don't stretch */}
+            <col />
+          </colgroup>
+          <Table.Header>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Table.Row key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  const isSorted = header.column.getIsSorted();
+                  const canSort = header.column.getCanSort();
+                  return (
+                    <Table.Head
+                      key={header.id}
+                      onClick={
+                        canSort
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      aria-label={
+                        canSort ? `Sort by ${header.column.id}` : undefined
+                      }
+                      className={
+                        canSort ? "cursor-pointer select-none" : undefined
+                      }
+                    >
+                      <div className="flex items-center gap-1">
+                        {header.isPlaceholder ? null : (
+                          <>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {canSort && (
+                              <Table.SortIcon direction={isSorted || "none"} />
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <Table.ResizeHandle
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                      />
+                    </Table.Head>
+                  );
+                })}
+                {/* Filler header cell matching the filler col */}
+                <Table.Head />
+              </Table.Row>
+            ))}
+          </Table.Header>
+          <Table.Body>
+            {table.getRowModel().rows.map((row) => (
+              <Table.Row key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Cell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Cell>
+                ))}
+                {/* Filler cell matching the filler col */}
+                <Table.Cell />
               </Table.Row>
             ))}
           </Table.Body>

@@ -17,6 +17,7 @@ import {
   TableSelectedRowDemo,
   TableFixedLayoutDemo,
   TableFullDemo,
+  TableTanStackSortableResizableDemo,
 } from "~/components/demos/TableDemo";
 
 {/* Demo */}
@@ -243,6 +244,131 @@ export default function Example() {
   >
     <TableFullDemo client:visible />
   </ComponentExample>
+
+  <Heading level={3}>TanStack Table — Sortable &amp; Resizable</Heading>
+  <p>
+    Combine <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">@tanstack/react-table</code> with
+    Kumo's <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Table</code> for sortable columns
+    and draggable column resizing via <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Table.ResizeHandle</code>.
+    Click any column header to sort; drag the resize handle on the right edge to change column width.
+  </p>
+  <ComponentExample
+    code={`import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+} from "@tanstack/react-table";
+import { Table, LayerCard, Badge } from "@cloudflare/kumo";
+import { ArrowDown, ArrowUp, ArrowsDownUp } from "@phosphor-icons/react";
+
+type Worker = {
+id: string;
+name: string;
+requests: number;
+errors: number;
+cpuMs: number;
+status: "Active" | "Inactive" | "Degraded";
+};
+
+const columns: ColumnDef<Worker>[] = [
+{ accessorKey: "name", header: "Worker", size: 200 },
+{ accessorKey: "requests", header: "Requests", size: 130,
+cell: ({ getValue }) => (getValue() as number).toLocaleString() },
+{ accessorKey: "errors", header: "Errors", size: 100 },
+{ accessorKey: "cpuMs", header: "CPU (ms)", size: 110,
+cell: ({ getValue }) => \`\${getValue() as number} ms\` },
+{ accessorKey: "status", header: "Status", size: 110,
+cell: ({ getValue }) => {
+const status = getValue() as Worker["status"];
+const variant = { Active: "success", Degraded: "destructive", Inactive: "secondary" }[status];
+return <Badge variant={variant}>{status}</Badge>;
+}},
+];
+
+export function DataTable({ data }: { data: Worker[] }) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+const table = useReactTable({
+data, columns,
+state: { sorting },
+onSortingChange: setSorting,
+columnResizeMode: "onChange",
+getCoreRowModel: getCoreRowModel(),
+getSortedRowModel: getSortedRowModel(),
+});
+
+return (
+
+<LayerCard>
+  <LayerCard.Primary className="w-full overflow-x-auto p-0">
+    <Table layout="fixed">
+      <colgroup>
+        {table.getAllColumns().map((col) => (
+          <col key={col.id} style={{ width: col.getSize() }} />
+        ))}
+      </colgroup>
+      <Table.Header>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <Table.Row key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              const isSorted = header.column.getIsSorted();
+              return (
+                <Table.Head key={header.id}>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      className="flex cursor-pointer select-none items-center gap-1"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                      <span className="text-kumo-subtle">
+                        {isSorted === "asc" ? (
+                          <ArrowUp size={12} weight="bold" />
+                        ) : isSorted === "desc" ? (
+                          <ArrowDown size={12} weight="bold" />
+                        ) : (
+                          <ArrowsDownUp size={12} />
+                        )}
+                      </span>
+                    </button>
+                  </div>
+                  <Table.ResizeHandle
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                  />
+                </Table.Head>
+              );
+            })}
+          </Table.Row>
+        ))}
+      </Table.Header>
+      <Table.Body>
+        {table.getRowModel().rows.map((row) => (
+          <Table.Row key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <Table.Cell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Table.Cell>
+            ))}
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  </LayerCard.Primary>
+</LayerCard>
+); }`}
+
+>
+
+    <TableTanStackSortableResizableDemo client:visible />
+
+  </ComponentExample>
 </ComponentSection>
 
 {/* API Reference */}
@@ -304,57 +430,38 @@ Body cell. Renders `<td>`.
       class="text-kumo-link hover:underline"
       target="_blank"
       rel="noopener noreferrer">TanStack Table</a>. The Table component is designed to work seamlessly with TanStack's
-    headless API.
+    headless API. See the live <strong>Sortable &amp; Resizable</strong> example in the Examples section above for a complete working implementation.
   </p>
+  <Heading level={3}>Installation</Heading>
+  <CodeBlock code={`npm install @tanstack/react-table`} lang="bash" />
+  <Heading level={3}>Key patterns</Heading>
   <CodeBlock
-    code={`import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Table } from "@cloudflare/kumo";
-
-function DataTable({ data, columns }) {
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-columnResizeMode: "onChange",
-});
-
-return (
-
+    code={`// 1. Use layout="fixed" so column widths from TanStack are respected
 <Table layout="fixed">
-  <colgroup>
-    {table.getAllColumns().map((column) => (
-      <col key={column.id} style={{ width: column.getSize() }} />
-    ))}
-  </colgroup>
-  <Table.Header>
-    {table.getHeaderGroups().map((headerGroup) => (
-      <Table.Row key={headerGroup.id}>
-        {headerGroup.headers.map((header) => (
-          <Table.Head key={header.id}>
-            {flexRender(header.column.columnDef.header, header.getContext())}
-            <Table.ResizeHandle
-              onMouseDown={header.getResizeHandler()}
-              onTouchStart={header.getResizeHandler()}
-            />
-          </Table.Head>
-        ))}
-      </Table.Row>
-    ))}
-  </Table.Header>
-  <Table.Body>
-    {table.getRowModel().rows.map((row) => (
-      <Table.Row key={row.id}>
-        {row.getVisibleCells().map((cell) => (
-          <Table.Cell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </Table.Cell>
-        ))}
-      </Table.Row>
-    ))}
-  </Table.Body>
-</Table>
-); }`} lang="tsx" />
 
+{/* 2. Drive colgroup widths from table state */}
+
+<colgroup>
+  {table.getAllColumns().map((col) => (
+    <col key={col.id} style={{ width: col.getSize() }} />
+  ))}
+</colgroup>
+
+{/* 3. Wire sorting toggle to the header button */}
+
+  <Table.Head>
+    <button onClick={header.column.getToggleSortingHandler()}>
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </button>
+
+    {/* 4. Attach resize handlers to Table.ResizeHandle */}
+    <Table.ResizeHandle
+      onMouseDown={header.getResizeHandler()}
+      onTouchStart={header.getResizeHandler()}
+    />
+
+  </Table.Head>
+</Table>`} lang="tsx" />
 </ComponentSection>
 
 {/* Accessibility */}

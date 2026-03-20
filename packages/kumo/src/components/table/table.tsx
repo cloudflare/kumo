@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+import { forwardRef, useRef } from "react";
+import { ArrowUpIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils";
 import { Checkbox } from "../checkbox";
 
@@ -34,6 +35,55 @@ export const KUMO_TABLE_DEFAULT_VARIANTS = {
 
 export type KumoTableRowVariant = keyof typeof KUMO_TABLE_VARIANTS.variant;
 export type KumoTableLayout = keyof typeof KUMO_TABLE_VARIANTS.layout;
+
+/** Sort direction for `Table.SortIcon`. */
+export type KumoTableSortDirection = "asc" | "desc" | "none";
+
+/**
+ * Sort direction icon for use inside `Table.Head`.
+ *
+ * Maps directly to TanStack Table's `column.getIsSorted()` return value
+ * (`"asc" | "desc" | false`) — pass `false` as `"none"` to render nothing.
+ *
+ * @example
+ * ```tsx
+ * // With TanStack Table
+ * const isSorted = header.column.getIsSorted(); // "asc" | "desc" | false
+ * <Table.SortIcon direction={isSorted || "none"} />
+ *
+ * // Standalone
+ * <Table.SortIcon direction="asc" />
+ * ```
+ */
+const TableSortIcon = ({
+  direction,
+  className,
+}: {
+  /**
+   * - `"asc"` — ascending arrow (`↑`)
+   * - `"desc"` — descending arrow (`↓`)
+   * - `"none"` — renders nothing; column is sortable but not currently sorted
+   */
+  direction: KumoTableSortDirection;
+  className?: string;
+}) => {
+  if (direction === "none") return null;
+
+  return (
+    <span
+      className={cn(
+        "inline-flex text-kumo-default",
+        "transition-transform duration-200",
+        direction === "desc" && "rotate-180",
+        className,
+      )}
+    >
+      <ArrowUpIcon size={12} weight="bold" />
+    </span>
+  );
+};
+
+TableSortIcon.displayName = "Table.SortIcon";
 
 /**
  * Table root — applies layout, borders, padding, and header styles.
@@ -143,7 +193,9 @@ const TableFooter = forwardRef<
 const TableResizeHandle = forwardRef<
   HTMLButtonElement,
   React.HTMLAttributes<HTMLButtonElement>
->((props, ref) => {
+>(({ onMouseDown, onTouchStart, ...props }, ref) => {
+  const didDrag = useRef(false);
+
   return (
     <button
       ref={ref}
@@ -157,7 +209,40 @@ const TableResizeHandle = forwardRef<
         "cursor-col-resize touch-none select-none", // Prevent selection and touch events
         "absolute top-0 right-0", // Position the handle
         "m-0 bg-kumo-base p-0", // Override the stratus button styles
+        props.className,
       )}
+      onMouseDown={(e) => {
+        didDrag.current = false;
+        const onMouseMove = () => {
+          didDrag.current = true;
+        };
+        const onMouseUp = () => {
+          window.removeEventListener("mousemove", onMouseMove);
+          window.removeEventListener("mouseup", onMouseUp);
+        };
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+        onMouseDown?.(e);
+      }}
+      onTouchStart={(e) => {
+        didDrag.current = false;
+        const onTouchMove = () => {
+          didDrag.current = true;
+        };
+        const onTouchEnd = () => {
+          e.target.removeEventListener("touchmove", onTouchMove);
+          e.target.removeEventListener("touchend", onTouchEnd);
+        };
+        e.target.addEventListener("touchmove", onTouchMove);
+        e.target.addEventListener("touchend", onTouchEnd);
+        onTouchStart?.(e);
+      }}
+      onClick={(e) => {
+        // Prevent the click from reaching Table.Head's sort handler after a drag
+        if (didDrag.current) {
+          e.stopPropagation();
+        }
+      }}
     >
       <span className="h-5 w-[2px] rounded bg-kumo-ring" />
     </button>
@@ -253,7 +338,7 @@ TableCheckHead.displayName = "Table.CheckHead";
  * Table — semantic HTML table with styled rows, cells, and selection support.
  *
  * Compound component: `Table` (Root), `.Header`, `.Head`, `.Body`, `.Row`,
- * `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`.
+ * `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`, `.SortIcon`.
  *
  * @example
  * ```tsx
@@ -285,4 +370,5 @@ export const Table = Object.assign(TableRoot, {
   CheckHead: TableCheckHead,
   Footer: TableFooter,
   ResizeHandle: TableResizeHandle,
+  SortIcon: TableSortIcon,
 });
