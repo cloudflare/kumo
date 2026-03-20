@@ -1077,27 +1077,6 @@ Props:
 - `lang`: CodeLang
 
 
-**Examples:**
-
-```tsx
-<CodeBlock
-      lang="tsx"
-      code={`const greeting = "Hello, World!";
-console.log(greeting);`}
-    />
-```
-
-```tsx
-<Code
-      lang="bash"
-      code="export API_KEY={{apiKey}}"
-      values={{
-        apiKey: { value: "sk_live_123", highlight: true },
-      }}
-    />
-```
-
-
 ---
 
 ### Collapsible
@@ -4617,6 +4596,29 @@ Props:
       <Switch
         label="Neutral variant"
         variant="neutral"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+    </div>
+```
+
+```tsx
+<div className="flex flex-col gap-4">
+      <Switch
+        label="Small"
+        size="sm"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Base (default)"
+        size="base"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Large"
+        size="lg"
         checked={true}
         onCheckedChange={() => {}}
       />

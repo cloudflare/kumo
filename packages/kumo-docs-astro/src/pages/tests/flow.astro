@@ -11,6 +11,7 @@ import {
   FlowDisabledDemo,
   FlowParallelAlignEndDemo,
   FlowParallelNestedListDemo,
+  FlowSequentialParallelDemo,
   FlowExpandableDemo,
 } from "../../components/demos/FlowDemo";
 ---
@@ -110,6 +111,18 @@ import {
       </p>
       <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <FlowParallelNestedListDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        FlowSequentialParallelDemo
+      </h2>
+      <p class="text-kumo-subtle">
+        Flow diagram with two parallel groups in sequence, back-to-back
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
+        <FlowSequentialParallelDemo client:visible />
       </div>
     </section>
 

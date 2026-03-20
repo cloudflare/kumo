@@ -88,10 +88,17 @@ export function FlowParallelNode({
   const contentRef = useRef<HTMLUListElement>(null);
   const [measurements, setMeasurements] = useState<DOMRect | null>(null);
 
+  // Use the first branch's anchors (similar to FlowNodeList in diagram.tsx)
+  // so that incoming/outgoing connectors align with the first branch.
+  const firstBranch = descendants.descendants[0];
+  const endAnchor = firstBranch?.props?.end ?? measurements;
+  const startAnchor = firstBranch?.props?.start ?? measurements;
+
   const { index, getPrevious, getNext } = useNode(
     useMemo(
-      () => ({ parallel: true, start: measurements, end: measurements }),
-      [measurements],
+      () => ({ parallel: true, start: startAnchor, end: endAnchor }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [JSON.stringify(startAnchor), JSON.stringify(endAnchor)],
     ),
   );
 
@@ -392,12 +399,21 @@ export function FlowParallelNode({
     };
   }, [computeLinks]);
 
+  const previousIsParallel = getPrevious()?.props?.parallel === true;
+
   return (
     <div
       ref={containerRef}
       className={cn(
         "relative isolate",
-        orientation === "horizontal" ? "px-16 -mx-16" : "py-16 -my-16",
+        orientation === "horizontal" ? "px-16 -mr-16" : "py-16 -mb-16",
+        orientation === "horizontal"
+          ? previousIsParallel
+            ? "-ml-3"
+            : "-ml-16"
+          : previousIsParallel
+            ? "-mt-3"
+            : "-mt-16",
       )}
       data-node-index={index}
     >

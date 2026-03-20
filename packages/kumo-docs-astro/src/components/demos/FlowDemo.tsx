@@ -285,6 +285,24 @@ export function FlowSidebarBugDemo() {
   );
 }
 
+/** Flow diagram with two sequential parallel groups back-to-back */
+export function FlowSequentialParallelDemo() {
+  return (
+    <Flow>
+      <Flow.Node>Incoming Request</Flow.Node>
+      <Flow.Parallel>
+        <Flow.Node>Validate Headers</Flow.Node>
+        <Flow.Node>Check Auth Token</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Parallel>
+        <Flow.Node>Write to DB</Flow.Node>
+        <Flow.Node>Update Cache</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Node>Return Response</Flow.Node>
+    </Flow>
+  );
+}
+
 /** Flow diagram with expandable nodes in a parallel group */
 export function FlowExpandableDemo() {
   return (
