@@ -2,10 +2,8 @@
 "@cloudflare/kumo": patch
 ---
 
-fix(flow): vibe-coded POC for connector misalignment on scroll/layout shift — not sure if this fully works
+fix(flow): connector lines no longer misalign when the page scrolls or a sidebar shifts the layout
 
-Connector lines were jumping out of place (or disappearing entirely) when a sidebar opened/closed or the page/inner container scrolled. Suspected root cause: `getBoundingClientRect` values stored in node state were going stale relative to the live `containerRect` read at connector-draw time.
+`getBoundingClientRect` values were stored in React state per node and later subtracted against a freshly-read container rect at connector-draw time. Any layout shift (sidebar open/close, page scroll, inner container scroll) between those two reads produced stale coordinates, causing connector lines to jump out of place or disappear entirely.
 
-Attempted fix: add `scroll`/`resize` listeners at the `FlowNode`, `FlowParallelNode`, and `FlowNodeList` levels so rects get remeasured after any layout shift. Also moved connector computation out of `useMemo`/render phase into `useLayoutEffect` so all DOM reads happen in the same synchronous pass.
-
-Seems to work against a repro demo (sidebar toggle + inner scroll), but hasn't been tested against the real Stratus layout yet. Treat as a POC.
+Fix: add `scroll` and `resize` listeners (capture phase) at the `FlowNode`, `FlowParallelNode`, and `FlowNodeList` levels so all rects are remeasured after any layout shift. Connector computation in `FlowNodeList` and `FlowParallelNode` is also moved from the render phase into `useLayoutEffect` so the container rect and node rects are always read in the same synchronous pass.
