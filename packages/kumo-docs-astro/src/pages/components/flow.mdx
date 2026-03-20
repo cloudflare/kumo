@@ -20,6 +20,7 @@ import {
   FlowDisabledDemo,
   FlowParallelAlignEndDemo,
   FlowParallelNestedListDemo,
+  FlowSidebarBugDemo,
 } from "~/components/demos/FlowDemo";
 
 <ComponentSection>
@@ -295,6 +296,23 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
+  <Heading level={2}>Known Issue: Sidebar / Layout Shift</Heading>
+  <p>
+    Toggling the sidebar shifts the Flow container's viewport position. Because
+    connector coordinates are computed from stale `getBoundingClientRect` values
+    stored in state (captured before the layout shift), the connector lines jump
+    out of alignment until the next remeasure is triggered. Scroll the page
+    while the sidebar is open to hit the same bug via the scroll path.
+  </p>
+  <ComponentExample
+    code={`// Toggle the sidebar — connectors misalign on open/close
+<FlowSidebarBugDemo />`}
+  >
+    <FlowSidebarBugDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
   <Heading level={2}>Other Examples</Heading>
 
   <Heading level={3}>Nested Node Lists in Parallel</Heading>
@@ -351,11 +369,8 @@ export default function Example() {
         <td class="px-4 py-3 font-mono">align</td>
         <td class="px-4 py-3 font-mono">"start" | "center"</td>
         <td class="px-4 py-3">
-          Vertical alignment of nodes.
-          `"start"`
-          (default) aligns to top,
-          `"center"`
-          vertically centers nodes.
+          Vertical alignment of nodes. `"start"` (default) aligns to top,
+          `"center"` vertically centers nodes.
         </td>
       </tr>
       <tr class="border-b border-kumo-line">
@@ -375,9 +390,7 @@ export default function Example() {
 <Heading level={3}>Flow.Node</Heading>
 <p>
   A single node in the flow diagram. Renders as a styled card with automatic
-  connector points. Use the
-  `render` prop to
-  customize the element.
+  connector points. Use the `render` prop to customize the element.
 </p>
 <div class="overflow-x-auto">
   <table class="w-full">
@@ -417,8 +430,7 @@ export default function Example() {
 <p>
   A component that marks a custom attachment point for connectors within a
   Flow.Node. Use this to control exactly where connector lines attach instead of
-  the default node center by providing a custom element via the
-  `render` prop.
+  the default node center by providing a custom element via the `render` prop.
 </p>
 <div class="overflow-x-auto">
   <table class="w-full">
@@ -472,10 +484,7 @@ export default function Example() {
         <td class="px-4 py-3 font-mono">"start" | "end"</td>
         <td class="px-4 py-3">
           Controls horizontal alignment of nodes within the parallel group.
-          `"start"`
-          (default) aligns left,
-          `"end"` aligns
-          right.
+          `"start"` (default) aligns left, `"end"` aligns right.
         </td>
       </tr>
       <tr class="border-b border-kumo-line">

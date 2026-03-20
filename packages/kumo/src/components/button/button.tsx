@@ -70,7 +70,7 @@ export const KUMO_BUTTON_VARIANTS = {
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
-      classes: "bg-transparent text-kumo-default ring-2 ring-kumo-ring",
+      classes: "bg-transparent text-kumo-default ring ring-kumo-ring",
       description: "Bordered button with transparent background",
     },
   },

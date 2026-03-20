@@ -137,6 +137,33 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
       remeasure();
     }, [measurementEpoch, remeasure]);
 
+    /**
+     * When the page scrolls or the window resizes, the node's viewport position
+     * changes without ResizeObserver firing. Re-running remeasure here ensures
+     * the stored rect is always fresh before connectors are recomputed.
+     *
+     * This is needed at the node level (rather than relying on the epoch chain
+     * from FlowNodeList) because nodes inside FlowParallel belong to a nested
+     * DescendantsProvider — their measurementEpoch is independent of the
+     * top-level one, so they would not be reached by a single scroll listener
+     * placed only at the FlowNodeList level.
+     */
+    useEffect(() => {
+      const onLayoutShift = () => {
+        remeasure();
+        notifySizeChange();
+      };
+      window.addEventListener("scroll", onLayoutShift, {
+        capture: true,
+        passive: true,
+      });
+      window.addEventListener("resize", onLayoutShift, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", onLayoutShift, { capture: true });
+        window.removeEventListener("resize", onLayoutShift);
+      };
+    }, [remeasure, notifySizeChange]);
+
     const mergedRef = mergeRefs(ref, nodeRef);
 
     let element: ReactElement;

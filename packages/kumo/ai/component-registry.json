@@ -322,7 +322,7 @@
             "ghost": "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
             "destructive": "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
             "secondary-destructive": "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
-            "outline": "bg-transparent text-kumo-default ring-2 ring-kumo-ring"
+            "outline": "bg-transparent text-kumo-default ring ring-kumo-ring"
           },
           "stateClasses": {
             "primary": {
@@ -3381,9 +3381,9 @@
         }
       },
       "examples": [
-        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />"
+        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive=\"\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3455,7 +3455,7 @@
         "<Meter label=\"Progress\" value={40} showValue={false} />",
         "<Meter label=\"Quota reached\" value={100} />",
         "<Meter label=\"Memory usage\" value={15} />",
-        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-kumo-success via-kumo-success to-kumo-success\"\n    />"
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
       ],
       "colors": [
         "bg-kumo-fill",
