@@ -4674,7 +4674,7 @@ Table — semantic HTML table with styled rows, cells, and selection support.  C
 
 **Colors (kumo tokens used):**
 
-`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-ring`, `bg-kumo-tint`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+`bg-kumo-base`, `bg-kumo-elevated`, `bg-kumo-ring`, `bg-kumo-tint`, `border-kumo-fill`, `text-kumo-default`, `text-kumo-strong`
 
 **Sub-Components:**
 
@@ -4927,9 +4927,7 @@ SortIcon sub-component
                               header.column.columnDef.header,
                               header.getContext(),
                             )}
-                            {canSort && (
-                              <Table.SortIcon direction={isSorted || "none"} />
-                            )}
+                            {canSort && <Table.SortIcon direction={isSorted} />}
                           </>
                         )}
                       </div>

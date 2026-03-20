@@ -442,9 +442,7 @@ export function TableTanStackSortableResizableDemo() {
                               header.column.columnDef.header,
                               header.getContext(),
                             )}
-                            {canSort && (
-                              <Table.SortIcon direction={isSorted || "none"} />
-                            )}
+                            {canSort && <Table.SortIcon direction={isSorted} />}
                           </>
                         )}
                       </div>

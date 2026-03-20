@@ -36,20 +36,25 @@ export const KUMO_TABLE_DEFAULT_VARIANTS = {
 export type KumoTableRowVariant = keyof typeof KUMO_TABLE_VARIANTS.variant;
 export type KumoTableLayout = keyof typeof KUMO_TABLE_VARIANTS.layout;
 
-/** Sort direction for `Table.SortIcon`. */
-export type KumoTableSortDirection = "asc" | "desc" | "none";
+/**
+ * Sort direction for `Table.SortIcon`.
+ *
+ * Matches TanStack Table's `column.getIsSorted()` return type exactly:
+ * `false` when unsorted, `"asc"` or `"desc"` when sorted.
+ */
+export type KumoTableSortDirection = false | "asc" | "desc";
 
 /**
  * Sort direction icon for use inside `Table.Head`.
  *
- * Maps directly to TanStack Table's `column.getIsSorted()` return value
- * (`"asc" | "desc" | false`) — pass `false` as `"none"` to render nothing.
+ * Accepts the same type as TanStack Table's `column.getIsSorted()` —
+ * pass the value directly without any conversion.
  *
  * @example
  * ```tsx
  * // With TanStack Table
- * const isSorted = header.column.getIsSorted(); // "asc" | "desc" | false
- * <Table.SortIcon direction={isSorted || "none"} />
+ * const isSorted = header.column.getIsSorted(); // false | "asc" | "desc"
+ * <Table.SortIcon direction={isSorted} />
  *
  * // Standalone
  * <Table.SortIcon direction="asc" />
@@ -62,12 +67,12 @@ const TableSortIcon = ({
   /**
    * - `"asc"` — ascending arrow (`↑`)
    * - `"desc"` — descending arrow (`↓`)
-   * - `"none"` — renders nothing; column is sortable but not currently sorted
+   * - `false` — renders nothing; column is sortable but not currently sorted
    */
   direction: KumoTableSortDirection;
   className?: string;
 }) => {
-  if (direction === "none") return null;
+  if (!direction) return null;
 
   return (
     <span
