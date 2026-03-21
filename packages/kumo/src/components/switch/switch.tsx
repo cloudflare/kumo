@@ -241,29 +241,42 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           };
           const s = sizeStyles[size];
 
-          // Track colors based on variant
-          const trackColors = isNeutral
-            ? state.checked
-              ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-              : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
-            : state.checked
-              ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
-              : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+          // Track colors based on variant and disabled state
+          const getTrackColors = () => {
+            if (disabled) {
+              return "bg-neutral-100 ring-neutral-200";
+            }
+            return isNeutral
+              ? state.checked
+                ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
+                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+              : state.checked
+                ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
+                : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+          };
 
-          // Thumb colors based on variant
-          const thumbColors = isNeutral
-            ? state.checked
-              ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
-              : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
-            : state.checked
-              ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
-              : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+          // Thumb colors based on variant and disabled state
+          const getThumbColors = () => {
+            if (disabled) {
+              return "bg-neutral-300 ring-neutral-300";
+            }
+            return isNeutral
+              ? state.checked
+                ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
+                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+              : state.checked
+                ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
+                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+          };
+
+          const trackColors = getTrackColors();
+          const thumbColors = getThumbColors();
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-            "transition-colors duration-150 ease-out motion-reduce:transition-none",
-            "disabled:cursor-not-allowed disabled:opacity-50",
+            "transition-[background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
+            "disabled:cursor-not-allowed",
             s.track,
             squircleRadius,
             trackColors,
@@ -276,7 +289,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             s.thumb,
             squircleRadius,
             thumbColors,
-            "transition-all duration-150 ease-out motion-reduce:transition-none",
+            "transition-[left,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
             state.checked ? s.slide : "left-0",
           );
 
@@ -351,7 +364,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
           // Control first (default): switch before label
           // Label first: label before switch using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+          disabled ? "cursor-not-allowed" : "cursor-pointer",
           className,
         )}
       >
@@ -391,29 +404,42 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             };
             const s = sizeStyles[size];
 
-            // Track colors based on variant
-            const trackColors = isNeutral
-              ? state.checked
-                ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
-              : state.checked
-                ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
-                : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+            // Track colors based on variant and disabled state
+            const getTrackColors = () => {
+              if (disabled) {
+                return "bg-neutral-100 ring-neutral-200";
+              }
+              return isNeutral
+                ? state.checked
+                  ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
+                  : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+                : state.checked
+                  ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
+                  : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+            };
 
-            // Thumb colors based on variant
-            const thumbColors = isNeutral
-              ? state.checked
-                ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
-                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
-              : state.checked
-                ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
-                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+            // Thumb colors based on variant and disabled state
+            const getThumbColors = () => {
+              if (disabled) {
+                return "bg-neutral-300 ring-neutral-300";
+              }
+              return isNeutral
+                ? state.checked
+                  ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
+                  : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+                : state.checked
+                  ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
+                  : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+            };
+
+            const trackColors = getTrackColors();
+            const thumbColors = getThumbColors();
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-              "transition-colors duration-150 ease-out motion-reduce:transition-none",
-              "disabled:cursor-not-allowed disabled:opacity-50",
+              "transition-[background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
+              "disabled:cursor-not-allowed",
               s.track,
               squircleRadius,
               trackColors,
@@ -425,7 +451,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               s.thumb,
               squircleRadius,
               thumbColors,
-              "transition-all duration-150 ease-out motion-reduce:transition-none",
+              "transition-[left,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
               state.checked ? s.slide : "left-0",
             );
 
