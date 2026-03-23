@@ -72,7 +72,7 @@
   );
 
   --color-kumo-recessed: light-dark(
-    var(--color-kumo-neutral-50, oklch(97.5% 0 0)),
+    var(--color-kumo-neutral-50, oklch(96.5% 0 0)),
     var(--color-kumo-neutral-925, oklch(18% 0 0))
   );
 
@@ -219,7 +219,7 @@
     --text-color-kumo-danger: var(--color-red-500, oklch(63.7% 0.237 25.331));
     --text-color-kumo-warning: var(--color-yellow-800, oklch(47.6% 0.114 61.907));
     --color-kumo-surface: var(--color-kumo-neutral-25, oklch(99% 0 0));
-    --color-kumo-recessed: var(--color-kumo-neutral-50, oklch(97.5% 0 0));
+    --color-kumo-recessed: var(--color-kumo-neutral-50, oklch(96.5% 0 0));
     --color-kumo-base: var(--color-white, #fff);
     --color-kumo-tint: var(--color-kumo-neutral-75, oklch(96.7% 0 0));
     --color-kumo-contrast: var(--color-kumo-neutral-975, oklch(8.5% 0 0));
