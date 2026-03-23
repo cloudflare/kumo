@@ -73,12 +73,13 @@ export function markdownPages(): AstroIntegration {
           htmlFiles.push(entry);
         }
 
+        // Changelog has paginated pages (/changelog/, /changelog/2/, etc.)
+        // but only one .md file — generated from the unpaginated /changelog/all/ page
         const changelogAllPage = join("changelog", "all", "index.html");
         const changelogDir = `${path.sep}changelog${path.sep}`;
 
         for (const htmlFile of htmlFiles) {
           try {
-            // Skip paginated changelog pages — changelog.md is generated from the "all" page
             if (
               htmlFile.includes(changelogDir) &&
               !htmlFile.endsWith(changelogAllPage)
