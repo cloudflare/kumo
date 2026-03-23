@@ -5,6 +5,9 @@ import { Text, Link } from "@cloudflare/kumo";
 
 const GITHUB_COMMIT_URL = "https://github.com/cloudflare/kumo/commit/";
 
+// Override prose defaults for rendered markdown inside changelog entries.
+// Headings are scaled down since they sit inside entries, not at page level.
+// First/last child margins are removed to avoid extra spacing within each entry.
 const proseStyles = cn(
   "kumo-prose prose prose-sm max-w-none flex-1",
   "[&>:first-child]:mt-0 [&>:last-child]:mb-0",

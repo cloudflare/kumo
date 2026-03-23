@@ -23,17 +23,21 @@ interface ParsedVersion {
   sections: ParsedSection[];
 }
 
+// Astro's getStaticPaths runs in an isolated scope — all logic must be self-contained.
+// Reads CHANGELOG.md at build time, parses it, and generates one static page per chunk.
 export function getStaticPaths() {
   const PER_PAGE = 10;
   type BumpType = "major" | "minor" | "patch";
   interface Section { type: BumpType; entries: { hash: string; text: string }[] }
 
+  // Highest severity section determines the version's bump type
   function getBumpType(sections: Section[]): BumpType {
     if (sections.some((s) => s.type === "major")) return "major";
     if (sections.some((s) => s.type === "minor")) return "minor";
     return "patch";
   }
 
+  // Read and parse CHANGELOG.md line by line
   const changelogPath = path.resolve(process.cwd(), "../kumo/CHANGELOG.md");
   const raw = fs.readFileSync(changelogPath, "utf-8");
 
@@ -43,6 +47,7 @@ export function getStaticPaths() {
   let curLines: string[] = [];
   let curHash = "";
 
+  // Flush helpers push accumulated state into the parent structure
   function flushEntry() {
     if (curSec && curHash && curLines.length > 0) {
       curSec.entries.push({ hash: curHash, text: curLines.join("\n").trimEnd() });
@@ -67,6 +72,7 @@ export function getStaticPaths() {
     curVer = null;
   }
 
+  // Parse: ## version → ### Section Changes → - hash: description
   for (const line of raw.split("\n")) {
     const versionMatch = line.match(/^## (\d+\.\d+\.\d+)/);
     if (versionMatch) {
@@ -90,6 +96,7 @@ export function getStaticPaths() {
       continue;
     }
 
+    // Continuation lines belong to the current entry (code blocks, lists, etc.)
     if (curHash && curSec) {
       curLines.push(line);
     }
@@ -97,6 +104,7 @@ export function getStaticPaths() {
 
   flushVersion();
 
+  // Generate one static page per PER_PAGE chunk
   const totalPages = Math.ceil(versions.length / PER_PAGE);
   const paths = Array.from({ length: totalPages }, (_, i) => ({
     params: { page: i === 0 ? undefined : String(i + 1) },
@@ -109,7 +117,7 @@ export function getStaticPaths() {
     },
   }));
 
-  // "all" page: every version, no pagination (used by /changelog.md)
+  // Unpaginated page with all versions — used by /changelog.md
   paths.push({
     params: { page: "all" },
     props: {
@@ -126,6 +134,7 @@ export function getStaticPaths() {
 
 const { page, perPage, totalPages, totalVersions, versions } = Astro.props;
 
+// Badge variant per bump type: primary (major), secondary (minor), outline (patch)
 const badgeConfig = {
   major: { variant: "primary" as const, label: "Major" },
   minor: { variant: "secondary" as const, label: "Minor" },
