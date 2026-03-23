@@ -1,7 +1,7 @@
 ---
 import DocLayout from "~/layouts/DocLayout.astro";
-import { Badge, Text, Link } from "@cloudflare/kumo";
-import { GithubLogoIcon } from "@phosphor-icons/react";
+import { Badge, Text } from "@cloudflare/kumo";
+import { GithubLogoIcon, LinkSimple } from "@phosphor-icons/react";
 import { ChangelogPagination } from "~/components/docs/ChangelogPagination";
 import { ChangelogEntry } from "~/components/docs/ChangelogEntry";
 import fs from "node:fs";
@@ -149,11 +149,20 @@ const GITHUB_RELEASE_URL = "https://github.com/cloudflare/kumo/releases/tag/%40c
 >
   <div class="space-y-6">
     {versions.map((v: ParsedVersion, i: number) => (
-      <article id={`v${v.version}`} class="scroll-mt-10 overflow-hidden">
-        <div class="mb-4 flex flex-wrap items-center gap-3">
-          <Link href={`#v${v.version}`} variant="current">
+      <article id={`v${v.version}`} class="scroll-mt-24">
+        <div class="group relative mb-4 flex flex-wrap items-center gap-3">
+          <a
+            href={`#v${v.version}`}
+            class="no-underline hover:underline"
+          >
+            <span
+              class="absolute -left-6 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
+              aria-hidden="true"
+            >
+              <LinkSimple className="size-4 text-kumo-subtle" />
+            </span>
             <Text as="span" variant="heading2">{v.version}</Text>
-          </Link>
+          </a>
           <Badge variant={badgeConfig[v.bump].variant}>{badgeConfig[v.bump].label}</Badge>
           <a
             href={`${GITHUB_RELEASE_URL}${v.version}`}
