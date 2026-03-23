@@ -77,6 +77,16 @@ export interface TimeseriesChartProps {
    * that oscillates back and forth to indicate that data is being fetched.
    */
   loading?: boolean;
+  /**
+   * Accessible description for screen readers. When provided, it is passed to
+   * ECharts' `aria.label.description` and announced when the chart receives
+   * focus. Consumers are responsible for writing a meaningful description —
+   * see the W3C guidance on complex images for recommendations.
+   *
+   * @see https://www.w3.org/WAI/tutorials/images/complex/
+   * @see https://echarts.apache.org/handbook/en/best-practices/aria/
+   */
+  ariaDescription?: string;
 }
 
 /**
@@ -127,6 +137,7 @@ export function TimeseriesChart({
   isDarkMode,
   gradient,
   loading,
+  ariaDescription,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const incompleteBefore = incomplete?.before;
@@ -205,6 +216,7 @@ export function TimeseriesChart({
     return {
       aria: {
         enabled: true,
+        ...(ariaDescription && { label: { description: ariaDescription } }),
       },
       brush: {
         snapToData: true,
@@ -313,6 +325,7 @@ export function TimeseriesChart({
     type,
     gradient,
     echarts,
+    ariaDescription,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
