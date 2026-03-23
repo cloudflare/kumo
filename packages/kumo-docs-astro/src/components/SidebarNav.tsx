@@ -29,6 +29,7 @@ const staticPages: NavItem[] = [
   { label: "Figma Resources", href: "/figma" },
   { label: "CLI", href: "/cli" },
   { label: "Registry", href: "/registry" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 const componentItems: NavItem[] = [
@@ -199,7 +200,9 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
               href={item.href}
               className={cn(
                 LI_STYLE,
-                activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
+                (activePath === normalizePathname(item.href) ||
+                  activePath.startsWith(normalizePathname(item.href) + "/")) &&
+                  LI_ACTIVE_STYLE,
               )}
             >
               {item.label}

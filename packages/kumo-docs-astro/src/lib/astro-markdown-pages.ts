@@ -1,6 +1,6 @@
 import type { AstroIntegration } from "astro";
 import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
+import path, { join } from "path";
 import { glob } from "fs/promises";
 import { htmlToMarkdown } from "./html-to-markdown.js";
 
@@ -26,7 +26,11 @@ export function markdownPages(): AstroIntegration {
           if (!url.endsWith(".md")) return next();
 
           // /components/badge.md -> /components/badge/
-          const htmlPath = url.replace(/\.md$/, "/");
+          // /changelog.md -> /changelog/all/ (full unpaginated version)
+          let htmlPath = url.replace(/\.md$/, "/");
+          if (htmlPath === "/changelog/") {
+            htmlPath = "/changelog/all/";
+          }
 
           try {
             // Fetch the HTML page from the dev server
@@ -69,8 +73,20 @@ export function markdownPages(): AstroIntegration {
           htmlFiles.push(entry);
         }
 
+        const changelogAllPage = join("changelog", "all", "index.html");
+        const changelogDir = `${path.sep}changelog${path.sep}`;
+
         for (const htmlFile of htmlFiles) {
           try {
+            // Skip paginated changelog pages — changelog.md is generated from the "all" page
+            if (
+              htmlFile.includes(changelogDir) &&
+              !htmlFile.endsWith(changelogAllPage)
+            ) {
+              skipped++;
+              continue;
+            }
+
             const html = await readFile(htmlFile, "utf-8");
 
             // Only generate .md for pages that have a <main> element
@@ -82,10 +98,16 @@ export function markdownPages(): AstroIntegration {
 
             const markdown = htmlToMarkdown(html);
 
-            // Write .md as a sibling to the directory
-            // e.g., dist/components/badge/index.html -> dist/components/badge.md
-            const mdFile = htmlFile.replace(/\/index\.html$/, ".md");
-            await writeFile(mdFile, markdown, "utf-8");
+            if (htmlFile.endsWith(changelogAllPage)) {
+              // Write as changelog.md (not changelog/all.md)
+              const mdFile = join(outDir, "changelog.md");
+              await writeFile(mdFile, markdown, "utf-8");
+            } else {
+              // Write .md as a sibling to the directory
+              // e.g., dist/components/badge/index.html -> dist/components/badge.md
+              const mdFile = htmlFile.replace(/\/index\.html$/, ".md");
+              await writeFile(mdFile, markdown, "utf-8");
+            }
             generated++;
           } catch (error) {
             logger.warn(
