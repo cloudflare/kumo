@@ -406,7 +406,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run build && pnpm run test:unit",
-    "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
+    "build": "pnpm run codegen:registry && vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",
     "clean": "rm -rf dist",
