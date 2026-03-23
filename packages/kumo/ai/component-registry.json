@@ -359,59 +359,15 @@
               "disabled": "disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70",
               "data-state": "data-[state=open]:bg-kumo-base"
             }
-          },
-          "default": "secondary"
-        },
-        "children": {
-          "type": "ReactNode",
-          "optional": true
+          }
         },
         "className": {
           "type": "string",
-          "optional": true
+          "description": "Additional CSS classes"
         },
-        "icon": {
+        "children": {
           "type": "ReactNode",
-          "optional": true,
-          "description": "Icon from `@phosphor-icons/react` or a React element. Rendered before children."
-        },
-        "loading": {
-          "type": "boolean",
-          "optional": true,
-          "description": "Shows a loading spinner and disables interaction."
-        },
-        "id": {
-          "type": "string",
-          "optional": true
-        },
-        "lang": {
-          "type": "string",
-          "optional": true
-        },
-        "title": {
-          "type": "string",
-          "optional": true
-        },
-        "disabled": {
-          "type": "boolean",
-          "optional": true
-        },
-        "name": {
-          "type": "string",
-          "optional": true
-        },
-        "type": {
-          "type": "enum",
-          "optional": true,
-          "values": [
-            "submit",
-            "reset",
-            "button"
-          ]
-        },
-        "value": {
-          "type": "string | string[] | number",
-          "optional": true
+          "description": "Child elements"
         }
       },
       "examples": [
@@ -3361,7 +3317,8 @@
       "examples": [
         "<Loader />",
         "<div className=\"flex items-center gap-4\">\n      <Loader size=\"sm\" />\n      <Loader size=\"base\" />\n      <Loader size=\"lg\" />\n    </div>",
-        "<Loader size={24} />"
+        "<Loader size={24} />",
+        "<Loader className=\"text-kumo-subtle\" />"
       ],
       "colors": []
     },
@@ -3394,9 +3351,9 @@
         }
       },
       "examples": [
-        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive=\"\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />"
+        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3468,7 +3425,7 @@
         "<Meter label=\"Progress\" value={40} showValue={false} />",
         "<Meter label=\"Quota reached\" value={100} />",
         "<Meter label=\"Memory usage\" value={15} />",
-        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-kumo-success via-kumo-success to-kumo-success\"\n    />"
       ],
       "colors": [
         "bg-kumo-fill",
@@ -5018,6 +4975,13 @@
             "error": "Error toast for critical issues",
             "warning": "Warning toast for cautionary messages",
             "info": "Info toast for neutral informational messages"
+          },
+          "classes": {
+            "default": "border-kumo-fill bg-kumo-control",
+            "success": "border-kumo-success bg-kumo-control [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
+            "error": "border-kumo-danger bg-kumo-control [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
+            "warning": "border-kumo-warning bg-kumo-control [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
+            "info": "border-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info"
           }
         },
         "className": {
@@ -5415,6 +5379,7 @@
         "Label",
         "Link",
         "SensitiveInput",
+        "Sidebar",
         "Table",
         "DeleteResource"
       ],
@@ -5435,13 +5400,6 @@
         "Surface",
         "PageHeader",
         "ResourceListPage"
-      ],
-      "Other": [
-        "Label",
-        "Link",
-        "SensitiveInput",
-        "Sidebar",
-        "Table"
       ]
     },
     "byName": [

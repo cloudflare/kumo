@@ -188,8 +188,8 @@
       "import": "./dist/components/flow.js"
     },
     "./components/sidebar": {
-        "types": "./dist/src/components/sidebar/index.d.ts",
-        "import": "./dist/components/sidebar.js"
+      "types": "./dist/src/components/sidebar/index.d.ts",
+      "import": "./dist/components/sidebar.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",

@@ -303,19 +303,10 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
     - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base`
     - `disabled`: `disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70`
     - `data-state`: `data-[state=open]:bg-kumo-base`
-- `children`: ReactNode
 - `className`: string
-- `icon`: ReactNode
-  Icon from `@phosphor-icons/react` or a React element. Rendered before children.
-- `loading`: boolean
-  Shows a loading spinner and disables interaction.
-- `id`: string
-- `lang`: string
-- `title`: string
-- `disabled`: boolean
-- `name`: string
-- `type`: enum
-- `value`: string | string[] | number
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
 
 **Colors (kumo tokens used):**
 
@@ -3296,6 +3287,10 @@ Animated circular spinner for indicating loading states.
 <Loader size={24} />
 ```
 
+```tsx
+<Loader className="text-kumo-subtle" />
+```
+
 
 ---
 
@@ -3331,20 +3326,20 @@ MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  
 
 ```tsx
 <MenuBar
-      isActive="bold"
+      isActive={active}
       optionIds
       options={[
         {
           icon: <TextBolderIcon />,
           id: "bold",
           tooltip: "Bold",
-          onClick: () => {},
+          onClick: () => setActive(active === "bold" ? undefined : "bold"),
         },
         {
           icon: <TextItalicIcon />,
           id: "italic",
           tooltip: "Italic",
-          onClick: () => {},
+          onClick: () => setActive(active === "italic" ? undefined : "italic"),
         },
       ]}
     />
@@ -3404,7 +3399,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-green-500 via-green-500 to-green-500"
+      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
     />
 ```
 
@@ -5808,8 +5803,7 @@ Multi-line textarea input with Input variants and InputArea-specific dimensions
 - **Feedback:** Banner, Loader, Toasty
 - **Action:** Button, ClipboardText
 - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, Switch
-- **Other:** CloudflareLogo, DatePicker, Label, Link, SensitiveInput, Table, DeleteResource
+- **Other:** CloudflareLogo, DatePicker, Label, Link, SensitiveInput, Sidebar, Table, DeleteResource
 - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
 - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
 - **Layout:** Grid, Surface, PageHeader, ResourceListPage
-- **Other:** Label, Link, SensitiveInput, Sidebar, Table
