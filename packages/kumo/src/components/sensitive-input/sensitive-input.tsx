@@ -249,10 +249,15 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
         if (!isControlled) {
           setInternalValue(newValue);
         }
+        // When typing into an empty field, switch to revealed mode
+        // so the input shows as type="text" instead of type="password"
+        if (mode === "empty" && newValue.length > 0) {
+          setMode("revealed");
+        }
         onChange?.(e);
         onValueChange?.(newValue);
       },
-      [isControlled, onChange, onValueChange],
+      [isControlled, onChange, onValueChange, mode],
     );
 
     const handleBlur = useCallback(
