@@ -23,21 +23,14 @@ interface ParsedVersion {
   sections: ParsedSection[];
 }
 
-// Astro's getStaticPaths runs in an isolated scope — all logic must be self-contained.
-// Reads CHANGELOG.md at build time, parses it, and generates one static page per chunk.
 export function getStaticPaths() {
   const PER_PAGE = 10;
   type BumpType = "major" | "minor" | "patch";
   interface Section { type: BumpType; entries: { hash: string; text: string }[] }
 
-  // Highest severity section determines the version's bump type
-  function getBumpType(sections: Section[]): BumpType {
-    if (sections.some((s) => s.type === "major")) return "major";
-    if (sections.some((s) => s.type === "minor")) return "minor";
-    return "patch";
-  }
+  // Bump priority: a version with both minor and patch sections is "minor"
+  const bumpPriority: BumpType[] = ["major", "minor", "patch"];
 
-  // Read and parse CHANGELOG.md line by line
   const changelogPath = path.resolve(process.cwd(), "../kumo/CHANGELOG.md");
   const raw = fs.readFileSync(changelogPath, "utf-8");
 
@@ -47,7 +40,6 @@ export function getStaticPaths() {
   let curLines: string[] = [];
   let curHash = "";
 
-  // Flush helpers push accumulated state into the parent structure
   function flushEntry() {
     if (curSec && curHash && curLines.length > 0) {
       curSec.entries.push({ hash: curHash, text: curLines.join("\n").trimEnd() });
@@ -67,7 +59,9 @@ export function getStaticPaths() {
   function flushVersion() {
     flushSection();
     if (curVer && curVer.sections.length > 0) {
-      versions.push({ ...curVer, bump: getBumpType(curVer.sections) });
+      const types = new Set(curVer.sections.map((s) => s.type));
+      const bump = bumpPriority.find((b) => types.has(b)) ?? "patch";
+      versions.push({ ...curVer, bump });
     }
     curVer = null;
   }
@@ -104,7 +98,6 @@ export function getStaticPaths() {
 
   flushVersion();
 
-  // Generate one static page per PER_PAGE chunk
   const totalPages = Math.ceil(versions.length / PER_PAGE);
   const paths = Array.from({ length: totalPages }, (_, i) => ({
     params: { page: i === 0 ? undefined : String(i + 1) },
@@ -157,7 +150,7 @@ const GITHUB_RELEASE_URL = "https://github.com/cloudflare/kumo/releases/tag/%40c
   <div class="space-y-6">
     {versions.map((v: ParsedVersion, i: number) => (
       <article id={`v${v.version}`} class="scroll-mt-10 overflow-hidden">
-        <div class="mb-3 flex flex-wrap items-center gap-3">
+        <div class="mb-4 flex flex-wrap items-center gap-3">
           <Link href={`#v${v.version}`} variant="current">
             <Text as="span" variant="heading2">{v.version}</Text>
           </Link>

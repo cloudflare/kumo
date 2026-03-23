@@ -22,7 +22,9 @@ export function CopyPageButton({ align = "end" }: CopyPageButtonProps) {
     const url = new URL(window.location.href);
 
     // /components/badge/ -> /components/badge.md
-    const path = url.pathname.replace(/\/+$/, "");
+    // /changelog/2/ -> /changelog.md (paginated pages share one .md)
+    let path = url.pathname.replace(/\/+$/, "");
+    path = path.replace(/^\/changelog\/.*/, "/changelog");
 
     return `${url.origin}${path}.md`;
   };

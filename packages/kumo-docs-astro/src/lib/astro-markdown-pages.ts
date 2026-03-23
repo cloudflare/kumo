@@ -98,16 +98,11 @@ export function markdownPages(): AstroIntegration {
 
             const markdown = htmlToMarkdown(html);
 
-            if (htmlFile.endsWith(changelogAllPage)) {
-              // Write as changelog.md (not changelog/all.md)
-              const mdFile = join(outDir, "changelog.md");
-              await writeFile(mdFile, markdown, "utf-8");
-            } else {
-              // Write .md as a sibling to the directory
-              // e.g., dist/components/badge/index.html -> dist/components/badge.md
-              const mdFile = htmlFile.replace(/\/index\.html$/, ".md");
-              await writeFile(mdFile, markdown, "utf-8");
-            }
+            // changelog/all/index.html → changelog.md, others → sibling .md
+            const mdFile = htmlFile.endsWith(changelogAllPage)
+              ? join(outDir, "changelog.md")
+              : htmlFile.replace(/\/index\.html$/, ".md");
+            await writeFile(mdFile, markdown, "utf-8");
             generated++;
           } catch (error) {
             logger.warn(
