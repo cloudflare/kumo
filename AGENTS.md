@@ -126,7 +126,7 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 
 ## NOTES
 
-- `ai/component-registry.json`, `ai/schemas.ts` are auto-generated but committed to git (shipped in npm package)
+- `ai/component-registry.json`, `ai/component-registry.md` are auto-generated at build time and gitignored (shipped in npm package). `ai/schemas.ts` is a stub for fresh clones (full version generated during build)
 - `src/primitives/` (40 files) are auto-generated Base UI re-exports
 - Blocks in `src/blocks/` are NOT exported from package index; installed via CLI `kumo add`
 - `src/catalog/` is a runtime JSON-UI rendering module (separate concern from component library)
