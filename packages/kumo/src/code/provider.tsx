@@ -28,6 +28,7 @@ const BUNDLED_LANGS: Record<
   bash: () => import("@shikijs/langs/bash"),
   shell: () => import("@shikijs/langs/shellscript"),
   diff: () => import("@shikijs/langs/diff"),
+  hcl: () => import("@shikijs/langs/hcl")
 };
 
 /**

@@ -22,7 +22,8 @@ export type SupportedLanguage =
   | "sql"
   | "bash"
   | "shell"
-  | "diff";
+  | "diff"
+  | "hcl";
 
 /**
  * Shiki engine choice for syntax highlighting.

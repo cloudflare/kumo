@@ -1,5 +1,16 @@
 # @cloudflare/kumo
 
+## 1.15.0
+
+### Minor Changes
+
+- 73f554a: Add success and info toast variants with semantic token styling. Migrate error/warning variants from raw CSS to semantic tokens for consistent theming.
+
+### Patch Changes
+
+- 9fbf3a8: Fix Radio compound component to use Object.assign pattern, enabling sub-component detection (Radio.Group, Radio.Item) in the component registry.
+- 3430785: Revert outline button variant ring width from `ring-2` (2px) back to `ring` (1px) to restore visual consistency with existing dashboard usage.
+
 ## 1.14.1
 
 ### Patch Changes

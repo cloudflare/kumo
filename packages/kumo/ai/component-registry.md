@@ -3331,20 +3331,20 @@ MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  
 
 ```tsx
 <MenuBar
-      isActive={active}
+      isActive="bold"
       optionIds
       options={[
         {
           icon: <TextBolderIcon />,
           id: "bold",
           tooltip: "Bold",
-          onClick: () => setActive(active === "bold" ? undefined : "bold"),
+          onClick: () => {},
         },
         {
           icon: <TextItalicIcon />,
           id: "italic",
           tooltip: "Italic",
-          onClick: () => setActive(active === "italic" ? undefined : "italic"),
+          onClick: () => {},
         },
       ]}
     />
@@ -3404,7 +3404,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
+      indicatorClassName="from-green-500 via-green-500 to-green-500"
     />
 ```
 

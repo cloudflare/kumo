@@ -86,7 +86,7 @@ Imports: `~/layouts/DocLayout.astro`, `~/components/docs/ComponentExample.astro`
 | Pattern                             | Why                             | Instead                                  |
 | ----------------------------------- | ------------------------------- | ---------------------------------------- |
 | Demo function without `Demo` suffix | Won't be extracted for registry | Always suffix with `Demo`                |
-| Manually updating PropsTable        | Data comes from registry        | Run `pnpm codegen:registry`              |
+| Manually updating PropsTable        | Data comes from registry        | Registry auto-generated at build time    |
 | Forgetting `@source` in global.css  | Tailwind misses kumo classes    | Keep `@source "../../../kumo/dist/**/*"` |
 | Using system `prefers-color-scheme` | Site uses `data-mode` attribute | Use ThemeToggle / `localStorage.theme`   |
 

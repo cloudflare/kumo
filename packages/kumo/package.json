@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.14.1",
+  "version": "1.15.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -410,7 +410,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run build && pnpm run test:unit",
-    "build": "vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
+    "build": "pnpm run codegen:registry && vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
     "dev": "vite build --watch --mode development",
     "new:component": "plop component",
     "clean": "rm -rf dist",

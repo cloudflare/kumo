@@ -110,6 +110,14 @@ const STATIC_PAGES: Array<{
     category: "Components",
     type: "component",
   },
+  {
+    name: "Flow",
+    description:
+      "A diagram component for visualizing sequential and parallel workflows.",
+    url: "/components/flow",
+    category: "Components",
+    type: "component",
+  },
 ];
 
 /** Better descriptions from the Astro doc pages */
