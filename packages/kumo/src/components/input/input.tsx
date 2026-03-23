@@ -114,7 +114,7 @@ export function inputVariants({
     // Apply variant styles from KUMO_INPUT_VARIANTS
     KUMO_INPUT_VARIANTS.variant[variant].classes,
     // Focus state handling
-    parentFocusIndicator && "[&:has(:focus-within)]:ring-kumo-ring",
+    parentFocusIndicator && "focus-within:ring-kumo-ring",
     focusIndicator && "focus:ring-kumo-ring",
   );
 }
