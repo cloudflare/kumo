@@ -88,13 +88,13 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 
 ## ANTI-PATTERNS
 
-| Pattern                                              | Why                                    | Instead                       |
-| ---------------------------------------------------- | -------------------------------------- | ----------------------------- |
-| Editing `src/primitives/`                            | Auto-generated from Base UI            | Run `pnpm codegen:primitives` |
-| Editing `ai/schemas.ts` or `ai/component-registry.*` | Auto-generated                         | Run `pnpm codegen:registry`   |
-| Creating component files manually                    | Misses index/vite/package.json updates | `pnpm new:component`          |
-| `as any` in component code                           | 3 existing instances; don't add more   | Model types correctly         |
-| Dynamic Tailwind class construction                  | JIT can't detect `leading-[${val}]`    | Use static class strings      |
+| Pattern                                              | Why                                    | Instead                              |
+| ---------------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| Editing `src/primitives/`                            | Auto-generated from Base UI            | Run `pnpm codegen:primitives`        |
+| Editing `ai/schemas.ts` or `ai/component-registry.*` | Auto-generated at build time           | Edit source files, CI generates them |
+| Creating component files manually                    | Misses index/vite/package.json updates | `pnpm new:component`                 |
+| `as any` in component code                           | 3 existing instances; don't add more   | Model types correctly                |
+| Dynamic Tailwind class construction                  | JIT can't detect `leading-[${val}]`    | Use static class strings             |
 
 ## DEPRECATED COMPONENTS/PROPS
 
