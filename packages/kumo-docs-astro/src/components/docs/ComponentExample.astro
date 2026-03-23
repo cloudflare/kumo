@@ -13,30 +13,34 @@ const demoSources = import.meta.glob("~/components/demos/*.tsx", {
 interface Props {
   /** Raw code string (legacy) */
   code?: string;
-  /** Name of the demo function to extract, e.g. "InputBasicDemo" */
+  /** Name of the demo function to extract, e.g. "InputBasicDemo". Auto-discovers the file. */
   demo?: string;
-  /** Name of the demo file (without .tsx), e.g. "InputDemo" */
-  file?: string;
   lang?: "tsx" | "ts" | "jsx" | "js" | "bash" | "css";
   vrSection?: string;
   vrTitle?: string;
 }
 
-const { code, demo, file, lang = "tsx", vrSection, vrTitle } = Astro.props;
+const { code, demo, lang = "tsx", vrSection, vrTitle } = Astro.props;
 
 // Resolve the code snippet: either from the `code` prop (legacy) or auto-extracted from demo source
 let resolvedCode = code ?? "";
 
-if (demo && file) {
-  // Find the matching source file
-  const sourceKey = Object.keys(demoSources).find((key) =>
-    key.endsWith(`/${file}.tsx`),
-  );
-  if (sourceKey) {
-    resolvedCode = extractDemoSnippet(demoSources[sourceKey], demo);
-  } else {
-    resolvedCode = `// Could not find demo file "${file}.tsx"`;
+if (demo) {
+  // Scan all loaded sources for the function name
+  let found = false;
+  for (const [, source] of Object.entries(demoSources)) {
+    if (source.includes(`function ${demo}`)) {
+      resolvedCode = extractDemoSnippet(source, demo);
+      found = true;
+      break;
+    }
   }
+  if (!found) {
+    resolvedCode = `// Could not find demo "${demo}" in any demo file`;
+    console.warn(`[ComponentExample] Could not find demo "${demo}" in any demo file`);
+  }
+} else if (!code) {
+  console.warn(`[ComponentExample] Missing both "code" and "demo" props`);
 }
 
 const vrAttrs = vrSection

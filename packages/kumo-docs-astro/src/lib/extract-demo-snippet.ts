@@ -71,8 +71,13 @@ export function extractDemoSnippet(
   }
 
   // Only include imports whose names appear in the function body
+  // Use word boundary regex to avoid false positives (e.g., "Input" matching "InputBasicDemo")
   const usedImports = imports
-    .filter((imp) => imp.names.some((name) => targetFunction!.includes(name)))
+    .filter((imp) =>
+      imp.names.some((name) =>
+        new RegExp(`\\b${name}\\b`).test(targetFunction!),
+      ),
+    )
     .map((imp) => imp.text);
 
   const importBlock = usedImports.join("\n");
