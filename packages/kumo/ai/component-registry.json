@@ -257,12 +257,12 @@
       "props": {
         "shape": {
           "type": "enum",
-          "optional": true,
           "values": [
             "base",
             "square",
             "circle"
           ],
+          "default": "base",
           "descriptions": {
             "base": "Default rectangular button shape",
             "square": "Square button for icon-only actions",
@@ -271,18 +271,17 @@
           "classes": {
             "square": "items-center justify-center p-0",
             "circle": "items-center justify-center p-0 rounded-full"
-          },
-          "default": "base"
+          }
         },
         "size": {
           "type": "enum",
-          "optional": true,
           "values": [
             "xs",
             "sm",
             "base",
             "lg"
           ],
+          "default": "base",
           "descriptions": {
             "xs": "Extra small button for compact UIs",
             "sm": "Small button for secondary actions",
@@ -294,12 +293,25 @@
             "sm": "h-6.5 gap-1 rounded-md px-2 text-xs",
             "base": "h-9 gap-1.5 rounded-lg px-3 text-base",
             "lg": "h-10 gap-2 rounded-lg px-4 text-base"
-          },
-          "default": "base"
+          }
+        },
+        "compactSize": {
+          "type": "enum",
+          "values": [
+            "xs",
+            "sm",
+            "base",
+            "lg"
+          ],
+          "classes": {
+            "xs": "size-3.5",
+            "sm": "size-6.5",
+            "base": "size-9",
+            "lg": "size-10"
+          }
         },
         "variant": {
           "type": "enum",
-          "optional": true,
           "values": [
             "primary",
             "secondary",
@@ -308,6 +320,7 @@
             "secondary-destructive",
             "outline"
           ],
+          "default": "secondary",
           "descriptions": {
             "primary": "High-emphasis button for primary actions",
             "secondary": "Default button style for most actions",
@@ -346,59 +359,15 @@
               "disabled": "disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70",
               "data-state": "data-[state=open]:bg-kumo-base"
             }
-          },
-          "default": "secondary"
-        },
-        "children": {
-          "type": "ReactNode",
-          "optional": true
+          }
         },
         "className": {
           "type": "string",
-          "optional": true
+          "description": "Additional CSS classes"
         },
-        "icon": {
+        "children": {
           "type": "ReactNode",
-          "optional": true,
-          "description": "Icon from `@phosphor-icons/react` or a React element. Rendered before children."
-        },
-        "loading": {
-          "type": "boolean",
-          "optional": true,
-          "description": "Shows a loading spinner and disables interaction."
-        },
-        "id": {
-          "type": "string",
-          "optional": true
-        },
-        "lang": {
-          "type": "string",
-          "optional": true
-        },
-        "title": {
-          "type": "string",
-          "optional": true
-        },
-        "disabled": {
-          "type": "boolean",
-          "optional": true
-        },
-        "name": {
-          "type": "string",
-          "optional": true
-        },
-        "type": {
-          "type": "enum",
-          "optional": true,
-          "values": [
-            "submit",
-            "reset",
-            "button"
-          ]
-        },
-        "value": {
-          "type": "string | string[] | number",
-          "optional": true
+          "description": "Child elements"
         }
       },
       "examples": [
@@ -3348,7 +3317,8 @@
       "examples": [
         "<Loader />",
         "<div className=\"flex items-center gap-4\">\n      <Loader size=\"sm\" />\n      <Loader size=\"base\" />\n      <Loader size=\"lg\" />\n    </div>",
-        "<Loader size={24} />"
+        "<Loader size={24} />",
+        "<Loader className=\"text-kumo-subtle\" />"
       ],
       "colors": []
     },
@@ -3381,9 +3351,9 @@
         }
       },
       "examples": [
-        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive=\"bold\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />",
-        "<MenuBar\n      isActive=\"\"\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => {},\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => {},\n        },\n      ]}\n    />"
+        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />",
+        "<MenuBar\n      isActive={active}\n      optionIds\n      options={[\n        {\n          icon: <TextBolderIcon />,\n          id: \"bold\",\n          tooltip: \"Bold\",\n          onClick: () => setActive(active === \"bold\" ? undefined : \"bold\"),\n        },\n        {\n          icon: <TextItalicIcon />,\n          id: \"italic\",\n          tooltip: \"Italic\",\n          onClick: () => setActive(active === \"italic\" ? undefined : \"italic\"),\n        },\n      ]}\n    />"
       ],
       "colors": [
         "bg-kumo-base",
@@ -3455,7 +3425,7 @@
         "<Meter label=\"Progress\" value={40} showValue={false} />",
         "<Meter label=\"Quota reached\" value={100} />",
         "<Meter label=\"Memory usage\" value={15} />",
-        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-green-500 via-green-500 to-green-500\"\n    />"
+        "<Meter\n      label=\"Upload progress\"\n      value={80}\n      indicatorClassName=\"from-kumo-success via-kumo-success to-kumo-success\"\n    />"
       ],
       "colors": [
         "bg-kumo-fill",
@@ -4148,6 +4118,298 @@
         "text-kumo-subtle"
       ]
     },
+    "Sidebar": {
+      "name": "Sidebar",
+      "type": "component",
+      "description": "Sidebar — responsive navigation panel with expand/collapse support.  Compound component: `Sidebar` (root `<aside>`), `.Provider`, `.Header`, `.Content`, `.Footer`, `.Group`, `.GroupLabel`, `.GroupContent`, `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuAction`, `.MenuBadge`, `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`, `.Input`, `.Trigger`, `.Rail`, `.MenuChevron`, `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`.  Built on `@base-ui/react/collapsible` + `@base-ui/react/dialog`.",
+      "importPath": "@cloudflare/kumo",
+      "category": "Other",
+      "props": {
+        "defaultOpen": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Initial open state when uncontrolled."
+        },
+        "open": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Controlled open state."
+        },
+        "variant": {
+          "type": "enum",
+          "optional": true,
+          "description": "Sidebar layout variant.",
+          "values": [
+            "sidebar",
+            "floating",
+            "inset"
+          ],
+          "descriptions": {
+            "sidebar": "Standard sidebar with border separator",
+            "floating": "Floating sidebar with shadow and rounded corners",
+            "inset": "Inset sidebar within the content area"
+          },
+          "default": "sidebar"
+        },
+        "side": {
+          "type": "enum",
+          "optional": true,
+          "description": "Which side the sidebar is on.",
+          "values": [
+            "left",
+            "right"
+          ],
+          "descriptions": {
+            "left": "Left-aligned sidebar",
+            "right": "Right-aligned sidebar"
+          },
+          "default": "left"
+        },
+        "collapsible": {
+          "type": "enum",
+          "optional": true,
+          "values": [
+            "icon",
+            "offcanvas",
+            "none"
+          ],
+          "descriptions": {
+            "icon": "Collapses to show icons only",
+            "offcanvas": "Slides off screen when collapsed",
+            "none": "Cannot be collapsed"
+          },
+          "default": "icon"
+        },
+        "resizable": {
+          "type": "boolean",
+          "optional": true,
+          "description": "Enable drag-to-resize on the sidebar edge."
+        },
+        "defaultWidth": {
+          "type": "number",
+          "optional": true,
+          "description": "Initial width in pixels when resizable."
+        },
+        "minWidth": {
+          "type": "number",
+          "optional": true,
+          "description": "Minimum width in pixels when resizing."
+        },
+        "maxWidth": {
+          "type": "number",
+          "optional": true,
+          "description": "Maximum width in pixels when resizing."
+        },
+        "children": {
+          "type": "ReactNode",
+          "optional": true,
+          "description": "Content — typically `<Sidebar>` + main content."
+        },
+        "className": {
+          "type": "string",
+          "optional": true,
+          "description": "Additional CSS classes for the wrapper div."
+        }
+      },
+      "examples": [
+        "<DemoContainer>\n      <Sidebar.Provider defaultOpen className=\"min-h-0! h-full\">\n        <Sidebar>\n          <Sidebar.Content>\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuButton icon={HouseIcon} active>\n                  Home\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={ChartBarIcon}>\n                  Analytics\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={GlobeIcon}>\n                  Domains\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuItem>\n                  <Sidebar.Collapsible defaultOpen>\n                    <Sidebar.CollapsibleTrigger\n                      render={\n                        <Sidebar.MenuButton icon={CodeIcon}>\n                          Compute\n                          <Sidebar.MenuChevron />\n                        </Sidebar.MenuButton>\n                      }\n                    />\n                    <Sidebar.CollapsibleContent>\n                      <Sidebar.MenuSub>\n                        <Sidebar.MenuSubButton>\n                          Workers & Pages\n                        </Sidebar.MenuSubButton>\n                        <Sidebar.MenuSubButton>\n                          Durable Objects\n                        </Sidebar.MenuSubButton>\n                      </Sidebar.MenuSub>\n                    </Sidebar.CollapsibleContent>\n                  </Sidebar.Collapsible>\n                </Sidebar.MenuItem>\n                <Sidebar.MenuButton icon={DatabaseIcon}>\n                  Storage\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n          </Sidebar.Content>\n        </Sidebar>\n        <DemoMain />\n      </Sidebar.Provider>\n    </DemoContainer>",
+        "<DemoContainer>\n      <Sidebar.Provider defaultOpen className=\"min-h-0! h-full\">\n        <Sidebar>\n          <Sidebar.Content>\n            {/* GroupContent is required for collapsible groups (provides grid-rows animation) */}\n            <Sidebar.Group collapsible defaultOpen>\n              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>\n              <Sidebar.GroupContent>\n                <Sidebar.Menu>\n                  <Sidebar.MenuButton icon={HouseIcon} active>\n                    Home\n                  </Sidebar.MenuButton>\n                  <Sidebar.MenuButton icon={ChartBarIcon}>\n                    Analytics\n                  </Sidebar.MenuButton>\n                  <Sidebar.MenuButton icon={GlobeIcon}>\n                    Domains\n                  </Sidebar.MenuButton>\n                </Sidebar.Menu>\n              </Sidebar.GroupContent>\n            </Sidebar.Group>\n\n            <Sidebar.Group collapsible defaultOpen>\n              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>\n              <Sidebar.GroupContent>\n                <Sidebar.Menu>\n                  <Sidebar.MenuButton icon={CodeIcon}>\n                    Compute\n                  </Sidebar.MenuButton>\n                  <Sidebar.MenuButton icon={DatabaseIcon}>\n                    Storage\n                  </Sidebar.MenuButton>\n                </Sidebar.Menu>\n              </Sidebar.GroupContent>\n            </Sidebar.Group>\n\n            <Sidebar.Group collapsible defaultOpen={false}>\n              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>\n              <Sidebar.GroupContent>\n                <Sidebar.Menu>\n                  <Sidebar.MenuButton icon={ShieldCheckIcon}>\n                    Security\n                  </Sidebar.MenuButton>\n                  <Sidebar.MenuButton icon={LockIcon}>\n                    Zero Trust\n                  </Sidebar.MenuButton>\n                </Sidebar.Menu>\n              </Sidebar.GroupContent>\n            </Sidebar.Group>\n          </Sidebar.Content>\n        </Sidebar>\n        <DemoMain />\n      </Sidebar.Provider>\n    </DemoContainer>",
+        "<DemoContainer>\n      <Sidebar.Provider defaultOpen className=\"min-h-0! h-full\">\n        <Sidebar>\n          <Sidebar.Header>\n            <BrandLogo />\n          </Sidebar.Header>\n          <Sidebar.Content>\n            <Sidebar.Group>\n              <Sidebar.Menu>\n                <Sidebar.MenuButton icon={HouseIcon} tooltip=\"Home\" active>\n                  Home\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={ChartBarIcon} tooltip=\"Analytics\">\n                  Analytics\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={CodeIcon} tooltip=\"Compute\">\n                  Compute\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={DatabaseIcon} tooltip=\"Storage\">\n                  Storage\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n          </Sidebar.Content>\n          <Sidebar.Footer>\n            <Sidebar.Trigger />\n          </Sidebar.Footer>\n        </Sidebar>\n        <DemoMain>\n          <ToggleButton />\n          <p className=\"text-sm\">\n            Click the button or the sidebar trigger to toggle\n          </p>\n        </DemoMain>\n      </Sidebar.Provider>\n    </DemoContainer>",
+        "<DemoContainer>\n      <Sidebar.Provider defaultOpen className=\"min-h-0! h-full\">\n        <Sidebar>\n          <Sidebar.Header>\n            <AccountSwitcher />\n          </Sidebar.Header>\n\n          <Sidebar.Content>\n            <div className=\"px-1 pb-2\">\n              <Sidebar.Input placeholder=\"Quick search...\" shortcut=\"⌘K\" />\n            </div>\n\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuButton icon={HouseIcon} active>\n                  Home\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={ChartBarIcon}>\n                  Analytics & Logs\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={GlobeIcon}>\n                  Domains\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n\n            <Sidebar.Separator />\n\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuItem>\n                  <Sidebar.Collapsible defaultOpen>\n                    <Sidebar.CollapsibleTrigger\n                      render={\n                        <Sidebar.MenuButton icon={CodeIcon}>\n                          Compute\n                          <Sidebar.MenuChevron />\n                        </Sidebar.MenuButton>\n                      }\n                    />\n                    <Sidebar.CollapsibleContent>\n                      <Sidebar.MenuSub>\n                        <Sidebar.MenuSubButton>\n                          Workers & Pages\n                        </Sidebar.MenuSubButton>\n                        <Sidebar.MenuSubButton>\n                          Durable Objects\n                        </Sidebar.MenuSubButton>\n                        <Sidebar.MenuSubButton>\n                          Containers\n                          <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>\n                        </Sidebar.MenuSubButton>\n                      </Sidebar.MenuSub>\n                    </Sidebar.CollapsibleContent>\n                  </Sidebar.Collapsible>\n                </Sidebar.MenuItem>\n                <Sidebar.MenuButton icon={DatabaseIcon}>\n                  Storage\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuButton icon={ShieldCheckIcon}>\n                  Security\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={LockIcon}>\n                  Zero Trust\n                  <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n          </Sidebar.Content>\n\n          <Sidebar.Footer>\n            <Sidebar.MenuButton icon={GearIcon}>\n              Manage account\n            </Sidebar.MenuButton>\n          </Sidebar.Footer>\n        </Sidebar>\n        <DemoMain />\n      </Sidebar.Provider>\n    </DemoContainer>",
+        "<DemoContainer>\n      <Sidebar.Provider\n        defaultOpen\n        resizable\n        defaultWidth={240}\n        minWidth={180}\n        maxWidth={400}\n        className=\"min-h-0! h-full\"\n      >\n        <Sidebar>\n          <Sidebar.Header>\n            <BrandLogo />\n          </Sidebar.Header>\n          <Sidebar.Content>\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuButton icon={HouseIcon} active>\n                  Home\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={ChartBarIcon}>\n                  Analytics\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={DatabaseIcon}>\n                  Storage\n                </Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n          </Sidebar.Content>\n          <Sidebar.Footer>\n            <Sidebar.Trigger />\n          </Sidebar.Footer>\n          <Sidebar.ResizeHandle />\n        </Sidebar>\n        <DemoMain>\n          <p className=\"text-sm\">Drag the sidebar edge to resize</p>\n        </DemoMain>\n      </Sidebar.Provider>\n    </DemoContainer>",
+        "<DemoContainer>\n      <Sidebar.Provider defaultOpen side=\"right\" className=\"min-h-0! h-full\">\n        <DemoMain />\n        <Sidebar>\n          <Sidebar.Content>\n            <Sidebar.Group>\n              <Sidebar.GroupLabel>Details</Sidebar.GroupLabel>\n              <Sidebar.Menu>\n                <Sidebar.MenuButton icon={GearIcon} active>\n                  Properties\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={ChartBarIcon}>\n                  Metrics\n                </Sidebar.MenuButton>\n                <Sidebar.MenuButton icon={BellIcon}>Alerts</Sidebar.MenuButton>\n              </Sidebar.Menu>\n            </Sidebar.Group>\n          </Sidebar.Content>\n        </Sidebar>\n      </Sidebar.Provider>\n    </DemoContainer>"
+      ],
+      "colors": [
+        "bg-kumo-base",
+        "bg-kumo-brand",
+        "bg-kumo-line",
+        "bg-kumo-overlay",
+        "bg-kumo-recessed",
+        "bg-kumo-tint",
+        "border-kumo-line",
+        "ring-kumo-line",
+        "ring-kumo-ring",
+        "text-kumo-default",
+        "text-kumo-strong",
+        "text-kumo-subtle"
+      ],
+      "subComponents": {
+        "Provider": {
+          "name": "Provider",
+          "description": "Provider sub-component",
+          "props": {
+            "defaultOpen": {
+              "type": "boolean",
+              "optional": true
+            },
+            "open": {
+              "type": "boolean",
+              "optional": true
+            },
+            "variant": {
+              "type": "SidebarVariant",
+              "optional": true
+            },
+            "side": {
+              "type": "SidebarSide",
+              "optional": true
+            },
+            "collapsible": {
+              "type": "\"icon\" | \"offcanvas\" | \"none\"",
+              "optional": true
+            },
+            "resizable": {
+              "type": "boolean",
+              "optional": true
+            },
+            "defaultWidth": {
+              "type": "number",
+              "optional": true
+            },
+            "minWidth": {
+              "type": "number",
+              "optional": true
+            },
+            "maxWidth": {
+              "type": "number",
+              "optional": true
+            },
+            "children": {
+              "type": "ReactNode",
+              "required": true
+            },
+            "className": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "Header": {
+          "name": "Header",
+          "description": "Header sub-component",
+          "props": {}
+        },
+        "Content": {
+          "name": "Content",
+          "description": "Content sub-component",
+          "props": {}
+        },
+        "Footer": {
+          "name": "Footer",
+          "description": "Footer sub-component",
+          "props": {}
+        },
+        "Group": {
+          "name": "Group",
+          "description": "Group sub-component",
+          "props": {}
+        },
+        "GroupLabel": {
+          "name": "GroupLabel",
+          "description": "GroupLabel sub-component",
+          "props": {}
+        },
+        "GroupContent": {
+          "name": "GroupContent",
+          "description": "GroupContent sub-component",
+          "props": {}
+        },
+        "Menu": {
+          "name": "Menu",
+          "description": "Menu sub-component",
+          "props": {}
+        },
+        "MenuItem": {
+          "name": "MenuItem",
+          "description": "MenuItem sub-component",
+          "props": {}
+        },
+        "MenuButton": {
+          "name": "MenuButton",
+          "description": "MenuButton sub-component",
+          "props": {}
+        },
+        "MenuAction": {
+          "name": "MenuAction",
+          "description": "MenuAction sub-component",
+          "props": {}
+        },
+        "MenuBadge": {
+          "name": "MenuBadge",
+          "description": "MenuBadge sub-component",
+          "props": {}
+        },
+        "MenuSub": {
+          "name": "MenuSub",
+          "description": "MenuSub sub-component",
+          "props": {}
+        },
+        "MenuSubItem": {
+          "name": "MenuSubItem",
+          "description": "MenuSubItem sub-component",
+          "props": {}
+        },
+        "MenuSubButton": {
+          "name": "MenuSubButton",
+          "description": "MenuSubButton sub-component",
+          "props": {}
+        },
+        "Separator": {
+          "name": "Separator",
+          "description": "Separator sub-component",
+          "props": {}
+        },
+        "Input": {
+          "name": "Input",
+          "description": "Input sub-component",
+          "props": {}
+        },
+        "Trigger": {
+          "name": "Trigger",
+          "description": "Trigger sub-component",
+          "props": {}
+        },
+        "Rail": {
+          "name": "Rail",
+          "description": "Rail sub-component",
+          "props": {}
+        },
+        "ResizeHandle": {
+          "name": "ResizeHandle",
+          "description": "ResizeHandle sub-component",
+          "props": {}
+        },
+        "MenuChevron": {
+          "name": "MenuChevron",
+          "description": "MenuChevron sub-component",
+          "props": {}
+        },
+        "Collapsible": {
+          "name": "Collapsible",
+          "description": "Collapsible sub-component",
+          "props": {}
+        },
+        "CollapsibleTrigger": {
+          "name": "CollapsibleTrigger",
+          "description": "CollapsibleTrigger sub-component",
+          "props": {}
+        },
+        "CollapsibleContent": {
+          "name": "CollapsibleContent",
+          "description": "CollapsibleContent sub-component",
+          "props": {}
+        }
+      },
+      "styling": {
+        "width": {
+          "expanded": "16rem",
+          "icon": "3rem"
+        },
+        "mobile": {
+          "breakpoint": 768
+        }
+      }
+    },
     "Surface": {
       "name": "Surface",
       "type": "component",
@@ -4370,6 +4632,9 @@
           "descriptions": {
             "auto": "Auto table layout - columns resize based on content",
             "fixed": "Fixed table layout - columns have equal width, controlled via colgroup"
+          },
+          "classes": {
+            "fixed": "table-fixed"
           }
         },
         "variant": {
@@ -4382,6 +4647,9 @@
           "descriptions": {
             "default": "Default row variant",
             "selected": "Selected row variant"
+          },
+          "classes": {
+            "selected": "bg-kumo-tint"
           }
         },
         "className": {
@@ -4707,6 +4975,13 @@
             "error": "Error toast for critical issues",
             "warning": "Warning toast for cautionary messages",
             "info": "Info toast for neutral informational messages"
+          },
+          "classes": {
+            "default": "border-kumo-fill bg-kumo-control",
+            "success": "border-kumo-success bg-kumo-control [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
+            "error": "border-kumo-danger bg-kumo-control [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
+            "warning": "border-kumo-warning bg-kumo-control [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
+            "info": "border-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info"
           }
         },
         "className": {
@@ -5104,6 +5379,7 @@
         "Label",
         "Link",
         "SensitiveInput",
+        "Sidebar",
         "Table",
         "DeleteResource"
       ],
@@ -5160,6 +5436,7 @@
       "ResourceListPage",
       "Select",
       "SensitiveInput",
+      "Sidebar",
       "Surface",
       "Switch",
       "Table",
@@ -5200,6 +5477,7 @@
         "Radio",
         "Select",
         "SensitiveInput",
+        "Sidebar",
         "Surface",
         "Switch",
         "Table",
