@@ -157,7 +157,7 @@ export function Tabs({
         activateOnFocus={activateOnFocus}
         className={cn(
           "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "h-8.5 rounded-lg bg-kumo-recessed p-0",
+          isSegmented && "h-8 rounded-lg bg-kumo-recessed p-0",
           isUnderline && "h-7 gap-4 border-b border-kumo-ring pb-2",
           listClassName,
         )}
