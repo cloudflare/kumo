@@ -277,6 +277,7 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
   - `"sm"`: Small button for secondary actions
   - `"base"`: Default button size
   - `"lg"`: Large button for primary CTAs
+- `compactSize`: enum
 - `variant`: enum [default: secondary]
   - `"primary"`: High-emphasis button for primary actions
   - `"secondary"`: Default button style for most actions
@@ -302,19 +303,10 @@ Primary action trigger. Supports multiple variants, sizes, shapes, icons, and lo
     - `not-disabled`: `not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base`
     - `disabled`: `disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70`
     - `data-state`: `data-[state=open]:bg-kumo-base`
-- `children`: ReactNode
 - `className`: string
-- `icon`: ReactNode
-  Icon from `@phosphor-icons/react` or a React element. Rendered before children.
-- `loading`: boolean
-  Shows a loading spinner and disables interaction.
-- `id`: string
-- `lang`: string
-- `title`: string
-- `disabled`: boolean
-- `name`: string
-- `type`: enum
-- `value`: string | string[] | number
+  Additional CSS classes
+- `children`: ReactNode
+  Child elements
 
 **Colors (kumo tokens used):**
 
@@ -3295,6 +3287,10 @@ Animated circular spinner for indicating loading states.
 <Loader size={24} />
 ```
 
+```tsx
+<Loader className="text-kumo-subtle" />
+```
+
 
 ---
 
@@ -3330,20 +3326,20 @@ MenuBar — horizontal icon-button toolbar with keyboard arrow-key navigation.  
 
 ```tsx
 <MenuBar
-      isActive="bold"
+      isActive={active}
       optionIds
       options={[
         {
           icon: <TextBolderIcon />,
           id: "bold",
           tooltip: "Bold",
-          onClick: () => {},
+          onClick: () => setActive(active === "bold" ? undefined : "bold"),
         },
         {
           icon: <TextItalicIcon />,
           id: "italic",
           tooltip: "Italic",
-          onClick: () => {},
+          onClick: () => setActive(active === "italic" ? undefined : "italic"),
         },
       ]}
     />
@@ -3403,7 +3399,7 @@ Progress bar showing a measured value within a known range (e.g. quota usage).
 <Meter
       label="Upload progress"
       value={80}
-      indicatorClassName="from-green-500 via-green-500 to-green-500"
+      indicatorClassName="from-kumo-success via-kumo-success to-kumo-success"
     />
 ```
 
@@ -4414,6 +4410,481 @@ Password/secret input that masks its value by default and reveals on click. Incl
 
 ---
 
+### Sidebar
+
+Sidebar — responsive navigation panel with expand/collapse support.  Compound component: `Sidebar` (root `<aside>`), `.Provider`, `.Header`, `.Content`, `.Footer`, `.Group`, `.GroupLabel`, `.GroupContent`, `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuAction`, `.MenuBadge`, `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`, `.Input`, `.Trigger`, `.Rail`, `.MenuChevron`, `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`.  Built on `@base-ui/react/collapsible` + `@base-ui/react/dialog`.
+
+**Type:** component
+
+**Import:** `import { Sidebar } from "@cloudflare/kumo";`
+
+**Category:** Other
+
+**Props:**
+
+- `defaultOpen`: boolean
+  Initial open state when uncontrolled.
+- `open`: boolean
+  Controlled open state.
+- `variant`: enum [default: sidebar]
+  - `"sidebar"`: Standard sidebar with border separator
+  - `"floating"`: Floating sidebar with shadow and rounded corners
+  - `"inset"`: Inset sidebar within the content area
+- `side`: enum [default: left]
+  - `"left"`: Left-aligned sidebar
+  - `"right"`: Right-aligned sidebar
+- `collapsible`: enum [default: icon]
+  - `"icon"`: Collapses to show icons only
+  - `"offcanvas"`: Slides off screen when collapsed
+  - `"none"`: Cannot be collapsed
+- `resizable`: boolean
+  Enable drag-to-resize on the sidebar edge.
+- `defaultWidth`: number
+  Initial width in pixels when resizable.
+- `minWidth`: number
+  Minimum width in pixels when resizing.
+- `maxWidth`: number
+  Maximum width in pixels when resizing.
+- `children`: ReactNode
+  Content — typically `<Sidebar>` + main content.
+- `className`: string
+  Additional CSS classes for the wrapper div.
+
+**Colors (kumo tokens used):**
+
+`bg-kumo-base`, `bg-kumo-brand`, `bg-kumo-line`, `bg-kumo-overlay`, `bg-kumo-recessed`, `bg-kumo-tint`, `border-kumo-line`, `ring-kumo-line`, `ring-kumo-ring`, `text-kumo-default`, `text-kumo-strong`, `text-kumo-subtle`
+
+**Styling:**
+
+
+**Sub-Components:**
+
+This is a compound component. Use these sub-components:
+
+#### Sidebar.Provider
+
+Provider sub-component
+
+Props:
+- `defaultOpen`: boolean
+- `open`: boolean
+- `variant`: SidebarVariant
+- `side`: SidebarSide
+- `collapsible`: "icon" | "offcanvas" | "none"
+- `resizable`: boolean
+- `defaultWidth`: number
+- `minWidth`: number
+- `maxWidth`: number
+- `children`: ReactNode (required)
+- `className`: string
+
+#### Sidebar.Header
+
+Header sub-component
+
+#### Sidebar.Content
+
+Content sub-component
+
+#### Sidebar.Footer
+
+Footer sub-component
+
+#### Sidebar.Group
+
+Group sub-component
+
+#### Sidebar.GroupLabel
+
+GroupLabel sub-component
+
+#### Sidebar.GroupContent
+
+GroupContent sub-component
+
+#### Sidebar.Menu
+
+Menu sub-component
+
+#### Sidebar.MenuItem
+
+MenuItem sub-component
+
+#### Sidebar.MenuButton
+
+MenuButton sub-component
+
+#### Sidebar.MenuAction
+
+MenuAction sub-component
+
+#### Sidebar.MenuBadge
+
+MenuBadge sub-component
+
+#### Sidebar.MenuSub
+
+MenuSub sub-component
+
+#### Sidebar.MenuSubItem
+
+MenuSubItem sub-component
+
+#### Sidebar.MenuSubButton
+
+MenuSubButton sub-component
+
+#### Sidebar.Separator
+
+Separator sub-component
+
+#### Sidebar.Input
+
+Input sub-component
+
+#### Sidebar.Trigger
+
+Trigger sub-component
+
+#### Sidebar.Rail
+
+Rail sub-component
+
+#### Sidebar.ResizeHandle
+
+ResizeHandle sub-component
+
+#### Sidebar.MenuChevron
+
+MenuChevron sub-component
+
+#### Sidebar.Collapsible
+
+Collapsible sub-component
+
+#### Sidebar.CollapsibleTrigger
+
+CollapsibleTrigger sub-component
+
+#### Sidebar.CollapsibleContent
+
+CollapsibleContent sub-component
+
+
+**Examples:**
+
+```tsx
+<DemoContainer>
+      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GlobeIcon}>
+                  Domains
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible defaultOpen>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>
+                          Workers & Pages
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Durable Objects
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+        </Sidebar>
+        <DemoMain />
+      </Sidebar.Provider>
+    </DemoContainer>
+```
+
+```tsx
+<DemoContainer>
+      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Content>
+            {/* GroupContent is required for collapsible groups (provides grid-rows animation) */}
+            <Sidebar.Group collapsible defaultOpen>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.GroupContent>
+                <Sidebar.Menu>
+                  <Sidebar.MenuButton icon={HouseIcon} active>
+                    Home
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={ChartBarIcon}>
+                    Analytics
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={GlobeIcon}>
+                    Domains
+                  </Sidebar.MenuButton>
+                </Sidebar.Menu>
+              </Sidebar.GroupContent>
+            </Sidebar.Group>
+
+            <Sidebar.Group collapsible defaultOpen>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.GroupContent>
+                <Sidebar.Menu>
+                  <Sidebar.MenuButton icon={CodeIcon}>
+                    Compute
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={DatabaseIcon}>
+                    Storage
+                  </Sidebar.MenuButton>
+                </Sidebar.Menu>
+              </Sidebar.GroupContent>
+            </Sidebar.Group>
+
+            <Sidebar.Group collapsible defaultOpen={false}>
+              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
+              <Sidebar.GroupContent>
+                <Sidebar.Menu>
+                  <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                    Security
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={LockIcon}>
+                    Zero Trust
+                  </Sidebar.MenuButton>
+                </Sidebar.Menu>
+              </Sidebar.GroupContent>
+            </Sidebar.Group>
+          </Sidebar.Content>
+        </Sidebar>
+        <DemoMain />
+      </Sidebar.Provider>
+    </DemoContainer>
+```
+
+```tsx
+<DemoContainer>
+      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                  Compute
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <ToggleButton />
+          <p className="text-sm">
+            Click the button or the sidebar trigger to toggle
+          </p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+```
+
+```tsx
+<DemoContainer>
+      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <AccountSwitcher />
+          </Sidebar.Header>
+
+          <Sidebar.Content>
+            <div className="px-1 pb-2">
+              <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" />
+            </div>
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics & Logs
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GlobeIcon}>
+                  Domains
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+
+            <Sidebar.Separator />
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible defaultOpen>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>
+                          Workers & Pages
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Durable Objects
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Containers
+                          <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                  Security
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={LockIcon}>
+                  Zero Trust
+                  <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+
+          <Sidebar.Footer>
+            <Sidebar.MenuButton icon={GearIcon}>
+              Manage account
+            </Sidebar.MenuButton>
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain />
+      </Sidebar.Provider>
+    </DemoContainer>
+```
+
+```tsx
+<DemoContainer>
+      <Sidebar.Provider
+        defaultOpen
+        resizable
+        defaultWidth={240}
+        minWidth={180}
+        maxWidth={400}
+        className="min-h-0! h-full"
+      >
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+          <Sidebar.ResizeHandle />
+        </Sidebar>
+        <DemoMain>
+          <p className="text-sm">Drag the sidebar edge to resize</p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+```
+
+```tsx
+<DemoContainer>
+      <Sidebar.Provider defaultOpen side="right" className="min-h-0! h-full">
+        <DemoMain />
+        <Sidebar>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Details</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={GearIcon} active>
+                  Properties
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Metrics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={BellIcon}>Alerts</Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+        </Sidebar>
+      </Sidebar.Provider>
+    </DemoContainer>
+```
+
+
+---
+
 ### Surface
 
 Surface component
@@ -5332,7 +5803,7 @@ Multi-line textarea input with Input variants and InputArea-specific dimensions
 - **Feedback:** Banner, Loader, Toasty
 - **Action:** Button, ClipboardText
 - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, Switch
-- **Other:** CloudflareLogo, DatePicker, Label, Link, SensitiveInput, Table, DeleteResource
+- **Other:** CloudflareLogo, DatePicker, Label, Link, SensitiveInput, Sidebar, Table, DeleteResource
 - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
 - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
 - **Layout:** Grid, Surface, PageHeader, ResourceListPage

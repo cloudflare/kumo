@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -186,6 +186,10 @@
     "./components/flow": {
       "types": "./dist/src/components/flow/index.d.ts",
       "import": "./dist/components/flow.js"
+    },
+    "./components/sidebar": {
+      "types": "./dist/src/components/sidebar/index.d.ts",
+      "import": "./dist/components/sidebar.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
