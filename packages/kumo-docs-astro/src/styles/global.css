@@ -143,3 +143,30 @@ html {
   font-size: inherit;
   line-height: inherit;
 }
+
+/* ==========================================================================
+   Shiki code blocks — markdown code blocks use .astro-code class
+   Dual theme support: light (github-light) and dark (vesper)
+   ========================================================================== */
+
+/* Container styling for all code blocks (markdown + CodeBlock component) */
+pre.astro-code {
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-kumo-line);
+  margin: 0;
+}
+
+/* Light mode (default) */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+}
+
+/* Dark mode — toggle via data-mode attribute */
+[data-mode="dark"] .astro-code,
+[data-mode="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}

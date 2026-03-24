@@ -73,6 +73,15 @@ const kumoSrc = resolve(__dirname, "../kumo/src");
 export default defineConfig({
   integrations: [mdx(), react(), sitemap(), markdownPages()],
   site: "https://kumo-ui.com/",
+  markdown: {
+    shikiConfig: {
+      themes: {
+        light: "github-light",
+        dark: "vesper",
+      },
+      defaultColor: false,
+    },
+  },
   vite: {
     plugins: [
       // In dev mode, resolve @cloudflare/kumo imports to raw source files

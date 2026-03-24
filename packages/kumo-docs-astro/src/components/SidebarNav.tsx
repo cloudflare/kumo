@@ -20,6 +20,11 @@ function normalizePathname(pathname: string) {
   return pathname.replace(/\/+$/, "");
 }
 
+function isActivePath(activePath: string, href: string) {
+  const normalized = normalizePathname(href);
+  return activePath === normalized || activePath.startsWith(normalized + "/");
+}
+
 const staticPages: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Installation", href: "/installation" },
@@ -29,6 +34,7 @@ const staticPages: NavItem[] = [
   { label: "Figma Resources", href: "/figma" },
   { label: "CLI", href: "/cli" },
   { label: "Registry", href: "/registry" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 const componentItems: NavItem[] = [
@@ -199,7 +205,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
               href={item.href}
               className={cn(
                 LI_STYLE,
-                activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
+                isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
               )}
             >
               {item.label}

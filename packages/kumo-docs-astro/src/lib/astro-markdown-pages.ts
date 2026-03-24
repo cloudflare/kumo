@@ -1,6 +1,6 @@
 import type { AstroIntegration } from "astro";
 import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
+import path, { join } from "path";
 import { glob } from "fs/promises";
 import { htmlToMarkdown } from "./html-to-markdown.js";
 
@@ -26,7 +26,11 @@ export function markdownPages(): AstroIntegration {
           if (!url.endsWith(".md")) return next();
 
           // /components/badge.md -> /components/badge/
-          const htmlPath = url.replace(/\.md$/, "/");
+          // /changelog.md -> /changelog/all/ (full unpaginated version)
+          let htmlPath = url.replace(/\.md$/, "/");
+          if (htmlPath === "/changelog/") {
+            htmlPath = "/changelog/all/";
+          }
 
           try {
             // Fetch the HTML page from the dev server
@@ -69,8 +73,21 @@ export function markdownPages(): AstroIntegration {
           htmlFiles.push(entry);
         }
 
+        // Changelog has paginated pages (/changelog/, /changelog/2/, etc.)
+        // but only one .md file — generated from the unpaginated /changelog/all/ page
+        const changelogAllPage = join("changelog", "all", "index.html");
+        const changelogDir = `${path.sep}changelog${path.sep}`;
+
         for (const htmlFile of htmlFiles) {
           try {
+            if (
+              htmlFile.includes(changelogDir) &&
+              !htmlFile.endsWith(changelogAllPage)
+            ) {
+              skipped++;
+              continue;
+            }
+
             const html = await readFile(htmlFile, "utf-8");
 
             // Only generate .md for pages that have a <main> element
@@ -82,9 +99,10 @@ export function markdownPages(): AstroIntegration {
 
             const markdown = htmlToMarkdown(html);
 
-            // Write .md as a sibling to the directory
-            // e.g., dist/components/badge/index.html -> dist/components/badge.md
-            const mdFile = htmlFile.replace(/\/index\.html$/, ".md");
+            // changelog/all/index.html → changelog.md, others → sibling .md
+            const mdFile = htmlFile.endsWith(changelogAllPage)
+              ? join(outDir, "changelog.md")
+              : htmlFile.replace(/\/index\.html$/, ".md");
             await writeFile(mdFile, markdown, "utf-8");
             generated++;
           } catch (error) {

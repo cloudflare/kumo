@@ -60,9 +60,16 @@ const vrAttrs = vrSection
   <ComponentPreview>
     <slot />
   </ComponentPreview>
-  <div
-    class="[&>.code-block]:rounded-none [&>.code-block]:rounded-b-lg [&>.code-block]:border-t-0"
-  >
+  <div class="component-example-code">
     <CodeBlock code={resolvedCode} lang={lang} />
   </div>
 </div>
+
+<style>
+  .component-example-code :global(pre.astro-code) {
+    border-radius: 0;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-top: 0;
+  }
+</style>
