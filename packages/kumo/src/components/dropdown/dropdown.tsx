@@ -90,7 +90,7 @@ const DropdownMenuContent = React.forwardRef<
       <DropdownMenuPrimitive.Popup
         className={cn(
           "overflow-hidden bg-kumo-control text-kumo-default", // background
-          "rounded-lg shadow-lg ring ring-kumo-line", // border part
+          "rounded-lg shadow-lg ring ring-kumo-ring", // border part
           "min-w-36 p-1.5", // spacing
           "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
           "data-[side=bottom]:slide-in-from-top-2", // bottom side animation

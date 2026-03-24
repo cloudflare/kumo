@@ -309,7 +309,7 @@ const ExpandableNode = forwardRef<
     <li
       ref={ref}
       {...props}
-      className="rounded-lg bg-kumo-base ring ring-kumo-line overflow-hidden"
+      className="rounded-lg bg-kumo-base ring ring-kumo-ring overflow-hidden"
     >
       <button
         type="button"

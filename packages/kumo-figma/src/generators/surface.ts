@@ -37,7 +37,7 @@ import themeData from "../generated/theme-data.json";
 /**
  * Base styles from Surface component
  */
-const BASE_STYLES = "shadow-xs ring ring-kumo-line";
+const BASE_STYLES = "shadow-xs ring ring-kumo-ring";
 
 /**
  * Create a single Surface component
@@ -67,7 +67,7 @@ async function createSurfaceComponent(): Promise<ComponentNode> {
     bindFillToVariable(component, bgVar.id);
   }
 
-  // Apply border (ring ring-kumo-line)
+  // Apply border (ring ring-kumo-ring)
   const borderVar = getVariableByName(VAR_NAMES.color.line);
   if (borderVar) {
     bindStrokeToVariable(component, borderVar.id, 1);

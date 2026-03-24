@@ -187,7 +187,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
       element = (
         <li
           ref={mergedRef}
-          className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line"
+          className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-ring"
           style={{ cursor: "default" }}
           data-node-index={index}
           data-node-id={id}

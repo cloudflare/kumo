@@ -227,7 +227,7 @@ describe("parseTailwindClasses", () => {
 
     it("should parse ring as border", () => {
       expect(parseTailwindClasses("ring")).toEqual({ hasBorder: true });
-      expect(parseTailwindClasses("ring-kumo-line")).toEqual({
+      expect(parseTailwindClasses("ring-kumo-ring")).toEqual({
         hasBorder: true,
         strokeVariable: "color-kumo-line",
       });
@@ -299,7 +299,7 @@ describe("parseTailwindClasses", () => {
 
     it("should parse button-like classes", () => {
       const result = parseTailwindClasses(
-        "flex items-center h-10 px-4 rounded-md bg-kumo-control text-kumo-default ring ring-kumo-line",
+        "flex items-center h-10 px-4 rounded-md bg-kumo-control text-kumo-default ring ring-kumo-ring",
       );
       expect(result).toEqual({
         height: 40,
@@ -870,7 +870,7 @@ describe("parseBaseStyles", () => {
 
   it("should parse complex base styles string", () => {
     const baseStyles =
-      "flex items-center font-medium h-9 px-3 gap-2 rounded-lg text-base bg-kumo-control text-kumo-default ring ring-kumo-line";
+      "flex items-center font-medium h-9 px-3 gap-2 rounded-lg text-base bg-kumo-control text-kumo-default ring ring-kumo-ring";
     const result = parseBaseStyles(baseStyles);
     expect(result).toEqual({
       height: 36,

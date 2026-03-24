@@ -109,7 +109,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 |-------|---------|
 | `border-kumo-fill` | Default border |
 | `border-kumo-line` | Subtle separator line |
-| `ring-kumo-line` | Default ring (input borders) |
+| `ring-kumo-ring` | Default ring (input borders) |
 | `ring-kumo-ring` | Focus ring |
 
 ## Icons

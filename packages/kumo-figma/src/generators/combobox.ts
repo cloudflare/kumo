@@ -65,9 +65,9 @@ const comboboxComponent = registry.components.Combobox;
 
 /**
  * Base styles for TriggerInput container
- * "bg-kumo-control ring ring-kumo-line rounded-lg"
+ * "bg-kumo-control ring ring-kumo-ring rounded-lg"
  */
-const TRIGGER_BASE_STYLES = "bg-kumo-control ring ring-kumo-line rounded-lg";
+const TRIGGER_BASE_STYLES = "bg-kumo-control ring ring-kumo-ring rounded-lg";
 
 /**
  * Dropdown panel styles

@@ -43,7 +43,7 @@ export function surfaceVariants({
 }: KumoSurfaceVariantsProps = {}) {
   return cn(
     // Base styles
-    "shadow-xs ring ring-kumo-line",
+    "shadow-xs ring ring-kumo-ring",
     // Apply color-specific styles
     KUMO_SURFACE_VARIANTS.color[color].classes,
   );
@@ -107,7 +107,7 @@ const SurfaceImpl = function Surface<
     <Component
       ref={ref}
       {...restProps}
-      className={cn("bg-kumo-base shadow-xs ring ring-kumo-line", className)}
+      className={cn("bg-kumo-base shadow-xs ring ring-kumo-ring", className)}
     >
       {children}
     </Component>

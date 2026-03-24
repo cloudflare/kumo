@@ -131,11 +131,11 @@ export function getPaginationStateConfig() {
 export function getPaginationColorBindings() {
   return {
     buttonBackground: VAR_NAMES.color.control, // bg-kumo-control
-    buttonBorder: VAR_NAMES.color.line, // ring-kumo-line
+    buttonBorder: VAR_NAMES.color.line, // ring-kumo-ring
     iconEnabled: VAR_NAMES.text.default,
     iconDisabled: VAR_NAMES.text.inactive,
     inputBackground: VAR_NAMES.color.control, // bg-kumo-control
-    inputBorder: VAR_NAMES.color.line, // ring-kumo-line
+    inputBorder: VAR_NAMES.color.line, // ring-kumo-ring
     inputText: VAR_NAMES.text.default,
     showingTextLabel: VAR_NAMES.text.strong, // From registry.colors: text-kumo-strong
   };
@@ -273,7 +273,7 @@ async function createNavButton(
     bindFillToVariable(button, bgVar.id);
   }
 
-  // Border: ring-kumo-line
+  // Border: ring-kumo-ring
   const borderVar = getVariableByName(VAR_NAMES.color.line);
   if (borderVar) {
     bindStrokeToVariable(button, borderVar.id, 1);
@@ -313,7 +313,7 @@ async function createPageInput(pageNumber: string): Promise<FrameNode> {
     bindFillToVariable(input, bgVar.id);
   }
 
-  // Border: ring-kumo-line
+  // Border: ring-kumo-ring
   const borderVar = getVariableByName(VAR_NAMES.color.line);
   if (borderVar) {
     bindStrokeToVariable(input, borderVar.id, 1);
