@@ -7,9 +7,8 @@ sourceFile: "components/clipboard-text"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
-import PropsTable from "~/components/docs/PropsTable.astro";
 import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   ClipboardTextBasicDemo,
   ClipboardTextShortDemo,
@@ -18,10 +17,10 @@ import {
   ClipboardTextWithTooltipDemo,
 } from "~/components/demos/ClipboardTextDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample code={`<ClipboardText text="0c239dd2" />`}>
+  <ComponentExample demo="ClipboardTextBasicDemo">
     <ClipboardTextBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -31,29 +30,32 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock
-    code={`import { ClipboardText } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";`}
-    lang="tsx"
-  />
+
+```tsx
+import { ClipboardText } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { ClipboardText } from "@cloudflare/kumo";
+
+```tsx
+import { ClipboardText } from "@cloudflare/kumo";
 
 export default function Example() {
   return <ClipboardText text="Copy this text" />;
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -62,33 +64,26 @@ export default function Example() {
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>Short Text</Heading>
-<ComponentExample code={`<ClipboardText text="abc123" />`}>
+<ComponentExample demo="ClipboardTextShortDemo">
   <ClipboardTextShortDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>API Key</Heading>
-<ComponentExample code={`<ClipboardText text="sk_live_51H8..." />`}>
+<ComponentExample demo="ClipboardTextApiKeyDemo">
   <ClipboardTextApiKeyDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Long Text</Heading>
-<ComponentExample
-  code={`<ClipboardText text="https://example.com/very/long/url/path" />`}
->
+<ComponentExample demo="ClipboardTextLongDemo">
   <ClipboardTextLongDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>With Tooltip</Heading>
-  <p>Shows "Copy" tooltip on hover, "Copied!" toast on click.</p>
-  <ComponentExample
-    code={`<ClipboardText
-
-text="npx kumo add button"
-tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
-/>`} >
-
-<ClipboardTextWithTooltipDemo client:visible />
+<Heading level={3}>With Tooltip</Heading>
+<p>Shows "Copy" tooltip on hover, "Copied!" toast on click.</p>
+<ComponentExample demo="ClipboardTextWithTooltipDemo">
+  <ClipboardTextWithTooltipDemo client:visible />
 </ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}

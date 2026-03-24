@@ -8,7 +8,6 @@ baseUIComponent: "switch"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -22,12 +21,10 @@ import {
   SwitchSizesDemo,
 } from "~/components/demos/SwitchDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Switch label="Switch" checked={false} onCheckedChange={() => {}} />`}
-  >
+  <ComponentExample demo="SwitchBasicDemo">
     <SwitchBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -37,34 +34,37 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Switch } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Switch } from "@cloudflare/kumo/components/switch";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Switch } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Switch } from "@cloudflare/kumo/components/switch";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { Switch } from "@cloudflare/kumo";
+
+```tsx
+import { Switch } from "@cloudflare/kumo";
 import { useState } from "react";
 
 export default function Example() {
   const [checked, setChecked] = useState(false);
-  
+
   return (
-    <Switch 
-      checked={checked} 
-      onCheckedChange={(val) => setChecked(val)} 
-    />
+    <Switch checked={checked} onCheckedChange={(val) => setChecked(val)} />
   );
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -73,63 +73,46 @@ export default function Example() {
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>Off State</Heading>
-<ComponentExample
-  code={`<Switch label="Switch" checked={false} onCheckedChange={() => {}} />`}
->
+<ComponentExample demo="SwitchOffDemo">
   <SwitchOffDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>On State</Heading>
-<ComponentExample
-  code={`<Switch label="Switch" checked={true} onCheckedChange={() => {}} />`}
->
+<ComponentExample demo="SwitchOnDemo">
   <SwitchOnDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Disabled</Heading>
-<ComponentExample code={`<Switch label="Disabled" checked={false} disabled />`}>
+<ComponentExample demo="SwitchDisabledDemo">
   <SwitchDisabledDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Variants</Heading>
-
-The Switch supports two variants: `default` (pill shape, blue when on) and `neutral` (squircle shape, monochrome).
-
-<ComponentExample
-  code={`<Switch label="Default variant" checked={true} onCheckedChange={() => {}} />
-<Switch label="Neutral variant" variant="neutral" checked={true} onCheckedChange={() => {}} />`}
->
+<p>
+  The Switch supports two variants: `default` (pill shape, blue when on) and
+  `neutral` (squircle shape, monochrome).
+</p>
+<ComponentExample demo="SwitchVariantsDemo">
   <SwitchVariantsDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Neutral Variant</Heading>
-
-The neutral variant uses monochrome colors and a squircle shape, ideal for subtle, less prominent toggles.
-
-<ComponentExample
-  code={`<Switch label="Neutral switch" variant="neutral" checked={checked} onCheckedChange={setChecked} />`}
->
+<p>
+  The neutral variant uses monochrome colors and a squircle shape, ideal for
+  subtle, less prominent toggles.
+</p>
+<ComponentExample demo="SwitchNeutralDemo">
   <SwitchNeutralDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Neutral States</Heading>
-<ComponentExample
-  code={`<Switch label="Neutral off" variant="neutral" checked={false} onCheckedChange={() => {}} />
-<Switch label="Neutral on" variant="neutral" checked={true} onCheckedChange={() => {}} />
-<Switch label="Neutral disabled" variant="neutral" checked={false} disabled />`}
->
+<ComponentExample demo="SwitchNeutralStatesDemo">
   <SwitchNeutralStatesDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Sizes</Heading>
-
-Three sizes available: `sm`, `base` (default), and `lg`.
-
-<ComponentExample
-  code={`<Switch label="Small" size="sm" checked={true} onCheckedChange={() => {}} />
-<Switch label="Base (default)" size="base" checked={true} onCheckedChange={() => {}} />
-<Switch label="Large" size="lg" checked={true} onCheckedChange={() => {}} />`}
->
+<p>Three sizes available: `sm`, `base` (default), and `lg`.</p>
+<ComponentExample demo="SwitchSizesDemo">
   <SwitchSizesDemo client:visible />
 </ComponentExample>
 

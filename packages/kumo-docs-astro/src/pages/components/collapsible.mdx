@@ -8,7 +8,6 @@ baseUIComponent: "collapsible"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -17,71 +16,65 @@ import {
   CollapsibleMultipleDemo,
 } from "~/components/demos/CollapsibleDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<Collapsible label="What is Kumo?">
-  Kumo is Cloudflare's new design system.
-</Collapsible>`}
-  >
+  <ComponentExample demo="CollapsibleHeroDemo">
     <CollapsibleHeroDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock
-    code={`import { Collapsible } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Collapsible } from "@cloudflare/kumo/components/collapsible";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Collapsible } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Collapsible } from "@cloudflare/kumo/components/collapsible";
+```
+
 </ComponentSection>
+
+{/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock code={`import { Collapsible } from "@cloudflare/kumo";
+
+```tsx
+import { Collapsible } from "@cloudflare/kumo";
 
 export default function Example() {
-  return (
-    <Collapsible label="Question">
-      Answer content goes here.
-    </Collapsible>
-  );
-}`} lang="tsx" />
+  return <Collapsible label="Question">Answer content goes here.</Collapsible>;
+}
+```
+
 </ComponentSection>
+
+{/* Examples */}
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>Single Item</Heading>
-<ComponentExample
-  code={`<Collapsible label="What is Kumo?">
-  Kumo is Cloudflare's new design system.
-</Collapsible>`}
->
+<ComponentExample demo="CollapsibleBasicDemo">
   <CollapsibleBasicDemo client:load />
 </ComponentExample>
 
-  <Heading level={3}>Multiple Items</Heading>
-  <ComponentExample code={`<div className="space-y-2">
+<Heading level={3}>Multiple Items</Heading>
+<ComponentExample demo="CollapsibleMultipleDemo">
+  <CollapsibleMultipleDemo client:load />
+</ComponentExample>
 
-  <Collapsible label="What is Kumo?">
-    Kumo is Cloudflare's new design system.
-  </Collapsible>
-  <Collapsible label="How do I use it?">
-    Install the components and import them into your project.
-  </Collapsible>
-  <Collapsible label="Is it open source?">
-    Check the repository for license information.
-  </Collapsible>
-</div>`}>
-    <CollapsibleMultipleDemo client:load />
-  </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>
