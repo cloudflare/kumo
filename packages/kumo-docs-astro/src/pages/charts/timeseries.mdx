@@ -28,38 +28,7 @@ import Heading from "~/components/docs/Heading.astro";
 
 <p>A simple line chart displaying multiple data series over time.</p>
 
-  <ComponentExample
-    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
-
-const data = [
-{
-name: "Requests",
-color: ChartPalette.semantic("Neutral", isDarkMode),
-data: [
-[timestamp_in_ms, value],
-[timestamp_in_ms, value],
-...
-],
-},
-{
-name: "Errors",
-color: ChartPalette.semantic("Attention", isDarkMode),
-data: [
-[timestamp_in_ms, value],
-[timestamp_in_ms, value],
-...
-],
-},
-];
-
-<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  data={data}
-  xAxisName="Time (UTC)"
-  yAxisName="Count"
-/>`}
-  >
+  <ComponentExample demo="BasicLineChartDemo">
     <BasicLineChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -73,19 +42,7 @@ data: [
   and returns a display string, overriding ECharts' built-in time formatting.
 </p>
 
-  <ComponentExample
-    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
-
-<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  data={data}
-  xAxisName="Time (UTC)"
-  yAxisTickLabelFormat={(value) => {
-    return Math.round(value).toString() + " requests";
-  }}
-/>`}
-  >
+  <ComponentExample demo="CustomAxisLabelFormatDemo">
     <CustomAxisLabelFormatDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -100,16 +57,7 @@ data: [
   without losing the clarity of individual lines.
 </p>
 
-  <ComponentExample
-    code={`<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  data={data}
-  xAxisName="Time (UTC)"
-  yAxisName="Count"
-  gradient
-/>`}
-  >
+  <ComponentExample demo="GradientLineChartDemo">
     <GradientLineChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -122,30 +70,7 @@ data: [
   incomplete or still being collected.
 </p>
 
-  <ComponentExample
-    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
-
-const data = [
-{
-name: "Bandwidth",
-color: ChartPalette.color(0, isDarkMode),
-data: [
-[timestamp_in_ms, value],
-[timestamp_in_ms, value],
-...
-],
-},
-];
-
-<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  data={data}
-  xAxisName="Time (UTC)"
-  yAxisName="Mbps"
-  incomplete={{ after: timestamp_in_ms }}
-/>`}
-  >
+  <ComponentExample demo="IncompleteDataChartDemo">
     <IncompleteDataChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -158,32 +83,7 @@ data: [
   callback. Users can click and drag on the chart to select a time range.
 </p>
 
-  <ComponentExample
-    code={`import { TimeseriesChart, ChartPalette } from "@cloudflare/kumo";
-
-const data = [
-{
-name: "CPU Usage",
-color: ChartPalette.color(0, isDarkMode),
-data: [
-[timestamp_in_ms, value],
-[timestamp_in_ms, value],
-...
-],
-},
-];
-
-<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  data={data}
-  xAxisName="Time (UTC)"
-  yAxisName="%"
-  onTimeRangeChange={(from, to) => {
-    alert("Selected range: " + from + " - " + to);
-  }}
-/>`}
-  >
+  <ComponentExample demo="TimeRangeSelectionChartDemo">
     <TimeRangeSelectionChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -196,16 +96,7 @@ data: [
   All other props — axes, tooltips, colors — work identically.
 </p>
 
-  <ComponentExample
-    code={`<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  type="bar"
-  data={data}
-  xAxisName="Time (UTC)"
-  yAxisName="Count"
-/>`}
-  >
+  <ComponentExample demo="BarChartDemo">
     <BarChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -219,16 +110,7 @@ data: [
   completes; swap back to <code>loading={`{false}`}</code> to reveal the chart.
 </p>
 
-  <ComponentExample
-    code={`const [isLoading, setIsLoading] = useState(true);
-
-<TimeseriesChart
-  echarts={echarts}
-  isDarkMode={isDarkMode}
-  data={data}
-  loading={isLoading}
-/>`}
-  >
+  <ComponentExample demo="LoadingChartDemo">
     <LoadingChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>

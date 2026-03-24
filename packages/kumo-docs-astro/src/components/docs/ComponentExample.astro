@@ -3,8 +3,8 @@ import ComponentPreview from "./ComponentPreview.astro";
 import CodeBlock from "./CodeBlock.astro";
 import { extractDemoSnippet } from "~/lib/extract-demo-snippet";
 
-// Import all demo source files as raw strings at build time
-const demoSources = import.meta.glob("~/components/demos/*.tsx", {
+// Import all demo source files as raw strings at build time (including subdirectories)
+const demoSources = import.meta.glob("~/components/demos/**/*.tsx", {
   eager: true,
   query: "?raw",
   import: "default",
