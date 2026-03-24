@@ -55,7 +55,7 @@ function LayerCardSecondary({ children, className }: LayerCardProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 p-2 text-base font-medium text-kumo-strong bg-kumo-recessed",
+        "flex items-center gap-2 p-4 text-base font-medium text-kumo-strong -my-2 bg-kumo-recessed",
         className,
       )}
     >
@@ -68,7 +68,7 @@ function LayerCardPrimary({ children, className }: LayerCardProps) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 overflow-hidden rounded-lg bg-kumo-base p-4 pr-3 text-inherit no-underline ring ring-kumo-fill",
+        "relative flex flex-col gap-2 overflow-hidden rounded-lg bg-kumo-base p-4 pr-3 text-inherit no-underline ring ring-kumo-fill",
         className,
       )}
     >
