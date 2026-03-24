@@ -11,3 +11,5 @@ Specific token updates:
 - Update token mapping across different themes and states.
 - Base neutral token scale updates in `kumo-binding.css`.
 - Updated `Tabs` component to use `kumo-recessed` since `kumo-surface` was removed.
+- Update all instances of `ring-kumo-line` with `ring-kumo-ring`.
+- Updated `LayerCard` with `ring-kumo-ring` instead of `ring-kumo-fill`.

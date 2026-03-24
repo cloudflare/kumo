@@ -122,7 +122,7 @@ export function extractSemanticColors(sourceFile: string): string[] {
     const semanticColorNames = parseSemanticColorNames();
 
     // Build regex pattern for each prefix + semantic color combination
-    // Match patterns like: text-surface, bg-primary, border-color, ring-kumo-line
+    // Match patterns like: text-surface, bg-primary, border-color, ring-kumo-ring
     // Also handles variants like: hover:bg-primary, disabled:text-kumo-subtle
     for (const prefix of COLOR_UTILITY_PREFIXES) {
       for (const colorName of semanticColorNames) {

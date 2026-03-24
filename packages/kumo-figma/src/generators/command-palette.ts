@@ -53,8 +53,8 @@ const COMPONENT_CLASSES = {
   searchIcon: "h-4 w-4 text-kumo-subtle",
   // Input: "flex-1 border-none bg-transparent text-base placeholder:text-kumo-subtle"
   input: "text-base",
-  // List: "z-10 min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line"
-  list: "rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
+  // List: "z-10 min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-ring"
+  list: "rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-ring",
   // Group: "space-y-0.5"
   group: "space-y-0.5",
   // Group label: "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-strong"
@@ -335,7 +335,7 @@ async function createGroupLabel(text: string): Promise<FrameNode> {
 
 /**
  * Create the results list
- * Styles from: "z-10 min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-surface-elevated px-2 py-2 ring-1 ring-kumo-line"
+ * Styles from: "z-10 min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-surface-elevated px-2 py-2 ring-1 ring-kumo-ring"
  */
 async function createResultsList(): Promise<FrameNode> {
   const styles = parseTailwindClasses(COMPONENT_CLASSES.list);
@@ -364,7 +364,7 @@ async function createResultsList(): Promise<FrameNode> {
     }
   }
 
-  // Note: The list has ring-1 ring-kumo-line and rounded-b-lg in the React component,
+  // Note: The list has ring-1 ring-kumo-ring and rounded-b-lg in the React component,
   // but when a Footer is present (which is the standard Figma representation),
   // the footer gets the rounded-b-lg and the list should have no rounding or ring.
   // The ring is an internal separator that's not needed in Figma's static representation.

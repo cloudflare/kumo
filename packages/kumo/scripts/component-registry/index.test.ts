@@ -216,7 +216,7 @@ describe("extractStateClasses", () => {
   });
 
   it("extracts focus state", () => {
-    const classes = "ring-kumo-line focus:ring-kumo-ring";
+    const classes = "ring-kumo-ring focus:ring-kumo-ring";
     expect(extractStateClasses(classes)).toEqual({
       focus: "focus:ring-kumo-ring",
     });

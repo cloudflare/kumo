@@ -1402,7 +1402,7 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
       data-sidebar="input"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-line",
+        "bg-kumo-base text-kumo-subtle ring ring-kumo-ring",
         "transition-[color,background-color,padding,box-shadow] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
         "hover:bg-kumo-overlay",
         // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition

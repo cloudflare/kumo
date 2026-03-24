@@ -147,7 +147,7 @@ describe("Surface Generator - Base Styles Parsing", () => {
 
   it("should have stroke variable from ring border", () => {
     const parsed = getSurfaceParsedBaseStyles();
-    // ring ring-kumo-line should parse to strokeVariable
+    // ring ring-kumo-ring should parse to strokeVariable
     expect(
       parsed.strokeVariable !== undefined || parsed.strokeWeight !== undefined,
     ).toBe(true);

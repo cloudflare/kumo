@@ -62,7 +62,7 @@ const _hasRadio = "Radio" in _radioComponent;
 const RADIO_VARIANTS = {
   values: ["default", "error"],
   classes: {
-    default: "ring-kumo-line",
+    default: "ring-kumo-ring",
     error: "ring-destructive",
   },
   descriptions: {

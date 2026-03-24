@@ -430,7 +430,7 @@ async function createDropdownPanel(variant: string): Promise<FrameNode> {
     bindFillToVariable(panel, bgVar.id);
   }
 
-  // Apply border (ring ring-kumo-line)
+  // Apply border (ring ring-kumo-ring)
   const borderVar = getVariableByName(VAR_NAMES.color.line);
   if (borderVar) {
     bindStrokeToVariable(panel, borderVar.id, 1);

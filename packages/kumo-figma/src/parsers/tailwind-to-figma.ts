@@ -127,7 +127,6 @@ const COLOR_TO_VARIABLE: Record<string, string> = {
   "border-kumo-warning": "color-kumo-warning",
   "border-kumo-danger": "color-kumo-danger",
   "border-kumo-success": "color-kumo-success",
-  "ring-kumo-line": "color-kumo-line",
   "ring-kumo-ring": "color-kumo-ring",
   "ring-kumo-danger": "color-kumo-danger",
 };

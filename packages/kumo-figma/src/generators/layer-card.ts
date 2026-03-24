@@ -126,7 +126,7 @@ const LAYER_CARD_CONFIG = getConfigFromRegistry();
  * Create a single LayerCard component
  *
  * Structure:
- * - Root frame (bg-surface-2, ring-kumo-line)
+ * - Root frame (bg-surface-2, ring-kumo-ring)
  *   - Secondary frame (header with text-kumo-strong)
  *   - Primary frame (bg-surface, ring-kumo-fill)
  *
@@ -167,7 +167,7 @@ async function createLayerCardComponent(): Promise<ComponentNode> {
     }
   }
 
-  // Apply root ring (ring-kumo-line)
+  // Apply root ring (ring-kumo-ring)
   const rootRingVar = getVariableByName(VAR_NAMES.color.line);
   if (rootRingVar) {
     bindStrokeToVariable(component, rootRingVar.id, 1);

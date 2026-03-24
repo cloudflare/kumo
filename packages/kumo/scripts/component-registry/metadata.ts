@@ -295,7 +295,7 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
   Checkbox: {
     dimensions: "h-4 w-4",
     borderRadius: "rounded-sm",
-    baseTokens: ["bg-kumo-base", "ring-kumo-line"],
+    baseTokens: ["bg-kumo-base", "ring-kumo-ring"],
     states: {
       checked: ["bg-kumo-contrast", "text-kumo-inverse"],
       indeterminate: ["bg-kumo-contrast", "text-kumo-inverse"],
@@ -318,14 +318,14 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     ],
   },
   ClipboardText: {
-    baseTokens: ["bg-kumo-base", "text-kumo-default", "ring-kumo-line", "border-kumo-fill"],
+    baseTokens: ["bg-kumo-base", "text-kumo-default", "ring-kumo-ring", "border-kumo-fill"],
     states: {
-      input: ["bg-kumo-control", "text-kumo-default", "ring-kumo-line"],
+      input: ["bg-kumo-control", "text-kumo-default", "ring-kumo-ring"],
       text: ["bg-kumo-base", "font-mono"],
       button: ["border-kumo-fill"],
     },
     inputStyles: {
-      base: "bg-kumo-control text-kumo-default ring ring-kumo-line",
+      base: "bg-kumo-control text-kumo-default ring ring-kumo-ring",
       sizes: {
         xs: "h-5 gap-1 rounded-sm px-1.5 text-xs",
         sm: "h-6.5 gap-1 rounded-md px-2 text-xs",
@@ -403,7 +403,7 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     },
   },
   Input: {
-    baseTokens: ["bg-kumo-control", "text-kumo-default", "text-kumo-subtle", "ring-kumo-line"],
+    baseTokens: ["bg-kumo-control", "text-kumo-default", "text-kumo-subtle", "ring-kumo-ring"],
     sizeVariants: {
       xs: {
         height: 20,
@@ -443,7 +443,7 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
       },
     },
     states: {
-      base: ["bg-kumo-control", "text-kumo-default", "ring-kumo-line"],
+      base: ["bg-kumo-control", "text-kumo-default", "ring-kumo-ring"],
       focus: ["ring-kumo-ring"],
       error: ["ring-kumo-danger"],
       disabled: ["opacity-50", "text-kumo-subtle"],

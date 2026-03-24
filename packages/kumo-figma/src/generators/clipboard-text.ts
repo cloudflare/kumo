@@ -214,7 +214,7 @@ async function createClipboardTextComponent(
     }
   }
 
-  // Apply border (ring-kumo-line from input)
+  // Apply border (ring-kumo-ring from input)
   if (inputBaseStyles.strokeVariable) {
     const strokeVar = getVariableByName(inputBaseStyles.strokeVariable);
     if (strokeVar) {

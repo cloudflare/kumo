@@ -335,7 +335,7 @@ describe("Input Generator - Color Token Parsing", () => {
   });
 
   it("should parse stroke variable from ring-* classes", () => {
-    const parsed = parseTailwindClasses("ring ring-kumo-line");
+    const parsed = parseTailwindClasses("ring ring-kumo-ring");
     expect(parsed.hasBorder).toBe(true);
     expect(parsed.strokeVariable).toBeDefined();
     expect(typeof parsed.strokeVariable).toBe("string");

@@ -211,7 +211,7 @@ function Content({
             "flex flex-col", // flexbox layout for sticky input + scrollable list
             "max-h-[min(var(--available-height),24rem)] max-w-(--available-width) min-w-(--anchor-width) py-1.5",
             "bg-kumo-base text-kumo-default", // background
-            "rounded-lg shadow-lg ring ring-kumo-line", // border part
+            "rounded-lg shadow-lg ring ring-kumo-ring", // border part
             className,
           )}
         >
@@ -411,7 +411,7 @@ function Chip(props: ComboboxBase.Chip.Props) {
       className={cn(
         "flex items-center gap-2.5", // Layout
         "h-6 pl-2 pr-[3px]", // Dimensions
-        "rounded-sm ring-1 ring-kumo-line", // Border
+        "rounded-sm ring-1 ring-kumo-ring", // Border
         "bg-kumo-overlay", // Background
         "text-sm", // Typography
       )}
