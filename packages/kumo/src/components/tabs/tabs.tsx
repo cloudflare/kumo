@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
+import { HTMLMotionProps, motion } from "motion/react";
 import { cn } from "../../utils/cn";
 
 /** Tabs variant definitions. */
@@ -99,6 +100,8 @@ export type TabsProps = KumoTabsVariantsProps & {
   indicatorClassName?: string;
 };
 
+const TabIndicator = motion(TabsPrimitive.Indicator);
+
 /**
  * Tab navigation component with segmented or underline style.
  * Built on Base UI Tabs with animated active indicator.
@@ -180,15 +183,31 @@ export function Tabs({
           </TabsPrimitive.Tab>
         ))}
         <TabsPrimitive.Indicator
-          className={cn(
-            "absolute z-1 transition-[left,width,transform] duration-200 ease-out",
-            "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
-            "left-(--active-tab-left) w-(--active-tab-width)",
-            isSegmented &&
-              "top-(--active-tab-top) h-(--active-tab-height) rounded-lg bg-kumo-base shadow-sm ring ring-kumo-ring",
-            isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
-            indicatorClassName,
-          )}
+          render={(props, state) => {
+            return (
+              <motion.div
+                {...(props as HTMLMotionProps<"div">)}
+                className={cn(
+                  "absolute z-1",
+                  "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
+                  isSegmented &&
+                    "top-(--active-tab-top) h-(--active-tab-height) rounded-lg bg-kumo-base shadow-sm ring ring-kumo-ring",
+                  isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
+                  indicatorClassName,
+                )}
+                animate={{
+                  x: state.activeTabPosition?.left,
+                  width: state.activeTabSize?.width,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 320,
+                  damping: 20,
+                  mass: 0.4,
+                }}
+              />
+            );
+          }}
         />
       </TabsPrimitive.List>
     </TabsPrimitive.Root>
