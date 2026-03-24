@@ -7,7 +7,6 @@ sourceFile: "components/pagination"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -23,17 +22,10 @@ import {
   PaginationPageSizeRightDemo,
 } from "~/components/demos/PaginationDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Pagination
-  page={page}
-  setPage={setPage}
-  perPage={10}
-  totalCount={100}
-/>`}
-  >
+  <ComponentExample demo="PaginationBasicDemo">
     <PaginationBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -43,221 +35,120 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock
-    code={`import { Pagination } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Pagination } from "@cloudflare/kumo/components/pagination";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Pagination } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Pagination } from "@cloudflare/kumo/components/pagination";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
-  <ComponentSection>
-    <Heading level={2}>Usage</Heading>
-    <CodeBlock
-      code={`import { useState } from "react";
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { useState } from "react";
 import { Pagination } from "@cloudflare/kumo";
 
 export default function Example() {
   const [page, setPage] = useState(1);
 
-return (
+  return (
+    <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
+  );
+}
+```
 
-<Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
-); }`} lang="tsx" />
-
-  </ComponentSection>
+</ComponentSection>
 
 {/* Examples */}
 
-  <ComponentSection>
-    <Heading level={2}>Examples</Heading>
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
 
-    <Heading level={3}>Full Controls (Default)</Heading>
-    <p>
-      The default pagination includes first, previous, page input, next, and
-      last buttons.
-    </p>
-    <ComponentExample
-      code={`<Pagination
-
-page={page}
-setPage={setPage}
-perPage={10}
-totalCount={100}
-controls="full"
-/>`} >
-
-<PaginationFullDemo client:visible />
+<Heading level={3}>Full Controls (Default)</Heading>
+<p>
+  The default pagination includes first, previous, page input, next, and last
+  buttons.
+</p>
+<ComponentExample demo="PaginationFullDemo">
+  <PaginationFullDemo client:visible />
 </ComponentExample>
 
-    <Heading level={3}>Simple Controls</Heading>
-    <p>
-      Use `controls="simple"` for a minimal
-      pagination with only previous and next buttons.
-    </p>
-    <ComponentExample
-      code={`<Pagination
-
-page={page}
-setPage={setPage}
-perPage={10}
-totalCount={100}
-controls="simple"
-/>`} >
-
-<PaginationSimpleDemo client:visible />
+<Heading level={3}>Simple Controls</Heading>
+<p>
+  Use `controls="simple"` for a minimal pagination with only previous and next
+  buttons.
+</p>
+<ComponentExample demo="PaginationSimpleDemo">
+  <PaginationSimpleDemo client:visible />
 </ComponentExample>
 
-    <Heading level={3}>Mid-Page State</Heading>
-    <p>
-      Pagination in the middle of a dataset with all navigation enabled.
-    </p>
-    <ComponentExample
-      code={`<Pagination
-
-page={5}
-setPage={setPage}
-perPage={10}
-totalCount={100}
-/>`} >
-
-<PaginationMidPageDemo client:visible />
+<Heading level={3}>Mid-Page State</Heading>
+<p>Pagination in the middle of a dataset with all navigation enabled.</p>
+<ComponentExample demo="PaginationMidPageDemo">
+  <PaginationMidPageDemo client:visible />
 </ComponentExample>
 
-    <Heading level={3}>Large Dataset</Heading>
-    <p>
-      Pagination handles large datasets with many pages.
-    </p>
-    <ComponentExample
-      code={`<Pagination
-
-page={1}
-setPage={setPage}
-perPage={25}
-totalCount={1250}
-/>`} >
-
-<PaginationLargeDatasetDemo client:visible />
+<Heading level={3}>Large Dataset</Heading>
+<p>Pagination handles large datasets with many pages.</p>
+<ComponentExample demo="PaginationLargeDatasetDemo">
+  <PaginationLargeDatasetDemo client:visible />
 </ComponentExample>
 
-    <Heading level={3}>Custom Text</Heading>
-    <p>
-      You can set custom pagination text
-    </p>
-    <ComponentExample
-      code={`<Pagination
-
-text={({perPage}) => \`Showing $\{perPage\} per page!\`}
-page={1}
-setPage={setPage}
-perPage={25}
-totalCount={100}
-/>`} >
-
-<PaginationCustomTextDemo client:visible />
+<Heading level={3}>Custom Text</Heading>
+<p>You can set custom pagination text.</p>
+<ComponentExample demo="PaginationCustomTextDemo">
+  <PaginationCustomTextDemo client:visible />
 </ComponentExample>
-  </ComponentSection>
+
+</ComponentSection>
 
 {/* Compound Components */}
 
-  <ComponentSection>
-    <Heading level={2}>Compound Components</Heading>
-    <p>
-      For more control over layout and features, use the compound component API.
-      This allows you to compose `Pagination.Info`,
-      `Pagination.PageSize`,
-      `Pagination.Controls`, and
-      `Pagination.Separator` in any order.
-    </p>
+<ComponentSection>
+  <Heading level={2}>Compound Components</Heading>
+  <p>
+    For more control over layout and features, use the compound component API. This allows you to compose `Pagination.Info`, `Pagination.PageSize`, `Pagination.Controls`, and `Pagination.Separator` in any order.
+  </p>
 
-    <Heading level={3}>Page Size Selector</Heading>
-    <p>
-      Add a dropdown to let users select the number of items per page.
-    </p>
-    <ComponentExample
-      code={`const [page, setPage] = useState(1);
+<Heading level={3}>Page Size Selector</Heading>
+<p>Add a dropdown to let users select the number of items per page.</p>
+<ComponentExample demo="PaginationPageSizeSelectorDemo">
+  <PaginationPageSizeSelectorDemo client:visible />
+</ComponentExample>
 
-const [perPage, setPerPage] = useState(25);
+<Heading level={3}>Custom Page Size Options</Heading>
+<p>
+  Customize the available page size options with the `options` prop. Defaults to
+  `[25, 50, 100, 250]`.
+</p>
+<ComponentExample demo="PaginationCustomPageSizeOptionsDemo">
+  <PaginationCustomPageSizeOptionsDemo client:visible />
+</ComponentExample>
 
-<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={500}>
-  <Pagination.Info />
-  <Pagination.Separator />
-  <Pagination.PageSize
-    value={perPage}
-    onChange={(size) => {
-      setPerPage(size);
-      setPage(1);
-    }}
-  />
-  <Pagination.Controls />
-</Pagination>`}
-    >
-      <PaginationPageSizeSelectorDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Custom Info Text</Heading>
+<p>Use a render function to customize the info text.</p>
+<ComponentExample demo="PaginationCompoundCustomInfoDemo">
+  <PaginationCompoundCustomInfoDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Custom Page Size Options</Heading>
-    <p>
-      Customize the available page size options with the `options` prop.
-      Defaults to `[25, 50, 100, 250]`.
-    </p>
-    <ComponentExample
-      code={`<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={200}>
+<Heading level={3}>Custom Layout</Heading>
+<p>
+  Arrange components in any order. Here the page size selector is on the right.
+</p>
+<ComponentExample demo="PaginationPageSizeRightDemo">
+  <PaginationPageSizeRightDemo client:visible />
+</ComponentExample>
 
-  <Pagination.Info />
-  <Pagination.Separator />
-  <Pagination.PageSize
-    value={perPage}
-    onChange={(size) => {
-      setPerPage(size);
-      setPage(1);
-    }}
-    options={[10, 20, 50]}
-  />
-  <Pagination.Controls />
-</Pagination>`}
-    >
-      <PaginationCustomPageSizeOptionsDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Custom Info Text</Heading>
-    <p>
-      Use a render function to customize the info text.
-    </p>
-    <ComponentExample
-      code={`<Pagination page={page} setPage={setPage} perPage={25} totalCount={100}>
-
-  <Pagination.Info>
-    {({ page, totalCount }) => \`Page $\{page\} of $\{Math.ceil((totalCount ?? 1) / 25)\}\`}
-  </Pagination.Info>
-  <Pagination.Controls />
-</Pagination>`}
-    >
-      <PaginationCompoundCustomInfoDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Custom Layout</Heading>
-    <p>
-      Arrange components in any order. Here the page size selector is on the right.
-    </p>
-    <ComponentExample
-      code={`<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={500}>
-
-  <Pagination.Info />
-  <div className="flex items-center gap-2">
-    <Pagination.Controls />
-    <Pagination.Separator />
-    <Pagination.PageSize value={perPage} onChange={setPerPage} />
-  </div>
-</Pagination>`}
-    >
-      <PaginationPageSizeRightDemo client:visible />
-    </ComponentExample>
-  </ComponentSection>
+</ComponentSection>
 
 {/* API Reference */}
 

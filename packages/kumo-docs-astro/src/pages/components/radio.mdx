@@ -8,7 +8,6 @@ baseUIComponent: "radio-group"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -23,16 +22,10 @@ import {
   RadioCardHorizontalDemo,
 } from "~/components/demos/RadioDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Radio.Group legend="Notification preference" defaultValue="email">
-  <Radio.Item label="Email" value="email" />
-  <Radio.Item label="SMS" value="sms" />
-  <Radio.Item label="Push notification" value="push" />
-</Radio.Group>`}
-  >
+  <ComponentExample demo="RadioBasicDemo">
     <RadioBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -42,20 +35,26 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Radio } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Radio } from "@cloudflare/kumo/components/radio";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Radio } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Radio } from "@cloudflare/kumo/components/radio";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
-  <ComponentSection>
-    <Heading level={2}>Usage</Heading>
-    <CodeBlock
-      code={`import { Radio } from "@cloudflare/kumo";
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Radio } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -64,214 +63,92 @@ export default function Example() {
       <Radio.Item label="Option B" value="b" />
     </Radio.Group>
   );
-}`}
-      lang="tsx"
-    />
-  </ComponentSection>
+}
+```
+
+</ComponentSection>
 
 {/* Examples */}
 
-  <ComponentSection>
-    <Heading level={2}>Examples</Heading>
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
 
-    <Heading level={3}>Default (Vertical)</Heading>
-    <p>
-      Radio groups display vertically by default. Each radio has a label
-      displayed to its right.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group legend="Account type" defaultValue="personal">
+<Heading level={3}>Default (Vertical)</Heading>
+<p>
+  Radio groups display vertically by default. Each radio has a label displayed
+  to its right.
+</p>
+<ComponentExample demo="RadioDefaultDemo">
+  <RadioDefaultDemo client:visible />
+</ComponentExample>
 
-  <Radio.Item label="Personal" value="personal" />
-  <Radio.Item label="Business" value="business" />
-  <Radio.Item label="Enterprise" value="enterprise" />
-</Radio.Group>`}
-    >
-      <RadioDefaultDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Horizontal</Heading>
+<p>
+  Use `orientation="horizontal"` for inline layouts. Items wrap when there isn't
+  enough space.
+</p>
+<ComponentExample demo="RadioHorizontalDemo">
+  <RadioHorizontalDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Horizontal</Heading>
-    <p>
-      Use `orientation="horizontal"` for inline layouts. Items wrap when there isn't enough space.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group legend="Size" orientation="horizontal" defaultValue="md">
+<Heading level={3}>With Description</Heading>
+<p>Add helper text below the radio items using the `description` prop.</p>
+<ComponentExample demo="RadioDescriptionDemo">
+  <RadioDescriptionDemo client:visible />
+</ComponentExample>
 
-  <Radio.Item label="Small" value="sm" />
-  <Radio.Item label="Medium" value="md" />
-  <Radio.Item label="Large" value="lg" />
-</Radio.Group>`}
-    >
-      <RadioHorizontalDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Control Position</Heading>
+<p>Use `controlPosition="end"` to place labels before radio buttons.</p>
+<ComponentExample demo="RadioControlPositionDemo">
+  <RadioControlPositionDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>With Description</Heading>
-    <p>
-      Add helper text below the radio items using the <code
-        class="rounded bg-kumo-control px-1 py-0.5 text-sm">description</code> prop.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group
+<Heading level={3}>Radio Card</Heading>
+<p>
+  Use `appearance="card"` on the group to display each option as a selectable
+  card. Combine with the `description` prop on each item for richer content.
+</p>
+<ComponentExample demo="RadioCardDemo">
+  <RadioCardDemo client:visible />
+</ComponentExample>
 
-legend="Shipping method"
-description="Choose how you'd like to receive your order"
-defaultValue="standard"
+<Heading level={3}>Radio Card (Horizontal)</Heading>
+<p>
+  Combine `appearance="card"` with `orientation="horizontal"` for a side-by-side
+  card layout.
+</p>
+<ComponentExample demo="RadioCardHorizontalDemo">
+  <RadioCardHorizontalDemo client:visible />
+</ComponentExample>
 
->
+<Heading level={3}>With Error</Heading>
+<p>Show validation errors at the group level using the `error` prop.</p>
+<ComponentExample demo="RadioErrorDemo">
+  <RadioErrorDemo client:visible />
+</ComponentExample>
 
-  <Radio.Item label="Standard (5-7 days)" value="standard" />
-  <Radio.Item label="Express (2-3 days)" value="express" />
-  <Radio.Item label="Overnight" value="overnight" />
-</Radio.Group>`}
-    >
-      <RadioDescriptionDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Disabled</Heading>
+<p>Disable the entire group or individual items.</p>
+<ComponentExample demo="RadioDisabledDemo">
+  <RadioDisabledDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Control Position</Heading>
-    <p>
-      Use `controlPosition="end"` to place labels before radio buttons.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group legend="Preferences" controlPosition="end" defaultValue="a">
-
-  <Radio.Item label="Label before radio" value="a" />
-  <Radio.Item label="Another option" value="b" />
-</Radio.Group>`}
-    >
-      <RadioControlPositionDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Radio Card</Heading>
-    <p>
-      Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">appearance="card"</code> on the group to display each option as a selectable card. Combine with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">description</code> prop on each item for richer content.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group legend="Choose a plan" appearance="card" defaultValue="free">
-
-  <Radio.Item
-    label="Free"
-    description="For personal or hobby projects that aren't business-critical."
-    value="free"
-  />
-  <Radio.Item
-    label="Pro"
-    description="For professional websites that aren't business-critical."
-    value="pro"
-  />
-  <Radio.Item
-    label="Business"
-    description="For small businesses operating online."
-    value="business"
-  />
-  <Radio.Item
-    label="Contract"
-    description="For mission-critical applications that are core to your business."
-    value="contract"
-  />
-</Radio.Group>`}
-    >
-      <RadioCardDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Radio Card (Horizontal)</Heading>
-    <p>
-      Combine <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">appearance="card"</code> with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">orientation="horizontal"</code> for a side-by-side card layout.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group
-
-legend="Choose a plan"
-appearance="card"
-orientation="horizontal"
-defaultValue="free"
-
->
-
-  <Radio.Item
-    label="Free"
-    description="For personal or hobby projects that aren't business-critical."
-    value="free"
-  />
-  <Radio.Item
-    label="Pro"
-    description="For professional websites that aren't business-critical."
-    value="pro"
-  />
-  <Radio.Item
-    label="Business"
-    description="For small businesses operating online."
-    value="business"
-  />
-  <Radio.Item
-    label="Contract"
-    description="For mission-critical applications that are core to your business."
-    value="contract"
-  />
-</Radio.Group>`}
-    >
-      <RadioCardHorizontalDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>With Error</Heading>
-    <p>
-      Show validation errors at the group level using the <code
-        class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code> prop.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group
-
-legend="Payment method"
-error="Please select a payment method to continue"
-
->
-
-  <Radio.Item label="Credit Card" value="card" variant="error" />
-  <Radio.Item label="PayPal" value="paypal" variant="error" />
-  <Radio.Item label="Bank Transfer" value="bank" variant="error" />
-</Radio.Group>`}
-    >
-      <RadioErrorDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Disabled</Heading>
-    <p>
-      Disable the entire group or individual items.
-    </p>
-    <ComponentExample
-      code={`<Radio.Group legend="Disabled group" disabled defaultValue="a">
-
-  <Radio.Item label="Option A" value="a" />
-  <Radio.Item label="Option B" value="b" />
-</Radio.Group>
-
-<Radio.Group legend="Individual disabled" defaultValue="available">
-  <Radio.Item label="Available" value="available" />
-  <Radio.Item label="Unavailable" value="unavailable" disabled />
-</Radio.Group>`}
-    >
-      <RadioDisabledDemo client:visible />
-    </ComponentExample>
-  </ComponentSection>
+</ComponentSection>
 
 {/* API Reference */}
 
-  <ComponentSection>
-    <Heading level={2}>API Reference</Heading>
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
 
-    <Heading level={3}>Radio.Group</Heading>
-    <p>
-      Container for radio buttons with legend, description, and error
-      support.
-    </p>
-    <PropsTable component="Radio.Group" />
+<Heading level={3}>Radio.Group</Heading>
+<p>Container for radio buttons with legend, description, and error support.</p>
+<PropsTable component="Radio.Group" />
 
-    <Heading level={3}>Radio.Item</Heading>
-    <p>
-      Individual radio button within Radio.Group.
-    </p>
-    <PropsTable component="Radio.Item" />
+<Heading level={3}>Radio.Item</Heading>
+<p>Individual radio button within Radio.Group.</p>
+<PropsTable component="Radio.Item" />
 
-  </ComponentSection>
+</ComponentSection>
 
 {/* Accessibility */}
 
@@ -281,33 +158,19 @@ error="Please select a payment method to continue"
     <div>
       <h3 class="mb-2 font-semibold">Semantic HTML</h3>
       <p class="text-kumo-strong">
-        Radio.Group uses semantic
-        `<fieldset>`
-        and
-        `<legend>`
-        elements for proper grouping and screen reader announcement.
+        Radio.Group uses semantic `<fieldset>` and `<legend>` elements for proper grouping and screen reader announcement.
       </p>
     </div>
     <div>
       <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
       <p class="text-kumo-strong">
-        <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Up/Down</kbd>
-        or
-        <kbd class="rounded bg-kumo-control px-1.5 py-0.5">
-          Arrow Left/Right
-        </kbd>
-        moves between options.
-        <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd> selects
-        the focused option.
-        <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus
-        to and from the radio group.
+        <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Up/Down</kbd> or <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Left/Right</kbd> moves between options. <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd> selects the focused option. <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus to and from the radio group.
       </p>
     </div>
     <div>
       <h3 class="mb-2 font-semibold">Screen Readers</h3>
       <p class="text-kumo-strong">
-        Each radio is announced with its label and selection state. The group
-        legend provides context for all options.
+        Each radio is announced with its label and selection state. The group legend provides context for all options.
       </p>
     </div>
   </div>

@@ -13,30 +13,7 @@ import Heading from "~/components/docs/Heading.astro";
 <ComponentSection>
   <Heading level={2}>Custom Chart</Heading>
 
-  <ComponentExample
-    code={`import { Chart } from "@cloudflare/kumo"
-
-const options = useMemo(
-() => ({
-series: [
-{
-type: "pie",
-data: [
-{ value: 101, name: "Series A" },
-{ value: 202, name: "Series B" },
-{ value: 303, name: "Series C" },
-{ value: 404, name: "Series D" },
-{ value: 505, name: "Series E" },
-],
-},
-],
-}) as echarts.EChartsOption,
-[],
-)
-
-<Chart options={options} echarts={echarts} />
-`}
-  >
+  <ComponentExample demo="PieChartDemo">
     <PieChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>

@@ -7,7 +7,6 @@ sourceFile: "components/surface"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -16,60 +15,50 @@ import {
   SurfaceNestedDemo,
 } from "~/components/demos/SurfaceDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<Surface className="p-6 rounded-lg">
-  <Text size="lg" weight="semibold">Surface Component</Text>
-  <Text variant="secondary" className="mt-2">
-    A container with consistent elevation and border styling.
-  </Text>
-</Surface>`}
-  >
+  <ComponentExample demo="SurfaceDemo">
     <SurfaceDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock code={`import { Surface } from "@cloudflare/kumo";`} lang="tsx" />
+
+```tsx
+import { Surface } from "@cloudflare/kumo";
+```
+
 </ComponentSection>
+
+{/* Polymorphic "as" prop */}
 
 <ComponentSection>
   <Heading level={2}>Polymorphic "as" prop</Heading>
   <p class="text-kumo-strong mb-4">
     Surface can render as different HTML elements using the `as` prop.
   </p>
-  <ComponentExample
-    code={`<Surface as="section" className="p-4 rounded-lg">
-  <Text weight="medium">As section element</Text>
-</Surface>
-<Surface as="article" className="p-4 rounded-lg">
-  <Text weight="medium">As article element</Text>
-</Surface>
-<Surface as="aside" className="p-4 rounded-lg">
-  <Text weight="medium">As aside element</Text>
-</Surface>`}
-  >
+  <ComponentExample demo="SurfaceAsDemo">
     <SurfaceAsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Nested Surfaces */}
 
 <ComponentSection>
   <Heading level={2}>Nested Surfaces</Heading>
   <p class="text-kumo-strong mb-4">
     Surfaces can be nested to create layered interfaces.
   </p>
-  <ComponentExample
-    code={`<Surface className="p-6 rounded-lg">
-  <Text weight="semibold">Outer Surface</Text>
-  <Surface className="mt-4 p-4 rounded-md bg-kumo-elevated">
-    <Text variant="secondary">Nested Surface</Text>
-  </Surface>
-</Surface>`}
-  >
+  <ComponentExample demo="SurfaceNestedDemo">
     <SurfaceNestedDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>

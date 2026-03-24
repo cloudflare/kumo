@@ -15,21 +15,16 @@ import {
   BadgePrimaryDemo,
   BadgeSecondaryDemo,
   BadgeDestructiveDemo,
+  BadgeSuccessDemo,
   BadgeOutlineDemo,
   BadgeBetaDemo,
   BadgeInSentenceDemo,
 } from "~/components/demos/BadgeDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Badge variant="primary">Primary</Badge>
-<Badge variant="secondary">Secondary</Badge>
-<Badge variant="destructive">Destructive</Badge>
-<Badge variant="outline">Outline</Badge>
-<Badge variant="beta">Beta</Badge>`}
-  >
+  <ComponentExample demo="BadgeVariantsDemo">
     <BadgeVariantsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -38,21 +33,28 @@ import {
 
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Badge } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Badge } from "@cloudflare/kumo/components/badge";`}
+    lang="tsx"
+  />
 </ComponentSection>
 
 {/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { Badge } from "@cloudflare/kumo";
+
+```tsx
+import { Badge } from "@cloudflare/kumo";
 
 export default function Example() {
-  return <Badge variant="primary">Beta</Badge>;
-}`}
-    lang="tsx"
-  />
+  return <Badge variant="primary">New</Badge>;
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -60,43 +62,40 @@ export default function Example() {
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
-{/* Variants */}
-
 <Heading level={3}>Variants</Heading>
+
 <h4 class="mb-3 text-base font-medium">Primary</h4>
-<ComponentExample code={`<Badge variant="primary">Primary</Badge>`}>
+<ComponentExample demo="BadgePrimaryDemo">
   <BadgePrimaryDemo client:visible />
 </ComponentExample>
 
 <h4 class="mb-3 text-base font-medium">Secondary</h4>
-<ComponentExample code={`<Badge variant="secondary">Secondary</Badge>`}>
+<ComponentExample demo="BadgeSecondaryDemo">
   <BadgeSecondaryDemo client:visible />
 </ComponentExample>
 
 <h4 class="mb-3 text-base font-medium">Destructive</h4>
-<ComponentExample code={`<Badge variant="destructive">Destructive</Badge>`}>
+<ComponentExample demo="BadgeDestructiveDemo">
   <BadgeDestructiveDemo client:visible />
 </ComponentExample>
 
+<h4 class="mb-3 text-base font-medium">Success</h4>
+<ComponentExample demo="BadgeSuccessDemo">
+  <BadgeSuccessDemo client:visible />
+</ComponentExample>
+
 <h4 class="mb-3 text-base font-medium">Outline</h4>
-<ComponentExample code={`<Badge variant="outline">Outline</Badge>`}>
+<ComponentExample demo="BadgeOutlineDemo">
   <BadgeOutlineDemo client:visible />
 </ComponentExample>
 
 <h4 class="mb-3 text-base font-medium">Beta</h4>
-<ComponentExample code={`<Badge variant="beta">Beta</Badge>`}>
+<ComponentExample demo="BadgeBetaDemo">
   <BadgeBetaDemo client:visible />
 </ComponentExample>
 
-{/* In a sentence */}
-
   <Heading level={3}>In a sentence</Heading>
-  <ComponentExample
-    code={`<p className="flex items-center gap-2">
-  Workers
-  <Badge variant="beta">Beta</Badge>
-</p>`}
-  >
+  <ComponentExample demo="BadgeInSentenceDemo">
     <BadgeInSentenceDemo client:visible />
   </ComponentExample>
 </ComponentSection>

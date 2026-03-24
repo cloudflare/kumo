@@ -8,7 +8,6 @@ baseUIComponent: "tooltip"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -17,33 +16,39 @@ import {
   TooltipMultipleDemo,
 } from "~/components/demos/TooltipDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<Tooltip content="Add new item" asChild>
-  <Button shape="square" icon={PlusIcon} />
-</Tooltip>`}
-  >
+  <ComponentExample demo="TooltipHeroDemo">
     <TooltipHeroDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock
-    code={`import { Tooltip, TooltipProvider } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Tooltip, TooltipProvider } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
+```
+
 </ComponentSection>
+
+{/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock code={`import { Tooltip, Button } from "@cloudflare/kumo";
+
+```tsx
+import { Tooltip, Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -51,53 +56,56 @@ export default function Example() {
       <Button>Hover me</Button>
     </Tooltip>
   );
-}`} lang="tsx" />
-  For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovider).
+}
+```
+
+For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovider).
+
 </ComponentSection>
+
+{/* Examples */}
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>Basic Tooltip</Heading>
-<ComponentExample
-  code={`<Tooltip content="Add" asChild>
-  <Button shape="square" icon={PlusIcon} />
-</Tooltip>`}
->
+<ComponentExample demo="TooltipBasicDemo">
   <TooltipBasicDemo client:load />
 </ComponentExample>
 
-  <Heading level={3}>Multiple Tooltips</Heading>
-  <ComponentExample code={`<TooltipProvider>
-  <div className="flex gap-2">
-    <Tooltip content="Add" asChild>
-      <Button shape="square" icon={PlusIcon} />
-    </Tooltip>
-    <Tooltip content="Change language" asChild>
-      <Button shape="square" icon={TranslateIcon} />
-    </Tooltip>
-  </div>
-</TooltipProvider>`}>
-    <TooltipMultipleDemo client:load />
-  </ComponentExample>
+<Heading level={3}>Multiple Tooltips</Heading>
+<ComponentExample demo="TooltipMultipleDemo">
+  <TooltipMultipleDemo client:load />
+</ComponentExample>
+
 </ComponentSection>
+
+{/* TooltipProvider */}
 
 <ComponentSection>
   <Heading level={2} id="tooltipprovider">TooltipProvider</Heading>
 
-`TooltipProvider` groups multiple tooltips so that after the first tooltip has been shown, switching to another skips the open delay. Place it once at your app root or layout — not around each individual `Tooltip`.
+<p>
+  `TooltipProvider` groups multiple tooltips so that after the first tooltip has
+  been shown, switching to another skips the open delay. Place it once at your
+  app root or layout — not around each individual `Tooltip`.
+</p>
 
-  <CodeBlock code={`// Wrap your app or layout once
+```tsx
+// Wrap your app or layout once
 <TooltipProvider>
   <App />
 </TooltipProvider>
 
 // Then use Tooltip anywhere inside
-
 <Tooltip content="Add" asChild>
   <Button shape="square" icon={PlusIcon} />
-</Tooltip>`} lang="tsx" />
+</Tooltip>
+```
+
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>

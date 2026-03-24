@@ -8,7 +8,6 @@ sourceFile: "blocks/resource-list"
 import Heading from "~/components/docs/Heading.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Callout from "~/components/docs/Callout.astro";
 import {
   ResourceListBasicDemo,
@@ -16,39 +15,15 @@ import {
   ResourceListCompleteDemo,
 } from "~/components/demos/ResourceListDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<ResourceListPage
-  title="KV Namespaces"
-  description="Store key-value data globally with low-latency access"
-  icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
-  usage={
-    <Surface className="p-4">
-      <h3 className="mb-2 font-semibold">Usage Example</h3>
-      <Code lang="ts" code={\`// Read from KV
-const value = await KV.get('key');\`} />
-    </Surface>
-  }
-  additionalContent={
-    <Surface className="p-4">
-      <h3 className="mb-2 font-semibold">Learn More</h3>
-      <p className="text-sm text-kumo-strong">
-        Check out our documentation to learn more about KV storage.
-      </p>
-    </Surface>
-  }
->
-  <div className="space-y-4">
-    <Surface className="p-6">
-      <h4 className="mb-2 font-semibold">production-kv</h4>
-      <p className="text-sm text-kumo-strong">Created 2 days ago</p>
-    </Surface>
-  </div>
-</ResourceListPage>`}
-  >
+  <ComponentExample demo="ResourceListCompleteDemo">
     <ResourceListCompleteDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Installation */}
 
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
@@ -60,24 +35,31 @@ const value = await KV.get('key');\`} />
   <div class="space-y-4">
     <div>
       <p>**1. Initialize Kumo config (first time only)**</p>
-      <CodeBlock code={`npx @cloudflare/kumo init`} lang="bash" />
-    </div>
-    <div>
-      <p>**2. Install the block**</p>
-      <CodeBlock
-        code={`npx @cloudflare/kumo add ResourceListPage`}
-        lang="bash"
-      />
-    </div>
-    <div>
-      <p>**3. Import from your local path**</p>
-      <CodeBlock
-        code={`// The path depends on your kumo.json blocksDir setting
+
+```bash
+npx @cloudflare/kumo init
+```
+
+</div>
+<div>
+<p>**2. Install the block**</p>
+
+```bash
+npx @cloudflare/kumo add ResourceListPage
+```
+
+</div>
+<div>
+<p>**3. Import from your local path**</p>
+
+```tsx
+// The path depends on your kumo.json blocksDir setting
 // Default: src/components/kumo/
-import { ResourceListPage } from "./components/kumo/resource-list/resource-list";`}
-        lang="tsx"
-      />
+import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
+```
+
     </div>
+
   </div>
   <Callout type="info">
     <strong>Why blocks?</strong> Blocks give you full ownership of the code,
@@ -86,9 +68,13 @@ import { ResourceListPage } from "./components/kumo/resource-list/resource-list"
   </Callout>
 </ComponentSection>
 
+{/* Usage */}
+
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock code={`import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
+
+```tsx
+import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
 import { Surface } from "@cloudflare/kumo";
 import { DatabaseIcon } from "@phosphor-icons/react";
 
@@ -99,58 +85,33 @@ export default function DatabasesPage() {
       description="Manage your database instances and configurations"
       icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
     >
-      <Surface className="p-6">
-        {/* Your resource list content */}
-      </Surface>
+      <Surface className="p-6">{/* Your resource list content */}</Surface>
     </ResourceListPage>
   );
-}`} lang="tsx" />
+}
+```
+
 </ComponentSection>
+
+{/* Examples */}
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>Basic</Heading>
 <p>A minimal resource list page with title, description, and icon.</p>
-<ComponentExample
-  code={`<ResourceListPage
-  title="Databases"
-  description="Manage your database instances and configurations"
-  icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
->
-  <Surface className="p-6">
-    <p>Main content area - your resource list would go here</p>
-  </Surface>
-</ResourceListPage>`}
->
+<ComponentExample demo="ResourceListBasicDemo">
   <ResourceListBasicDemo client:visible />
 </ComponentExample>
 
   <Heading level={3}>With Usage Sidebar</Heading>
   <p>Include a sidebar with usage examples or quick start guides.</p>
-  <ComponentExample code={`<ResourceListPage
-  title="API Keys"
-  description="Create and manage API keys for your applications"
-  usage={
-    <Surface className="p-4">
-      <h3 className="mb-2 font-semibold">Quick Start</h3>
-      <p className="mb-3 text-sm text-kumo-strong">
-        Generate an API key to authenticate your requests
-      </p>
-      <Code
-        lang="bash"
-        code='curl -H "Authorization: Bearer YOUR_API_KEY" https://api.example.com'
-      />
-    </Surface>
-  }
->
-  <Surface className="p-6">
-    <p>API keys list would appear here</p>
-  </Surface>
-</ResourceListPage>`}>
+  <ComponentExample demo="ResourceListWithUsageDemo">
     <ResourceListWithUsageDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>
