@@ -24,405 +24,219 @@ import {
   SelectComplexDemo,
 } from "~/components/demos/SelectDemo";
 
-{/* Basic Usage with Label */}
+{/* Hero Demo */}
 
-  <ComponentSection>
-    <Heading level={3}>Basic Usage</Heading>
-    <p>
-      A select with a visible label. When you provide the <code
-        class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop, the select automatically renders inside a Field wrapper with the label displayed above it.
-    </p>
+<ComponentSection>
+  <ComponentExample demo="SelectBasicDemo">
+    <SelectBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
-    <ComponentExample
-      code={`import { Select } from "@cloudflare/kumo";
+{/* Installation */}
 
-function App() {
-const [value, setValue] = useState("apple");
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Select } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Select } from "@cloudflare/kumo/components/select";`}
+    lang="tsx"
+  />
+</ComponentSection>
 
-return (
+{/* Usage */}
 
-<Select
-label="Favorite Fruit"
-className="w-[200px]"
-value={value}
-onValueChange={(v) => setValue(v ?? "apple")}
-items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-/>
-)
-}`} >
-<SelectBasicDemo client:load />
-</ComponentExample>
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
 
-  </ComponentSection>
+```tsx
+import { Select } from "@cloudflare/kumo";
+
+export default function Example() {
+  const [value, setValue] = useState("apple");
+
+  return (
+    <Select
+      label="Favorite Fruit"
+      value={value}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    />
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic</Heading>
+<p>
+  A select with a visible label. When you provide the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop,
+  the select automatically renders inside a Field wrapper with the label
+  displayed above it.
+</p>
+
+  <ComponentExample demo="SelectBasicDemo">
+    <SelectBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* Without Visible Label */}
 
-  <ComponentSection>
-    <Heading level={3}>Without Visible Label</Heading>
-    <p>
-      When a visible label isn't needed (e.g., in compact UIs or when context is clear),
-      use `aria-label` for accessibility.
-    </p>
+<ComponentSection>
+  <Heading level={3}>Without Visible Label</Heading>
+  <p>
+    When a visible label isn't needed (e.g., in compact UIs or when context is clear),
+    use `aria-label` for accessibility.
+  </p>
 
-    <ComponentExample
-      code={`import { Select } from "@cloudflare/kumo";
-
-function App() {
-const [value, setValue] = useState("apple");
-
-return (
-
-<Select
-aria-label="Select a fruit"
-className="w-[200px]"
-value={value}
-onValueChange={(v) => setValue(v ?? "apple")}
-items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
-/>
-)
-}`} >
-<SelectWithoutLabelDemo client:load />
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectWithoutLabelDemo">
+    <SelectWithoutLabelDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* With Description and Error */}
 
-  <ComponentSection>
-    <Heading level={3}>With Description and Error</Heading>
-    <p>
-      Select integrates with the Field wrapper to show description text and validation errors.
-    </p>
+<ComponentSection>
+  <Heading level={3}>With Description and Error</Heading>
+  <p>
+    Select integrates with the Field wrapper to show description text and validation errors.
+  </p>
 
-    <ComponentExample
-      code={`import { Select } from "@cloudflare/kumo";
-
-function App() {
-const [value, setValue] = useState<string | null>(null);
-
-return (
-
-<Select
-label="Issue Type"
-description="Choose the category that best describes your issue"
-error={!value ? "Please select an issue type" : undefined}
-className="w-[280px]"
-value={value}
-onValueChange={(v) => setValue(v as string | null)}
-items={{
-        bug: "Bug",
-        documentation: "Documentation",
-        feature: "Feature",
-      }}
-/>
-)
-}`} >
-<SelectWithFieldDemo client:load />
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectWithFieldDemo">
+    <SelectWithFieldDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* Placeholder */}
 
-  <ComponentSection>
-    <Heading level={3}>Placeholder</Heading>
-    <p>
-      Use the `placeholder` prop
-      to show text when no value is selected.
-    </p>
+<ComponentSection>
+  <Heading level={3}>Placeholder</Heading>
+  <p>
+    Use the `placeholder` prop
+    to show text when no value is selected.
+  </p>
 
-    <ComponentExample
-      code={`import { Select } from "@cloudflare/kumo";
-
-function App() {
-const [value, setValue] = useState<string | null>(null);
-
-return (
-
-<Select
-label="Category"
-placeholder="Choose a category..."
-className="w-[200px]"
-value={value}
-onValueChange={(v) => setValue(v as string | null)}
-items={{
-        bug: "Bug",
-        documentation: "Documentation",
-        feature: "Feature",
-      }}
-/>
-)
-}`} >
-<SelectPlaceholderDemo client:load />
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectPlaceholderDemo">
+    <SelectPlaceholderDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* Label Tooltip */}
 
-  <ComponentSection>
-    <Heading level={3}>Label with Tooltip</Heading>
-    <p>
-      Add a tooltip icon next to the label for additional context using <code
-        class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
-    </p>
+<ComponentSection>
+  <Heading level={3}>Label with Tooltip</Heading>
+  <p>
+    Add a tooltip icon next to the label for additional context using <code
+      class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
+  </p>
 
-    <ComponentExample
-      code={`import { Select } from "@cloudflare/kumo";
-
-function App() {
-const [value, setValue] = useState<string | null>(null);
-
-return (
-
-<Select
-label="Priority"
-labelTooltip="Higher priority issues are addressed first"
-placeholder="Select priority"
-className="w-[200px]"
-value={value}
-onValueChange={(v) => setValue(v as string | null)}
-items={{
-        low: "Low",
-        medium: "Medium",
-        high: "High",
-        critical: "Critical",
-      }}
-/>
-)
-}`} >
-<SelectWithTooltipDemo client:load />
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectWithTooltipDemo">
+    <SelectWithTooltipDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* Custom Rendering */}
 
-  <ComponentSection>
-    <Heading level={3}>Custom Rendering</Heading>
-    <p>
-      A select component that demonstrates custom rendering capabilities for
-      both the trigger button and dropdown options, allowing you to work with
-      complex object data structures instead of simple string values.
-    </p>
+<ComponentSection>
+  <Heading level={3}>Custom Rendering</Heading>
+  <p>
+    A select component that demonstrates custom rendering capabilities for
+    both the trigger button and dropdown options, allowing you to work with
+    complex object data structures instead of simple string values.
+  </p>
 
-    <ComponentExample
-      code={`const languages = [
-
-{ value: "en", label: "English", emoji: "🇬🇧" },
-{ value: "fr", label: "French", emoji: "🇫🇷" },
-{ value: "de", label: "German", emoji: "🇩🇪" },
-{ value: "es", label: "Spanish", emoji: "🇪🇸" },
-{ value: "it", label: "Italian", emoji: "🇮🇹" },
-{ value: "pt", label: "Portuguese", emoji: "🇵🇹" },
-];
-
-function App() {
-const [value, setValue] = useState(languages[0]);
-
-return (
-
-<Select
-className="w-[200px]"
-renderValue={(v) => (
-<span>
-{v.emoji} {v.label}
-</span>
-)}
-value={value}
-onValueChange={(v) => setValue(v as any)} >
-{languages.map((language) => (
-<Select.Option key={language.value} value={language}>
-{language.emoji} {language.label}
-</Select.Option>
-))}
-</Select>
-);
-}`} >
-<SelectCustomRenderingDemo client:load />
+<ComponentExample demo="SelectCustomRenderingDemo">
+  <SelectCustomRenderingDemo client:load />
 </ComponentExample>
 
-    <p>
-      Select compares value with items to find which one is selected. For
-      object items, it will compare if the object is the same reference not by
-      value by default. If you want to compare object items by value, you can
-      use <strong>isItemEqualToValue</strong> prop.
-    </p>
+<p>
+  Select compares value with items to find which one is selected. For object
+  items, it will compare if the object is the same reference not by value by
+  default. If you want to compare object items by value, you can use{" "}
+  <strong>isItemEqualToValue</strong> prop.
+</p>
 
-    <CodeBlock
-      code={`function App() {
-
-const languages = [
-{ value: "en", label: "English", emoji: "🇬🇧" },
-{ value: "fr", label: "French", emoji: "🇫🇷" },
-// ...
-];
-
-const [value, setValue] = useState(languages[0]);
-
-return (
-
+```tsx
 <Select
-className="w-[200px]"
-renderValue={(v) => (
-<span>
-{v.emoji} {v.label}
-</span>
-)}
-value={value}
-onValueChange={(v) => setValue(v as any)}
-// Provides custom comparison logic
-isItemEqualToValue={(item, value) => item.value === value.value} >
-{languages.map((language) => (
-<Select.Option key={language.value} value={language}>
-{language.emoji} {language.label}
-</Select.Option>
-))}
+  className="w-[200px]"
+  renderValue={(v) => (
+    <span>
+      {v.emoji} {v.label}
+    </span>
+  )}
+  value={value}
+  onValueChange={(v) => setValue(v)}
+  // Provides custom comparison logic
+  isItemEqualToValue={(item, value) => item.value === value.value}
+>
+  {languages.map((language) => (
+    <Select.Option key={language.value} value={language}>
+      {language.emoji} {language.label}
+    </Select.Option>
+  ))}
 </Select>
-);
-}`}
-lang="tsx"
-/>
+```
 
-  </ComponentSection>
+</ComponentSection>
 
 {/* Loading */}
 
-  <ComponentSection>
-    <Heading level={3}>Loading</Heading>
-    <p>
-      A select component with loading state. The loading state is passed to
-      the component via the <code
-        class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code> prop.
-    </p>
+<ComponentSection>
+  <Heading level={3}>Loading</Heading>
+  <p>
+    A select component with loading state. The loading state is passed to
+    the component via the <code
+      class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code> prop.
+  </p>
 
-    <ComponentExample
-      code={`function App() {
-
-// NULL is for unselected value
-const [value, setValue] = useState(null);
-const { data, isLoading } = useQuery({...});
-
-return (
-
-<Select value={value} onValueChange={(v) => setValue(v as any)} loading={isLoading}>
-{data?.map((item) => (
-<Select.Option key={item.id} value={item.id}>
-{item.name}
-</Select.Option>
-))}
-</Select>
-);
-}`} >
-<div class="flex flex-col gap-4">
-<p class="text-kumo-strong">Loading State</p>
-<SelectLoadingDemo client:load />
-<p class="text-kumo-strong">Loading From Server (simulated 2s delay)</p>
-<SelectLoadingDataDemo client:load />
-</div>
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectLoadingDemo">
+    <div class="flex flex-col gap-4">
+      <p class="text-kumo-strong">Loading State</p>
+      <SelectLoadingDemo client:load />
+      <p class="text-kumo-strong">Loading From Server (simulated 2s delay)</p>
+      <SelectLoadingDataDemo client:load />
+    </div>
+  </ComponentExample>
+</ComponentSection>
 
 {/* Multiple Item */}
 
-  <ComponentSection>
-    <Heading level={3}>Multiple Item</Heading>
-    <p>
-      A select component with multiple selection enabled. The value is an
-      array of selected items.
-    </p>
+<ComponentSection>
+  <Heading level={3}>Multiple Item</Heading>
+  <p>
+    A select component with multiple selection enabled. The value is an
+    array of selected items.
+  </p>
 
-    <ComponentExample
-      code={`function App() {
-
-const [value, setValue] = useState<string[]>(["Name", "Location", "Size"]);
-
-return (
-
-<Select
-className="w-[250px]"
-multiple
-renderValue={(value) => {
-if (value.length > 3) {
-return (
-<span className="line-clamp-1">
-{value.slice(2).join(", ") + \` and \${value.length - 2} more\`}
-</span>
-);
-}
-return <span>{value.join(", ")}</span>;
-}}
-value={value}
-onValueChange={(v) => setValue(v as any)} >
-<Select.Option value="Name">Name</Select.Option>
-<Select.Option value="Location">Location</Select.Option>
-<Select.Option value="Size">Size</Select.Option>
-<Select.Option value="Read">Read</Select.Option>
-<Select.Option value="Write">Write</Select.Option>
-<Select.Option value="CreatedAt">Created At</Select.Option>
-</Select>
-);
-}`} >
-<SelectMultipleDemo client:load />
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectMultipleDemo">
+    <SelectMultipleDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* More Example */}
 
-  <ComponentSection>
-    <Heading level={3}>More Example</Heading>
+<ComponentSection>
+  <Heading level={3}>More Example</Heading>
 
-    <ComponentExample
-      code={`const authors = [
-
-{ id: 1, name: "John Doe", title: "Programmer" },
-{ id: 2, name: "Alice Smith", title: "Software Engineer" },
-{ id: 3, name: "Michael Chan", title: "UI/UX Designer" },
-{ id: 4, name: "Sok Dara", title: "DevOps Engineer" },
-{ id: 5, name: "Emily Johnson", title: "Product Manager" },
-{ id: 6, name: "Visal In", title: "System Engineer" },
-{ id: 7, name: "Laura Kim", title: "Technical Writer" },
-];
-
-function App() {
-const [value, setValue] = useState<(typeof authors)[0] | null>(null);
-
-return (
-
-<Select
-className="w-[200px]"
-onValueChange={(v) => setValue(v as any)}
-value={value}
-isItemEqualToValue={(item, value) => item?.id === value?.id}
-renderValue={(author) => {
-return author?.name ?? "Please select author";
-}} >
-{authors.map((author) => (
-<Select.Option key={author.id} value={author}>
-<div className="flex items-center gap-2 w-[300px] justify-between">
-<Text>{author.name}</Text>
-<Text variant="secondary">{author.title}</Text>
-</div>
-</Select.Option>
-))}
-</Select>
-)
-}`} >
-<SelectComplexDemo client:load />
-</ComponentExample>
-
-  </ComponentSection>
+  <ComponentExample demo="SelectComplexDemo">
+    <SelectComplexDemo client:load />
+  </ComponentExample>
+</ComponentSection>
 
 {/* API Reference */}
 
-  <ComponentSection>
-    <Heading level={2}>API Reference</Heading>
-    <Heading level={3}>Select</Heading>
-    <PropsTable component="Select" />
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <Heading level={3}>Select</Heading>
+  <PropsTable component="Select" />
 
-    <Heading level={3}>Select.Option</Heading>
-    <PropsTable component="Select.Option" />
-
-  </ComponentSection>
+  <Heading level={3}>Select.Option</Heading>
+  <PropsTable component="Select.Option" />
+</ComponentSection>

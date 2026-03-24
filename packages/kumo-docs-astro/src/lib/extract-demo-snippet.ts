@@ -1,10 +1,63 @@
 import ts from "typescript";
 
 /**
+ * Collects all identifier references within an AST node.
+ * Only collects identifiers that are actual references (not declarations or property names).
+ */
+function collectIdentifierReferences(node: ts.Node): Set<string> {
+  const identifiers = new Set<string>();
+
+  function visit(node: ts.Node) {
+    if (ts.isIdentifier(node)) {
+      const parent = node.parent;
+
+      // Skip if this is a property name in a property access (e.g., `obj.foo` - skip `foo`)
+      if (ts.isPropertyAccessExpression(parent) && parent.name === node) {
+        return;
+      }
+
+      // Skip if this is a property name in an object literal (e.g., `{ foo: 1 }` - skip `foo`)
+      if (ts.isPropertyAssignment(parent) && parent.name === node) {
+        return;
+      }
+
+      // Skip if this is a shorthand property (e.g., `{ foo }` - we want to include `foo` as a reference)
+      // Actually, shorthand properties ARE references, so don't skip them
+
+      // Skip if this is a declaration name (function name, variable name, parameter name)
+      if (ts.isFunctionDeclaration(parent) && parent.name === node) {
+        return;
+      }
+      if (ts.isVariableDeclaration(parent) && parent.name === node) {
+        return;
+      }
+      if (ts.isParameter(parent) && parent.name === node) {
+        return;
+      }
+      if (ts.isBindingElement(parent) && parent.name === node) {
+        return;
+      }
+
+      // Skip JSX attribute names (e.g., `<Foo bar={...}>` - skip `bar`)
+      if (ts.isJsxAttribute(parent) && parent.name === node) {
+        return;
+      }
+
+      identifiers.add(node.text);
+    }
+
+    ts.forEachChild(node, visit);
+  }
+
+  visit(node);
+  return identifiers;
+}
+
+/**
  * Extracts a named export function from a demo source file,
  * prepended with only the import statements that the function actually uses.
  *
- * Uses the TypeScript compiler API for robust parsing.
+ * Uses the TypeScript compiler API for robust AST-based analysis.
  */
 export function extractDemoSnippet(
   source: string,
@@ -18,22 +71,30 @@ export function extractDemoSnippet(
     ts.ScriptKind.TSX,
   );
 
-  // Collect all import declarations with their imported names
+  // Collect all import declarations with their structure
   const imports: Array<{
-    text: string;
-    names: string[];
+    moduleSpecifier: string;
+    defaultImport: string | null;
+    namedImports: string[];
+    namespaceImport: string | null;
   }> = [];
 
-  let targetFunction: string | null = null;
+  let targetFunctionNode: ts.FunctionDeclaration | null = null;
+  let targetFunctionText: string | null = null;
 
   for (const statement of sourceFile.statements) {
     if (ts.isImportDeclaration(statement)) {
-      const names: string[] = [];
+      const moduleSpecifier = (statement.moduleSpecifier as ts.StringLiteral)
+        .text;
+      let defaultImport: string | null = null;
+      const namedImports: string[] = [];
+      let namespaceImport: string | null = null;
+
       const importClause = statement.importClause;
       if (importClause) {
         // Default import: import Foo from "..."
         if (importClause.name) {
-          names.push(importClause.name.text);
+          defaultImport = importClause.name.text;
         }
         // Named imports: import { Foo, Bar } from "..."
         if (
@@ -41,7 +102,7 @@ export function extractDemoSnippet(
           ts.isNamedImports(importClause.namedBindings)
         ) {
           for (const el of importClause.namedBindings.elements) {
-            names.push(el.name.text);
+            namedImports.push(el.name.text);
           }
         }
         // Namespace import: import * as Foo from "..."
@@ -49,12 +110,14 @@ export function extractDemoSnippet(
           importClause.namedBindings &&
           ts.isNamespaceImport(importClause.namedBindings)
         ) {
-          names.push(importClause.namedBindings.name.text);
+          namespaceImport = importClause.namedBindings.name.text;
         }
       }
       imports.push({
-        text: source.slice(statement.pos, statement.end).trim(),
-        names,
+        moduleSpecifier,
+        defaultImport,
+        namedImports,
+        namespaceImport,
       });
     }
 
@@ -62,25 +125,57 @@ export function extractDemoSnippet(
       ts.isFunctionDeclaration(statement) &&
       statement.name?.text === functionName
     ) {
-      targetFunction = source.slice(statement.pos, statement.end).trim();
+      targetFunctionNode = statement;
+      targetFunctionText = source.slice(statement.pos, statement.end).trim();
     }
   }
 
-  if (!targetFunction) {
+  if (!targetFunctionNode || !targetFunctionText) {
     return `// Could not find function "${functionName}"`;
   }
 
-  // Only include imports whose names appear in the function body
-  // Use word boundary regex to avoid false positives (e.g., "Input" matching "InputBasicDemo")
-  const usedImports = imports
-    .filter((imp) =>
-      imp.names.some((name) =>
-        new RegExp(`\\b${name}\\b`).test(targetFunction!),
-      ),
-    )
-    .map((imp) => imp.text);
+  // Use AST to find all identifier references in the function
+  const usedIdentifiers = collectIdentifierReferences(targetFunctionNode);
+
+  // Rebuild imports with only the used specifiers
+  const usedImports: string[] = [];
+
+  for (const imp of imports) {
+    const usedDefault =
+      imp.defaultImport && usedIdentifiers.has(imp.defaultImport);
+    const usedNamed = imp.namedImports.filter((name) =>
+      usedIdentifiers.has(name),
+    );
+    const usedNamespace =
+      imp.namespaceImport && usedIdentifiers.has(imp.namespaceImport);
+
+    if (!usedDefault && usedNamed.length === 0 && !usedNamespace) {
+      continue; // Skip this import entirely
+    }
+
+    // Reconstruct the import statement
+    const parts: string[] = [];
+
+    if (usedDefault) {
+      parts.push(imp.defaultImport!);
+    }
+
+    if (usedNamed.length > 0) {
+      parts.push(`{ ${usedNamed.join(", ")} }`);
+    }
+
+    if (usedNamespace) {
+      parts.push(`* as ${imp.namespaceImport}`);
+    }
+
+    usedImports.push(
+      `import ${parts.join(", ")} from "${imp.moduleSpecifier}";`,
+    );
+  }
 
   const importBlock = usedImports.join("\n");
 
-  return importBlock ? `${importBlock}\n\n${targetFunction}` : targetFunction;
+  return importBlock
+    ? `${importBlock}\n\n${targetFunctionText}`
+    : targetFunctionText;
 }
