@@ -100,3 +100,7 @@ export function ButtonDisabledDemo() {
     </Button>
   );
 }
+
+export function ButtonUsageDemo() {
+  return <Button variant="secondary">Click me</Button>;
+}

@@ -28,12 +28,7 @@ import {
 {/* Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Button variant="secondary">Button</Button>
-<Button variant="secondary" shape="square" icon={PlusIcon} />`}
-    vrSection="basic"
-    vrTitle="Basic"
-  >
+  <ComponentExample demo="ButtonBasicDemo" vrSection="basic" vrTitle="Basic">
     <ButtonBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -55,14 +50,15 @@ import {
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { Button } from "@cloudflare/kumo";
+
+```tsx
+import { Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Button variant="secondary">Click me</Button>;
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -76,7 +72,7 @@ export default function Example() {
 
 <h4 class="mb-3 text-base font-medium">Primary</h4>
 <ComponentExample
-  code={`<Button variant="primary">Primary</Button>`}
+  demo="ButtonPrimaryDemo"
   vrSection="variant-primary"
   vrTitle="Variant: Primary"
 >
@@ -85,7 +81,7 @@ export default function Example() {
 
 <h4 class="mb-3 text-base font-medium">Secondary</h4>
 <ComponentExample
-  code={`<Button variant="secondary">Secondary</Button>`}
+  demo="ButtonSecondaryDemo"
   vrSection="variant-secondary"
   vrTitle="Variant: Secondary"
 >
@@ -94,7 +90,7 @@ export default function Example() {
 
 <h4 class="mb-3 text-base font-medium">Ghost</h4>
 <ComponentExample
-  code={`<Button variant="ghost">Ghost</Button>`}
+  demo="ButtonGhostDemo"
   vrSection="variant-ghost"
   vrTitle="Variant: Ghost"
 >
@@ -103,7 +99,7 @@ export default function Example() {
 
 <h4 class="mb-3 text-base font-medium">Destructive</h4>
 <ComponentExample
-  code={`<Button variant="destructive">Destructive</Button>`}
+  demo="ButtonDestructiveDemo"
   vrSection="variant-destructive"
   vrTitle="Variant: Destructive"
 >
@@ -112,7 +108,7 @@ export default function Example() {
 
 <h4 class="mb-3 text-base font-medium">Outline</h4>
 <ComponentExample
-  code={`<Button variant="outline">Outline</Button>`}
+  demo="ButtonOutlineDemo"
   vrSection="variant-outline"
   vrTitle="Variant: Outline"
 >
@@ -121,7 +117,7 @@ export default function Example() {
 
 <h4 class="mb-3 text-base font-medium">Secondary Destructive</h4>
 <ComponentExample
-  code={`<Button variant="secondary-destructive">Secondary Destructive</Button>`}
+  demo="ButtonSecondaryDestructiveDemo"
   vrSection="variant-secondary-destructive"
   vrTitle="Variant: Secondary Destructive"
 >
@@ -131,14 +127,7 @@ export default function Example() {
 {/* Sizes */}
 
 <Heading level={3}>Sizes</Heading>
-<ComponentExample
-  code={`<Button size="xs" variant="secondary">Extra Small</Button>
-<Button size="sm" variant="secondary">Small</Button>
-<Button size="base" variant="secondary">Base</Button>
-<Button size="lg" variant="secondary">Large</Button>`}
-  vrSection="sizes"
-  vrTitle="Sizes"
->
+<ComponentExample demo="ButtonSizesDemo" vrSection="sizes" vrTitle="Sizes">
   <ButtonSizesDemo client:visible />
 </ComponentExample>
 
@@ -146,9 +135,7 @@ export default function Example() {
 
 <Heading level={3}>With Icon</Heading>
 <ComponentExample
-  code={`<Button variant="secondary" icon={PlusIcon}>
-  Create Worker
-</Button>`}
+  demo="ButtonWithIconDemo"
   vrSection="with-icon"
   vrTitle="With Icon"
 >
@@ -166,8 +153,7 @@ export default function Example() {
   convey the button's purpose.
 </p>
 <ComponentExample
-  code={`<Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add item" />
-<Button variant="secondary" shape="circle" icon={PlusIcon} aria-label="Add item" />`}
+  demo="ButtonIconOnlyDemo"
   vrSection="icon-only"
   vrTitle="Icon Only"
 >
@@ -178,9 +164,7 @@ export default function Example() {
 
 <Heading level={3}>Loading State</Heading>
 <ComponentExample
-  code={`<Button variant="primary" loading>
-  Loading...
-</Button>`}
+  demo="ButtonLoadingDemo"
   vrSection="loading"
   vrTitle="Loading State"
 >
@@ -191,9 +175,7 @@ export default function Example() {
 
   <Heading level={3}>Disabled State</Heading>
   <ComponentExample
-    code={`<Button variant="secondary" disabled>
-  Disabled
-</Button>`}
+    demo="ButtonDisabledDemo"
     vrSection="disabled"
     vrTitle="Disabled State"
   >
