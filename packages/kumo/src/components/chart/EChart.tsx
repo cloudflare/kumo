@@ -284,7 +284,13 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   }, []);
 
   return (
-    <div ref={elRef} className={cn("w-full", className)} style={{ height }} />
+    <div
+      ref={elRef}
+      className={cn("w-full", className)}
+      style={{ height }}
+      tabIndex={options.aria?.enabled ? 0 : undefined}
+      role={options.aria?.enabled ? "img" : undefined}
+    />
   );
 });
 

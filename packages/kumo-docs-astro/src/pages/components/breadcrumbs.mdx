@@ -19,17 +19,7 @@ import {
 } from "~/components/demos/BreadcrumbsDemo";
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Breadcrumbs>
-  <Breadcrumbs.Link icon={<HouseIcon size={16} />} href="/">
-    Home
-  </Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Link href="/docs">Projects</Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Current>Current Project</Breadcrumbs.Current>
-</Breadcrumbs>`}
-  >
+  <ComponentExample demo="BreadcrumbsWithIconsDemo">
     <BreadcrumbsWithIconsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -44,76 +34,37 @@ import {
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock code={`import { Breadcrumbs } from "@cloudflare/kumo";
-
-export default function Example() {
-  return (
-    <Breadcrumbs>
-      <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
-      <Breadcrumbs.Separator />
-      <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
-      <Breadcrumbs.Separator />
-      <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>
-    </Breadcrumbs>
-  );
-}`} lang="tsx" />
+  <ComponentExample demo="BreadcrumbsDemo">
+    <BreadcrumbsDemo client:visible />
+  </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
   <Heading level={3}>Basic</Heading>
-  <ComponentExample code={`<Breadcrumbs>
-  <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>
-</Breadcrumbs>`}>
+  <ComponentExample demo="BreadcrumbsDemo">
     <BreadcrumbsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
   <Heading level={3}>Loading</Heading>
-  <ComponentExample
-    code={`<Breadcrumbs>
-  <Breadcrumbs.Link href="#" icon={<HouseIcon size={16} />}>
-    Home
-  </Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Link href="/docs">Docs</Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Current loading></Breadcrumbs.Current>
-</Breadcrumbs>`}
-  >
+  <ComponentExample demo="BreadcrumbsLoadingDemo">
     <BreadcrumbsLoadingDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
   <Heading level={3}>Root</Heading>
-  <ComponentExample
-    code={`<Breadcrumbs>
-  <Breadcrumbs.Current icon={<HouseIcon size={16} />}>
-    Worker Analytics
-  </Breadcrumbs.Current>
-</Breadcrumbs>`}
-  >
+  <ComponentExample demo="BreadcrumbsRootDemo">
     <BreadcrumbsRootDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
   <Heading level={3}>Clipboard</Heading>
-  <ComponentExample
-    code={`<Breadcrumbs>
-  <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
-  <Breadcrumbs.Separator />
-  <Breadcrumbs.Current>Breadcrumbs</Breadcrumbs.Current>
-  <Breadcrumbs.Clipboard text="#" />
-</Breadcrumbs>`}
-  >
+  <ComponentExample demo="BreadcrumbsWithClipboardDemo">
     <BreadcrumbsWithClipboardDemo client:visible />
   </ComponentExample>
 </ComponentSection>
