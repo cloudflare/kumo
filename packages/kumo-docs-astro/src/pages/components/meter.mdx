@@ -7,7 +7,6 @@ sourceFile: "components/meter"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -18,10 +17,10 @@ import {
   MeterLowDemo,
 } from "~/components/demos/MeterDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample code={`<Meter label="Storage used" value={65} />`}>
+  <ComponentExample demo="MeterBasicDemo">
     <MeterBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -31,76 +30,70 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Meter } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Meter } from "@cloudflare/kumo/components/meter";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Meter } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Meter } from "@cloudflare/kumo/components/meter";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
-  <ComponentSection>
-    <Heading level={2}>Usage</Heading>
-    <CodeBlock
-      code={`import { Meter } from "@cloudflare/kumo";
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Meter } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Meter label="Storage used" value={65} />;
-}`}
-      lang="tsx"
-    />
-  </ComponentSection>
+}
+```
+
+</ComponentSection>
 
 {/* Examples */}
 
-  <ComponentSection>
-    <Heading level={2}>Examples</Heading>
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
 
-    <Heading level={3}>Basic Meter</Heading>
-    <p>
-      The default meter displays a label and percentage value.
-    </p>
-    <ComponentExample code={`<Meter label="Storage used" value={65} />`}>
-      <MeterBasicDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Basic Meter</Heading>
+<p>The default meter displays a label and percentage value.</p>
+<ComponentExample demo="MeterBasicDemo">
+  <MeterBasicDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Custom Value Display</Heading>
-    <p>
-      Use `customValue` to show a custom
-      string instead of the percentage.
-    </p>
-    <ComponentExample
-      code={`<Meter label="API requests" value={75} customValue="750 / 1,000" />`}
-    >
-      <MeterCustomValueDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Custom Value Display</Heading>
+<p>Use `customValue` to show a custom string instead of the percentage.</p>
+<ComponentExample demo="MeterCustomValueDemo">
+  <MeterCustomValueDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Hidden Value</Heading>
-    <p>
-      Set `showValue={"{false}"}` to hide
-      the value display.
-    </p>
-    <ComponentExample
-      code={`<Meter label="Progress" value={40} showValue={false} />`}
-    >
-      <MeterHiddenValueDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Hidden Value</Heading>
+<p>Set `showValue={false}` to hide the value display.</p>
+<ComponentExample demo="MeterHiddenValueDemo">
+  <MeterHiddenValueDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Full Meter</Heading>
-    <p>A meter at 100% capacity.</p>
-    <ComponentExample code={`<Meter label="Quota reached" value={100} />`}>
-      <MeterFullDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Full Meter</Heading>
+<p>A meter at 100% capacity.</p>
+<ComponentExample demo="MeterFullDemo">
+  <MeterFullDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Low Value</Heading>
-    <p>A meter with a low value.</p>
-    <ComponentExample code={`<Meter label="Memory usage" value={15} />`}>
-      <MeterLowDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Low Value</Heading>
+<p>A meter with a low value.</p>
+<ComponentExample demo="MeterLowDemo">
+  <MeterLowDemo client:visible />
+</ComponentExample>
 
-  </ComponentSection>
+</ComponentSection>
 
 {/* API Reference */}
 

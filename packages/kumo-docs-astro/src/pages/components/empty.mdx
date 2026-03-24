@@ -7,7 +7,6 @@ sourceFile: "components/empty"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -19,31 +18,32 @@ import {
   EmptyBasicDemo,
 } from "~/components/demos/EmptyDemo";
 
-export const heroCode = `<Empty 
-    icon={<PackageIcon size={48} />}
-    title="No packages found" 
-    description="Get started by installing your first package." 
-    commandLine="npm install @cloudflare/kumo" 
-    contents={<div className="flex items-center gap-2">
-        <Button icon={<CodeIcon />}>See examples</Button>
-        <Button icon={<GlobeIcon />} variant="primary">View documentation</Button>
-    </div>}
-/>`;
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample code={heroCode}>
+  <ComponentExample demo="EmptyDemo">
     <EmptyDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock code={`import { Empty } from "@cloudflare/kumo";`} lang="tsx" />
+
+```tsx
+import { Empty } from "@cloudflare/kumo";
+```
+
 </ComponentSection>
+
+{/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock code={`import { Empty } from "@cloudflare/kumo";
+
+```tsx
+import { Empty } from "@cloudflare/kumo";
 import { PackageIcon } from "@phosphor-icons/react";
 
 export default function Example() {
@@ -55,75 +55,64 @@ export default function Example() {
       commandLine="npm install @kumo/ui"
     />
   );
-}`} lang="tsx" />
+}
+```
+
 </ComponentSection>
+
+{/* Examples */}
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
-  <Heading level={3}>Basic</Heading>
-  <ComponentExample code={`<Empty
-  title="No results found"
-  description="Try adjusting your search or filter to find what you're looking for."
-/>`}>
-    <EmptyBasicDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Basic</Heading>
+<ComponentExample demo="EmptyBasicDemo">
+  <EmptyBasicDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
+
+{/* Sizes */}
 
 <ComponentSection>
   <Heading level={2}>Sizes</Heading>
   <p>Empty states come in three sizes to fit different container contexts.</p>
-  <ComponentExample
-    code={`<Empty size="sm" icon={...} title="..." description="..." />
-<Empty size="base" icon={...} title="..." description="..." />
-<Empty size="lg" icon={...} title="..." description="..." />`}
-  >
+  <ComponentExample demo="EmptySizesDemo">
     <EmptySizesDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* With Command Line */}
+
 <ComponentSection>
   <Heading level={2}>With Command Line</Heading>
   <p>Include a copyable command to help users get started.</p>
-  <ComponentExample
-    code={`<Empty 
-  icon={<FolderOpen size={48} className="text-kumo-inactive" />}
-  title="No projects found"
-  description="Get started by creating your first project using the command below."
-  commandLine="npm create kumo-project"
-/>`}
-  >
+  <ComponentExample demo="EmptyWithCommandDemo">
     <EmptyWithCommandDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* With Actions */}
+
 <ComponentSection>
   <Heading level={2}>With Actions</Heading>
   <p>Add custom action buttons using the contents prop.</p>
-  <ComponentExample
-    code={`<Empty 
-  icon={<CloudSlash size={48} className="text-kumo-inactive" />}
-  title="No connection"
-  description="Unable to connect to the server."
-  contents={
-    <div className="flex gap-2">
-      <Button variant="primary">Retry</Button>
-      <Button variant="secondary">Go Back</Button>
-    </div>
-  }
-/>`}
-  >
+  <ComponentExample demo="EmptyWithActionsDemo">
     <EmptyWithActionsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Minimal */}
+
 <ComponentSection>
   <Heading level={2}>Minimal</Heading>
   <p>At minimum, only a title is required.</p>
-  <ComponentExample code={`<Empty title="Nothing here" />`}>
+  <ComponentExample demo="EmptyMinimalDemo">
     <EmptyMinimalDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>
