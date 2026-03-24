@@ -151,7 +151,7 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-recessed ring-[0.75px] ring-kumo-ring" />
+        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-recessed ring-[0.75px] ring-kumo-ring/50" />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
@@ -185,7 +185,7 @@ export function Tabs({
             "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
             "left-(--active-tab-left) w-(--active-tab-width)",
             isSegmented &&
-              "top-(--active-tab-top) h-(--active-tab-height) rounded-lg bg-kumo-base shadow-sm ring ring-kumo-ring",
+              "top-[calc(var(--active-tab-top)-1px)] h-[calc(var(--active-tab-height)+2px)] rounded-lg bg-kumo-base shadow-sm ring-[0.5px] ring-kumo-ring",
             isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
             indicatorClassName,
           )}
