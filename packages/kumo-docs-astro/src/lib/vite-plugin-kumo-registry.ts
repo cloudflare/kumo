@@ -51,7 +51,7 @@ export const kumoRegistryJson = ${json};
       };
       moduleGraph: {
         getModuleById: (id: string) => unknown;
-        invalidateModule: (mod: unknown) => void;
+        invalidateModule: (mod: any) => void;
       };
       ws: { send: (message: { type: string }) => void };
     }) {

@@ -6,6 +6,7 @@ import {
 import { useCallback, useState } from "react";
 import { cn } from "../../utils/cn";
 
+/** DateRangePicker size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_DATE_RANGE_PICKER_VARIANTS = {
   size: {
     sm: {
@@ -60,7 +61,20 @@ export type KumoDateRangePickerVariant =
   keyof typeof KUMO_DATE_RANGE_PICKER_VARIANTS.variant;
 
 export interface KumoDateRangePickerVariantsProps {
+  /**
+   * Calendar size.
+   * - `"sm"` — Compact calendar for tight spaces
+   * - `"base"` — Default calendar size
+   * - `"lg"` — Large calendar for prominent date selection
+   * @default "base"
+   */
   size?: KumoDateRangePickerSize;
+  /**
+   * Visual variant.
+   * - `"default"` — Standard appearance with overlay background
+   * - `"subtle"` — Minimal background
+   * @default "default"
+   */
   variant?: KumoDateRangePickerVariant;
 }
 
@@ -93,17 +107,60 @@ enum DateRangeCellMode {
 
 const DAYS_OF_WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
 
+/**
+ * DateRangePicker component props.
+ *
+ * Dual-calendar date range selector with hover preview, timezone display, and reset support.
+ *
+ * @example
+ * ```tsx
+ * <DateRangePicker
+ *   onStartDateChange={(d) => setStart(d)}
+ *   onEndDateChange={(d) => setEnd(d)}
+ *   timezone="New York, NY, USA (GMT-4)"
+ * />
+ *
+ * // Compact variant
+ * <DateRangePicker
+ *   size="sm"
+ *   variant="subtle"
+ *   onStartDateChange={setStart}
+ *   onEndDateChange={setEnd}
+ * />
+ * ```
+ *
+ * @deprecated Use {@link DatePicker} with `mode="range"` instead.
+ */
 export interface DateRangePickerProps extends KumoDateRangePickerVariantsProps {
-  /** Callback fired when start date changes */
+  /** Callback fired when start date changes. Receives `null` on reset. */
   onStartDateChange: (date: Date | null) => void;
-  /** Callback fired when end date changes */
+  /** Callback fired when end date changes. Receives `null` on reset. */
   onEndDateChange: (date: Date | null) => void;
-  /** Display timezone (display only) */
+  /**
+   * Display timezone string shown in the footer.
+   * @default "New York, NY, USA (GMT-4)"
+   */
   timezone?: string;
-  /** Additional CSS classes */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
 
+/**
+ * DateRangePicker — dual-calendar date range selector.
+ *
+ * Renders two side-by-side month calendars with click-to-select start/end dates,
+ * hover preview of the range, a timezone footer, and a reset button.
+ *
+ * @example
+ * ```tsx
+ * <DateRangePicker
+ *   onStartDateChange={setStart}
+ *   onEndDateChange={setEnd}
+ * />
+ * ```
+ *
+ * @deprecated Use {@link DatePicker} with `mode="range"` instead.
+ */
 export function DateRangePicker({
   onStartDateChange,
   onEndDateChange,
@@ -245,57 +302,57 @@ export function DateRangePicker({
                     getDateFromIndex(viewingMonth, 0, index) >= startDate &&
                     getDateFromIndex(viewingMonth, 0, index) <= endDate &&
                     index >
-                      getNumberOfDaysInMonth(viewingMonth, 0) +
-                        getMonthsStartingDay(viewingMonth, 0) -
-                        1) ||
-                  // Before current month range
-                  (startDate &&
-                    endDate &&
-                    getDateFromIndex(viewingMonth, 0, index) >= startDate &&
-                    getDateFromIndex(viewingMonth, 0, index) <= endDate &&
-                    index < getMonthsStartingDay(viewingMonth, 0))
+                    getNumberOfDaysInMonth(viewingMonth, 0) +
+                    getMonthsStartingDay(viewingMonth, 0) -
+                    1) ||
+                    // Before current month range
+                    (startDate &&
+                      endDate &&
+                      getDateFromIndex(viewingMonth, 0, index) >= startDate &&
+                      getDateFromIndex(viewingMonth, 0, index) <= endDate &&
+                      index < getMonthsStartingDay(viewingMonth, 0))
                     ? DateRangeCellMode.SELECTED_OUT_OF_RANGE
                     : // Before current month range
-                      index < getMonthsStartingDay(viewingMonth, 0)
+                    index < getMonthsStartingDay(viewingMonth, 0)
                       ? DateRangeCellMode.OUT_OF_RANGE
                       : // After current month range
-                        index >
-                          getNumberOfDaysInMonth(viewingMonth, 0) +
-                            getMonthsStartingDay(viewingMonth, 0) -
-                            1
+                      index >
+                        getNumberOfDaysInMonth(viewingMonth, 0) +
+                        getMonthsStartingDay(viewingMonth, 0) -
+                        1
                         ? DateRangeCellMode.OUT_OF_RANGE
                         : // Selected start date
-                          isDateEqual(
-                              getDateFromIndex(viewingMonth, 0, index),
-                              startDate,
-                            )
+                        isDateEqual(
+                          getDateFromIndex(viewingMonth, 0, index),
+                          startDate,
+                        )
                           ? DateRangeCellMode.SELECTED_START_NODE
                           : // Selected end date
-                            isDateEqual(
-                                getDateFromIndex(viewingMonth, 0, index),
-                                endDate,
-                              )
+                          isDateEqual(
+                            getDateFromIndex(viewingMonth, 0, index),
+                            endDate,
+                          )
                             ? DateRangeCellMode.SELECTED_END_NODE
                             : // Selected date range
+                            startDate &&
+                              getDateFromIndex(viewingMonth, 0, index) >=
                               startDate &&
-                                getDateFromIndex(viewingMonth, 0, index) >=
-                                  startDate &&
-                                endDate &&
-                                getDateFromIndex(viewingMonth, 0, index) <=
-                                  endDate
+                              endDate &&
+                              getDateFromIndex(viewingMonth, 0, index) <=
+                              endDate
                               ? DateRangeCellMode.SELECTED
                               : // Hovering past a starting date and no end date selected
-                                startDate &&
-                                  !endDate &&
-                                  hoveringDate &&
-                                  hoveringDate > startDate &&
-                                  getDateFromIndex(viewingMonth, 0, index) <=
-                                    hoveringDate &&
-                                  getDateFromIndex(viewingMonth, 0, index) >
-                                    startDate
+                              startDate &&
+                                !endDate &&
+                                hoveringDate &&
+                                hoveringDate > startDate &&
+                                getDateFromIndex(viewingMonth, 0, index) <=
+                                hoveringDate &&
+                                getDateFromIndex(viewingMonth, 0, index) >
+                                startDate
                                 ? DateRangeCellMode.SELECTED
                                 : // Default to enabled date
-                                  DateRangeCellMode.ENABLED
+                                DateRangeCellMode.ENABLED
                 }
                 onClick={(date) => {
                   if (!startDate || date < startDate) {
@@ -348,57 +405,57 @@ export function DateRangePicker({
                     getDateFromIndex(viewingMonth, 1, index) >= startDate &&
                     getDateFromIndex(viewingMonth, 1, index) <= endDate &&
                     index >
-                      getNumberOfDaysInMonth(viewingMonth, 1) +
-                        getMonthsStartingDay(viewingMonth, 1) -
-                        1) ||
-                  // Before current month range
-                  (startDate &&
-                    endDate &&
-                    getDateFromIndex(viewingMonth, 1, index) >= startDate &&
-                    getDateFromIndex(viewingMonth, 1, index) <= endDate &&
-                    index < getMonthsStartingDay(viewingMonth, 1))
+                    getNumberOfDaysInMonth(viewingMonth, 1) +
+                    getMonthsStartingDay(viewingMonth, 1) -
+                    1) ||
+                    // Before current month range
+                    (startDate &&
+                      endDate &&
+                      getDateFromIndex(viewingMonth, 1, index) >= startDate &&
+                      getDateFromIndex(viewingMonth, 1, index) <= endDate &&
+                      index < getMonthsStartingDay(viewingMonth, 1))
                     ? DateRangeCellMode.SELECTED_OUT_OF_RANGE
                     : // Before current month range
-                      index < getMonthsStartingDay(viewingMonth, 1)
+                    index < getMonthsStartingDay(viewingMonth, 1)
                       ? DateRangeCellMode.OUT_OF_RANGE
                       : // After current month range
-                        index >
-                          getNumberOfDaysInMonth(viewingMonth, 1) +
-                            getMonthsStartingDay(viewingMonth, 1) -
-                            1
+                      index >
+                        getNumberOfDaysInMonth(viewingMonth, 1) +
+                        getMonthsStartingDay(viewingMonth, 1) -
+                        1
                         ? DateRangeCellMode.OUT_OF_RANGE
                         : // Selected start date
-                          isDateEqual(
-                              getDateFromIndex(viewingMonth, 1, index),
-                              startDate,
-                            )
+                        isDateEqual(
+                          getDateFromIndex(viewingMonth, 1, index),
+                          startDate,
+                        )
                           ? DateRangeCellMode.SELECTED_START_NODE
                           : // Selected end date
-                            isDateEqual(
-                                getDateFromIndex(viewingMonth, 1, index),
-                                endDate,
-                              )
+                          isDateEqual(
+                            getDateFromIndex(viewingMonth, 1, index),
+                            endDate,
+                          )
                             ? DateRangeCellMode.SELECTED_END_NODE
                             : // Selected date range
+                            startDate &&
+                              getDateFromIndex(viewingMonth, 1, index) >=
                               startDate &&
-                                getDateFromIndex(viewingMonth, 1, index) >=
-                                  startDate &&
-                                endDate &&
-                                getDateFromIndex(viewingMonth, 1, index) <=
-                                  endDate
+                              endDate &&
+                              getDateFromIndex(viewingMonth, 1, index) <=
+                              endDate
                               ? DateRangeCellMode.SELECTED
                               : // Hovering past a starting date and no end date selected
-                                startDate &&
-                                  !endDate &&
-                                  hoveringDate &&
-                                  hoveringDate > startDate &&
-                                  getDateFromIndex(viewingMonth, 1, index) <=
-                                    hoveringDate &&
-                                  getDateFromIndex(viewingMonth, 1, index) >
-                                    startDate
+                              startDate &&
+                                !endDate &&
+                                hoveringDate &&
+                                hoveringDate > startDate &&
+                                getDateFromIndex(viewingMonth, 1, index) <=
+                                hoveringDate &&
+                                getDateFromIndex(viewingMonth, 1, index) >
+                                startDate
                                 ? DateRangeCellMode.SELECTED
                                 : // Default to enabled date
-                                  DateRangeCellMode.ENABLED
+                                DateRangeCellMode.ENABLED
                 }
                 onClick={(date) => {
                   if (!startDate || date < startDate) {
@@ -604,4 +661,7 @@ function DateRangeFooter({
 }
 
 // Default export for backwards compatibility
+/**
+ * @deprecated Use {@link DatePicker} with `mode="range"` instead.
+ */
 export default DateRangePicker;

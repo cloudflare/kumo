@@ -2,6 +2,7 @@ import { Meter as BaseMeter } from "@base-ui/react/meter";
 import { type ComponentPropsWithoutRef } from "react";
 import { cn } from "../../utils/cn";
 
+/** Meter variant definitions (currently empty, reserved for future additions). */
 export const KUMO_METER_VARIANTS = {
   // Meter currently has no variant options but structure is ready for future additions
 } as const;
@@ -20,14 +21,39 @@ export function meterVariants(_props: KumoMeterVariantsProps = {}) {
 
 type RootProps = ComponentPropsWithoutRef<typeof BaseMeter.Root>;
 
+/**
+ * Meter component props.
+ *
+ * @example
+ * ```tsx
+ * <Meter label="Storage used" value={65} />
+ * <Meter label="API requests" value={75} customValue="750 / 1,000" />
+ * ```
+ */
 export interface MeterProps extends RootProps, KumoMeterVariantsProps {
+  /** Custom formatted value text (e.g. "750 / 1,000") displayed instead of percentage. */
   customValue?: string;
+  /** Label text displayed above the meter track. */
   label: string;
+  /**
+   * Whether to display the percentage value next to the label.
+   * @default true
+   */
   showValue?: boolean;
+  /** Additional CSS classes for the track (background bar). */
   trackClassName?: string;
+  /** Additional CSS classes for the indicator (filled bar). */
   indicatorClassName?: string;
 }
 
+/**
+ * Progress bar showing a measured value within a known range (e.g. quota usage).
+ *
+ * @example
+ * ```tsx
+ * <Meter label="Storage" value={65} />
+ * ```
+ */
 export function Meter({
   value,
   customValue,

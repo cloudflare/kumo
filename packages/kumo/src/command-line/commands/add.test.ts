@@ -127,20 +127,21 @@ describe("add command - integration tests", () => {
       expect(output).toBe('import { cn } from "@cloudflare/kumo";');
     });
 
-    it("should split mixed value and type imports", () => {
+    it("should consolidate mixed value and type imports using inline type syntax", () => {
       const input =
         'import { Tabs, type TabsItem } from "../../components/tabs";';
       const output = transformImports(input);
-      expect(output).toContain('import { Tabs } from "@cloudflare/kumo";');
-      expect(output).toContain(
-        'import type { TabsItem } from "@cloudflare/kumo";',
+      // Uses inline type syntax to satisfy import/no-duplicates with prefer-inline: true
+      expect(output).toBe(
+        'import { Tabs, type TabsItem } from "@cloudflare/kumo";',
       );
     });
 
-    it("should preserve type-only imports", () => {
+    it("should convert type-only imports to inline type syntax", () => {
       const input = 'import type { TabsItem } from "../../components/tabs";';
       const output = transformImports(input);
-      expect(output).toBe('import type { TabsItem } from "@cloudflare/kumo";');
+      // Uses inline type syntax to satisfy import/no-duplicates with prefer-inline: true
+      expect(output).toBe('import { type TabsItem } from "@cloudflare/kumo";');
     });
 
     it("should preserve non-relative imports", () => {
@@ -155,20 +156,19 @@ describe("add command - integration tests", () => {
       expect(output).toBe('import { helper } from "./helper";');
     });
 
-    it("should handle real PageHeader imports", () => {
+    it("should consolidate real PageHeader imports into a single kumo import", () => {
       const input = `import { ReactNode } from "react";
 import { Tabs, type TabsItem } from "../../components/tabs";
 import { cn } from "../../utils/cn";`;
 
       const output = transformImports(input);
 
-      // Check each line
+      // React import should be preserved unchanged
       expect(output).toContain('import { ReactNode } from "react";');
-      expect(output).toContain('import { Tabs } from "@cloudflare/kumo";');
+      // All kumo imports should be consolidated with inline type syntax
       expect(output).toContain(
-        'import type { TabsItem } from "@cloudflare/kumo";',
+        'import { Tabs, cn, type TabsItem } from "@cloudflare/kumo";',
       );
-      expect(output).toContain('import { cn } from "@cloudflare/kumo";');
 
       // Ensure React import is preserved
       expect(output.split("\n")[0]).toBe('import { ReactNode } from "react";');
@@ -269,7 +269,7 @@ import { cn } from "../../utils/cn";`;
       expect(transformed).toContain("export");
     });
 
-    it("should handle multiple imports in a single file", () => {
+    it("should consolidate multiple imports into a single kumo import", () => {
       const input = `import { ReactNode } from "react";
 import { Tabs } from "../../components/tabs";
 import { Button } from "../../components/button";
@@ -282,10 +282,10 @@ import { useState } from "react";`;
       expect(output).toContain('import { ReactNode } from "react"');
       expect(output).toContain('import { useState } from "react"');
 
-      // All Kumo imports should be transformed
-      expect(output).toContain('import { Tabs } from "@cloudflare/kumo"');
-      expect(output).toContain('import { Button } from "@cloudflare/kumo"');
-      expect(output).toContain('import { cn } from "@cloudflare/kumo"');
+      // All Kumo imports should be consolidated into a single import
+      expect(output).toContain(
+        'import { Tabs, Button, cn } from "@cloudflare/kumo"',
+      );
 
       // Original relative paths should be gone
       expect(output).not.toContain("../../components/");

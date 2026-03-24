@@ -1,21 +1,32 @@
 ---
-// Static header component with version info
+import { ThemeToggle } from "./ThemeToggle";
+
 declare const __KUMO_VERSION__: string;
 
-const kumoVersion = typeof __KUMO_VERSION__ !== "undefined" ? __KUMO_VERSION__ : "dev";
+const kumoVersion =
+  typeof __KUMO_VERSION__ !== "undefined" ? __KUMO_VERSION__ : "dev";
 ---
 
 <header
-  class="sticky top-0 z-10 border-b border-kumo-line bg-kumo-elevated pr-12"
+  class="sticky top-0 z-10 h-12 border-b border-kumo-line bg-kumo-elevated hidden md:flex"
 >
   <div
-    class="mx-auto flex h-12 items-center border-r border-kumo-line px-4"
+    class="flex min-w-0 flex-1 items-center justify-end border-r border-kumo-line px-4"
   >
-    <p class="ml-auto font-mono text-base text-kumo-subtle">
+    <a
+      href="https://github.com/cloudflare/kumo"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="font-mono text-sm text-kumo-subtle transition-colors hover:text-kumo-default"
+    >
       @cloudflare/kumo
-      <span class="ml-1 rounded bg-kumo-control px-1.5 py-0.5 text-xs text-kumo-strong">
+      <span class="ml-1 rounded bg-kumo-control px-1.5 py-0.5 text-xs">
         v{kumoVersion}
       </span>
-    </p>
+    </a>
+  </div>
+
+  <div class="flex w-12 shrink-0 items-center justify-center">
+    <ThemeToggle client:only="react" />
   </div>
 </header>

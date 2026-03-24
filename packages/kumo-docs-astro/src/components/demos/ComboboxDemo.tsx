@@ -1,18 +1,45 @@
 import { useState } from "react";
 import { Combobox, Text, Button } from "@cloudflare/kumo";
 
-// Basic fruits list for simple demos
+// Basic fruits list for simple demos (expanded to test scrolling)
 const fruits = [
   "Apple",
-  "Orange",
+  "Apricot",
+  "Avocado",
   "Banana",
-  "Grape",
-  "Strawberry",
+  "Blackberry",
   "Blueberry",
+  "Cantaloupe",
   "Cherry",
-  "Watermelon",
+  "Coconut",
+  "Cranberry",
+  "Date",
+  "Dragon Fruit",
+  "Fig",
+  "Grape",
+  "Grapefruit",
+  "Guava",
+  "Honeydew",
+  "Kiwi",
+  "Lemon",
+  "Lime",
+  "Lychee",
+  "Mango",
+  "Nectarine",
+  "Orange",
+  "Papaya",
+  "Passion Fruit",
   "Peach",
   "Pear",
+  "Persimmon",
+  "Pineapple",
+  "Plum",
+  "Pomegranate",
+  "Raspberry",
+  "Starfruit",
+  "Strawberry",
+  "Tangerine",
+  "Watermelon",
 ];
 
 // Languages with emoji for searchable inside popup demo
@@ -29,6 +56,30 @@ const languages: Language[] = [
   { value: "es", label: "Spanish", emoji: "🇪🇸" },
   { value: "it", label: "Italian", emoji: "🇮🇹" },
   { value: "pt", label: "Portuguese", emoji: "🇵🇹" },
+  { value: "nl", label: "Dutch", emoji: "🇳🇱" },
+  { value: "pl", label: "Polish", emoji: "🇵🇱" },
+  { value: "ru", label: "Russian", emoji: "🇷🇺" },
+  { value: "ja", label: "Japanese", emoji: "🇯🇵" },
+  { value: "zh", label: "Chinese", emoji: "🇨🇳" },
+  { value: "ko", label: "Korean", emoji: "🇰🇷" },
+  { value: "ar", label: "Arabic", emoji: "🇸🇦" },
+  { value: "hi", label: "Hindi", emoji: "🇮🇳" },
+  { value: "tr", label: "Turkish", emoji: "🇹🇷" },
+  { value: "vi", label: "Vietnamese", emoji: "🇻🇳" },
+  { value: "th", label: "Thai", emoji: "🇹🇭" },
+  { value: "sv", label: "Swedish", emoji: "🇸🇪" },
+  { value: "no", label: "Norwegian", emoji: "🇳🇴" },
+  { value: "da", label: "Danish", emoji: "🇩🇰" },
+  { value: "fi", label: "Finnish", emoji: "🇫🇮" },
+  { value: "el", label: "Greek", emoji: "🇬🇷" },
+  { value: "cs", label: "Czech", emoji: "🇨🇿" },
+  { value: "ro", label: "Romanian", emoji: "🇷🇴" },
+  { value: "hu", label: "Hungarian", emoji: "🇭🇺" },
+  { value: "uk", label: "Ukrainian", emoji: "🇺🇦" },
+  { value: "id", label: "Indonesian", emoji: "🇮🇩" },
+  { value: "ms", label: "Malay", emoji: "🇲🇾" },
+  { value: "he", label: "Hebrew", emoji: "🇮🇱" },
+  { value: "fa", label: "Persian", emoji: "🇮🇷" },
 ];
 
 // Server locations for grouped demo
@@ -49,6 +100,11 @@ const servers: ServerLocationGroup[] = [
       { label: "Japan", value: "japan" },
       { label: "China", value: "china" },
       { label: "Singapore", value: "singapore" },
+      { label: "South Korea", value: "south-korea" },
+      { label: "India", value: "india" },
+      { label: "Hong Kong", value: "hong-kong" },
+      { label: "Taiwan", value: "taiwan" },
+      { label: "Thailand", value: "thailand" },
     ],
   },
   {
@@ -57,6 +113,35 @@ const servers: ServerLocationGroup[] = [
       { label: "Germany", value: "germany" },
       { label: "France", value: "france" },
       { label: "Italy", value: "italy" },
+      { label: "United Kingdom", value: "uk" },
+      { label: "Netherlands", value: "netherlands" },
+      { label: "Spain", value: "spain" },
+      { label: "Poland", value: "poland" },
+      { label: "Sweden", value: "sweden" },
+    ],
+  },
+  {
+    value: "North America",
+    items: [
+      { label: "United States (East)", value: "us-east" },
+      { label: "United States (West)", value: "us-west" },
+      { label: "Canada", value: "canada" },
+      { label: "Mexico", value: "mexico" },
+    ],
+  },
+  {
+    value: "South America",
+    items: [
+      { label: "Brazil", value: "brazil" },
+      { label: "Argentina", value: "argentina" },
+      { label: "Chile", value: "chile" },
+    ],
+  },
+  {
+    value: "Oceania",
+    items: [
+      { label: "Australia", value: "australia" },
+      { label: "New Zealand", value: "new-zealand" },
     ],
   },
 ];
@@ -69,9 +154,24 @@ type DatabaseItem = {
 const databases: DatabaseItem[] = [
   { value: "postgres", label: "PostgreSQL" },
   { value: "mysql", label: "MySQL" },
+  { value: "mariadb", label: "MariaDB" },
   { value: "mongodb", label: "MongoDB" },
   { value: "redis", label: "Redis" },
   { value: "sqlite", label: "SQLite" },
+  { value: "cassandra", label: "Apache Cassandra" },
+  { value: "dynamodb", label: "Amazon DynamoDB" },
+  { value: "couchdb", label: "CouchDB" },
+  { value: "neo4j", label: "Neo4j" },
+  { value: "elasticsearch", label: "Elasticsearch" },
+  { value: "cockroachdb", label: "CockroachDB" },
+  { value: "timescaledb", label: "TimescaleDB" },
+  { value: "clickhouse", label: "ClickHouse" },
+  { value: "firestore", label: "Google Firestore" },
+  { value: "supabase", label: "Supabase" },
+  { value: "planetscale", label: "PlanetScale" },
+  { value: "fauna", label: "Fauna" },
+  { value: "d1", label: "Cloudflare D1" },
+  { value: "turso", label: "Turso" },
 ];
 
 // Basic demo with TriggerInput
@@ -172,6 +272,21 @@ const bots: BotItem[] = [
   { value: "yandexbot", label: "YandexBot", author: "Yandex" },
   { value: "duckduckbot", label: "DuckDuckBot", author: "DuckDuckGo" },
   { value: "baiduspider", label: "Baiduspider", author: "Baidu" },
+  { value: "slurp", label: "Yahoo Slurp", author: "Yahoo" },
+  { value: "applebot", label: "Applebot", author: "Apple" },
+  { value: "facebookbot", label: "Facebookbot", author: "Meta" },
+  { value: "twitterbot", label: "Twitterbot", author: "X" },
+  { value: "linkedinbot", label: "LinkedInBot", author: "LinkedIn" },
+  { value: "pinterestbot", label: "Pinterest", author: "Pinterest" },
+  { value: "discordbot", label: "Discordbot", author: "Discord" },
+  { value: "slackbot", label: "Slackbot", author: "Slack" },
+  { value: "telegrambot", label: "TelegramBot", author: "Telegram" },
+  { value: "whatsapp", label: "WhatsApp", author: "Meta" },
+  { value: "semrushbot", label: "SemrushBot", author: "Semrush" },
+  { value: "ahrefsbot", label: "AhrefsBot", author: "Ahrefs" },
+  { value: "mj12bot", label: "MJ12bot", author: "Majestic" },
+  { value: "dotbot", label: "DotBot", author: "Moz" },
+  { value: "petalbot", label: "PetalBot", author: "Huawei" },
 ];
 
 export function ComboboxMultipleDemo() {
@@ -262,6 +377,102 @@ export function ComboboxErrorDemo() {
             {(item: DatabaseItem) => (
               <Combobox.Item key={item.value} value={item}>
                 {item.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
+
+/** Demonstrates the different size variants: xs, sm, base, and lg. */
+export function ComboboxSizesDemo() {
+  const [smValue, setSmValue] = useState<string | null>(null);
+  const [baseValue, setBaseValue] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Combobox
+        size="sm"
+        value={smValue}
+        onValueChange={(v) => setSmValue(v as string | null)}
+        items={fruits.slice(0, 8)}
+      >
+        <Combobox.TriggerInput placeholder="Small (sm)" />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+      <Combobox
+        size="base"
+        value={baseValue}
+        onValueChange={(v) => setBaseValue(v as string | null)}
+        items={fruits.slice(0, 8)}
+      >
+        <Combobox.TriggerInput placeholder="Base (default)" />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
+
+/** Demonstrates size variants with TriggerValue (searchable inside). */
+export function ComboboxSizesSearchableInsideDemo() {
+  const [smValue, setSmValue] = useState<Language>(languages[0]);
+  const [baseValue, setBaseValue] = useState<Language>(languages[1]);
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Combobox
+        size="sm"
+        value={smValue}
+        onValueChange={(v) => setSmValue(v as Language)}
+        items={languages}
+      >
+        <Combobox.TriggerValue className="w-[160px]" />
+        <Combobox.Content>
+          <Combobox.Input placeholder="Search" />
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: Language) => (
+              <Combobox.Item key={item.value} value={item}>
+                {item.emoji} {item.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+      <Combobox
+        size="base"
+        value={baseValue}
+        onValueChange={(v) => setBaseValue(v as Language)}
+        items={languages}
+      >
+        <Combobox.TriggerValue className="w-[180px]" />
+        <Combobox.Content>
+          <Combobox.Input placeholder="Search" />
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: Language) => (
+              <Combobox.Item key={item.value} value={item}>
+                {item.emoji} {item.label}
               </Combobox.Item>
             )}
           </Combobox.List>

@@ -20,21 +20,21 @@ describe("transformImports", () => {
     expect(transformImports(input)).toBe(expected);
   });
 
-  it("preserves type-only imports with import type syntax", () => {
+  it("preserves type-only imports using inline type syntax", () => {
     const input = `import type { TabsItem } from "../../components/tabs";`;
-    const expected = `import type { TabsItem } from "@cloudflare/kumo";`;
+    const expected = `import { type TabsItem } from "@cloudflare/kumo";`;
     expect(transformImports(input)).toBe(expected);
   });
 
-  it("splits mixed value and type imports into separate statements", () => {
+  it("consolidates mixed value and type imports using inline type syntax", () => {
     const input = `import { Tabs, type TabsItem } from "../../components/tabs";`;
-    const expected = `import { Tabs } from "@cloudflare/kumo";\nimport type { TabsItem } from "@cloudflare/kumo";`;
+    const expected = `import { Tabs, type TabsItem } from "@cloudflare/kumo";`;
     expect(transformImports(input)).toBe(expected);
   });
 
   it("handles inline type imports for multiple types", () => {
     const input = `import { type TabsItem, type TabsProps } from "../../components/tabs";`;
-    const expected = `import type { TabsItem, TabsProps } from "@cloudflare/kumo";`;
+    const expected = `import { type TabsItem, type TabsProps } from "@cloudflare/kumo";`;
     expect(transformImports(input)).toBe(expected);
   });
 
@@ -48,23 +48,20 @@ describe("transformImports", () => {
     expect(transformImports(input)).toBe(input);
   });
 
-  it("transforms multiple import statements in a file", () => {
+  it("consolidates multiple import statements from kumo into a single import", () => {
     const input = `import { ReactNode } from "react";
 import { Tabs, type TabsItem } from "../../components/tabs";
 import { cn } from "../../utils/cn";`;
 
     const expected = `import { ReactNode } from "react";
-import { Tabs } from "@cloudflare/kumo";
-import type { TabsItem } from "@cloudflare/kumo";
-import { cn } from "@cloudflare/kumo";`;
+import { Tabs, cn, type TabsItem } from "@cloudflare/kumo";`;
 
     expect(transformImports(input)).toBe(expected);
   });
 
   it("handles complex mixed imports with multiple values and types", () => {
     const input = `import { Button, Input, type ButtonProps, Select, type InputProps } from "../../components/button";`;
-    const expected = `import { Button, Input, Select } from "@cloudflare/kumo";
-import type { ButtonProps, InputProps } from "@cloudflare/kumo";`;
+    const expected = `import { Button, Input, Select, type ButtonProps, type InputProps } from "@cloudflare/kumo";`;
     expect(transformImports(input)).toBe(expected);
   });
 
@@ -90,15 +87,13 @@ export function Component() {
     expect(transformImports(input)).toBe(expected);
   });
 
-  it("handles real-world PageHeader example", () => {
+  it("handles real-world PageHeader example with consolidated imports", () => {
     const input = `import { ReactNode } from "react";
 import { Tabs, type TabsItem } from "../../components/tabs";
 import { cn } from "../../utils/cn";`;
 
     const expected = `import { ReactNode } from "react";
-import { Tabs } from "@cloudflare/kumo";
-import type { TabsItem } from "@cloudflare/kumo";
-import { cn } from "@cloudflare/kumo";`;
+import { Tabs, cn, type TabsItem } from "@cloudflare/kumo";`;
 
     expect(transformImports(input)).toBe(expected);
   });
@@ -122,5 +117,55 @@ import { cn } from "@cloudflare/kumo";`;
   it("does not transform imports from parent directories that are not components or utils", () => {
     const input = `import { something } from "../../other/thing";`;
     expect(transformImports(input)).toBe(input);
+  });
+
+  it("consolidates the DeleteResource block imports correctly", () => {
+    const input = `import { useState, useCallback, useEffect } from "react";
+import {
+  Dialog,
+  DialogRoot,
+  DialogTitle,
+  DialogClose,
+} from "../../components/dialog";
+import { Input } from "../../components/input";
+import { Button } from "../../components/button";
+import { cn } from "../../utils/cn";
+import {
+  CheckIcon,
+  CopyIcon,
+  WarningCircleIcon,
+  XIcon,
+} from "@phosphor-icons/react";
+import { Banner } from "../../components/banner";`;
+
+    const expected = `import { useState, useCallback, useEffect } from "react";
+import { Dialog, DialogRoot, DialogTitle, DialogClose, Input, Button, cn, Banner } from "@cloudflare/kumo";
+import {
+  CheckIcon,
+  CopyIcon,
+  WarningCircleIcon,
+  XIcon,
+} from "@phosphor-icons/react";`;
+
+    expect(transformImports(input)).toBe(expected);
+  });
+
+  it("consolidates imports from multiple components with types", () => {
+    const input = `import { Dialog, type DialogProps } from "../../components/dialog";
+import { Button, type ButtonProps } from "../../components/button";
+import { Input, type InputProps } from "../../components/input";`;
+
+    const expected = `import { Dialog, Button, Input, type DialogProps, type ButtonProps, type InputProps } from "@cloudflare/kumo";`;
+
+    expect(transformImports(input)).toBe(expected);
+  });
+
+  it("handles type-only imports from multiple sources consolidated together", () => {
+    const input = `import type { DialogProps } from "../../components/dialog";
+import type { ButtonProps } from "../../components/button";`;
+
+    const expected = `import { type DialogProps, type ButtonProps } from "@cloudflare/kumo";`;
+
+    expect(transformImports(input)).toBe(expected);
   });
 });

@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "../../utils/cn";
 
+/** Grid variant and gap definitions mapping layout names to their responsive Tailwind classes. */
 export const KUMO_GRID_VARIANTS = {
   variant: {
     "2up": {
@@ -74,37 +75,53 @@ export const KUMO_GRID_DEFAULT_VARIANTS = {
 export type KumoGridVariant = keyof typeof KUMO_GRID_VARIANTS.variant;
 export type KumoGridGap = keyof typeof KUMO_GRID_VARIANTS.gap;
 
+/**
+ * Grid component props.
+ *
+ * @example
+ * ```tsx
+ * <Grid variant="3up" gap="sm">
+ *   <GridItem><Surface className="p-4">1</Surface></GridItem>
+ *   <GridItem><Surface className="p-4">2</Surface></GridItem>
+ *   <GridItem><Surface className="p-4">3</Surface></GridItem>
+ * </Grid>
+ * ```
+ */
 export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * Child node(s) that can be nested inside component
-   */
+  /** Grid items to render. */
   children?: React.ReactNode;
-  /**
-   * CSS class names that can be appended to the component
-   */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /**
-   * Show dividers between grid items on mobile (only works with 4up variant)
-   */
+  /** Show dividers between grid items on mobile (only works with `"4up"` variant). */
   mobileDivider?: boolean;
   /**
-   * Gap size between grid items
+   * Gap size between grid items.
+   * - `"none"` — No gap
+   * - `"sm"` — 12px gap
+   * - `"base"` — Responsive gap (8px → 24px → 32px)
+   * - `"lg"` — 32px gap
+   * @default "base"
    */
   gap?: KumoGridGap;
   /**
-   * Stylistic variations of the Grid layout
+   * Responsive column layout variant.
+   * - `"2up"` — 1 col → 2 cols at md
+   * - `"side-by-side"` — Always 2 cols
+   * - `"2-1"` — 66%/33% split at md
+   * - `"1-2"` — 33%/66% split at md
+   * - `"3up"` — 1 → 2 → 3 cols
+   * - `"4up"` — 1 → 2 → 3 → 4 cols
+   * - `"6up"` — 2 → 3 → 4 → 6 cols
+   * - `"1-2-4up"` — 1 → 2 → 4 cols
    */
   variant?: KumoGridVariant;
 }
 
+/** GridItem component props — a single cell within a Grid. */
 export interface GridItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * Child node(s) that can be nested inside component
-   */
+  /** Content for this grid cell. */
   children?: React.ReactNode;
-  /**
-   * CSS class names that can be appended to the component
-   */
+  /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
 
@@ -146,6 +163,17 @@ export function gridItemVariants({
   );
 }
 
+/**
+ * Responsive CSS grid layout container with preset column configurations.
+ *
+ * @example
+ * ```tsx
+ * <Grid variant="2up" gap="base">
+ *   <GridItem>Left</GridItem>
+ *   <GridItem>Right</GridItem>
+ * </Grid>
+ * ```
+ */
 export const Grid = React.forwardRef<HTMLDivElement, GridProps>(
   (
     {

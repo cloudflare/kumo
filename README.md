@@ -4,6 +4,8 @@ Cloudflare's component library for building modern web applications.
 
 Kumo provides accessible, design-system-compliant UI components built on [Base UI](https://base-ui.com/). It handles keyboard navigation, focus management, and ARIA attributes so you can build accessible applications without thinking through every detail.
 
+<img width="2560" height="1456" alt="image" src="https://github.com/user-attachments/assets/032f5a0e-b686-4440-b1ca-6182379479aa" />
+
 ## Installation
 
 ```bash
@@ -62,8 +64,19 @@ See [AGENTS.md](./AGENTS.md) for comprehensive development documentation includi
 ```bash
 pnpm install
 pnpm dev                    # Start docs site at localhost:4321
-pnpm storybook              # Start Storybook at localhost:6006
 pnpm --filter @cloudflare/kumo test
+```
+
+### Figma Plugin
+
+```bash
+# Optional: enable token sync during build
+# cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env
+# $EDITOR packages/kumo-figma/scripts/.env  # set FIGMA_TOKEN (and optionally FIGMA_FILE_KEY)
+
+pnpm --filter @cloudflare/kumo-figma build
+# In Figma: Plugins > Development > Import plugin from manifest...
+# Select: packages/kumo-figma/src/manifest.json
 ```
 
 ### Creating Components
@@ -75,7 +88,6 @@ pnpm --filter @cloudflare/kumo new-component
 ## Documentation
 
 - **Live Docs**: [kumo-ui.com](https://kumo-ui.com)
-- **Storybook**: [storybook.kumo-ui.com](https://storybook.kumo-ui.com)
 - **AI/Agent Guide**: [AGENTS.md](./AGENTS.md)
 
 ## License

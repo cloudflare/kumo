@@ -61,6 +61,23 @@ const sampleGroups: CommandGroup[] = [
 const getSelectableItems = (groups: CommandGroup[]) =>
   groups.flatMap((group) => group.items);
 
+// Helper to filter groups and their items based on search query
+const filterGroupsWithItems = (
+  groups: CommandGroup[],
+  query: string,
+): CommandGroup[] => {
+  if (!query) return groups;
+  const lowerQuery = query.toLowerCase();
+  return groups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        item.title.toLowerCase().includes(lowerQuery),
+      ),
+    }))
+    .filter((group) => group.items.length > 0);
+};
+
 export function CommandPaletteBasicDemo() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -71,6 +88,9 @@ export function CommandPaletteBasicDemo() {
     setOpen(false);
     setSearch("");
   };
+
+  // Filter groups based on search
+  const filteredGroups = filterGroupsWithItems(sampleGroups, search);
 
   return (
     <div className="flex flex-col items-start gap-4">
@@ -85,7 +105,7 @@ export function CommandPaletteBasicDemo() {
       <CommandPalette.Root
         open={open}
         onOpenChange={setOpen}
-        items={sampleGroups}
+        items={filteredGroups}
         value={search}
         onValueChange={setSearch}
         itemToStringValue={(group) => group.label}
@@ -99,7 +119,7 @@ export function CommandPaletteBasicDemo() {
         <CommandPalette.List>
           <CommandPalette.Results>
             {(group: CommandGroup) => (
-              <CommandPalette.Group key={group.id}>
+              <CommandPalette.Group key={group.id} items={group.items}>
                 <CommandPalette.GroupLabel>
                   {group.label}
                 </CommandPalette.GroupLabel>
@@ -214,6 +234,9 @@ export function CommandPaletteLoadingDemo() {
     setTimeout(() => setLoading(false), 1500);
   };
 
+  // Filter groups based on search
+  const filteredGroups = filterGroupsWithItems(sampleGroups, search);
+
   return (
     <div>
       <Button onClick={handleOpen}>Open with Loading</Button>
@@ -221,7 +244,7 @@ export function CommandPaletteLoadingDemo() {
       <CommandPalette.Root
         open={open}
         onOpenChange={setOpen}
-        items={loading ? [] : sampleGroups}
+        items={loading ? [] : filteredGroups}
         value={search}
         onValueChange={setSearch}
         itemToStringValue={(group) => group.label}
@@ -235,7 +258,7 @@ export function CommandPaletteLoadingDemo() {
             <>
               <CommandPalette.Results>
                 {(group: CommandGroup) => (
-                  <CommandPalette.Group key={group.id}>
+                  <CommandPalette.Group key={group.id} items={group.items}>
                     <CommandPalette.GroupLabel>
                       {group.label}
                     </CommandPalette.GroupLabel>

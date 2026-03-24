@@ -10,10 +10,12 @@ import {
   type CheckboxRootChangeEventDetails,
 } from "@base-ui/react/checkbox";
 
+/** Checkbox variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_CHECKBOX_VARIANTS = {
   variant: {
     default: {
-      classes: "[&:focus-within>span]:ring-kumo-ring [&:hover>span]:ring-kumo-ring",
+      classes:
+        "[&:focus-within>span]:ring-kumo-ring [&:hover>span]:ring-kumo-ring",
       description: "Default checkbox appearance",
     },
     error: {
@@ -31,6 +33,12 @@ export const KUMO_CHECKBOX_DEFAULT_VARIANTS = {
 export type KumoCheckboxVariant = keyof typeof KUMO_CHECKBOX_VARIANTS.variant;
 
 export interface KumoCheckboxVariantsProps {
+  /**
+   * Visual variant.
+   * - `"default"` — Standard checkbox appearance
+   * - `"error"` — Error state for validation failures
+   * @default "default"
+   */
   variant?: KumoCheckboxVariant;
 }
 
@@ -253,27 +261,27 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         disabled={disabled}
         onCheckedChange={handleCheckedChange}
         className={cn(
-          "flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring",
+          "relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled && "hover:ring-kumo-ring focus-visible:ring-kumo-ring",
-          "data-[checked]:bg-kumo-contrast data-[indeterminate]:bg-kumo-contrast",
+          "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
         {...props}
       >
         <BaseCheckbox.Indicator
-          className="flex items-center justify-center text-kumo-inverse"
-          render={(renderProps, state) => {
-            const Icon = state.indeterminate ? MinusIcon : CheckIcon;
-            return (
-              <span {...renderProps}>
-                {(state.checked || state.indeterminate) && (
-                  <Icon weight="bold" size={12} />
-                )}
-              </span>
-            );
-          }}
+          keepMounted
+          className="flex items-center justify-center text-kumo-inverse data-[unchecked]:invisible"
+          render={(renderProps, state) => (
+            <span {...renderProps}>
+              {state.indeterminate ? (
+                <MinusIcon weight="bold" size={12} />
+              ) : (
+                <CheckIcon weight="bold" size={12} />
+              )}
+            </span>
+          )}
         />
       </BaseCheckbox.Root>
     );
@@ -289,7 +297,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       <FieldBase.Root className="inline-flex">
         <FieldBase.Label
           className={cn(
-            "inline-flex items-center gap-2",
+            "!m-0 !min-h-0 !text-base inline-flex items-center gap-2",
             controlFirst ? "flex-row" : "flex-row-reverse justify-end",
             disabled ? "cursor-not-allowed" : "cursor-pointer",
           )}
@@ -338,7 +346,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
     return (
       <label
         className={cn(
-          "relative inline-flex items-center gap-2",
+          "m-0 relative inline-flex items-center gap-2",
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
@@ -355,25 +363,25 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           disabled={disabled}
           onCheckedChange={handleCheckedChange}
           className={cn(
-            "peer flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring",
+            "peer relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               "group-hover:ring-kumo-ring hover:ring-kumo-ring focus-visible:ring-kumo-ring",
-            "data-[checked]:bg-kumo-contrast data-[indeterminate]:bg-kumo-contrast",
+            "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           )}
         >
           <BaseCheckbox.Indicator
-            className="flex items-center justify-center text-kumo-inverse"
-            render={(props, state) => {
-              const Icon = state.indeterminate ? MinusIcon : CheckIcon;
-              return (
-                <span {...props}>
-                  {(state.checked || state.indeterminate) && (
-                    <Icon weight="bold" size={12} />
-                  )}
-                </span>
-              );
-            }}
+            keepMounted
+            className="flex items-center justify-center text-kumo-inverse data-[unchecked]:invisible"
+            render={(renderProps, state) => (
+              <span {...renderProps}>
+                {state.indeterminate ? (
+                  <MinusIcon weight="bold" size={12} />
+                ) : (
+                  <CheckIcon weight="bold" size={12} />
+                )}
+              </span>
+            )}
           />
         </BaseCheckbox.Root>
         <span className="text-base font-medium text-kumo-default">{label}</span>
@@ -418,7 +426,9 @@ function CheckboxGroup({
           </Fieldset.Legend>
           <div className="flex flex-col gap-2">{children}</div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
-          {description && <p className="text-sm text-kumo-subtle">{description}</p>}
+          {description && (
+            <p className="text-sm text-kumo-subtle">{description}</p>
+          )}
         </Fieldset.Root>
       </BaseCheckboxGroup>
     </CheckboxGroupContext.Provider>

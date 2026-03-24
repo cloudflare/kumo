@@ -5,12 +5,13 @@ node_modules/
 build/
 dist/
 .react-router/
+.build-complete
 
 # Cloudflare
 .wrangler/
 .dev.vars
 wrangler.toml.local
-worker-configuration.d.ts
+
 
 # Environment variables
 .env
@@ -46,3 +47,11 @@ coverage/
 # Temporary files
 *.tmp
 .cache/
+
+# Codex
+.codex/environments
+
+# Generated component registry files (built during CI)
+# Note: schemas.ts is kept as a stub for fresh clones
+packages/kumo/ai/component-registry.json
+packages/kumo/ai/component-registry.md
