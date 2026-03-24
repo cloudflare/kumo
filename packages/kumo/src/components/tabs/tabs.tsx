@@ -189,6 +189,7 @@ export function Tabs({
                 {...(props as HTMLMotionProps<"div">)}
                 className={cn(
                   "absolute z-1",
+                  "w-(--active-tab-width)",
                   "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                   isSegmented &&
                     "top-(--active-tab-top) h-(--active-tab-height) rounded-lg bg-kumo-base shadow-sm ring ring-kumo-ring",
