@@ -13,3 +13,5 @@ Specific token updates:
 - Updated `Tabs` component to use `kumo-recessed` since `kumo-surface` was removed.
 - Update all instances of `ring-kumo-line` with `ring-kumo-ring`.
 - Updated `LayerCard` with `ring-kumo-ring` instead of `ring-kumo-fill`.
+- Update all instances of `bg-kumo-elevated` with `bg-kumo-base` or `bg-kumo-recessed` in `Combobox` specifically since it depends on context and placement of components
+- Update all instances of `bg-kumo-control` with `bg-kumo-base`
