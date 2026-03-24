@@ -7,7 +7,6 @@ sourceFile: "components/flow"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   FlowBasicDemo,
@@ -23,32 +22,33 @@ import {
   FlowSidebarBugDemo,
 } from "~/components/demos/FlowDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<Flow>
-  <Flow.Node>Start</Flow.Node>
-  <Flow.Parallel>
-    <Flow.Node>Branch A</Flow.Node>
-    <Flow.Node>Branch B</Flow.Node>
-    <Flow.Node>Branch C</Flow.Node>
-  </Flow.Parallel>
-  <Flow.Node>End</Flow.Node>
-</Flow>`}
-  >
+  <ComponentExample demo="FlowParallelDemo">
     <FlowParallelDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Flow } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Flow } from "@cloudflare/kumo/components/flow";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Flow } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Flow } from "@cloudflare/kumo/components/flow";
+```
+
 </ComponentSection>
+
+{/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
@@ -60,8 +60,9 @@ import {
     `Flow.Parallel` to create
     branching paths.
   </p>
-  <CodeBlock
-    code={`import { Flow } from "@cloudflare/kumo";
+
+```tsx
+import { Flow } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -71,202 +72,81 @@ export default function Example() {
       <Flow.Node>Step 3</Flow.Node>
     </Flow>
   );
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
+
+{/* Examples */}
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>Sequential Flow</Heading>
 <p>A simple linear flow with nodes connected in sequence.</p>
-<ComponentExample
-  code={`<Flow>
-  <Flow.Node>Step 1</Flow.Node>
-  <Flow.Node>Step 2</Flow.Node>
-  <Flow.Node>Step 3</Flow.Node>
-</Flow>`}
->
+<ComponentExample demo="FlowBasicDemo">
   <FlowBasicDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Parallel Branches</Heading>
-  <p>
-    Use `Flow.Parallel` to create branching paths that run in parallel.
-  </p>
-  <ComponentExample
-    code={`<Flow>
+<Heading level={3}>Parallel Branches</Heading>
+<p>Use `Flow.Parallel` to create branching paths that run in parallel.</p>
+<ComponentExample demo="FlowParallelDemo">
+  <FlowParallelDemo client:visible />
+</ComponentExample>
 
-  <Flow.Node>Start</Flow.Node>
-  <Flow.Parallel>
-    <Flow.Node>Branch A</Flow.Node>
-    <Flow.Node>Branch B</Flow.Node>
-    <Flow.Node>Branch C</Flow.Node>
-  </Flow.Parallel>
-  <Flow.Node>End</Flow.Node>
-</Flow>`}
-  >
-    <FlowParallelDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Custom Node Styling</Heading>
+<p>
+  Use the `render` prop to completely customize node appearance. The render prop
+  accepts a React element that will be used instead of the default styled node.
+</p>
+<ComponentExample demo="FlowCustomContentDemo">
+  <FlowCustomContentDemo client:visible />
+</ComponentExample>
 
-  <Heading level={3}>Custom Node Styling</Heading>
-  <p>
-    Use the
-    `render` prop to
-    completely customize node appearance. The render prop accepts a React element
-    that will be used instead of the default styled node.
-  </p>
-  <ComponentExample
-    code={`<Flow>
+<Heading level={3}>Centered Alignment</Heading>
+<p>
+  Use the `align` prop to vertically center nodes. This is useful when nodes
+  have different heights.
+</p>
+<ComponentExample demo="FlowCenteredDemo">
+  <FlowCenteredDemo client:visible />
+</ComponentExample>
 
-  <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
-  <Flow.Node
-    render={
-      <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
-        my-worker
-      </li>
-    }
-  />
-</Flow>`}
-  >
-    <FlowCustomContentDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Complex Flow</Heading>
+<p>Combine sequential and parallel nodes to build complex workflows.</p>
+<ComponentExample demo="FlowComplexDemo">
+  <FlowComplexDemo client:visible />
+</ComponentExample>
 
-  <Heading level={3}>Centered Alignment</Heading>
-  <p>
-    Use the
-    `align` prop to
-    vertically center nodes. This is useful when nodes have different heights.
-  </p>
-  <ComponentExample
-    code={`<Flow align="center">
+<Heading level={3}>Custom Anchor Points</Heading>
+<p>
+  By default, connectors attach to the center of each node. Use `Flow.Anchor`
+  with its `render` prop to specify custom attachment points. The `type` prop
+  controls whether the anchor serves as a `"start"` point (where connectors
+  leave) or `"end"` point (where connectors arrive).
+</p>
+<ComponentExample demo="FlowAnchorDemo">
+  <FlowAnchorDemo client:visible />
+</ComponentExample>
 
-  <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
-  <Flow.Node>my-worker</Flow.Node>
-  <Flow.Node
-    render={
-      <li className="py-6 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line">
-        Taller node
-      </li>
-    }
-  />
-</Flow>`}
-  >
-    <FlowCenteredDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Panning Large Diagrams</Heading>
+<p>
+  When a diagram exceeds its container, Flow automatically enables panning. Drag
+  to pan the viewport, or use the scroll wheel. Scrollbars appear on hover to
+  indicate available scroll area.
+</p>
+<ComponentExample demo="FlowPanningDemo">
+  <FlowPanningDemo client:visible />
+</ComponentExample>
 
-  <Heading level={3}>Complex Flow</Heading>
-  <p>
-    Combine sequential and parallel nodes to build complex workflows.
-  </p>
-  <ComponentExample
-    code={`<Flow>
-
-  <Flow.Node>Trigger</Flow.Node>
-  <Flow.Parallel>
-    <Flow.Node>Validate Input</Flow.Node>
-    <Flow.Node>Check Cache</Flow.Node>
-  </Flow.Parallel>
-  <Flow.Node>Process Request</Flow.Node>
-  <Flow.Parallel>
-    <Flow.Node>Log Analytics</Flow.Node>
-    <Flow.Node>Update Cache</Flow.Node>
-    <Flow.Node>Send Notification</Flow.Node>
-  </Flow.Parallel>
-  <Flow.Node>Complete</Flow.Node>
-</Flow>`}
-  >
-    <FlowComplexDemo client:visible />
-  </ComponentExample>
-
-  <Heading level={3}>Custom Anchor Points</Heading>
-  <p>
-    By default, connectors attach to the center of each node. Use
-    `Flow.Anchor` with
-    its `render` prop
-    to specify custom attachment points. The `type` prop controls whether the anchor serves as a `"start"` point (where connectors leave) or `"end"` point (where connectors arrive).
-  </p>
-  <ComponentExample
-    code={`<Flow>
-
-  <Flow.Node>Load balancer</Flow.Node>
-  <Flow.Node
-    render={
-      <li className="shadow-none rounded-lg ring ring-kumo-line bg-kumo-overlay">
-        <Flow.Anchor
-          type="end"
-          render={
-            <div className="text-kumo-subtle h-10 flex items-center px-2.5">
-              my-worker
-            </div>
-          }
-        />
-        <Flow.Anchor
-          type="start"
-          render={
-            <div className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0">
-              Bindings
-              <span className="text-kumo-subtle w-5 ml-3">2</span>
-            </div>
-          }
-        />
-      </li>
-    }
-  />
-  <Flow.Parallel>
-    <Flow.Node>DATABASE</Flow.Node>
-    <Flow.Node>OTHER_SERVICE</Flow.Node>
-  </Flow.Parallel>
-</Flow>`}
-  >
-    <FlowAnchorDemo client:visible />
-  </ComponentExample>
-
-  <Heading level={3}>Panning Large Diagrams</Heading>
-  <p>
-    When a diagram exceeds its container, Flow automatically enables
-    panning. Drag to pan the viewport, or use the scroll wheel. Scrollbars
-    appear on hover to indicate available scroll area.
-  </p>
-  <ComponentExample
-    code={`<Flow>
-
-  <Flow.Node>Start</Flow.Node>
-  <Flow.Node>Authenticate</Flow.Node>
-  <Flow.Node>Validate</Flow.Node>
-  <Flow.Node>Transform</Flow.Node>
-  <Flow.Node>Process</Flow.Node>
-  <Flow.Node>Store</Flow.Node>
-  <Flow.Node>Notify</Flow.Node>
-  <Flow.Node>Log</Flow.Node>
-  <Flow.Node>Complete</Flow.Node>
-  <Flow.Node>End</Flow.Node>
-</Flow>`}
-  >
-    <FlowPanningDemo client:visible />
-  </ComponentExample>
-
-  <Heading level={3}>Disabled Nodes</Heading>
-  <p>
-    Use the
-    `disabled` prop
-    on a node to visually indicate it's inactive. Connectors linking to disabled
-    nodes are rendered with reduced opacity.
-  </p>
-  <ComponentExample
-    code={`<Flow>
-
-  <Flow.Node>Request</Flow.Node>
-  <Flow.Parallel>
-    <Flow.Node>Primary Handler</Flow.Node>
-    <Flow.Node disabled>Backup Handler (disabled)</Flow.Node>
-  </Flow.Parallel>
-  <Flow.Node>Response</Flow.Node>
-</Flow>`}
-  >
-    <FlowDisabledDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Disabled Nodes</Heading>
+<p>
+  Use the `disabled` prop on a node to visually indicate it's inactive.
+  Connectors linking to disabled nodes are rendered with reduced opacity.
+</p>
+<ComponentExample demo="FlowDisabledDemo">
+  <FlowDisabledDemo client:visible />
+</ComponentExample>
 
   <Heading level={3}>Parallel Node Alignment</Heading>
   <p>
@@ -279,21 +159,12 @@ export default function Example() {
     `"end"` to align
     right.
   </p>
-  <ComponentExample
-    code={`<Flow>
-
-  <Flow.Node>Start</Flow.Node>
-  <Flow.Parallel align="end">
-    <Flow.Node>Short</Flow.Node>
-    <Flow.Node>Medium Length</Flow.Node>
-    <Flow.Node>Very Long Node Name</Flow.Node>
-  </Flow.Parallel>
-  <Flow.Node>End</Flow.Node>
-</Flow>`}
-  >
+  <ComponentExample demo="FlowParallelAlignEndDemo">
     <FlowParallelAlignEndDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Known Issue */}
 
 <ComponentSection>
   <Heading level={2}>Known Issue: Sidebar / Layout Shift</Heading>
@@ -304,13 +175,12 @@ export default function Example() {
     out of alignment until the next remeasure is triggered. Scroll the page
     while the sidebar is open to hit the same bug via the scroll path.
   </p>
-  <ComponentExample
-    code={`// Toggle the sidebar — connectors misalign on open/close
-<FlowSidebarBugDemo />`}
-  >
+  <ComponentExample demo="FlowSidebarBugDemo">
     <FlowSidebarBugDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Other Examples */}
 
 <ComponentSection>
   <Heading level={2}>Other Examples</Heading>
@@ -324,28 +194,12 @@ export default function Example() {
     to create parallel branches where each branch contains a sequence of connected
     nodes.
   </p>
-  <ComponentExample
-    code={`<Flow>
-  <Flow.Parallel>
-    <Flow.List>
-      <Flow.Node>Client Users</Flow.Node>
-      <Flow.Node>Engineering Team Access</Flow.Node>
-    </Flow.List>
-    <Flow.List>
-      <Flow.Parallel>
-        <Flow.Node>All Authenticated Users</Flow.Node>
-        <Flow.Node>Client Users</Flow.Node>
-        <Flow.Node>Site Users</Flow.Node>
-      </Flow.Parallel>
-      <Flow.Node>Contractor Access</Flow.Node>
-    </Flow.List>
-  </Flow.Parallel>
-  <Flow.Node>Destinations</Flow.Node>
-</Flow>`}
-  >
+  <ComponentExample demo="FlowParallelNestedListDemo">
     <FlowParallelNestedListDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Components */}
 
 <ComponentSection>
   <Heading level={2}>Components</Heading>
