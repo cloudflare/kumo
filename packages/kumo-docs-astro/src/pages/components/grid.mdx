@@ -7,7 +7,6 @@ sourceFile: "components/grid"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -18,87 +17,59 @@ import {
   GridMobileDividerDemo,
 } from "~/components/demos/GridDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<Grid variant="2up" gap="base">
-  <GridItem>
-    <Surface className="rounded-lg p-4">
-      <Text bold>Item 1</Text>
-      <Text variant="secondary">First grid item</Text>
-    </Surface>
-  </GridItem>
-  <GridItem>
-    <Surface className="rounded-lg p-4">
-      <Text bold>Item 2</Text>
-      <Text variant="secondary">Second grid item</Text>
-    </Surface>
-  </GridItem>
-</Grid>`}
-  >
+  <ComponentExample demo="GridDemo">
     <GridDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock
-    code={`import { Grid, GridItem } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Grid, GridItem } from "@cloudflare/kumo";
+```
+
 </ComponentSection>
+
+{/* Grid Variants */}
 
 <ComponentSection>
   <Heading level={2}>Grid Variants</Heading>
   <p>
-    The Grid component supports multiple column layouts that adapt responsively across breakpoints.
+    The Grid component supports multiple column layouts that adapt responsively
+    across breakpoints.
   </p>
-  <ComponentExample code={`// 2up: 1 column on mobile, 2 on medium+
-<Grid variant="2up">...</Grid>
-
-// 3up: 1 column mobile, 2 medium, 3 large
-
-<Grid variant="3up">...</Grid>
-
-// 4up: Progressive columns at each breakpoint
-
-<Grid variant="4up">...</Grid>`}>
+  <ComponentExample demo="GridVariantsDemo">
     <GridVariantsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Asymmetric Layouts */}
+
 <ComponentSection>
   <Heading level={2}>Asymmetric Layouts</Heading>
-  <p>
-    Use asymmetric variants for sidebar/main content layouts.
-  </p>
-  <ComponentExample code={`// 2-1: Two-thirds / one-third split (66%/33%)
-<Grid variant="2-1">
-  <GridItem>Main content</GridItem>
-  <GridItem>Sidebar</GridItem>
-</Grid>
-
-// 1-2: One-third / two-thirds split (33%/66%)
-
-<Grid variant="1-2">
-  <GridItem>Sidebar</GridItem>
-  <GridItem>Main content</GridItem>
-</Grid>`}>
+  <p>Use asymmetric variants for sidebar/main content layouts.</p>
+  <ComponentExample demo="GridAsymmetricDemo">
     <GridAsymmetricDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Gap Sizes */}
+
 <ComponentSection>
   <Heading level={2}>Gap Sizes</Heading>
   <p>Control the spacing between grid items with the gap prop.</p>
-  <ComponentExample
-    code={`<Grid variant="side-by-side" gap="none">...</Grid>
-<Grid variant="side-by-side" gap="sm">...</Grid>
-<Grid variant="side-by-side" gap="base">...</Grid>
-<Grid variant="side-by-side" gap="lg">...</Grid>`}
-  >
+  <ComponentExample demo="GridGapDemo">
     <GridGapDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Mobile Dividers */}
 
 <ComponentSection>
   <Heading level={2}>Mobile Dividers</Heading>
@@ -106,17 +77,12 @@ import {
     Add dividers between items on mobile with the mobileDivider prop (only works
     with the 4up variant).
   </p>
-  <ComponentExample
-    code={`<Grid variant="4up" gap="base" mobileDivider>
-  <GridItem>...</GridItem>
-  <GridItem>...</GridItem>
-  <GridItem>...</GridItem>
-  <GridItem>...</GridItem>
-</Grid>`}
-  >
+  <ComponentExample demo="GridMobileDividerDemo">
     <GridMobileDividerDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* All Variants */}
 
 <ComponentSection>
   <Heading level={2}>All Variants</Heading>
@@ -131,57 +97,39 @@ import {
       </thead>
       <tbody class="text-kumo-strong">
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `2up`
-          </td>
+          <td class="py-3 pr-4">`2up`</td>
           <td class="py-3 pr-4">1 column mobile, 2 columns medium+</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `side-by-side`
-          </td>
+          <td class="py-3 pr-4">`side-by-side`</td>
           <td class="py-3 pr-4">Always 2 columns</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `2-1`
-          </td>
+          <td class="py-3 pr-4">`2-1`</td>
           <td class="py-3 pr-4">66%/33% split on medium+</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `1-2`
-          </td>
+          <td class="py-3 pr-4">`1-2`</td>
           <td class="py-3 pr-4">33%/66% split on medium+</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `1-3up`
-          </td>
+          <td class="py-3 pr-4">`1-3up`</td>
           <td class="py-3 pr-4">1 column mobile, 3 columns large+</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `3up`
-          </td>
+          <td class="py-3 pr-4">`3up`</td>
           <td class="py-3 pr-4">1 mobile, 2 medium, 3 large</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `4up`
-          </td>
+          <td class="py-3 pr-4">`4up`</td>
           <td class="py-3 pr-4">Progressive: 1 → 2 → 3 → 4 columns</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `6up`
-          </td>
+          <td class="py-3 pr-4">`6up`</td>
           <td class="py-3 pr-4">2 mobile, up to 6 on XL</td>
         </tr>
         <tr class="border-b border-kumo-line">
-          <td class="py-3 pr-4">
-            `1-2-4up`
-          </td>
+          <td class="py-3 pr-4">`1-2-4up`</td>
           <td class="py-3 pr-4">1 mobile, 2 medium, 4 large</td>
         </tr>
       </tbody>
@@ -189,17 +137,17 @@ import {
   </div>
 </ComponentSection>
 
+{/* API Reference */}
+
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>
   <Heading level={3}>Grid</Heading>
   <PropsTable component="Grid" />
 
-  <Heading level={3}>GridItem</Heading>
-  <p>
-    GridItem is a wrapper component for grid children. It accepts standard div
-    props including
-    `className`
-    and
-    `children`.
-  </p>
+<Heading level={3}>GridItem</Heading>
+<p>
+  GridItem is a wrapper component for grid children. It accepts standard div
+  props including `className` and `children`.
+</p>
+
 </ComponentSection>

@@ -7,7 +7,6 @@ sourceFile: "components/table"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -19,27 +18,10 @@ import {
   TableFullDemo,
 } from "~/components/demos/TableDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Table>
-  <Table.Header>
-    <Table.Row>
-      <Table.Head>Subject</Table.Head>
-      <Table.Head>From</Table.Head>
-      <Table.Head>Date</Table.Head>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>Kumo v1.0.0 released</Table.Cell>
-      <Table.Cell>Visal In</Table.Cell>
-      <Table.Cell>5 seconds ago</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>`}
-  >
+  <ComponentExample demo="TableBasicDemo">
     <TableBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -49,20 +31,26 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Table } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Table } from "@cloudflare/kumo/components/table";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Table } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Table } from "@cloudflare/kumo/components/table";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { Table, LayerCard } from "@cloudflare/kumo";
+
+```tsx
+import { Table, LayerCard } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -87,9 +75,9 @@ export default function Example() {
       </LayerCard.Primary>
     </LayerCard>
   );
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -98,151 +86,43 @@ export default function Example() {
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>With Checkboxes</Heading>
-<p>Add row selection with `Table.CheckHead` and `Table.CheckCell` .</p>
-<ComponentExample
-  code={`<Table>
-  <Table.Header>
-    <Table.Row>
-      <Table.CheckHead />
-      <Table.Head>Subject</Table.Head>
-      <Table.Head>From</Table.Head>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.CheckCell />
-      <Table.Cell>Email subject</Table.Cell>
-      <Table.Cell>Sender name</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>`}
->
+<p>Add row selection with `Table.CheckHead` and `Table.CheckCell`.</p>
+<ComponentExample demo="TableWithCheckboxDemo">
   <TableWithCheckboxDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Compact Header</Heading>
-  <p>
-    Use `variant="compact"` on `Table.Header` for a more condensed header style.
-  </p>
-  <ComponentExample
-    code={`<Table>
+<Heading level={3}>Compact Header</Heading>
+<p>
+  Use `variant="compact"` on `Table.Header` for a more condensed header style.
+</p>
+<ComponentExample demo="TableWithCompactHeaderDemo">
+  <TableWithCompactHeaderDemo client:visible />
+</ComponentExample>
 
-  <Table.Header variant="compact">
-    <Table.Row>
-      <Table.Head>Subject</Table.Head>
-      <Table.Head>From</Table.Head>
-      <Table.Head>Date</Table.Head>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>Email subject</Table.Cell>
-      <Table.Cell>Sender name</Table.Cell>
-      <Table.Cell>Date</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>`}
-  >
-    <TableWithCompactHeaderDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Selected Row</Heading>
+<p>Use `variant="selected"` on `Table.Row` to highlight selected rows.</p>
+<ComponentExample demo="TableSelectedRowDemo">
+  <TableSelectedRowDemo client:visible />
+</ComponentExample>
 
-  <Heading level={3}>Selected Row</Heading>
-  <p>
-    Use `variant="selected"` on `Table.Row` to highlight selected rows.
-  </p>
-  <ComponentExample
-    code={`<Table.Row variant="selected">
+<Heading level={3}>Fixed Layout with Column Sizes</Heading>
+<p>
+  For precise control over column widths, set `layout="fixed"` and use
+  `colgroup` with `col` elements.
+</p>
+<ComponentExample demo="TableFixedLayoutDemo">
+  <TableFixedLayoutDemo client:visible />
+</ComponentExample>
 
-  <Table.CheckCell checked />
-  <Table.Cell>Selected row</Table.Cell>
-</Table.Row>`}
-  >
-    <TableSelectedRowDemo client:visible />
-  </ComponentExample>
+<Heading level={3}>Full Example</Heading>
+<p>
+  Complete table with checkboxes, badges, action buttons, and fixed column
+  widths.
+</p>
+<ComponentExample demo="TableFullDemo">
+  <TableFullDemo client:visible />
+</ComponentExample>
 
-  <Heading level={3}>Fixed Layout with Column Sizes</Heading>
-  <p>
-    For precise control over column widths, set <code
-      class="rounded bg-kumo-control px-1 py-0.5 text-sm">layout="fixed"</code> and use `colgroup` with `col` elements.
-  </p>
-  <ComponentExample
-    code={`<Table layout="fixed">
-
-  <colgroup>
-    <col />
-    <col className="w-[150px]" />
-    <col className="w-[150px]" />
-  </colgroup>
-  <Table.Header>
-    <Table.Row>
-      <Table.Head>Subject</Table.Head>
-      <Table.Head>From</Table.Head>
-      <Table.Head>Date</Table.Head>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    {data.map((row) => (
-      <Table.Row key={row.id}>
-        <Table.Cell>{row.subject}</Table.Cell>
-        <Table.Cell>{row.from}</Table.Cell>
-        <Table.Cell>{row.date}</Table.Cell>
-      </Table.Row>
-    ))}
-  </Table.Body>
-</Table>`}
-  >
-    <TableFixedLayoutDemo client:visible />
-  </ComponentExample>
-
-  <Heading level={3}>Full Example</Heading>
-  <p>
-    Complete table with checkboxes, badges, action buttons, and fixed
-    column widths.
-  </p>
-  <ComponentExample
-    code={`<Table layout="fixed">
-
-  <colgroup>
-    <col style={{ width: "40px" }} />
-    <col />
-    <col style={{ width: "150px" }} />
-    <col style={{ width: "120px" }} />
-    <col style={{ width: "50px" }} />
-  </colgroup>
-  <Table.Header>
-    <Table.Row>
-      <Table.CheckHead />
-      <Table.Head>Subject</Table.Head>
-      <Table.Head>From</Table.Head>
-      <Table.Head>Date</Table.Head>
-      <Table.Head></Table.Head>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    {data.map((row) => (
-      <Table.Row key={row.id} variant={row.selected ? "selected" : "default"}>
-        <Table.CheckCell checked={row.selected} />
-        <Table.Cell>
-          <div className="flex items-center gap-2">
-            <EnvelopeSimple size={16} />
-            {row.subject}
-            {row.tags?.map((tag) => <Badge key={tag}>{tag}</Badge>)}
-          </div>
-        </Table.Cell>
-        <Table.Cell>{row.from}</Table.Cell>
-        <Table.Cell>{row.date}</Table.Cell>
-        <Table.Cell className="text-right">
-          <Button variant="ghost" size="sm" shape="square">
-            <DotsThree weight="bold" size={16} />
-          </Button>
-        </Table.Cell>
-      </Table.Row>
-    ))}
-  </Table.Body>
-</Table>`}
-  >
-    <TableFullDemo client:visible />
-  </ComponentExample>
 </ComponentSection>
 
 {/* API Reference */}
@@ -251,32 +131,24 @@ export default function Example() {
   <Heading level={2}>API Reference</Heading>
 
 <Heading level={3}>Table</Heading>
-
-Root table component. Renders a semantic `<table>` element.
-
+<p>Root table component. Renders a semantic `<table>` element.</p>
 <PropsTable component="Table" />
 
 <Heading level={3}>Table.Header</Heading>
-
-Table header section. Renders `<thead>`.
+<p>Table header section. Renders `<thead>`.</p>
 
 <Heading level={3}>Table.Body</Heading>
-
-Table body section. Renders `<tbody>`.
+<p>Table body section. Renders `<tbody>`.</p>
 
 <Heading level={3}>Table.Row</Heading>
-
-Table row. Supports `variant="selected"` for highlighting.
-
+<p>Table row. Supports `variant="selected"` for highlighting.</p>
 <PropsTable component="Table.Row" />
 
 <Heading level={3}>Table.Head</Heading>
-
-Header cell. Renders `<th>`.
+<p>Header cell. Renders `<th>`.</p>
 
 <Heading level={3}>Table.Cell</Heading>
-
-Body cell. Renders `<td>`.
+<p>Body cell. Renders `<td>`.</p>
 
 <Heading level={3}>Table.CheckHead</Heading>
 <p>Header cell with checkbox for "select all" functionality.</p>
@@ -286,11 +158,12 @@ Body cell. Renders `<td>`.
 <p>Body cell with checkbox for row selection.</p>
 <PropsTable component="Table.CheckCell" />
 
-  <Heading level={3}>Table.ResizeHandle</Heading>
-  <p>
-    Draggable handle for column resizing. Use with TanStack Table or
-    custom resize logic.
-  </p>
+<Heading level={3}>Table.ResizeHandle</Heading>
+<p>
+  Draggable handle for column resizing. Use with TanStack Table or custom resize
+  logic.
+</p>
+
 </ComponentSection>
 
 {/* TanStack Table Integration */}
@@ -298,62 +171,65 @@ Body cell. Renders `<td>`.
 <ComponentSection>
   <Heading level={2}>TanStack Table Integration</Heading>
   <p>
-    For advanced features like sorting, filtering, and resizable columns,
-    integrate with <a
-      href="https://tanstack.com/table"
-      class="text-kumo-link hover:underline"
-      target="_blank"
-      rel="noopener noreferrer">TanStack Table</a>. The Table component is designed to work seamlessly with TanStack's
-    headless API.
+    For advanced features like sorting, filtering, and resizable columns, integrate with <a href="https://tanstack.com/table" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">TanStack Table</a>. The Table component is designed to work seamlessly with TanStack's headless API.
   </p>
-  <CodeBlock
-    code={`import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+
+```tsx
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { Table } from "@cloudflare/kumo";
 
 function DataTable({ data, columns }) {
-const table = useReactTable({
-data,
-columns,
-getCoreRowModel: getCoreRowModel(),
-columnResizeMode: "onChange",
-});
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: "onChange",
+  });
 
-return (
-
-<Table layout="fixed">
-  <colgroup>
-    {table.getAllColumns().map((column) => (
-      <col key={column.id} style={{ width: column.getSize() }} />
-    ))}
-  </colgroup>
-  <Table.Header>
-    {table.getHeaderGroups().map((headerGroup) => (
-      <Table.Row key={headerGroup.id}>
-        {headerGroup.headers.map((header) => (
-          <Table.Head key={header.id}>
-            {flexRender(header.column.columnDef.header, header.getContext())}
-            <Table.ResizeHandle
-              onMouseDown={header.getResizeHandler()}
-              onTouchStart={header.getResizeHandler()}
-            />
-          </Table.Head>
+  return (
+    <Table layout="fixed">
+      <colgroup>
+        {table.getAllColumns().map((column) => (
+          <col key={column.id} style={{ width: column.getSize() }} />
         ))}
-      </Table.Row>
-    ))}
-  </Table.Header>
-  <Table.Body>
-    {table.getRowModel().rows.map((row) => (
-      <Table.Row key={row.id}>
-        {row.getVisibleCells().map((cell) => (
-          <Table.Cell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </Table.Cell>
+      </colgroup>
+      <Table.Header>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <Table.Row key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <Table.Head key={header.id}>
+                {flexRender(
+                  header.column.columnDef.header,
+                  header.getContext(),
+                )}
+                <Table.ResizeHandle
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
+                />
+              </Table.Head>
+            ))}
+          </Table.Row>
         ))}
-      </Table.Row>
-    ))}
-  </Table.Body>
-</Table>
-); }`} lang="tsx" />
+      </Table.Header>
+      <Table.Body>
+        {table.getRowModel().rows.map((row) => (
+          <Table.Row key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <Table.Cell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Table.Cell>
+            ))}
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  );
+}
+```
 
 </ComponentSection>
 
@@ -362,17 +238,22 @@ return (
 <ComponentSection>
   <Heading level={2}>Accessibility</Heading>
 
-### Semantic HTML
+<h3 class="mb-2 font-semibold">Semantic HTML</h3>
+<p class="text-kumo-strong">
+  Table uses semantic `<table>`, `<thead>`, `<tbody>`, `<th>`, and `<td>` elements for proper screen reader navigation.
+</p>
 
-Table uses semantic `<table>`, `<thead>`, `<tbody>`, `<th>`, and `<td>` elements for proper screen reader navigation.
+<h3 class="mb-2 mt-4 font-semibold">Checkbox Labels</h3>
+<p class="text-kumo-strong">
+  Always provide `aria-label` for `Table.CheckHead` and `Table.CheckCell` to
+  describe their purpose.
+</p>
 
-### Checkbox Labels
-
-Always provide `aria-label` for `Table.CheckHead` and `Table.CheckCell` to describe their purpose.
-
-### Keyboard Navigation
-
-<kbd>Tab</kbd> moves focus through interactive elements. Checkboxes respond to
-<kbd>Space</kbd>.
+<h3 class="mb-2 mt-4 font-semibold">Keyboard Navigation</h3>
+<p class="text-kumo-strong">
+  <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus
+  through interactive elements. Checkboxes respond to{" "}
+  <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd>.
+</p>
 
 </ComponentSection>
