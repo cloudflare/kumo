@@ -629,7 +629,7 @@ export function HomeGrid() {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-surface"
+            className="relative flex aspect-square items-center justify-center bg-kumo-canvas"
             key={c.name}
           >
             {route ? (

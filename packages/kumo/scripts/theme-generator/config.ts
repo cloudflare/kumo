@@ -128,12 +128,12 @@ export const THEME_CONFIG: ThemeConfig = {
    * CSS variable: --color-{token}
    */
   color: {
-    "kumo-surface": {
+    "kumo-canvas": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-25, oklch(99% 0 0))",
-          dark: "var(--color-kumo-neutral-975, oklch(8.5% 0 0))",
+          light: "var(--color-kumo-neutral-50, oklch(99% 0 0))",
+          dark: "var(--color-kumo-neutral-975, oklch(12% 0 0))",
         },
         fedramp: {
           light: "#5b697c",
@@ -145,8 +145,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
-          dark: "var(--color-kumo-neutral-925, oklch(18% 0 0))",
+          light: "var(--color-neutral-50, oklch(98.5% 0 0))",
+          dark: "var(--color-kumo-neutral-925, oklch(15% 0 0))",
         },
       },
     },
@@ -155,7 +155,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
-          dark: "var(--color-kumo-neutral-850, oklch(22.4% 0 0))",
+          dark: "var(--color-kumo-neutral-900, oklch(19% 0 0))",
         },
         fedramp: {
           light: "#5b697c",
@@ -163,12 +163,38 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-ring": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-neutral-200, oklch(92.2% 0 0))",
+          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+        },
+        fedramp: {
+          light: "#c8d4e5",
+          dark: "#c8d4e5",
+        },
+      },
+    },
+    "kumo-active": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-neutral-400, oklch(70.8% 0 0))",
+          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
+        },
+        fedramp: {
+          light: "#c8d4e5",
+          dark: "#c8d4e5",
+        },
+      },
+    },
     "kumo-tint": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-75, oklch(96.7% 0 0))",
-          dark: "var(--color-kumo-neutral-800, oklch(26.9% 0 0))",
+          light: "var(--color-kumo-neutral-175, oklch(94% 0 0))",
+          dark: "var(--color-kumo-neutral-850, oklch(22.4% 0 0))",
         },
       },
     },
@@ -176,8 +202,80 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-975, oklch(8.5% 0 0))",
-          dark: "var(--color-kumo-neutral-25, oklch(99% 0 0))",
+          light: "var(--color-kumo-neutral-975, oklch(12% 0 0))",
+          dark: "var(--color-kumo-neutral-50, oklch(98% 0 0))",
+        },
+      },
+    },
+    "kumo-warning": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-yellow-500, oklch(79.5% 0.184 86.047))",
+          dark: "var(--color-yellow-700, oklch(55.4% 0.135 66.442))",
+        },
+      },
+    },
+    "kumo-warning-tint": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-yellow-300, oklch(90.5% 0.182 98.111))",
+          dark: "var(--color-yellow-900, oklch(42.1% 0.095 57.708))",
+        },
+      },
+    },
+    "kumo-danger": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
+          dark: "var(--color-red-700, oklch(50.5% 0.213 27.518))",
+        },
+      },
+    },
+    "kumo-danger-tint": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-red-300, oklch(80.8% 0.114 19.571))",
+          dark: "var(--color-red-900, oklch(39.6% 0.141 25.723))",
+        },
+      },
+    },
+    "kumo-success": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-green-500, oklch(72.3% 0.219 149.579))",
+          dark: "var(--color-green-700, oklch(52.7% 0.154 150.069))",
+        },
+      },
+    },
+    "kumo-success-tint": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-green-300, oklch(87.1% 0.15 154.449))",
+          dark: "var(--color-green-900, oklch(39.3% 0.095 152.535))",
+        },
+      },
+    },
+    "kumo-info": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-blue-500, oklch(62.3% 0.214 259.815))",
+          dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
+        },
+      },
+    },
+    "kumo-info-tint": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-blue-300, oklch(80.9% 0.105 251.813))",
+          dark: "var(--color-blue-900, oklch(37.9% 0.146 265.522))",
         },
       },
     },
@@ -189,7 +287,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-25, oklch(98.5% 0 0))",
+          light: "var(--color-kumo-neutral-50, oklch(98.5% 0 0))",
           dark: "var(--color-neutral-950, oklch(14.5% 0 0))",
         },
       },
@@ -198,7 +296,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
+          light: "var(--color-kumo-neutral-75, oklch(97.5% 0 0))",
           dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
         },
       },
@@ -266,19 +364,6 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-ring": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
-          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
-        },
-        fedramp: {
-          light: "#c8d4e5",
-          dark: "#c8d4e5",
-        },
-      },
-    },
     "kumo-tip-shadow": {
       newName: "",
       theme: {
@@ -294,78 +379,6 @@ export const THEME_CONFIG: ThemeConfig = {
         kumo: {
           light: "transparent",
           dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
-        },
-      },
-    },
-    "kumo-info": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-blue-500, oklch(62.3% 0.214 259.815))",
-          dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
-        },
-      },
-    },
-    "kumo-info-tint": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-blue-300, oklch(80.9% 0.105 251.813))",
-          dark: "var(--color-blue-900, oklch(37.9% 0.146 265.522))",
-        },
-      },
-    },
-    "kumo-warning": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-yellow-500, oklch(79.5% 0.184 86.047))",
-          dark: "var(--color-yellow-700, oklch(55.4% 0.135 66.442))",
-        },
-      },
-    },
-    "kumo-warning-tint": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-yellow-300, oklch(90.5% 0.182 98.111))",
-          dark: "var(--color-yellow-900, oklch(42.1% 0.095 57.708))",
-        },
-      },
-    },
-    "kumo-danger": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
-          dark: "var(--color-red-700, oklch(50.5% 0.213 27.518))",
-        },
-      },
-    },
-    "kumo-danger-tint": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-red-300, oklch(80.8% 0.114 19.571))",
-          dark: "var(--color-red-900, oklch(39.6% 0.141 25.723))",
-        },
-      },
-    },
-    "kumo-success": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-green-500, oklch(72.3% 0.219 149.579))",
-          dark: "var(--color-green-700, oklch(52.7% 0.154 150.069))",
-        },
-      },
-    },
-    "kumo-success-tint": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-green-300, oklch(87.1% 0.15 154.449))",
-          dark: "var(--color-green-900, oklch(39.3% 0.095 152.535))",
         },
       },
     },

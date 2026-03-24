@@ -151,7 +151,7 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-surface" />
+        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-recessed" />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
