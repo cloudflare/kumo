@@ -8,6 +8,7 @@ sourceFile: "components/command-palette"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
+import KeyboardShortcuts from "~/components/docs/KeyboardShortcuts.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   CommandPaletteBasicDemo,
@@ -110,35 +111,14 @@ export default function Example() {
 <ComponentSection>
   <Heading level={2}>Keyboard Navigation</Heading>
   <p>Built-in keyboard navigation is provided automatically:</p>
-  <ul class="mb-4 list-inside list-disc space-y-2 text-kumo-subtle">
-    <li>
-      <kbd class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs">
-        ↑
-      </kbd>
-      <kbd class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs">
-        ↓
-      </kbd>
-      - Move highlight between items
-    </li>
-    <li>
-      <kbd class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs">
-        Enter
-      </kbd>
-      - Select highlighted item
-    </li>
-    <li>
-      <kbd class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs">
-        ⌘/Ctrl + Enter
-      </kbd>
-      - Select with `newTab: true`
-    </li>
-    <li>
-      <kbd class="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs">
-        Escape
-      </kbd>
-      - Close the dialog
-    </li>
-  </ul>
+  <KeyboardShortcuts
+    shortcuts={[
+      { keys: ["↑", "↓"], description: "Move highlight between items" },
+      { keys: ["Enter"], description: "Select highlighted item" },
+      { keys: ["⌘/Ctrl", "Enter"], description: "Select with newTab: true" },
+      { keys: ["Escape"], description: "Close the dialog" },
+    ]}
+  />
 </ComponentSection>
 
 {/* Examples */}
