@@ -282,11 +282,12 @@ export function FlowDiagram({
     <DiagramContext.Provider value={contextValue}>
       <motion.div
         ref={wrapperRef}
-        className={cn(
-          "relative overflow-hidden py-16 px-4 grow isolate group",
-          className,
-        )}
+        className={cn("relative overflow-hidden grow isolate group", className)}
         style={{
+          paddingTop: padding.y,
+          paddingBottom: padding.y,
+          paddingLeft: padding.x,
+          paddingRight: padding.x,
           cursor: canPan && !isPanning ? "grab" : undefined,
         }}
         onPanStart={handlePanStart}

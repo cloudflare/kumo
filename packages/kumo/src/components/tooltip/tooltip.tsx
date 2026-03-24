@@ -73,11 +73,9 @@ type TooltipAlign = "start" | "center" | "end";
  *
  * @example
  * ```tsx
- * <TooltipProvider>
- *   <Tooltip content="Add new item" asChild>
- *     <Button shape="square" icon={PlusIcon} />
- *   </Tooltip>
- * </TooltipProvider>
+ * <Tooltip content="Add new item" asChild>
+ *   <Button shape="square" icon={PlusIcon} />
+ * </Tooltip>
  * ```
  */
 export type TooltipProps = BaseTooltipProps &
