@@ -135,10 +135,18 @@ export const BreadcrumbsPropsSchema = z.object({
 export const ButtonPropsSchema = z.object({
   shape: z.enum(["base", "square", "circle"]).optional(),
   size: z.enum(["xs", "sm", "base", "lg"]).optional(),
-  compactSize: z.enum(["xs", "sm", "base", "lg"]).optional(),
   variant: z.enum(["primary", "secondary", "ghost", "destructive", "secondary-destructive", "outline"]).optional(),
-  className: z.string().optional(), // Additional CSS classes
-  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Child elements
+  children: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(),
+  className: z.string().optional(),
+  icon: z.union([z.string(), z.number(), z.boolean(), z.null(), DynamicValueSchema]).optional(), // Icon from `@phosphor-icons/react` or a React element. Rendered before children.
+  loading: z.boolean().optional(), // Shows a loading spinner and disables interaction.
+  id: z.string().optional(),
+  lang: z.string().optional(),
+  title: z.string().optional(),
+  disabled: z.boolean().optional(),
+  name: z.string().optional(),
+  type: z.enum(["submit", "reset", "button"]).optional(),
+  value: z.unknown().optional(),
 });
 
 export const CheckboxPropsSchema = z.object({

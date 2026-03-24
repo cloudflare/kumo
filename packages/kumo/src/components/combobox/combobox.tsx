@@ -412,7 +412,7 @@ function Chip(props: ComboboxBase.Chip.Props) {
         "flex items-center gap-2.5", // Layout
         "h-6 pl-2 pr-[3px]", // Dimensions
         "rounded-sm ring-1 ring-kumo-ring", // Border
-        "bg-kumo-overlay", // Background
+        "bg-kumo-base", // Background
         "text-sm", // Typography
       )}
     >

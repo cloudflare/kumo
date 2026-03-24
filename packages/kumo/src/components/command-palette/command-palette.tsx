@@ -383,7 +383,7 @@ function Loading({ children }: CommandPaletteLoadingProps) {
  */
 function Footer({ children }: CommandPaletteFooterProps) {
   return (
-    <div className="flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong">
+    <div className="flex items-center justify-between rounded-b-lg bg-kumo-recessed px-4 py-3 text-xs text-kumo-strong">
       {children}
     </div>
   );
@@ -540,7 +540,7 @@ function Container({
   return (
     <div
       className={cn(
-        "flex max-h-[60vh] flex-col overflow-hidden rounded-lg bg-kumo-elevated",
+        "flex max-h-[60vh] flex-col overflow-hidden rounded-lg bg-kumo-base",
         className,
       )}
     >

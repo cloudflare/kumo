@@ -98,7 +98,7 @@
 
   --color-kumo-contrast: light-dark(
     var(--color-kumo-neutral-975, oklch(12% 0 0)),
-    var(--color-kumo-neutral-25, oklch(98% 0 0))
+    var(--color-kumo-neutral-50, oklch(98% 0 0))
   );
 
   --color-kumo-warning: light-dark(
@@ -142,12 +142,12 @@
   );
 
   --color-kumo-elevated: light-dark(
-    var(--color-kumo-neutral-25, oklch(98.5% 0 0)),
+    var(--color-kumo-neutral-50, oklch(98.5% 0 0)),
     var(--color-neutral-950, oklch(14.5% 0 0))
   );
 
   --color-kumo-overlay: light-dark(
-    var(--color-kumo-neutral-50, oklch(97.5% 0 0)),
+    var(--color-kumo-neutral-75, oklch(97.5% 0 0)),
     var(--color-neutral-800, oklch(26.9% 0 0))
   );
 
@@ -238,8 +238,8 @@
     --color-kumo-success-tint: var(--color-green-300, oklch(87.1% 0.15 154.449));
     --color-kumo-info: var(--color-blue-500, oklch(62.3% 0.214 259.815));
     --color-kumo-info-tint: var(--color-blue-300, oklch(80.9% 0.105 251.813));
-    --color-kumo-elevated: var(--color-kumo-neutral-25, oklch(98.5% 0 0));
-    --color-kumo-overlay: var(--color-kumo-neutral-50, oklch(97.5% 0 0));
+    --color-kumo-elevated: var(--color-kumo-neutral-50, oklch(98.5% 0 0));
+    --color-kumo-overlay: var(--color-kumo-neutral-75, oklch(97.5% 0 0));
     --color-kumo-control: var(--color-white, #fff);
     --color-kumo-interact: var(--color-neutral-300, oklch(87% 0 0));
     --color-kumo-fill: var(--color-neutral-200, oklch(92.2% 0 0));
@@ -269,7 +269,7 @@
     --color-kumo-ring: var(--color-neutral-800, oklch(26.9% 0 0));
     --color-kumo-active: var(--color-neutral-700, oklch(37.1% 0 0));
     --color-kumo-tint: var(--color-kumo-neutral-850, oklch(22.4% 0 0));
-    --color-kumo-contrast: var(--color-kumo-neutral-25, oklch(98% 0 0));
+    --color-kumo-contrast: var(--color-kumo-neutral-50, oklch(98% 0 0));
     --color-kumo-warning: var(--color-yellow-700, oklch(55.4% 0.135 66.442));
     --color-kumo-warning-tint: var(--color-yellow-900, oklch(42.1% 0.095 57.708));
     --color-kumo-danger: var(--color-red-700, oklch(50.5% 0.213 27.518));

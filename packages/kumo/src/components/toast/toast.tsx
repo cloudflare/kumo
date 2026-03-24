@@ -21,7 +21,7 @@ import {
 export const KUMO_TOAST_VARIANTS = {
   root: {
     classes:
-      "rounded-lg border border-kumo-fill bg-kumo-control p-4 shadow-lg text-kumo-default",
+      "rounded-lg border border-kumo-fill bg-kumo-base p-4 shadow-lg text-kumo-default",
     description: "Toast container with background, border, and shadow",
   },
   title: {
@@ -39,30 +39,30 @@ export const KUMO_TOAST_VARIANTS = {
   },
   variant: {
     default: {
-      classes: "border-kumo-fill bg-kumo-control",
+      classes: "border-kumo-fill bg-kumo-base",
       description: "Default toast style",
     },
     success: {
       classes:
-        "border-kumo-success bg-kumo-control [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
+        "border-kumo-success bg-kumo-base [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
       description: "Success toast for confirmations and positive outcomes",
       icon: CheckCircleIcon,
     },
     error: {
       classes:
-        "border-kumo-danger bg-kumo-control [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
+        "border-kumo-danger bg-kumo-base [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
       description: "Error toast for critical issues",
       icon: WarningOctagonIcon,
     },
     warning: {
       classes:
-        "border-kumo-warning bg-kumo-control [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
+        "border-kumo-warning bg-kumo-base [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
       description: "Warning toast for cautionary messages",
       icon: WarningIcon,
     },
     info: {
       classes:
-        "border-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
+        "border-kumo-info bg-kumo-base [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
       description: "Info toast for neutral informational messages",
       icon: InfoIcon,
     },
