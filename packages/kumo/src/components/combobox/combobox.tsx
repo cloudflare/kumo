@@ -245,6 +245,7 @@ function TriggerValue({
       className={cn(
         inputVariants({ size }),
         "relative flex items-center",
+        "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         iconStyles.padding,
         className,
       )}
@@ -299,16 +300,26 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
 
   return (
     <div
-      className={cn("relative inline-block w-full max-w-xs", props.className)}
+      className={cn(
+        "relative inline-block w-full max-w-xs",
+        "has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed",
+        props.className,
+      )}
     >
       <ComboboxBase.Input
         {...props}
-        className={cn(inputVariants({ size }), "w-full", iconStyles.padding)}
+        className={cn(
+          inputVariants({ size }),
+          "w-full",
+          iconStyles.padding,
+          "disabled:cursor-not-allowed",
+        )}
       />
 
       <ComboboxBase.Clear
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
+          "data-[disabled]:pointer-events-none data-[disabled]:opacity-0",
           iconStyles.clearRight,
         )}
       >
@@ -463,6 +474,7 @@ function TriggerMultipleWithInput<ValueType>({
         "gap-1 py-1 px-1.5",
         sizeToMinHeight[size],
         "h-auto",
+        "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         className,
       )}
     >
