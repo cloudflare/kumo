@@ -15,16 +15,16 @@ export function SurfaceDemo() {
   );
 }
 
-export function SurfaceAsDemo() {
+export function SurfaceRenderDemo() {
   return (
     <div className="flex flex-col gap-4">
-      <Surface as="section" className="rounded-lg p-4">
+      <Surface render={<section />} className="rounded-lg p-4">
         <Text bold>As section element</Text>
       </Surface>
-      <Surface as="article" className="rounded-lg p-4">
+      <Surface render={<article />} className="rounded-lg p-4">
         <Text bold>As article element</Text>
       </Surface>
-      <Surface as="aside" className="rounded-lg p-4">
+      <Surface render={<aside />} className="rounded-lg p-4">
         <Text bold>As aside element</Text>
       </Surface>
     </div>
