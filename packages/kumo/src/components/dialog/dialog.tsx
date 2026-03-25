@@ -215,7 +215,7 @@ function DialogContent({
     <BasePortal>
       <BaseBackdrop className="fixed inset-0 bg-kumo-base opacity-80 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
       <Surface
-        as={BasePopup}
+        render={<BasePopup />}
         className={cn(dialogVariants({ size }), className)}
         style={
           {

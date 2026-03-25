@@ -11,7 +11,7 @@ import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   SurfaceDemo,
-  SurfaceAsDemo,
+  SurfaceRenderDemo,
   SurfaceNestedDemo,
 } from "~/components/demos/SurfaceDemo";
 
@@ -34,15 +34,16 @@ import { Surface } from "@cloudflare/kumo";
 
 </ComponentSection>
 
-{/* Polymorphic "as" prop */}
+{/* render prop */}
 
 <ComponentSection>
-  <Heading level={2}>Polymorphic "as" prop</Heading>
+  <Heading level={2}>Rendering as a different element</Heading>
   <p class="text-kumo-strong mb-4">
-    Surface can render as different HTML elements using the `as` prop.
+    Use the `render` prop to render Surface as a different HTML element or
+    custom component.
   </p>
-  <ComponentExample demo="SurfaceAsDemo">
-    <SurfaceAsDemo client:visible />
+  <ComponentExample demo="SurfaceRenderDemo">
+    <SurfaceRenderDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
