@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { createElement, forwardRef, type ElementType } from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "../../utils/cn";
@@ -55,7 +55,13 @@ export function surfaceVariants({
  * ```
  */
 export type SurfaceProps = useRender.ComponentProps<"div"> &
-  KumoSurfaceVariantsProps;
+  KumoSurfaceVariantsProps & {
+    /**
+     * @deprecated Use the `render` prop instead.
+     * @example `<Surface render={<section />}>` instead of `<Surface as="section">`
+     */
+    as?: ElementType;
+  };
 
 /**
  * Polymorphic container with consistent background, shadow, and border styling.
@@ -71,7 +77,10 @@ export type SurfaceProps = useRender.ComponentProps<"div"> &
  * ```
  */
 export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
-  function Surface({ color = "primary", className, render, ...props }, ref) {
+  function Surface(
+    { color = "primary", className, render, as: asProp, ...props },
+    ref,
+  ) {
     const defaultProps: useRender.ElementProps<"div"> = {
       className: cn(
         "bg-kumo-base shadow-xs ring ring-kumo-line",
@@ -79,9 +88,13 @@ export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
       ),
     };
 
+    // Support deprecated `as` prop by converting to a render element.
+    const resolvedRender =
+      render ?? (asProp ? createElement(asProp) : undefined);
+
     return useRender({
       defaultTagName: "div",
-      render,
+      render: resolvedRender,
       ref,
       props: mergeProps<"div">(defaultProps, props, { className }),
     });
