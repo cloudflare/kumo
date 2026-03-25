@@ -17,6 +17,7 @@ import {
   ComboboxGroupedDemo,
   ComboboxMultipleDemo,
   ComboboxWithFieldDemo,
+  ComboboxDisabledDemo,
   ComboboxErrorDemo,
   ComboboxSizesDemo,
   ComboboxSizesSearchableInsideDemo,
@@ -131,6 +132,14 @@ export default function Example() {
   <p>Add label and description using the built-in Field wrapper.</p>
   <ComponentExample demo="ComboboxWithFieldDemo">
     <ComboboxWithFieldDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Disabled</Heading>
+  <p>Pass the `disabled` prop to prevent interaction. Works with both `TriggerInput` and `TriggerValue`.</p>
+  <ComponentExample demo="ComboboxDisabledDemo">
+    <ComboboxDisabledDemo client:load />
   </ComponentExample>
 </ComponentSection>
 

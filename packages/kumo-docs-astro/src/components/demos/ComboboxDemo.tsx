@@ -358,6 +358,44 @@ export function ComboboxWithFieldDemo() {
   );
 }
 
+export function ComboboxDisabledDemo() {
+  return (
+    <div className="flex flex-wrap gap-4 items-start">
+      <Combobox value="Apple" items={fruits} disabled>
+        <Combobox.TriggerInput
+          className="w-[200px]"
+          placeholder="Select fruit"
+        />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+
+      <Combobox value={languages[0]} items={languages} disabled>
+        <Combobox.TriggerValue className="w-[200px]" />
+        <Combobox.Content>
+          <Combobox.Input placeholder="Search" />
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: Language) => (
+              <Combobox.Item key={item.value} value={item}>
+                {item.emoji} {item.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
+
 export function ComboboxErrorDemo() {
   const [value, setValue] = useState<DatabaseItem | null>(null);
 
