@@ -59,6 +59,84 @@ export function paginationVariants({
   );
 }
 
+/**
+ * Calculates which page numbers to display in a numbered pagination control.
+ *
+ * Returns an array of page numbers and "ellipsis" markers for gaps between ranges.
+ * Always shows the first and last pages, with `siblingCount` pages on each side
+ * of the current page.
+ *
+ * @param currentPage - The currently active page (1-indexed)
+ * @param maxPage - The total number of pages
+ * @param siblingCount - Number of pages to show on each side of current page (default: 1)
+ * @returns Array of page numbers and "ellipsis" markers
+ *
+ * @example
+ * ```ts
+ * getPageRange(1, 5)     // [1, 2, 3, 4, 5] - small, show all
+ * getPageRange(5, 10)    // [1, "ellipsis", 4, 5, 6, "ellipsis", 10] - middle
+ * getPageRange(1, 10)    // [1, 2, 3, 4, 5, "ellipsis", 10] - near start
+ * getPageRange(5, 10, 2) // [1, "ellipsis", 3, 4, 5, 6, 7, "ellipsis", 10] - siblingCount=2
+ * ```
+ */
+export function getPageRange(
+  currentPage: number,
+  maxPage: number,
+  siblingCount: number = 1,
+): (number | "ellipsis")[] {
+  // Handle edge cases
+  if (maxPage < 1) return [1];
+
+  // Clamp current page to valid range
+  const page = Math.max(1, Math.min(currentPage, maxPage));
+
+  // Total number of "slots" we can display:
+  // first + last + current + 2*siblings + 2 ellipsis positions
+  const totalSlots = siblingCount * 2 + 5;
+
+  // If we can show all pages, no ellipsis needed
+  if (maxPage <= totalSlots) {
+    return Array.from({ length: maxPage }, (_, i) => i + 1);
+  }
+
+  const leftSibling = Math.max(page - siblingCount, 1);
+  const rightSibling = Math.min(page + siblingCount, maxPage);
+
+  const showLeftEllipsis = leftSibling > 2;
+  const showRightEllipsis = rightSibling < maxPage - 1;
+
+  const result: (number | "ellipsis")[] = [];
+
+  if (!showLeftEllipsis && showRightEllipsis) {
+    // Near the start: show more pages on the left
+    const leftRange = siblingCount * 2 + 3;
+    for (let i = 1; i <= leftRange; i++) {
+      result.push(i);
+    }
+    result.push("ellipsis");
+    result.push(maxPage);
+  } else if (showLeftEllipsis && !showRightEllipsis) {
+    // Near the end: show more pages on the right
+    const rightRange = siblingCount * 2 + 3;
+    result.push(1);
+    result.push("ellipsis");
+    for (let i = maxPage - rightRange + 1; i <= maxPage; i++) {
+      result.push(i);
+    }
+  } else {
+    // Middle: ellipsis on both sides
+    result.push(1);
+    result.push("ellipsis");
+    for (let i = leftSibling; i <= rightSibling; i++) {
+      result.push(i);
+    }
+    result.push("ellipsis");
+    result.push(maxPage);
+  }
+
+  return result;
+}
+
 // ============================================================================
 // Pagination Context
 // ============================================================================
