@@ -31,6 +31,11 @@ export const KUMO_PAGINATION_VARIANTS = {
       description:
         "Simple pagination controls with only previous and next buttons",
     },
+    numbered: {
+      classes: "",
+      description:
+        "Numbered page buttons with previous and next navigation arrows",
+    },
   },
 } as const;
 
