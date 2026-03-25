@@ -257,16 +257,28 @@ PaginationPageSize.displayName = "Pagination.PageSize";
 // ============================================================================
 
 export interface PaginationControlsProps extends KumoPaginationVariantsProps {
+  /** Number of page numbers to show on each side of the current page. Only applies to the "numbered" variant. @default 1 */
+  siblingCount?: number;
   /** Additional CSS classes */
   className?: string;
 }
 
 function PaginationControls({
   controls = KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
+  siblingCount,
   className,
 }: PaginationControlsProps) {
   const { page, maxPage, setPage, editingPage, setEditingPage } =
     usePaginationContext();
+
+  if (controls === "numbered") {
+    return (
+      <NumberedPaginationControls
+        siblingCount={siblingCount}
+        className={className}
+      />
+    );
+  }
 
   return (
     <div
