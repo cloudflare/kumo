@@ -376,6 +376,105 @@ function PaginationSeparator({ className }: PaginationSeparatorProps) {
 PaginationSeparator.displayName = "Pagination.Separator";
 
 // ============================================================================
+// NumberedPaginationControls (internal)
+// ============================================================================
+
+interface NumberedPaginationControlsProps {
+  /** Number of pages to show on each side of the current page. @default 1 */
+  siblingCount?: number;
+  /** Additional CSS classes */
+  className?: string;
+}
+
+function NumberedPaginationControls({
+  siblingCount = 1,
+  className,
+}: NumberedPaginationControlsProps) {
+  const { page, maxPage, setPage, setEditingPage } = usePaginationContext();
+
+  const pages = getPageRange(page, maxPage, siblingCount);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setEditingPage(newPage);
+  };
+
+  return (
+    <div
+      data-slot="pagination-controls"
+      className={cn("grow flex items-center justify-end", className)}
+    >
+      <nav aria-label="Pagination" className="flex items-center gap-1">
+        <button
+          type="button"
+          aria-label="Previous page"
+          disabled={page <= 1}
+          onClick={() => handlePageChange(Math.max(page - 1, 1))}
+          className={cn(
+            "inline-flex items-center justify-center size-8 rounded-md",
+            "text-kumo-default cursor-pointer",
+            "hover:bg-kumo-tint",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
+            "disabled:cursor-not-allowed disabled:text-kumo-subtle disabled:opacity-50",
+            "disabled:hover:bg-transparent",
+          )}
+        >
+          <CaretLeftIcon size={16} />
+        </button>
+
+        {pages.map((item, index) =>
+          item === "ellipsis" ? (
+            <span
+              key={`ellipsis-${index}`}
+              aria-hidden="true"
+              className="inline-flex items-center justify-center size-8 text-sm text-kumo-subtle select-none"
+            >
+              &hellip;
+            </span>
+          ) : (
+            <button
+              key={item}
+              type="button"
+              aria-label={`Go to page ${item}`}
+              aria-current={item === page ? "page" : undefined}
+              onClick={() => handlePageChange(item)}
+              className={cn(
+                "inline-flex items-center justify-center size-8 rounded-md text-sm font-medium tabular-nums cursor-pointer",
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
+                item === page
+                  ? "bg-kumo-tint border border-kumo-line text-kumo-default"
+                  : "text-kumo-default hover:bg-kumo-tint",
+              )}
+            >
+              {item}
+            </button>
+          ),
+        )}
+
+        <button
+          type="button"
+          aria-label="Next page"
+          disabled={page >= maxPage}
+          onClick={() => handlePageChange(Math.min(page + 1, maxPage))}
+          className={cn(
+            "inline-flex items-center justify-center size-8 rounded-md",
+            "text-kumo-default cursor-pointer",
+            "hover:bg-kumo-tint",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
+            "disabled:cursor-not-allowed disabled:text-kumo-subtle disabled:opacity-50",
+            "disabled:hover:bg-transparent",
+          )}
+        >
+          <CaretRightIcon size={16} />
+        </button>
+      </nav>
+    </div>
+  );
+}
+
+NumberedPaginationControls.displayName = "NumberedPaginationControls";
+
+// ============================================================================
 // Pagination Root
 // ============================================================================
 
