@@ -19,28 +19,10 @@ import {
   BannerCustomContentDemo,
 } from "~/components/demos/BannerDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Banner
-  icon={<Info weight="fill" />}
-  title="Update available"
-  description="A new version is ready to install."
-/>
-<Banner
-  icon={<Warning weight="fill" />}
-  variant="alert"
-  title="Session expiring"
-  description="Your session will expire in 5 minutes."
-/>
-<Banner
-  icon={<WarningCircle weight="fill" />}
-  variant="error"
-  title="Save failed"
-  description="We couldn't save your changes. Please try again."
-/>`}
-  >
+  <ComponentExample demo="BannerVariantsDemo">
     <BannerVariantsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -49,15 +31,22 @@ import {
 
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Banner } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Banner } from "@cloudflare/kumo/components/banner";`}
+    lang="tsx"
+  />
 </ComponentSection>
 
 {/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { Banner } from "@cloudflare/kumo";
+
+```tsx
+import { Banner } from "@cloudflare/kumo";
 import { Info } from "@phosphor-icons/react";
 
 export default function Example() {
@@ -68,9 +57,9 @@ export default function Example() {
       description="A new version is ready to install."
     />
   );
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -78,74 +67,30 @@ export default function Example() {
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
-{/* Variants */}
-
 <Heading level={3}>Variants</Heading>
+
 <h4 class="mb-3 text-base font-medium">Default</h4>
-<ComponentExample
-  code={`<Banner
-  icon={<Info weight="fill" />}
-  title="Update available"
-  description="A new version is ready to install."
-/>`}
->
+<ComponentExample demo="BannerDefaultDemo">
   <BannerDefaultDemo client:visible />
 </ComponentExample>
 
-  <h4 class="mb-3 text-base font-medium">Alert</h4>
-  <ComponentExample
-    code={`<Banner
-
-icon={<Warning weight="fill" />}
-variant="alert"
-title="Session expiring"
-description="Your session will expire in 5 minutes."
-/>`} >
-
-<BannerAlertDemo client:visible />
+<h4 class="mb-3 text-base font-medium">Alert</h4>
+<ComponentExample demo="BannerAlertDemo">
+  <BannerAlertDemo client:visible />
 </ComponentExample>
 
-  <h4 class="mb-3 text-base font-medium">Error</h4>
-  <ComponentExample
-    code={`<Banner
-
-icon={<WarningCircle weight="fill" />}
-variant="error"
-title="Save failed"
-description="We couldn't save your changes. Please try again."
-/>`} >
-
-<BannerErrorDemo client:visible />
+<h4 class="mb-3 text-base font-medium">Error</h4>
+<ComponentExample demo="BannerErrorDemo">
+  <BannerErrorDemo client:visible />
 </ComponentExample>
-
-{/* With icon */}
 
 <Heading level={3}>With icon</Heading>
-<ComponentExample
-  code={`<Banner
-  icon={<Warning weight="fill" />}
-  variant="alert"
-  title="Review required"
-  description="Please review your billing information before proceeding."
-/>`}
->
+<ComponentExample demo="BannerWithIconDemo">
   <BannerWithIconDemo client:visible />
 </ComponentExample>
 
-{/* Custom content */}
-
   <Heading level={3}>Custom content</Heading>
-  <ComponentExample
-    code={`<Banner
-  icon={<Info weight="fill" />}
-  title="Custom content supported"
-  description={
-    <Text DANGEROUS_className="text-inherit">
-      This banner supports <strong>custom content</strong> with Text.
-    </Text>
-  }
-/>`}
-  >
+  <ComponentExample demo="BannerCustomContentDemo">
     <BannerCustomContentDemo client:visible />
   </ComponentExample>
 </ComponentSection>

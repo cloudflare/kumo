@@ -1,0 +1,30 @@
+---
+interface Shortcut {
+  keys: string[];
+  description: string;
+}
+
+interface Props {
+  shortcuts: Shortcut[];
+}
+
+const { shortcuts } = Astro.props;
+---
+
+<div class="my-4 space-y-2">
+  {shortcuts.map(({ keys, description }) => (
+    <div class="flex items-center gap-3">
+      <span class="flex items-center gap-1">
+        {keys.map((key, i) => (
+          <>
+            <kbd class="inline-flex items-center justify-center rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs font-medium min-w-[1.5rem]">
+              {key}
+            </kbd>
+            {i < keys.length - 1 && <span class="text-kumo-subtle text-xs">+</span>}
+          </>
+        ))}
+      </span>
+      <span class="text-kumo-subtle">{description}</span>
+    </div>
+  ))}
+</div>

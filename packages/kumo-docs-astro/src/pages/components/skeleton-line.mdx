@@ -7,7 +7,6 @@ sourceFile: "primitives/skeleton-line"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   SkeletonLineDemo,
@@ -15,62 +14,50 @@ import {
   SkeletonLineCardDemo,
 } from "~/components/demos/SkeletonLineDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<div className="flex flex-col gap-3 w-64">
-  <SkeletonLine />
-  <SkeletonLine />
-  <SkeletonLine />
-</div>`}
-  >
+  <ComponentExample demo="SkeletonLineDemo">
     <SkeletonLineDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock
-    code={`import { SkeletonLine } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
+
+```tsx
+import { SkeletonLine } from "@cloudflare/kumo";
+```
+
 </ComponentSection>
+
+{/* Custom Widths */}
 
 <ComponentSection>
   <Heading level={2}>Custom Widths</Heading>
   <p class="text-kumo-strong mb-4">
     Control the randomized width range for more natural-looking skeletons.
   </p>
-  <ComponentExample
-    code={`<div className="flex flex-col gap-3 w-64">
-  <SkeletonLine minWidth={80} maxWidth={100} />
-  <SkeletonLine minWidth={60} maxWidth={80} />
-  <SkeletonLine minWidth={40} maxWidth={60} />
-</div>`}
-  >
+  <ComponentExample demo="SkeletonLineWidthDemo">
     <SkeletonLineWidthDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Card Loading State */}
 
 <ComponentSection>
   <Heading level={2}>Card Loading State</Heading>
   <p class="text-kumo-strong mb-4">
     Use skeleton lines to create loading states for cards and content areas.
   </p>
-  <ComponentExample
-    code={`<div className="p-4 rounded-lg ring ring-kumo-line w-64">
-  <div className="h-4 mb-4">
-    <SkeletonLine minWidth={40} maxWidth={60} />
-  </div>
-  <div className="flex flex-col gap-2">
-    <SkeletonLine />
-    <SkeletonLine />
-    <SkeletonLine minWidth={50} maxWidth={70} />
-  </div>
-</div>`}
-  >
+  <ComponentExample demo="SkeletonLineCardDemo">
     <SkeletonLineCardDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>

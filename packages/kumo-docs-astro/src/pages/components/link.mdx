@@ -7,7 +7,6 @@ sourceFile: "components/link"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   LinkBasicDemo,
@@ -17,14 +16,10 @@ import {
   LinkRenderDemo,
 } from "~/components/demos/LinkDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`<Link href="#">Learn more</Link>
-<Link href="#" variant="plain">Plain link</Link>
-<Link href="#" variant="current">Current variant</Link>`}
-  >
+  <ComponentExample demo="LinkBasicDemo">
     <LinkBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -34,24 +29,30 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Link } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Link } from "@cloudflare/kumo/components/link";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Link } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Link } from "@cloudflare/kumo/components/link";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
-  <ComponentSection>
-    <Heading level={2}>Usage</Heading>
-    <Heading level={3}>Basic Link</Heading>
-    <p>
-      The default Link component renders an underlined anchor with primary color styling.
-    </p>
-    <CodeBlock
-      code={`import { Link } from "@cloudflare/kumo";
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+  <Heading level={3}>Basic Link</Heading>
+  <p>
+    The default Link component renders an underlined anchor with primary color styling.
+  </p>
+
+```tsx
+import { Link } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -59,40 +60,39 @@ export default function Example() {
       Read our <Link href="/docs">documentation</Link> for more details.
     </p>
   );
-}`}
-      lang="tsx"
-    />
+}
+```
 
-    <Heading level={3}>External Links</Heading>
-    <p>
-      Use the <code class="rounded bg-secondary px-1 py-0.5 text-sm">Link.ExternalIcon</code> subcomponent
-      to indicate links that open in a new tab.
-    </p>
-    <CodeBlock
-      code={`import { Link } from "@cloudflare/kumo";
+<Heading level={3}>External Links</Heading>
+<p>
+  Use the `Link.ExternalIcon` subcomponent to indicate links that open in a new
+  tab.
+</p>
+
+```tsx
+import { Link } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
-    <Link 
-      href="https://cloudflare.com" 
-      target="_blank" 
+    <Link
+      href="https://cloudflare.com"
+      target="_blank"
       rel="noopener noreferrer"
     >
       Visit Cloudflare <Link.ExternalIcon />
     </Link>
   );
-}`}
-      lang="tsx"
-    />
+}
+```
 
-    <Heading level={3}>Framework Integration (render prop)</Heading>
-    <p>
-      Use the <code class="rounded bg-secondary px-1 py-0.5 text-sm">render</code> prop to compose
-      Link styles onto framework-specific routing components like React Router's Link or Next.js Link.
-    </p>
-    <CodeBlock
-      code={`import { Link } from "@cloudflare/kumo";
+<Heading level={3}>Framework Integration (render prop)</Heading>
+<p>
+  Use the `render` prop to compose Link styles onto framework-specific routing
+  components like React Router's Link or Next.js Link.
+</p>
 
+```tsx
+import { Link } from "@cloudflare/kumo";
 import { Link as RouterLink } from "react-router-dom";
 
 export default function Example() {
@@ -101,192 +101,154 @@ export default function Example() {
       Dashboard
     </Link>
   );
-}`}
-      lang="tsx"
-    />
-  </ComponentSection>
+}
+```
+
+</ComponentSection>
 
 {/* Examples */}
 
-  <ComponentSection>
-    <Heading level={2}>Examples</Heading>
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
 
-    <Heading level={3}>Inline in Paragraph</Heading>
-    <p>
-      Links flow naturally within paragraph text with proper underline offset.
-    </p>
-    <ComponentExample
-      code={`<p className="text-surface">
+<Heading level={3}>Inline in Paragraph</Heading>
+<p>Links flow naturally within paragraph text with proper underline offset.</p>
+<ComponentExample demo="LinkInParagraphDemo">
+  <LinkInParagraphDemo client:visible />
+</ComponentExample>
 
-This is a paragraph with an <Link href="#">inline link</Link> that flows
-naturally with the surrounding text.
+<Heading level={3}>External Link with Icon</Heading>
+<p>
+  Use `Link.ExternalIcon` to visually indicate links that navigate away from
+  your site.
+</p>
+<ComponentExample demo="LinkExternalDemo">
+  <LinkExternalDemo client:visible />
+</ComponentExample>
 
-</p>`}
-    >
-      <LinkInParagraphDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Current Variant (Color Inheritance)</Heading>
+<p>
+  The `current` variant inherits color from its parent, useful for links within
+  colored contexts like alerts.
+</p>
+<ComponentExample demo="LinkCurrentVariantDemo">
+  <LinkCurrentVariantDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>External Link with Icon</Heading>
-    <p>
-      Use <code class="rounded bg-secondary px-1 py-0.5 text-sm">Link.ExternalIcon</code> to
-      visually indicate links that navigate away from your site.
-    </p>
-    <ComponentExample
-      code={`<Link
+<Heading level={3}>Composition with render prop</Heading>
+<p>
+  The `render` prop lets you compose Link styling onto any element, enabling
+  integration with framework routing components.
+</p>
+<ComponentExample demo="LinkRenderDemo">
+  <LinkRenderDemo client:visible />
+</ComponentExample>
 
-href="https://cloudflare.com"
-target="\_blank"
-rel="noopener noreferrer"
-
-> Visit Cloudflare <Link.ExternalIcon />
-
-</Link>`}
-    >
-      <LinkExternalDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Current Variant (Color Inheritance)</Heading>
-    <p>
-      The <code class="rounded bg-secondary px-1 py-0.5 text-sm">current</code> variant
-      inherits color from its parent, useful for links within colored contexts like alerts.
-    </p>
-    <ComponentExample
-      code={`<p className="text-error">
-
-This error message contains a
-
-  <Link href="#" variant="current">link</Link>
-  that inherits the red color from its parent.
-</p>`}
-    >
-      <LinkCurrentVariantDemo client:visible />
-    </ComponentExample>
-
-    <Heading level={3}>Composition with render prop</Heading>
-    <p>
-      The <code class="rounded bg-secondary px-1 py-0.5 text-sm">render</code> prop lets you
-      compose Link styling onto any element, enabling integration with framework routing components.
-    </p>
-    <ComponentExample
-      code={`<Link render={<RouterLink href="/dashboard" />} variant="inline">
-
-Dashboard (via render)
-
-</Link>
-<Link
-  render={
-    <RouterLink
-      href="https://developers.cloudflare.com"
-      target="_blank"
-      rel="noopener noreferrer"
-    />
-  }
-  variant="inline"
->
-  Cloudflare Docs <Link.ExternalIcon />
-</Link>`}
-    >
-      <LinkRenderDemo client:visible />
-    </ComponentExample>
-  </ComponentSection>
+</ComponentSection>
 
 {/* API Reference */}
 
-  <ComponentSection>
-    <Heading level={2}>API Reference</Heading>
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
 
-    <Heading level={3}>Link Props</Heading>
-    <p>
-      Extends all native anchor element attributes.
-    </p>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-kumo-line">
-            <th class="px-4 py-3 text-left font-semibold">Prop</th>
-            <th class="px-4 py-3 text-left font-semibold">Type</th>
-            <th class="px-4 py-3 text-left font-semibold">Default</th>
-            <th class="px-4 py-3 text-left font-semibold">Description</th>
-          </tr>
-        </thead>
-        <tbody class="text-label">
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">variant</td>
-            <td class="px-4 py-3 font-mono text-xs">"inline" | "current" | "plain"</td>
-            <td class="px-4 py-3 font-mono text-xs">"inline"</td>
-            <td class="px-4 py-3 text-xs">Visual style variant</td>
-          </tr>
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">render</td>
-            <td class="px-4 py-3 font-mono text-xs">ReactElement</td>
-            <td class="px-4 py-3 font-mono text-xs">-</td>
-            <td class="px-4 py-3 text-xs">Element to render with Link props merged onto it</td>
-          </tr>
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">href</td>
-            <td class="px-4 py-3 font-mono text-xs">string</td>
-            <td class="px-4 py-3 font-mono text-xs">-</td>
-            <td class="px-4 py-3 text-xs">Link destination URL</td>
-          </tr>
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">className</td>
-            <td class="px-4 py-3 font-mono text-xs">string</td>
-            <td class="px-4 py-3 font-mono text-xs">-</td>
-            <td class="px-4 py-3 text-xs">Additional CSS classes</td>
-          </tr>
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">children</td>
-            <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
-            <td class="px-4 py-3 font-mono text-xs">-</td>
-            <td class="px-4 py-3 text-xs">Link content</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<Heading level={3}>Link Props</Heading>
+<p>Extends all native anchor element attributes.</p>
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-line">
+        <th class="px-4 py-3 text-left font-semibold">Prop</th>
+        <th class="px-4 py-3 text-left font-semibold">Type</th>
+        <th class="px-4 py-3 text-left font-semibold">Default</th>
+        <th class="px-4 py-3 text-left font-semibold">Description</th>
+      </tr>
+    </thead>
+    <tbody class="text-kumo-strong">
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">variant</td>
+        <td class="px-4 py-3 font-mono text-xs">
+          "inline" | "current" | "plain"
+        </td>
+        <td class="px-4 py-3 font-mono text-xs">"inline"</td>
+        <td class="px-4 py-3 text-xs">Visual style variant</td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">render</td>
+        <td class="px-4 py-3 font-mono text-xs">ReactElement</td>
+        <td class="px-4 py-3 font-mono text-xs">-</td>
+        <td class="px-4 py-3 text-xs">
+          Element to render with Link props merged onto it
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">href</td>
+        <td class="px-4 py-3 font-mono text-xs">string</td>
+        <td class="px-4 py-3 font-mono text-xs">-</td>
+        <td class="px-4 py-3 text-xs">Link destination URL</td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">className</td>
+        <td class="px-4 py-3 font-mono text-xs">string</td>
+        <td class="px-4 py-3 font-mono text-xs">-</td>
+        <td class="px-4 py-3 text-xs">Additional CSS classes</td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">children</td>
+        <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+        <td class="px-4 py-3 font-mono text-xs">-</td>
+        <td class="px-4 py-3 text-xs">Link content</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-    <Heading level={3}>Variants</Heading>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-kumo-line">
-            <th class="px-4 py-3 text-left font-semibold">Variant</th>
-            <th class="px-4 py-3 text-left font-semibold">Description</th>
-            <th class="px-4 py-3 text-left font-semibold">Use Case</th>
-          </tr>
-        </thead>
-        <tbody class="text-label">
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">inline</td>
-            <td class="px-4 py-3 text-xs">Primary color with underline</td>
-            <td class="px-4 py-3 text-xs">Default for inline text links</td>
-          </tr>
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">current</td>
-            <td class="px-4 py-3 text-xs">Inherits parent text color with underline</td>
-            <td class="px-4 py-3 text-xs">Links within colored contexts (alerts, errors)</td>
-          </tr>
-          <tr class="border-b border-kumo-line">
-            <td class="px-4 py-3 font-mono text-xs">plain</td>
-            <td class="px-4 py-3 text-xs">Primary color without underline</td>
-            <td class="px-4 py-3 text-xs">Navigation links, menus, footers</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<Heading level={3}>Variants</Heading>
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-line">
+        <th class="px-4 py-3 text-left font-semibold">Variant</th>
+        <th class="px-4 py-3 text-left font-semibold">Description</th>
+        <th class="px-4 py-3 text-left font-semibold">Use Case</th>
+      </tr>
+    </thead>
+    <tbody class="text-kumo-strong">
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">inline</td>
+        <td class="px-4 py-3 text-xs">Primary color with underline</td>
+        <td class="px-4 py-3 text-xs">Default for inline text links</td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">current</td>
+        <td class="px-4 py-3 text-xs">
+          Inherits parent text color with underline
+        </td>
+        <td class="px-4 py-3 text-xs">
+          Links within colored contexts (alerts, errors)
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">plain</td>
+        <td class="px-4 py-3 text-xs">Primary color without underline</td>
+        <td class="px-4 py-3 text-xs">Navigation links, menus, footers</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-    <Heading level={3}>Link.ExternalIcon</Heading>
-    <p>
-      SVG icon component to indicate external links. Accepts all SVG element attributes.
-    </p>
-    <CodeBlock
-      code={`<Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+<Heading level={3}>Link.ExternalIcon</Heading>
+<p>
+  SVG icon component to indicate external links. Accepts all SVG element
+  attributes.
+</p>
 
-External Site <Link.ExternalIcon />
+```tsx
+<Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+  External Site <Link.ExternalIcon />
+</Link>
+```
 
-</Link>`}
-      lang="tsx"
-    />
-  </ComponentSection>
+</ComponentSection>
 
 {/* Design Guidelines */}
 
@@ -295,7 +257,7 @@ External Site <Link.ExternalIcon />
   <div class="space-y-4 text-sm">
     <div>
       <h3 class="mb-2 font-semibold">When to Use Each Variant</h3>
-      <ul class="ml-4 list-disc space-y-1 text-label">
+      <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>
           <strong>inline</strong>: Default choice for links within body text
         </li>
@@ -311,24 +273,10 @@ External Site <Link.ExternalIcon />
     </div>
     <div>
       <h3 class="mb-2 font-semibold">External Link Indicators</h3>
-      <ul class="ml-4 list-disc space-y-1 text-label">
+      <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
+        <li>Always use `Link.ExternalIcon` for links that open in new tabs</li>
         <li>
-          Always use
-          <code class="rounded bg-secondary px-1 py-0.5 text-sm">
-            Link.ExternalIcon
-          </code>
-          for links that open in new tabs
-        </li>
-        <li>
-          Set
-          <code class="rounded bg-secondary px-1 py-0.5 text-sm">
-            target="_blank"
-          </code>
-          and
-          <code class="rounded bg-secondary px-1 py-0.5 text-sm">
-            rel="noopener noreferrer"
-          </code>
-          for security
+          Set `target="_blank"` and `rel="noopener noreferrer"` for security
         </li>
         <li>
           The icon provides a visual cue that users will leave the current site
@@ -337,11 +285,10 @@ External Site <Link.ExternalIcon />
     </div>
     <div>
       <h3 class="mb-2 font-semibold">Framework Integration</h3>
-      <ul class="ml-4 list-disc space-y-1 text-label">
+      <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>
-          Use the
-          <code class="rounded bg-secondary px-1 py-0.5 text-sm">render</code>
-          prop with React Router, Next.js, or other framework links
+          Use the `render` prop with React Router, Next.js, or other framework
+          links
         </li>
         <li>Pass your framework's Link component as the render prop value</li>
         <li>
@@ -355,14 +302,11 @@ External Site <Link.ExternalIcon />
     </div>
     <div>
       <h3 class="mb-2 font-semibold">Accessibility</h3>
-      <ul class="ml-4 list-disc space-y-1 text-label">
+      <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>Links are keyboard focusable by default</li>
         <li>
-          The external icon has
-          <code class="rounded bg-secondary px-1 py-0.5 text-sm">
-            aria-hidden="true"
-          </code>
-          - add descriptive text for screen readers
+          The external icon has `aria-hidden="true"` - add descriptive text for
+          screen readers
         </li>
         <li>Ensure sufficient color contrast for all variants</li>
         <li>Use descriptive link text (avoid "click here")</li>

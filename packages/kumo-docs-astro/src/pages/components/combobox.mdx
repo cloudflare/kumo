@@ -22,45 +22,15 @@ import {
   ComboboxSizesSearchableInsideDemo,
 } from "~/components/demos/ComboboxDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample code={`function App() {
-  const [value, setValue] = useState<string | null>("Apple");
-
-return (
-
-<Combobox value={value} onValueChange={(v) => setValue(v as any)} items={fruits}>  
- <Combobox.TriggerInput placeholder="Please select" />
-<Combobox.Content>
-<Combobox.Empty />
-<Combobox.List>
-{(item: string) => (
-<Combobox.Item key={item} value={item}>
-{item}
-</Combobox.Item>
-)}
-</Combobox.List>
-</Combobox.Content>
-</Combobox>  
- );
-}
-
-const fruits = [
-"Apple",
-"Orange",
-"Banana",
-"Grape",
-"Strawberry",
-"Blueberry",
-"Cherry",
-"Watermelon",
-"Peach",
-"Pear",
-];`}>
-
-<ComboboxDemo client:load />
-
+  <ComponentExample demo="ComboboxDemo">
+    <ComboboxDemo client:load />
   </ComponentExample>
 </ComponentSection>
+
+{/* Installation */}
 
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
@@ -73,261 +43,101 @@ const fruits = [
   />
 </ComponentSection>
 
+{/* Usage */}
+
 <ComponentSection>
-  <Heading level={2}>Sizes</Heading>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { useState } from "react";
+import { Combobox } from "@cloudflare/kumo";
+
+const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
+
+export default function Example() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Combobox value={value} onValueChange={setValue} items={fruits}>
+      <Combobox.TriggerInput placeholder="Select a fruit" />
+      <Combobox.Content>
+        <Combobox.Empty />
+        <Combobox.List>
+          {(item) => (
+            <Combobox.Item key={item} value={item}>
+              {item}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Sizes</Heading>
+<p>
+  The Combobox supports four size variants that match the Input component: `xs`,
+  `sm`, `base` (default), and `lg`.
+</p>
+<ComponentExample demo="ComboboxSizesDemo">
+  <ComboboxSizesDemo client:load />
+</ComponentExample>
+
   <p>
-    The Combobox supports four size variants that match the Input component:
-    `xs`,
-    `sm`,
-    `base` (default), and
-    `lg`.
+    Size also applies to `TriggerValue` (searchable inside variant):
   </p>
-  <ComponentExample
-    code={`<Combobox size="sm" items={fruits} value={value} onValueChange={setValue}>
-  <Combobox.TriggerInput placeholder="Select fruit" />
-  <Combobox.Content>
-    <Combobox.Empty />
-    <Combobox.List>
-      {(item) => (
-        <Combobox.Item key={item} value={item}>
-          {item}
-        </Combobox.Item>
-      )}
-    </Combobox.List>
-  </Combobox.Content>
-</Combobox>`}
-  >
-    <ComboboxSizesDemo client:load />
-  </ComponentExample>
-  <p>
-    Size also applies to `TriggerValue`
-    (searchable inside variant):
-  </p>
-  <ComponentExample
-    code={`<Combobox size="sm" items={languages} value={value} onValueChange={setValue}>
-  <Combobox.TriggerValue className="w-[160px]" />
-  <Combobox.Content>
-    <Combobox.Input placeholder="Search" />
-    <Combobox.Empty />
-    <Combobox.List>
-      {(item) => (
-        <Combobox.Item key={item.value} value={item}>
-          {item.emoji} {item.label}
-        </Combobox.Item>
-      )}
-    </Combobox.List>
-  </Combobox.Content>
-</Combobox>`}
-  >
+  <ComponentExample demo="ComboboxSizesSearchableInsideDemo">
     <ComboboxSizesSearchableInsideDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Searchable Item (Inside)</Heading>
-  <p>A searchable select component inside popup that allows users to filter and select.</p>
-  <ComponentExample code={`function App() {
-  const [value, setValue] = useState<Language | null>(languages[0]);
-
-return (
-
-<Combobox
-value={value}
-onValueChange={(v) => setValue(v)}
-items={languages} >
-<Combobox.TriggerValue className="w-[200px]" />
-<Combobox.Content>
-<Combobox.Input /> // Add this to make item searchable
-<Combobox.Empty />
-<Combobox.List>
-{(item: Language) => (
-<Combobox.Item key={item.value} value={item}>
-{item.emoji} {item.label}
-</Combobox.Item>
-)}
-</Combobox.List>
-</Combobox.Content>
-</Combobox>
-);
-}
-
-interface Language {
-value: string;
-label: string;
-emoji: string;
-}
-
-const languages: Language[] = [
-{ value: "en", label: "English", emoji: "🇬🇧" },
-{ value: "fr", label: "French", emoji: "🇫🇷" },
-{ value: "de", label: "German", emoji: "🇩🇪" },
-{ value: "es", label: "Spanish", emoji: "🇪🇸" },
-{ value: "it", label: "Italian", emoji: "🇮🇹" },
-{ value: "pt", label: "Portuguese", emoji: "🇵🇹" },
-];`}>
-
-<ComboboxSearchableInsideDemo client:load />
-
+  <Heading level={3}>Searchable Item (Inside)</Heading>
+  <p>
+    A searchable select component inside popup that allows users to filter and
+    select.
+  </p>
+  <ComponentExample demo="ComboboxSearchableInsideDemo">
+    <ComboboxSearchableInsideDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Grouped</Heading>
+  <Heading level={3}>Grouped</Heading>
   <p>Group items into categories using the Group and GroupLabel components.</p>
-  <ComponentExample code={`function App() {
-  const [value, setValue] = useState<string | null>("singapore");
-
-return (
-
-<Combobox value={value} onValueChange={(v) => setValue(v as any)} items={server}>
-<Combobox.TriggerInput className="w-[200px]" placeholder="Select server" />
-<Combobox.Content>
-<Combobox.Empty />
-<Combobox.List>
-{(group: ServerLocationGroup) => (
-<Combobox.Group key={group.value} items={group.items}>
-<Combobox.GroupLabel>{group.value}</Combobox.GroupLabel>
-<Combobox.Collection>
-{(item: ServerLocation) => {
-return (
-<Combobox.Item key={item.value} value={item}>
-{item.label}
-</Combobox.Item>
-);
-}}
-</Combobox.Collection>
-</Combobox.Group>
-)}
-</Combobox.List>
-</Combobox.Content>
-</Combobox>  
- )
-}
-
-const server = [
-{
-value: "Asia",
-items: [
-{ label: "Japan", value: "japan" },
-{ label: "China", value: "china" },
-{ label: "Singapore", value: "singapore" },
-],
-},
-{
-value: "Europe",
-items: [
-{ label: "Germany", value: "germany" },
-{ label: "France", value: "france" },
-{ label: "Italy", value: "italy" },
-],
-},
-];
-
-interface ServerLocation {
-label: string;
-value: string;
-}
-
-interface ServerLocationGroup {
-value: string;
-items: ServerLocation[];
-}`}>
-
-<ComboboxGroupedDemo client:load />
-
+  <ComponentExample demo="ComboboxGroupedDemo">
+    <ComboboxGroupedDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Multiple</Heading>
+  <Heading level={3}>Multiple</Heading>
   <p>Allow users to select multiple options from the list.</p>
-  <ComponentExample
-    code={`<Combobox
-  value={value}
-  onValueChange={setValue}
-  items={bots}
-  isItemEqualToValue={(bot, selected) => bot.value === selected.value}
-  multiple
->
-  <Combobox.TriggerMultipleWithInput
-    className="w-[400px]"
-    placeholder="Select bots"
-    renderItem={(selected) => (
-      <Combobox.Chip key={selected.value}>
-        {selected.label}
-      </Combobox.Chip>
-    )}
-    inputSide="right"
-  />
-  <Combobox.Content>
-    <Combobox.Empty />
-    <Combobox.List>
-      {(item) => (
-        <Combobox.Item key={item.value} value={item}>
-          <Text>{item.label}</Text>
-          <Text variant="secondary">{item.author}</Text>
-        </Combobox.Item>
-      )}
-    </Combobox.List>
-  </Combobox.Content>
-</Combobox>`}
-  >
+  <ComponentExample demo="ComboboxMultipleDemo">
     <ComboboxMultipleDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>With Field</Heading>
+  <Heading level={3}>With Field</Heading>
   <p>Add label and description using the built-in Field wrapper.</p>
-  <ComponentExample
-    code={`<Combobox
-  items={items}
-  value={value}
-  onValueChange={setValue}
-  label="Database"
-  description="Select your preferred database"
->
-  <Combobox.TriggerInput placeholder="Select database" />
-  <Combobox.Content>
-    <Combobox.Empty />
-    <Combobox.List>
-      {(item) => (
-        <Combobox.Item key={item.value} value={item}>
-          {item.label}
-        </Combobox.Item>
-      )}
-    </Combobox.List>
-  </Combobox.Content>
-</Combobox>`}
-  >
+  <ComponentExample demo="ComboboxWithFieldDemo">
     <ComboboxWithFieldDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Error State</Heading>
+  <Heading level={3}>Error State</Heading>
   <p>Display validation errors with the error prop.</p>
-  <ComponentExample
-    code={`<Combobox
-  items={items}
-  value={value}
-  onValueChange={setValue}
-  label="Database"
-  error={{ message: "Please select a database", match: true }}
->
-  <Combobox.TriggerInput placeholder="Select database" />
-  <Combobox.Content>
-    <Combobox.Empty />
-    <Combobox.List>
-      {(item) => (
-        <Combobox.Item key={item.value} value={item}>
-          {item.label}
-        </Combobox.Item>
-      )}
-    </Combobox.List>
-  </Combobox.Content>
-</Combobox>`}
-  >
+  <ComponentExample demo="ComboboxErrorDemo">
     <ComboboxErrorDemo client:load />
   </ComponentExample>
 </ComponentSection>
@@ -340,17 +150,19 @@ items: ServerLocation[];
   <p>
     To customize the max height, pass a className to <code class="text-surface">Combobox.Content</code>:
   </p>
-  <CodeBlock code={`// Shorter dropdown (200px)
+
+```tsx
+// Shorter dropdown (200px)
 <Combobox.Content className="max-h-[200px]">
 
 // Taller dropdown (500px)
-
 <Combobox.Content className="max-h-[500px]">
 
 // Use Tailwind presets
-
 <Combobox.Content className="max-h-64">  // 256px
-<Combobox.Content className="max-h-96">  // 384px (same as default)`} lang="tsx" />
+<Combobox.Content className="max-h-96">  // 384px (same as default)
+```
+
 </ComponentSection>
 
 <ComponentSection>

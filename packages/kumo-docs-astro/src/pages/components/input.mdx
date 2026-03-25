@@ -25,17 +25,15 @@ import {
   InputReactNodeLabelDemo,
 } from "~/components/demos/InputDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<Input 
-  label="Email" 
-  placeholder="you@example.com"
-  description="We'll never share your email"
-/>`}
-  >
+  <ComponentExample demo="InputBasicDemo">
     <InputBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* Installation */}
 
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
@@ -48,188 +46,112 @@ import {
   />
 </ComponentSection>
 
+{/* Usage */}
+
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
   <Heading level={3}>With Built-in Field (Recommended)</Heading>
   <p>
-    Use the `label` prop
-    to enable the built-in Field wrapper with label, description, and error support.
+    Use the `label` prop to enable the built-in Field wrapper with label, description, and error support.
   </p>
-  <CodeBlock
-    code={`import { Input } from "@cloudflare/kumo";
+
+```tsx
+import { Input } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
-    <Input 
-      label="Email" 
+    <Input
+      label="Email"
       placeholder="you@example.com"
       description="We'll never share your email"
     />
   );
-}`}
-    lang="tsx"
-  />
+}
+```
 
-  <Heading level={3}>Bare Input (Custom Layouts)</Heading>
-  <p>
-    For custom form layouts, use Input without `label`. Must provide `aria-label` or `aria-labelledby` for accessibility.
-  </p>
-  <CodeBlock
-    code={`import { Input } from "@cloudflare/kumo";
+<Heading level={3}>Bare Input (Custom Layouts)</Heading>
+<p>
+  For custom form layouts, use Input without `label`. Must provide `aria-label`
+  or `aria-labelledby` for accessibility.
+</p>
+
+```tsx
+import { Input } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Input placeholder="Search..." aria-label="Search products" />;
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
+
+{/* Examples */}
 
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
 <Heading level={3}>With Label and Description</Heading>
 <p>
-  The `label`
-  prop enables the built-in Field wrapper with automatic vertical layout (label
-  above input).
+  The `label` prop enables the built-in Field wrapper with automatic vertical
+  layout (label above input).
 </p>
-<ComponentExample
-  code={`<Input 
-  label="Username" 
-  placeholder="Choose a username"
-  description="3-20 characters, alphanumeric only"
-/>`}
->
+<ComponentExample demo="InputWithLabelDemo">
   <InputWithLabelDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>With Error (String)</Heading>
-  <p>
-    Pass `error` as
-    a string for simple error messages. Error replaces description when present.
-  </p>
-  <ComponentExample
-    code={`<Input
-
-label="Email"
-placeholder="you@example.com"
-value="invalid-email"
-variant="error"
-error="Please enter a valid email address"
-/>`} >
-
-<InputErrorStringDemo client:visible />
+<Heading level={3}>With Error (String)</Heading>
+<p>
+  Pass `error` as a string for simple error messages. Error replaces description
+  when present.
+</p>
+<ComponentExample demo="InputErrorStringDemo">
+  <InputErrorStringDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>With Error (Validation Object)</Heading>
-  <p>
-    Pass `error` as
-    an object with `message` and `match` for
-    HTML5 validation. Error shows when field validity matches.
-  </p>
-  <ComponentExample
-    code={`<Input
-
-label="Password"
-type="password"
-value="short"
-variant="error"
-error={{
-    message: "Password must be at least 8 characters",
-    match: "tooShort"
-  }}
-minLength={8}
-/>`} >
-
-<InputErrorObjectDemo client:visible />
+<Heading level={3}>With Error (Validation Object)</Heading>
+<p>
+  Pass `error` as an object with `message` and `match` for HTML5 validation.
+  Error shows when field validity matches.
+</p>
+<ComponentExample demo="InputErrorObjectDemo">
+  <InputErrorObjectDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Input Sizes</Heading>
-  <p>
-    Four sizes available: `xs`, `sm`, `base` (default), `lg`.
-  </p>
-  <ComponentExample
-    code={`<>
-
-  <Input size="xs" label="Extra Small" placeholder="Extra small input" />
-  <Input size="sm" label="Small" placeholder="Small input" />
-  <Input label="Base" placeholder="Base input (default)" />
-  <Input size="lg" label="Large" placeholder="Large input" />
-</>`}
-  >
-    <InputSizesDemo client:visible />
-  </ComponentExample>
-
-  <Heading level={3}>Disabled</Heading>
-  <ComponentExample
-    code={`<Input
-
-label="Disabled field"
-placeholder="Cannot edit"
-disabled
-/>`} >
-
-<InputDisabledDemo client:visible />
+<Heading level={3}>Input Sizes</Heading>
+<p>Four sizes available: `xs`, `sm`, `base` (default), `lg`.</p>
+<ComponentExample demo="InputSizesDemo">
+  <InputSizesDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Optional Field</Heading>
-  <p>
-    Set `required={"{false}"}` to show "(optional)" text after the label.
-  </p>
-  <ComponentExample
-    code={`<Input
-
-label="Phone Number"
-required={false}
-placeholder="+1 (555) 000-0000"
-/>`} >
-
-<InputOptionalFieldDemo client:visible />
+<Heading level={3}>Disabled</Heading>
+<ComponentExample demo="InputDisabledDemo">
+  <InputDisabledDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>With Label Tooltip</Heading>
-  <p>
-    Use `labelTooltip` to add an info icon with additional context on hover.
-  </p>
-  <ComponentExample
-    code={`<Input
-
-label="API Key"
-labelTooltip="Find this in your dashboard under Settings > API Keys"
-placeholder="sk*live*..."
-/>`} >
-
-<InputLabelTooltipDemo client:visible />
+<Heading level={3}>Optional Field</Heading>
+<p>Set `required={false}` to show "(optional)" text after the label.</p>
+<ComponentExample demo="InputOptionalFieldDemo">
+  <InputOptionalFieldDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>ReactNode Label</Heading>
-  <p>
-    The `label`
-    prop accepts ReactNode for rich formatting.
-  </p>
-  <ComponentExample
-    code={`<Input
+<Heading level={3}>With Label Tooltip</Heading>
+<p>Use `labelTooltip` to add an info icon with additional context on hover.</p>
+<ComponentExample demo="InputLabelTooltipDemo">
+  <InputLabelTooltipDemo client:visible />
+</ComponentExample>
 
-label={<span>Email for <strong>billing</strong></span>}
-required
-placeholder="billing@company.com"
-type="email"
-/>`} >
-
-<InputReactNodeLabelDemo client:visible />
+<Heading level={3}>ReactNode Label</Heading>
+<p>The `label` prop accepts ReactNode for rich formatting.</p>
+<ComponentExample demo="InputReactNodeLabelDemo">
+  <InputReactNodeLabelDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Bare Input (No Label)</Heading>
 <p>
-  Input without
-  `label` renders
-  as a bare input. Must provide
-  `aria-label`
-  for accessibility.
+  Input without `label` renders as a bare input. Must provide `aria-label` for
+  accessibility.
 </p>
-<ComponentExample
-  code={`<Input placeholder="Search..." aria-label="Search products" />`}
->
+<ComponentExample demo="InputBareDemo">
   <InputBareDemo client:visible />
 </ComponentExample>
 
@@ -237,18 +159,12 @@ type="email"
   <p>
     Supports all HTML input types: `text`, `email`, `password`, `number`, `tel`, `url`, etc.
   </p>
-  <ComponentExample
-    code={`<>
-
-  <Input type="email" label="Email" placeholder="you@example.com" />
-  <Input type="password" label="Password" placeholder="••••••••" />
-  <Input type="number" label="Age" placeholder="18" />
-  <Input type="tel" label="Phone" placeholder="+1 (555) 000-0000" />
-</>`}
-  >
+  <ComponentExample demo="InputTypesDemo">
     <InputTypesDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>
@@ -259,9 +175,7 @@ type="email"
 
   <Heading level={3}>Validation Error Types</Heading>
   <p>
-    When using `error` as
-    an object, the `match`
-    property corresponds to HTML5 ValidityState values:
+    When using `error` as an object, the `match` property corresponds to HTML5 ValidityState values:
   </p>
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
@@ -309,6 +223,8 @@ type="email"
   </div>
 </ComponentSection>
 
+{/* Accessibility */}
+
 <ComponentSection>
   <Heading level={2}>Accessibility</Heading>
   <div class="space-y-4 text-sm">
@@ -318,20 +234,9 @@ type="email"
         Inputs require an accessible name via one of:
       </p>
       <ul class="mt-2 ml-4 list-disc space-y-1 text-kumo-strong">
-        <li>
-          `label`
-          prop (recommended)
-        </li>
-        <li>
-          `placeholder`
-          +
-          `aria-label`
-          for bare inputs
-        </li>
-        <li>
-          `aria-labelledby`
-          for custom label association
-        </li>
+        <li>`label` prop (recommended)</li>
+        <li>`placeholder` + `aria-label` for bare inputs</li>
+        <li>`aria-labelledby` for custom label association</li>
       </ul>
       <p class="mt-2 text-kumo-strong">
         Missing accessible names trigger console warnings in development.

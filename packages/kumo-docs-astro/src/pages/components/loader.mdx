@@ -7,19 +7,17 @@ sourceFile: "components/loader"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   LoaderBasicDemo,
-  LoaderSizesDemo,
   LoaderCustomSizeDemo,
 } from "~/components/demos/LoaderDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample code={`<Loader />`}>
+  <ComponentExample demo="LoaderBasicDemo">
     <LoaderBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -29,44 +27,50 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Loader } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Loader } from "@cloudflare/kumo/components/loader";`}
-    lang="tsx"
-  />
+
+```tsx
+import { Loader } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Loader } from "@cloudflare/kumo/components/loader";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
-  <ComponentSection>
-    <Heading level={2}>Usage</Heading>
-    <CodeBlock
-      code={`import { Loader } from "@cloudflare/kumo";
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Loader } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Loader />;
-}`}
-      lang="tsx"
-    />
-  </ComponentSection>
+}
+```
+
+</ComponentSection>
 
 {/* Examples */}
 
-  <ComponentSection>
-    <Heading level={2}>Examples</Heading>
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
 
-    <Heading level={3}>Default Size</Heading>
-    <ComponentExample code={`<Loader />`}>
-      <LoaderBasicDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Default Size</Heading>
+<ComponentExample demo="LoaderBasicDemo">
+  <LoaderBasicDemo client:visible />
+</ComponentExample>
 
-    <Heading level={3}>Custom Size</Heading>
-    <ComponentExample code={`<Loader size={24} />`}>
-      <LoaderCustomSizeDemo client:visible />
-    </ComponentExample>
+<Heading level={3}>Custom Size</Heading>
+<ComponentExample demo="LoaderCustomSizeDemo">
+  <LoaderCustomSizeDemo client:visible />
+</ComponentExample>
 
-  </ComponentSection>
+</ComponentSection>
 
 {/* API Reference */}
 

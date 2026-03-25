@@ -7,7 +7,6 @@ sourceFile: "components/date-picker"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -21,13 +20,10 @@ import {
   DatePickerDisabledWithFooterDemo,
 } from "~/components/demos/DatePickerDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample
-    code={`const [date, setDate] = useState<Date>();
-<DatePicker mode="single" selected={date} onChange={setDate} />`}
-  >
+  <ComponentExample demo="DatePickerSingleDemo">
     <DatePickerSingleDemo client:load />
   </ComponentExample>
 </ComponentSection>
@@ -37,15 +33,20 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock
-    code={`import { DatePicker, type DateRange } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { DatePicker, type DateRange } from "@cloudflare/kumo/components/date-picker";`}
-    lang="tsx"
-  />
+
+```tsx
+import { DatePicker, type DateRange } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import {
+  DatePicker,
+  type DateRange,
+} from "@cloudflare/kumo/components/date-picker";
+```
+
 </ComponentSection>
 
 {/* Usage */}
@@ -57,23 +58,18 @@ import {
     `multiple`, and
     `range`.
   </p>
-  <CodeBlock
-    code={`import { useState } from "react";
+
+```tsx
+import { useState } from "react";
 import { DatePicker } from "@cloudflare/kumo";
 
 export default function Example() {
   const [date, setDate] = useState<Date>();
-  
-  return (
-    <DatePicker
-      mode="single"
-      selected={date}
-      onChange={setDate}
-    />
-  );
-}`}
-    lang="tsx"
-  />
+
+  return <DatePicker mode="single" selected={date} onChange={setDate} />;
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -81,85 +77,34 @@ export default function Example() {
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
-{/* Single Selection */}
-
-  <Heading level={3}>Single Date Selection</Heading>
-  <p>
-    Select a single date. The most common use case for date pickers.
-  </p>
-  <ComponentExample
-    code={`const [date, setDate] = useState<Date>();
-
-<DatePicker
-  mode="single"
-  selected={date}
-  onChange={setDate}
-/>`}
-  >
-    <DatePickerSingleDemo client:load />
-  </ComponentExample>
-
-{/* Multiple Selection */}
-
-  <Heading level={3}>Multiple Date Selection</Heading>
-  <p>
-    Select multiple individual dates. Use `max` to limit the number of selections.
-  </p>
-  <ComponentExample
-    code={`const [dates, setDates] = useState<Date[]>();
-
-<DatePicker
-  mode="multiple"
-  selected={dates}
-  onChange={setDates}
-  max={5}
-/>`}
-  >
-    <DatePickerMultipleDemo client:load />
-  </ComponentExample>
-
-{/* Range Selection */}
-
-  <Heading level={3}>Date Range Selection</Heading>
-  <p>
-    Select a continuous range of dates. Works well with `numberOfMonths={2}` for a side-by-side view.
-  </p>
-  <ComponentExample
-    code={`const [range, setRange] = useState<DateRange>();
-
-<DatePicker
-  mode="range"
-  selected={range}
-  onChange={setRange}
-  numberOfMonths={2}
-/>`}
-  >
-    <DatePickerRangeDemo client:load />
-  </ComponentExample>
-
-{/* Range with Min/Max */}
-
-<Heading level={3}>Range with Min/Max Constraints</Heading>
-<p>
-  Constrain the range length using
-  `min` and
-  `max` props (in
-  days/nights).
-</p>
-<ComponentExample
-  code={`<DatePicker
-  mode="range"
-  selected={range}
-  onChange={setRange}
-  min={3}
-  max={7}
-  footer={<span>Select 3-7 nights</span>}
-/>`}
->
-  <DatePickerRangeMinMaxDemo client:load />
+<Heading level={3}>Single Date Selection</Heading>
+<p>Select a single date. The most common use case for date pickers.</p>
+<ComponentExample demo="DatePickerSingleDemo">
+  <DatePickerSingleDemo client:load />
 </ComponentExample>
 
-{/* With Popover */}
+<Heading level={3}>Multiple Date Selection</Heading>
+<p>
+  Select multiple individual dates. Use `max` to limit the number of selections.
+</p>
+<ComponentExample demo="DatePickerMultipleDemo">
+  <DatePickerMultipleDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Date Range Selection</Heading>
+<p>
+  Select a continuous range of dates. Works well with `numberOfMonths={2}` for a
+  side-by-side view.
+</p>
+<ComponentExample demo="DatePickerRangeDemo">
+  <DatePickerRangeDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Range with Min/Max Constraints</Heading>
+<p>Constrain the range length using `min` and `max` props (in days/nights).</p>
+<ComponentExample demo="DatePickerRangeMinMaxDemo">
+  <DatePickerRangeMinMaxDemo client:load />
+</ComponentExample>
 
 <Heading level={3}>With Popover</Heading>
 <p>
@@ -169,146 +114,66 @@ export default function Example() {
   </a>
   component to create a dropdown date picker.
 </p>
-<ComponentExample
-  code={`<Popover>
-  <Popover.Trigger asChild>
-    <Button variant="outline" icon={CalendarDotsIcon}>
-      {date ? date.toLocaleDateString() : "Pick a date"}
-    </Button>
-  </Popover.Trigger>
-  <Popover.Content className="p-1">
-    <DatePicker
-      mode="single"
-      selected={date}
-      onChange={(d) => setDate(d)}
-    />
-  </Popover.Content>
-</Popover>`}
->
+<ComponentExample demo="DatePickerPopoverDemo">
   <DatePickerPopoverDemo client:load />
 </ComponentExample>
 
-{/* Range with Popover */}
-
 <Heading level={3}>Date Range with Popover</Heading>
 <p>A date range picker in a popover with two months displayed.</p>
-<ComponentExample
-  code={`<Popover>
-  <Popover.Trigger asChild>
-    <Button variant="outline" icon={CalendarDotsIcon}>
-      {formatRange()}
-    </Button>
-  </Popover.Trigger>
-  <Popover.Content className="p-1">
-    <DatePicker
-      mode="range"
-      selected={range}
-      onChange={(r) => setRange(r)}
-      numberOfMonths={2}
-    />
-  </Popover.Content>
-</Popover>`}
->
+<ComponentExample demo="DatePickerRangePopoverDemo">
   <DatePickerRangePopoverDemo client:load />
 </ComponentExample>
 
-{/* Range with Presets */}
-
 <Heading level={3}>Date Range with Presets</Heading>
 <p>Combine the date picker with preset options for quick selection.</p>
-<ComponentExample
-  code={`<Popover>
-  <Popover.Trigger asChild>
-    <Button variant="outline" icon={CalendarDotsIcon}>
-      {formatRange()}
-    </Button>
-  </Popover.Trigger>
-  <Popover.Content className="p-0">
-    <div className="flex">
-      <div className="flex flex-col gap-1 border-r border-kumo-line p-2 text-sm">
-        {presets.map((preset) => (
-          <button
-            key={preset.label}
-            onClick={() => setRange(preset.range)}
-            className="rounded-md px-3 py-1.5 text-left hover:bg-kumo-control"
-          >
-            {preset.label}
-          </button>
-        ))}
-      </div>
-      <div className="p-1">
-        <DatePicker
-          mode="range"
-          selected={range}
-          onChange={(r) => setRange(r)}
-          numberOfMonths={2}
-        />
-      </div>
-    </div>
-  </Popover.Content>
-</Popover>`}
->
+<ComponentExample demo="DatePickerRangeWithPresetsDemo">
   <DatePickerRangeWithPresetsDemo client:load />
 </ComponentExample>
-
-{/* Disabled Dates with Footer */}
 
   <Heading level={3}>Disabled Dates with Usage Limits</Heading>
   <p>
     Use the `disabled` prop to make certain dates unselectable,
     and `footer` to display usage information.
   </p>
-  <ComponentExample
-    code={`const unavailableDates = [
-  new Date(2025, 0, 5),
-  new Date(2025, 0, 12),
-];
-
-<DatePicker
-  mode="multiple"
-  selected={dates}
-  onChange={setDates}
-  max={5}
-  disabled={unavailableDates}
-  footer={
-    <p className="text-xs text-kumo-subtle pt-2">
-      {selectedCount}/{maxDays} days selected. Grayed dates are unavailable.
-    </p>
-  }
-/>`}
-  >
+  <ComponentExample demo="DatePickerDisabledWithFooterDemo">
     <DatePickerDisabledWithFooterDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
-{/* Composing with Popover (Code Example) */}
+{/* Full Popover Example */}
 
 <ComponentSection>
   <Heading level={2}>Full Popover Example</Heading>
   <p>
     Here's a complete example showing how to compose DatePicker with Popover:
   </p>
-  <CodeBlock
-    code={`import { useState } from "react";
+
+```tsx
+import { useState } from "react";
 import { DatePicker, Popover, Button } from "@cloudflare/kumo";
 import { CalendarDotsIcon } from "@phosphor-icons/react";
 
 export function DatePickerDropdown() {
   const [date, setDate] = useState<Date>();
 
-return (
-
-<Popover>
-  <Popover.Trigger asChild>
-    <Button variant="outline" icon={CalendarDotsIcon}>
-      {date ? date.toLocaleDateString() : "Pick a date"}
-    </Button>
-  </Popover.Trigger>
-  <Popover.Content className="p-3">
-    <DatePicker mode="single" selected={date} onChange={(d) => setDate(d)} />
-  </Popover.Content>
-</Popover>
-); }`} lang="tsx" />
+  return (
+    <Popover>
+      <Popover.Trigger asChild>
+        <Button variant="outline" icon={CalendarDotsIcon}>
+          {date ? date.toLocaleDateString() : "Pick a date"}
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content className="p-3">
+        <DatePicker
+          mode="single"
+          selected={date}
+          onChange={(d) => setDate(d)}
+        />
+      </Popover.Content>
+    </Popover>
+  );
+}
+```
 
 </ComponentSection>
 

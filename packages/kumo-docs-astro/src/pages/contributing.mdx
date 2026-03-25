@@ -4,7 +4,6 @@ title: "Contributing"
 description: "Learn how to contribute to Kumo by adding new components and features."
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Callout from "~/components/docs/Callout.astro";
 
 ## Contributing to Kumo
@@ -48,7 +47,9 @@ Kumo includes a scaffolding tool that automates component creation. This ensures
 
 From the workspace root, run:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo new-component`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo new-component
+```
 
 ## What the Scaffolding Tool Does
 
@@ -66,29 +67,26 @@ The tool automatically creates and updates several files:
 
 Here's what the scaffolding process looks like:
 
-<CodeBlock
-  code={`? Component name: Alert Banner
+```bash
+? Component name: Alert Banner
 
 ✅ Component scaffolded successfully!
 
 📁 Files created:
-
-- src/components/alert-banner/alert-banner.tsx
-- src/components/alert-banner/index.ts
-- src/components/alert-banner/alert-banner.stories.tsx
-- src/components/alert-banner/alert-banner.test.tsx
+  - src/components/alert-banner/alert-banner.tsx
+  - src/components/alert-banner/index.ts
+  - src/components/alert-banner/alert-banner.stories.tsx
+  - src/components/alert-banner/alert-banner.test.tsx
 
 📝 Files updated:
-
-- src/index.ts
-- vite.config.ts
-- package.json
+  - src/index.ts
+  - vite.config.ts
+  - package.json
 
 💡 Import examples:
-import { AlertBanner } from "@cloudflare/kumo";
-import { AlertBanner } from "@cloudflare/kumo/components/alert-banner";`}
-lang="bash"
-/>
+   import { AlertBanner } from "@cloudflare/kumo";
+   import { AlertBanner } from "@cloudflare/kumo/components/alert-banner";
+```
 
 ## Component Naming
 
@@ -106,7 +104,9 @@ Blocks are higher-level components that compose multiple base components. Use th
 
 From the workspace root, run:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo new-block`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo new-block
+```
 
 ### What It Creates
 
@@ -122,29 +122,26 @@ The block scaffolding tool creates the same structure as components, but in the 
 
 ### Example
 
-<CodeBlock
-  code={`? Block name: Navigation Bar
+```bash
+? Block name: Navigation Bar
 
 ✅ Block scaffolded successfully!
 
 📁 Files created:
-
-- src/blocks/navigation-bar/navigation-bar.tsx
-- src/blocks/navigation-bar/index.ts
-- src/blocks/navigation-bar/navigation-bar.stories.tsx
-- src/blocks/navigation-bar/navigation-bar.test.tsx
+  - src/blocks/navigation-bar/navigation-bar.tsx
+  - src/blocks/navigation-bar/index.ts
+  - src/blocks/navigation-bar/navigation-bar.stories.tsx
+  - src/blocks/navigation-bar/navigation-bar.test.tsx
 
 📝 Files updated:
-
-- src/index.ts
-- vite.config.ts
-- package.json
+  - src/index.ts
+  - vite.config.ts
+  - package.json
 
 💡 Import examples:
-import { NavigationBar } from "@cloudflare/kumo";
-import { NavigationBar } from "@cloudflare/kumo/blocks/navigation-bar";`}
-lang="bash"
-/>
+   import { NavigationBar } from "@cloudflare/kumo";
+   import { NavigationBar } from "@cloudflare/kumo/blocks/navigation-bar";
+```
 
 ## Creating New Layouts
 
@@ -154,7 +151,9 @@ Layouts are page-level components that provide consistent structure for common p
 
 From the workspace root, run:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo new-layout`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo new-layout
+```
 
 ### What It Creates
 
@@ -170,29 +169,26 @@ The layout scaffolding tool creates the same structure as components and blocks,
 
 ### Example
 
-<CodeBlock
-  code={`? Layout name: Dashboard Page
+```bash
+? Layout name: Dashboard Page
 
 ✅ Layout scaffolded successfully!
 
 📁 Files created:
-
-- src/layouts/dashboard-page/dashboard-page.tsx
-- src/layouts/dashboard-page/index.ts
-- src/layouts/dashboard-page/dashboard-page.stories.tsx
-- src/layouts/dashboard-page/dashboard-page.test.tsx
+  - src/layouts/dashboard-page/dashboard-page.tsx
+  - src/layouts/dashboard-page/index.ts
+  - src/layouts/dashboard-page/dashboard-page.stories.tsx
+  - src/layouts/dashboard-page/dashboard-page.test.tsx
 
 📝 Files updated:
-
-- src/index.ts
-- vite.config.ts
-- package.json
+  - src/index.ts
+  - vite.config.ts
+  - package.json
 
 💡 Import examples:
-import { DashboardPage } from "@cloudflare/kumo";
-import { DashboardPage } from "@cloudflare/kumo/layouts/dashboard-page";`}
-lang="bash"
-/>
+   import { DashboardPage } from "@cloudflare/kumo";
+   import { DashboardPage } from "@cloudflare/kumo/layouts/dashboard-page";
+```
 
 ## Development Workflow
 
@@ -202,15 +198,13 @@ After scaffolding a component, block, or layout, use the watch build setup to de
 
 Run these commands in separate terminals for development with HMR:
 
-<CodeBlock
-  code={`# Terminal 1: Watch mode for kumo package
+```bash
+# Terminal 1: Watch mode for kumo package
 pnpm --filter @cloudflare/kumo dev
 
 # Terminal 2: Documentation site dev server
-
-pnpm dev`}
-lang="bash"
-/>
+pnpm dev
+```
 
 - Fast rebuild time (~400ms)
 - Validates bundle exports/imports
@@ -225,18 +219,21 @@ lang="bash"
 
 3. **Write tests** — Add tests to the generated `.test.tsx` file. Run tests in watch mode while developing.
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo test`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo test
+```
 
 4. **Build the package** — Before committing, do a full production build to ensure everything works:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo build`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo build
+```
 
 5. **Regenerate registry** — Update the component registry to include examples from your demo file:
 
-<CodeBlock
-  code={`pnpm --filter @cloudflare/kumo codegen:registry`}
-  lang="bash"
-/>
+```bash
+pnpm --filter @cloudflare/kumo codegen:registry
+```
 
 6. **Add documentation page** — Create a documentation page in `kumo-docs-astro/src/pages/` showing real-world usage examples.
 
@@ -252,7 +249,9 @@ The test suite automatically validates your component, block, or layout configur
 
 Run the test suite to ensure everything is configured correctly:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo test:run`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo test:run
+```
 
 The tests will provide helpful error messages with exact code snippets if any configuration is missing.
 

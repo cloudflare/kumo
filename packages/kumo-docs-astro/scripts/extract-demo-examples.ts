@@ -14,7 +14,13 @@
  *   e.g., ButtonDemo.tsx -> ButtonBasicDemo, ButtonPrimaryDemo, etc.
  */
 
-import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  mkdirSync,
+  statSync,
+} from "node:fs";
 import { dirname, join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as ts from "typescript";
@@ -239,13 +245,34 @@ function parseDemoFile(filePath: string): ComponentDemos | null {
 // Main
 // =============================================================================
 
+/**
+ * Recursively find all *Demo.tsx files in a directory
+ */
+function findDemoFiles(dir: string, baseDir: string = dir): string[] {
+  const entries = readdirSync(dir);
+  const files: string[] = [];
+
+  for (const entry of entries) {
+    if (entry.startsWith("_")) continue;
+
+    const fullPath = join(dir, entry);
+    const stat = statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      files.push(...findDemoFiles(fullPath, baseDir));
+    } else if (entry.endsWith("Demo.tsx")) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
 function main() {
   console.log("Extracting demo examples from kumo-docs-astro...\n");
 
-  // Find all demo files
-  const files = readdirSync(demosDir).filter(
-    (f) => f.endsWith("Demo.tsx") && !f.startsWith("_"),
-  );
+  // Find all demo files recursively
+  const files = findDemoFiles(demosDir);
 
   console.log(`Found ${files.length} demo files\n`);
 
@@ -257,8 +284,7 @@ function main() {
 
   let totalDemos = 0;
 
-  for (const file of files) {
-    const filePath = join(demosDir, file);
+  for (const filePath of files) {
     const result = parseDemoFile(filePath);
 
     if (result) {

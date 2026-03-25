@@ -16,7 +16,6 @@ import {
 import { ColorDemo } from "~/components/demos/Chart/ColorDemo";
 import ChartCard from "~/components/demos/Chart/ChartCard.astro";
 import Heading from "~/components/docs/Heading.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 
 <ComponentSection>
@@ -24,15 +23,17 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
     Chart components are built on ECharts. Install it as a dependency:
   </p>
 
-<CodeBlock code={"npm install echarts"} lang="bash" />
+```bash
+npm install echarts
+```
 
 <p class="my-4">
   For optimal bundle size, import only the ECharts components you need. The
   examples below show the minimum required imports for our use cases.
 </p>
 
-  <CodeBlock
-    code={`import * as echarts from "echarts/core";
+```tsx
+import * as echarts from "echarts/core";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -45,18 +46,17 @@ import {
 import { CanvasRenderer } from "echarts/renderers";
 
 echarts.use([
-BarChart,
-LineChart,
-PieChart,
-AxisPointerComponent,
-BrushComponent,
-GridComponent,
-TooltipComponent,
-CanvasRenderer,
-AriaComponent,
-]);`}
-lang="tsx"
-/>
+  BarChart,
+  LineChart,
+  PieChart,
+  AxisPointerComponent,
+  BrushComponent,
+  GridComponent,
+  TooltipComponent,
+  CanvasRenderer,
+  AriaComponent,
+]);
+```
 
 </ComponentSection>
 
@@ -92,13 +92,12 @@ lang="tsx"
       colors for differentiating arbitrary series.
     </p>
 
-    <CodeBlock
-      code={`import { ChartPalette } from "@cloudflare/kumo";
+```tsx
+import { ChartPalette } from "@cloudflare/kumo";
 
 const attention = ChartPalette.semantic("Attention", isDarkMode);
-const series0 = ChartPalette.color(0, isDarkMode);`}
-lang="tsx"
-/>
+const series0 = ChartPalette.color(0, isDarkMode);
+```
 
     <ColorDemo />
 
@@ -114,25 +113,12 @@ lang="tsx"
 </p>
 
 <Heading level={3}>LargeItem</Heading>
-<ComponentExample
-  code={`<ChartLegend.LargeItem
-  name="Requests"
-  color={ChartPalette.semantic("Neutral", isDarkMode)}
-  value="1,234"
-  unit="req/s"
-/>`}
->
+<ComponentExample demo="LegendDefaultDemo">
   <LegendDefaultDemo client:visible />
 </ComponentExample>
 
   <Heading level={3}>SmallItem</Heading>
-  <ComponentExample
-    code={`<ChartLegend.SmallItem
-  name="Series A"
-  color={ChartPalette.color(0, isDarkMode)}
-  value="45%"
-/>`}
-  >
+  <ComponentExample demo="LegendCompactDemo">
     <LegendCompactDemo client:visible />
   </ComponentExample>
 </ComponentSection>

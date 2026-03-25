@@ -7,7 +7,6 @@ sourceFile: "components/sensitive-input"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -17,68 +16,68 @@ import {
   SensitiveInputStatesDemo,
 } from "~/components/demos/SensitiveInputDemo";
 
+{/* Hero Demo */}
+
 <ComponentSection>
-  <ComponentExample
-    code={`<SensitiveInput 
-  label="API Key" 
-  defaultValue="sk_live_abc123xyz789" 
-/>`}
-  >
+  <ComponentExample demo="SensitiveInputDemo">
     <SensitiveInputDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
+{/* Installation */}
+
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
-  <CodeBlock
-    code={`import { SensitiveInput } from "@cloudflare/kumo";`}
-    lang="tsx"
-  />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { SensitiveInput } from "@cloudflare/kumo/components/sensitive-input";`}
-    lang="tsx"
-  />
+
+```tsx
+import { SensitiveInput } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { SensitiveInput } from "@cloudflare/kumo/components/sensitive-input";
+```
+
 </ComponentSection>
 
-  <ComponentSection>
-    <Heading level={2}>Usage</Heading>
-    <CodeBlock code={`import { SensitiveInput } from "@cloudflare/kumo";
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { SensitiveInput } from "@cloudflare/kumo";
 
 export default function Example() {
-  return (
-    <SensitiveInput label="Secret" defaultValue="my-secret-key" />
-  );
-}`} lang="tsx" />
-  </ComponentSection>
+  return <SensitiveInput label="Secret" defaultValue="my-secret-key" />;
+}
+```
+
+</ComponentSection>
+
+{/* Sizes */}
 
 <ComponentSection>
   <Heading level={2}>Sizes</Heading>
   <p>SensitiveInput supports multiple sizes to fit different contexts.</p>
-  <ComponentExample
-    code={`<SensitiveInput label="xs size" size="xs" defaultValue="secret-key" />
-<SensitiveInput label="sm size" size="sm" defaultValue="secret-key" />
-<SensitiveInput label="base size" size="base" defaultValue="secret-key" />
-<SensitiveInput label="lg size" size="lg" defaultValue="secret-key" />`}
-  >
+  <ComponentExample demo="SensitiveInputSizesDemo">
     <SensitiveInputSizesDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
-  <ComponentSection>
-    <Heading level={2}>Controlled</Heading>
-    <p>Use controlled mode for full control over the input value.</p>
-    <ComponentExample code={`const [value, setValue] = useState("my-secret-value");
+{/* Controlled */}
 
-<SensitiveInput
-  label="Controlled Secret"
-  value={value}
-  onValueChange={setValue}
-/>`}>
-      <SensitiveInputControlledDemo client:load />
-    </ComponentExample>
-  </ComponentSection>
+<ComponentSection>
+  <Heading level={2}>Controlled</Heading>
+  <p>Use controlled mode for full control over the input value.</p>
+  <ComponentExample demo="SensitiveInputControlledDemo">
+    <SensitiveInputControlledDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* States */}
 
 <ComponentSection>
   <Heading level={2}>States</Heading>
@@ -86,32 +85,12 @@ export default function Example() {
     Various input states including error, disabled, read-only, and with
     description.
   </p>
-  <ComponentExample
-    code={`<SensitiveInput
-  label="Error State"
-  variant="error"
-  defaultValue="invalid-key"
-  error="This API key is not valid"
-/>
-<SensitiveInput
-  label="Disabled"
-  defaultValue="cannot-edit"
-  disabled
-/>
-<SensitiveInput
-  label="Read-only"
-  defaultValue="view-only-secret-key"
-  readOnly
-/>
-<SensitiveInput
-  label="With Description"
-  defaultValue="my-secret-value"
-  description="Keep this value secure"
-/>`}
-  >
+  <ComponentExample demo="SensitiveInputStatesDemo">
     <SensitiveInputStatesDemo client:visible />
   </ComponentExample>
 </ComponentSection>
+
+{/* API Reference */}
 
 <ComponentSection>
   <Heading level={2}>API Reference</Heading>
