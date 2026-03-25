@@ -1,5 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { getPageRange } from "./pagination";
+import { Pagination } from "./pagination";
+import {
+  KUMO_PAGINATION_VARIANTS,
+  KUMO_PAGINATION_DEFAULT_VARIANTS,
+} from "./pagination";
 
 describe("getPageRange", () => {
   describe("small page counts (show all pages)", () => {
@@ -129,5 +135,124 @@ describe("getPageRange", () => {
         expect(result).toContain(page);
       }
     });
+  });
+});
+
+describe("KUMO_PAGINATION_VARIANTS", () => {
+  it("includes numbered variant in controls", () => {
+    expect(KUMO_PAGINATION_VARIANTS.controls.numbered).toBeDefined();
+    expect(KUMO_PAGINATION_VARIANTS.controls.numbered.description).toBe(
+      "Numbered page buttons with previous and next navigation arrows",
+    );
+  });
+
+  it("has correct default controls variant", () => {
+    expect(KUMO_PAGINATION_DEFAULT_VARIANTS.controls).toBe("full");
+  });
+});
+
+describe("Pagination with numbered controls", () => {
+  const renderNumberedPagination = (props: {
+    page: number;
+    totalCount: number;
+    perPage: number;
+    setPage?: (page: number) => void;
+  }) => {
+    const setPage = props.setPage ?? (() => {});
+    return render(
+      <Pagination
+        page={props.page}
+        totalCount={props.totalCount}
+        perPage={props.perPage}
+        setPage={setPage}
+      >
+        <Pagination.Controls controls="numbered" />
+      </Pagination>,
+    );
+  };
+
+  it("renders page number buttons", () => {
+    renderNumberedPagination({ page: 1, totalCount: 50, perPage: 10 });
+    expect(screen.getByText("1")).toBeTruthy();
+    expect(screen.getByText("2")).toBeTruthy();
+    expect(screen.getByText("3")).toBeTruthy();
+    expect(screen.getByText("4")).toBeTruthy();
+    expect(screen.getByText("5")).toBeTruthy();
+  });
+
+  it("renders previous and next buttons", () => {
+    renderNumberedPagination({ page: 3, totalCount: 50, perPage: 10 });
+    expect(screen.getByLabelText("Previous page")).toBeTruthy();
+    expect(screen.getByLabelText("Next page")).toBeTruthy();
+  });
+
+  it("disables previous button on first page", () => {
+    renderNumberedPagination({ page: 1, totalCount: 50, perPage: 10 });
+    const prevButton = screen.getByLabelText("Previous page");
+    expect(prevButton).toHaveProperty("disabled", true);
+  });
+
+  it("disables next button on last page", () => {
+    renderNumberedPagination({ page: 5, totalCount: 50, perPage: 10 });
+    const nextButton = screen.getByLabelText("Next page");
+    expect(nextButton).toHaveProperty("disabled", true);
+  });
+
+  it("marks current page with aria-current", () => {
+    renderNumberedPagination({ page: 3, totalCount: 50, perPage: 10 });
+    const currentPageButton = screen.getByLabelText("Go to page 3");
+    expect(currentPageButton.getAttribute("aria-current")).toBe("page");
+  });
+
+  it("does not mark non-current pages with aria-current", () => {
+    renderNumberedPagination({ page: 3, totalCount: 50, perPage: 10 });
+    const otherPageButton = screen.getByLabelText("Go to page 1");
+    expect(otherPageButton.getAttribute("aria-current")).toBeNull();
+  });
+
+  it("calls setPage when clicking a page number", () => {
+    const setPage = vi.fn();
+    renderNumberedPagination({ page: 1, totalCount: 50, perPage: 10, setPage });
+    fireEvent.click(screen.getByLabelText("Go to page 3"));
+    expect(setPage).toHaveBeenCalledWith(3);
+  });
+
+  it("calls setPage when clicking next button", () => {
+    const setPage = vi.fn();
+    renderNumberedPagination({ page: 2, totalCount: 50, perPage: 10, setPage });
+    fireEvent.click(screen.getByLabelText("Next page"));
+    expect(setPage).toHaveBeenCalledWith(3);
+  });
+
+  it("calls setPage when clicking previous button", () => {
+    const setPage = vi.fn();
+    renderNumberedPagination({ page: 3, totalCount: 50, perPage: 10, setPage });
+    fireEvent.click(screen.getByLabelText("Previous page"));
+    expect(setPage).toHaveBeenCalledWith(2);
+  });
+
+  it("renders ellipsis for large page counts", () => {
+    renderNumberedPagination({ page: 10, totalCount: 500, perPage: 10 });
+    const ellipses = screen.getAllByText("…");
+    expect(ellipses.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders navigation landmark", () => {
+    renderNumberedPagination({ page: 1, totalCount: 50, perPage: 10 });
+    expect(screen.getByRole("navigation", { name: "Pagination" })).toBeTruthy();
+  });
+
+  it("supports siblingCount prop", () => {
+    render(
+      <Pagination page={10} totalCount={500} perPage={10} setPage={() => {}}>
+        <Pagination.Controls controls="numbered" siblingCount={2} />
+      </Pagination>,
+    );
+    // With siblingCount=2, pages 8,9,10,11,12 should be visible
+    expect(screen.getByText("8")).toBeTruthy();
+    expect(screen.getByText("9")).toBeTruthy();
+    expect(screen.getByText("10")).toBeTruthy();
+    expect(screen.getByText("11")).toBeTruthy();
+    expect(screen.getByText("12")).toBeTruthy();
   });
 });
