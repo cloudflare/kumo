@@ -52,6 +52,6 @@ coverage/
 .codex/environments
 
 # Generated component registry files (built during CI)
-# Note: schemas.ts is kept as a stub for fresh clones
 packages/kumo/ai/component-registry.json
 packages/kumo/ai/component-registry.md
+packages/kumo/ai/schemas.ts
