@@ -150,7 +150,7 @@ function Dialog({
           onClick={handleBackdropClick}
         />
         <Surface
-          as={DialogBase.Popup}
+          render={<DialogBase.Popup />}
           className={cn(
             "fixed top-[10vh] left-1/2 w-full max-w-2xl -translate-x-1/2",
             "overflow-hidden rounded-lg",
