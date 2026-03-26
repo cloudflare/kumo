@@ -13,6 +13,7 @@ import {
   ClipboardTextBasicDemo,
   ClipboardTextShortDemo,
   ClipboardTextApiKeyDemo,
+  ClipboardTextAlternateTextToCopyDemo,
   ClipboardTextLongDemo,
   ClipboardTextWithTooltipDemo,
 } from "~/components/demos/ClipboardTextDemo";
@@ -71,6 +72,11 @@ export default function Example() {
 <Heading level={3}>API Key</Heading>
 <ComponentExample demo="ClipboardTextApiKeyDemo">
   <ClipboardTextApiKeyDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Copy Alternate Text</Heading>
+<ComponentExample demo="ClipboardTextAlternateTextToCopyDemo">
+  <ClipboardTextAlternateTextToCopyDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Long Text</Heading>
