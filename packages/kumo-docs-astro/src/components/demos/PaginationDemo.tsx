@@ -164,3 +164,36 @@ export function PaginationPageSizeRightDemo() {
     </Pagination>
   );
 }
+
+/** Numbered pagination controls with clickable page buttons */
+export function PaginationNumberedDemo() {
+  const [page, setPage] = useState(1);
+  return (
+    <Pagination page={page} setPage={setPage} perPage={10} totalCount={50}>
+      <Pagination.Info />
+      <Pagination.Controls controls="numbered" />
+    </Pagination>
+  );
+}
+
+/** Numbered pagination with many pages showing ellipsis */
+export function PaginationNumberedLargeDemo() {
+  const [page, setPage] = useState(10);
+  return (
+    <Pagination page={page} setPage={setPage} perPage={25} totalCount={500}>
+      <Pagination.Info />
+      <Pagination.Controls controls="numbered" />
+    </Pagination>
+  );
+}
+
+/** Numbered pagination with custom sibling count for wider page range */
+export function PaginationNumberedSiblingsDemo() {
+  const [page, setPage] = useState(10);
+  return (
+    <Pagination page={page} setPage={setPage} perPage={25} totalCount={500}>
+      <Pagination.Info />
+      <Pagination.Controls controls="numbered" siblingCount={2} />
+    </Pagination>
+  );
+}
