@@ -1,20 +1,9 @@
-import puppeteer, { ElementHandle } from "@cloudflare/puppeteer";
+import puppeteer from "@cloudflare/puppeteer";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const MAX_PAGES = 50;
 const MAX_ACTION_PAYLOAD_BYTES = 64_000; // 64 KB per css action payload
-
-// Selectors for sections to skip in captureSections mode.
-const SKIP_SECTION_IDS = [
-  "barrel",
-  "granular",
-  "installation",
-  "usage",
-  "api-reference",
-];
-
-const DEFAULT_SECTION_SELECTOR = 'main h3 a[href^="#"]';
 
 const HIDE_SIDEBAR_CSS = `
   aside[data-sidebar-open] { display: none !important; }
