@@ -274,7 +274,7 @@ async function handleBatch(
           if (demoElements.length > 0) {
             // Use explicit VR demo elements
             for (const element of demoElements) {
-              const attrs = await element.evaluate((el) => ({
+              const attrs = await element.evaluate((el: Element) => ({
                 sectionId: el.getAttribute("data-vr-section"),
                 sectionTitle: el.getAttribute("data-vr-title"),
               }));
