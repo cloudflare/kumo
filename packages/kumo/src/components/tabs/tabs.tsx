@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { TabsTab, TabsIndicator } from "@base-ui/react/tabs";
+import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
 
