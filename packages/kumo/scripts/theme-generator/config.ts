@@ -279,6 +279,26 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-shadow-edge": {
+      newName: "",
+      description: "Tight spread shadow color for control thumbs/knobs",
+      theme: {
+        kumo: {
+          light: "oklch(0% 0 0 / 0.12)",
+          dark: "oklch(100% 0 0 / 0.1)",
+        },
+      },
+    },
+    "kumo-shadow-drop": {
+      newName: "",
+      description: "Drop shadow color for control thumbs/knobs",
+      theme: {
+        kumo: {
+          light: "oklch(0% 0 0 / 0.08)",
+          dark: "oklch(0% 0 0 / 0.3)",
+        },
+      },
+    },
     "kumo-tip-shadow": {
       newName: "",
       theme: {

@@ -44,25 +44,11 @@ export const KUMO_SWITCH_DEFAULT_VARIANTS = {
   variant: "default",
 } as const;
 
-// Derived types from KUMO_SWITCH_VARIANTS
 export type KumoSwitchSize = keyof typeof KUMO_SWITCH_VARIANTS.size;
 export type KumoSwitchVariant = keyof typeof KUMO_SWITCH_VARIANTS.variant;
 
 export interface KumoSwitchVariantsProps {
-  /**
-   * Switch size.
-   * - `"sm"` — Small for compact UIs
-   * - `"base"` — Default size
-   * - `"lg"` — Large for prominent toggles
-   * @default "base"
-   */
   size?: KumoSwitchSize;
-  /**
-   * Visual variant.
-   * - `"default"` — Standard switch appearance
-   * - `"error"` — Error state for validation failures
-   * @default "default"
-   */
   variant?: KumoSwitchVariant;
 }
 
@@ -70,7 +56,6 @@ export function switchVariants({
   size = KUMO_SWITCH_DEFAULT_VARIANTS.size,
   variant = KUMO_SWITCH_DEFAULT_VARIANTS.variant,
 }: KumoSwitchVariantsProps = {}) {
-  // Fallback to defaults if invalid size/variant passed
   const sizeConfig =
     KUMO_SWITCH_VARIANTS.size[size] ?? KUMO_SWITCH_VARIANTS.size.base;
   const variantConfig =
@@ -79,54 +64,21 @@ export function switchVariants({
   return cn(sizeConfig.classes, variantConfig.classes);
 }
 
-// Legacy type aliases for backwards compatibility
 export type SwitchSize = KumoSwitchSize;
 export type SwitchVariant = KumoSwitchVariant;
 
-// Context for passing controlFirst from Group to Items
 const SwitchGroupContext = createContext<{ controlFirst: boolean }>({
   controlFirst: true,
 });
 
-/**
- * Single switch component props (with built-in Field)
- *
- * Usage patterns:
- *
- * Basic usage:
- * ```tsx
- * <Switch label="Enable notifications" checked={true} onCheckedChange={setChecked} />
- * ```
- *
- * Label first layout:
- * ```tsx
- * <Switch label="Dark mode" checked={false} onCheckedChange={setChecked} controlFirst={false} />
- * ```
- *
- * Neutral variant (monochrome, squircle shape):
- * ```tsx
- * <Switch label="Setting" variant="neutral" checked={false} onCheckedChange={setChecked} />
- * ```
- *
- * @property {string} label - Label text for the switch (Field wrapper is built-in)
- * @property {boolean} [controlFirst] - When true (default), switch appears before label
- */
 export type SwitchProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   "children"
 > & {
-  /** Visual variant: "default" (pill, brand color) or "neutral" (squircle, monochrome) */
   variant?: SwitchVariant;
-  /** Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes. */
   label?: ReactNode;
-  /** Tooltip content to display next to the label via an info icon */
   labelTooltip?: ReactNode;
-  /**
-   * Whether the switch is required.
-   * When explicitly false, shows "(optional)" text after the label.
-   */
   required?: boolean;
-  /** When true (default), switch appears before label. When false, label appears before switch. */
   controlFirst?: boolean;
   size?: KumoSwitchSize;
   checked?: boolean;
@@ -135,46 +87,19 @@ export type SwitchProps = Omit<
   transitioning?: boolean;
 };
 
-/**
- * Switch group component props (with built-in Fieldset)
- *
- * Usage:
- * ```tsx
- * <Switch.Group
- *   legend="Notification settings"
- *   error="You must enable at least one notification type"
- * >
- *   <Switch.Item label="Email notifications" value="email" />
- *   <Switch.Item label="SMS notifications" value="sms" />
- * </Switch.Group>
- * ```
- */
 export interface SwitchGroupProps {
-  /** Legend text for the group */
   legend: string;
-  /** Child Switch.Item components */
   children: ReactNode;
-  /** Error message for the group (only appears in groups, not single switches) */
   error?: string;
-  /** Helper text for the group */
   description?: ReactNode;
-  /** Whether all switches in the group are disabled */
   disabled?: boolean;
-  /** When true (default), switch appears before label. When false, label appears before switch. */
   controlFirst?: boolean;
-  /** Additional CSS classes */
   className?: string;
 }
 
-/**
- * Individual switch item within a group
- */
 export type SwitchItemProps = {
-  /** Visual variant: "default" or "error" for validation failures */
   variant?: SwitchVariant;
-  /** Label text displayed next to switch */
   label: string;
-  /** Additional CSS classes for the label wrapper */
   className?: string;
   checked?: boolean;
   disabled?: boolean;
@@ -183,7 +108,6 @@ export type SwitchItemProps = {
   transitioning?: boolean;
 };
 
-// Single switch with built-in Field
 const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
   (
     {
@@ -202,7 +126,6 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
     },
     ref,
   ) => {
-    // For aria-label, only use string labels (ReactNode labels can't be used for aria-label)
     const ariaLabelFallback = typeof label === "string" ? label : "Switch";
     const switchControl = (
       <BaseSwitch.Root
@@ -228,12 +151,9 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           };
 
           const isNeutral = variant === "neutral";
-
-          // Squircle-aware border-radius (used by both variants)
           const squircleRadius =
             "rounded-[5px] supports-[corner-shape:squircle]:rounded-[10px] [corner-shape:squircle]";
 
-          // Size styles matching Kyle's stratus implementation
           const sizeStyles = {
             sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
             base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
@@ -241,10 +161,10 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           };
           const s = sizeStyles[size];
 
-          // Track colors based on variant and disabled state
+          // Resolved: Improved logic with main branch styling updates
           const getTrackColors = () => {
             if (disabled) {
-              return "bg-neutral-100 ring-neutral-200";
+              return "bg-neutral-100 ring-neutral-200 opacity-50";
             }
             return isNeutral
               ? state.checked
@@ -255,7 +175,6 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
                 : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
           };
 
-          // Thumb colors based on variant and disabled state
           const getThumbColors = () => {
             if (disabled) {
               return "bg-neutral-300 ring-neutral-300";
@@ -274,7 +193,9 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+            // Adopting main's improved accessibility focus styles
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+            // Keeping your improved fluid animation
             "transition-[background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
             "disabled:cursor-not-allowed",
             s.track,
@@ -285,7 +206,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           );
 
           const thumbClassName = cn(
-            "absolute top-0 bottom-0 shadow-sm ring-1",
+            "absolute top-0 bottom-0 shadow-[0_0_1px_0.5px_var(--color-kumo-shadow-edge),0_1px_2px_var(--color-kumo-shadow-drop)]",
             s.thumb,
             squircleRadius,
             thumbColors,
@@ -293,8 +214,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             state.checked ? s.slide : "left-0",
           );
 
-          const role =
-            (props.role as string | undefined) ?? baseRole ?? "switch";
+          const role = (props.role as string | undefined) ?? baseRole ?? "switch";
           const checkedA11yProps =
             role === "switch"
               ? { "aria-checked": state.checked }
@@ -319,11 +239,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
       />
     );
 
-    // Wrap in Field (built-in) - no description for single switches
-    // If no label provided, return bare switch (for use in other components)
-    if (!label) {
-      return switchControl;
-    }
+    if (!label) return switchControl;
 
     return (
       <Field
@@ -340,7 +256,6 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
 SwitchBase.displayName = "Switch";
 
-// Switch.Item for use within Switch.Group
 const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
   (
     {
@@ -361,8 +276,6 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
       <label
         className={cn(
           "m-0 relative inline-flex items-center gap-2",
-          // Control first (default): switch before label
-          // Label first: label before switch using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
           disabled ? "cursor-not-allowed" : "cursor-pointer",
           className,
@@ -391,12 +304,9 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             };
 
             const isNeutral = variant === "neutral";
-
-            // Squircle-aware border-radius (used by both variants)
             const squircleRadius =
               "rounded-[5px] supports-[corner-shape:squircle]:rounded-[10px] [corner-shape:squircle]";
 
-            // Size styles matching Kyle's stratus implementation
             const sizeStyles = {
               sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
               base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
@@ -404,10 +314,9 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             };
             const s = sizeStyles[size];
 
-            // Track colors based on variant and disabled state
             const getTrackColors = () => {
               if (disabled) {
-                return "bg-neutral-100 ring-neutral-200";
+                return "bg-neutral-100 ring-neutral-200 opacity-50";
               }
               return isNeutral
                 ? state.checked
@@ -418,7 +327,6 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
                   : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
             };
 
-            // Thumb colors based on variant and disabled state
             const getThumbColors = () => {
               if (disabled) {
                 return "bg-neutral-300 ring-neutral-300";
@@ -437,7 +345,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
               "transition-[background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
               "disabled:cursor-not-allowed",
               s.track,
@@ -447,7 +355,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             );
 
             const thumbClassName = cn(
-              "absolute top-0 bottom-0 shadow-sm ring-1",
+              "absolute top-0 bottom-0 shadow-[0_0_1px_0.5px_var(--color-kumo-shadow-edge),0_1px_2px_var(--color-kumo-shadow-drop)]",
               s.thumb,
               squircleRadius,
               thumbColors,
@@ -484,7 +392,6 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
 SwitchItem.displayName = "Switch.Item";
 
-// Switch.Group with built-in Fieldset
 function SwitchGroup({
   legend,
   children,
@@ -516,7 +423,6 @@ function SwitchGroup({
   );
 }
 
-// Compound component
 export const Switch = Object.assign(SwitchBase, {
   Item: SwitchItem,
   Group: SwitchGroup,
