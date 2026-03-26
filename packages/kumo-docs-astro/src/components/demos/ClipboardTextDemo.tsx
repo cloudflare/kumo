@@ -13,7 +13,12 @@ export function ClipboardTextApiKeyDemo() {
 }
 
 export function ClipboardTextAlternateTextToCopyDemo() {
-  return <ClipboardText text="sk_live_***********" textToCopy="sk_live_51H8_abc123" />;
+  return (
+    <ClipboardText
+      text="sk_live_***********"
+      textToCopy="sk_live_51H8_abc123"
+    />
+  );
 }
 
 export function ClipboardTextLongDemo() {
