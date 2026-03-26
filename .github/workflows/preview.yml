@@ -246,6 +246,11 @@ jobs:
             ci/visual-regression
             .github/actions/install-dependencies
 
+      # Fetch the PR's HEAD so git diff can detect changed files.
+      # (HEAD points to main after checkout, so we need the explicit SHA)
+      - name: Fetch PR head for git diff
+        run: git fetch --depth=1 origin ${{ github.event.pull_request.head.sha }}
+
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
         with:
@@ -256,6 +261,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ needs.docs-deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
