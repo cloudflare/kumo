@@ -221,6 +221,7 @@ jobs:
           GITHUB_PR_NUMBER: ${{ needs.deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_BASE_REF: main
+          PR_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.deploy.outputs.preview_url }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
