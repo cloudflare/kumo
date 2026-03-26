@@ -47,7 +47,7 @@ export const KUMO_BUTTON_VARIANTS = {
   variant: {
     primary: {
       classes:
-        "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
+        "bg-red-500 !text-white hover:bg-red-600 focus:bg-red-600 disabled:bg-red-500/50",
       description: "High-emphasis button for primary actions",
     },
     secondary: {
