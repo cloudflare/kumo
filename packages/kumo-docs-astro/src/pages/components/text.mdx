@@ -9,7 +9,10 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
-import { TextVariantsDemo } from "~/components/demos/TextDemo";
+import {
+  TextVariantsDemo,
+  TextTruncateDemo,
+} from "~/components/demos/TextDemo";
 
 {/* Hero Demo */}
 
@@ -85,6 +88,23 @@ export default function Example() {
 ```
 
 </section>
+
+</ComponentSection>
+
+{/* Truncate */}
+
+<ComponentSection>
+  <Heading level={2}>Truncate</Heading>
+  <p class="text-kumo-strong">
+    Use the `truncate` prop to clip overflowing text with an ellipsis. This adds `truncate min-w-0` classes, which is useful when `Text` is inside a flex or grid container.
+  </p>
+  <ComponentExample demo="TextTruncateDemo">
+    <TextTruncateDemo client:visible />
+  </ComponentExample>
+
+```tsx
+<Text truncate>This is a long piece of text that will be truncated...</Text>
+```
 
 </ComponentSection>
 

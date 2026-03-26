@@ -64,3 +64,14 @@ export function TextVariantsDemo() {
     </div>
   );
 }
+
+export function TextTruncateDemo() {
+  return (
+    <div className="w-64 rounded-lg border border-kumo-line bg-kumo-base p-4">
+      <Text truncate>
+        This is a long piece of text that will be truncated with an ellipsis
+        when it overflows its container.
+      </Text>
+    </div>
+  );
+}

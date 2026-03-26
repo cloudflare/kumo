@@ -1,299 +1,186 @@
 ---
 layout: ~/layouts/MdxDocLayout.astro
 title: "Contributing"
-description: "Learn how to contribute to Kumo by adding new components and features."
+description: "Learn how to contribute to Kumo, from setup and workflows to PR and release guidelines."
 ---
-
-import Callout from "~/components/docs/Callout.astro";
-
 ## Contributing to Kumo
 
-We welcome contributions to Kumo! This guide will help you get started with adding new components and blocks to the library.
+This page is the complete contribution guide for internal contributors. Everything you need for setup, development, quality checks, and PR process is documented here.
 
-## Components vs Blocks vs Layouts
+## Before You Start
 
-**Components** — Atomic, reusable UI elements
+For non-trivial changes, start with alignment before coding:
 
-- Single responsibility
-- Highly reusable
-- Minimal dependencies
-- Style-focused
+- Comment on an existing issue or open one first.
+- Confirm scope, API direction, and migration impact.
+- For small fixes/docs tweaks, you can go straight to a PR.
 
-Examples: Button, Input, Badge, Tabs
+## 1) Get Set Up Once
 
-**Blocks** — Composed patterns for page layouts
-
-- Compose multiple components
-- Implement common patterns
-- Layout-focused
-- May include business logic
-
-Examples: Breadcrumbs, PageHeader, Empty
-
-**Layouts** — Page-level structure patterns
-
-- Full-page composition
-- Consistent structure
-- Responsive patterns
-- Application-wide use
-
-Examples: DashboardPage
-
-## Creating New Components
-
-Kumo includes a scaffolding tool that automates component creation. This ensures all components follow the same structure and are properly configured.
-
-### Run the Scaffolding Tool
-
-From the workspace root, run:
+From repo root:
 
 ```bash
-pnpm --filter @cloudflare/kumo new-component
+pnpm install
+pnpm build
 ```
 
-## What the Scaffolding Tool Does
+Requirements:
 
-The tool automatically creates and updates several files:
+- Node `^24.12.0`
+- pnpm `>=10.21.0`
 
-- **Component file** — `src/components/{name}/{name}.tsx`
-- **Index file** — `src/components/{name}/index.ts`
-- **Story file** — `src/components/{name}/{name}.stories.tsx`
-- **Test file** — `src/components/{name}/{name}.test.tsx`
-- **Main exports** — Updates `src/index.ts`
-- **Build config** — Updates `vite.config.ts`
-- **Package exports** — Updates `package.json`
+Recommended local setup:
 
-## Example
+- Use a Node version manager (`nvm`, `fnm`, etc.).
+- Use VS Code and select the workspace TypeScript version.
+- If dependencies changed after rebase, run `pnpm install` again.
 
-Here's what the scaffolding process looks like:
+## Repository Access and Branching
+
+Internal contributors normally clone and push directly to `cloudflare/kumo`:
 
 ```bash
-? Component name: Alert Banner
-
-✅ Component scaffolded successfully!
-
-📁 Files created:
-  - src/components/alert-banner/alert-banner.tsx
-  - src/components/alert-banner/index.ts
-  - src/components/alert-banner/alert-banner.stories.tsx
-  - src/components/alert-banner/alert-banner.test.tsx
-
-📝 Files updated:
-  - src/index.ts
-  - vite.config.ts
-  - package.json
-
-💡 Import examples:
-   import { AlertBanner } from "@cloudflare/kumo";
-   import { AlertBanner } from "@cloudflare/kumo/components/alert-banner";
+git clone https://github.com/cloudflare/kumo.git
+git switch -c <branch-name>
+git push -u origin <branch-name>
 ```
 
-## Component Naming
+If you do not have write access, contact your manager or Kumo maintainers.
 
-The scaffolding tool handles naming automatically. You can input the name in any format:
+## 2) Pick the Right Contribution Type
 
-- **Spaces** — "Alert Banner" → `alert-banner` directory, `AlertBanner` component
-- **PascalCase** — "AlertBanner" → `alert-banner` directory, `AlertBanner` component
-- **kebab-case** — "alert-banner" → `alert-banner` directory, `AlertBanner` component
+Use this to decide where your change belongs:
 
-## Creating New Blocks
+- **Component**: reusable UI primitive in `packages/kumo/src/components/`
+- **Block**: installable composition pattern in `packages/kumo/src/blocks/`
+- **Docs only**: docs/demo/navigation updates in `packages/kumo-docs-astro/`
 
-Blocks are higher-level components that compose multiple base components. Use the block scaffolding tool to create them:
-
-### Run the Block Scaffolding Tool
-
-From the workspace root, run:
+When adding a new **component**, scaffold it (do not create files manually):
 
 ```bash
-pnpm --filter @cloudflare/kumo new-block
+pnpm --filter @cloudflare/kumo new:component
 ```
 
-### What It Creates
+## 3) Start the Dev Loop
 
-The block scaffolding tool creates the same structure as components, but in the `src/blocks` directory:
-
-- **Block file** — `src/blocks/{name}/{name}.tsx`
-- **Index file** — `src/blocks/{name}/index.ts`
-- **Story file** — `src/blocks/{name}/{name}.stories.tsx`
-- **Test file** — `src/blocks/{name}/{name}.test.tsx`
-- **Main exports** — Updates `src/index.ts` (Blocks section)
-- **Build config** — Updates `vite.config.ts`
-- **Package exports** — Updates `package.json`
-
-### Example
+Run these in separate terminals:
 
 ```bash
-? Block name: Navigation Bar
-
-✅ Block scaffolded successfully!
-
-📁 Files created:
-  - src/blocks/navigation-bar/navigation-bar.tsx
-  - src/blocks/navigation-bar/index.ts
-  - src/blocks/navigation-bar/navigation-bar.stories.tsx
-  - src/blocks/navigation-bar/navigation-bar.test.tsx
-
-📝 Files updated:
-  - src/index.ts
-  - vite.config.ts
-  - package.json
-
-💡 Import examples:
-   import { NavigationBar } from "@cloudflare/kumo";
-   import { NavigationBar } from "@cloudflare/kumo/blocks/navigation-bar";
-```
-
-## Creating New Layouts
-
-Layouts are page-level components that provide consistent structure for common page patterns. Use the layout scaffolding tool:
-
-### Run the Layout Scaffolding Tool
-
-From the workspace root, run:
-
-```bash
-pnpm --filter @cloudflare/kumo new-layout
-```
-
-### What It Creates
-
-The layout scaffolding tool creates the same structure as components and blocks, but in the `src/layouts` directory:
-
-- **Layout file** — `src/layouts/{name}/{name}.tsx`
-- **Index file** — `src/layouts/{name}/index.ts`
-- **Story file** — `src/layouts/{name}/{name}.stories.tsx`
-- **Test file** — `src/layouts/{name}/{name}.test.tsx`
-- **Main exports** — Updates `src/index.ts` (Layouts section)
-- **Build config** — Updates `vite.config.ts`
-- **Package exports** — Updates `package.json`
-
-### Example
-
-```bash
-? Layout name: Dashboard Page
-
-✅ Layout scaffolded successfully!
-
-📁 Files created:
-  - src/layouts/dashboard-page/dashboard-page.tsx
-  - src/layouts/dashboard-page/index.ts
-  - src/layouts/dashboard-page/dashboard-page.stories.tsx
-  - src/layouts/dashboard-page/dashboard-page.test.tsx
-
-📝 Files updated:
-  - src/index.ts
-  - vite.config.ts
-  - package.json
-
-💡 Import examples:
-   import { DashboardPage } from "@cloudflare/kumo";
-   import { DashboardPage } from "@cloudflare/kumo/layouts/dashboard-page";
-```
-
-## Development Workflow
-
-After scaffolding a component, block, or layout, use the watch build setup to develop with the documentation site:
-
-### Watch Build Setup
-
-Run these commands in separate terminals for development with HMR:
-
-```bash
-# Terminal 1: Watch mode for kumo package
+# Terminal 1: watch Kumo package output
 pnpm --filter @cloudflare/kumo dev
 
-# Terminal 2: Documentation site dev server
+# Terminal 2: docs site
 pnpm dev
 ```
 
-- Fast rebuild time (~400ms)
-- Validates bundle exports/imports
-- Tests actual build output
-- See components in real documentation context
+This gives you a fast loop while verifying your change in the actual docs environment.
 
-### Implementation Steps
+## 4) Implement the Change
 
-1. **Implement the component/block/layout** — Edit the generated `.tsx` file in the kumo package.
+Typical internal change flow:
 
-2. **Create demo file** — Add a `{Name}Demo.tsx` file in `kumo-docs-astro/src/components/demos/` to showcase component variants.
+1. Build the feature in `packages/kumo/src/...`.
+2. Add or update demos in `packages/kumo-docs-astro/src/components/demos/`.
+3. Add/update tests in `packages/kumo`.
+4. Add or update docs pages in `packages/kumo-docs-astro/src/pages/`.
 
-3. **Write tests** — Add tests to the generated `.test.tsx` file. Run tests in watch mode while developing.
+If your demos should appear in registry metadata, keep demo naming exact:
+
+- File: `{Component}Demo.tsx`
+- Export names must end with `Demo`
+
+Implementation expectations:
+
+- Preserve accessibility semantics and keyboard behavior.
+- Keep APIs focused and avoid one-off abstractions.
+- Follow existing Kumo patterns for variants, props, and structure.
+
+## 5) Run Validation Before PR
+
+Run these from repo root before opening or updating your PR:
 
 ```bash
+pnpm lint
+pnpm typecheck
 pnpm --filter @cloudflare/kumo test
 ```
 
-4. **Build the package** — Before committing, do a full production build to ensure everything works:
+If you changed exports/build behavior, also run:
 
 ```bash
 pnpm --filter @cloudflare/kumo build
 ```
 
-5. **Regenerate registry** — Update the component registry to include examples from your demo file:
+Optional (when relevant):
 
 ```bash
-pnpm --filter @cloudflare/kumo codegen:registry
-```
-
-6. **Add documentation page** — Create a documentation page in `kumo-docs-astro/src/pages/` showing real-world usage examples.
-
-## Testing
-
-The test suite automatically validates your component, block, or layout configuration:
-
-- Main entry point exports the component/block/layout
-- Deep import paths work correctly (`@cloudflare/kumo/components/*`, `@cloudflare/kumo/blocks/*`, or `@cloudflare/kumo/layouts/*`)
-- Package.json exports are properly configured
-- Build configuration is correct
-- All files exist in the correct locations
-
-Run the test suite to ensure everything is configured correctly:
-
-```bash
+pnpm format
 pnpm --filter @cloudflare/kumo test:run
 ```
 
-The tests will provide helpful error messages with exact code snippets if any configuration is missing.
+Windsurf and hooks catch additional issues, but you should still run checks locally before requesting review.
 
-## Component Guidelines
+## 6) Handle Changesets Correctly
 
-When implementing components, follow these guidelines:
+If your change touches `packages/kumo/` and should ship, add a changeset:
 
-- **Accessibility** — Include proper ARIA attributes and keyboard navigation
-- **TypeScript** — Export prop types and use proper type annotations
-- **Styling** — Use Tailwind CSS classes and the `cn` utility
-- **Consistency** — Follow existing component patterns and naming conventions
-- **Documentation** — Add clear JSDoc comments and usage examples
-- **Testing** — Include unit tests for component behavior
-- **Single Responsibility** — Keep components focused on one task
+```bash
+pnpm changeset
+```
 
-## Block Guidelines
+Changeset guidance:
 
-When implementing blocks, follow these additional guidelines:
+- Use `patch` for bug fixes and low-risk improvements.
+- Use `minor` for new backward-compatible features.
+- Use `major` only for breaking changes.
+- Keep the summary focused on user-visible impact.
 
-- **Composition** — Compose existing components rather than reimplementing functionality
-- **Framework Agnostic** — Use `LinkProvider` for routing to remain framework-agnostic
-- **Flexible Props** — Accept both simple and complex props to support various use cases
-- **Common Patterns** — Focus on patterns that appear in multiple applications
-- **Documentation** — Include JSDoc explaining the block's purpose and when to use it
-- **Examples** — Provide clear usage examples showing composition
+If your change is docs-only or non-releasable package work, a changeset is usually not required.
 
-### When to Create a Block
+## 7) Open and Maintain the PR
 
-- Pattern appears in multiple places across applications
-- Combines 2+ base components
-- Implements a common layout or page structure
-- Has specific business logic or behavior
+- Branch from `main` and push to `origin`.
+- Use PR title format: `[package] short description` (example: `[kumo] add meter warning variant`).
+- Fill in the PR template with testing details and impact.
+- After review starts, prefer follow-up commits over force-pushing rewritten history.
 
-### When NOT to Create a Block
+Git hygiene expectations:
 
-- Single component with styling variations (use component variants instead)
-- Application-specific logic (keep in application code)
-- One-off patterns (wait for reuse before abstracting)
+- Keep commit history readable before first review.
+- After reviews begin, avoid rewriting already-reviewed commits.
+- Add follow-up commits for feedback (`fixup` commits are fine).
 
-## Additional Resources
+PR review is required before merge.
 
-For more detailed information, refer to:
+## PR Previews and Tests
 
-- [GitHub Repository](https://github.com/cloudflare/kumo)
-- [Base UI Documentation](https://base-ui.com/)
+- PRs publish prerelease artifacts via `pkg.pr.new` links in CI comments.
+- Every PR should include tests for behavior changes.
+- Most Kumo tests are Vitest-based and live under `packages/kumo`.
+
+## Release Process (How Your Change Ships)
+
+- Releases are managed through Changesets.
+- Merged changesets on `main` feed the automated versioning/publish flow.
+- If you need an urgent out-of-cadence release, contact maintainers.
+
+## Practical Guidelines
+
+- Use semantic Kumo tokens and avoid raw Tailwind color classes.
+- Compose class names with `cn(...)`.
+- Prefer extending existing patterns over introducing one-off API designs.
+- Include tests for behavior changes, not just rendering snapshots.
+
+Common pitfalls to avoid:
+
+- Do not scaffold components manually; use `new:component`.
+- Do not rely on raw Tailwind color classes (`bg-blue-500`, etc.).
+- Do not skip changesets for releasable `packages/kumo` changes.
+
+## Questions?
+If you have any questions for Kumo, please reach out to the team in our Kumo channel.
+
+## Related Docs
+
+- Changeset guidance: [`.changeset/README.md`](../../../.changeset/README.md)
+- Kumo package architecture: [`packages/kumo/AGENTS.md`](../../kumo/AGENTS.md)
