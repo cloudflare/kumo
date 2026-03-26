@@ -20,6 +20,9 @@ import {
   PaginationCustomPageSizeOptionsDemo,
   PaginationCompoundCustomInfoDemo,
   PaginationPageSizeRightDemo,
+  PaginationNumberedDemo,
+  PaginationNumberedLargeDemo,
+  PaginationNumberedSiblingsDemo,
 } from "~/components/demos/PaginationDemo";
 
 {/* Hero Demo */}
@@ -89,6 +92,34 @@ export default function Example() {
 </p>
 <ComponentExample demo="PaginationSimpleDemo">
   <PaginationSimpleDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Numbered Controls</Heading>
+<p>
+  The <code>numbered</code> variant renders clickable page number buttons with
+  previous and next navigation arrows. The current page is highlighted with a
+  subtle background and border.
+</p>
+<ComponentExample demo="PaginationNumberedDemo">
+  <PaginationNumberedDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Numbered Controls with Large Dataset</Heading>
+<p>
+  When there are many pages, ellipsis markers appear to keep the pagination
+  compact while always showing the first and last pages.
+</p>
+<ComponentExample demo="PaginationNumberedLargeDemo">
+  <PaginationNumberedLargeDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Numbered Controls with Custom Siblings</Heading>
+<p>
+  Use the <code>siblingCount</code> prop to control how many page numbers appear
+  on each side of the current page.
+</p>
+<ComponentExample demo="PaginationNumberedSiblingsDemo">
+  <PaginationNumberedSiblingsDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Mid-Page State</Heading>
