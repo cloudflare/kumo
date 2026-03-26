@@ -24,6 +24,10 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-success text-white",
       description: "Success or positive state indicator",
     },
+    warning: {
+      classes: "bg-kumo-warning text-white",
+      description: "Warning or caution state indicator",
+    },
     outline: {
       classes: "border border-kumo-fill bg-transparent text-kumo-default",
       description: "Bordered badge with transparent background",
@@ -70,6 +74,7 @@ export type BadgeVariant = KumoBadgeVariant;
  * ```tsx
  * <Badge variant="primary">New</Badge>
  * <Badge variant="destructive">Error</Badge>
+ * <Badge variant="warning">Caution</Badge>
  * <Badge variant="beta">Beta</Badge>
  * ```
  */
@@ -79,6 +84,7 @@ export interface BadgeProps {
    * - `"primary"` — High-emphasis badge for important labels
    * - `"secondary"` — Subtle badge for secondary information
    * - `"destructive"` — Error or danger state indicator
+   * - `"warning"` — Warning or caution state indicator
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
    * @default "primary"
