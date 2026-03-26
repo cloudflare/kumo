@@ -100,8 +100,6 @@ export type TabsProps = KumoTabsVariantsProps & {
   indicatorClassName?: string;
 };
 
-const TabIndicator = motion(TabsPrimitive.Indicator);
-
 /**
  * Tab navigation component with segmented or underline style.
  * Built on Base UI Tabs with animated active indicator.
