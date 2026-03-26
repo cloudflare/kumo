@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
+import { HTMLMotionProps, motion } from "motion/react";
 import { cn } from "../../utils/cn";
 
 /** Tabs variant definitions. */
@@ -151,13 +152,13 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-recessed ring-[0.75px] ring-kumo-ring/50" />
+        <div className="absolute inset-x-0 top-1/2 z-0 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-surface" />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
         className={cn(
           "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "h-8 rounded-lg bg-kumo-recessed p-0",
+          isSegmented && "h-8.5 rounded-lg bg-kumo-recessed px-px",
           isUnderline && "h-7 gap-4 border-b border-kumo-ring pb-2",
           listClassName,
         )}
@@ -168,9 +169,9 @@ export function Tabs({
             value={tab.value}
             render={tab.render}
             className={cn(
-              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
               isSegmented &&
-                "rounded-lg px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default",
+                "my-px rounded-lg px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
               isUnderline &&
                 "px-2 py-2.5 text-kumo-strong hover:bg-kumo-tint hover:text-kumo-subtle aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
               tab.className,
@@ -180,15 +181,32 @@ export function Tabs({
           </TabsPrimitive.Tab>
         ))}
         <TabsPrimitive.Indicator
-          className={cn(
-            "absolute z-1 transition-[left,width,transform] duration-200 ease-out",
-            "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
-            "left-(--active-tab-left) w-(--active-tab-width)",
-            isSegmented &&
-              "top-[calc(var(--active-tab-top)-1px)] h-[calc(var(--active-tab-height)+2px)] rounded-lg bg-kumo-base shadow-sm ring-[0.5px] ring-kumo-ring",
-            isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
-            indicatorClassName,
-          )}
+          render={(props, state) => {
+            return (
+              <motion.div
+                {...(props as HTMLMotionProps<"div">)}
+                className={cn(
+                  "absolute z-1",
+                  "w-(--active-tab-width)",
+                  "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
+                  isSegmented &&
+                    "top-(--active-tab-top) h-(--active-tab-height) rounded-lg bg-kumo-base shadow-sm ring ring-kumo-ring",
+                  isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
+                  indicatorClassName,
+                )}
+                animate={{
+                  x: state.activeTabPosition?.left,
+                  width: state.activeTabSize?.width,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 320,
+                  damping: 20,
+                  mass: 0.4,
+                }}
+              />
+            );
+          }}
         />
       </TabsPrimitive.List>
     </TabsPrimitive.Root>
