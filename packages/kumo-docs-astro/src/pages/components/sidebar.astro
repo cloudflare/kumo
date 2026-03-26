@@ -12,6 +12,9 @@ import {
   SidebarFullDemo,
   SidebarResizableDemo,
   SidebarRightDemo,
+  SidebarPeekingDemo,
+  SidebarKeyboardShortcutDemo,
+  SidebarSlidingViewsDemo,
 } from "../../components/demos/SidebarDemo";
 ---
 
@@ -227,6 +230,64 @@ const { toggleSidebar } = useSidebar();`}>
   </Sidebar>
 </Sidebar.Provider>`}>
           <SidebarRightDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Peeking</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">peekable</code> on the Provider. When the sidebar is collapsed,
+          hovering or focusing it temporarily expands it. Moving away collapses it back.
+          The <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">data-state</code> attribute will be <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"peeking"</code> during the peek.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen peekable>
+  <Sidebar>
+    <Sidebar.Content>...</Sidebar.Content>
+    <Sidebar.Footer>
+      <Sidebar.Trigger />
+    </Sidebar.Footer>
+  </Sidebar>
+</Sidebar.Provider>
+
+// Read peeking state:
+const { state, isPeeking } = useSidebar();
+// state: "expanded" | "collapsed" | "peeking"`}>
+          <SidebarPeekingDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Keyboard Shortcut</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">keyboardShortcut</code> to the Provider to toggle the sidebar
+          with a keyboard shortcut. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"mod+b"</code> for Cmd+B on Mac / Ctrl+B elsewhere.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen keyboardShortcut="mod+b">
+  <Sidebar>...</Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarKeyboardShortcutDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Sliding Views</Heading>
+        <p class="mb-3 text-sm text-kumo-strong">
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingViews</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingView</code>
+          for animated horizontal transitions between navigation surfaces (e.g., account &harr; zone).
+          Inactive views are automatically marked with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">aria-hidden</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">inert</code>.
+          Animation respects <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">prefers-reduced-motion</code>.
+        </p>
+        <ComponentExample code={`const [surface, setSurface] = useState("account");
+
+<Sidebar.SlidingViews activeKey={surface} direction="left">
+  <Sidebar.SlidingView value="account">
+    <Sidebar.Content>...account nav...</Sidebar.Content>
+  </Sidebar.SlidingView>
+  <Sidebar.SlidingView value="zone">
+    <Sidebar.Content>...zone nav...</Sidebar.Content>
+  </Sidebar.SlidingView>
+</Sidebar.SlidingViews>`}>
+          <SidebarSlidingViewsDemo client:load />
         </ComponentExample>
       </div>
     </div>

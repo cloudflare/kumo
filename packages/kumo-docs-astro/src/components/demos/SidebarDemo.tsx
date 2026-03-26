@@ -1,4 +1,4 @@
-import { Sidebar, useSidebar, DropdownMenu } from "@cloudflare/kumo";
+import { Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
 import {
   HouseIcon,
   GlobeIcon,
@@ -14,6 +14,8 @@ import {
   CheckIcon,
   RocketIcon,
   FlaskIcon,
+  UserIcon,
+  ArrowsLeftRightIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -39,7 +41,7 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
 
 function BrandLogo() {
   return (
-    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]">
+    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)">
       <div className="size-4 shrink-0 rounded bg-kumo-brand" />
       <span className="text-sm font-semibold text-kumo-strong truncate group-data-[state=collapsed]/sidebar:hidden">
         Acme Inc
@@ -63,7 +65,7 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[color,background-color,padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)] group-data-[state=collapsed]/sidebar:px-2"
+            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[color,background-color,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:px-2"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
@@ -76,7 +78,7 @@ function AccountSwitcher() {
           </button>
         }
       />
-      <DropdownMenu.Content className="w-[var(--anchor-width)]">
+      <DropdownMenu.Content className="w-(--anchor-width)">
         {accounts.map((account) => (
           <DropdownMenu.Item
             key={account.id}
@@ -244,7 +246,7 @@ function ToggleButton() {
 export function SidebarToggleDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider defaultOpen keyboardShortcut="mod+b" className="min-h-0! h-full">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -393,6 +395,7 @@ export function SidebarResizableDemo() {
         defaultWidth={240}
         minWidth={180}
         maxWidth={400}
+        keyboardShortcut="mod+b"
         className="min-h-0! h-full"
       >
         <Sidebar>
@@ -454,6 +457,206 @@ export function SidebarRightDemo() {
             </Sidebar.Group>
           </Sidebar.Content>
         </Sidebar>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 7. Peeking — hover to temporarily expand collapsed sidebar
+// ---------------------------------------------------------------------------
+
+function PeekStateIndicator() {
+  const { state } = useSidebar();
+  const labels: Record<SidebarState, string> = {
+    expanded: "Expanded",
+    collapsed: "Collapsed",
+    peeking: "Peeking",
+  };
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <span className="rounded-full border border-kumo-line bg-kumo-elevated px-3 py-1 text-xs font-medium text-kumo-default">
+        State: {labels[state]}
+      </span>
+      <p className="text-sm">Collapse, then hover the sidebar to peek</p>
+    </div>
+  );
+}
+
+/** Peekable sidebar that temporarily expands on hover when collapsed. */
+export function SidebarPeekingDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider defaultOpen peekable keyboardShortcut="mod+b" className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                  Compute
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <PeekStateIndicator />
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 8. Keyboard Shortcut — toggle sidebar with Cmd+B / Ctrl+B
+// ---------------------------------------------------------------------------
+
+/** Sidebar with keyboard shortcut toggle (Cmd+B / Ctrl+B). */
+export function SidebarKeyboardShortcutDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider
+        defaultOpen
+        keyboardShortcut="mod+b"
+        className="min-h-0! h-full"
+      >
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <div className="flex flex-col items-center gap-2">
+            <kbd className="rounded border border-kumo-line bg-kumo-elevated px-2 py-1 font-mono text-xs text-kumo-default shadow-sm">
+              ⌘B
+            </kbd>
+            <p className="text-sm">Press Cmd+B (Mac) or Ctrl+B to toggle</p>
+          </div>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 9. Sliding Views — animated horizontal transitions between surfaces
+// ---------------------------------------------------------------------------
+
+/** Sidebar with animated sliding views between Account and Zone navigation. */
+export function SidebarSlidingViewsDemo() {
+  const [surface, setSurface] = useState<"account" | "zone">("account");
+
+  return (
+    <DemoContainer>
+      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <button
+              type="button"
+              onClick={() =>
+                setSurface((s) => (s === "account" ? "zone" : "account"))
+              }
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-kumo-default hover:bg-kumo-tint transition-colors"
+            >
+              <ArrowsLeftRightIcon className="size-4 shrink-0 text-kumo-brand" />
+              <span className="flex-1 text-left font-semibold text-kumo-strong">
+                {surface === "account" ? "Account Nav" : "Zone Nav"}
+              </span>
+            </button>
+          </Sidebar.Header>
+
+          <Sidebar.SlidingViews
+            activeKey={surface}
+            direction={surface === "zone" ? "left" : "right"}
+          >
+            <Sidebar.SlidingView value="account">
+              <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>Account</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={HouseIcon} active>
+                      Home
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={UserIcon}>
+                      Members
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ChartBarIcon}>
+                      Analytics
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={GearIcon}>
+                      Settings
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              </Sidebar.Content>
+            </Sidebar.SlidingView>
+
+            <Sidebar.SlidingView value="zone">
+              <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>Zone</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={GlobeIcon} active>
+                      Overview
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                      Security
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={LockIcon}>
+                      SSL/TLS
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={DatabaseIcon}>
+                      Caching
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              </Sidebar.Content>
+            </Sidebar.SlidingView>
+          </Sidebar.SlidingViews>
+        </Sidebar>
+        <DemoMain>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm font-medium">
+              Active: {surface === "account" ? "Account" : "Zone"} surface
+            </p>
+            <p className="text-sm">
+              Click the header button to slide between views
+            </p>
+          </div>
+        </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>
   );

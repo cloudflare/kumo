@@ -241,10 +241,13 @@ export {
   SidebarCollapsible,
   SidebarCollapsibleTrigger,
   SidebarCollapsibleContent,
+  SidebarSlidingViews,
+  SidebarSlidingView,
   useSidebar,
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
+  type SidebarState,
   type SidebarSide,
   type SidebarVariant,
   type SidebarCollapsible as SidebarCollapsibleType,
@@ -255,6 +258,8 @@ export {
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
   type SidebarInputProps,
+  type SidebarSlidingViewProps,
+  type SidebarSlidingViewsProps,
 } from "./components/sidebar";
 // PLOP_INJECT_EXPORT
 
