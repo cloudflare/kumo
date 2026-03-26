@@ -93,6 +93,15 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-info": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-blue-700, oklch(48.8% 0.243 264.376))",
+          dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
+        },
+      },
+    },
     "kumo-success": {
       newName: "",
       theme: {
@@ -106,7 +115,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
+          light: "var(--color-red-700, oklch(50.5% 0.213 27.518))",
           dark: "var(--color-red-400, oklch(70.4% 0.191 22.216))",
         },
       },
