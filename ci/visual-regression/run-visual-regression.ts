@@ -73,7 +73,9 @@ function getChangedFiles(): string[] | null {
     // running untrusted PR code with secrets), so HEAD points to main. The PR's
     // head commit is fetched separately and passed via PR_HEAD_SHA.
     const head = process.env.PR_HEAD_SHA || "HEAD";
-    const output = execSync(`git diff --name-only origin/${base}...${head}`, {
+    // Use two-dot diff (A..B) instead of three-dot (A...B) because shallow
+    // clones don't have enough history to compute merge-base.
+    const output = execSync(`git diff --name-only origin/${base}..${head}`, {
       encoding: "utf-8",
     });
     return output.trim().split("\n").filter(Boolean);
