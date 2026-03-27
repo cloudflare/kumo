@@ -1,14 +1,12 @@
 import React from "react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 // Mock motion/react so motion.div renders as a plain div in happy-dom
 vi.mock("motion/react", () => ({
   motion: {
     div: React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLDivElement>) => {
       // Strip motion-specific props, pass the rest through
-      const { animate, initial, transition, ...rest } = props;
+      const { animate: _animate, initial: _initial, transition: _transition, ...rest } = props;
       return React.createElement("div", { ...rest, ref });
     }),
   },

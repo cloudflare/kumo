@@ -25,6 +25,10 @@ import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import { Tooltip, TooltipProvider } from "../tooltip";
 
+/** Check whether an event target is inside the sidebar footer zone. */
+const isInFooter = (el: EventTarget | null) =>
+  el instanceof HTMLElement && !!el.closest('[data-sidebar="footer"]');
+
 // ============================================================================
 // Variants (required by Kumo convention)
 // ============================================================================
@@ -470,10 +474,6 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     // Peek handlers — only active when collapsed and peekable
     const canPeek = peekable && !open && !isMobile && collapsible !== "none";
     const isMouseOverRef = useRef(false);
-
-    const isInFooter = (el: EventTarget | null) =>
-      el instanceof HTMLElement &&
-      !!el.closest('[data-sidebar="footer"]');
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent) => {
