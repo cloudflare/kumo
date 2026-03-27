@@ -253,7 +253,7 @@ export function SelectMultipleWithIndicatorDemo() {
         <span className="flex items-center gap-2">
           <span>Issue Types</span>
           {selected.length > 0 && (
-            <Badge variant="secondary">{selected.length}</Badge>
+            <Badge variant="neutral">{selected.length}</Badge>
           )}
         </span>
       )}

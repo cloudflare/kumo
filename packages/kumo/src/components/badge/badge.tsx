@@ -8,36 +8,75 @@ export const KUMO_BADGE_BASE_STYLES =
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
   variant: {
-    primary: {
-      classes: "bg-kumo-contrast text-kumo-inverse",
-      description: "Default high-emphasis badge for important labels",
+    red: {
+      classes: "bg-red-600 text-white dark:bg-red-700",
+      description: "Red badge",
     },
-    secondary: {
-      classes: "bg-kumo-fill text-kumo-default",
-      description: "Subtle badge for secondary information",
+    "red-subtle": {
+      classes: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      description: "Subtle red badge",
     },
-    destructive: {
-      classes: "bg-kumo-danger text-white",
-      description: "Error or danger state indicator",
+    orange: {
+      classes: "bg-orange-600 text-white dark:bg-orange-700",
+      description: "Orange badge",
     },
-    success: {
-      classes: "bg-kumo-success text-white",
-      description: "Success or positive state indicator",
-    },
-    outline: {
-      classes: "border border-kumo-fill bg-transparent text-kumo-default",
-      description: "Bordered badge with transparent background",
-    },
-    beta: {
+    "orange-subtle": {
       classes:
-        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
-      description: "Indicates beta or experimental features",
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      description: "Subtle orange badge",
+    },
+    yellow: {
+      classes: "bg-yellow-600 text-white dark:bg-yellow-700",
+      description: "Yellow badge",
+    },
+    "yellow-subtle": {
+      classes:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+      description: "Subtle yellow badge",
+    },
+    green: {
+      classes: "bg-emerald-600 text-white dark:bg-emerald-700",
+      description: "Green badge",
+    },
+    "green-subtle": {
+      classes:
+        "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
+      description: "Subtle green badge",
+    },
+    teal: {
+      classes: "bg-teal-600 text-white dark:bg-teal-700",
+      description: "Teal badge",
+    },
+    "teal-subtle": {
+      classes: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+      description: "Subtle teal badge",
+    },
+    blue: {
+      classes: "bg-blue-600 text-white dark:bg-blue-700",
+      description: "Blue badge",
+    },
+    "blue-subtle": {
+      classes: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      description: "Subtle blue badge",
+    },
+    neutral: {
+      classes: "bg-neutral-600 text-white",
+      description: "Neutral badge",
+    },
+    "neutral-subtle": {
+      classes:
+        "bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200",
+      description: "Subtle neutral badge",
+    },
+    inverted: {
+      classes: "bg-neutral-950 text-white dark:bg-white dark:text-black",
+      description: "Inverted badge",
     },
   },
 } as const;
 
 export const KUMO_BADGE_DEFAULT_VARIANTS = {
-  variant: "primary",
+  variant: "neutral",
 } as const;
 
 // Derived types from KUMO_BADGE_VARIANTS
@@ -68,20 +107,23 @@ export type BadgeVariant = KumoBadgeVariant;
  *
  * @example
  * ```tsx
- * <Badge variant="primary">New</Badge>
- * <Badge variant="destructive">Error</Badge>
- * <Badge variant="beta">Beta</Badge>
+ * <Badge variant="green">Active</Badge>
+ * <Badge variant="red">Error</Badge>
+ * <Badge variant="neutral">Inactive</Badge>
  * ```
  */
 export interface BadgeProps {
   /**
-   * Visual style of the badge.
-   * - `"primary"` — High-emphasis badge for important labels
-   * - `"secondary"` — Subtle badge for secondary information
-   * - `"destructive"` — Error or danger state indicator
-   * - `"outline"` — Bordered badge with transparent background
-   * - `"beta"` — Dashed-border badge for beta/experimental features
-   * @default "primary"
+   * Color variant of the badge.
+   * - `"red"` / `"red-subtle"` — Red badge
+   * - `"orange"` / `"orange-subtle"` — Orange badge
+   * - `"yellow"` / `"yellow-subtle"` — Yellow badge
+   * - `"green"` / `"green-subtle"` — Green badge (emerald scale)
+   * - `"teal"` / `"teal-subtle"` — Teal badge
+   * - `"blue"` / `"blue-subtle"` — Blue badge
+   * - `"neutral"` / `"neutral-subtle"` — Neutral badge
+   * - `"inverted"` — Inverted badge (near-black, white in dark mode)
+   * @default "neutral"
    */
   variant?: KumoBadgeVariant;
   /** Additional CSS classes merged via `cn()`. */
@@ -95,7 +137,7 @@ export interface BadgeProps {
  *
  * @example
  * ```tsx
- * <Badge variant="primary">Active</Badge>
+ * <Badge variant="green">Active</Badge>
  * ```
  */
 export function Badge({
