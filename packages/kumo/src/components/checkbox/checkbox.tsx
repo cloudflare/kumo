@@ -384,7 +384,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             )}
           />
         </BaseCheckbox.Root>
-        <span className="text-base font-medium text-kumo-default">{label}</span>
+        <span className="text-base text-kumo-default">{label}</span>
       </label>
     );
   },
@@ -415,13 +415,8 @@ function CheckboxGroup({
         allValues={allValues}
         disabled={disabled}
       >
-        <Fieldset.Root
-          className={cn(
-            "flex flex-col gap-4 rounded-lg border border-kumo-line p-4",
-            className,
-          )}
-        >
-          <Fieldset.Legend className="text-lg font-medium text-kumo-default">
+        <Fieldset.Root className={cn("flex flex-col gap-4", className)}>
+          <Fieldset.Legend className="text-base font-medium text-kumo-default">
             {legend}
           </Fieldset.Legend>
           <div className="flex flex-col gap-2">{children}</div>
