@@ -155,18 +155,21 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
         variant?: Variant;
         bold?: boolean;
         size?: TextSize;
+        truncate?: boolean;
       }
     : Variant extends Monospace
       ? {
           variant?: Variant;
           bold?: never;
           size?: "lg";
+          truncate?: boolean;
         }
       : Variant extends Heading
         ? {
             variant?: Variant;
             bold?: never;
             size?: never;
+            truncate?: boolean;
           }
         : never);
 
@@ -208,6 +211,8 @@ export interface TextProps {
   size?: KumoTextSize;
   /** Whether to use bold font weight (only applies to body variants). */
   bold?: boolean;
+  /** Whether to truncate overflowing text with an ellipsis. Adds `truncate min-w-0` classes. */
+  truncate?: boolean;
   /** The HTML element type to render as (e.g. `"span"`, `"p"`, `"h1"`). Auto-selected based on variant if omitted. */
   as?: ElementType;
   /** Text content. */
@@ -230,6 +235,7 @@ function _Text<Variant extends TextVariant = "body">(
     variant = "body" as Variant,
     bold = false,
     size = "base",
+    truncate = false,
     children,
     DANGEROUS_className,
     DANGEROUS_style,
@@ -263,6 +269,7 @@ function _Text<Variant extends TextVariant = "body">(
           (size === "lg"
             ? KUMO_TEXT_VARIANTS.size.base.classes
             : KUMO_TEXT_VARIANTS.size.sm.classes),
+        truncate && "truncate min-w-0",
         DANGEROUS_className,
       )}
       style={DANGEROUS_style}

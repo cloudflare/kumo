@@ -69,7 +69,13 @@ interface ComparisonResult {
 function getChangedFiles(): string[] | null {
   try {
     const base = process.env.GITHUB_BASE_REF || "main";
-    const output = execSync(`git diff --name-only origin/${base}...HEAD`, {
+    // Use PR_HEAD_SHA when provided. CI checks out main for security (to avoid
+    // running untrusted PR code with secrets), so HEAD points to main. The PR's
+    // head commit is fetched separately and passed via PR_HEAD_SHA.
+    const head = process.env.PR_HEAD_SHA || "HEAD";
+    // Use two-dot diff (A..B) instead of three-dot (A...B) because shallow
+    // clones don't have enough history to compute merge-base.
+    const output = execSync(`git diff --name-only origin/${base}..${head}`, {
       encoding: "utf-8",
     });
     return output.trim().split("\n").filter(Boolean);
