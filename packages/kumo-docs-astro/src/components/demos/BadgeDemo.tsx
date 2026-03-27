@@ -11,6 +11,8 @@ export function BadgeVariantsDemo() {
       <Badge variant="blue">Blue</Badge>
       <Badge variant="neutral">Neutral</Badge>
       <Badge variant="inverted">Inverted</Badge>
+      <Badge variant="outline">Outline</Badge>
+      <Badge variant="beta">Beta</Badge>
       <Badge variant="red-subtle">Red</Badge>
       <Badge variant="orange-subtle">Orange</Badge>
       <Badge variant="yellow-subtle">Yellow</Badge>
@@ -80,6 +82,14 @@ export function BadgeNeutralSubtleDemo() {
 
 export function BadgeInvertedDemo() {
   return <Badge variant="inverted">Inverted</Badge>;
+}
+
+export function BadgeOutlineDemo() {
+  return <Badge variant="outline">Outline</Badge>;
+}
+
+export function BadgeBetaDemo() {
+  return <Badge variant="beta">Beta</Badge>;
 }
 
 export function BadgeInSentenceDemo() {

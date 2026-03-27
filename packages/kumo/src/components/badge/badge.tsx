@@ -72,6 +72,35 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-neutral-950 text-white dark:bg-white dark:text-black",
       description: "Inverted badge",
     },
+    outline: {
+      classes: "border border-kumo-fill bg-transparent text-kumo-default",
+      description: "Bordered badge with transparent background",
+    },
+    beta: {
+      classes:
+        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
+      description: "Indicates beta or experimental features",
+    },
+    /** @deprecated Use `"inverted"` instead. */
+    primary: {
+      classes: "bg-neutral-950 text-white dark:bg-white dark:text-black",
+      description: "Deprecated. Use inverted instead.",
+    },
+    /** @deprecated Use `"neutral"` instead. */
+    secondary: {
+      classes: "bg-neutral-600 text-white",
+      description: "Deprecated. Use neutral instead.",
+    },
+    /** @deprecated Use `"red"` instead. */
+    destructive: {
+      classes: "bg-red-600 text-white dark:bg-red-700",
+      description: "Deprecated. Use red instead.",
+    },
+    /** @deprecated Use `"green"` instead. */
+    success: {
+      classes: "bg-emerald-600 text-white dark:bg-emerald-700",
+      description: "Deprecated. Use green instead.",
+    },
   },
 } as const;
 
@@ -123,6 +152,12 @@ export interface BadgeProps {
    * - `"blue"` / `"blue-subtle"` — Blue badge
    * - `"neutral"` / `"neutral-subtle"` — Neutral badge
    * - `"inverted"` — Inverted badge (near-black, white in dark mode)
+   * - `"outline"` — Bordered badge with transparent background
+   * - `"beta"` — Dashed-border badge for beta/experimental features
+   * - `"primary"` — **Deprecated.** Use `"inverted"` instead.
+   * - `"secondary"` — **Deprecated.** Use `"neutral"` instead.
+   * - `"destructive"` — **Deprecated.** Use `"red"` instead.
+   * - `"success"` — **Deprecated.** Use `"green"` instead.
    * @default "neutral"
    */
   variant?: KumoBadgeVariant;

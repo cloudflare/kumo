@@ -27,6 +27,8 @@ import {
   BadgeNeutralDemo,
   BadgeNeutralSubtleDemo,
   BadgeInvertedDemo,
+  BadgeOutlineDemo,
+  BadgeBetaDemo,
   BadgeInSentenceDemo,
 } from "~/components/demos/BadgeDemo";
 
@@ -111,6 +113,16 @@ export default function Example() {
 <h4 class="mb-3 text-base font-medium">Inverted</h4>
 <ComponentExample demo="BadgeInvertedDemo">
   <BadgeInvertedDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Outline</h4>
+<ComponentExample demo="BadgeOutlineDemo">
+  <BadgeOutlineDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Beta</h4>
+<ComponentExample demo="BadgeBetaDemo">
+  <BadgeBetaDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Subtle variants</Heading>
