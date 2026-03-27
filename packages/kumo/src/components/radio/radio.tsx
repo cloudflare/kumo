@@ -318,7 +318,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             <span className="h-2 w-2 rounded-full bg-kumo-base" />
           </BaseRadio.Indicator>
         </BaseRadio.Root>
-        <span className="text-base font-medium text-kumo-default">{label}</span>
+        <span className="text-base text-kumo-default">{label}</span>
       </label>
     );
   },
@@ -353,12 +353,9 @@ function RadioGroup({
       >
         <Fieldset.Root
           disabled={disabled}
-          className={cn(
-            "flex flex-col gap-4 rounded-lg border border-kumo-line p-4",
-            className,
-          )}
+          className={cn("flex flex-col gap-4", className)}
         >
-          <Fieldset.Legend className="text-lg font-medium text-kumo-default">
+          <Fieldset.Legend className="text-base font-medium text-kumo-default">
             {legend}
           </Fieldset.Legend>
           <div
