@@ -28,6 +28,11 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-warning text-white",
       description: "Warning or caution state indicator",
     },
+    "warning-subtle": {
+      classes: "bg-kumo-warning/10 text-kumo-warning",
+      description:
+        "Subtle warning badge with low-opacity background and full-color text",
+    },
     outline: {
       classes: "border border-kumo-fill bg-transparent text-kumo-default",
       description: "Bordered badge with transparent background",
@@ -85,6 +90,7 @@ export interface BadgeProps {
    * - `"secondary"` — Subtle badge for secondary information
    * - `"destructive"` — Error or danger state indicator
    * - `"warning"` — Warning or caution state indicator
+   * - `"warning-subtle"` — Subtle warning with low-opacity background and full-color text
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
    * @default "primary"

@@ -8,6 +8,7 @@ export function BadgeVariantsDemo() {
       <Badge variant="destructive">Destructive</Badge>
       <Badge variant="success">Success</Badge>
       <Badge variant="warning">Warning</Badge>
+      <Badge variant="warning-subtle">Warning Subtle</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
     </div>
@@ -32,6 +33,10 @@ export function BadgeSuccessDemo() {
 
 export function BadgeWarningDemo() {
   return <Badge variant="warning">Warning</Badge>;
+}
+
+export function BadgeWarningSubtleDemo() {
+  return <Badge variant="warning-subtle">Warning Subtle</Badge>;
 }
 
 export function BadgeOutlineDemo() {
