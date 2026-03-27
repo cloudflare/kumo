@@ -74,8 +74,8 @@ const vrAttrs = resolvedVrSection
   : {};
 ---
 
-<div class="not-prose overflow-hidden rounded-lg" {...vrAttrs}>
-  <ComponentPreview>
+<div class="not-prose overflow-hidden rounded-lg">
+  <ComponentPreview {...vrAttrs}>
     <slot />
   </ComponentPreview>
   <div class="component-example-code">
