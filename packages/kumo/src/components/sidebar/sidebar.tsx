@@ -83,7 +83,7 @@ export const KUMO_SIDEBAR_DEFAULT_VARIANTS = {
 
 export const KUMO_SIDEBAR_STYLING = {
   width: {
-    expanded: "16rem",
+    expanded: "16.25rem",
     icon: "3rem",
   },
   mobile: {
@@ -99,7 +99,7 @@ export type SidebarCollapsible = "icon" | "offcanvas" | "none";
 // Constants
 // ============================================================================
 
-const SIDEBAR_WIDTH = "16rem";
+const SIDEBAR_WIDTH = "16.25rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const MOBILE_BREAKPOINT = 768;
 const SIDEBAR_ANIMATION_DURATION_MS = 200;
@@ -663,7 +663,7 @@ const SidebarHeader = forwardRef<
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex items-center gap-2 border-b border-kumo-line px-2 py-3",
+      "flex h-[58px] items-center gap-1 border-b border-kumo-line px-2",
       "overflow-hidden",
       // Collapsed: just remove border, keep same height
       "group-data-[state=collapsed]/sidebar:border-b-0",
@@ -697,9 +697,9 @@ const SidebarContent = forwardRef<
     ref={ref}
     data-sidebar="content"
     className={cn(
-      "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 py-2",
-      // Collapsed: flatten spacing so icons are evenly spaced
-      "group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:py-0",
+      "flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden",
+      "px-[11px] group-data-[state=expanded]/sidebar:px-3.5",
+      "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       "group-data-[state=collapsed]/sidebar:overflow-x-hidden",
       className,
     )}
@@ -739,12 +739,13 @@ const SidebarFooter = forwardRef<
       ref={ref}
       data-sidebar="footer"
       className={cn(
-        "flex h-12 shrink-0 items-center gap-4 overflow-hidden whitespace-nowrap border-t border-kumo-line px-3.5",
+        "flex h-12 shrink-0 items-center gap-4 overflow-hidden whitespace-nowrap border-t border-kumo-line",
+        "px-[11px] group-data-[state=expanded]/sidebar:px-3.5",
         "bg-kumo-base",
         // Width tracks the sidebar — expanded uses full sidebar width
         "w-(--sidebar-width)",
-        // Transition width to match sidebar expand/collapse animation
-        "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+        // Transition width + padding to match sidebar expand/collapse animation
+        "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
         "motion-reduce:transition-none",
         // Sticky keeps the footer pinned to the bottom of the sidebar
         // (container-relative), unlike fixed which would escape demo bounds.
@@ -794,86 +795,33 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   toggle: () => { },
 });
 
-export interface SidebarGroupProps extends ComponentPropsWithoutRef<"div"> {
-  /** When true, the group can be expanded/collapsed via its label. @default false */
-  collapsible?: boolean;
-  /** Initial open state when collapsible and uncontrolled. @default true */
-  defaultOpen?: boolean;
-  /** Controlled open state (collapsible mode only). */
-  open?: boolean;
-  /** Callback when open state changes (collapsible mode only). */
-  onOpenChange?: (open: boolean) => void;
-}
+export interface SidebarGroupProps extends ComponentPropsWithoutRef<"div"> { }
 
 /**
  * Groups related menu items with an optional label.
- * When `collapsible` is set, wraps content with Base UI Collapsible for
- * animated expand/collapse via the group label.
  *
- * @example Non-collapsible group
+ * @example
  * ```tsx
  * <Sidebar.Group>
  *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
  *   <Sidebar.Menu>...</Sidebar.Menu>
  * </Sidebar.Group>
  * ```
- *
- * @example Collapsible group (requires GroupContent for animation)
- * ```tsx
- * <Sidebar.Group collapsible defaultOpen>
- *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
- *   <Sidebar.GroupContent>
- *     <Sidebar.Menu>...</Sidebar.Menu>
- *   </Sidebar.GroupContent>
- * </Sidebar.Group>
- * ```
  */
 const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(
-  (
-    {
-      className,
-      collapsible = false,
-      defaultOpen = true,
-      open: openProp,
-      onOpenChange,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
-    const [internalOpen, setInternalOpen] = useState(defaultOpen);
-    const isOpen = openProp ?? internalOpen;
-    const contentId = useId();
-
-    const toggle = useCallback(() => {
-      const next = !isOpen;
-      setInternalOpen(next);
-      onOpenChange?.(next);
-    }, [isOpen, onOpenChange]);
-
-    const contextValue = useMemo<SidebarCollapseContextValue>(
-      () => ({ isCollapsible: collapsible, isOpen, contentId, toggle }),
-      [collapsible, isOpen, contentId, toggle],
-    );
-
-    return (
-      <SidebarCollapseContext.Provider value={contextValue}>
-        <div
-          ref={ref}
-          data-sidebar="group"
-          className={cn(
-            "flex min-w-0 flex-col gap-0.5",
-            // Collapsed: remove internal gap so icons stack uniformly
-            "group-data-[state=collapsed]/sidebar:gap-0",
-            className,
-          )}
-          {...props}
-        >
-          {children}
-        </div>
-      </SidebarCollapseContext.Provider>
-    );
-  },
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-sidebar="group"
+      className={cn(
+        "flex min-w-0 flex-col gap-y-px",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  ),
 );
 
 SidebarGroup.displayName = "Sidebar.Group";
@@ -884,10 +832,8 @@ SidebarGroup.displayName = "Sidebar.Group";
 
 /**
  * Section label for a sidebar group (e.g., "Build", "Protect & Connect").
- * Hidden when the sidebar is collapsed to icon-only mode.
- *
- * When used inside a collapsible `Sidebar.Group`, renders as a
- * `Collapsible.Trigger` with an auto-rotating chevron.
+ * Uses a grid-rows animation to smoothly collapse when the sidebar is in
+ * icon-only mode, acting as a spacer between icon groups.
  *
  * @example
  * ```tsx
@@ -897,136 +843,31 @@ SidebarGroup.displayName = "Sidebar.Group";
 const SidebarGroupLabel = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { isCollapsible, isOpen, contentId, toggle } =
-    useContext(SidebarCollapseContext);
-
-  if (isCollapsible) {
-    return (
-      <button
-        ref={ref as React.Ref<HTMLButtonElement>}
-        type="button"
-        data-sidebar="group-label"
-        data-open={isOpen ? "" : undefined}
-        aria-expanded={isOpen}
-        aria-controls={contentId}
-        onClick={toggle}
-        className={cn(
-          "group/group-label flex w-full cursor-pointer items-center px-3 py-1 text-xs font-medium text-kumo-subtle",
-          "group-data-[state=collapsed]/sidebar:hidden",
-          className,
-        )}
-        {...(props as ComponentPropsWithoutRef<"button">)}
-      >
-        <span className="flex-1 truncate text-left">{children}</span>
-        <CaretRightIcon
-          size={12}
-          weight="bold"
-          className={cn(
-            "ml-auto size-3 shrink-0 text-kumo-subtle transition-transform duration-200",
-            isOpen && "rotate-90",
-          )}
-        />
-      </button>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="group-label"
-      className={cn(
-        "truncate px-3 py-1 text-xs font-medium text-kumo-subtle",
-        "group-data-[state=collapsed]/sidebar:hidden",
-        className,
-      )}
-      {...props}
-    >
-      {children}
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-sidebar="group-label"
+    className={cn(
+      "w-full grid",
+      // Collapsed: hidden content, margin acts as spacer between icon groups
+      "my-3 grid-rows-[0fr] border-b border-kumo-line",
+      // Expanded: visible label, no extra margin, border fades
+      "group-data-[state=expanded]/sidebar:my-0 group-data-[state=expanded]/sidebar:grid-rows-[1fr] group-data-[state=expanded]/sidebar:border-transparent",
+      // Smooth transitions on all animated properties
+      "transition-[grid-template-rows,border,margin] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      className,
+    )}
+    {...props}
+  >
+    <div className="overflow-hidden min-h-0">
+      <div className="px-3 pt-4 pb-2 text-sm font-medium text-kumo-subtle truncate">
+        {children}
+      </div>
     </div>
-  );
-});
+  </div>
+));
 
 SidebarGroupLabel.displayName = "Sidebar.GroupLabel";
-
-// ============================================================================
-// Sidebar GroupContent
-// ============================================================================
-
-/**
- * Animation wrapper for collapsible group content. Uses CSS grid-rows
- * for smooth height transitions when the group is expanded/collapsed.
- *
- * **Only needed for collapsible groups.** For non-collapsible groups,
- * place `Menu` directly inside `Group` — no wrapper required.
- *
- * @example Collapsible group (GroupContent required)
- * ```tsx
- * <Sidebar.Group collapsible defaultOpen>
- *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
- *   <Sidebar.GroupContent>
- *     <Sidebar.Menu>...</Sidebar.Menu>
- *   </Sidebar.GroupContent>
- * </Sidebar.Group>
- * ```
- *
- * @example Non-collapsible group (no GroupContent needed)
- * ```tsx
- * <Sidebar.Group>
- *   <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
- *   <Sidebar.Menu>...</Sidebar.Menu>
- * </Sidebar.Group>
- * ```
- */
-const SidebarGroupContent = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { isCollapsible, isOpen, contentId } =
-    useContext(SidebarCollapseContext);
-
-  if (isCollapsible) {
-    return (
-      <div
-        ref={ref}
-        id={contentId}
-        role="region"
-        data-sidebar="group-content"
-        aria-hidden={!isOpen}
-        {...(!isOpen ? ({ inert: "" } as Record<string, string>) : {})}
-        className={cn(
-          "grid",
-          // Animate height via grid-rows — uses configurable duration + easing from Provider
-          "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-          "motion-reduce:transition-none",
-          // Default: collapsed
-          "grid-rows-[0fr]",
-          // When sidebar is expanded, respect group open/close state
-          isOpen
-            ? "group-data-[state=expanded]/sidebar:grid-rows-[1fr]"
-            : "group-data-[state=expanded]/sidebar:grid-rows-[0fr]",
-          className,
-        )}
-        {...props}
-      >
-        <div className="overflow-hidden">{children}</div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="group-content"
-      className={cn("flex flex-col", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-});
-
-SidebarGroupContent.displayName = "Sidebar.GroupContent";
 
 // ============================================================================
 // MenuItem / MenuSubItem auto-wrap contexts
@@ -1079,8 +920,7 @@ const SidebarMenu = forwardRef<
     ref={ref}
     data-sidebar="menu"
     className={cn(
-      "m-0 flex min-w-0 list-none flex-col gap-0.5 p-0",
-      "group-data-[state=collapsed]/sidebar:gap-0",
+      "m-0 flex min-w-0 list-none flex-col gap-y-px items-stretch p-0",
       className,
     )}
     {...props}
@@ -1205,36 +1045,41 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       const Comp = IconProp as React.ComponentType<{ className?: string }>;
       return (
         <Comp
-          className={cn("shrink-0", size === "base" ? "size-4" : "size-3.5")}
+          className={cn("shrink-0 opacity-50", size === "base" ? "size-4" : "size-3.5")}
         />
       );
     })();
 
     const content = (
-      <>
+      <div
+        className={cn(
+          "flex flex-1 items-center min-w-0 gap-3",
+          "translate-x-[-3px] group-data-[state=expanded]/sidebar:translate-x-0",
+          "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+        )}
+      >
         {iconNode}
         <span
           className={cn(
-            "flex flex-1 items-center min-w-0 text-left overflow-hidden",
+            "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
             "group-data-[state=collapsed]/sidebar:hidden",
           )}
         >
           {children}
         </span>
-      </>
+      </div>
     );
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg outline-none cursor-pointer",
+      "group/menu-button relative flex w-full min-w-0 items-center gap-2.5 rounded-lg outline-none cursor-pointer",
+      "before:absolute before:inset-x-0 before:-inset-y-px",
       // Sizing
-      size === "base" && "min-h-[34px] px-3 py-1.5 text-sm font-medium",
-      size === "sm" && "min-h-[28px] px-2 py-1 text-sm",
-      // Default state — transition includes padding so collapsed centering animates smoothly
+      size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
+      size === "sm" && "min-h-7 px-2 py-0 text-sm",
+      // Default state
       "text-kumo-default",
-      "transition-[color,background-color,padding] duration-0 ease-(--sidebar-easing)",
-      // Icon color
-      "[&>svg]:text-kumo-subtle",
+      "transition-[color,background-color] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       !active && "hover:bg-kumo-tint",
       // Active state
       active && "bg-kumo-tint",
@@ -1242,9 +1087,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
       // Focus
       "focus-visible:ring-1 focus-visible:ring-kumo-ring",
-      // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
-      // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
-      "group-data-[state=collapsed]/sidebar:px-2",
+      // Collapsed: keep same padding, icon centering handled by translate offset
+      "group-data-[state=collapsed]/sidebar:px-3",
       className,
     );
 
@@ -1327,7 +1171,7 @@ const SidebarMenuAction = forwardRef<
     type="button"
     data-sidebar="menu-action"
     className={cn(
-      "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
+      "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1 cursor-pointer",
       "text-kumo-strong hover:bg-kumo-overlay",
       "transition-colors duration-150",
       "group-data-[state=collapsed]/sidebar:hidden",
@@ -1396,18 +1240,22 @@ SidebarMenuBadge.displayName = "Sidebar.MenuBadge";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   ComponentPropsWithoutRef<"ul">
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <ul
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-line p-0 pl-2.5",
+      "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0 overflow-hidden",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
     )}
     {...props}
-  />
+  >
+    {/* Vertical line indicator matching Stratus sub-menu styling */}
+    <div className="absolute left-[19px] inset-y-px w-px bg-kumo-line z-10" />
+    {children}
+  </ul>
 ));
 
 SidebarMenuSub.displayName = "Sidebar.MenuSub";
@@ -1474,7 +1322,8 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium outline-none",
+    "relative flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium outline-none cursor-pointer",
+    "before:absolute before:inset-x-0 before:-inset-y-px",
     "text-kumo-default transition-colors duration-150",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
@@ -1482,7 +1331,7 @@ const SidebarMenuSubButton = forwardRef<
     className,
   );
 
-  const content = <span className="flex-1 truncate text-left">{children}</span>;
+  const content = <span className="flex flex-1 items-center gap-2 truncate text-left">{children}</span>;
 
   let button: React.ReactNode;
 
@@ -1539,15 +1388,21 @@ SidebarMenuSubButton.displayName = "Sidebar.MenuSubButton";
  * Horizontal divider line between sidebar sections.
  */
 const SidebarSeparator = forwardRef<
-  HTMLHRElement,
-  ComponentPropsWithoutRef<"hr">
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => (
-  <hr
+  <div
     ref={ref}
     data-sidebar="separator"
-    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-line", className)}
+    className={cn(
+      "py-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      "group-data-[state=expanded]/sidebar:px-3",
+      className,
+    )}
     {...props}
-  />
+  >
+    <div className="border-b border-kumo-line" />
+  </div>
 ));
 
 SidebarSeparator.displayName = "Sidebar.Separator";
@@ -1576,31 +1431,50 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
     { className, placeholder = "Search...", shortcut, children, ...props },
     ref,
   ) => (
-    <button
-      ref={ref}
-      type="button"
-      data-sidebar="input"
+    <div
       className={cn(
-        "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-line",
-        "transition-[color,background-color,padding,box-shadow] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-        "hover:bg-kumo-overlay",
-        // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
-        "group-data-[state=collapsed]/sidebar:px-2 group-data-[state=collapsed]/sidebar:ring-0",
-        className,
+        "w-full pt-[13px]",
+        "group-data-[state=expanded]/sidebar:pb-[13px]",
+        "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       )}
-      {...props}
     >
-      <MagnifyingGlassIcon className="size-4 shrink-0 text-kumo-subtle" />
-      <span className="flex-1 truncate text-left group-data-[state=collapsed]/sidebar:hidden">
-        {children ?? placeholder}
-      </span>
-      {shortcut && (
-        <kbd className="ml-auto font-sans text-xs text-kumo-subtle group-data-[state=collapsed]/sidebar:hidden">
-          {shortcut}
-        </kbd>
-      )}
-    </button>
+      <button
+        ref={ref}
+        type="button"
+        data-sidebar="input"
+        className={cn(
+          "block h-8 w-full shrink-0 rounded-lg px-3 text-sm font-normal cursor-pointer",
+          "bg-kumo-base shadow-xs ring ring-kumo-ring",
+          "overflow-x-clip select-none",
+          "hover:bg-kumo-tint",
+          "focus-visible:ring-1 focus-visible:ring-kumo-ring",
+          "transition-[color,background,border,box-shadow] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+          // Collapsed: no ring/shadow, subtle background
+          "group-data-[state=collapsed]/sidebar:ring-transparent group-data-[state=collapsed]/sidebar:shadow-none",
+          "group-data-[state=collapsed]/sidebar:bg-kumo-elevated",
+          className,
+        )}
+        {...props}
+      >
+        <div
+          className={cn(
+            "flex items-center min-w-0 gap-3 text-kumo-subtle",
+            "translate-x-[-4px] group-data-[state=expanded]/sidebar:translate-x-0",
+            "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+          )}
+        >
+          <MagnifyingGlassIcon className="size-4 shrink-0 opacity-50" />
+          <span className="leading-none whitespace-nowrap group-data-[state=collapsed]/sidebar:hidden">
+            {children ?? placeholder}
+          </span>
+          {shortcut && (
+            <kbd className="ml-auto font-sans text-xs/4 text-kumo-subtle whitespace-nowrap group-data-[state=collapsed]/sidebar:hidden">
+              {shortcut}
+            </kbd>
+          )}
+        </div>
+      </button>
+    </div>
   ),
 );
 
@@ -1710,7 +1584,7 @@ const SidebarTrigger = forwardRef<
         }
         : {})}
       className={cn(
-        "grid size-7 place-items-center rounded-md",
+        "grid size-7 place-items-center rounded-md cursor-pointer",
         "text-kumo-subtle hover:text-kumo-strong hover:bg-kumo-overlay",
         "transition-colors duration-150",
         "[&_svg]:pointer-events-none",
@@ -2068,7 +1942,7 @@ const SidebarCollapsibleContent = forwardRef<
       {...(!isOpen ? ({ inert: "" } as Record<string, string>) : {})}
       className={cn(
         "grid",
-        // Animate height via grid-rows — same technique as SidebarGroupContent
+        // Animate height via grid-rows
         "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
         "motion-reduce:transition-none",
         // Default: collapsed
@@ -2239,7 +2113,7 @@ SidebarSlidingViews.displayName = "Sidebar.SlidingViews";
  * Sidebar — responsive navigation panel with expand/collapse support.
  *
  * Compound component: `Sidebar` (root `<aside>`), `.Provider`, `.Header`,
- * `.Content`, `.Footer`, `.Group`, `.GroupLabel`, `.GroupContent`,
+ * `.Content`, `.Footer`, `.Group`, `.GroupLabel`,
  * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuAction`, `.MenuBadge`,
  * `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`,
  * `.Input`, `.Trigger`, `.Rail`, `.MenuChevron`,
@@ -2275,7 +2149,6 @@ export const Sidebar = Object.assign(SidebarRoot, {
   Footer: SidebarFooter,
   Group: SidebarGroup,
   GroupLabel: SidebarGroupLabel,
-  GroupContent: SidebarGroupContent,
   Menu: SidebarMenu,
   MenuItem: SidebarMenuItem,
   MenuButton: SidebarMenuButton,
@@ -2305,7 +2178,6 @@ export {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,

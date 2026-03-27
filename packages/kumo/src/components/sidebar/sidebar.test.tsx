@@ -20,7 +20,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -72,7 +71,6 @@ describe("Sidebar", () => {
     expect(Sidebar.Footer).toBe(SidebarFooter);
     expect(Sidebar.Group).toBe(SidebarGroup);
     expect(Sidebar.GroupLabel).toBe(SidebarGroupLabel);
-    expect(Sidebar.GroupContent).toBe(SidebarGroupContent);
     expect(Sidebar.Menu).toBe(SidebarMenu);
     expect(Sidebar.MenuItem).toBe(SidebarMenuItem);
     expect(Sidebar.MenuButton).toBe(SidebarMenuButton);
@@ -117,7 +115,7 @@ describe("Sidebar", () => {
 
   it("should export styling metadata", () => {
     expect(KUMO_SIDEBAR_STYLING).toBeDefined();
-    expect(KUMO_SIDEBAR_STYLING.width.expanded).toBe("16rem");
+    expect(KUMO_SIDEBAR_STYLING.width.expanded).toBe("16.25rem");
     expect(KUMO_SIDEBAR_STYLING.width.icon).toBe("3rem");
   });
 
@@ -127,7 +125,6 @@ describe("Sidebar", () => {
     expect(SidebarFooter.displayName).toBe("Sidebar.Footer");
     expect(SidebarGroup.displayName).toBe("Sidebar.Group");
     expect(SidebarGroupLabel.displayName).toBe("Sidebar.GroupLabel");
-    expect(SidebarGroupContent.displayName).toBe("Sidebar.GroupContent");
     expect(SidebarMenu.displayName).toBe("Sidebar.Menu");
     expect(SidebarMenuItem.displayName).toBe("Sidebar.MenuItem");
     expect(SidebarMenuButton.displayName).toBe("Sidebar.MenuButton");
@@ -427,123 +424,6 @@ describe("Sidebar.Collapsible", () => {
     const content = screen.getByTestId("cc");
     expect(trigger.getAttribute("aria-controls")).toBe(content.id);
     expect(content.id).toBeTruthy();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Sidebar.Group (collapsible)
-// ---------------------------------------------------------------------------
-
-describe("Sidebar.Group collapsible", () => {
-  beforeEach(() => mockDesktopViewport());
-
-  it("renders group content when collapsible and defaultOpen", () => {
-    renderDesktopSidebar(
-      <Sidebar.Content>
-        <Sidebar.Group collapsible defaultOpen>
-          <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-          <Sidebar.GroupContent>
-            <Sidebar.Menu>
-              <Sidebar.MenuButton>Compute</Sidebar.MenuButton>
-            </Sidebar.Menu>
-          </Sidebar.GroupContent>
-        </Sidebar.Group>
-      </Sidebar.Content>,
-    );
-
-    expect(screen.getByText("Compute")).toBeTruthy();
-  });
-
-  it("group content stays in DOM when defaultOpen is false (grid-rows keeps it mounted)", () => {
-    renderDesktopSidebar(
-      <Sidebar.Content>
-        <Sidebar.Group collapsible defaultOpen={false}>
-          <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-          <Sidebar.GroupContent>
-            <Sidebar.Menu>
-              <Sidebar.MenuButton>Compute</Sidebar.MenuButton>
-            </Sidebar.Menu>
-          </Sidebar.GroupContent>
-        </Sidebar.Group>
-      </Sidebar.Content>,
-    );
-
-    // Content is in the DOM (collapsed visually via grid-rows-[0fr])
-    expect(screen.getByText("Compute")).toBeTruthy();
-  });
-
-  it("group label trigger has aria-expanded=true when open", () => {
-    renderDesktopSidebar(
-      <Sidebar.Content>
-        <Sidebar.Group collapsible defaultOpen>
-          <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-          <Sidebar.GroupContent>
-            <Sidebar.Menu>
-              <Sidebar.MenuButton>Compute</Sidebar.MenuButton>
-            </Sidebar.Menu>
-          </Sidebar.GroupContent>
-        </Sidebar.Group>
-      </Sidebar.Content>,
-    );
-
-    const trigger = screen.getByRole("button", { name: /Build/i });
-    expect(trigger.getAttribute("aria-expanded")).toBe("true");
-  });
-
-  it("group label trigger has aria-expanded=false when collapsed", () => {
-    renderDesktopSidebar(
-      <Sidebar.Content>
-        <Sidebar.Group collapsible defaultOpen={false}>
-          <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-          <Sidebar.GroupContent>
-            <Sidebar.Menu>
-              <Sidebar.MenuButton>Compute</Sidebar.MenuButton>
-            </Sidebar.Menu>
-          </Sidebar.GroupContent>
-        </Sidebar.Group>
-      </Sidebar.Content>,
-    );
-
-    const trigger = screen.getByRole("button", { name: /Build/i });
-    expect(trigger.getAttribute("aria-expanded")).toBe("false");
-  });
-
-  // --- Semantic hiding on collapsed group content ---
-
-  it("collapsed group content has aria-hidden=true when closed", () => {
-    renderDesktopSidebar(
-      <Sidebar.Content>
-        <Sidebar.Group collapsible defaultOpen={false}>
-          <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-          <Sidebar.GroupContent data-testid="gc">
-            <Sidebar.Menu>
-              <Sidebar.MenuButton>Compute</Sidebar.MenuButton>
-            </Sidebar.Menu>
-          </Sidebar.GroupContent>
-        </Sidebar.Group>
-      </Sidebar.Content>,
-    );
-
-    const content = screen.getByTestId("gc");
-    expect(content.getAttribute("aria-hidden")).toBe("true");
-  });
-
-  it("collapsed group content has inert attribute when closed", () => {
-    renderDesktopSidebar(
-      <Sidebar.Content>
-        <Sidebar.Group collapsible defaultOpen={false}>
-          <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-          <Sidebar.GroupContent data-testid="gc">
-            <Sidebar.Menu>
-              <Sidebar.MenuButton>Compute</Sidebar.MenuButton>
-            </Sidebar.Menu>
-          </Sidebar.GroupContent>
-        </Sidebar.Group>
-      </Sidebar.Content>,
-    );
-
-    const content = screen.getByTestId("gc");
-    expect(content.getAttribute("inert")).toBeDefined();
   });
 });
 

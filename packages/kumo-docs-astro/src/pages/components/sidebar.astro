@@ -7,7 +7,6 @@ import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   SidebarBasicDemo,
-  SidebarCollapsibleGroupDemo,
   SidebarToggleDemo,
   SidebarFullDemo,
   SidebarResizableDemo,
@@ -128,23 +127,6 @@ function AppLayout({ children }) {
   </Sidebar>
 </Sidebar.Provider>`}>
           <SidebarBasicDemo client:load />
-        </ComponentExample>
-      </div>
-
-      <div>
-        <Heading level={3}>Collapsible Groups</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
-          Add <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">collapsible</code> to a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Group</code> and wrap the <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Menu</code> in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">GroupContent</code> to enable animated expand/collapse via the group label.
-        </p>
-        <ComponentExample code={`<Sidebar.Group collapsible defaultOpen>
-  <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-  <Sidebar.GroupContent>
-    <Sidebar.Menu>
-      <Sidebar.MenuButton icon={HouseIcon} active>Home</Sidebar.MenuButton>
-    </Sidebar.Menu>
-  </Sidebar.GroupContent>
-</Sidebar.Group>`}>
-          <SidebarCollapsibleGroupDemo client:load />
         </ComponentExample>
       </div>
 

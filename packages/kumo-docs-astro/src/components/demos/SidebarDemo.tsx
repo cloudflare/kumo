@@ -162,71 +162,7 @@ export function SidebarBasicDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 2. Collapsible Groups — group-level collapse via label click
-// ---------------------------------------------------------------------------
-
-/** Sidebar with collapsible groups that animate open/closed via the group label. */
-export function SidebarCollapsibleGroupDemo() {
-  return (
-    <DemoContainer>
-      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
-        <Sidebar>
-          <Sidebar.Content>
-            {/* GroupContent is required for collapsible groups (provides grid-rows animation) */}
-            <Sidebar.Group collapsible defaultOpen>
-              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuButton icon={HouseIcon} active>
-                    Home
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={ChartBarIcon}>
-                    Analytics
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={GlobeIcon}>
-                    Domains
-                  </Sidebar.MenuButton>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-
-            <Sidebar.Group collapsible defaultOpen>
-              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuButton icon={CodeIcon}>
-                    Compute
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={DatabaseIcon}>
-                    Storage
-                  </Sidebar.MenuButton>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-
-            <Sidebar.Group collapsible defaultOpen={false}>
-              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuButton icon={ShieldCheckIcon}>
-                    Security
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={LockIcon}>
-                    Zero Trust
-                  </Sidebar.MenuButton>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-          </Sidebar.Content>
-        </Sidebar>
-        <DemoMain />
-      </Sidebar.Provider>
-    </DemoContainer>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// 3. Toggle — expand/collapse with trigger + tooltips
+// 2. Toggle — expand/collapse with trigger + tooltips
 // ---------------------------------------------------------------------------
 
 function ToggleButton() {
@@ -299,9 +235,7 @@ export function SidebarFullDemo() {
           </Sidebar.Header>
 
           <Sidebar.Content>
-            <div className="px-1 pb-2">
-              <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" />
-            </div>
+            <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" />
 
             <Sidebar.Group>
               <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
