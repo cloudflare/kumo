@@ -13,13 +13,13 @@ export function BadgeVariantsDemo() {
       <Badge variant="inverted">Inverted</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
-      <Badge variant="red-subtle">Red</Badge>
-      <Badge variant="orange-subtle">Orange</Badge>
-      <Badge variant="yellow-subtle">Yellow</Badge>
-      <Badge variant="green-subtle">Green</Badge>
-      <Badge variant="teal-subtle">Teal</Badge>
-      <Badge variant="blue-subtle">Blue</Badge>
-      <Badge variant="neutral-subtle">Neutral</Badge>
+      <Badge variant="red-subtle">Red subtle</Badge>
+      <Badge variant="orange-subtle">Orange subtle</Badge>
+      <Badge variant="yellow-subtle">Yellow subtle</Badge>
+      <Badge variant="green-subtle">Green subtle</Badge>
+      <Badge variant="teal-subtle">Teal subtle</Badge>
+      <Badge variant="blue-subtle">Blue subtle</Badge>
+      <Badge variant="neutral-subtle">Neutral subtle</Badge>
     </div>
   );
 }
@@ -29,7 +29,7 @@ export function BadgeRedDemo() {
 }
 
 export function BadgeRedSubtleDemo() {
-  return <Badge variant="red-subtle">Red</Badge>;
+  return <Badge variant="red-subtle">Red subtle</Badge>;
 }
 
 export function BadgeOrangeDemo() {
@@ -37,7 +37,7 @@ export function BadgeOrangeDemo() {
 }
 
 export function BadgeOrangeSubtleDemo() {
-  return <Badge variant="orange-subtle">Orange</Badge>;
+  return <Badge variant="orange-subtle">Orange subtle</Badge>;
 }
 
 export function BadgeYellowDemo() {
@@ -45,7 +45,7 @@ export function BadgeYellowDemo() {
 }
 
 export function BadgeYellowSubtleDemo() {
-  return <Badge variant="yellow-subtle">Yellow</Badge>;
+  return <Badge variant="yellow-subtle">Yellow subtle</Badge>;
 }
 
 export function BadgeGreenDemo() {
@@ -53,7 +53,7 @@ export function BadgeGreenDemo() {
 }
 
 export function BadgeGreenSubtleDemo() {
-  return <Badge variant="green-subtle">Green</Badge>;
+  return <Badge variant="green-subtle">Green subtle</Badge>;
 }
 
 export function BadgeTealDemo() {
@@ -61,7 +61,7 @@ export function BadgeTealDemo() {
 }
 
 export function BadgeTealSubtleDemo() {
-  return <Badge variant="teal-subtle">Teal</Badge>;
+  return <Badge variant="teal-subtle">Teal subtle</Badge>;
 }
 
 export function BadgeBlueDemo() {
@@ -69,7 +69,7 @@ export function BadgeBlueDemo() {
 }
 
 export function BadgeBlueSubtleDemo() {
-  return <Badge variant="blue-subtle">Blue</Badge>;
+  return <Badge variant="blue-subtle">Blue subtle</Badge>;
 }
 
 export function BadgeNeutralDemo() {
@@ -77,7 +77,7 @@ export function BadgeNeutralDemo() {
 }
 
 export function BadgeNeutralSubtleDemo() {
-  return <Badge variant="neutral-subtle">Neutral</Badge>;
+  return <Badge variant="neutral-subtle">Neutral subtle</Badge>;
 }
 
 export function BadgeInvertedDemo() {
