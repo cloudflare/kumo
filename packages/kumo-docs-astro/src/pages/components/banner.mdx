@@ -16,6 +16,8 @@ import {
   BannerAlertDemo,
   BannerErrorDemo,
   BannerWithIconDemo,
+  BannerWithActionDemo,
+  BannerWithActionsDemo,
   BannerCustomContentDemo,
 } from "~/components/demos/BannerDemo";
 
@@ -88,6 +90,16 @@ export default function Example() {
 <ComponentExample demo="BannerWithIconDemo">
   <BannerWithIconDemo client:visible />
 </ComponentExample>
+
+  <Heading level={3}>With action</Heading>
+  <ComponentExample demo="BannerWithActionDemo">
+    <BannerWithActionDemo client:visible />
+  </ComponentExample>
+
+  <Heading level={3}>With multiple actions</Heading>
+  <ComponentExample demo="BannerWithActionsDemo">
+    <BannerWithActionsDemo client:visible />
+  </ComponentExample>
 
   <Heading level={3}>Custom content</Heading>
   <ComponentExample demo="BannerCustomContentDemo">
