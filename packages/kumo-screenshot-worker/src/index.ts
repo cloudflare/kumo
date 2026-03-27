@@ -1,20 +1,9 @@
-import puppeteer, { ElementHandle } from "@cloudflare/puppeteer";
+import puppeteer from "@cloudflare/puppeteer";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const MAX_PAGES = 50;
 const MAX_ACTION_PAYLOAD_BYTES = 64_000; // 64 KB per css action payload
-
-// Selectors for sections to skip in captureSections mode.
-const SKIP_SECTION_IDS = [
-  "barrel",
-  "granular",
-  "installation",
-  "usage",
-  "api-reference",
-];
-
-const DEFAULT_SECTION_SELECTOR = 'main h3 a[href^="#"]';
 
 const HIDE_SIDEBAR_CSS = `
   aside[data-sidebar-open] { display: none !important; }
@@ -279,68 +268,36 @@ async function handleBatch(
         }
 
         if (pageConfig.captureSections) {
-          const sectionSelector =
-            pageConfig.sectionSelector || DEFAULT_SECTION_SELECTOR;
+          // Find all elements with data-vr-demo attribute
+          const demoElements = await page.$$("[data-vr-demo]");
 
-          // Pass selector as a parameter — never interpolate caller input into eval strings.
-          const sections = await page.evaluate(
-            (sel: string, skipIds: string[]) => {
-              const found: Array<{ id: string; title: string }> = [];
-              const examplesAnchor = document.querySelector(
-                'main h2 a[href="#examples"]',
-              );
-              const examplesParent = examplesAnchor
-                ? examplesAnchor.closest("section, div")
-                : null;
+          if (demoElements.length > 0) {
+            // Use explicit VR demo elements
+            for (const element of demoElements) {
+              const attrs = await element.evaluate((el: Element) => ({
+                sectionId: el.getAttribute("data-vr-section"),
+                sectionTitle: el.getAttribute("data-vr-title"),
+              }));
 
-              document.querySelectorAll(sel).forEach((a) => {
-                const href = a.getAttribute("href");
-                if (!href || !href.startsWith("#")) return;
-                const id = href.replace("#", "");
-                if (skipIds.includes(id)) return;
-
-                const title = a.textContent?.trim() ?? "";
-                const container = a.closest(
-                  'div.mb-12, section.mb-12, div[class*="mb-"]',
-                );
-                if (
-                  examplesParent &&
-                  container &&
-                  !examplesParent.contains(container)
-                )
-                  return;
-                if (container && id) {
-                  found.push({ id, title });
-                }
-              });
-              return found;
-            },
-            sectionSelector,
-            SKIP_SECTION_IDS,
-          );
-
-          for (const section of sections) {
-            // Use evaluateHandle to walk to the nearest mb-12 ancestor from the heading.
-            const containerHandle = await page.evaluateHandle((id: string) => {
-              const anchor = document.querySelector(`#${id}`);
-              return anchor
-                ? anchor.closest('div.mb-12, section.mb-12, div[class*="mb-"]')
-                : null;
-            }, section.id);
-            const container =
-              containerHandle.asElement() as ElementHandle<Element> | null;
-
-            if (container) {
-              await container.scrollIntoView();
-              await new Promise((r) => setTimeout(r, 200));
-              const shot = await container.screenshot({ type: "png" });
-              results.push({
-                url: fullUrl,
-                sectionId: section.id,
-                sectionTitle: section.title,
-                image: Buffer.from(shot).toString("base64"),
-              });
+              if (attrs.sectionId) {
+                await element.scrollIntoView();
+                await new Promise((r) => setTimeout(r, 200));
+                const shot = await element.screenshot({ type: "png" });
+                results.push({
+                  url: fullUrl,
+                  sectionId: attrs.sectionId,
+                  sectionTitle: attrs.sectionTitle || attrs.sectionId,
+                  image: Buffer.from(shot).toString("base64"),
+                });
+              }
             }
+          } else {
+            // Fallback: full page screenshot if no VR demo elements found
+            const shot = await page.screenshot({ type: "png" });
+            results.push({
+              url: fullUrl,
+              image: Buffer.from(shot).toString("base64"),
+            });
           }
         } else if (pageConfig.selector) {
           const element = await page.$(pageConfig.selector);

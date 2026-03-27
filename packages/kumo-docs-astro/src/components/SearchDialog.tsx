@@ -24,7 +24,6 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
-  "Toasty",
 ]);
 
 /**
@@ -34,6 +33,7 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
 const SLUG_OVERRIDES: Record<string, string> = {
   CodeHighlighted: "code-highlighted",
   DropdownMenu: "dropdown",
+  Toasty: "toast",
 };
 
 /**
@@ -168,6 +168,8 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "page-header": "Combines breadcrumbs and tabs for page navigation.",
   "resource-list":
     "A layout for displaying resource lists with title and sidebar.",
+  toast:
+    "Displays brief, non-intrusive notifications that appear temporarily.",
 };
 
 interface ComponentRegistryEntry {

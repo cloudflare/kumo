@@ -43,21 +43,39 @@ if (demo) {
   console.warn(`[ComponentExample] Missing both "code" and "demo" props`);
 }
 
-const vrAttrs = vrSection
+// Auto-derive vrSection from demo prop: "ButtonLoadingDemo" → "button-loading"
+function toKebabCase(str: string): string {
+  return str
+    .replace(/Demo$/, "")
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .toLowerCase();
+}
+
+// Auto-derive vrTitle from demo prop: "ButtonLoadingDemo" → "Button Loading"
+function toTitleCase(str: string): string {
+  return str
+    .replace(/Demo$/, "")
+    .replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+const resolvedVrSection = vrSection ?? (demo ? toKebabCase(demo) : undefined);
+const resolvedVrTitle = vrTitle ?? (demo ? toTitleCase(demo) : undefined);
+
+const vrAttrs = resolvedVrSection
   ? {
       "data-vr-demo": "",
-      "data-vr-section": vrSection,
+      "data-vr-section": resolvedVrSection,
       "data-vr-title":
-        vrTitle ||
-        vrSection
+        resolvedVrTitle ||
+        resolvedVrSection
           .replace(/-/g, " ")
           .replace(/\b\w/g, (c) => c.toUpperCase()),
     }
   : {};
 ---
 
-<div class="not-prose overflow-hidden rounded-lg" {...vrAttrs}>
-  <ComponentPreview>
+<div class="not-prose overflow-hidden rounded-lg">
+  <ComponentPreview {...vrAttrs}>
     <slot />
   </ComponentPreview>
   <div class="component-example-code">
