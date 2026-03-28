@@ -61,7 +61,7 @@ export const KUMO_BADGE_VARIANTS = {
       description: "Neutral badge",
     },
     "neutral-subtle": {
-      classes: "bg-kumo-badge-neutral-subtle text-kumo-badge-neutral-subtle",
+      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
       description: "Subtle neutral badge",
     },
     inverted: {

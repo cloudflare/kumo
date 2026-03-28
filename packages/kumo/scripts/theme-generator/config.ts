@@ -633,16 +633,8 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-badge-neutral-subtle": {
-      newName: "",
-      description: "Subtle neutral badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-neutral-200, oklch(92.2% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
-        },
-      },
-    },
+    // NOTE: kumo-badge-neutral-subtle omitted — same pair as kumo-fill.
+    // Badge uses bg-kumo-fill instead.
 
     // Inverted
     "kumo-badge-inverted": {
