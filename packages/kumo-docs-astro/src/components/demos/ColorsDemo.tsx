@@ -306,13 +306,13 @@ export const TailwindColorTokens: FC = () => {
 
       {/* Component Colors Section */}
       {componentGroups.length > 0 && (
-        <section className="flex flex-col gap-6">
+        <section className="flex flex-col gap-4">
           <h2 className="text-sm font-semibold">
             Component Colors ({componentTokenCount})
           </h2>
           {componentGroups.map((group) => (
             <div key={group.component} className="flex flex-col gap-3">
-              <h3 className="text-xs font-semibold text-kumo-subtle">
+              <h3 className="!m-0 text-xs font-semibold text-kumo-subtle">
                 {group.displayName} ({group.tokens.length})
               </h3>
               <TokenGrid tokens={group.tokens} />
