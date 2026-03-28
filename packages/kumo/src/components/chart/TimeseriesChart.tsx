@@ -185,6 +185,7 @@ export function TimeseriesChart({
         data: completePoints,
         color: s.color,
         name: s.name,
+        emphasis: { focus: "series" },
         ...(areaStyle ? { areaStyle } : {}),
         ...seriesType,
       });
@@ -196,6 +197,7 @@ export function TimeseriesChart({
         type: "line" as const,
         lineStyle: { type: "dashed" as const },
         showSymbol: false,
+        emphasis: { focus: "series" as const },
       };
 
       if (incompleteBeforePoints.length > 0) {

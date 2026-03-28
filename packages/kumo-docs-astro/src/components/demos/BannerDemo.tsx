@@ -1,10 +1,10 @@
-import { Banner, Text } from "@cloudflare/kumo";
-import { Info, WarningCircle, Warning } from "@phosphor-icons/react";
+import { Banner, Button, Text } from "@cloudflare/kumo";
+import { Info, WarningCircle, Warning, X } from "@phosphor-icons/react";
 
 /** Shows all banner variants with structured title and description. */
 export function BannerVariantsDemo() {
   return (
-    <div className="space-y-3">
+    <div className="w-full space-y-3">
       <Banner
         icon={<Info weight="fill" />}
         title="Update available"
@@ -93,6 +93,54 @@ export function BannerCustomContentDemo() {
         <Text DANGEROUS_className="text-inherit">
           This banner supports <strong>custom content</strong> with Text.
         </Text>
+      }
+    />
+  );
+}
+
+/** Banner with action buttons: CTA and dismissable. */
+export function BannerWithActionDemo() {
+  return (
+    <div className="w-full space-y-3">
+      <Banner
+        icon={<Info weight="fill" />}
+        title="Update available"
+        description="A new version is ready to install."
+        action={<Button size="sm">Update now</Button>}
+      />
+      <Banner
+        icon={<Info weight="fill" />}
+        title="Update available"
+        description="A new version is ready to install."
+        action={
+          <Button
+            size="sm"
+            variant="ghost"
+            shape="square"
+            icon={X}
+            aria-label="Dismiss"
+          />
+        }
+      />
+    </div>
+  );
+}
+
+/** Banner with multiple action buttons. */
+export function BannerWithActionsDemo() {
+  return (
+    <Banner
+      icon={<Warning weight="fill" />}
+      variant="alert"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+      action={
+        <>
+          <Button size="sm" variant="secondary">
+            Dismiss
+          </Button>
+          <Button size="sm">Extend session</Button>
+        </>
       }
     />
   );
