@@ -9,67 +9,63 @@ export const KUMO_BADGE_BASE_STYLES =
 export const KUMO_BADGE_VARIANTS = {
   variant: {
     red: {
-      classes: "bg-red-600 text-white dark:bg-red-700",
+      classes: "bg-kumo-badge-red text-white",
       description: "Red badge",
     },
     "red-subtle": {
-      classes: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      classes: "bg-kumo-badge-red-subtle text-kumo-badge-red-subtle",
       description: "Subtle red badge",
     },
     orange: {
-      classes: "bg-orange-600 text-white dark:bg-orange-700",
+      classes: "bg-kumo-badge-orange text-white",
       description: "Orange badge",
     },
     "orange-subtle": {
-      classes:
-        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      classes: "bg-kumo-badge-orange-subtle text-kumo-badge-orange-subtle",
       description: "Subtle orange badge",
     },
     yellow: {
-      classes: "bg-yellow-600 text-white dark:bg-yellow-700",
+      classes: "bg-kumo-badge-yellow text-white",
       description: "Yellow badge",
     },
     "yellow-subtle": {
-      classes:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+      classes: "bg-kumo-badge-yellow-subtle text-kumo-badge-yellow-subtle",
       description: "Subtle yellow badge",
     },
     green: {
-      classes: "bg-emerald-600 text-white dark:bg-emerald-700",
+      classes: "bg-kumo-badge-green text-white",
       description: "Green badge",
     },
     "green-subtle": {
-      classes:
-        "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
+      classes: "bg-kumo-badge-green-subtle text-kumo-badge-green-subtle",
       description: "Subtle green badge",
     },
     teal: {
-      classes: "bg-teal-600 text-white dark:bg-teal-700",
+      classes: "bg-kumo-badge-teal text-white",
       description: "Teal badge",
     },
     "teal-subtle": {
-      classes: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+      classes: "bg-kumo-badge-teal-subtle text-kumo-badge-teal-subtle",
       description: "Subtle teal badge",
     },
     blue: {
-      classes: "bg-blue-600 text-white dark:bg-blue-700",
+      classes: "bg-kumo-badge-blue text-white",
       description: "Blue badge",
     },
     "blue-subtle": {
-      classes: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      classes: "bg-kumo-badge-blue-subtle text-kumo-badge-blue-subtle",
       description: "Subtle blue badge",
     },
     neutral: {
-      classes: "bg-neutral-600 text-white",
+      classes: "bg-kumo-badge-neutral text-white",
       description: "Neutral badge",
     },
     "neutral-subtle": {
-      classes:
-        "bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200",
+      classes: "bg-kumo-badge-neutral-subtle text-kumo-badge-neutral-subtle",
       description: "Subtle neutral badge",
     },
     inverted: {
-      classes: "bg-neutral-950 text-white dark:bg-white dark:text-black",
+      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
       description: "Inverted badge",
     },
     outline: {
@@ -83,22 +79,22 @@ export const KUMO_BADGE_VARIANTS = {
     },
     /** @deprecated Use `"inverted"` instead. */
     primary: {
-      classes: "bg-neutral-950 text-white dark:bg-white dark:text-black",
+      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
       description: "Deprecated. Use inverted instead.",
     },
     /** @deprecated Use `"neutral"` instead. */
     secondary: {
-      classes: "bg-neutral-600 text-white",
+      classes: "bg-kumo-badge-neutral text-white",
       description: "Deprecated. Use neutral instead.",
     },
     /** @deprecated Use `"red"` instead. */
     destructive: {
-      classes: "bg-red-600 text-white dark:bg-red-700",
+      classes: "bg-kumo-badge-red text-white",
       description: "Deprecated. Use red instead.",
     },
     /** @deprecated Use `"green"` instead. */
     success: {
-      classes: "bg-emerald-600 text-white dark:bg-emerald-700",
+      classes: "bg-kumo-badge-green text-white",
       description: "Deprecated. Use green instead.",
     },
   },
