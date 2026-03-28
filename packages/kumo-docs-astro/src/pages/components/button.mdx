@@ -23,6 +23,7 @@ import {
   ButtonIconOnlyDemo,
   ButtonLoadingDemo,
   ButtonDisabledDemo,
+  ButtonTitleDemo,
 } from "~/components/demos/ButtonDemo";
 
 {/* Demo */}
@@ -173,13 +174,29 @@ export default function Example() {
 
 {/* Disabled State */}
 
-  <Heading level={3}>Disabled State</Heading>
+<Heading level={3}>Disabled State</Heading>
+<ComponentExample
+  demo="ButtonDisabledDemo"
+  vrSection="disabled"
+  vrTitle="Disabled State"
+>
+  <ButtonDisabledDemo client:visible />
+</ComponentExample>
+
+{/* Title (Tooltip) */}
+
+  <Heading level={3}>Title</Heading>
+  <p>
+    Use the `title` prop to wrap the button in a tooltip. This is useful for
+    icon-only buttons or whenever additional context helps the user understand
+    the action.
+  </p>
   <ComponentExample
-    demo="ButtonDisabledDemo"
-    vrSection="disabled"
-    vrTitle="Disabled State"
+    demo="ButtonTitleDemo"
+    vrSection="title"
+    vrTitle="Title"
   >
-    <ButtonDisabledDemo client:visible />
+    <ButtonTitleDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

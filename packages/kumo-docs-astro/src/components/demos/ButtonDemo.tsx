@@ -104,3 +104,21 @@ export function ButtonDisabledDemo() {
 export function ButtonUsageDemo() {
   return <Button variant="secondary">Click me</Button>;
 }
+
+/** Demonstrates the title prop which wraps the button in a Tooltip. */
+export function ButtonTitleDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="secondary" title="Create a new Worker">
+        Create Worker
+      </Button>
+      <Button
+        variant="secondary"
+        shape="square"
+        icon={PlusIcon}
+        aria-label="Add item"
+        title="Add item"
+      />
+    </div>
+  );
+}
