@@ -23,7 +23,8 @@ export type SupportedLanguage =
   | "bash"
   | "shell"
   | "diff"
-  | "hcl";
+  | "hcl"
+  | "toml";
 
 /**
  * Shiki engine choice for syntax highlighting.
