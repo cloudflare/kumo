@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
+import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 
@@ -170,6 +171,8 @@ type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: Icon | React.ReactNode;
   /** Shows a loading spinner and disables interaction. */
   loading?: boolean;
+  /** When set, wraps the button in a Tooltip with this content. */
+  title?: React.ReactNode;
 };
 
 type ButtonWithTextProps = ButtonBaseProps & {
@@ -230,12 +233,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "base",
       variant = "secondary",
       icon: IconComponent,
+      title,
       ...props
     },
     ref,
   ) => {
     const { type, ...restProps } = props;
-    return (
+    const button = (
       <button
         ref={ref}
         className={cn(
@@ -254,6 +258,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
+
+    if (title) {
+      return (
+        <Tooltip content={title} asChild>
+          {button}
+        </Tooltip>
+      );
+    }
+
+    return button;
   },
 );
 

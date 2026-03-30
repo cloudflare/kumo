@@ -381,11 +381,11 @@ export function HomeGrid() {
       id: "badge",
       Component: (
         <div className="flex flex-col gap-2">
-          <Badge variant="primary">Primary</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="beta">Beta</Badge>
-          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="blue">Blue</Badge>
+          <Badge variant="green">Green</Badge>
+          <Badge variant="orange">Orange</Badge>
+          <Badge variant="neutral">Neutral</Badge>
+          <Badge variant="red">Red</Badge>
         </div>
       ),
     },
