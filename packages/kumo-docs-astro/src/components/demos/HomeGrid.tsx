@@ -325,7 +325,7 @@ export function HomeGrid() {
       name: "Surface",
       id: "surface",
       Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-base text-sm text-kumo-subtle">
+        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-canvas text-sm text-kumo-subtle">
           <em>To put things over.</em>
         </Surface>
       ),
@@ -629,7 +629,7 @@ export function HomeGrid() {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-surface"
+            className="relative flex aspect-square items-center justify-center bg-kumo-canvas"
             key={c.name}
           >
             {route ? (

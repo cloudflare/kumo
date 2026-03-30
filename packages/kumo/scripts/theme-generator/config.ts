@@ -222,16 +222,25 @@ export const THEME_CONFIG: ThemeConfig = {
    * CSS variable: --color-{token}
    */
   color: {
-    "kumo-surface": {
+    "kumo-canvas": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-25, oklch(99% 0 0))",
-          dark: "var(--color-kumo-neutral-975, oklch(8.5% 0 0))",
+          light: "var(--color-kumo-neutral-25, oklch(98.75% 0 0))",
+          dark: "var(--color-kumo-neutral-1000, oklch(10% 0 0))",
         },
         fedramp: {
           light: "#5b697c",
           dark: "#5b697c",
+        },
+      },
+    }, 
+    "kumo-elevated": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-75, oklch(98% 0 0))",
+          dark: "var(--color-kumo-neutral-975, oklch(12% 0 0))",
         },
       },
     },
@@ -239,8 +248,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-50, oklch(96.5% 0 0))",
-          dark: "var(--color-kumo-neutral-925, oklch(18% 0 0))",
+          light: "var(--color-kumo-neutral-125, oklch(96% 0 0))",
+          dark: "var(--color-kumo-neutral-950, oklch(12% 0 0))",
         },
       },
     },
@@ -249,7 +258,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
-          dark: "var(--color-kumo-neutral-850, oklch(22.4% 0 0))",
+          dark: "var(--color-kumo-neutral-925, oklch(17% 0 0))",
         },
         fedramp: {
           light: "#5b697c",
@@ -261,7 +270,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-kumo-neutral-75, oklch(96.7% 0 0))",
+          light: "var(--color-neutral-100, oklch(97% 0 0))",
           dark: "var(--color-kumo-neutral-800, oklch(26.9% 0 0))",
         },
       },
@@ -271,20 +280,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-975, oklch(8.5% 0 0))",
-          dark: "var(--color-kumo-neutral-25, oklch(99% 0 0))",
-        },
-      },
-    },
-    /**
-     * TO DEPRECIATE
-     * In an effort to reduce the amount of greyscale tokens used in Kumo & Stratus, these tokens will be replaced and depreciated
-     */
-    "kumo-elevated": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-kumo-neutral-25, oklch(98.5% 0 0))",
-          dark: "var(--color-neutral-950, oklch(14.5% 0 0))",
+          dark: "var(--color-kumo-neutral-25, oklch(98.5% 0 0))",
         },
       },
     },
@@ -328,8 +324,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-200, oklch(92.2% 0 0))",
-          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
+          light: "var(--color-kumo-neutral-125, oklch(96.5% 0 0))",
+          dark: "var(--color-neutral-800, oklch(37.1% 0 0))",
         },
       },
     },
