@@ -4,7 +4,7 @@ import { ArrowRightIcon } from "@phosphor-icons/react";
 export function LayerCardDemo() {
   return (
     <LayerCard>
-      <LayerCard.Secondary className="flex items-center justify-between">
+      <LayerCard.Secondary className="justify-between pr-2.5">
         <div>Next Steps</div>
         <Button
           variant="ghost"
