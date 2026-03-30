@@ -168,8 +168,7 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "page-header": "Combines breadcrumbs and tabs for page navigation.",
   "resource-list":
     "A layout for displaying resource lists with title and sidebar.",
-  toast:
-    "Displays brief, non-intrusive notifications that appear temporarily.",
+  toast: "Displays brief, non-intrusive notifications that appear temporarily.",
 };
 
 interface ComponentRegistryEntry {
@@ -308,11 +307,11 @@ function getTypeBadge(
 
   switch (type) {
     case "block":
-      return <Badge variant="secondary">Block</Badge>;
+      return <Badge variant="neutral">Block</Badge>;
     case "layout":
-      return <Badge variant="secondary">Layout</Badge>;
+      return <Badge variant="neutral">Layout</Badge>;
     case "page":
-      return <Badge variant="secondary">Guide</Badge>;
+      return <Badge variant="neutral">Guide</Badge>;
     default:
       return null;
   }
