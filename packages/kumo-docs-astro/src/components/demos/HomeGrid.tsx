@@ -325,7 +325,7 @@ export function HomeGrid() {
       name: "Surface",
       id: "surface",
       Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-base text-sm text-kumo-subtle">
+        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-canvas text-sm text-kumo-subtle">
           <em>To put things over.</em>
         </Surface>
       ),
@@ -381,11 +381,11 @@ export function HomeGrid() {
       id: "badge",
       Component: (
         <div className="flex flex-col gap-2">
-          <Badge variant="primary">Primary</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="beta">Beta</Badge>
-          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="blue">Blue</Badge>
+          <Badge variant="green">Green</Badge>
+          <Badge variant="orange">Orange</Badge>
+          <Badge variant="neutral">Neutral</Badge>
+          <Badge variant="red">Red</Badge>
         </div>
       ),
     },
@@ -629,7 +629,7 @@ export function HomeGrid() {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-surface"
+            className="relative flex aspect-square items-center justify-center bg-kumo-canvas"
             key={c.name}
           >
             {route ? (

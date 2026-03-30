@@ -9,14 +9,15 @@
   --color-blue-400: oklch(70.7% 0.165 254.624);
   --color-blue-800: oklch(42.4% 0.199 265.638);
 
-  --color-kumo-neutral-25: oklch(99% 0 0);
-  --color-kumo-neutral-50: oklch(96.5% 0 0);
-  --color-kumo-neutral-75: oklch(95.7% 0 0);
-  --color-kumo-neutral-150: oklch(93.5% 0 0);
-  --color-kumo-neutral-450: oklch(86% 0 0);
-  --color-kumo-neutral-850: oklch(22.4% 0 0);
-  --color-kumo-neutral-925: oklch(18% 0 0);
-  --color-kumo-neutral-975: oklch(8.5% 0 0);
+  --color-kumo-neutral-50: oklch(98.75% 0 0);
+  --color-kumo-neutral-75: oklch(98% 0 0);
+  --color-kumo-neutral-125: oklch(96.5% 0 0);
+  --color-kumo-neutral-450: oklch(89% 0 0);
+  --color-kumo-neutral-850: oklch(24% 0 0);
+  --color-kumo-neutral-925: oklch(17% 0 0);
+  --color-kumo-neutral-950: oklch(15% 0 0);
+  --color-kumo-neutral-975: oklch(12% 0 0);
+  --color-kumo-neutral-1000: oklch(10% 0 0);
 }
 
 /* Typography is now generated in theme-kumo.css via codegen:themes */

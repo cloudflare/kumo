@@ -151,13 +151,13 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 z-0 h-9 -translate-y-1/2 rounded-lg bg-kumo-surface" />
+        <div className="absolute inset-x-0 top-1/2 z-0 h-9 -translate-y-1/2 rounded-lg bg-kumo-recessed" />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
         className={cn(
           "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5",
+          isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-line/70",
           isUnderline && "h-7 gap-4 border-b border-kumo-ring pb-2",
           listClassName,
         )}

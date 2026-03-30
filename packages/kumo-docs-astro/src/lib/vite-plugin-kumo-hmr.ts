@@ -37,6 +37,17 @@ const aliases: Record<string, string> = {
     kumoRoot,
     "ai/component-registry.json",
   ),
+
+  // Theme generator — resolve to source TS so the docs color page
+  // always reflects the latest config without a kumo build step.
+  "@cloudflare/kumo/scripts/theme-generator/config": resolve(
+    kumoRoot,
+    "scripts/theme-generator/config.ts",
+  ),
+  "@cloudflare/kumo/scripts/theme-generator/types": resolve(
+    kumoRoot,
+    "scripts/theme-generator/types.ts",
+  ),
 };
 
 /**

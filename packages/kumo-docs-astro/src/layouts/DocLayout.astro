@@ -4,6 +4,7 @@ import { StickyDocHeader } from "../components/docs/StickyDocHeader";
 import { CopyPageButton } from "../components/docs/CopyPageButton";
 import { BaseUIIcon } from "../components/docs/icons/BaseUIIcon";
 import { GithubLogoIcon } from "@phosphor-icons/react";
+import { TableOfContents } from "../components/docs/TableOfContents";
 
 interface Props {
   title: string;
@@ -11,9 +12,20 @@ interface Props {
   baseUIComponent?: string;
   /** Path to the source file in the kumo package (e.g., "components/button") - will link to GitHub */
   sourceFile?: string;
+  headings?: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
 }
 
-const { title, description, baseUIComponent, sourceFile } = Astro.props;
+const {
+  title,
+  description,
+  baseUIComponent,
+  sourceFile,
+  headings = [],
+} = Astro.props;
 
 const baseUIUrl = baseUIComponent
   ? `https://base-ui.com/react/components/${baseUIComponent}`
@@ -46,7 +58,7 @@ const githubSourceUrl = sourceFile
     <!-- Page Header -->
     <div id="page-header" class="border-b border-kumo-line md:pr-12">
       <div class="mx-auto md:border-r md:border-kumo-line">
-        <div class="mx-auto max-w-5xl px-8 py-12">
+        <div class="mx-auto max-w-7xl p-12">
           <!-- Mobile: Copy page button above title -->
           <div class="mb-3 md:hidden">
             <CopyPageButton align="center" client:idle />
@@ -96,9 +108,16 @@ const githubSourceUrl = sourceFile
     <!-- Content -->
     <main class="flex grow flex-col md:pr-12">
       <div class="mx-auto w-full grow md:border-r md:border-kumo-line">
-        <div class="mx-auto max-w-5xl px-8 py-12">
-          <div class="kumo-prose prose max-w-none">
-            <slot />
+        <div class="mx-auto max-w-7xl p-12 pr-10">
+          <div class="grid grid-cols-1 gap-16 lg:grid-cols-[3fr_1fr]">
+            <div class="kumo-prose prose max-w-none">
+              <slot />
+            </div>
+            <aside class="hidden lg:block">
+              <div class="sticky top-24">
+                <TableOfContents headings={headings.length > 0 ? headings : undefined} client:load />
+              </div>
+            </aside>
           </div>
         </div>
       </div>
