@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  type KeyboardEvent,
   type ReactNode,
 } from "react";
 import { InputGroup } from "../input";
@@ -174,12 +175,19 @@ PaginationPageSize.displayName = "Pagination.PageSize";
 // ============================================================================
 
 export interface PaginationControlsProps extends KumoPaginationVariantsProps {
+  /**
+   * How the page number selector is rendered in "full" controls mode.
+   * - `"input"` (default): A text input where users type a page number.
+   * - `"dropdown"`: A dropdown select with all page numbers as options.
+   */
+  pageSelector?: "input" | "dropdown";
   /** Additional CSS classes */
   className?: string;
 }
 
 function PaginationControls({
   controls = KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
+  pageSelector = "input",
   className,
 }: PaginationControlsProps) {
   const { page, maxPage, setPage, editingPage, setEditingPage } =
@@ -217,28 +225,53 @@ function PaginationControls({
           >
             <CaretLeftIcon size={16} />
           </InputGroup.Button>
-          {controls === "full" && (
-            <InputGroup.Input
-              style={{ width: 50 }}
-              className="text-center"
-              aria-label="Page number"
-              value={editingPage}
-              onValueChange={(value: string) => {
-                setEditingPage(Number(value));
-              }}
-              onBlur={() => {
-                let number = Math.max(editingPage, 1);
-                number = Math.min(number, maxPage);
-                setPage(number);
-                setEditingPage(number);
-              }}
-              // Prevent password managers from auto-filling
-              autoComplete="off"
-              data-1p-ignore
-              data-lpignore="true"
-              data-form-type="other"
-            />
-          )}
+          {controls === "full" &&
+            (pageSelector === "dropdown" ? (
+              <Select
+                aria-label="Page number"
+                value={page}
+                onValueChange={(value) => {
+                  const num = value as number;
+                  setPage(num);
+                  setEditingPage(num);
+                }}
+              >
+                {Array.from({ length: maxPage }, (_, i) => i + 1).map((p) => (
+                  <Select.Option key={p} value={p}>
+                    {p}
+                  </Select.Option>
+                ))}
+              </Select>
+            ) : (
+              <InputGroup.Input
+                style={{ width: 50 }}
+                className="text-center"
+                aria-label="Page number"
+                value={editingPage}
+                onValueChange={(value: string) => {
+                  setEditingPage(Number(value));
+                }}
+                onBlur={() => {
+                  let number = Math.max(editingPage, 1);
+                  number = Math.min(number, maxPage);
+                  setPage(number);
+                  setEditingPage(number);
+                }}
+                onKeyDown={(e: KeyboardEvent) => {
+                  if (e.key === "Enter") {
+                    let clamped = Math.max(editingPage, 1);
+                    clamped = Math.min(clamped, maxPage);
+                    setPage(clamped);
+                    setEditingPage(clamped);
+                  }
+                }}
+                // Prevent password managers from auto-filling
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
+              />
+            ))}
           <InputGroup.Button
             variant="secondary"
             aria-label="Next page"
@@ -353,8 +386,7 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  * ```
  */
 export interface PaginationLegacyProps
-  extends PaginationBaseProps,
-    KumoPaginationVariantsProps {
+  extends PaginationBaseProps, KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {
