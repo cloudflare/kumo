@@ -229,6 +229,7 @@ function PaginationControls({
             (pageSelector === "dropdown" ? (
               <Select
                 aria-label="Page number"
+                className="rounded-none"
                 value={page}
                 onValueChange={(value) => {
                   const num = value as number;
@@ -386,7 +387,8 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  * ```
  */
 export interface PaginationLegacyProps
-  extends PaginationBaseProps, KumoPaginationVariantsProps {
+  extends PaginationBaseProps,
+    KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {
