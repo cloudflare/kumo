@@ -1,6 +1,11 @@
 packages:
   - packages/*
 
+# Security: reject packages published less than 3 days ago to reduce
+# the risk of installing compromised/malicious releases.
+# See https://pnpm.io/settings#minimumreleaseage
+minimumReleaseAge: 4320
+
 catalog:
   "@cloudflare/vite-plugin": ^1.15.3
   "@cloudflare/workers-types": ^4.20240909.0
