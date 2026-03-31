@@ -16,6 +16,7 @@ export const SkeletonLine = ({
   maxDuration = 1.7,
   minDelay = 0,
   maxDelay = 0.5,
+  blockHeight,
   className,
 }: {
   minWidth?: number;
@@ -24,6 +25,7 @@ export const SkeletonLine = ({
   maxDuration?: number;
   minDelay?: number;
   maxDelay?: number;
+  blockHeight?: string | number;
   className?: string;
 }) => {
   const { width, duration, delay } = useMemo(() => {
@@ -40,7 +42,19 @@ export const SkeletonLine = ({
     "--shimmer-delay": `${delay}s`,
   };
 
-  return (
+  const line = (
     <div className={cn("skeleton-line", className)} style={lineStyle}></div>
   );
+
+  if (blockHeight !== undefined) {
+    const height =
+      typeof blockHeight === "number" ? `${blockHeight}px` : blockHeight;
+    return (
+      <div className="flex items-center" style={{ height }}>
+        {line}
+      </div>
+    );
+  }
+
+  return line;
 };
