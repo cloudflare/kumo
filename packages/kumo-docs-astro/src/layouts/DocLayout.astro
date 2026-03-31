@@ -108,12 +108,20 @@ const githubSourceUrl = sourceFile
     <!-- Content -->
     <main class="flex grow flex-col md:pr-12">
       <div class="mx-auto w-full grow md:border-r md:border-kumo-line">
+        <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
+        <div class="xl:hidden border-b border-kumo-line">
+          <div class="mx-auto max-w-7xl px-4 py-3">
+            <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
+          </div>
+        </div>
+
         <div class="mx-auto max-w-7xl p-12 pr-10">
-          <div class="grid grid-cols-1 gap-16 lg:grid-cols-[3fr_1fr]">
-            <div class="kumo-prose prose max-w-none">
+          <div class="grid grid-cols-1 gap-16 xl:grid-cols-[3fr_1fr]">
+            <div class="kumo-prose prose max-w-none min-w-0">
               <slot />
             </div>
-            <aside class="hidden lg:block">
+            <!-- Sidebar TOC: only at xl+ -->
+            <aside class="hidden xl:block min-w-0">
               <div class="sticky top-24">
                 <TableOfContents headings={headings.length > 0 ? headings : undefined} client:load />
               </div>
