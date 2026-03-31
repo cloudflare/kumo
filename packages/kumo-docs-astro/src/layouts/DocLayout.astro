@@ -109,7 +109,7 @@ const githubSourceUrl = sourceFile
     <main class="flex grow flex-col md:pr-12">
       <div class="mx-auto w-full grow md:border-r md:border-kumo-line">
         <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
-        <div class="xl:hidden border-b border-kumo-line">
+        <div class="xl:hidden sticky top-24 md:top-12 z-1 border-b border-kumo-line bg-kumo-base">
           <div class="mx-auto max-w-7xl px-4 py-3">
             <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
           </div>
