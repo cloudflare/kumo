@@ -7,6 +7,10 @@ import type React from "react";
 import { cn } from "../../utils/cn";
 import { Button, ButtonProps } from "../../components/button";
 import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
+import {
   CheckCircleIcon,
   InfoIcon,
   WarningIcon,
@@ -147,6 +151,12 @@ export function toastVariants({
 export interface ToastyProps extends KumoToastVariantsProps {
   /** Application content. Toasts render via a portal above this. */
   children: React.ReactNode;
+  /**
+   * Container element for the portal. Use this to render toasts inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 }
 
 type KumoToastOptionsBase = {
@@ -276,11 +286,14 @@ export const createKumoToastManager = () => {
  * </Toasty>
  * ```
  */
-export function Toasty({ children }: ToastyProps) {
+export function Toasty({ children, container: containerProp }: ToastyProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   return (
     <Toast.Provider>
       {children}
-      <Toast.Portal>
+      <Toast.Portal container={container}>
         <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
           <ToastList />
         </Toast.Viewport>
@@ -373,4 +386,3 @@ function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
     <Icon data-toast-icon className="mt-0.5 h-4 w-4 shrink-0" weight="fill" />
   );
 }
-
