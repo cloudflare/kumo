@@ -268,7 +268,6 @@ export {
 } from "./utils/link-provider";
 export {
   KumoPortalProvider,
-  usePortalContainer,
   type PortalContainer,
 } from "./utils/portal-provider";
 

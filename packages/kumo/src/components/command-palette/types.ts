@@ -1,10 +1,8 @@
-import type { ReactNode, RefObject } from "react";
+import type { ReactNode } from "react";
 import type { PortalContainer } from "../../utils/portal-provider";
 
 /** A single highlight range within a string [startIndex, endIndex] (inclusive) */
 export type HighlightRange = [number, number];
-
-export type { PortalContainer };
 
 /**
  * Props for the CommandPalette.Root component - main dialog wrapper with Autocomplete

@@ -9,7 +9,6 @@ All overlay components (Dialog, DropdownMenu, Combobox, Select, Tooltip, Popover
 **New exports:**
 
 - `KumoPortalProvider` - Context provider to set default portal container for all overlays
-- `usePortalContainer` - Hook to access portal container context (internal use)
 - `PortalContainer` - Type for portal container (HTMLElement, ShadowRoot, or ref)
 
 **Component updates:**

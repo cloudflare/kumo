@@ -4,8 +4,4 @@ export {
   useLinkComponent,
   type LinkComponentProps,
 } from "./link-provider";
-export {
-  KumoPortalProvider,
-  usePortalContainer,
-  type PortalContainer,
-} from "./portal-provider";
+export { KumoPortalProvider, type PortalContainer } from "./portal-provider";
