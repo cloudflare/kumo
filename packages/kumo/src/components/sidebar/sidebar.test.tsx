@@ -23,13 +23,11 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarSeparator,
-  SidebarInput,
   SidebarTrigger,
   SidebarRail,
   SidebarMenuChevron,
@@ -74,13 +72,11 @@ describe("Sidebar", () => {
     expect(Sidebar.Menu).toBe(SidebarMenu);
     expect(Sidebar.MenuItem).toBe(SidebarMenuItem);
     expect(Sidebar.MenuButton).toBe(SidebarMenuButton);
-    expect(Sidebar.MenuAction).toBe(SidebarMenuAction);
     expect(Sidebar.MenuBadge).toBe(SidebarMenuBadge);
     expect(Sidebar.MenuSub).toBe(SidebarMenuSub);
     expect(Sidebar.MenuSubItem).toBe(SidebarMenuSubItem);
     expect(Sidebar.MenuSubButton).toBe(SidebarMenuSubButton);
     expect(Sidebar.Separator).toBe(SidebarSeparator);
-    expect(Sidebar.Input).toBe(SidebarInput);
     expect(Sidebar.Trigger).toBe(SidebarTrigger);
     expect(Sidebar.Rail).toBe(SidebarRail);
     expect(Sidebar.MenuChevron).toBe(SidebarMenuChevron);
@@ -116,7 +112,7 @@ describe("Sidebar", () => {
   it("should export styling metadata", () => {
     expect(KUMO_SIDEBAR_STYLING).toBeDefined();
     expect(KUMO_SIDEBAR_STYLING.width.expanded).toBe("16.25rem");
-    expect(KUMO_SIDEBAR_STYLING.width.icon).toBe("3rem");
+    expect(KUMO_SIDEBAR_STYLING.width.icon).toBe("57px");
   });
 
   it("should set displayName on all forwardRef components", () => {
@@ -128,13 +124,11 @@ describe("Sidebar", () => {
     expect(SidebarMenu.displayName).toBe("Sidebar.Menu");
     expect(SidebarMenuItem.displayName).toBe("Sidebar.MenuItem");
     expect(SidebarMenuButton.displayName).toBe("Sidebar.MenuButton");
-    expect(SidebarMenuAction.displayName).toBe("Sidebar.MenuAction");
     expect(SidebarMenuBadge.displayName).toBe("Sidebar.MenuBadge");
     expect(SidebarMenuSub.displayName).toBe("Sidebar.MenuSub");
     expect(SidebarMenuSubItem.displayName).toBe("Sidebar.MenuSubItem");
     expect(SidebarMenuSubButton.displayName).toBe("Sidebar.MenuSubButton");
     expect(SidebarSeparator.displayName).toBe("Sidebar.Separator");
-    expect(SidebarInput.displayName).toBe("Sidebar.Input");
     expect(SidebarTrigger.displayName).toBe("Sidebar.Trigger");
     expect(SidebarRail.displayName).toBe("Sidebar.Rail");
   });
@@ -424,6 +418,154 @@ describe("Sidebar.Collapsible", () => {
     const content = screen.getByTestId("cc");
     expect(trigger.getAttribute("aria-controls")).toBe(content.id);
     expect(content.id).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sidebar.Collapsible keyboard expand/collapse
+// ---------------------------------------------------------------------------
+
+describe("Sidebar.Collapsible keyboard expand/collapse", () => {
+  beforeEach(() => mockDesktopViewport());
+
+  const CollapsibleFixture = ({ defaultOpen = false }: { defaultOpen?: boolean }) => (
+    <Sidebar.Content>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          <Sidebar.Collapsible defaultOpen={defaultOpen} data-testid="collapsible">
+            <Sidebar.CollapsibleTrigger
+              render={<Sidebar.MenuButton>Compute</Sidebar.MenuButton>}
+            />
+            <Sidebar.CollapsibleContent data-testid="cc">
+              <Sidebar.MenuSub>
+                <Sidebar.MenuSubButton>Workers</Sidebar.MenuSubButton>
+              </Sidebar.MenuSub>
+            </Sidebar.CollapsibleContent>
+          </Sidebar.Collapsible>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Content>
+  );
+
+  it("expands on keyboard focus (focus-visible)", () => {
+    renderDesktopSidebar(<CollapsibleFixture />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+
+    // Simulate keyboard focus: mock matches(':focus-visible') → true
+    vi.spyOn(trigger, "matches").mockImplementation(
+      (selector: string) => selector === ":focus-visible",
+    );
+
+    // Focus the trigger inside the collapsible — bubbles to collapsible's onFocus
+    fireEvent.focus(trigger);
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("does not expand on mouse focus (non focus-visible)", () => {
+    renderDesktopSidebar(<CollapsibleFixture />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+
+    // Mouse focus: matches(':focus-visible') → false
+    vi.spyOn(trigger, "matches").mockReturnValue(false);
+    fireEvent.focus(trigger);
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("collapses on blur when keyboard-expanded and focus leaves", () => {
+    renderDesktopSidebar(<CollapsibleFixture />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    const collapsible = screen.getByTestId("collapsible");
+
+    // Keyboard-expand it first
+    vi.spyOn(trigger, "matches").mockImplementation(
+      (selector: string) => selector === ":focus-visible",
+    );
+    fireEvent.focus(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+
+    // Blur with relatedTarget outside the collapsible
+    fireEvent.blur(collapsible, { relatedTarget: document.body });
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("does not collapse on blur when focus moves to a child", () => {
+    renderDesktopSidebar(<CollapsibleFixture />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    const collapsible = screen.getByTestId("collapsible");
+
+    // Keyboard-expand it first
+    vi.spyOn(trigger, "matches").mockImplementation(
+      (selector: string) => selector === ":focus-visible",
+    );
+    fireEvent.focus(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+
+    // Blur with relatedTarget inside the collapsible (focus moving to child)
+    const subButton = screen.getByText("Workers");
+    fireEvent.blur(collapsible, { relatedTarget: subButton });
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("does not auto-collapse after manual click toggle", () => {
+    renderDesktopSidebar(<CollapsibleFixture />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    const collapsible = screen.getByTestId("collapsible");
+
+    // Click to open (manual toggle)
+    fireEvent.click(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+
+    // Blur — should NOT collapse because it was click-expanded
+    fireEvent.blur(collapsible, { relatedTarget: document.body });
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("does not auto-collapse when a child has data-active", () => {
+    renderDesktopSidebar(
+      <Sidebar.Content>
+        <Sidebar.Menu>
+          <Sidebar.MenuItem>
+            <Sidebar.Collapsible data-testid="collapsible">
+              <Sidebar.CollapsibleTrigger
+                render={<Sidebar.MenuButton>Compute</Sidebar.MenuButton>}
+              />
+              <Sidebar.CollapsibleContent>
+                <Sidebar.MenuSub>
+                  <Sidebar.MenuSubButton active>Workers</Sidebar.MenuSubButton>
+                </Sidebar.MenuSub>
+              </Sidebar.CollapsibleContent>
+            </Sidebar.Collapsible>
+          </Sidebar.MenuItem>
+        </Sidebar.Menu>
+      </Sidebar.Content>,
+    );
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    const collapsible = screen.getByTestId("collapsible");
+
+    // Keyboard-expand
+    vi.spyOn(trigger, "matches").mockImplementation(
+      (selector: string) => selector === ":focus-visible",
+    );
+    fireEvent.focus(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+
+    // Blur — should NOT collapse because a child has data-active
+    fireEvent.blur(collapsible, { relatedTarget: document.body });
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
   });
 });
 
