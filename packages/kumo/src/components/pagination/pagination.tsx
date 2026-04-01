@@ -229,7 +229,7 @@ function PaginationControls({
             (pageSelector === "dropdown" ? (
               <Select
                 aria-label="Page number"
-                className="rounded-none"
+                className="rounded-none ring-kumo-line"
                 value={page}
                 onValueChange={(value) => {
                   const num = value as number;
