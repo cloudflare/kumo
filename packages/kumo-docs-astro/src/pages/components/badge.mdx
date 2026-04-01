@@ -12,10 +12,21 @@ import PropsTable from "~/components/docs/PropsTable.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   BadgeVariantsDemo,
-  BadgePrimaryDemo,
-  BadgeSecondaryDemo,
-  BadgeDestructiveDemo,
-  BadgeSuccessDemo,
+  BadgeRedDemo,
+  BadgeRedSubtleDemo,
+  BadgeOrangeDemo,
+  BadgeOrangeSubtleDemo,
+  BadgeYellowDemo,
+  BadgeYellowSubtleDemo,
+  BadgeGreenDemo,
+  BadgeGreenSubtleDemo,
+  BadgeTealDemo,
+  BadgeTealSubtleDemo,
+  BadgeBlueDemo,
+  BadgeBlueSubtleDemo,
+  BadgeNeutralDemo,
+  BadgeNeutralSubtleDemo,
+  BadgeInvertedDemo,
   BadgeOutlineDemo,
   BadgeBetaDemo,
   BadgeInSentenceDemo,
@@ -51,7 +62,7 @@ import {
 import { Badge } from "@cloudflare/kumo";
 
 export default function Example() {
-  return <Badge variant="primary">New</Badge>;
+  return <Badge variant="neutral">New</Badge>;
 }
 ```
 
@@ -64,24 +75,44 @@ export default function Example() {
 
 <Heading level={3}>Variants</Heading>
 
-<h4 class="mb-3 text-base font-medium">Primary</h4>
-<ComponentExample demo="BadgePrimaryDemo">
-  <BadgePrimaryDemo client:visible />
+<h4 class="mb-3 text-base font-medium">Red</h4>
+<ComponentExample demo="BadgeRedDemo">
+  <BadgeRedDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Secondary</h4>
-<ComponentExample demo="BadgeSecondaryDemo">
-  <BadgeSecondaryDemo client:visible />
+<h4 class="mb-3 text-base font-medium">Orange</h4>
+<ComponentExample demo="BadgeOrangeDemo">
+  <BadgeOrangeDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Destructive</h4>
-<ComponentExample demo="BadgeDestructiveDemo">
-  <BadgeDestructiveDemo client:visible />
+<h4 class="mb-3 text-base font-medium">Yellow</h4>
+<ComponentExample demo="BadgeYellowDemo">
+  <BadgeYellowDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Success</h4>
-<ComponentExample demo="BadgeSuccessDemo">
-  <BadgeSuccessDemo client:visible />
+<h4 class="mb-3 text-base font-medium">Green</h4>
+<ComponentExample demo="BadgeGreenDemo">
+  <BadgeGreenDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Teal</h4>
+<ComponentExample demo="BadgeTealDemo">
+  <BadgeTealDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Blue</h4>
+<ComponentExample demo="BadgeBlueDemo">
+  <BadgeBlueDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Neutral</h4>
+<ComponentExample demo="BadgeNeutralDemo">
+  <BadgeNeutralDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Inverted</h4>
+<ComponentExample demo="BadgeInvertedDemo">
+  <BadgeInvertedDemo client:visible />
 </ComponentExample>
 
 <h4 class="mb-3 text-base font-medium">Outline</h4>
@@ -92,6 +123,43 @@ export default function Example() {
 <h4 class="mb-3 text-base font-medium">Beta</h4>
 <ComponentExample demo="BadgeBetaDemo">
   <BadgeBetaDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Subtle variants</Heading>
+
+<h4 class="mb-3 text-base font-medium">Red subtle</h4>
+<ComponentExample demo="BadgeRedSubtleDemo">
+  <BadgeRedSubtleDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Orange subtle</h4>
+<ComponentExample demo="BadgeOrangeSubtleDemo">
+  <BadgeOrangeSubtleDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Yellow subtle</h4>
+<ComponentExample demo="BadgeYellowSubtleDemo">
+  <BadgeYellowSubtleDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Green subtle</h4>
+<ComponentExample demo="BadgeGreenSubtleDemo">
+  <BadgeGreenSubtleDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Teal subtle</h4>
+<ComponentExample demo="BadgeTealSubtleDemo">
+  <BadgeTealSubtleDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Blue subtle</h4>
+<ComponentExample demo="BadgeBlueSubtleDemo">
+  <BadgeBlueSubtleDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Neutral subtle</h4>
+<ComponentExample demo="BadgeNeutralSubtleDemo">
+  <BadgeNeutralSubtleDemo client:visible />
 </ComponentExample>
 
   <Heading level={3}>In a sentence</Heading>

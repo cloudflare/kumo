@@ -14,6 +14,10 @@ import {
 } from "../input/input";
 import { cn } from "../../utils/cn";
 import { Field, type FieldErrorMatch } from "../field/field";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 
 /** Combobox variant definitions. */
 export const KUMO_COMBOBOX_VARIANTS = {
@@ -190,15 +194,25 @@ function Content({
   sideOffset = 4,
   alignOffset,
   side,
+  container: containerProp,
 }: PropsWithChildren<{
   className?: string;
   align?: ComboboxBase.Positioner.Props["align"];
   alignOffset?: ComboboxBase.Positioner.Props["alignOffset"];
   side?: ComboboxBase.Positioner.Props["side"];
   sideOffset?: ComboboxBase.Positioner.Props["sideOffset"];
+  /**
+   * Container element for the portal. Use this to render the combobox inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 }>) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   return (
-    <ComboboxBase.Portal>
+    <ComboboxBase.Portal container={container}>
       <ComboboxBase.Positioner
         className=""
         align={align}

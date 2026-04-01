@@ -11,6 +11,8 @@ import Heading from "~/components/docs/Heading.astro";
 import {
   SkeletonLineDemo,
   SkeletonLineWidthDemo,
+  SkeletonLineHeightDemo,
+  SkeletonLineBlockHeightDemo,
   SkeletonLineCardDemo,
 } from "~/components/demos/SkeletonLineDemo";
 
@@ -42,6 +44,34 @@ import { SkeletonLine } from "@cloudflare/kumo";
   </p>
   <ComponentExample demo="SkeletonLineWidthDemo">
     <SkeletonLineWidthDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Custom Height */}
+
+<ComponentSection>
+  <Heading level={2}>Custom Height</Heading>
+  <p class="text-kumo-strong mb-4">
+    Override the default height using Tailwind utility classes via{" "}
+    <code>className</code>. The default height is <code>0.5rem</code>.
+  </p>
+  <ComponentExample demo="SkeletonLineHeightDemo">
+    <SkeletonLineHeightDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Block Height */}
+
+<ComponentSection>
+  <Heading level={2}>Block Height</Heading>
+  <p class="text-kumo-strong mb-4">
+    Use <code>blockHeight</code> to set the height of a container that
+    vertically centers the skeleton line. Useful when replacing text of a known
+    line height. Accepts a number (treated as <code>px</code>) or any CSS string
+    value.
+  </p>
+  <ComponentExample demo="SkeletonLineBlockHeightDemo">
+    <SkeletonLineBlockHeightDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
@@ -100,6 +130,11 @@ import { SkeletonLine } from "@cloudflare/kumo";
           <td class="px-4 py-3 font-mono text-xs">maxDelay</td>
           <td class="px-4 py-3 font-mono text-xs">number</td>
           <td class="px-4 py-3 font-mono text-xs">0.5</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">blockHeight</td>
+          <td class="px-4 py-3 font-mono text-xs">string | number</td>
+          <td class="px-4 py-3 font-mono text-xs">-</td>
         </tr>
         <tr class="border-b border-kumo-line">
           <td class="px-4 py-3 font-mono text-xs">className</td>

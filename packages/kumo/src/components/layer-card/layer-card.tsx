@@ -55,7 +55,7 @@ function LayerCardSecondary({ children, className }: LayerCardProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 p-4 text-base font-medium text-kumo-strong -my-2 bg-kumo-recessed",
+        "flex items-center gap-2 p-4 text-base font-medium text-kumo-strong -my-2 bg-kumo-elevated",
         className,
       )}
     >

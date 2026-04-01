@@ -47,6 +47,7 @@ const BUNDLED_LANGS: Record<
   shell: () => import("@shikijs/langs/shellscript"),
   diff: () => import("@shikijs/langs/diff"),
   hcl: () => import("@shikijs/langs/hcl"),
+  toml: () => import("@shikijs/langs/toml"),
 };
 
 export interface HighlightCodeOptions {

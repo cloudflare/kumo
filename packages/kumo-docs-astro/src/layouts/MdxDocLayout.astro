@@ -18,9 +18,14 @@ interface Props {
     sourceFile?: string;
     baseUIComponent?: string;
   };
+  headings?: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
 }
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
 ---
 
 <DocLayout
@@ -28,6 +33,7 @@ const { frontmatter } = Astro.props;
   description={frontmatter.description}
   sourceFile={frontmatter.sourceFile}
   baseUIComponent={frontmatter.baseUIComponent}
+  headings={headings}
 >
   <slot />
 </DocLayout>

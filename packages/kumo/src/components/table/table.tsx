@@ -25,7 +25,46 @@ export const KUMO_TABLE_VARIANTS = {
       description: "Selected row variant",
     },
   },
+  sticky: {
+    left: {
+      classes: "sticky left-0",
+      description: "Pin column to the left edge of the scroll container",
+    },
+    right: {
+      classes: "sticky right-0",
+      description: "Pin column to the right edge of the scroll container",
+    },
+  },
 } as const;
+
+export type KumoTableStickyColumn = keyof typeof KUMO_TABLE_VARIANTS.sticky;
+
+/**
+ * Shared sticky-column styles for `<th>` and `<td>`.
+ *
+ * - Opaque background so scrolling content doesn't show through.
+ * - Gradient fade on the inner edge so the sticky boundary isn't a hard clip.
+ * - z-index kept to z-0/z-1/z-2 within the table's `isolate` stacking context:
+ *   - `z-0` — normal cells (default)
+ *   - `z-1` — sticky body cells (`<td>`)
+ *   - `z-2` — sticky header cells (`<th>`) so they sit above sticky body cells
+ */
+const stickyColumnClasses = (
+  side: KumoTableStickyColumn,
+  /** "head" renders at z-2, "cell" at z-1 */
+  element: "head" | "cell",
+) => {
+  const base = KUMO_TABLE_VARIANTS.sticky[side].classes;
+  const fade =
+    side === "right"
+      ? // Gradient fades from transparent on the left to opaque on the right
+        "before:pointer-events-none before:absolute before:inset-y-0 before:-left-6 before:w-6 before:bg-gradient-to-r before:from-transparent before:to-kumo-base"
+      : "before:pointer-events-none before:absolute before:inset-y-0 before:-right-6 before:w-6 before:bg-gradient-to-l before:from-transparent before:to-kumo-base";
+
+  const z = element === "head" ? "z-2" : "z-1";
+
+  return cn(base, z, "bg-kumo-base", fade);
+};
 
 export const KUMO_TABLE_DEFAULT_VARIANTS = {
   layout: "auto",
@@ -69,7 +108,7 @@ const TableRoot = forwardRef<
   }
 >(({ layout = "auto", ...props }, ref) => {
   const className = cn(
-    "w-full",
+    "isolate w-full", // isolate creates a stacking context so z-0/z-1/z-2 never leak out
     KUMO_TABLE_VARIANTS.layout[layout].classes,
     "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
@@ -86,11 +125,18 @@ const TableHeader = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement> & {
     variant?: "default" | "compact";
+    /**
+     * Make the header row stick to the top of the scroll container.
+     * Requires the table's parent to have a constrained height with
+     * `overflow-y: auto`.
+     */
+    sticky?: boolean;
   }
->(({ variant = "default", ...props }, ref) => {
+>(({ variant = "default", sticky, ...props }, ref) => {
   const className = cn(
     variant === "compact" &&
       "[&_th]:bg-kumo-elevated [&_th]:py-2 text-xs text-kumo-strong",
+    sticky && "[&_th]:sticky [&_th]:top-0 [&_th]:z-1",
     props.className,
   );
 
@@ -99,9 +145,21 @@ const TableHeader = forwardRef<
 
 const TableHead = forwardRef<
   HTMLTableCellElement,
-  React.HTMLAttributes<HTMLTableCellElement>
->((props, ref) => {
-  const className = cn("group relative", props.className);
+  React.HTMLAttributes<HTMLTableCellElement> & {
+    /**
+     * Pin this header cell to the left or right edge of the scroll container.
+     * Adds `position: sticky`, an opaque background, and a gradient fade on the
+     * inner edge. Sticky header columns render at `z-2` so they sit above both
+     * normal cells and sticky body cells (`z-1`).
+     */
+    sticky?: KumoTableStickyColumn;
+  }
+>(({ sticky, ...props }, ref) => {
+  const className = cn(
+    "group relative",
+    sticky && stickyColumnClasses(sticky, "head"),
+    props.className,
+  );
   return <th ref={ref} {...props} className={className} />;
 });
 
@@ -128,9 +186,20 @@ const TableBody = forwardRef<
 
 const TableCell = forwardRef<
   HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->((props, ref) => {
-  return <td ref={ref} {...props} />;
+  React.TdHTMLAttributes<HTMLTableCellElement> & {
+    /**
+     * Pin this cell to the left or right edge of the scroll container.
+     * Adds `position: sticky`, an opaque background, and a gradient fade on
+     * the inner edge. Requires the table's parent to have `overflow-x: auto`.
+     */
+    sticky?: KumoTableStickyColumn;
+  }
+>(({ sticky, ...props }, ref) => {
+  const className = cn(
+    sticky && stickyColumnClasses(sticky, "cell"),
+    props.className,
+  );
+  return <td ref={ref} {...props} className={className} />;
 });
 
 const TableFooter = forwardRef<

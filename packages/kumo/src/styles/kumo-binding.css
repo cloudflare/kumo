@@ -9,14 +9,15 @@
   --color-blue-400: oklch(70.7% 0.165 254.624);
   --color-blue-800: oklch(42.4% 0.199 265.638);
 
-  --color-kumo-neutral-25: oklch(99% 0 0);
-  --color-kumo-neutral-50: oklch(96.5% 0 0);
-  --color-kumo-neutral-75: oklch(95.7% 0 0);
-  --color-kumo-neutral-150: oklch(93.5% 0 0);
-  --color-kumo-neutral-450: oklch(86% 0 0);
-  --color-kumo-neutral-850: oklch(22.4% 0 0);
-  --color-kumo-neutral-925: oklch(18% 0 0);
-  --color-kumo-neutral-975: oklch(8.5% 0 0);
+  --color-kumo-neutral-50: oklch(98.75% 0 0);
+  --color-kumo-neutral-75: oklch(98% 0 0);
+  --color-kumo-neutral-125: oklch(96.5% 0 0);
+  --color-kumo-neutral-450: oklch(89% 0 0);
+  --color-kumo-neutral-850: oklch(24% 0 0);
+  --color-kumo-neutral-925: oklch(17% 0 0);
+  --color-kumo-neutral-950: oklch(15% 0 0);
+  --color-kumo-neutral-975: oklch(12% 0 0);
+  --color-kumo-neutral-1000: oklch(10% 0 0);
 }
 
 /* Typography is now generated in theme-kumo.css via codegen:themes */
@@ -167,44 +168,46 @@
   transform-origin: center;
 }
 
-.skeleton-line {
-  position: relative;
-  overflow: hidden;
-  border-radius: 2px;
-  height: var(--skeleton-height, 0.5rem);
-  width: var(--skeleton-width);
-  background-color: #f3f4f6;
-  /* neutral-100 for light mode */
-}
+@layer base {
+  .skeleton-line {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    height: 0.5rem;
+    width: var(--skeleton-width);
+    background-color: #f3f4f6;
+    /* neutral-100 for light mode */
+  }
 
-.skeleton-line::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  animation: shimmer var(--shimmer-duration, 1.5s) var(--shimmer-delay, 0s)
-    infinite ease-in-out;
-  content: "";
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.08) 50%,
-    rgba(0, 0, 0, 0) 100%
-  );
-}
+  .skeleton-line::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    animation: shimmer var(--shimmer-duration, 1.5s) var(--shimmer-delay, 0s)
+      infinite ease-in-out;
+    content: "";
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
 
-[data-mode="dark"] .skeleton-line {
-  background-color: rgba(255, 255, 255, 0.06);
-}
+  [data-mode="dark"] .skeleton-line {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
 
-[data-mode="dark"] .skeleton-line::after {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  [data-mode="dark"] .skeleton-line::after {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
 }
 
 /* Popup outline offset - in dark mode, offset inward to align with inner stroke.

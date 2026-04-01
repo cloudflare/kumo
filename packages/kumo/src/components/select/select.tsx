@@ -6,6 +6,10 @@ import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
 import { SkeletonLine } from "../loader";
 import { Field, type FieldErrorMatch } from "../field/field";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 
 /** Select variant definitions (currently empty, reserved for future additions). */
 export const KUMO_SELECT_VARIANTS = {
@@ -136,6 +140,12 @@ type SelectPropsGeneric<
     description?: ReactNode;
     /** Error message or validation error object */
     error?: string | { message: ReactNode; match: FieldErrorMatch };
+    /**
+     * Container element for the portal. Use this to render the select inside
+     * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+     * @default document.body (or KumoPortalProvider container if set)
+     */
+    container?: PortalContainer;
   };
 
 /**
@@ -225,9 +235,12 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   description,
   error,
   required,
+  container: containerProp,
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
   const propLookup = props as Record<string, unknown>;
   const ariaLabel = propLookup["aria-label"] as string | undefined;
   const ariaLabelledby = propLookup["aria-labelledby"] as string | undefined;
@@ -292,7 +305,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           <CaretUpDownIcon />
         </SelectBase.Icon>
       </SelectBase.Trigger>
-      <SelectBase.Portal>
+      <SelectBase.Portal container={container}>
         <SelectBase.Positioner>
           <SelectBase.Popup
             className={cn(

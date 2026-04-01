@@ -1,6 +1,10 @@
 import { Tooltip as TooltipBase } from "@base-ui/react/tooltip";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 
 /** Tooltip side variant definitions mapping positions to their Tailwind classes. */
 export const KUMO_TOOLTIP_VARIANTS = {
@@ -93,6 +97,12 @@ export type TooltipProps = BaseTooltipProps &
     className?: string;
     /** Content to display inside the tooltip popup. */
     content: ReactNode;
+    /**
+     * Container element for the portal. Use this to render the tooltip inside
+     * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+     * @default document.body (or KumoPortalProvider container if set)
+     */
+    container?: PortalContainer;
   };
 
 /**
@@ -113,8 +123,12 @@ export function Tooltip({
   asChild,
   side,
   className,
+  container: containerProp,
   ...props
 }: TooltipProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   return (
     <TooltipBase.Root {...props}>
       <TooltipBase.Trigger
@@ -130,7 +144,7 @@ export function Tooltip({
       >
         {asChild ? undefined : (children as ReactNode)}
       </TooltipBase.Trigger>
-      <TooltipBase.Portal>
+      <TooltipBase.Portal container={container}>
         <TooltipBase.Positioner align={align} side={side} sideOffset={10}>
           <TooltipBase.Popup
             className={cn(
