@@ -4,7 +4,6 @@ title: "Components vs Blocks"
 description: "Understanding how Kumo delivers different types of building blocks: versioned components you import, and copy-paste blocks you own."
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Callout from "~/components/docs/Callout.astro";
 
 ## The Building Block Spectrum
@@ -29,13 +28,12 @@ Components are the atomic, reusable UI elements that form the foundation of your
 
 Import directly from the package:
 
-<CodeBlock
-  code={`import { Button, Input, Dialog, Badge } from "@cloudflare/kumo";
+```tsx
+import { Button, Input, Dialog, Badge } from "@cloudflare/kumo";
 
 // Or use granular imports for better tree-shaking
-import { Button } from "@cloudflare/kumo/components/button";`}
-lang="tsx"
-/>
+import { Button } from "@cloudflare/kumo/components/button";
+```
 
 When Kumo ships a new version, you get bug fixes and improvements automatically. Your code doesn't change — just bump the version.
 
@@ -55,28 +53,24 @@ Blocks are compositions of components that solve common patterns, but aren't agn
 
 Install via CLI, then import from your project:
 
-<CodeBlock
-  code={`# Initialize config (first time only)
+```bash
+# Initialize config (first time only)
 npx @cloudflare/kumo init
 
 # List available blocks
-
 npx @cloudflare/kumo blocks
 
 # Install a block to your project
-
-npx @cloudflare/kumo add PageHeader`}
-lang="bash"
-/>
+npx @cloudflare/kumo add PageHeader
+```
 
 After installation, import from your local path:
 
-<CodeBlock
-  code={`// Path depends on your kumo.json blocksDir setting
+```tsx
+// Path depends on your kumo.json blocksDir setting
 // Default: src/components/kumo/
-import { PageHeader } from "./components/kumo/page-header/page-header";`}
-  lang="tsx"
-/>
+import { PageHeader } from "./components/kumo/page-header/page-header";
+```
 
 The block code is now yours. Customize it, extend it, break it apart — whatever your product needs.
 
@@ -84,8 +78,8 @@ The block code is now yours. Customize it, extend it, break it apart — whateve
 
 Consider a `ProductCard`. It's a specific arrangement of components for a specific use case:
 
-<CodeBlock
-  code={`// This is a "block" or "recipe" - a specific composition
+```tsx
+// This is a "block" or "recipe" - a specific composition
 // of design system components for a particular pattern
 
 <Surface className="rounded-lg p-4">
@@ -101,7 +95,7 @@ Consider a `ProductCard`. It's a specific arrangement of components for a specif
     <Button variant="primary">Add to cart</Button>
   </div>
 </Surface>
-`} lang="tsx" />
+```
 
 All those components (`Surface`, `Text`, `Button`) come from Kumo. But the specific arrangement? That's a pattern you own and customize.
 

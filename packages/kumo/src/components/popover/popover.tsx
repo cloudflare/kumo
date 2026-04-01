@@ -1,6 +1,10 @@
 import { Popover as PopoverBase } from "@base-ui/react/popover";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 
 /** Popover side variant definitions mapping positions to their Tailwind classes. */
 export const KUMO_POPOVER_VARIANTS = {
@@ -134,6 +138,12 @@ export type PopoverContentProps = KumoPopoverVariantsProps & {
   className?: string;
   /** Content to render inside the popover. */
   children?: ReactNode;
+  /**
+   * Container element for the portal. Use this to render the popover inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 };
 
 function PopoverContent({
@@ -144,9 +154,13 @@ function PopoverContent({
   alignOffset = 0,
   positionMethod = "absolute",
   className,
+  container: containerProp,
 }: PopoverContentProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   return (
-    <PopoverBase.Portal>
+    <PopoverBase.Portal container={container}>
       <PopoverBase.Positioner
         align={align}
         alignOffset={alignOffset}

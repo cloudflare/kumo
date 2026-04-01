@@ -20,6 +20,11 @@ function normalizePathname(pathname: string) {
   return pathname.replace(/\/+$/, "");
 }
 
+function isActivePath(activePath: string, href: string) {
+  const normalized = normalizePathname(href);
+  return activePath === normalized || activePath.startsWith(normalized + "/");
+}
+
 const staticPages: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Installation", href: "/installation" },
@@ -29,6 +34,7 @@ const staticPages: NavItem[] = [
   { label: "Figma Resources", href: "/figma" },
   { label: "CLI", href: "/cli" },
   { label: "Registry", href: "/registry" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 const componentItems: NavItem[] = [
@@ -62,6 +68,7 @@ const componentItems: NavItem[] = [
   { label: "Radio", href: "/components/radio" },
   { label: "Select", href: "/components/select" },
   { label: "Sensitive Input", href: "/components/sensitive-input" },
+  { label: "Sidebar", href: "/components/sidebar" },
   { label: "Skeleton Line", href: "/components/skeleton-line" },
   { label: "Surface", href: "/components/surface" },
   { label: "Switch", href: "/components/switch" },
@@ -198,7 +205,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
               href={item.href}
               className={cn(
                 LI_STYLE,
-                activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
+                isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
               )}
             >
               {item.label}
@@ -334,7 +341,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-canvas px-3 md:hidden",
         )}
       >
         <Button
@@ -352,7 +359,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-elevated md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-canvas md:hidden",
           "transition-transform duration-300 will-change-transform",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
@@ -381,7 +388,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Desktop: Left rail that always stays put */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-elevated md:block",
+          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block",
           "border-r border-kumo-line",
         )}
       >
@@ -409,7 +416,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <aside
         data-sidebar-open={sidebarOpen}
         className={cn(
-          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-elevated md:flex",
+          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
           "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
             ? "translate-x-0 border-r border-kumo-line"

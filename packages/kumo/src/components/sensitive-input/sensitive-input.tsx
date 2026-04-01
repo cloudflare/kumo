@@ -249,10 +249,15 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
         if (!isControlled) {
           setInternalValue(newValue);
         }
+        // When typing into an empty field, switch to revealed mode
+        // so the input shows as type="text" instead of type="password"
+        if (mode === "empty" && newValue.length > 0) {
+          setMode("revealed");
+        }
         onChange?.(e);
         onValueChange?.(newValue);
       },
-      [isControlled, onChange, onValueChange],
+      [isControlled, onChange, onValueChange, mode],
     );
 
     const handleBlur = useCallback(
@@ -309,6 +314,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
     const containerClassName = cn(
       inputVariants({ size, variant, parentFocusIndicator: true }),
       "group/container relative flex w-full items-center",
+      // Show browser-native focus outline on container when child input is focused
+      "focus-within:outline focus-within:outline-2 focus-within:outline-[-webkit-focus-ring-color]",
       isMaskedWithValue && !disabled && "cursor-pointer",
       disabled && "cursor-not-allowed",
       className,
@@ -330,7 +337,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           autoComplete={autoComplete}
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
-            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 kumo-input-placeholder disabled:cursor-not-allowed disabled:text-kumo-subtle",
+            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none kumo-input-placeholder disabled:cursor-not-allowed disabled:text-kumo-subtle",
             size === "xs" && "pr-5",
             size === "sm" && "pr-6",
             size === "base" && "pr-8",
@@ -394,6 +401,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           tabIndex={showEyeButton ? 0 : -1}
           className={cn(
             "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus-visible:ring-1 focus-visible:ring-kumo-ring focus-visible:rounded-sm",
+            // Defensive styles to prevent global CSS pollution (e.g., button { background: gray })
+            "bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 inline-flex items-center justify-center",
             // Match right padding from inputVariants
             size === "xs" && "right-1.5",
             size === "sm" && "right-2",
@@ -419,6 +428,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             aria-label={copied ? "Copied" : "Copy to clipboard"}
             className={cn(
               "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-kumo-ring",
+              // Defensive styles to prevent global CSS pollution
+              "border-none shadow-none m-0 h-auto min-h-0",
             )}
           >
             {copied ? "Copied" : "Copy"}

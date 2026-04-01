@@ -1,5 +1,39 @@
 # @cloudflare/kumo
 
+## 1.16.0
+
+### Minor Changes
+
+- c5f69b9: Make Chart components keyboard focusable with tabindex. Timeseries adds `ariaDescription` prop
+
+### Patch Changes
+
+- b3c44f1: Generate component-registry files at build time, remove from git
+
+  Eliminates contributor friction by generating component-registry.json,
+  component-registry.md, and schemas.ts during the build process instead of
+  tracking them in git. Contributors will no longer see stale diffs or need to
+  manually regenerate these files.
+  - Add ai/component-registry.json and ai/component-registry.md to .gitignore
+  - Convert ai/schemas.ts to a stub file for TypeScript compilation
+  - Add codegen:registry to build script for deterministic generation
+
+- 759f4e8: feat(code): add HCL (HashiCorp Configuration Language) as a supported syntax highlighting language
+- a67fac7: fix(flow): connector lines no longer misalign when the page scrolls or a sidebar shifts the layout
+
+  `getBoundingClientRect` values were stored in React state per node and later subtracted against a freshly-read container rect at connector-draw time. Any layout shift (sidebar open/close, page scroll, inner container scroll) between those two reads produced stale coordinates, causing connector lines to jump out of place or disappear entirely.
+
+  Fix: add `scroll` and `resize` listeners (capture phase) at the `FlowNode`, `FlowParallelNode`, and `FlowNodeList` levels so all rects are remeasured after any layout shift. Connector computation in `FlowNodeList` and `FlowParallelNode` is also moved from the render phase into `useLayoutEffect` so the container rect and node rects are always read in the same synchronous pass.
+
+- 15a344e: Add missing HCL language import to server-side Shiki bundle
+
+  The HCL language was added to SupportedLanguage type and the client-side
+  provider in a previous commit, but the server.tsx BUNDLED_LANGS object
+  was missed. This caused typecheck failures when building.
+
+- 5d8d3a9: Sidebar: polish animations, fix separator reflow bug, improve header spacing
+- 7e82920: Fix connector alignment and spacing between adjacent parallel nodes in Flow diagrams
+
 ## 1.15.0
 
 ### Minor Changes

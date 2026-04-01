@@ -59,17 +59,28 @@ export function SwitchNeutralStatesDemo() {
   );
 }
 
-/** All variants comparison */
+/** All variants comparison — 2×2 grid showing off/on for default and neutral */
 export function SwitchVariantsDemo() {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-2 gap-x-8 gap-y-4">
       <Switch
-        label="Default variant"
+        label="Default off"
+        checked={false}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Default on"
         checked={true}
         onCheckedChange={() => {}}
       />
       <Switch
-        label="Neutral variant"
+        label="Neutral off"
+        variant="neutral"
+        checked={false}
+        onCheckedChange={() => {}}
+      />
+      <Switch
+        label="Neutral on"
         variant="neutral"
         checked={true}
         onCheckedChange={() => {}}

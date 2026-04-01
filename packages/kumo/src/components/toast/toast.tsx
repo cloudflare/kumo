@@ -7,6 +7,10 @@ import type React from "react";
 import { cn } from "../../utils/cn";
 import { Button, ButtonProps } from "../../components/button";
 import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
+import {
   CheckCircleIcon,
   InfoIcon,
   WarningIcon,
@@ -34,35 +38,35 @@ export const KUMO_TOAST_VARIANTS = {
   },
   close: {
     classes:
-      "absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded border-none bg-transparent text-kumo-subtle hover:bg-kumo-fill-hover hover:text-kumo-strong",
+      "absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded bg-transparent text-kumo-subtle hover:bg-kumo-fill-hover hover:text-kumo-strong",
     description: "Close button with X icon",
   },
   variant: {
     default: {
-      classes: "border-kumo-fill bg-kumo-control",
+      classes: "border-kumo-fill bg-kumo-base",
       description: "Default toast style",
     },
     success: {
       classes:
-        "border-kumo-success bg-kumo-control [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
+        "ring-[0.3px] ring-kumo-success bg-kumo-base [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
       description: "Success toast for confirmations and positive outcomes",
       icon: CheckCircleIcon,
     },
     error: {
       classes:
-        "border-kumo-danger bg-kumo-control [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
+        "ring-[0.3px] ring-kumo-danger bg-kumo-base [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
       description: "Error toast for critical issues",
       icon: WarningOctagonIcon,
     },
     warning: {
       classes:
-        "border-kumo-warning bg-kumo-control [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
+        "ring-[0.3px] ring-kumo-warning bg-kumo-base [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
       description: "Warning toast for cautionary messages",
       icon: WarningIcon,
     },
     info: {
       classes:
-        "border-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
+        "ring-[0.3px] ring-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
       description: "Info toast for neutral informational messages",
       icon: InfoIcon,
     },
@@ -82,8 +86,8 @@ export const KUMO_TOAST_STYLING = {
     width: 300,
     padding: 16,
     borderRadius: 8,
-    background: "color-secondary",
-    border: "color-color",
+    background: "bg-kumo-base",
+    border: "ring-[0.3px] ring-kumo-ring",
     shadow: "shadow-lg",
     gap: 4,
   },
@@ -120,7 +124,7 @@ export function toastVariants({
 }: KumoToastVariantsProps = {}) {
   return cn(
     // Base styles for toast root
-    "rounded-xl border bg-clip-padding p-4 shadow-lg",
+    "rounded-xl ring ring-kumo-ring bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
     KUMO_TOAST_VARIANTS.variant[variant].classes,
   );
@@ -147,6 +151,12 @@ export function toastVariants({
 export interface ToastyProps extends KumoToastVariantsProps {
   /** Application content. Toasts render via a portal above this. */
   children: React.ReactNode;
+  /**
+   * Container element for the portal. Use this to render toasts inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 }
 
 type KumoToastOptionsBase = {
@@ -276,11 +286,14 @@ export const createKumoToastManager = () => {
  * </Toasty>
  * ```
  */
-export function Toasty({ children }: ToastyProps) {
+export function Toasty({ children, container: containerProp }: ToastyProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   return (
     <Toast.Provider>
       {children}
-      <Toast.Portal>
+      <Toast.Portal container={container}>
         <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
           <ToastList />
         </Toast.Viewport>
@@ -349,17 +362,17 @@ function ToastList() {
 }
 
 const TOAST_TINT_CLASSES: Record<string, string> = {
-  success: "bg-kumo-success-tint/10",
-  error: "bg-kumo-danger-tint/10",
-  warning: "bg-kumo-warning-tint/10",
-  info: "bg-kumo-info-tint/10",
+  success: "bg-kumo-success-tint/5",
+  error: "bg-kumo-danger-tint/5",
+  warning: "bg-kumo-warning-tint/5",
+  info: "bg-kumo-info-tint/5",
 };
 
 function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
   const tint = variant && TOAST_TINT_CLASSES[variant];
   return (
     <div
-      className={cn("absolute inset-0 rounded-[11px] bg-kumo-control/90", tint)}
+      className={cn("absolute inset-0 rounded-[11px] bg-kumo-base/90", tint)}
     />
   );
 }
@@ -373,4 +386,3 @@ function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
     <Icon data-toast-icon className="mt-0.5 h-4 w-4 shrink-0" weight="fill" />
   );
 }
-

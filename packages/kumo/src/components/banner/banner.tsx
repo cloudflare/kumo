@@ -82,6 +82,8 @@ export interface BannerProps {
   title?: string;
   /** Secondary description text displayed below the title. Use for i18n string injection. */
   description?: ReactNode;
+  /** Action slot rendered at the trailing end of the banner (e.g. a CTA button or link). Only used in structured mode (with `title` or `description`). */
+  action?: ReactNode;
   /** @deprecated Use `title` and `description` instead. Will be removed in a future major version. */
   text?: string;
   /** @deprecated Use `title` and `description` instead for better i18n support. */
@@ -123,6 +125,7 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
     icon,
     title,
     description,
+    action,
     children,
     text,
     variant = KUMO_BANNER_DEFAULT_VARIANTS.variant,
@@ -146,12 +149,21 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
             {icon}
           </span>
         )}
-        <div className="flex flex-col gap-0.5">
-          {title && <p className="font-medium leading-snug">{title}</p>}
-          {description && (
-            <div className="text-sm leading-snug">
-              {isValidElement(description) ? description : <p>{description}</p>}
-            </div>
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            {title && <p className="font-medium leading-snug">{title}</p>}
+            {description && (
+              <div className="text-sm leading-snug">
+                {isValidElement(description) ? (
+                  description
+                ) : (
+                  <p>{description}</p>
+                )}
+              </div>
+            )}
+          </div>
+          {action && (
+            <div className="flex shrink-0 items-center gap-2">{action}</div>
           )}
         </div>
       </div>

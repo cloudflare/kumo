@@ -24,7 +24,6 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
-  "Toasty",
 ]);
 
 /**
@@ -34,6 +33,7 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
 const SLUG_OVERRIDES: Record<string, string> = {
   CodeHighlighted: "code-highlighted",
   DropdownMenu: "dropdown",
+  Toasty: "toast",
 };
 
 /**
@@ -110,6 +110,14 @@ const STATIC_PAGES: Array<{
     category: "Components",
     type: "component",
   },
+  {
+    name: "Flow",
+    description:
+      "A diagram component for visualizing sequential and parallel workflows.",
+    url: "/components/flow",
+    category: "Components",
+    type: "component",
+  },
 ];
 
 /** Better descriptions from the Astro doc pages */
@@ -160,6 +168,7 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "page-header": "Combines breadcrumbs and tabs for page navigation.",
   "resource-list":
     "A layout for displaying resource lists with title and sidebar.",
+  toast: "Displays brief, non-intrusive notifications that appear temporarily.",
 };
 
 interface ComponentRegistryEntry {
@@ -298,11 +307,11 @@ function getTypeBadge(
 
   switch (type) {
     case "block":
-      return <Badge variant="secondary">Block</Badge>;
+      return <Badge variant="neutral">Block</Badge>;
     case "layout":
-      return <Badge variant="secondary">Layout</Badge>;
+      return <Badge variant="neutral">Layout</Badge>;
     case "page":
-      return <Badge variant="secondary">Guide</Badge>;
+      return <Badge variant="neutral">Guide</Badge>;
     default:
       return null;
   }

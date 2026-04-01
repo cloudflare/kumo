@@ -89,8 +89,10 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 ### Background Colors
 | Token | Purpose |
 |-------|---------|
-| `bg-kumo-base` | Page/card background |
+| `bg-kumo-surface` | Page background |
+| `bg-kumo-base` | Component background |
 | `bg-kumo-elevated` | Slightly elevated surface |
+| `bg-kumo-recessed` | Recessed surface with a darker colour |
 | `bg-kumo-overlay` | Overlay/hover background |
 | `bg-kumo-contrast` | High-contrast background (inverted) |
 | `bg-kumo-control` | Form control background |

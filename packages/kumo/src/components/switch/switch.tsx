@@ -253,15 +253,15 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           // Thumb colors based on variant
           const thumbColors = isNeutral
             ? state.checked
-              ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
-              : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+              ? "bg-kumo-base dark:bg-neutral-400"
+              : "bg-kumo-base dark:bg-neutral-850"
             : state.checked
-              ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
-              : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+              ? "bg-kumo-base dark:bg-blue-300"
+              : "bg-kumo-base dark:bg-neutral-850";
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
             "transition-colors duration-150 ease-out motion-reduce:transition-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
             s.track,
@@ -272,7 +272,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           );
 
           const thumbClassName = cn(
-            "absolute top-0 bottom-0 shadow-sm ring-1",
+            "absolute top-0 bottom-0 shadow-[0_0_1px_0.5px_var(--color-kumo-shadow-edge),0_1px_2px_var(--color-kumo-shadow-drop)]",
             s.thumb,
             squircleRadius,
             thumbColors,
@@ -403,15 +403,15 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             // Thumb colors based on variant
             const thumbColors = isNeutral
               ? state.checked
-                ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
-                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+                ? "bg-kumo-base dark:bg-neutral-400"
+                : "bg-kumo-base dark:bg-neutral-850"
               : state.checked
-                ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
-                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+                ? "bg-kumo-base dark:bg-blue-300"
+                : "bg-kumo-base dark:bg-neutral-850";
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
               "transition-colors duration-150 ease-out motion-reduce:transition-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
               s.track,
@@ -421,7 +421,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             );
 
             const thumbClassName = cn(
-              "absolute top-0 bottom-0 shadow-sm ring-1",
+              "absolute top-0 bottom-0 shadow-[0_0_1px_0.5px_var(--color-kumo-shadow-edge),0_1px_2px_var(--color-kumo-shadow-drop)]",
               s.thumb,
               squircleRadius,
               thumbColors,

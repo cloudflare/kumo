@@ -232,14 +232,24 @@ jobs:
   visual-regression:
     name: Visual Regression
     needs: docs-deploy
-    if: ${{ needs.docs-deploy.outputs.preview_url }}
+    if: always() && needs.docs-deploy.result == 'success' && needs.docs-deploy.outputs.preview_url != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
+      # Pin to main so that a PR modifying run-visual-regression.ts cannot
+      # execute its own version of the script with secrets in env.
+      - name: Checkout VR script from main
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          ref: main
+          sparse-checkout: |
+            ci/visual-regression
+            .github/actions/install-dependencies
+
+      # Fetch the PR's HEAD so git diff can detect changed files.
+      # (HEAD points to main after checkout, so we need the explicit SHA)
+      - name: Fetch PR head for git diff
+        run: git fetch --depth=1 origin ${{ github.event.pull_request.head.sha }}
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -251,9 +261,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ needs.docs-deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}
-          SCREENSHOT_WORKER_URL: ${{ secrets.SCREENSHOT_WORKER_URL }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
         run: pnpm tsx ci/visual-regression/run-visual-regression.ts
 

@@ -264,6 +264,86 @@ export function TableFixedLayoutDemo() {
   );
 }
 
+/**
+ * Demonstrates a sticky right-hand actions column that stays pinned while the
+ * table scrolls horizontally. Uses `sticky="right"` on `Table.Head` and
+ * `Table.Cell` — the gradient fade and opaque background are applied
+ * automatically.
+ */
+export function TableStickyColumnDemo() {
+  return (
+    <LayerCard>
+      <LayerCard.Primary className="w-full max-w-md overflow-x-auto p-0">
+        <Table>
+          <Table.Header>
+            <Table.Row>
+              <Table.Head>Subject</Table.Head>
+              <Table.Head>From</Table.Head>
+              <Table.Head>Date</Table.Head>
+              <Table.Head>Tags</Table.Head>
+              <Table.Head sticky="right">
+                <span className="sr-only">Actions</span>
+              </Table.Head>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {emailData.map((row) => (
+              <Table.Row key={row.id}>
+                <Table.Cell className="whitespace-nowrap">
+                  {row.subject}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap">
+                  {row.from}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap">
+                  {row.date}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap">
+                  {row.tags ? (
+                    <div className="inline-flex gap-1">
+                      {row.tags.map((tag) => (
+                        <Badge key={tag}>{tag}</Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
+                </Table.Cell>
+                <Table.Cell sticky="right" className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenu.Trigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          shape="square"
+                          aria-label="More options"
+                        >
+                          <DotsThree weight="bold" size={16} />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item icon={Eye}>View</DropdownMenu.Item>
+                      <DropdownMenu.Item icon={PencilSimple}>
+                        Edit
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item icon={Trash} variant="danger">
+                        Delete
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}
+
 export function TableFullDemo() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(["2"]));
 

@@ -4,6 +4,7 @@ import { StickyDocHeader } from "../components/docs/StickyDocHeader";
 import { CopyPageButton } from "../components/docs/CopyPageButton";
 import { BaseUIIcon } from "../components/docs/icons/BaseUIIcon";
 import { GithubLogoIcon } from "@phosphor-icons/react";
+import { TableOfContents } from "../components/docs/TableOfContents";
 
 interface Props {
   title: string;
@@ -11,9 +12,20 @@ interface Props {
   baseUIComponent?: string;
   /** Path to the source file in the kumo package (e.g., "components/button") - will link to GitHub */
   sourceFile?: string;
+  headings?: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
 }
 
-const { title, description, baseUIComponent, sourceFile } = Astro.props;
+const {
+  title,
+  description,
+  baseUIComponent,
+  sourceFile,
+  headings = [],
+} = Astro.props;
 
 const baseUIUrl = baseUIComponent
   ? `https://base-ui.com/react/components/${baseUIComponent}`
@@ -46,7 +58,7 @@ const githubSourceUrl = sourceFile
     <!-- Page Header -->
     <div id="page-header" class="border-b border-kumo-line md:pr-12">
       <div class="mx-auto md:border-r md:border-kumo-line">
-        <div class="mx-auto max-w-5xl px-8 py-12">
+        <div class="mx-auto max-w-7xl p-12">
           <!-- Mobile: Copy page button above title -->
           <div class="mb-3 md:hidden">
             <CopyPageButton align="center" client:idle />
@@ -96,9 +108,24 @@ const githubSourceUrl = sourceFile
     <!-- Content -->
     <main class="flex grow flex-col md:pr-12">
       <div class="mx-auto w-full grow md:border-r md:border-kumo-line">
-        <div class="mx-auto max-w-5xl px-8 py-12">
-          <div class="kumo-prose prose max-w-none">
-            <slot />
+        <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
+        <div class="xl:hidden sticky top-24 md:top-12 z-1 border-b border-kumo-line bg-kumo-canvas">
+          <div class="mx-auto max-w-7xl px-2 md:px-3 py-3">
+            <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
+          </div>
+        </div>
+
+        <div class="mx-auto max-w-7xl p-12 pr-10">
+          <div class="grid grid-cols-1 gap-16 xl:grid-cols-[3fr_1fr]">
+            <div class="kumo-prose prose max-w-none min-w-0">
+              <slot />
+            </div>
+            <!-- Sidebar TOC: only at xl+ -->
+            <aside class="hidden xl:block min-w-0">
+              <div class="sticky top-24">
+                <TableOfContents headings={headings.length > 0 ? headings : undefined} client:load />
+              </div>
+            </aside>
           </div>
         </div>
       </div>

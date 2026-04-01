@@ -84,6 +84,8 @@ export type ClipboardTextSize = KumoClipboardTextSize;
 export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
   /** The text to display and copy to clipboard. */
   text: string;
+  /** If provided, this text will be copied to clipboard instead of the `text` prop. */
+  textToCopy?: string;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Callback fired after text is copied to clipboard. */
@@ -163,6 +165,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
   (
     {
       text,
+      textToCopy,
       className,
       size = KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
       onCopy,
@@ -189,11 +192,11 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
           navigator.clipboard &&
           typeof navigator.clipboard.writeText === "function"
         ) {
-          await navigator.clipboard.writeText(text);
+          await navigator.clipboard.writeText(textToCopy ?? text);
         } else if (typeof document !== "undefined") {
           // Fallback for older browsers
           const textarea = document.createElement("textarea");
-          textarea.value = text;
+          textarea.value = textToCopy ?? text;
           textarea.setAttribute("readonly", "");
           textarea.style.position = "absolute";
           textarea.style.left = "-9999px";

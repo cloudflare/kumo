@@ -1,8 +1,10 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -280,11 +282,12 @@ export function FlowDiagram({
     <DiagramContext.Provider value={contextValue}>
       <motion.div
         ref={wrapperRef}
-        className={cn(
-          "relative overflow-hidden py-16 px-4 grow isolate group",
-          className,
-        )}
+        className={cn("relative overflow-hidden grow isolate group", className)}
         style={{
+          paddingTop: padding.y,
+          paddingBottom: padding.y,
+          paddingLeft: padding.x,
+          paddingRight: padding.x,
           cursor: canPan && !isPanning ? "grab" : undefined,
         }}
         onPanStart={handlePanStart}
@@ -403,8 +406,9 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
   const { orientation, align } = useDiagramContext();
   const descendants = useNodeGroup();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [connectors, setConnectors] = useState<Connector[]>([]);
 
-  const connectors = useMemo(() => {
+  const computeConnectors = useCallback(() => {
     const edges: Connector[] = [];
     const nodes = descendants.descendants;
     const containerRect = containerRef.current?.getBoundingClientRect();
@@ -437,8 +441,34 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
       }
     }
 
-    return edges;
+    setConnectors(edges);
   }, [descendants.descendants]);
+
+  /**
+   * Recompute connectors after layout so that containerRect and node rects are
+   * read in the same synchronous pass — preventing stale-rect mismatches.
+   */
+  useLayoutEffect(() => {
+    computeConnectors();
+  }, [computeConnectors]);
+
+  /**
+   * Recompute on scroll/resize: the container shifts in the viewport without
+   * any ResizeObserver firing, so we must re-read all rects explicitly.
+   */
+  useEffect(() => {
+    window.addEventListener("scroll", computeConnectors, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", computeConnectors, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", computeConnectors, {
+        capture: true,
+      });
+      window.removeEventListener("resize", computeConnectors);
+    };
+  }, [computeConnectors]);
 
   // Get the first and last node's anchor points for parent registration
   const firstNode = descendants.descendants[0];

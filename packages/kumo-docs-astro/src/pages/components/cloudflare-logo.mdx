@@ -7,7 +7,6 @@ sourceFile: "components/cloudflare-logo"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   CloudflareLogoBasicDemo,
@@ -21,10 +20,10 @@ import {
   PoweredByCloudflareFooterDemo,
 } from "~/components/demos/CloudflareLogoDemo";
 
-{/* Demo */}
+{/* Hero Demo */}
 
 <ComponentSection>
-  <ComponentExample code={`<CloudflareLogo className="w-72" />`}>
+  <ComponentExample demo="CloudflareLogoBasicDemo">
     <CloudflareLogoBasicDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -33,21 +32,41 @@ import {
 
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
-  <CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import {
+  CloudflareLogo,
+  PoweredByCloudflare,
+  generateCloudflareLogoSvg,
+} from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import {
+  CloudflareLogo,
+  PoweredByCloudflare,
+  generateCloudflareLogoSvg,
+} from "@cloudflare/kumo/components/cloudflare-logo";
+```
+
 </ComponentSection>
 
 {/* Usage */}
 
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
-  <CodeBlock
-    code={`import { CloudflareLogo } from "@cloudflare/kumo";
+
+```tsx
+import { CloudflareLogo } from "@cloudflare/kumo";
 
 export default function Example() {
   return <CloudflareLogo className="w-36" />;
-}`}
-    lang="tsx"
-  />
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -55,94 +74,41 @@ export default function Example() {
 <ComponentSection>
   <Heading level={2}>Examples</Heading>
 
-{/* Glyph Only */}
-
 <Heading level={3}>Glyph Only</Heading>
 <p>
   Use <code>variant="glyph"</code> to display just the cloud icon without the
   wordmark.
 </p>
-<ComponentExample code={`<CloudflareLogo variant="glyph" className="w-24" />`}>
+<ComponentExample demo="CloudflareLogoGlyphDemo">
   <CloudflareLogoGlyphDemo client:visible />
 </ComponentExample>
 
-{/* Color Variants (Full) */}
-
 <Heading level={3}>Color Variants</Heading>
 <p>The logo supports three color schemes: brand colors, black, and white.</p>
-<ComponentExample
-  code={`<CloudflareLogo color="color" />  {/* Brand colors (default) */}
-<CloudflareLogo color="black" />  {/* Solid black */}
-<CloudflareLogo color="white" />  {/* Solid white */}`}
->
+<ComponentExample demo="CloudflareLogoColorVariantsDemo">
   <CloudflareLogoColorVariantsDemo client:visible />
 </ComponentExample>
 
-{/* Glyph Color Variants */}
-
 <Heading level={3}>Glyph Color Variants</Heading>
-<ComponentExample
-  code={`<CloudflareLogo variant="glyph" color="color" />
-<CloudflareLogo variant="glyph" color="black" />
-<CloudflareLogo variant="glyph" color="white" />`}
->
+<ComponentExample demo="CloudflareLogoGlyphVariantsDemo">
   <CloudflareLogoGlyphVariantsDemo client:visible />
 </ComponentExample>
-
-{/* Sizing */}
 
 <Heading level={3}>Sizing</Heading>
 <p>
   Size the logo using CSS width classes. The height adjusts automatically to
   maintain aspect ratio.
 </p>
-<ComponentExample
-  code={`<CloudflareLogo className="w-20" />
-<CloudflareLogo className="w-28" />
-<CloudflareLogo className="w-44" />`}
->
+<ComponentExample demo="CloudflareLogoSizesDemo">
   <CloudflareLogoSizesDemo client:visible />
 </ComponentExample>
-
-{/* Copy as SVG */}
 
   <Heading level={3}>Brand Assets Menu</Heading>
   <p>
     Combine with DropdownMenu to create a brand assets menu. Use <code>generateCloudflareLogoSvg()</code> to
     get copy-paste ready SVG markup.
   </p>
-  <ComponentExample
-    code={`import {
-  CloudflareLogo,
-  DropdownMenu,
-  generateCloudflareLogoSvg,
-} from "@cloudflare/kumo";
-
-<DropdownMenu>
-  <DropdownMenu.Trigger>
-    <button>
-      <CloudflareLogo variant="glyph" color="white" className="w-8" />
-      Logo
-    </button>
-  </DropdownMenu.Trigger>
-  <DropdownMenu.Content>
-    <DropdownMenu.Item
-      onSelect={() => navigator.clipboard.writeText(
-        generateCloudflareLogoSvg({ variant: "glyph" })
-      )}
-    >
-      Copy logo as SVG
-    </DropdownMenu.Item>
-    <DropdownMenu.Item
-      onSelect={() => navigator.clipboard.writeText(
-        generateCloudflareLogoSvg({ variant: "full" })
-      )}
-    >
-      Copy full logo as SVG
-    </DropdownMenu.Item>
-  </DropdownMenu.Content>
-</DropdownMenu>`}
-  >
+  <ComponentExample demo="CloudflareLogoCopyDemo">
     <CloudflareLogoCopyDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -155,33 +121,18 @@ export default function Example() {
     A pre-built "Powered by Cloudflare" badge component for footers and attribution.
   </p>
 
-{/* Basic */}
-
 <Heading level={3}>Basic Usage</Heading>
-<ComponentExample code={`<PoweredByCloudflare />`}>
+<ComponentExample demo="PoweredByCloudflareBasicDemo">
   <PoweredByCloudflareBasicDemo client:visible />
 </ComponentExample>
 
-{/* Variants */}
-
 <Heading level={3}>Color Variants</Heading>
-<ComponentExample
-  code={`<PoweredByCloudflare />              {/* color (default) */}
-<PoweredByCloudflare color="black" />
-<PoweredByCloudflare color="white" />`}
->
+<ComponentExample demo="PoweredByCloudflareVariantsDemo">
   <PoweredByCloudflareVariantsDemo client:visible />
 </ComponentExample>
 
-{/* Footer Example */}
-
   <Heading level={3}>Footer Example</Heading>
-  <ComponentExample
-    code={`<footer className="flex items-center justify-between px-6 py-4">
-  <span>&copy; 2026 Your Company</span>
-  <PoweredByCloudflare />
-</footer>`}
-  >
+  <ComponentExample demo="PoweredByCloudflareFooterDemo">
     <PoweredByCloudflareFooterDemo client:visible />
   </ComponentExample>
 </ComponentSection>
@@ -193,8 +144,9 @@ export default function Example() {
   <p>
     Use <code>generateCloudflareLogoSvg()</code> to get copy-paste ready SVG markup for non-React contexts.
   </p>
-  <CodeBlock
-    code={`import { generateCloudflareLogoSvg } from "@cloudflare/kumo";
+
+```tsx
+import { generateCloudflareLogoSvg } from "@cloudflare/kumo";
 
 // Generate glyph SVG (cloud only)
 const glyphSvg = generateCloudflareLogoSvg({ variant: "glyph" });
@@ -207,10 +159,9 @@ const blackSvg = generateCloudflareLogoSvg({ color: "black" });
 
 // Copy to clipboard
 await navigator.clipboard.writeText(
-generateCloudflareLogoSvg({ variant: "glyph", color: "color" })
-);`}
-lang="tsx"
-/>
+  generateCloudflareLogoSvg({ variant: "glyph", color: "color" }),
+);
+```
 
 </ComponentSection>
 
@@ -253,8 +204,6 @@ lang="tsx"
       </tbody>
     </table>
   </div>
-
-{/* PoweredByCloudflare Props */}
 
   <Heading level={3}>PoweredByCloudflare</Heading>
   <p>

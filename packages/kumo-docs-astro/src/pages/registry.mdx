@@ -4,7 +4,6 @@ title: "Component Registry"
 description: "AI-readable component metadata for LLMs and code generation tools. Auto-generated from TypeScript types and component variants."
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Callout from "~/components/docs/Callout.astro";
 import { ComponentRegistryView } from "~/components/demos/RegistryDemo";
 
@@ -18,35 +17,30 @@ The component registry is a machine-readable JSON file that describes all Kumo c
 
 ### Via CLI
 
-<CodeBlock
-  code={`# List all components
+```bash
+# List all components
 npx @cloudflare/kumo ls
 
 # Get docs for a specific component
-
-npx @cloudflare/kumo doc Button`}
-lang="bash"
-/>
+npx @cloudflare/kumo doc Button
+```
 
 ### Via HTTP API
 
-<CodeBlock
-  code={`# JSON endpoint
-curl https://kumo-ui.com/api/component-registry`}
-  lang="bash"
-/>
+```bash
+# JSON endpoint
+curl https://kumo-ui.com/api/component-registry
+```
 
 ### Via jq (Local)
 
-<CodeBlock
-  code={`# Get Button props
+```bash
+# Get Button props
 jq '.components.Button.props' packages/kumo/ai/component-registry.json
 
 # List components by category
-
-jq '.search.byCategory' packages/kumo/ai/component-registry.json`}
-lang="bash"
-/>
+jq '.search.byCategory' packages/kumo/ai/component-registry.json
+```
 
 ## Registry Contents
 

@@ -1,0 +1,218 @@
+---
+import DocLayout from "~/layouts/DocLayout.astro";
+import { Badge, Text } from "@cloudflare/kumo";
+import { GithubLogoIcon, LinkSimple } from "@phosphor-icons/react";
+import { ChangelogPagination } from "~/components/docs/ChangelogPagination";
+import { ChangelogEntry } from "~/components/docs/ChangelogEntry";
+import fs from "node:fs";
+import path from "node:path";
+
+interface ParsedEntry {
+  hash: string;
+  text: string;
+}
+
+interface ParsedSection {
+  type: "major" | "minor" | "patch";
+  entries: ParsedEntry[];
+}
+
+interface ParsedVersion {
+  version: string;
+  bump: "major" | "minor" | "patch";
+  sections: ParsedSection[];
+}
+
+export function getStaticPaths() {
+  const PER_PAGE = 10;
+  type BumpType = "major" | "minor" | "patch";
+  interface Section { type: BumpType; entries: { hash: string; text: string }[] }
+
+  // Bump priority: a version with both minor and patch sections is "minor"
+  const bumpPriority: BumpType[] = ["major", "minor", "patch"];
+
+  const changelogPath = path.resolve(process.cwd(), "../kumo/CHANGELOG.md");
+  const raw = fs.readFileSync(changelogPath, "utf-8");
+
+  const versions: ParsedVersion[] = [];
+  let curVer: { version: string; sections: Section[] } | null = null;
+  let curSec: Section | null = null;
+  let curLines: string[] = [];
+  let curHash = "";
+
+  function flushEntry() {
+    if (curSec && curHash && curLines.length > 0) {
+      curSec.entries.push({ hash: curHash, text: curLines.join("\n").trimEnd() });
+    }
+    curLines = [];
+    curHash = "";
+  }
+
+  function flushSection() {
+    flushEntry();
+    if (curVer && curSec && curSec.entries.length > 0) {
+      curVer.sections.push(curSec);
+    }
+    curSec = null;
+  }
+
+  function flushVersion() {
+    flushSection();
+    if (curVer && curVer.sections.length > 0) {
+      const types = new Set(curVer.sections.map((s) => s.type));
+      const bump = bumpPriority.find((b) => types.has(b)) ?? "patch";
+      versions.push({ ...curVer, bump });
+    }
+    curVer = null;
+  }
+
+  // Parse: ## version → ### Section Changes → - hash: description
+  for (const line of raw.split("\n")) {
+    const versionMatch = line.match(/^## (\d+\.\d+\.\d+)/);
+    if (versionMatch) {
+      flushVersion();
+      curVer = { version: versionMatch[1], sections: [] };
+      continue;
+    }
+
+    const sectionMatch = line.match(/^### (Major|Minor|Patch) Changes/);
+    if (sectionMatch && curVer) {
+      flushSection();
+      curSec = { type: sectionMatch[1].toLowerCase() as BumpType, entries: [] };
+      continue;
+    }
+
+    const entryMatch = line.match(/^- ([a-f0-9]{7}): (.+)/);
+    if (entryMatch && curSec) {
+      flushEntry();
+      curHash = entryMatch[1];
+      curLines.push(entryMatch[2]);
+      continue;
+    }
+
+    // Continuation lines belong to the current entry (code blocks, lists, etc.)
+    if (curHash && curSec) {
+      curLines.push(line);
+    }
+  }
+
+  flushVersion();
+
+  const totalPages = Math.ceil(versions.length / PER_PAGE);
+  const paths = Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: i === 0 ? undefined : String(i + 1) },
+    props: {
+      page: i + 1,
+      perPage: PER_PAGE,
+      totalPages,
+      totalVersions: versions.length,
+      versions: versions.slice(i * PER_PAGE, (i + 1) * PER_PAGE),
+    },
+  }));
+
+  // Unpaginated page with all versions — used by /changelog.md
+  paths.push({
+    params: { page: "all" },
+    props: {
+      page: 1,
+      perPage: PER_PAGE,
+      totalPages: 1,
+      totalVersions: versions.length,
+      versions,
+    },
+  });
+
+  return paths;
+}
+
+const { page, perPage, totalPages, totalVersions, versions } = Astro.props;
+
+// Badge variant per bump type: primary (major), secondary (minor), outline (patch)
+const badgeConfig = {
+  major: { variant: "primary" as const, label: "Major" },
+  minor: { variant: "secondary" as const, label: "Minor" },
+  patch: { variant: "outline" as const, label: "Patch" },
+};
+
+const sectionLabels: Record<string, string> = {
+  major: "Major changes",
+  minor: "Minor changes",
+  patch: "Patch changes",
+};
+
+const GITHUB_RELEASE_URL = "https://github.com/cloudflare/kumo/releases/tag/%40cloudflare%2Fkumo%40";
+---
+
+<DocLayout
+  title="Changelog"
+  description="Latest updates and features. See what changed in each release."
+>
+  <div class="space-y-6">
+    {versions.map((v: ParsedVersion, i: number) => (
+      <article id={`v${v.version}`} class="scroll-mt-24">
+        <div class="group relative mb-4 flex flex-wrap items-center gap-3">
+          <a
+            href={`#v${v.version}`}
+            class="no-underline hover:underline"
+          >
+            <span
+              class="absolute -left-6 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
+              aria-hidden="true"
+            >
+              <LinkSimple className="size-4 text-kumo-subtle" />
+            </span>
+            <Text as="span" variant="heading2">{v.version}</Text>
+          </a>
+          <Badge variant={badgeConfig[v.bump].variant}>{badgeConfig[v.bump].label}</Badge>
+          <a
+            href={`${GITHUB_RELEASE_URL}${v.version}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ml-auto text-kumo-subtle transition-colors hover:text-kumo-strong"
+            title="View release on GitHub"
+            aria-label={`View ${v.version} release on GitHub`}
+          >
+            <GithubLogoIcon size={18} weight="fill" />
+          </a>
+        </div>
+
+        <div class="space-y-4">
+          {v.sections.map((section: ParsedSection) => (
+            <div>
+              <div class="mb-2.5 [&>h3]:m-0">
+                <Text as="h3" bold>{sectionLabels[section.type]}</Text>
+              </div>
+              <ul class="list-none p-0 mt-0 mb-0 [&>li]:ps-0 md:[&>li]:ml-4">
+                {section.entries.map((entry: ParsedEntry) => (
+                  <ChangelogEntry hash={entry.hash} text={entry.text} />
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {i < versions.length - 1 && (
+          <div class="mt-6 border-b border-kumo-line" />
+        )}
+      </article>
+    ))}
+  </div>
+
+  {totalPages > 1 && (
+    <div class="mt-8">
+      <ChangelogPagination
+        page={page}
+        perPage={perPage}
+        totalCount={totalVersions}
+        client:load
+      />
+    </div>
+  )}
+</DocLayout>
+
+<script>
+  if (window.location.hash) {
+    const el = document.querySelector(window.location.hash);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+</script>

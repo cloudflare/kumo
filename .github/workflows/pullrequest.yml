@@ -21,6 +21,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changeset:
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/install-dependencies
+      - run: pnpm tsx ci/scripts/validate-kumo-changeset.ts
+
   build:
     timeout-minutes: 5
     runs-on: ubuntu-latest
@@ -34,6 +44,11 @@ jobs:
         with:
           name: kumo-dist
           path: packages/kumo/dist
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
           retention-days: 1
 
   lint:
@@ -49,6 +64,10 @@ jobs:
         with:
           name: kumo-dist
           path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
       - run: pnpm lint
 
   typecheck:
@@ -64,6 +83,10 @@ jobs:
         with:
           name: kumo-dist
           path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
       - run: pnpm typecheck
 
   test:
@@ -79,4 +102,8 @@ jobs:
         with:
           name: kumo-dist
           path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
       - run: pnpm --filter @cloudflare/kumo test
