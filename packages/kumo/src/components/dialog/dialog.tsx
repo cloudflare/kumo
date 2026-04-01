@@ -9,6 +9,10 @@ import { Dialog as DialogBase } from "@base-ui/react/dialog";
 import { AlertDialog as AlertDialogBase } from "@base-ui/react/alert-dialog";
 import { Surface } from "../surface";
 import { cn } from "../../utils/cn";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 
 /** Dialog size variant definitions mapping sizes to their minimum widths. */
 export const KUMO_DIALOG_VARIANTS = {
@@ -166,6 +170,12 @@ export type DialogProps = KumoDialogVariantsProps & {
   children: ReactNode;
   /** Inline styles. */
   style?: CSSProperties;
+  /**
+   * Container element for the portal. Use this to render the dialog inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 };
 
 /**
@@ -202,8 +212,12 @@ function DialogContent({
   children,
   style,
   size = KUMO_DIALOG_DEFAULT_VARIANTS.size,
+  container: containerProp,
 }: DialogProps) {
   const role = useDialogRole();
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   const BasePortal =
     role === "alertdialog" ? AlertDialogBase.Portal : DialogBase.Portal;
   const BaseBackdrop =
@@ -212,7 +226,7 @@ function DialogContent({
     role === "alertdialog" ? AlertDialogBase.Popup : DialogBase.Popup;
 
   return (
-    <BasePortal>
+    <BasePortal container={container}>
       <BaseBackdrop className="fixed inset-0 bg-kumo-recessed opacity-80 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
       <Surface
         render={<BasePopup />}

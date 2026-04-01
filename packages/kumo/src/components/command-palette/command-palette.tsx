@@ -18,6 +18,10 @@ import {
 import { Surface } from "../surface";
 import { Loader } from "../loader";
 import { cn } from "../../utils";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 import type {
   HighlightRange,
   CommandPaletteRootProps,
@@ -103,6 +107,12 @@ interface DialogProps {
   onBackdropClick?: (e: React.MouseEvent) => void;
   /** Child content - typically one or more Panel components */
   children: React.ReactNode;
+  /**
+   * Container element for the portal. Use this to render the command palette inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 }
 
 /**
@@ -129,7 +139,11 @@ function Dialog({
   onOpenChange,
   onBackdropClick,
   children,
+  container: containerProp,
 }: DialogProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (onBackdropClick) {
       onBackdropClick(e);
@@ -144,7 +158,7 @@ function Dialog({
 
   return (
     <DialogBase.Root open={open} onOpenChange={onOpenChange} modal>
-      <DialogBase.Portal>
+      <DialogBase.Portal container={container}>
         <DialogBase.Backdrop
           className="fixed inset-0 bg-kumo-overlay opacity-80 transition-all duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0"
           onClick={handleBackdropClick}
@@ -198,12 +212,14 @@ function Root<TGroup, TItem = TGroup>({
   filter,
   onSelect,
   getSelectableItems,
+  container,
 }: CommandPaletteRootProps<TGroup, TItem>) {
   return (
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
       onBackdropClick={onBackdropClick}
+      container={container}
     >
       <Panel
         items={items}

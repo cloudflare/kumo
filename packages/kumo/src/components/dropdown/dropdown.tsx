@@ -3,6 +3,10 @@ import * as React from "react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
+import {
   CaretRightIcon as CaretRight,
   CheckIcon,
   CheckIcon as Check,
@@ -79,33 +83,50 @@ DropdownMenuSubTrigger.displayName =
 
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Positioner>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner>
->(({ className, sideOffset = 8, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Positioner
-      ref={ref}
-      sideOffset={sideOffset}
-      {...props}
-    >
-      <DropdownMenuPrimitive.Popup
-        className={cn(
-          "overflow-hidden bg-kumo-control text-kumo-default", // background
-          "rounded-lg shadow-lg ring ring-kumo-line", // border part
-          "min-w-36 p-1.5", // spacing
-          "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
-          "data-[side=bottom]:slide-in-from-top-2", // bottom side animation
-          "data-[side=left]:slide-in-from-right-2", // left side animation
-          "data-[side=right]:slide-in-from-left-2", // right side animation
-          "data-[side=top]:slide-in-from-bottom-2", // top side animation
-          "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95", // close animation
-          className,
-        )}
-      >
-        {children}
-      </DropdownMenuPrimitive.Popup>
-    </DropdownMenuPrimitive.Positioner>
-  </DropdownMenuPrimitive.Portal>
-));
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner> & {
+    /**
+     * Container element for the portal. Use this to render the dropdown inside
+     * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+     * @default document.body (or KumoPortalProvider container if set)
+     */
+    container?: PortalContainer;
+  }
+>(
+  (
+    { className, sideOffset = 8, children, container: containerProp, ...props },
+    ref,
+  ) => {
+    const contextContainer = usePortalContainer();
+    const container = containerProp ?? contextContainer ?? undefined;
+
+    return (
+      <DropdownMenuPrimitive.Portal container={container}>
+        <DropdownMenuPrimitive.Positioner
+          ref={ref}
+          sideOffset={sideOffset}
+          {...props}
+        >
+          <DropdownMenuPrimitive.Popup
+            className={cn(
+              "overflow-hidden bg-kumo-control text-kumo-default", // background
+              "rounded-lg shadow-lg ring ring-kumo-line", // border part
+              "min-w-36 p-1.5", // spacing
+              "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
+              "data-[side=bottom]:slide-in-from-top-2", // bottom side animation
+              "data-[side=left]:slide-in-from-right-2", // left side animation
+              "data-[side=right]:slide-in-from-left-2", // right side animation
+              "data-[side=top]:slide-in-from-bottom-2", // top side animation
+              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95", // close animation
+              className,
+            )}
+          >
+            {children}
+          </DropdownMenuPrimitive.Popup>
+        </DropdownMenuPrimitive.Positioner>
+      </DropdownMenuPrimitive.Portal>
+    );
+  },
+);
 
 const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (!IconComponent) return null;
