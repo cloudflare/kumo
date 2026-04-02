@@ -6,6 +6,7 @@ import {
   useMemo,
   isValidElement,
 } from "react";
+import { defaultTranslation } from "./trans";
 
 /**
  * Recursively makes all properties of an object type optional.
@@ -22,8 +23,8 @@ type DeepPartial<T> = {
 type DeepString<T> = T extends string
   ? string
   : T extends object
-  ? { [K in keyof T]: DeepString<T[K]> }
-  : T;
+    ? { [K in keyof T]: DeepString<T[K]> }
+    : T;
 
 /**
  * Formats a translation template string with named placeholders.
@@ -121,21 +122,6 @@ export function formatTranslationTemplate(
 
   return parts;
 }
-
-/**
- * Default English translations for built-in Kumo component text.
- * Used as fallback when no custom translations are provided.
- */
-const defaultTranslation = {
-  common: {
-    copy: "Copy",
-    copied: "Copied",
-  },
-  pagination: {
-    perPage: "Per page",
-    showInfo: "Showing {range} of {total}",
-  },
-} as const;
 
 /** Type derived from the default translation object with flexible string values */
 export type KumoTranslations = DeepString<typeof defaultTranslation>;
