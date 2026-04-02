@@ -1,0 +1,48 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "KumoLocaleProvider"
+description: "Provides localization for Kumo component text."
+sourceFile: "components/locale"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  KumoLocaleProviderBasicDemo,
+  KumoLocaleProviderChineseDemo,
+  KumoLocaleProviderFrenchDemo,
+} from "~/components/demos/KumoLocaleProviderDemo";
+
+<p>
+  Kumo components come with default English text. To localize them, wrap your
+  app with <code>KumoLocaleProvider</code> and provide a{" "}
+  <code>translations</code> object. Only specify the keys you want to override —
+  the rest will fall back to English defaults. The <code>KumoTranslations</code>{" "}
+  type is exported from <code>@cloudflare/kumo</code> for TypeScript
+  autocompletion.
+</p>
+
+<ComponentSection>
+
+<Heading level={3}>Chinese Localization</Heading>
+<p>Override the default pagination labels with Chinese translations.</p>
+<ComponentExample demo="KumoLocaleProviderChineseDemo">
+  <KumoLocaleProviderChineseDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>French Localization</Heading>
+<p>French translations for the pagination labels.</p>
+<ComponentExample demo="KumoLocaleProviderFrenchDemo">
+  <KumoLocaleProviderFrenchDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="KumoLocaleProvider" />
+</ComponentSection>

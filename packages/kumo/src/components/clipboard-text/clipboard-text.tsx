@@ -5,6 +5,7 @@ import { Tooltip } from "@base-ui/react/tooltip";
 import { Button } from "../button";
 import { inputVariants } from "../input";
 import { cn } from "../../utils/cn";
+import { useKumoLocale } from "../locale/locale";
 
 // Create a toast manager for anchored "Copied" toasts
 const clipboardToastManager = Toast.createToastManager();
@@ -175,13 +176,14 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
     ref,
   ) => {
     const [copied, setCopied] = useState(false);
+    const { t } = useKumoLocale();
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const sizeConfig = KUMO_CLIPBOARD_TEXT_VARIANTS.size[size];
 
     // Destructure tooltip config with defaults
     const {
-      text: tooltipText = "Copy",
-      copiedText = "Copied",
+      text: tooltipText = t.common.copy,
+      copiedText = t.common.copied,
       side: tooltipSide = "top",
     } = tooltip ?? {};
 

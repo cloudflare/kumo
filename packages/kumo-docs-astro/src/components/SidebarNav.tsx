@@ -57,6 +57,7 @@ const componentItems: NavItem[] = [
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
   { label: "InputArea", href: "/components/input-area" },
+  { label: "Kumo Locale Provider", href: "/components/kumo-locale-provider" },
   { label: "Label", href: "/components/label" },
   { label: "Layer Card", href: "/components/layer-card" },
   { label: "Link", href: "/components/link" },

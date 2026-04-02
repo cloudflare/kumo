@@ -214,6 +214,11 @@ export {
   ChartLegend,
 } from "./components/chart";
 
+export {
+  KumoLocaleProvider,
+  type KumoTranslationsPartial,
+} from "./components/locale";
+
 // Sidebar
 export {
   Sidebar,

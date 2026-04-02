@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { Select } from "../select";
+import { useKumoLocale } from "../locale/locale";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
 
@@ -100,15 +101,16 @@ export interface PaginationInfoProps {
 function PaginationInfo({ children, className }: PaginationInfoProps) {
   const { page, perPage, totalCount, pageShowingRange } =
     usePaginationContext();
+  const { t, formatTranslation } = useKumoLocale();
 
-  const content = children ? (
-    children({ page, perPage, totalCount, pageShowingRange })
-  ) : totalCount && totalCount > 0 ? (
-    <>
-      Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
-      <span className="tabular-nums">{totalCount}</span>
-    </>
-  ) : null;
+  const content = children
+    ? children({ page, perPage, totalCount, pageShowingRange })
+    : totalCount && totalCount > 0
+      ? formatTranslation(t.pagination.showInfo, {
+        range: <span className="tabular-nums">{pageShowingRange}</span>,
+        total: <span className="tabular-nums">{totalCount}</span>,
+      })
+      : null;
 
   return (
     <div
@@ -143,15 +145,20 @@ function PaginationPageSize({
   value,
   onChange,
   options = DEFAULT_PAGE_SIZE_OPTIONS as unknown as number[],
-  label = "Per page:",
+  label,
   className,
 }: PaginationPageSizeProps) {
+  const { t } = useKumoLocale();
+  const finalLabel = label ?? t.pagination.perPage;
+
   return (
     <div
       data-slot="pagination-page-size"
       className={cn("flex items-center gap-2", className)}
     >
-      {label && <span className="text-sm text-kumo-strong">{label}</span>}
+      {finalLabel && (
+        <span className="text-sm text-kumo-strong">{finalLabel}:</span>
+      )}
       <Select
         aria-label="Page size"
         value={value}
@@ -354,7 +361,7 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  */
 export interface PaginationLegacyProps
   extends PaginationBaseProps,
-    KumoPaginationVariantsProps {
+  KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {
@@ -404,6 +411,7 @@ export type PaginationProps = PaginationCompoundProps | PaginationLegacyProps;
  */
 function PaginationRoot(props: PaginationProps) {
   const { page = 1, perPage, totalCount, setPage, children, className } = props;
+  const { t, formatTranslation } = useKumoLocale();
 
   // Extract legacy props (only present when children is not provided)
   const text = "text" in props ? props.text : undefined;
@@ -461,12 +469,10 @@ function PaginationRoot(props: PaginationProps) {
     if (text) {
       return text({ page, perPage, totalCount, pageShowingRange });
     } else if (totalCount && totalCount > 0) {
-      return (
-        <>
-          Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
-          <span className="tabular-nums">{totalCount}</span>
-        </>
-      );
+      return formatTranslation(t.pagination.showInfo, {
+        range: <span className="tabular-nums">{pageShowingRange}</span>,
+        total: <span className="tabular-nums">{totalCount}</span>,
+      });
     }
     return null;
   };
