@@ -5,6 +5,7 @@ import {
   useContext,
   useMemo,
   isValidElement,
+  Fragment,
 } from "react";
 import { defaultTranslation } from "./trans";
 
@@ -31,13 +32,13 @@ type DeepString<T> = T extends string
  * Replaces `{key}` patterns with corresponding values from the provided object.
  *
  * Values can be:
- * - Primitives (string | number) - numbers get wrapped in `tabular-nums` spans
+ * - Primitives (string | number) - rendered as-is
  * - React nodes - passed through as-is for custom styling
  *
  * @example
- * // Primitive values (numbers get tabular-nums automatically)
+ * // Primitive values
  * formatTranslationTemplate("Showing {start}-{end} of {total}", { start: 1, end: 25, total: 100 })
- * // Returns: ["Showing ", <span className="tabular-nums">1</span>, "-", <span className="tabular-nums">25</span>, " of ", <span className="tabular-nums">100</span>]
+ * // Returns: ["Showing ", 1, "-", 25, " of ", 100]
  *
  * @example
  * // React node values for custom styling
@@ -46,7 +47,7 @@ type DeepString<T> = T extends string
  *   end: <span className="font-bold">25</span>,
  *   total: 100
  * })
- * // Returns: ["Showing ", <span className="font-bold">1</span>, "-", <span className="font-bold">25</span>, " of ", <span className="tabular-nums">100</span>]
+ * // Returns: ["Showing ", <span className="font-bold">1</span>, "-", <span className="font-bold">25</span>, " of ", 100]
  */
 export function formatTranslationTemplate(
   template: string,
@@ -63,19 +64,7 @@ export function formatTranslationTemplate(
     // Add text before the placeholder
     if (match.index > lastIndex) {
       const textBefore = template.slice(lastIndex, match.index);
-      // Split text by numbers and wrap them
-      const textParts = textBefore.split(/(\d+)/);
-      for (const part of textParts) {
-        if (/^\d+$/.test(part)) {
-          parts.push(
-            <span key={partIndex++} className="tabular-nums">
-              {part}
-            </span>,
-          );
-        } else if (part) {
-          parts.push(<span key={partIndex++}>{part}</span>);
-        }
-      }
+      parts.push(<Fragment key={partIndex++}>{textBefore}</Fragment>);
     }
 
     // Get the value for this placeholder
@@ -84,20 +73,13 @@ export function formatTranslationTemplate(
 
     if (value === undefined) {
       // Keep the placeholder as-is if no value provided
-      parts.push(<span key={partIndex++}>{`{${key}}`}</span>);
+      parts.push(<Fragment key={partIndex++}>{`{${key}}`}</Fragment>);
     } else if (isValidElement(value) || typeof value === "object") {
       // React node - pass through as-is
-      parts.push(<span key={partIndex++}>{value}</span>);
-    } else if (typeof value === "number") {
-      // Number - wrap in tabular-nums
-      parts.push(
-        <span key={partIndex++} className="tabular-nums">
-          {value}
-        </span>,
-      );
+      parts.push(<Fragment key={partIndex++}>{value}</Fragment>);
     } else {
-      // String - pass through
-      parts.push(<span key={partIndex++}>{value}</span>);
+      // String or number - pass through
+      parts.push(<Fragment key={partIndex++}>{value}</Fragment>);
     }
 
     lastIndex = regex.lastIndex;
@@ -106,18 +88,7 @@ export function formatTranslationTemplate(
   // Add remaining text after last placeholder
   if (lastIndex < template.length) {
     const textAfter = template.slice(lastIndex);
-    const textParts = textAfter.split(/(\d+)/);
-    for (const part of textParts) {
-      if (/^\d+$/.test(part)) {
-        parts.push(
-          <span key={partIndex++} className="tabular-nums">
-            {part}
-          </span>,
-        );
-      } else if (part) {
-        parts.push(<span key={partIndex++}>{part}</span>);
-      }
-    }
+    parts.push(<Fragment key={partIndex++}>{textAfter}</Fragment>);
   }
 
   return parts;
@@ -180,13 +151,12 @@ interface LocaleContextValue {
    * Formats a translation template string with named placeholders.
    * Replaces `{key}` patterns with corresponding values.
    *
-   * Values can be primitives (numbers get `tabular-nums` automatically)
-   * or React nodes for custom styling.
+   * Values can be primitives or React nodes for custom styling.
    *
    * @example
    * // Primitive values
    * const text = formatTranslation("Showing {start}-{end} of {total}", { start: 1, end: 25, total: 100 });
-   * // Returns: ["Showing ", <span className="tabular-nums">1</span>, "-", <span className="tabular-nums">25</span>, " of ", <span className="tabular-nums">100</span>]
+   * // Returns: ["Showing ", 1, "-", 25, " of ", 100]
    *
    * @example
    * // React node values for custom styling
@@ -249,3 +219,5 @@ export function KumoLocaleProvider({
     </KumoLocaleContext.Provider>
   );
 }
+
+KumoLocaleProvider.displayName = "KumoLocaleProvider";
