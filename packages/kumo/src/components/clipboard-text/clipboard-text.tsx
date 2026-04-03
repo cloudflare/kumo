@@ -5,7 +5,7 @@ import { Tooltip } from "@base-ui/react/tooltip";
 import { Button } from "../button";
 import { inputVariants } from "../input";
 import { cn } from "../../utils/cn";
-import { useKumoLocale } from "../locale/locale";
+import { useKumoLocale } from "../locale";
 
 // Create a toast manager for anchored "Copied" toasts
 const clipboardToastManager = Toast.createToastManager();

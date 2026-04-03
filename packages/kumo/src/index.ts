@@ -216,6 +216,7 @@ export {
 
 export {
   KumoLocaleProvider,
+  type KumoTranslations,
   type KumoTranslationsPartial,
 } from "./components/locale";
 

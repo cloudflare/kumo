@@ -15,7 +15,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { Select } from "../select";
-import { useKumoLocale } from "../locale/locale";
+import { useKumoLocale } from "../locale";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
 

@@ -132,6 +132,7 @@ export type KumoTranslationsPartial = DeepPartial<KumoTranslations>;
 interface KumoLocaleProviderProps {
   /** Partial translation object to merge with default English strings */
   translations?: KumoTranslationsPartial;
+  locale?: string;
 }
 
 /**
@@ -174,6 +175,7 @@ function mergeTranslations<T extends object>(
 interface LocaleContextValue {
   /** Translation object with all localized strings */
   t: KumoTranslations;
+  locale?: string;
   /**
    * Formats a translation template string with named placeholders.
    * Replaces `{key}` patterns with corresponding values.
@@ -227,15 +229,18 @@ export function useKumoLocale() {
  */
 export function KumoLocaleProvider({
   translations,
+  locale,
   children,
 }: PropsWithChildren<KumoLocaleProviderProps>) {
   /** Memoized context value to prevent unnecessary re-renders */
   const contextValue = useMemo(
-    () => ({
-      t: Object.freeze(mergeTranslations(defaultTranslation, translations)),
-      formatTranslation: formatTranslationTemplate,
-    }),
-    [translations],
+    () =>
+      ({
+        t: Object.freeze(mergeTranslations(defaultTranslation, translations)),
+        formatTranslation: formatTranslationTemplate,
+        locale,
+      }) satisfies LocaleContextValue,
+    [translations, locale],
   );
 
   return (
