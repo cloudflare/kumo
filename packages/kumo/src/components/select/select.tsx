@@ -309,7 +309,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         <SelectBase.Positioner>
           <SelectBase.Popup
             className={cn(
-              "overflow-hidden bg-kumo-base text-kumo-default", // background
+              "max-h-[var(--available-height)] overflow-x-hidden overflow-y-auto overscroll-y-none bg-kumo-base text-kumo-default", // background
               "rounded-lg shadow-lg ring ring-kumo-ring", // border part
               // 3px adjustment to account for padding + border differences
               "min-w-[calc(var(--anchor-width)+3px)] p-1.5", // spacing
