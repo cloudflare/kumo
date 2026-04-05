@@ -292,7 +292,7 @@ describe("Select", () => {
   });
 
   describe("popup structure", () => {
-    it("opens a listbox popup from the trigger", () => {
+    it("opens a listbox popup from the trigger", async () => {
       render(
         <Select aria-label="Select a country">
           <Select.Option value="af">Afghanistan</Select.Option>
@@ -300,14 +300,14 @@ describe("Select", () => {
         </Select>,
       );
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(screen.getByRole("combobox"));
       });
 
       expect(screen.getByRole("listbox")).toBeTruthy();
     });
 
-    it("uses a presentation popup and inner listbox after the refactor", () => {
+    it("uses a presentation popup and inner listbox after the refactor", async () => {
       render(
         <Select aria-label="Select a country">
           <Select.Option value="af">Afghanistan</Select.Option>
@@ -315,7 +315,7 @@ describe("Select", () => {
         </Select>,
       );
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(screen.getByRole("combobox"));
       });
 
@@ -325,9 +325,11 @@ describe("Select", () => {
 
       const popup = listbox.parentElement;
       expect(popup?.getAttribute("role")).toBe("presentation");
+      expect(popup?.className).toContain("max-h-[var(--available-height)]");
+      expect(popup?.className).not.toContain("overscroll");
     });
 
-    it("applies height and overscroll classes to the inner scroll container", () => {
+    it("applies height and overscroll classes to the inner scroll container", async () => {
       // DOM structure assertion only: real touch scroll behavior still needs manual/device validation.
       render(
         <Select aria-label="Select many countries">
@@ -339,7 +341,7 @@ describe("Select", () => {
         </Select>,
       );
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(screen.getByRole("combobox"));
       });
 

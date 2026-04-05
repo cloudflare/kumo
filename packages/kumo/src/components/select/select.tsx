@@ -400,3 +400,4 @@ function Option<T>({ children, value }: OptionProps<T>) {
 }
 
 Select.Option = Option;
+(Select.Option as { displayName?: string }).displayName = "Select.Option";
