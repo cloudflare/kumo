@@ -156,7 +156,7 @@ export function Tabs({
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
         className={cn(
-          "scrollbar-hide relative flex min-w-0 shrink items-stretch",
+          "scrollbar-hide relative flex min-w-0 shrink items-stretch overflow-x-auto overflow-y-hidden",
           isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-line/70",
           isUnderline && "h-7 gap-4 border-b border-kumo-ring pb-2",
           listClassName,
