@@ -81,7 +81,7 @@ export function PageHeader({
       )}
 
       {tabs && (
-        <div className="flex w-full items-center justify-between border-b border-kumo-line pt-1 pb-3 pl-3">
+        <div className="flex w-full items-center justify-between gap-3 border-b border-kumo-line pt-1 pb-3 overflow-hidden">
           <Tabs
             tabs={tabs}
             selectedValue={defaultTab}
@@ -91,7 +91,7 @@ export function PageHeader({
             }}
           />
 
-          <div className="flex items-center gap-2">{children}</div>
+          <div className="ml-auto flex shrink-0 items-center gap-2">{children}</div>
         </div>
       )}
     </div>
