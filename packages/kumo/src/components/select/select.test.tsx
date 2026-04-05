@@ -329,7 +329,7 @@ describe("Select", () => {
       expect(popup?.className).not.toContain("overscroll");
     });
 
-    it("applies height and overscroll classes to the inner scroll container", async () => {
+    it("applies height and overscroll-none to the inner scroll container", async () => {
       // DOM structure assertion only: real touch scroll behavior still needs manual/device validation.
       render(
         <Select aria-label="Select many countries">
@@ -347,7 +347,7 @@ describe("Select", () => {
 
       const listbox = screen.getByRole("listbox");
       expect(listbox.className).toContain("overflow-y-auto");
-      expect(listbox.className).toContain("overscroll-contain");
+      expect(listbox.className).toContain("overscroll-none");
     });
   });
 });

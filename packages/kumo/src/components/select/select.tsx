@@ -317,7 +317,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           >
             <SelectBase.List
               className={cn(
-                "min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-pt-2 scroll-pb-2",
+                "min-h-0 flex-1 overflow-y-auto overscroll-none scroll-pt-2 scroll-pb-2",
               )}
             >
               {renderedChildren}
