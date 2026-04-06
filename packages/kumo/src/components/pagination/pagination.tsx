@@ -19,6 +19,9 @@ import { Select } from "../select";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
 /** Pagination controls variant definitions. */
 export const KUMO_PAGINATION_VARIANTS = {
   controls: {
@@ -253,15 +256,13 @@ function PaginationControls({
                   setEditingPage(Number(value));
                 }}
                 onBlur={() => {
-                  let number = Math.max(editingPage, 1);
-                  number = Math.min(number, maxPage);
-                  setPage(number);
-                  setEditingPage(number);
+                  const clamped = clamp(editingPage, 1, maxPage);
+                  setPage(clamped);
+                  setEditingPage(clamped);
                 }}
                 onKeyDown={(e: KeyboardEvent) => {
                   if (e.key === "Enter") {
-                    let clamped = Math.max(editingPage, 1);
-                    clamped = Math.min(clamped, maxPage);
+                    const clamped = clamp(editingPage, 1, maxPage);
                     setPage(clamped);
                     setEditingPage(clamped);
                   }
