@@ -195,6 +195,27 @@ describe("Pagination", () => {
       expect(screen.queryByRole("textbox", { name: "Page number" })).toBeNull();
     });
 
+    it("calls setPage when selecting a page from dropdown", async () => {
+      const user = userEvent.setup();
+      const setPage = vi.fn();
+      renderPagination({
+        page: 1,
+        perPage: 10,
+        totalCount: 100,
+        pageSelector: "dropdown",
+        setPage,
+      });
+
+      const combobox = screen.getByRole("combobox", { name: "Page number" });
+      await user.click(combobox);
+
+      // Base UI Select renders options in a portal; query from document
+      const option = await screen.findByRole("option", { name: "5" });
+      await user.click(option);
+
+      expect(setPage).toHaveBeenCalledWith(5);
+    });
+
     it("does not render dropdown in simple controls mode even if pageSelector is dropdown", () => {
       renderPagination({ controls: "simple", pageSelector: "dropdown" });
 

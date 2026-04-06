@@ -182,6 +182,10 @@ export interface PaginationControlsProps extends KumoPaginationVariantsProps {
    * How the page number selector is rendered in "full" controls mode.
    * - `"input"` (default): A text input where users type a page number.
    * - `"dropdown"`: A dropdown select with all page numbers as options.
+   *
+   * **Note:** `"dropdown"` renders an option for every page, so it is best
+   * suited for small page counts. For large datasets (hundreds of pages or
+   * more) prefer `"input"` to avoid rendering performance overhead.
    */
   pageSelector?: "input" | "dropdown";
   /** Additional CSS classes */
