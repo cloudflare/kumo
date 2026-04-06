@@ -63,16 +63,8 @@ export function SwitchNeutralStatesDemo() {
 export function SwitchVariantsDemo() {
   return (
     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-      <Switch
-        label="Default off"
-        checked={false}
-        onCheckedChange={() => {}}
-      />
-      <Switch
-        label="Default on"
-        checked={true}
-        onCheckedChange={() => {}}
-      />
+      <Switch label="Default off" checked={false} onCheckedChange={() => {}} />
+      <Switch label="Default on" checked={true} onCheckedChange={() => {}} />
       <Switch
         label="Neutral off"
         variant="neutral"
@@ -86,6 +78,19 @@ export function SwitchVariantsDemo() {
         onCheckedChange={() => {}}
       />
     </div>
+  );
+}
+
+/** Switch with a custom id prop — clicking the label should still toggle the switch. */
+export function SwitchCustomIdDemo() {
+  const [checked, setChecked] = useState(false);
+  return (
+    <Switch
+      id="my-custom-switch"
+      label="Custom ID"
+      checked={checked}
+      onCheckedChange={setChecked}
+    />
   );
 }
 

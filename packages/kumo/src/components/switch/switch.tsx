@@ -198,6 +198,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
       controlFirst = true,
       onCheckedChange,
       transitioning,
+      id,
       ...props
     },
     ref,
@@ -207,6 +208,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
     const switchControl = (
       <BaseSwitch.Root
         ref={ref}
+        id={id}
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
