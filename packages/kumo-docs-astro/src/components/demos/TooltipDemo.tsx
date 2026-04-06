@@ -58,3 +58,34 @@ export function TooltipCustomTriggerDemo() {
     </TooltipProvider>
   );
 }
+
+/**
+ * Control the delay before opening and closing the tooltip.
+ * `delay` controls open delay (default: 600ms), `closeDelay` controls close delay (default: 0ms).
+ */
+export function TooltipDelayDemo() {
+  return (
+    <TooltipProvider>
+      <div className="flex gap-4">
+        <Tooltip content="Opens after 1 second" delay={1000} asChild>
+          <Button variant="secondary">1s open delay</Button>
+        </Tooltip>
+        <Tooltip
+          content="Stays open 500ms after leaving"
+          closeDelay={500}
+          asChild
+        >
+          <Button variant="secondary">500ms close delay</Button>
+        </Tooltip>
+        <Tooltip
+          content="Instant open, stays 1s"
+          delay={0}
+          closeDelay={1000}
+          asChild
+        >
+          <Button variant="secondary">Instant + 1s close</Button>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+}

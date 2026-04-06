@@ -11,7 +11,6 @@ on:
 permissions:
   contents: read
   pull-requests: read
-  statuses: write
 
 jobs:
   bonk-check:
@@ -22,60 +21,73 @@ jobs:
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          REVIEW_BODY: ${{ github.event.review.body || '' }}
+          REVIEW_USER: ${{ github.event.review.user.login || '' }}
         run: |
-          # get the PR number and head sha
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-            SHA="${{ github.event.pull_request.head.sha }}"
-          elif [ "${{ github.event_name }}" = "pull_request_review" ]; then
+          set -euo pipefail
+
+          is_collaborator() {
+            local user="$1"
+            local status
+            status=$(gh api "repos/$REPOSITORY/collaborators/$user" -i 2>/dev/null | head -1 | awk '{print $2}')
+            [ "$status" = "204" ]
+          }
+
+          if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_review" ]; then
             PR_NUMBER="${{ github.event.pull_request.number }}"
             SHA="${{ github.event.pull_request.head.sha }}"
           else
             PR_NUMBER="${{ github.event.issue.number }}"
-            SHA=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.head.sha')
+            SHA=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')
           fi
 
-          echo "pr=$PR_NUMBER" >> $GITHUB_OUTPUT
-          echo "sha=$SHA" >> $GITHUB_OUTPUT
-
-          # fetch all issue comments on the PR
-          COMMENTS=$(gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" --paginate | jq -r '.[] | .body + " ||| " + .user.login')
+          echo "pr=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
           FOUND=false
-          while IFS= read -r line; do
-            BODY=$(echo "$line" | sed 's/ ||| .*//')
-            USER=$(echo "$line" | sed 's/.* ||| //')
 
-            # check if comment contains /bonk
-            if echo "$BODY" | grep -q '/bonk'; then
-              # check if commenter is a repo collaborator
-              STATUS=$(gh api "repos/${{ github.repository }}/collaborators/$USER" -i 2>/dev/null | head -1 | awk '{print $2}')
-              if [ "$STATUS" = "204" ]; then
-                FOUND=true
-                echo "found=true" >> $GITHUB_OUTPUT
-                echo "bonk_user=$USER" >> $GITHUB_OUTPUT
-                break
-              fi
+          if [ "$EVENT_NAME" = "pull_request_review" ] && printf '%s' "$REVIEW_BODY" | grep -q '/bonk'; then
+            if is_collaborator "$REVIEW_USER"; then
+              FOUND=true
+              echo "found=true" >> "$GITHUB_OUTPUT"
+              echo "bonk_user=$REVIEW_USER" >> "$GITHUB_OUTPUT"
             fi
-          done <<< "$COMMENTS"
+          fi
 
           if [ "$FOUND" = "false" ]; then
-            echo "found=false" >> $GITHUB_OUTPUT
+            COMMENTS=$(gh api "repos/$REPOSITORY/issues/$PR_NUMBER/comments" --paginate | jq -r '.[] | @base64')
+
+            while IFS= read -r encoded; do
+              [ -z "$encoded" ] && continue
+
+              BODY=$(printf '%s' "$encoded" | base64 --decode | jq -r '.body')
+              USER=$(printf '%s' "$encoded" | base64 --decode | jq -r '.user.login')
+
+              if printf '%s' "$BODY" | grep -q '/bonk' && is_collaborator "$USER"; then
+                FOUND=true
+                echo "found=true" >> "$GITHUB_OUTPUT"
+                echo "bonk_user=$USER" >> "$GITHUB_OUTPUT"
+                break
+              fi
+            done <<< "$COMMENTS"
           fi
 
-      - name: Post commit status
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          if [ "$FOUND" = "false" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summarize result
         run: |
           if [ "${{ steps.check.outputs.found }}" = "true" ]; then
-            STATE="success"
-            DESCRIPTION="/bonk called by ${{ steps.check.outputs.bonk_user }}"
+            echo "✅ /bonk called by ${{ steps.check.outputs.bonk_user }}" >> "$GITHUB_STEP_SUMMARY"
           else
-            STATE="failure"
-            DESCRIPTION="/bonk has not been called on this PR"
+            echo "❌ /bonk has not been called on this PR by a collaborator" >> "$GITHUB_STEP_SUMMARY"
           fi
 
-          gh api "repos/${{ github.repository }}/statuses/${{ steps.check.outputs.sha }}" \
-            -f state="$STATE" \
-            -f description="$DESCRIPTION" \
-            -f context="bonk-check"
+      - name: Require /bonk
+        if: steps.check.outputs.found != 'true'
+        run: |
+          echo "::error::/bonk has not been called on this PR by a collaborator"
+          exit 1

@@ -19,6 +19,7 @@ import {
   PaginationPageSizeSelectorDemo,
   PaginationCustomPageSizeOptionsDemo,
   PaginationCompoundCustomInfoDemo,
+  PaginationDropdownSelectorDemo,
   PaginationPageSizeRightDemo,
 } from "~/components/demos/PaginationDemo";
 
@@ -148,6 +149,29 @@ export default function Example() {
   <PaginationPageSizeRightDemo client:visible />
 </ComponentExample>
 
+    <Heading level={3}>Dropdown Page Selector</Heading>
+    <p>
+      Use `pageSelector="dropdown"` on `Pagination.Controls` to render a dropdown
+      select instead of a text input for page navigation. This is useful when you
+      want users to pick from a list of available pages rather than typing a number.
+    </p>
+    <ComponentExample
+      code={`<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={500}>
+
+  <Pagination.Info />
+  <Pagination.Separator />
+  <Pagination.PageSize
+    value={perPage}
+    onChange={(size) => {
+      setPerPage(size);
+      setPage(1);
+    }}
+  />
+  <Pagination.Controls pageSelector="dropdown" />
+</Pagination>`}
+    >
+      <PaginationDropdownSelectorDemo client:visible />
+    </ComponentExample>
 </ComponentSection>
 
 {/* API Reference */}

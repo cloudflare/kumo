@@ -1,5 +1,115 @@
 # @cloudflare/kumo
 
+## 1.17.0
+
+### Minor Changes
+
+- 355a1b5: Badge: add color-based variants and deprecate semantic variants
+  - Add color variants: `red`, `orange`, `yellow`, `green`, `teal`, `blue`, `neutral`, `inverted`
+  - Add subtle variants for each color (`red-subtle`, `orange-subtle`, etc.) with lighter backgrounds and darker text
+  - Retain `outline` and `beta` variants unchanged
+  - Deprecate `primary` (use `inverted`), `secondary` (use `neutral`), `destructive` (use `red`), `success` (use `green`)
+  - Dark mode support: subtle variants flip to dark backgrounds with light text, regular color variants darken slightly, inverted flips to white bg with black text
+  - Default variant changed from `primary` to `neutral`
+
+- 250a6dd: Add `action` prop to Banner for rendering CTA buttons alongside structured title/description content without resorting to the `children` prop.
+- 8c244d2: Refresh semantic surface color tokens and component surface usage.
+  - Add and adopt `kumo-canvas` as the page-level surface token in theme output and docs usage.
+  - Rebalance neutral token values in `kumo-binding.css` and generated theme variables for improved light/dark surface hierarchy.
+  - Update surface-related component styling (`LayerCard`, `MenuBar`, `Tabs`) to align with the refreshed `canvas`/`elevated`/`recessed` layering model.
+  - Update token usage guidance in `ai/USAGE.md` to reflect page vs component background roles.
+
+- ef15662: Make timeseries' highlighted on hovering a data point
+- cd0c22f: Add Shadow DOM support via `KumoPortalProvider` and `container` prop on all portal-based components
+
+  All overlay components (Dialog, DropdownMenu, Combobox, Select, Tooltip, Popover, CommandPalette, Toast) now support rendering inside Shadow DOM or custom containers.
+
+  **New exports:**
+  - `KumoPortalProvider` - Context provider to set default portal container for all overlays
+  - `PortalContainer` - Type for portal container (HTMLElement, ShadowRoot, or ref)
+
+  **Component updates:**
+  All portal-based components now accept an optional `container` prop:
+  - `Dialog` - `container` prop on Dialog component
+  - `DropdownMenu.Content` - `container` prop
+  - `Combobox.Content` - `container` prop
+  - `Select` - `container` prop
+  - `Tooltip` - `container` prop
+  - `Popover.Content` - `container` prop
+  - `CommandPalette.Root` and `CommandPalette.Dialog` - `container` prop
+  - `Toasty` (Toast provider) - `container` prop
+
+  **Usage:**
+
+  Set once at the app level:
+
+  ```tsx
+  <KumoPortalProvider container={shadowRoot}>
+    <App />
+  </KumoPortalProvider>
+  ```
+
+  Or override per component:
+
+  ```tsx
+  <Dialog container={customContainer}>
+    <Dialog.Title>Modal inside shadow DOM</Dialog.Title>
+  </Dialog>
+  ```
+
+  When no provider or prop is set, components default to `document.body` (existing behavior).
+
+- 17f21f3: SkeletonLine: add `blockHeight` prop to set a container height and vertically center the skeleton line within it
+- d1f697b: Table: add `sticky` prop to `Table.Head` and `Table.Cell` for pinning columns to left/right edges, and `sticky` prop to `Table.Header` for sticky header rows. Uses `isolate` stacking context with `z-0`/`z-1`/`z-2` layering.
+- 56e3640: Add `toml` as a supported language for syntax highlighting in the Code component
+- f0c8952: Add `title` prop to `Button` — wraps the button in a `Tooltip` when provided.
+
+### Patch Changes
+
+- 7721bc5: Checkbox.Group & Radio.Group: remove fieldset border box and simplify styling
+  - Remove `rounded-lg border border-kumo-line p-4` wrapper from both group fieldsets
+  - Downsize legend from `text-lg` to `text-base` with inline-flex layout
+  - Drop `font-medium` from Checkbox.Item and Radio.Item labels
+
+- 6c21970: Fix missing disabled styling on Combobox triggers. `TriggerValue` and `TriggerMultipleWithInput` now apply `opacity-50` and `cursor-not-allowed` when disabled, matching the behaviour of the `Select` component.
+- 0e4247a: Update dialog backdrop overlay to use `bg-kumo-recessed` token
+- 0060bb9: Remove `ai/schemas.ts` from version control (now fully generated at build time)
+- 04a1f07: Fix LayerCard.Primary stacking order when sandwiched between LayerCard.Secondary elements
+- 94d50e2: Fix SensitiveInput focus ring and global CSS pollution
+  - Fix focus ring not showing on container when inner input is focused (focus-within:outline)
+  - Add defensive styles to eye toggle and copy buttons to prevent global CSS pollution
+  - Fix inputVariants parentFocusIndicator using wrong selector ([&:has(:focus-within)] → focus-within:)
+
+- db75c51: SkeletonLine: move `.skeleton-line` styles into `@layer base` so Tailwind utility classes (e.g. `className="h-6"`) can override the default height
+- eb68b35: Tabs indicator now uses `translate-x` for its transition animation, replacing the CSS `left` transition with a GPU-accelerated transform.
+- e21a6df: fix flow component not reflecting padding prop
+- 29c56fd: `Surface`: replace `as` prop with Base UI `render` prop for polymorphism
+
+  The `as` prop used a hand-rolled generic `forwardRef` pattern (with `as any` casts) that conflicted with how the rest of the library handles polymorphism via Base UI's `useRender` hook.
+
+  `Surface` now accepts a `render` prop, consistent with `Link` and other components. The old `as` prop is kept as a deprecated alias and continues to work unchanged — no migration required.
+
+  ```tsx
+  // Still works (deprecated)
+  <Surface as="section">...</Surface>
+
+  // Preferred going forward
+  <Surface render={<section />}>...</Surface>
+  ```
+
+- 9272b4a: Switch: polish squircle styling
+  - Use `ring-inset` on thumb to prevent border protruding beyond the track
+  - Make thumb ring transparent to remove visible border outline
+  - Switch focus indicator from `ring` to `outline` with `outline-offset-2` to avoid clashing with the track's own ring border
+
+- 6b15bac: fix(Tabs): update segmented tab spacing and track styling
+  - Adjust segmented `Tabs` list styling colour to `bg-kumo-recessed` and added `ring` to make the Tabs background more visible
+  - Remove extra edge spacing and keep the segmented track/indicator alignment consistent
+
+- cfe814d: update toast styling to use a subtle ring and background that reflect each state.
+- 7ac73d2: update status text token values for info and danger to improve a11y contrast ratio on banners.
+- dcbf185: Add `truncate` prop to `Text` component. When `true`, applies `truncate min-w-0` classes to clip overflowing text with an ellipsis.
+
 ## 1.16.0
 
 ### Minor Changes

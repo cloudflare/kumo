@@ -103,6 +103,16 @@ export type TooltipProps = BaseTooltipProps &
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
+    /**
+     * How long to wait before closing the tooltip. Specified in milliseconds.
+     * @default 0
+     */
+    closeDelay?: number;
+    /**
+     * How long to wait before opening the tooltip. Specified in milliseconds.
+     * @default 600
+     */
+    delay?: number;
   };
 
 /**
@@ -124,6 +134,8 @@ export function Tooltip({
   side,
   className,
   container: containerProp,
+  closeDelay,
+  delay,
   ...props
 }: TooltipProps) {
   const contextContainer = usePortalContainer();
@@ -132,6 +144,8 @@ export function Tooltip({
   return (
     <TooltipBase.Root {...props}>
       <TooltipBase.Trigger
+        closeDelay={closeDelay}
+        delay={delay}
         className={cn(
           // Defensive resets when rendering as button wrapper (not asChild)
           // These prevent global button styles from polluting the trigger
