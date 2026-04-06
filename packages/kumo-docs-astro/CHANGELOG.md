@@ -1,5 +1,41 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.16
+
+### Patch Changes
+
+- 6c21970: Fix missing disabled styling on Combobox triggers. `TriggerValue` and `TriggerMultipleWithInput` now apply `opacity-50` and `cursor-not-allowed` when disabled, matching the behaviour of the `Select` component.
+- 36f1609: - Added a table-of-contents to the docs pages
+  - Refined layout updates
+  - Improved prose styling while avoiding impacts to embedded component previews
+- c58357d: Add changelog page
+- 0e5dd5e: restructure contributing docs into a complete contributor workflow so setup, validation, changeset, and PR guidance are all in one place
+- Updated dependencies [355a1b5]
+- Updated dependencies [250a6dd]
+- Updated dependencies [7721bc5]
+- Updated dependencies [8c244d2]
+- Updated dependencies [6c21970]
+- Updated dependencies [0e4247a]
+- Updated dependencies [ef15662]
+- Updated dependencies [0060bb9]
+- Updated dependencies [04a1f07]
+- Updated dependencies [94d50e2]
+- Updated dependencies [cd0c22f]
+- Updated dependencies [db75c51]
+- Updated dependencies [17f21f3]
+- Updated dependencies [eb68b35]
+- Updated dependencies [e21a6df]
+- Updated dependencies [29c56fd]
+- Updated dependencies [9272b4a]
+- Updated dependencies [6b15bac]
+- Updated dependencies [d1f697b]
+- Updated dependencies [cfe814d]
+- Updated dependencies [7ac73d2]
+- Updated dependencies [56e3640]
+- Updated dependencies [dcbf185]
+- Updated dependencies [f0c8952]
+  - @cloudflare/kumo@1.17.0
+
 ## 1.3.15
 
 ### Patch Changes

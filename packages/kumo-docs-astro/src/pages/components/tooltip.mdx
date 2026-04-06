@@ -14,6 +14,7 @@ import {
   TooltipHeroDemo,
   TooltipBasicDemo,
   TooltipMultipleDemo,
+  TooltipDelayDemo,
 } from "~/components/demos/TooltipDemo";
 
 {/* Hero Demo */}
@@ -76,6 +77,15 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
 <Heading level={3}>Multiple Tooltips</Heading>
 <ComponentExample demo="TooltipMultipleDemo">
   <TooltipMultipleDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Delay Control</Heading>
+<p>
+  Use `delay` to control how long to wait before opening (default: 600ms) and
+  `closeDelay` to control how long to wait before closing (default: 0ms).
+</p>
+<ComponentExample demo="TooltipDelayDemo">
+  <TooltipDelayDemo client:load />
 </ComponentExample>
 
 </ComponentSection>
