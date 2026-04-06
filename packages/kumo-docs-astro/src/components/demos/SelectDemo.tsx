@@ -306,3 +306,31 @@ export function SelectComplexDemo() {
     </Select>
   );
 }
+
+// Generate 50 items for long list scrolling test
+const longListItems = Array.from({ length: 50 }, (_, i) => ({
+  value: `item-${i + 1}`,
+  label: `Option ${i + 1}`,
+}));
+
+/** Select with a long list to test popup scrolling behavior. */
+export function SelectLongListDemo() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Long List Select"
+      description="Tests scrolling behavior with many options"
+      placeholder="Choose an option..."
+      className="w-[220px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+    >
+      {longListItems.map((item) => (
+        <Select.Option key={item.value} value={item.value}>
+          {item.label}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}
