@@ -1,5 +1,5 @@
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { Select } from "./select";
 
@@ -288,6 +288,66 @@ describe("Select", () => {
       );
 
       expect(screen.getByText("Choose a database")).toBeTruthy();
+    });
+  });
+
+  describe("popup structure", () => {
+    it("opens a listbox popup from the trigger", async () => {
+      render(
+        <Select aria-label="Select a country">
+          <Select.Option value="af">Afghanistan</Select.Option>
+          <Select.Option value="al">Albania</Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      expect(screen.getByRole("listbox")).toBeTruthy();
+    });
+
+    it("uses a presentation popup and inner listbox after the refactor", async () => {
+      render(
+        <Select aria-label="Select a country">
+          <Select.Option value="af">Afghanistan</Select.Option>
+          <Select.Option value="al">Albania</Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const listbox = screen.getByRole("listbox");
+      expect(listbox).toBeTruthy();
+      expect(listbox.className).toContain("overflow-y-auto");
+
+      const popup = listbox.parentElement;
+      expect(popup?.getAttribute("role")).toBe("presentation");
+      expect(popup?.className).toContain("max-h-[var(--available-height)]");
+      expect(popup?.className).not.toContain("overscroll");
+    });
+
+    it("applies height and overscroll-none to the inner scroll container", async () => {
+      // DOM structure assertion only: real touch scroll behavior still needs manual/device validation.
+      render(
+        <Select aria-label="Select many countries">
+          {Array.from({ length: 30 }, (_, index) => (
+            <Select.Option key={index} value={`value-${index}`}>
+              {`Option ${index}`}
+            </Select.Option>
+          ))}
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const listbox = screen.getByRole("listbox");
+      expect(listbox.className).toContain("overflow-y-auto");
+      expect(listbox.className).toContain("overscroll-none");
     });
   });
 });

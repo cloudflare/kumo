@@ -22,6 +22,7 @@ import {
   SelectLoadingDataDemo,
   SelectMultipleDemo,
   SelectComplexDemo,
+  SelectLongListDemo,
 } from "~/components/demos/SelectDemo";
 
 {/* Hero Demo */}
@@ -227,6 +228,20 @@ export default function Example() {
 
   <ComponentExample demo="SelectComplexDemo">
     <SelectComplexDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Long List - Test scrolling behavior */}
+
+<ComponentSection>
+  <Heading level={3}>Long List (Scrolling Test)</Heading>
+  <p>
+    A select component with many options to test popup scrolling behavior.
+    The popup should scroll smoothly without bounce/overscroll issues.
+  </p>
+
+  <ComponentExample demo="SelectLongListDemo">
+    <SelectLongListDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
