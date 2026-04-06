@@ -233,17 +233,12 @@
 
   --color-kumo-badge-orange: light-dark(
     var(--color-orange-650, oklch(81.5% 0.197 76)),
-    var(--color-orange-700, oklch(55.3% 0.195 38.402))
+    var(--color-orange-650, oklch(81.5% 0.197 76))
   );
 
   --color-kumo-badge-orange-subtle: light-dark(
     var(--color-orange-100, oklch(95.4% 0.038 75.164)),
     var(--color-orange-900, oklch(40.8% 0.123 38.172))
-  );
-
-  --color-kumo-badge-yellow: light-dark(
-    var(--color-yellow-600, oklch(68.1% 0.162 75.834)),
-    var(--color-yellow-700, oklch(55.4% 0.135 66.442))
   );
 
   --color-kumo-badge-purple: light-dark(
@@ -343,7 +338,6 @@
     --color-kumo-badge-red: var(--color-red-600, oklch(57.7% 0.245 27.325));
     --color-kumo-badge-orange: var(--color-orange-650, oklch(81.5% 0.197 76));
     --color-kumo-badge-orange-subtle: var(--color-orange-100, oklch(95.4% 0.038 75.164));
-    --color-kumo-badge-yellow: var(--color-yellow-600, oklch(68.1% 0.162 75.834));
     --color-kumo-badge-purple: var(--color-purple-600, oklch(60% 0.118 184.704));
     --color-kumo-badge-green: var(--color-emerald-700, oklch(50.8% 0.118 165.612));
     --color-kumo-badge-teal: var(--color-teal-650, oklch(54.9% 0.096 184.565));
@@ -398,9 +392,8 @@
     --color-kumo-success: var(--color-emerald-900, oklch(37.8% 0.077 168.94));
     --color-kumo-success-tint: var(--color-green-900, oklch(39.3% 0.095 152.535));
     --color-kumo-badge-red: var(--color-red-700, oklch(50.5% 0.213 27.518));
-    --color-kumo-badge-orange: var(--color-orange-700, oklch(55.3% 0.195 38.402));
+    --color-kumo-badge-orange: var(--color-orange-650, oklch(81.5% 0.197 76));
     --color-kumo-badge-orange-subtle: var(--color-orange-900, oklch(40.8% 0.123 38.172));
-    --color-kumo-badge-yellow: var(--color-yellow-700, oklch(55.4% 0.135 66.442));
     --color-kumo-badge-purple: var(--color-purple-700, oklch(50.8% 0.118 165.612));
     --color-kumo-badge-green: var(--color-emerald-700, oklch(50.8% 0.118 165.612));
     --color-kumo-badge-teal: var(--color-teal-700, oklch(51.1% 0.096 186.391));
