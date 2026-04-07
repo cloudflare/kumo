@@ -1,11 +1,10 @@
 import { Select as SelectBase } from "@base-ui/react/select";
-import { CaretUpDownIcon, CheckIcon, Info } from "@phosphor-icons/react";
+import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
 import { SkeletonLine } from "../loader";
-import { Tooltip } from "../tooltip";
 import { Field, type FieldErrorMatch } from "../field/field";
 import {
   usePortalContainer,
@@ -77,8 +76,6 @@ export interface SelectItemDescriptor {
   label: ReactNode;
   /** When `true`, the option cannot be selected. */
   disabled?: boolean;
-  /** Explanation shown via an info icon tooltip when the option is disabled. */
-  disabledReason?: ReactNode;
 }
 
 /** Value type accepted by the `items` object-map prop. */
@@ -134,17 +131,11 @@ function renderOptionsFromItems<T>(
   // Object-map keys are always strings (Record<string, ...>), so the lookup
   // uses string keys. The array form ({ label, value }[]) does not support
   // descriptors — consumers should use the children API for that case.
-  const disabledLookup = new Map<
-    string,
-    { disabled?: boolean; disabledReason?: ReactNode }
-  >();
+  const disabledLookup = new Map<string, { disabled?: boolean }>();
   if (!Array.isArray(items)) {
     for (const [key, entry] of Object.entries(items)) {
       if (isItemDescriptor(entry)) {
-        disabledLookup.set(key, {
-          disabled: entry.disabled,
-          disabledReason: entry.disabledReason,
-        });
+        disabledLookup.set(key, { disabled: entry.disabled });
       }
     }
   }
@@ -163,12 +154,7 @@ function renderOptionsFromItems<T>(
           : undefined;
 
       return (
-        <Option
-          key={key}
-          value={item.value}
-          disabled={meta?.disabled}
-          disabledReason={meta?.disabledReason}
-        >
+        <Option key={key} value={item.value} disabled={meta?.disabled}>
           {item.label}
         </Option>
       );
@@ -301,11 +287,6 @@ export interface SelectOptionProps {
   value: unknown;
   /** When `true`, the option cannot be selected. */
   disabled?: boolean;
-  /**
-   * Explanation shown via an info icon tooltip when the option is disabled.
-   * Only rendered when `disabled` is `true`.
-   */
-  disabledReason?: ReactNode;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }
@@ -487,22 +468,11 @@ type OptionProps<T> = {
   value: T;
   /** When `true`, the option cannot be selected. */
   disabled?: boolean;
-  /**
-   * Explanation shown via an info icon tooltip when the option is disabled.
-   * Only rendered when `disabled` is `true`.
-   */
-  disabledReason?: ReactNode;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
 };
 
-function Option<T>({
-  children,
-  value,
-  disabled,
-  disabledReason,
-  className,
-}: OptionProps<T>) {
+function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
   return (
     <SelectBase.Item
       value={value}
@@ -514,18 +484,6 @@ function Option<T>({
       )}
     >
       <SelectBase.ItemText>{children}</SelectBase.ItemText>
-      {disabled && disabledReason && (
-        <span
-          className="pointer-events-auto inline-flex shrink-0 items-center"
-          // Prevent tooltip click from bubbling to the item
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          <Tooltip content={disabledReason}>
-            <Info className="size-4 text-kumo-subtle" />
-          </Tooltip>
-        </span>
-      )}
       <SelectBase.ItemIndicator>
         <CheckIcon />
       </SelectBase.ItemIndicator>

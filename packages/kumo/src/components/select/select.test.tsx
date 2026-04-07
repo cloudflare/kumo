@@ -331,47 +331,6 @@ describe("Select", () => {
       expect(option.className).toContain("data-[disabled]");
     });
 
-    it("renders info icon with tooltip when disabledReason is provided", async () => {
-      render(
-        <Select aria-label="Pick one">
-          <Select.Option value="a" disabled disabledReason="Not available">
-            Option A
-          </Select.Option>
-        </Select>,
-      );
-
-      await act(async () => {
-        fireEvent.click(screen.getByRole("combobox"));
-      });
-
-      // The Info icon should be rendered inside the option
-      const option = screen.getByRole("option");
-      const infoIcon = option.querySelector("svg");
-      expect(infoIcon).toBeTruthy();
-    });
-
-    it("does not render info icon when option is not disabled", async () => {
-      render(
-        <Select aria-label="Pick one">
-          <Select.Option value="a" disabledReason="Should not show">
-            Option A
-          </Select.Option>
-        </Select>,
-      );
-
-      await act(async () => {
-        fireEvent.click(screen.getByRole("combobox"));
-      });
-
-      // Only the CheckIcon SVG should be present (item indicator), not the Info icon
-      const option = screen.getByRole("option");
-      // The disabledReason tooltip wrapper should not be rendered
-      const tooltipTriggers = option.querySelectorAll(
-        "[class*='pointer-events-auto']",
-      );
-      expect(tooltipTriggers.length).toBe(0);
-    });
-
     it("does not fire onValueChange when clicking a disabled option", async () => {
       const handleChange = vi.fn();
       render(
@@ -410,7 +369,6 @@ describe("Select", () => {
             banana: {
               label: "Banana",
               disabled: true,
-              disabledReason: "Out of season",
             },
           }}
         />,

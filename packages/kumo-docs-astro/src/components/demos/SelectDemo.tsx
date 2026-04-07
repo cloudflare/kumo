@@ -321,18 +321,10 @@ export function SelectDisabledOptionsDemo() {
     >
       <Select.Option value="us-east">US East</Select.Option>
       <Select.Option value="us-west">US West</Select.Option>
-      <Select.Option
-        value="eu-west"
-        disabled
-        disabledReason="Requires Enterprise plan"
-      >
+      <Select.Option value="eu-west" disabled>
         EU West
       </Select.Option>
-      <Select.Option
-        value="ap-south"
-        disabled
-        disabledReason="Currently at capacity"
-      >
+      <Select.Option value="ap-south" disabled>
         AP South
       </Select.Option>
     </Select>
@@ -352,16 +344,8 @@ export function SelectDisabledItemsDemo() {
       items={{
         free: "Free",
         pro: "Pro",
-        business: {
-          label: "Business",
-          disabled: true,
-          disabledReason: "Contact sales",
-        },
-        enterprise: {
-          label: "Enterprise",
-          disabled: true,
-          disabledReason: "Contact sales",
-        },
+        business: { label: "Business", disabled: true },
+        enterprise: { label: "Enterprise", disabled: true },
       }}
     />
   );
@@ -396,7 +380,7 @@ export function SelectGroupedDemo() {
   );
 }
 
-/** Select combining groups, separators, and disabled options with info tooltips. */
+/** Select combining groups, separators, and disabled options. */
 export function SelectGroupedWithDisabledDemo() {
   const [value, setValue] = useState<string | null>(null);
 
@@ -417,18 +401,10 @@ export function SelectGroupedWithDisabledDemo() {
       <Select.Separator />
       <Select.Group>
         <Select.GroupLabel>Unavailable</Select.GroupLabel>
-        <Select.Option
-          value="ap-south-1"
-          disabled
-          disabledReason="Region at capacity — try again later"
-        >
+        <Select.Option value="ap-south-1" disabled>
           AP South (Mumbai)
         </Select.Option>
-        <Select.Option
-          value="sa-east-1"
-          disabled
-          disabledReason="Requires Enterprise plan"
-        >
+        <Select.Option value="sa-east-1" disabled>
           SA East (São Paulo)
         </Select.Option>
       </Select.Group>
