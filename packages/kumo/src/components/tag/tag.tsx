@@ -10,7 +10,7 @@ import { cn } from "../../utils/cn";
 export const KUMO_TAG_VARIANTS = {
   variant: {
     default: {
-      classes: "bg-kumo-overlay ring-1 ring-kumo-line",
+      classes: "bg-kumo-recessed ring-1 ring-kumo-line",
       description: "Standard tag",
     },
   },
@@ -23,22 +23,22 @@ export const KUMO_TAG_DEFAULT_VARIANTS = {
 export type KumoTagVariant = keyof typeof KUMO_TAG_VARIANTS.variant;
 
 const TAG_BASE =
-  "inline-flex h-6 max-w-[320px] shrink-0 items-center gap-2.5 rounded-sm bg-kumo-overlay text-sm ring-1 ring-kumo-line";
+  "inline-flex h-6 max-w-[320px] shrink-0 items-center gap-2.5 rounded-sm bg-kumo-recessed text-sm ring-1 ring-kumo-line";
 
 const TAG_CLICKABLE =
-  "cursor-pointer hover:bg-kumo-tint focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-kumo-brand";
+  "cursor-pointer hover:bg-kumo-fill-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-kumo-brand";
 
 const MAIN_BUTTON =
   "inline-flex min-w-0 items-center gap-1 rounded-sm bg-transparent p-0 [font:inherit] leading-4 text-kumo-default outline-none cursor-pointer disabled:cursor-not-allowed";
 
 const DISMISS_BUTTON =
-  "flex cursor-pointer items-center rounded-md bg-transparent p-1 text-kumo-subtle transition-colors hover:bg-kumo-control hover:text-kumo-default hover:outline hover:outline-1 hover:outline-kumo-line hover:[&>svg]:scale-110 focus-visible:bg-kumo-interact focus-visible:text-kumo-default focus-visible:outline focus-visible:outline-1 focus-visible:outline-kumo-brand [&>svg]:transition-transform [&>svg]:duration-150 disabled:cursor-not-allowed";
+  "flex cursor-pointer items-center rounded-md bg-transparent p-1 text-kumo-subtle hover:bg-kumo-control hover:text-kumo-default focus-visible:bg-kumo-interact focus-visible:text-kumo-default focus-visible:outline focus-visible:outline-1 focus-visible:outline-kumo-brand disabled:cursor-not-allowed";
 
 const FOCUS_RING_PRIMARY =
   "[&:has(>button:first-child:focus-visible)]:outline [&:has(>button:first-child:focus-visible)]:outline-2 [&:has(>button:first-child:focus-visible)]:outline-offset-1 [&:has(>button:first-child:focus-visible)]:outline-kumo-brand";
 
 const HOVER_PRIMARY =
-  "[&:has(>button:first-child)]:hover:bg-kumo-tint [&:has(>button:first-child:disabled)]:hover:bg-kumo-overlay";
+  "[&:has(>button:first-child)]:hover:bg-kumo-fill-hover [&:has(>button:first-child:disabled)]:hover:bg-kumo-recessed";
 
 interface TagVisualProps {
   /** Leading icon before the label. */
