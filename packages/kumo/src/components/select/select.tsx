@@ -130,7 +130,10 @@ function renderOptionsFromItems<T>(
 ): ReactNode {
   const normalizedItems = normalizeItems(items);
 
-  // Build a lookup for disabled metadata from object-map items
+  // Build a lookup for disabled metadata from object-map items.
+  // Object-map keys are always strings (Record<string, ...>), so the lookup
+  // uses string keys. The array form ({ label, value }[]) does not support
+  // descriptors — consumers should use the children API for that case.
   const disabledLookup = new Map<
     string,
     { disabled?: boolean; disabledReason?: ReactNode }
@@ -152,6 +155,8 @@ function renderOptionsFromItems<T>(
     .map((item, index) => {
       const key =
         typeof item.value === "string" ? item.value : `option-${index}`;
+      // When items is an object-map, value is always a string key from
+      // Object.entries. When items is an array, disabledLookup is empty.
       const meta =
         typeof item.value === "string"
           ? disabledLookup.get(item.value)
