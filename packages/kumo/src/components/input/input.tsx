@@ -107,14 +107,14 @@ export function inputVariants({
   return cn(
     // Base styles
     "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line",
-    // Disabled state and placeholder styles
-    "outline-none placeholder:text-kumo-subtle disabled:text-kumo-subtle",
+    // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
+    "kumo-input-placeholder disabled:text-kumo-subtle",
     // Apply size styles from KUMO_INPUT_VARIANTS
     KUMO_INPUT_VARIANTS.size[size].classes,
     // Apply variant styles from KUMO_INPUT_VARIANTS
     KUMO_INPUT_VARIANTS.variant[variant].classes,
     // Focus state handling
-    parentFocusIndicator && "[&:has(:focus-within)]:ring-kumo-ring",
+    parentFocusIndicator && "focus-within:ring-kumo-ring",
     focusIndicator && "focus:ring-kumo-ring",
   );
 }
@@ -123,13 +123,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const {
     className,
     size = "base",
-    variant = "default",
+    variant: variantProp,
     label,
     labelTooltip,
     description,
     error,
     ...inputProps
   } = props;
+
+  // Deprecation warning for variant="error"
+  if (process.env.NODE_ENV !== "production" && variantProp === "error") {
+    console.warn(
+      '[Kumo Input]: variant="error" is deprecated. ' +
+        "Error styling is now automatically applied when the `error` prop is truthy. " +
+        "Simply remove the variant prop and pass an error message instead.",
+    );
+  }
+
+  // Auto-apply error styling when error prop is truthy
+  // Explicit variant prop takes precedence for backwards compatibility
+  const variant = variantProp ?? (error ? "error" : "default");
 
   // Extract required from inputProps to pass to Field for label decoration
   const { required } = inputProps;
@@ -219,7 +232,6 @@ Input.displayName = "Input";
  *   label="Password"
  *   description="Must be at least 8 characters"
  *   error="Password is too short"
- *   variant="error"
  * />
  */
 export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &

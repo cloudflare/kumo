@@ -1,5 +1,5 @@
 import { Tooltip, TooltipProvider, Button } from "@cloudflare/kumo";
-import { PlusIcon, TranslateIcon } from "@phosphor-icons/react";
+import { Info, PlusIcon, TranslateIcon } from "@phosphor-icons/react";
 
 export function TooltipHeroDemo() {
   return (
@@ -34,6 +34,56 @@ export function TooltipMultipleDemo() {
             icon={TranslateIcon}
             aria-label="Change language"
           />
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+/**
+ * Without `asChild`, Tooltip wraps children in an internal button element.
+ * Defensive styles are applied by default, but you can fully customize
+ * the trigger by passing className - your styles override the defaults.
+ */
+export function TooltipCustomTriggerDemo() {
+  return (
+    <TooltipProvider>
+      <Tooltip
+        content="Click to learn more"
+        className="inline-flex items-center gap-1.5 rounded-full bg-kumo-brand px-3 py-1.5 text-sm font-medium text-white shadow-md transition-transform hover:scale-105 active:scale-95"
+      >
+        <Info className="size-4" />
+        <span>Help</span>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+/**
+ * Control the delay before opening and closing the tooltip.
+ * `delay` controls open delay (default: 600ms), `closeDelay` controls close delay (default: 0ms).
+ */
+export function TooltipDelayDemo() {
+  return (
+    <TooltipProvider>
+      <div className="flex gap-4">
+        <Tooltip content="Opens after 1 second" delay={1000} asChild>
+          <Button variant="secondary">1s open delay</Button>
+        </Tooltip>
+        <Tooltip
+          content="Stays open 500ms after leaving"
+          closeDelay={500}
+          asChild
+        >
+          <Button variant="secondary">500ms close delay</Button>
+        </Tooltip>
+        <Tooltip
+          content="Instant open, stays 1s"
+          delay={0}
+          closeDelay={1000}
+          asChild
+        >
+          <Button variant="secondary">Instant + 1s close</Button>
         </Tooltip>
       </div>
     </TooltipProvider>

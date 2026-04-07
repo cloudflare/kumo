@@ -27,6 +27,17 @@ type DescendantsContextType<DescendantType = Record<string, unknown>> = {
   ) => { unregister: () => void };
   descendants: DescendantInfo<DescendantType>[];
   claimRenderOrder: (id: string) => number;
+  /**
+   * Counter that increments whenever any descendant registers, unregisters, or
+   * reports a size change. Nodes can depend on this value to know when they
+   * should remeasure their `getBoundingClientRect`.
+   */
+  measurementEpoch: number;
+  /**
+   * Call this when a node's own size changes (e.g. from a ResizeObserver) so
+   * that sibling nodes know to remeasure their positions.
+   */
+  notifySizeChange: () => void;
 };
 
 // ============================================================================
@@ -55,6 +66,8 @@ export function useDescendants<
     new Map(),
   );
 
+  const [measurementEpoch, setMeasurementEpoch] = useState(0);
+
   // Track render order - resets each render cycle
   const renderOrderCounterRef = useRef(0);
   const renderOrderMapRef = useRef<Map<string, number>>(new Map());
@@ -72,12 +85,18 @@ export function useDescendants<
     return renderOrderMapRef.current.get(id) as number;
   }, []);
 
+  const notifySizeChange = useCallback(() => {
+    setMeasurementEpoch((prev) => prev + 1);
+  }, []);
+
   const register = useCallback(
     (
       id: string,
       renderOrder: number,
       props: DescendantType = {} as DescendantType,
     ) => {
+      const isNewDescendant = !descendantsRef.current.has(id);
+
       // Add descendant to the map with render order
       const descendantInfo: DescendantInfo<DescendantType> = {
         id,
@@ -92,6 +111,13 @@ export function useDescendants<
       ).sort((a, b) => a.renderOrder - b.renderOrder);
       setRegisteredDescendants(sortedDescendants);
 
+      // Bump the epoch when a new node enters so siblings remeasure their
+      // positions. We intentionally skip this for prop-only updates to
+      // avoid infinite remeasure loops.
+      if (isNewDescendant) {
+        setMeasurementEpoch((prev) => prev + 1);
+      }
+
       // Return unregister function
       const unregister = () => {
         descendantsRef.current.delete(id);
@@ -99,6 +125,8 @@ export function useDescendants<
           descendantsRef.current.values(),
         ).sort((a, b) => a.renderOrder - b.renderOrder);
         setRegisteredDescendants(remainingDescendants);
+        // Bump the epoch so siblings remeasure after a node exits.
+        setMeasurementEpoch((prev) => prev + 1);
       };
 
       return { unregister };
@@ -111,8 +139,16 @@ export function useDescendants<
       register,
       descendants: registeredDescendants,
       claimRenderOrder,
+      measurementEpoch,
+      notifySizeChange,
     }),
-    [register, registeredDescendants, claimRenderOrder],
+    [
+      register,
+      registeredDescendants,
+      claimRenderOrder,
+      measurementEpoch,
+      notifySizeChange,
+    ],
   );
 
   return contextValue;
@@ -216,9 +252,11 @@ export function useOptionalDescendantsContext<
 
 export function useDescendantIndex<T extends Record<string, unknown>>(
   props?: T,
+  customId?: string,
 ) {
   const context = useDescendantsContext<T>();
-  const id = useId();
+  const generatedId = useId();
+  const id = customId ?? generatedId;
 
   // Claim render order during render (synchronously, not in useEffect)
   // This captures the order in which descendants render

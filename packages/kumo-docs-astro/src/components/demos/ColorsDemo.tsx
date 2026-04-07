@@ -1,5 +1,6 @@
 import { type FC, useMemo, useSyncExternalStore } from "react";
 import { kumoColors, type ColorToken } from "virtual:kumo-colors";
+import { kumoRegistryJson } from "virtual:kumo-registry";
 
 /**
  * Extract the actual color value from a CSS variable fallback.
@@ -96,9 +97,52 @@ function useCurrentTheme(): string {
   return useSyncExternalStore(subscribeToTheme, getTheme, () => "kumo");
 }
 
+/**
+ * Build a set of lowercase component names from the registry.
+ * Cached once — the registry doesn't change at runtime.
+ */
+const componentNames: Set<string> = new Set(
+  Object.keys(kumoRegistryJson.components).map((n) => n.toLowerCase()),
+);
+
+/**
+ * Extract the component name from a token, if it matches a known component.
+ *
+ * Token format: `--color-kumo-{component}-{variant}` or `--text-color-kumo-{component}-{variant}`
+ * Returns the matched component name (lowercase) or null.
+ */
+function getComponentFromToken(tokenName: string): string | null {
+  // Strip the CSS variable prefix to get the semantic name
+  // "--color-kumo-badge-red" → "kumo-badge-red"
+  // "--text-color-kumo-badge-red-subtle" → "kumo-badge-red-subtle"
+  const semantic = tokenName
+    .replace(/^--text-color-/, "")
+    .replace(/^--color-/, "");
+
+  // Must start with "kumo-"
+  if (!semantic.startsWith("kumo-")) return null;
+
+  // "kumo-badge-red" → "badge-red" → check if "badge" is a component
+  const afterKumo = semantic.slice("kumo-".length);
+  const segments = afterKumo.split("-");
+
+  // Require at least 2 segments: component name + variant.
+  // This avoids matching standalone semantic tokens like "kumo-link" or "kumo-surface".
+  if (segments.length < 2) return null;
+
+  return componentNames.has(segments[0]) ? segments[0] : null;
+}
+
+type ComponentColorGroup = {
+  component: string;
+  displayName: string;
+  tokens: ColorToken[];
+};
+
 type ColorsByCategory = {
   textColors: ColorToken[];
   colors: ColorToken[];
+  componentGroups: ComponentColorGroup[];
 };
 
 /**
@@ -140,14 +184,45 @@ function getColorsForTheme(theme: string): ColorsByCategory {
     effectiveTokens = [...effectiveSemanticTokens, ...globalTokens];
   }
 
-  // Split by category
+  // Partition: component-specific tokens vs semantic tokens
+  const componentTokenMap = new Map<string, ColorToken[]>();
+  const semanticTokens2: ColorToken[] = [];
+
+  for (const token of effectiveTokens) {
+    const comp = getComponentFromToken(token.name);
+    if (comp) {
+      const list = componentTokenMap.get(comp) ?? [];
+      list.push(token);
+      componentTokenMap.set(comp, list);
+    } else {
+      semanticTokens2.push(token);
+    }
+  }
+
+  // Build sorted component groups with display names from the registry
+  const componentGroups: ComponentColorGroup[] = [...componentTokenMap.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([comp, tokens]) => {
+      // Find the proper-cased name from the registry
+      const registryName = Object.keys(kumoRegistryJson.components).find(
+        (n) => n.toLowerCase() === comp,
+      );
+      return {
+        component: comp,
+        displayName: registryName ?? comp.charAt(0).toUpperCase() + comp.slice(1),
+        tokens,
+      };
+    });
+
+  // Split remaining semantic tokens by category
   return {
-    textColors: effectiveTokens.filter(
+    textColors: semanticTokens2.filter(
       (c) => getTokenCategory(c.name) === "text-colors",
     ),
-    colors: effectiveTokens.filter(
+    colors: semanticTokens2.filter(
       (c) => getTokenCategory(c.name) === "colors",
     ),
+    componentGroups,
   };
 }
 
@@ -181,8 +256,13 @@ const TokenGrid: FC<{ tokens: ColorToken[] }> = ({ tokens }) => (
 
 export const TailwindColorTokens: FC = () => {
   const currentTheme = useCurrentTheme();
-  const { textColors, colors } = getColorsForTheme(currentTheme);
+  const { textColors, colors, componentGroups } =
+    getColorsForTheme(currentTheme);
 
+  const componentTokenCount = componentGroups.reduce(
+    (sum, g) => sum + g.tokens.length,
+    0,
+  );
   const allTokens = [...textColors, ...colors];
 
   // Count override tokens for display
@@ -198,7 +278,7 @@ export const TailwindColorTokens: FC = () => {
       <div className="flex flex-col gap-1">
         <h2 className="m-0 text-2xl font-semibold">Colors</h2>
         <div className="text-sm text-kumo-default">
-          Displaying {allTokens.length} tokens
+          Displaying {allTokens.length + componentTokenCount} tokens
           {overrideCount > 0 && (
             <span className="ml-1">
               — {overrideCount} overridden by{" "}
@@ -223,6 +303,23 @@ export const TailwindColorTokens: FC = () => {
         </h2>
         <TokenGrid tokens={colors} />
       </section>
+
+      {/* Component Colors Section */}
+      {componentGroups.length > 0 && (
+        <section className="flex flex-col gap-4">
+          <h2 className="text-sm font-semibold">
+            Component Colors ({componentTokenCount})
+          </h2>
+          {componentGroups.map((group) => (
+            <div key={group.component} className="flex flex-col gap-3">
+              <h3 className="!m-0 text-xs font-semibold text-kumo-subtle">
+                {group.displayName} ({group.tokens.length})
+              </h3>
+              <TokenGrid tokens={group.tokens} />
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 };

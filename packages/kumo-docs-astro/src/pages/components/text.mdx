@@ -1,0 +1,116 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Text"
+description: "A typography component for various heading and copy styles."
+sourceFile: "components/text"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TextVariantsDemo,
+  TextTruncateDemo,
+} from "~/components/demos/TextDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="TextVariantsDemo">
+    <TextVariantsDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Text } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Text } from "@cloudflare/kumo/components/text";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Text } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Text>Your content here</Text>;
+}
+```
+
+<section class="mt-8 space-y-4">
+  <h3 class="text-lg font-semibold">Restrictions</h3>
+  <p class="text-kumo-strong">
+    The `bold` and `size` props are intentionally restricted to the `base`, `secondary`, `success`, and `error` text variants.
+  </p>
+
+```tsx
+<Text size="sm" bold>Body</Text>
+<Text variant="secondary" bold>Body secondary</Text>
+<Text variant="success" size="lg">Success</Text>
+<Text variant="error">Error</Text>
+```
+
+<p class="text-kumo-strong">
+  Monospace variants (`mono` and `mono-secondary`) can only set `size` to `lg`
+  and cannot use the `bold` prop:
+</p>
+
+```tsx
+<Text variant="mono">Monospace</Text>
+<Text variant="mono" size="lg">Monospace</Text>
+<Text variant="mono" bold>Monospace</Text> // Doesn't compile
+```
+
+<p class="text-kumo-strong">
+  Headings (i.e. `h1`, `h2` and `h3` variants) cannot use these props at all:
+</p>
+
+```tsx
+<Text variant="h1" bold>
+  Heading 1
+</Text> // Doesn't compile
+```
+
+</section>
+
+</ComponentSection>
+
+{/* Truncate */}
+
+<ComponentSection>
+  <Heading level={2}>Truncate</Heading>
+  <p class="text-kumo-strong">
+    Use the `truncate` prop to clip overflowing text with an ellipsis. This adds `truncate min-w-0` classes, which is useful when `Text` is inside a flex or grid container.
+  </p>
+  <ComponentExample demo="TextTruncateDemo">
+    <TextTruncateDemo client:visible />
+  </ComponentExample>
+
+```tsx
+<Text truncate>This is a long piece of text that will be truncated...</Text>
+```
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Text" />
+</ComponentSection>

@@ -12,6 +12,15 @@ export function ClipboardTextApiKeyDemo() {
   return <ClipboardText text="sk_live_51H8..." />;
 }
 
+export function ClipboardTextAlternateTextToCopyDemo() {
+  return (
+    <ClipboardText
+      text="sk_live_***********"
+      textToCopy="sk_live_51H8_abc123"
+    />
+  );
+}
+
 export function ClipboardTextLongDemo() {
   return <ClipboardText text="https://example.com/very/long/url/path" />;
 }

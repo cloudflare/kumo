@@ -19,11 +19,11 @@ import {
  * 3. Add its description to COMPONENT_DESCRIPTIONS below
  */
 const COMPONENTS_WITHOUT_DOCS = new Set([
+  "Code", // Deprecated: use CodeHighlighted from @cloudflare/kumo/code
+  "CodeBlock", // Deprecated: use CodeHighlighted from @cloudflare/kumo/code
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
-  "InputArea",
-  "Toasty",
 ]);
 
 /**
@@ -31,7 +31,9 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
  * Only needed when the name doesn't match the standard kebab-case conversion.
  */
 const SLUG_OVERRIDES: Record<string, string> = {
+  CodeHighlighted: "code-highlighted",
   DropdownMenu: "dropdown",
+  Toasty: "toast",
 };
 
 /**
@@ -43,6 +45,7 @@ const STATIC_PAGES: Array<{
   description: string;
   url: string;
   category: string;
+  type?: "component" | "block" | "layout" | "page";
 }> = [
   {
     name: "Installation",
@@ -100,6 +103,21 @@ const STATIC_PAGES: Array<{
     url: "/registry",
     category: "Guides",
   },
+  {
+    name: "CodeHighlighted",
+    description: "Syntax-highlighted code blocks powered by Shiki.",
+    url: "/components/code-highlighted",
+    category: "Components",
+    type: "component",
+  },
+  {
+    name: "Flow",
+    description:
+      "A diagram component for visualizing sequential and parallel workflows.",
+    url: "/components/flow",
+    category: "Components",
+    type: "component",
+  },
 ];
 
 /** Better descriptions from the Astro doc pages */
@@ -115,7 +133,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   checkbox:
     "A control that allows the user to toggle between checked and not checked.",
   "clipboard-text": "A text component with a copy-to-clipboard button.",
-  code: "Syntax-highlighted code blocks with support for multiple languages.",
   collapsible:
     "A vertically stacked set of interactive headings that each reveal content.",
   combobox:
@@ -124,6 +141,8 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   dropdown: "Displays a menu of actions or functions triggered by a button.",
   input:
     "A text input field with built-in label, description, and error support.",
+  "input-area":
+    "A multi-line text input for longer content with built-in label, description, and error support.",
   label: "A label component for form fields with required/optional indicators.",
   "layer-card":
     "A card with a layered visual effect for navigation or highlights.",
@@ -149,6 +168,7 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "page-header": "Combines breadcrumbs and tabs for page navigation.",
   "resource-list":
     "A layout for displaying resource lists with title and sidebar.",
+  toast: "Displays brief, non-intrusive notifications that appear temporarily.",
 };
 
 interface ComponentRegistryEntry {
@@ -287,11 +307,11 @@ function getTypeBadge(
 
   switch (type) {
     case "block":
-      return <Badge variant="secondary">Block</Badge>;
+      return <Badge variant="neutral">Block</Badge>;
     case "layout":
-      return <Badge variant="secondary">Layout</Badge>;
+      return <Badge variant="neutral">Layout</Badge>;
     case "page":
-      return <Badge variant="secondary">Guide</Badge>;
+      return <Badge variant="neutral">Guide</Badge>;
     default:
       return null;
   }
@@ -333,7 +353,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     // Always include static pages
     const staticItems: SearchItem[] = STATIC_PAGES.map((page) => ({
       name: page.name,
-      type: "page" as const,
+      type: page.type ?? "page",
       description: page.description,
       category: page.category,
       url: page.url,

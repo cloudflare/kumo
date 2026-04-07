@@ -10,19 +10,19 @@ export const KUMO_BANNER_VARIANTS = {
   variant: {
     default: {
       classes:
-        "bg-kumo-info/10 border-kumo-info/30 text-kumo-info selection:bg-kumo-info-tint",
+        "bg-kumo-info/30 border-kumo-info-tint/50 text-kumo-info selection:bg-kumo-info-tint",
       iconClasses: "text-kumo-info",
       description: "Informational banner for general messages",
     },
     alert: {
       classes:
-        "bg-kumo-warning/10 border-kumo-warning/30 text-kumo-warning selection:bg-kumo-warning-tint",
+        "bg-kumo-warning/15 border-kumo-warning-tint/50 text-kumo-warning selection:bg-kumo-warning-tint",
       iconClasses: "text-kumo-warning",
       description: "Warning banner for cautionary messages",
     },
     error: {
       classes:
-        "bg-kumo-danger/10 border-kumo-danger/30 text-kumo-danger selection:bg-kumo-danger-tint",
+        "bg-kumo-danger/15 border-kumo-danger-tint/50 text-kumo-danger selection:bg-kumo-danger-tint",
       iconClasses: "text-kumo-danger",
       description: "Error banner for critical issues",
     },
@@ -82,6 +82,8 @@ export interface BannerProps {
   title?: string;
   /** Secondary description text displayed below the title. Use for i18n string injection. */
   description?: ReactNode;
+  /** Action slot rendered at the trailing end of the banner (e.g. a CTA button or link). Only used in structured mode (with `title` or `description`). */
+  action?: ReactNode;
   /** @deprecated Use `title` and `description` instead. Will be removed in a future major version. */
   text?: string;
   /** @deprecated Use `title` and `description` instead for better i18n support. */
@@ -123,6 +125,7 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
     icon,
     title,
     description,
+    action,
     children,
     text,
     variant = KUMO_BANNER_DEFAULT_VARIANTS.variant,
@@ -146,12 +149,21 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
             {icon}
           </span>
         )}
-        <div className="flex flex-col gap-0.5">
-          {title && <p className="font-medium leading-snug">{title}</p>}
-          {description && (
-            <div className="text-sm leading-snug">
-              {isValidElement(description) ? description : <p>{description}</p>}
-            </div>
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            {title && <p className="font-medium leading-snug">{title}</p>}
+            {description && (
+              <div className="text-sm leading-snug">
+                {isValidElement(description) ? (
+                  description
+                ) : (
+                  <p>{description}</p>
+                )}
+              </div>
+            )}
+          </div>
+          {action && (
+            <div className="flex shrink-0 items-center gap-2">{action}</div>
           )}
         </div>
       </div>

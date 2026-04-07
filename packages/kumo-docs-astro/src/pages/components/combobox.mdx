@@ -1,0 +1,205 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Combobox"
+description: "A searchable select component that allows users to filter and select from a list of options."
+sourceFile: "components/combobox"
+baseUIComponent: "combobox"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  ComboboxDemo,
+  ComboboxSearchableInsideDemo,
+  ComboboxGroupedDemo,
+  ComboboxMultipleDemo,
+  ComboboxWithFieldDemo,
+  ComboboxDisabledDemo,
+  ComboboxErrorDemo,
+  ComboboxSizesDemo,
+  ComboboxSizesSearchableInsideDemo,
+} from "~/components/demos/ComboboxDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="ComboboxDemo">
+    <ComboboxDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Combobox } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Combobox } from "@cloudflare/kumo/components/combobox";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { useState } from "react";
+import { Combobox } from "@cloudflare/kumo";
+
+const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
+
+export default function Example() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Combobox value={value} onValueChange={setValue} items={fruits}>
+      <Combobox.TriggerInput placeholder="Select a fruit" />
+      <Combobox.Content>
+        <Combobox.Empty />
+        <Combobox.List>
+          {(item) => (
+            <Combobox.Item key={item} value={item}>
+              {item}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Sizes</Heading>
+<p>
+  The Combobox supports four size variants that match the Input component: `xs`,
+  `sm`, `base` (default), and `lg`.
+</p>
+<ComponentExample demo="ComboboxSizesDemo">
+  <ComboboxSizesDemo client:load />
+</ComponentExample>
+
+  <p>
+    Size also applies to `TriggerValue` (searchable inside variant):
+  </p>
+  <ComponentExample demo="ComboboxSizesSearchableInsideDemo">
+    <ComboboxSizesSearchableInsideDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Searchable Item (Inside)</Heading>
+  <p>
+    A searchable select component inside popup that allows users to filter and
+    select.
+  </p>
+  <ComponentExample demo="ComboboxSearchableInsideDemo">
+    <ComboboxSearchableInsideDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Grouped</Heading>
+  <p>Group items into categories using the Group and GroupLabel components.</p>
+  <ComponentExample demo="ComboboxGroupedDemo">
+    <ComboboxGroupedDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Multiple</Heading>
+  <p>Allow users to select multiple options from the list.</p>
+  <ComponentExample demo="ComboboxMultipleDemo">
+    <ComboboxMultipleDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>With Field</Heading>
+  <p>Add label and description using the built-in Field wrapper.</p>
+  <ComponentExample demo="ComboboxWithFieldDemo">
+    <ComboboxWithFieldDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Disabled</Heading>
+  <p>Pass the `disabled` prop to prevent interaction. Works with both `TriggerInput` and `TriggerValue`.</p>
+  <ComponentExample demo="ComboboxDisabledDemo">
+    <ComboboxDisabledDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Error State</Heading>
+  <p>Display validation errors with the error prop.</p>
+  <ComponentExample demo="ComboboxErrorDemo">
+    <ComboboxErrorDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={2}>Customizing Dropdown Height</Heading>
+  <p>
+    By default, <code class="text-surface">Combobox.Content</code> has a max height of <code class="text-surface">24rem</code> (384px) or the available viewport space, whichever is smaller. The dropdown scrolls automatically when content exceeds this height.
+  </p>
+  <p>
+    To customize the max height, pass a className to <code class="text-surface">Combobox.Content</code>:
+  </p>
+
+```tsx
+// Shorter dropdown (200px)
+<Combobox.Content className="max-h-[200px]">
+
+// Taller dropdown (500px)
+<Combobox.Content className="max-h-[500px]">
+
+// Use Tailwind presets
+<Combobox.Content className="max-h-64">  // 256px
+<Combobox.Content className="max-h-96">  // 384px (same as default)
+```
+
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+
+<Heading level={3}>Combobox</Heading>
+<p>Root component for the searchable select.</p>
+<PropsTable component="Combobox" />
+
+<Heading level={3}>Combobox.Content</Heading>
+<p>Dropdown container for the list.</p>
+<PropsTable component="Combobox.Content" />
+
+<Heading level={3}>Combobox.Item</Heading>
+<p>Individual selectable option.</p>
+<PropsTable component="Combobox.Item" />
+
+  <Heading level={3}>Additional Sub-components</Heading>
+  <ul class="list-disc list-inside text-kumo-strong space-y-1">
+    <li>`Combobox.TriggerInput` - Single-select input trigger</li>
+    <li>`Combobox.TriggerValue` - Button trigger showing selected value</li>
+    <li>`Combobox.TriggerMultipleWithInput` - Multi-select with chips</li>
+    <li>`Combobox.Input` - Search input inside dropdown</li>
+    <li>`Combobox.List` - List container with render prop</li>
+    <li>`Combobox.Group` - Group container for categorized items</li>
+    <li>`Combobox.GroupLabel` - Header label for a group</li>
+    <li>`Combobox.Collection` - Items container within a group</li>
+    <li>`Combobox.Chip` - Selected item chip</li>
+    <li>`Combobox.Empty` - Empty state message</li>
+  </ul>
+</ComponentSection>

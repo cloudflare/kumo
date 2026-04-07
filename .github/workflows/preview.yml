@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - "opencode/**"
+      - "changeset-release/main"
 
 permissions:
   contents: write
@@ -55,6 +56,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -77,6 +80,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -88,6 +93,9 @@ jobs:
 
       - name: Build docs
         run: pnpm --filter @cloudflare/kumo-docs-astro build
+
+      - name: Test docs
+        run: pnpm --filter @cloudflare/kumo-docs-astro test
 
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4
@@ -137,9 +145,6 @@ jobs:
           name: docs-preview-dist
           path: packages/kumo-docs-astro/dist/
 
-      - name: Install wrangler
-        run: npm install -g wrangler
-
       - name: Deploy docs preview
         id: deploy
         working-directory: packages/kumo-docs-astro
@@ -152,7 +157,7 @@ jobs:
 
           # "wrangler versions upload" creates a preview version without
           # routing production traffic. Safe to run on every PR.
-          VERSION_OUTPUT=$(wrangler versions upload --env="" --message "PR #${PR_NUMBER} (${COMMIT_SHORT})" 2>&1) || true
+          VERSION_OUTPUT=$(npx wrangler versions upload --env="" --message "PR #${PR_NUMBER} (${COMMIT_SHORT})" 2>&1) || true
           echo "$VERSION_OUTPUT"
 
           # Verify upload succeeded
@@ -227,14 +232,24 @@ jobs:
   visual-regression:
     name: Visual Regression
     needs: docs-deploy
-    if: ${{ needs.docs-deploy.outputs.preview_url }}
+    if: always() && needs.docs-deploy.result == 'success' && needs.docs-deploy.outputs.preview_url != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
+      # Pin to main so that a PR modifying run-visual-regression.ts cannot
+      # execute its own version of the script with secrets in env.
+      - name: Checkout VR script from main
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: main
+          sparse-checkout: |
+            ci/visual-regression
+            .github/actions/install-dependencies
+
+      # Fetch the PR's HEAD so git diff can detect changed files.
+      # (HEAD points to main after checkout, so we need the explicit SHA)
+      - name: Fetch PR head for git diff
+        run: git fetch --depth=1 origin ${{ github.event.pull_request.head.sha }}
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -246,9 +261,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ needs.docs-deploy.outputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}
-          SCREENSHOT_WORKER_URL: ${{ secrets.SCREENSHOT_WORKER_URL }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
         run: pnpm tsx ci/visual-regression/run-visual-regression.ts
 

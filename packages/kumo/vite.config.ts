@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       dts({
-        include: ["src/**/*", "ai/**/*"],
+        include: ["src/**/*", "ai/**/*", "scripts/theme-generator/**/*"],
         exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
         rollupTypes: false, // Disabled - causes timeouts with many entry points
         compilerOptions: {
@@ -68,6 +68,10 @@ export default defineConfig(({ mode }) => {
           "components/date-range-picker": resolve(
             __dirname,
             "src/components/date-range-picker/index.ts",
+          ),
+          "components/chart": resolve(
+            __dirname,
+            "src/components/chart/index.ts",
           ),
           "components/checkbox": resolve(
             __dirname,
@@ -187,8 +191,12 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/date-picker/index.ts",
           ),
-          'components/flow': resolve(__dirname, 'src/components/flow/index.ts'),
-        // PLOP_INJECT_COMPONENT_ENTRY
+          "components/flow": resolve(__dirname, "src/components/flow/index.ts"),
+          "components/sidebar": resolve(
+            __dirname,
+            "src/components/sidebar/index.ts",
+          ),
+          // PLOP_INJECT_COMPONENT_ENTRY
           // Utils entry point
           utils: resolve(__dirname, "src/utils/index.ts"),
           // Primitives entry point (base-ui re-exports)
@@ -197,6 +205,20 @@ export default defineConfig(({ mode }) => {
           registry: resolve(__dirname, "src/registry/index.ts"),
           // Catalog module entry point (runtime validation, JSON UI rendering)
           catalog: resolve(__dirname, "src/catalog/index.ts"),
+          // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
+          code: resolve(__dirname, "src/code/index.ts"),
+          "code/server": resolve(__dirname, "src/code/server.tsx"),
+          // AI schemas for runtime validation (compiled to avoid consumers type-checking raw .ts)
+          "ai/schemas": resolve(__dirname, "ai/schemas.ts"),
+          // Theme generator utilities for consumers extending the theme
+          "scripts/theme-generator/config": resolve(
+            __dirname,
+            "scripts/theme-generator/config.ts",
+          ),
+          "scripts/theme-generator/types": resolve(
+            __dirname,
+            "scripts/theme-generator/types.ts",
+          ),
         },
         formats: ["es"],
         fileName: (format, entryName) => {
@@ -205,7 +227,7 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         // Externalize dependencies that shouldn't be bundled
-        external: (id) => {
+        external: (id, importer) => {
           // Only externalize peer dependencies - bundle everything else
           switch (true) {
             case id === "react":
@@ -214,6 +236,15 @@ export default defineConfig(({ mode }) => {
             case id.startsWith("react-dom/"):
             case id === "@phosphor-icons/react":
               return true;
+            // Externalize shiki for server entry - it should be resolved at runtime in Node.js
+            // This prevents shiki from being bundled with "use client" directives
+            case id === "shiki":
+            case id.startsWith("shiki/"):
+              // Only externalize when imported from server.ts
+              if (importer?.includes("code/server")) {
+                return true;
+              }
+              return false;
             default:
               // Bundle all node_modules dependencies (don't externalize them)
               // This includes @base-ui-components and its transitive deps (tabbable, floating-ui, etc)
@@ -224,6 +255,16 @@ export default defineConfig(({ mode }) => {
           // Don't preserve modules - bundle dependencies into flat output
           // This avoids nested node_modules/.pnpm/ paths in dist that break Jest
           preserveModules: false,
+          // Chunk filenames without double-dashes (fixes Jest resolution issues)
+          // Use a function to sanitize chunk names
+          chunkFileNames: (chunkInfo) => {
+            // Strip trailing dashes/underscores from chunk name
+            const name = chunkInfo.name.replace(/[-_]+$/, "") || "chunk";
+            // Use hashCharacters to avoid dashes in hash (Rollup 4.8+)
+            return `chunks/${name}-[hash:16].js`;
+          },
+          // Use only alphanumeric characters in hashes to avoid filename issues
+          hashCharacters: "base36",
           // Hoist "use client" directives to the top of chunks
           hoistTransitiveImports: false,
           // Add "use client" directive to all output chunks
@@ -231,6 +272,13 @@ export default defineConfig(({ mode }) => {
           banner: (chunk) => {
             // Add "use client" to all chunks since this is a client-side component library
             // RSC apps will need this directive on all components that use hooks/events
+            // Exception: server utilities should NOT have "use client"
+            if (
+              chunk.name === "code/server" ||
+              chunk.fileName?.includes("code/server")
+            ) {
+              return "";
+            }
             return '"use client";\n';
           },
           // Manual chunks for better code splitting

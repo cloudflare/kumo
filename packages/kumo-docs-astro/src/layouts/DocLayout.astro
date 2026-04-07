@@ -1,8 +1,10 @@
 ---
 import MainLayout from "./MainLayout.astro";
 import { StickyDocHeader } from "../components/docs/StickyDocHeader";
+import { CopyPageButton } from "../components/docs/CopyPageButton";
 import { BaseUIIcon } from "../components/docs/icons/BaseUIIcon";
-import { GithubLogo } from "@phosphor-icons/react";
+import { GithubLogoIcon } from "@phosphor-icons/react";
+import { TableOfContents } from "../components/docs/TableOfContents";
 
 interface Props {
   title: string;
@@ -10,28 +12,42 @@ interface Props {
   baseUIComponent?: string;
   /** Path to the source file in the kumo package (e.g., "components/button") - will link to GitHub */
   sourceFile?: string;
+  headings?: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
 }
 
-const { title, description, baseUIComponent, sourceFile } =
-  Astro.props;
+const {
+  title,
+  description,
+  baseUIComponent,
+  sourceFile,
+  headings = [],
+} = Astro.props;
 
 const baseUIUrl = baseUIComponent
   ? `https://base-ui.com/react/components/${baseUIComponent}`
   : null;
 
 // Extract the component name from the path (e.g., "components/button" -> "button")
-// and construct the direct file URL (e.g., "components/button/button.tsx")
+// and construct the direct file URL (e.g., "components/button/button.tsx").
+// If sourceFile already has a file extension, use it as-is.
 const githubSourceUrl = sourceFile
   ? (() => {
+      const base = `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/`;
+      if (/\.\w+$/.test(sourceFile)) {
+        return `${base}${sourceFile}`;
+      }
       const componentName = sourceFile.split("/").pop();
-      return `https://github.com/cloudflare/kumo/blob/main/packages/kumo/src/${sourceFile}/${componentName}.tsx`;
+      return `${base}${sourceFile}/${componentName}.tsx`;
     })()
   : null;
 ---
 
 <MainLayout title={`${title} - Kumo`} description={description}>
   <div class="flex flex-col">
-    
     <StickyDocHeader
       title={title}
       githubSourceUrl={githubSourceUrl}
@@ -40,14 +56,13 @@ const githubSourceUrl = sourceFile
     />
 
     <!-- Page Header -->
-    <div
-      id="page-header"
-      class="border-b border-kumo-line md:pr-12"
-    >
-      <div
-        class="mx-auto md:border-r md:border-kumo-line"
-      >
-        <div class="mx-auto max-w-5xl px-8 py-12">
+    <div id="page-header" class="border-b border-kumo-line md:pr-12">
+      <div class="mx-auto md:border-r md:border-kumo-line">
+        <div class="mx-auto max-w-7xl p-12">
+          <!-- Mobile: Copy page button above title -->
+          <div class="mb-3 md:hidden">
+            <CopyPageButton align="center" client:idle />
+          </div>
           <div class="mb-3 flex items-center gap-3">
             <h1 class="text-4xl font-bold text-kumo-default">{title}</h1>
             {
@@ -60,7 +75,7 @@ const githubSourceUrl = sourceFile
                   title="View source on GitHub"
                   aria-label="View source on GitHub"
                 >
-                  <GithubLogo size={28} weight="fill" />
+                  <GithubLogoIcon size={28} weight="fill" />
                 </a>
               )
             }
@@ -78,6 +93,10 @@ const githubSourceUrl = sourceFile
                 </a>
               )
             }
+            <!-- Desktop: Copy page button on far right -->
+            <div class="hidden md:block md:ml-auto">
+              <CopyPageButton client:idle />
+            </div>
           </div>
           <p class="text-lg text-kumo-strong">
             {description}
@@ -88,12 +107,25 @@ const githubSourceUrl = sourceFile
 
     <!-- Content -->
     <main class="flex grow flex-col md:pr-12">
-      <div
-        class="mx-auto w-full grow md:border-r md:border-kumo-line"
-      >
-        <div class="mx-auto max-w-5xl px-8 py-12">
-          <div class="max-w-none">
-            <slot />
+      <div class="mx-auto w-full grow md:border-r md:border-kumo-line">
+        <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
+        <div class="xl:hidden sticky top-24 md:top-12 z-1 border-b border-kumo-line bg-kumo-canvas">
+          <div class="mx-auto max-w-7xl px-2 md:px-3 py-3">
+            <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
+          </div>
+        </div>
+
+        <div class="mx-auto max-w-7xl p-12 pr-10">
+          <div class="grid grid-cols-1 gap-16 xl:grid-cols-[3fr_1fr]">
+            <div class="kumo-prose prose max-w-none min-w-0">
+              <slot />
+            </div>
+            <!-- Sidebar TOC: only at xl+ -->
+            <aside class="hidden xl:block min-w-0">
+              <div class="sticky top-24">
+                <TableOfContents headings={headings.length > 0 ? headings : undefined} client:load />
+              </div>
+            </aside>
           </div>
         </div>
       </div>

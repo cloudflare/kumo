@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
 
@@ -54,8 +55,11 @@ export type TabsItem = {
   label: ReactNode;
   /** Additional CSS classes for this tab trigger. */
   className?: string;
-  /** Custom render function to replace the tab element (e.g. for link-based tabs). */
-  render?: (props: Record<string, unknown>) => React.ReactElement;
+  /**
+   * Custom render function or element to replace the tab element (e.g. for link-based tabs).
+   * When using a function, it receives the props to spread on the element and the tab's state.
+   */
+  render?: TabsTab.Props["render"];
 };
 
 /**
@@ -139,7 +143,7 @@ export function Tabs({
   return (
     <TabsPrimitive.Root
       {...rootProps}
-      className={cn("relative min-w-0 font-medium", className)}
+      className={cn("relative isolate min-w-0 font-medium", className)}
       onValueChange={(nextValue) => {
         const stringValue = String(nextValue);
         onValueChange?.(stringValue);
@@ -147,14 +151,14 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 -z-10 h-8.5 -translate-y-1/2 rounded-lg bg-kumo-tint" />
+        <div className="absolute inset-x-0 top-1/2 z-0 h-9 -translate-y-1/2 rounded-lg bg-kumo-recessed" />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
         className={cn(
           "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "h-8.5 rounded-lg bg-kumo-tint px-px",
-          isUnderline && "h-7 gap-4 border-b border-kumo-line pb-2",
+          isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-line/70",
+          isUnderline && "h-7 gap-4 border-b border-kumo-ring pb-2",
           listClassName,
         )}
       >
@@ -162,12 +166,13 @@ export function Tabs({
           <TabsPrimitive.Tab
             key={tab.value}
             value={tab.value}
+            render={tab.render}
             className={cn(
-              "relative z-10 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap hover:border-kumo-tint focus-visible:rounded-none focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-ring",
               isSegmented &&
-                "my-px rounded-lg px-2.5 text-kumo-strong aria-selected:text-kumo-default",
+                "my-0.5 rounded-md px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
               isUnderline &&
-                "mb-2 text-kumo-strong hover:text-kumo-subtle aria-selected:font-medium aria-selected:text-kumo-default",
+                "px-2 py-2.5 text-kumo-strong hover:bg-kumo-tint hover:text-kumo-subtle aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
               tab.className,
             )}
           >
@@ -175,14 +180,19 @@ export function Tabs({
           </TabsPrimitive.Tab>
         ))}
         <TabsPrimitive.Indicator
-          className={cn(
-            "absolute z-0 transition-[left,width,transform] duration-200 ease-out",
-            "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
-            "left-(--active-tab-left) w-(--active-tab-width)",
-            isSegmented &&
-              "top-(--active-tab-top) h-(--active-tab-height) rounded-lg bg-kumo-overlay shadow-sm ring ring-kumo-fill-hover",
-            isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
-            indicatorClassName,
+          render={(props) => (
+            <div
+              {...props}
+              className={cn(
+                "absolute z-1 left-0",
+                "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
+                "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
+                isSegmented &&
+                  "top-(--active-tab-top) h-(--active-tab-height) rounded-md bg-kumo-base shadow-sm ring ring-kumo-ring",
+                isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
+                indicatorClassName,
+              )}
+            />
           )}
         />
       </TabsPrimitive.List>

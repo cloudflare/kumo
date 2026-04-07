@@ -1,0 +1,120 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Empty"
+description: "A component to display when there's no content or data to show, with optional command line and actions."
+sourceFile: "components/empty"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  EmptyDemo,
+  EmptySizesDemo,
+  EmptyWithCommandDemo,
+  EmptyWithActionsDemo,
+  EmptyMinimalDemo,
+  EmptyBasicDemo,
+} from "~/components/demos/EmptyDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="EmptyDemo">
+    <EmptyDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+
+```tsx
+import { Empty } from "@cloudflare/kumo";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Empty } from "@cloudflare/kumo";
+import { PackageIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <Empty
+      icon={<PackageIcon size={48} />}
+      title="No packages found"
+      description="Get started by installing your first package."
+      commandLine="npm install @kumo/ui"
+    />
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic</Heading>
+<ComponentExample demo="EmptyBasicDemo">
+  <EmptyBasicDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Sizes */}
+
+<ComponentSection>
+  <Heading level={2}>Sizes</Heading>
+  <p>Empty states come in three sizes to fit different container contexts.</p>
+  <ComponentExample demo="EmptySizesDemo">
+    <EmptySizesDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* With Command Line */}
+
+<ComponentSection>
+  <Heading level={2}>With Command Line</Heading>
+  <p>Include a copyable command to help users get started.</p>
+  <ComponentExample demo="EmptyWithCommandDemo">
+    <EmptyWithCommandDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* With Actions */}
+
+<ComponentSection>
+  <Heading level={2}>With Actions</Heading>
+  <p>Add custom action buttons using the contents prop.</p>
+  <ComponentExample demo="EmptyWithActionsDemo">
+    <EmptyWithActionsDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Minimal */}
+
+<ComponentSection>
+  <Heading level={2}>Minimal</Heading>
+  <p>At minimum, only a title is required.</p>
+  <ComponentExample demo="EmptyMinimalDemo">
+    <EmptyMinimalDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Empty" />
+</ComponentSection>

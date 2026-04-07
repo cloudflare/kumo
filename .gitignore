@@ -11,7 +11,7 @@ dist/
 .wrangler/
 .dev.vars
 wrangler.toml.local
-worker-configuration.d.ts
+
 
 # Environment variables
 .env
@@ -47,3 +47,11 @@ coverage/
 # Temporary files
 *.tmp
 .cache/
+
+# Codex
+.codex/environments
+
+# Generated component registry files (built during CI)
+packages/kumo/ai/component-registry.json
+packages/kumo/ai/component-registry.md
+packages/kumo/ai/schemas.ts

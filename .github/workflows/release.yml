@@ -38,6 +38,7 @@ jobs:
       # which rebuilds kumo (redundant but harmless). If this becomes slow,
       # consider a publish-only script.
       - name: Create Version PR or Publish to npm
+        id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm run version
@@ -45,3 +46,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+
+      # Publish pkg-pr-new preview for Version Packages PR
+      # (GITHUB_TOKEN PRs don't trigger workflows, so we do it here)
+      - name: Publish package preview
+        if: ${{ steps.changesets.outputs.pullRequestNumber }}
+        run: pnpm dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo

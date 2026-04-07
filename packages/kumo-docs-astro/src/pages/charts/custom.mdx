@@ -1,0 +1,19 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Custom Chart"
+description: "Example charts using the Chart component."
+sourceFile: "components/chart"
+---
+
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import { PieChartDemo } from "~/components/demos/Chart/ChartDemo";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import Heading from "~/components/docs/Heading.astro";
+
+<ComponentSection>
+  <Heading level={2}>Custom Chart</Heading>
+
+  <ComponentExample demo="PieChartDemo">
+    <PieChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>

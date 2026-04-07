@@ -134,10 +134,13 @@ export {
   RadioGroup,
   KUMO_RADIO_VARIANTS,
   KUMO_RADIO_DEFAULT_VARIANTS,
+  radioVariants,
   type RadioGroupProps,
   type RadioItemProps,
   type RadioControlPosition,
   type KumoRadioVariant,
+  type KumoRadioAppearance,
+  type KumoRadioVariantsProps,
   type RadioVariant,
 } from "./components/radio";
 export {
@@ -204,6 +207,56 @@ export {
 } from "./components/date-picker";
 
 export { Flow } from "./components/flow";
+export {
+  Chart,
+  ChartPalette,
+  TimeseriesChart,
+  ChartLegend,
+} from "./components/chart";
+
+// Sidebar
+export {
+  Sidebar,
+  SidebarProvider,
+  SidebarRoot,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarSeparator,
+  SidebarInput,
+  SidebarTrigger,
+  SidebarRail,
+  SidebarResizeHandle,
+  SidebarMenuChevron,
+  SidebarCollapsible,
+  SidebarCollapsibleTrigger,
+  SidebarCollapsibleContent,
+  useSidebar,
+  KUMO_SIDEBAR_VARIANTS,
+  KUMO_SIDEBAR_DEFAULT_VARIANTS,
+  KUMO_SIDEBAR_STYLING,
+  type SidebarSide,
+  type SidebarVariant,
+  type SidebarCollapsible as SidebarCollapsibleType,
+  type SidebarContextValue,
+  type SidebarProviderProps,
+  type SidebarRootProps,
+  type SidebarMenuButtonSize,
+  type SidebarMenuButtonProps,
+  type SidebarMenuSubButtonProps,
+  type SidebarInputProps,
+} from "./components/sidebar";
 // PLOP_INJECT_EXPORT
 
 // Utils
@@ -213,6 +266,10 @@ export {
   useLinkComponent,
   type LinkComponentProps,
 } from "./utils/link-provider";
+export {
+  KumoPortalProvider,
+  type PortalContainer,
+} from "./utils/portal-provider";
 
 // Registry types (for consuming packages to type registry JSON)
 export type {

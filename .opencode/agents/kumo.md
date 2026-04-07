@@ -95,12 +95,12 @@ Button.displayName = "Button";
 
 Do not edit these files directly:
 
-| File                         | Edit Instead                             |
-| ---------------------------- | ---------------------------------------- |
-| `src/styles/theme-kumo.css`  | `scripts/theme-generator/config.ts`      |
-| `ai/component-registry.json` | Component source files, then run codegen |
-| `ai/schemas.ts`              | Component source files, then run codegen |
-| `src/primitives/*`           | Run `pnpm codegen:primitives`            |
+| File                         | Edit Instead                                                       |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `src/styles/theme-kumo.css`  | `scripts/theme-generator/config.ts`                                |
+| `ai/component-registry.json` | Component source files (built at build time)                       |
+| `ai/schemas.ts`              | Component source files (stub for fresh clones, full at build time) |
+| `src/primitives/*`           | Run `pnpm codegen:primitives`                                      |
 
 ## Build Pipeline
 
@@ -108,7 +108,7 @@ The packages have cross-dependencies. Order matters:
 
 ```
 1. kumo-docs-astro: pnpm codegen:demos → dist/demo-metadata.json
-2. kumo: pnpm codegen:registry → ai/component-registry.{json,md}
+2. kumo: build runs codegen:registry → ai/component-registry.{json,md} (auto-generated)
 3. kumo-figma: pnpm build:data → generated/*.json
 ```
 
@@ -123,7 +123,7 @@ pnpm typecheck                              # TypeScript check all packages
 # Component library
 pnpm --filter @cloudflare/kumo build        # Build library
 pnpm --filter @cloudflare/kumo test         # Vitest (happy-dom env, v8 coverage)
-pnpm --filter @cloudflare/kumo codegen:registry  # Regenerate registry
+pnpm --filter @cloudflare/kumo codegen:registry  # Regenerate registry (auto-runs in build)
 
 # Test path aliases: @/ → src/, @cloudflare/kumo → src/index.ts
 
@@ -190,15 +190,15 @@ When you see lint errors from these rules, check the rule source for context.
 
 ## Anti-Patterns
 
-| Pattern                      | Problem                    | Fix                      |
-| ---------------------------- | -------------------------- | ------------------------ |
-| `bg-blue-500`                | Breaks theming, fails lint | `bg-kumo-brand`          |
-| `dark:bg-black`              | Redundant                  | Remove `dark:` prefix    |
-| Missing `displayName`        | Breaks React DevTools      | Set on forwardRef        |
-| Manual component creation    | Misses config updates      | Use scaffolding tool     |
-| Editing auto-generated files | Gets overwritten           | Edit source, run codegen |
-| `as any` in components       | Type safety                | Model types correctly    |
-| Dynamic Tailwind classes     | JIT cannot detect          | Use static strings       |
+| Pattern                      | Problem                    | Fix                         |
+| ---------------------------- | -------------------------- | --------------------------- |
+| `bg-blue-500`                | Breaks theming, fails lint | `bg-kumo-brand`             |
+| `dark:bg-black`              | Redundant                  | Remove `dark:` prefix       |
+| Missing `displayName`        | Breaks React DevTools      | Set on forwardRef           |
+| Manual component creation    | Misses config updates      | Use scaffolding tool        |
+| Editing auto-generated files | Gets overwritten           | Edit source, CI regenerates |
+| `as any` in components       | Type safety                | Model types correctly       |
+| Dynamic Tailwind classes     | JIT cannot detect          | Use static strings          |
 
 ## Package Structure
 

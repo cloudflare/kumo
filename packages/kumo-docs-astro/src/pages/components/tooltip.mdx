@@ -1,0 +1,123 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Tooltip"
+description: "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it."
+sourceFile: "components/tooltip"
+baseUIComponent: "tooltip"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TooltipHeroDemo,
+  TooltipBasicDemo,
+  TooltipMultipleDemo,
+  TooltipDelayDemo,
+} from "~/components/demos/TooltipDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="TooltipHeroDemo">
+    <TooltipHeroDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Tooltip, TooltipProvider } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Tooltip, Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <Tooltip content="Tooltip text" asChild>
+      <Button>Hover me</Button>
+    </Tooltip>
+  );
+}
+```
+
+For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovider).
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic Tooltip</Heading>
+<ComponentExample demo="TooltipBasicDemo">
+  <TooltipBasicDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Multiple Tooltips</Heading>
+<ComponentExample demo="TooltipMultipleDemo">
+  <TooltipMultipleDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Delay Control</Heading>
+<p>
+  Use `delay` to control how long to wait before opening (default: 600ms) and
+  `closeDelay` to control how long to wait before closing (default: 0ms).
+</p>
+<ComponentExample demo="TooltipDelayDemo">
+  <TooltipDelayDemo client:load />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* TooltipProvider */}
+
+<ComponentSection>
+  <Heading level={2} id="tooltipprovider">TooltipProvider</Heading>
+
+<p>
+  `TooltipProvider` groups multiple tooltips so that after the first tooltip has
+  been shown, switching to another skips the open delay. Place it once at your
+  app root or layout — not around each individual `Tooltip`.
+</p>
+
+```tsx
+// Wrap your app or layout once
+<TooltipProvider>
+  <App />
+</TooltipProvider>
+
+// Then use Tooltip anywhere inside
+<Tooltip content="Add" asChild>
+  <Button shape="square" icon={PlusIcon} />
+</Tooltip>
+```
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Tooltip" />
+</ComponentSection>

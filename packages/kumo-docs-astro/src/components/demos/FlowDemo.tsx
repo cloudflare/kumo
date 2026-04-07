@@ -1,4 +1,36 @@
+import { forwardRef, useState } from "react";
 import { Flow } from "@cloudflare/kumo";
+import { CaretDownIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
+
+const ExpandableNode = forwardRef<
+  HTMLLIElement,
+  { title: string; children: React.ReactNode }
+>(function ExpandableNode({ title, children, ...props }, ref) {
+  const [open, setOpen] = useState(false);
+  return (
+    <li
+      ref={ref}
+      {...props}
+      className="rounded-lg shadow bg-kumo-base ring ring-kumo-line overflow-hidden"
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full cursor-pointer items-center justify-between gap-2 px-3 py-2 text-sm font-medium text-kumo-default"
+      >
+        {title}
+        <CaretDownIcon
+          className={`size-4 text-kumo-subtle transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div className="border-t border-kumo-line px-3 py-2 text-sm text-kumo-subtle">
+          {children}
+        </div>
+      )}
+    </li>
+  );
+});
 
 /** Basic flow diagram with sequential nodes */
 export function FlowBasicDemo() {
@@ -180,6 +212,123 @@ export function FlowParallelNestedListDemo() {
         </Flow.List>
       </Flow.Parallel>
       <Flow.Node>Destinations</Flow.Node>
+    </Flow>
+  );
+}
+
+/**
+ * Repro: connector lines misalign when a sidebar shifts the layout.
+ * Toggle the sidebar to see connectors jump out of place (the bug) or
+ * stay aligned (after the fix). Scroll the page while the sidebar is
+ * open to trigger the same stale-rect issue.
+ */
+export function FlowSidebarBugDemo() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  return (
+    <div className="relative overflow-hidden rounded-lg ring ring-kumo-line bg-kumo-base min-h-64 flex flex-col">
+      {/* Toolbar */}
+      <div className="flex items-center gap-2 border-b border-kumo-line px-3 py-2 shrink-0">
+        <button
+          type="button"
+          onClick={() => setSidebarOpen((v) => !v)}
+          className="flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium text-kumo-default hover:bg-kumo-elevated transition-colors"
+        >
+          <SidebarSimpleIcon className="size-4" />
+          {sidebarOpen ? "Close sidebar" : "Open sidebar"}
+        </button>
+        <span className="text-xs text-kumo-subtle">
+          Toggle the sidebar — connectors should stay aligned
+        </span>
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 min-h-0">
+        {/* Sidebar */}
+        <div
+          className="shrink-0 overflow-hidden transition-[width] duration-300 border-r border-kumo-line bg-kumo-elevated"
+          style={{ width: sidebarOpen ? 160 : 0 }}
+        >
+          <div className="w-40 p-3 space-y-1">
+            <p className="text-xs font-semibold text-kumo-subtle uppercase tracking-wide mb-2">
+              Sidebar
+            </p>
+            {["Overview", "Settings", "Logs", "Analytics"].map((item) => (
+              <div
+                key={item}
+                className="rounded px-2 py-1 text-sm text-kumo-default hover:bg-kumo-base cursor-default"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main content with Flow — fixed height forces inner scroll */}
+        <div className="flex-1 overflow-auto p-4 h-48">
+          <Flow>
+            <Flow.Node>HTTP Request</Flow.Node>
+            <Flow.Parallel>
+              <Flow.Node>Auth Check</Flow.Node>
+              <Flow.Node>Rate Limit</Flow.Node>
+              <Flow.Node>Cache Lookup</Flow.Node>
+            </Flow.Parallel>
+            <Flow.Node>Route Handler</Flow.Node>
+            <Flow.Parallel>
+              <Flow.Node>Log</Flow.Node>
+              <Flow.Node>Respond</Flow.Node>
+            </Flow.Parallel>
+          </Flow>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Flow diagram with two sequential parallel groups back-to-back */
+export function FlowSequentialParallelDemo() {
+  return (
+    <Flow>
+      <Flow.Node>Incoming Request</Flow.Node>
+      <Flow.Parallel>
+        <Flow.Node>Validate Headers</Flow.Node>
+        <Flow.Node>Check Auth Token</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Parallel>
+        <Flow.Node>Write to DB</Flow.Node>
+        <Flow.Node>Update Cache</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Node>Return Response</Flow.Node>
+    </Flow>
+  );
+}
+
+/** Flow diagram with expandable nodes in a parallel group */
+export function FlowExpandableDemo() {
+  return (
+    <Flow>
+      <Flow.Node>Incoming Request</Flow.Node>
+      <Flow.Parallel>
+        <Flow.Node
+          render={
+            <ExpandableNode title="Auth Service">
+              <p>Validates JWT tokens and session cookies.</p>
+              <p className="mt-1">
+                Connects to identity provider via OAuth 2.0.
+              </p>
+            </ExpandableNode>
+          }
+        />
+        <Flow.Node
+          render={
+            <ExpandableNode title="Rate Limiter">
+              <p>Enforces per-IP request limits.</p>
+              <p className="mt-1">Sliding window: 100 req/min.</p>
+            </ExpandableNode>
+          }
+        />
+      </Flow.Parallel>
+      <Flow.Node>Route to Origin</Flow.Node>
     </Flow>
   );
 }

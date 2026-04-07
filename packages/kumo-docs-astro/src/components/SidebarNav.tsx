@@ -20,6 +20,11 @@ function normalizePathname(pathname: string) {
   return pathname.replace(/\/+$/, "");
 }
 
+function isActivePath(activePath: string, href: string) {
+  const normalized = normalizePathname(href);
+  return activePath === normalized || activePath.startsWith(normalized + "/");
+}
+
 const staticPages: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Installation", href: "/installation" },
@@ -29,6 +34,7 @@ const staticPages: NavItem[] = [
   { label: "Figma Resources", href: "/figma" },
   { label: "CLI", href: "/cli" },
   { label: "Registry", href: "/registry" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 const componentItems: NavItem[] = [
@@ -39,7 +45,7 @@ const componentItems: NavItem[] = [
   { label: "Checkbox", href: "/components/checkbox" },
   { label: "Clipboard Text", href: "/components/clipboard-text" },
   { label: "Cloudflare Logo", href: "/components/cloudflare-logo" },
-  { label: "Code", href: "/components/code" },
+  { label: "CodeHighlighted", href: "/components/code-highlighted" },
   { label: "Collapsible", href: "/components/collapsible" },
   { label: "Combobox", href: "/components/combobox" },
   { label: "Command Palette", href: "/components/command-palette" },
@@ -50,6 +56,7 @@ const componentItems: NavItem[] = [
   { label: "Flow", href: "/components/flow" },
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
+  { label: "InputArea", href: "/components/input-area" },
   { label: "Label", href: "/components/label" },
   { label: "Layer Card", href: "/components/layer-card" },
   { label: "Link", href: "/components/link" },
@@ -61,6 +68,7 @@ const componentItems: NavItem[] = [
   { label: "Radio", href: "/components/radio" },
   { label: "Select", href: "/components/select" },
   { label: "Sensitive Input", href: "/components/sensitive-input" },
+  { label: "Sidebar", href: "/components/sidebar" },
   { label: "Skeleton Line", href: "/components/skeleton-line" },
   { label: "Surface", href: "/components/surface" },
   { label: "Switch", href: "/components/switch" },
@@ -69,6 +77,12 @@ const componentItems: NavItem[] = [
   { label: "Text", href: "/components/text" },
   { label: "Toast", href: "/components/toast" },
   { label: "Tooltip", href: "/components/tooltip" },
+];
+
+const chartItems: NavItem[] = [
+  { label: "Charts", href: "/charts" },
+  { label: "Timeseries", href: "/charts/timeseries" },
+  { label: "Custom Chart", href: "/charts/custom" },
 ];
 
 // Blocks are CLI-installed components that you own and can customize
@@ -97,6 +111,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [componentsOpen, setComponentsOpen] = useState(true);
+  const [chartsOpen, setChartsOpen] = useState(true);
   const [blocksOpen, setBlocksOpen] = useState(true);
 
   const activePath = normalizePathname(currentPath);
@@ -190,7 +205,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
               href={item.href}
               className={cn(
                 LI_STYLE,
-                activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE,
+                isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
               )}
             >
               {item.label}
@@ -232,6 +247,44 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                   "pl-4",
                   activePath === normalizePathname(item.href) &&
                     LI_ACTIVE_STYLE,
+                )}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mb-4">
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          onClick={() => setChartsOpen(!chartsOpen)}
+        >
+          <span>Charts</span>
+          <CaretDownIcon
+            size={12}
+            className={cn(
+              "text-kumo-subtle transition-transform duration-200",
+              !chartsOpen && "-rotate-90",
+            )}
+          />
+        </button>
+        <ul
+          className={cn(
+            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          {chartItems.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className={cn(
+                  LI_STYLE,
+                  "pl-4",
+                  currentPath === item.href && LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
@@ -288,7 +341,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-canvas px-3 md:hidden",
         )}
       >
         <Button
@@ -306,7 +359,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-elevated md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-canvas md:hidden",
           "transition-transform duration-300 will-change-transform",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
@@ -335,12 +388,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Desktop: Left rail that always stays put */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-elevated md:block",
+          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block",
           "border-r border-kumo-line",
         )}
       >
         <div className="relative h-12 border-b border-kumo-line">
-          <div className="absolute top-2 right-1">
+          <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
               shape="square"
@@ -363,7 +416,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <aside
         data-sidebar-open={sidebarOpen}
         className={cn(
-          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-elevated md:flex",
+          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
           "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
             ? "translate-x-0 border-r border-kumo-line"

@@ -74,6 +74,7 @@ export function ToastDescriptionOnlyDemo() {
   );
 }
 
+/** Success toast with green accent border and check icon. */
 function ToastSuccessButton() {
   const toastManager = useKumoToastManager();
 
@@ -82,8 +83,9 @@ function ToastSuccessButton() {
       variant="primary"
       onClick={() =>
         toastManager.add({
-          title: "Success!",
-          description: "Your Worker has been deployed.",
+          title: "Deployed successfully",
+          description: "Your Worker is now live.",
+          variant: "success",
         })
       }
     >
@@ -185,6 +187,33 @@ export function ToastWarningDemo() {
   return (
     <Toasty>
       <ToastWarningButton />
+    </Toasty>
+  );
+}
+
+/** Info toast with blue accent border and info icon. */
+function ToastInfoButton() {
+  const toastManager = useKumoToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toastManager.add({
+          title: "New version available",
+          description: "Kumo v4.2 includes performance improvements.",
+          variant: "info",
+        })
+      }
+    >
+      Show info toast
+    </Button>
+  );
+}
+
+export function ToastInfoDemo() {
+  return (
+    <Toasty>
+      <ToastInfoButton />
     </Toasty>
   );
 }

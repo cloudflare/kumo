@@ -2,6 +2,7 @@ import { inputVariants } from "./input";
 import { cn } from "../../utils/cn";
 import { useCallback, type ReactNode } from "react";
 import * as React from "react";
+import { Field as FieldBase } from "@base-ui/react/field";
 import { Field as KumoField, type FieldErrorMatch } from "../field/field";
 
 export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
@@ -10,7 +11,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       className,
       onValueChange,
       size = "base",
-      variant = "default",
+      variant: variantProp,
       onChange,
       label,
       labelTooltip,
@@ -18,6 +19,19 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       error,
       ...inputProps
     } = props;
+
+    // Deprecation warning for variant="error"
+    if (process.env.NODE_ENV !== "production" && variantProp === "error") {
+      console.warn(
+        '[Kumo InputArea]: variant="error" is deprecated. ' +
+          "Error styling is now automatically applied when the `error` prop is truthy. " +
+          "Simply remove the variant prop and pass an error message instead.",
+      );
+    }
+
+    // Auto-apply error styling when error prop is truthy
+    // Explicit variant prop takes precedence for backwards compatibility
+    const variant = variantProp ?? (error ? "error" : "default");
 
     // Extract required from inputProps to pass to Field for label decoration
     const { required } = inputProps;
@@ -29,20 +43,15 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       [onChange, onValueChange],
     );
 
-    const textarea = (
-      <textarea
-        ref={ref}
-        className={cn(
-          inputVariants({ size, variant, focusIndicator: true }),
-          "h-auto py-2", // Input variant always come with size, but it does not apply for textarea
-          className,
-        )}
-        onChange={handleChange}
-        {...inputProps}
-      />
+    const textareaClassName = cn(
+      inputVariants({ size, variant, focusIndicator: true }),
+      "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
+      className,
     );
 
     // Render with Field wrapper if label is provided
+    // Use FieldBase.Control with render callback to ensure proper label-textarea association.
+    // The render callback receives props with the correct id/aria-labelledby from Field context.
     if (label) {
       return (
         <KumoField
@@ -58,13 +67,30 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
               : undefined
           }
         >
-          {textarea}
+          <FieldBase.Control
+            render={(controlProps) => (
+              <textarea
+                {...controlProps}
+                ref={ref}
+                className={textareaClassName}
+                onChange={handleChange}
+                {...inputProps}
+              />
+            )}
+          />
         </KumoField>
       );
     }
 
     // Render bare textarea without Field wrapper
-    return textarea;
+    return (
+      <textarea
+        ref={ref}
+        className={textareaClassName}
+        onChange={handleChange}
+        {...inputProps}
+      />
+    );
   },
 );
 

@@ -1,0 +1,82 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Collapsible"
+description: "A vertically stacked set of interactive headings that each reveal a section of content."
+sourceFile: "components/collapsible"
+baseUIComponent: "collapsible"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  CollapsibleHeroDemo,
+  CollapsibleBasicDemo,
+  CollapsibleMultipleDemo,
+} from "~/components/demos/CollapsibleDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="CollapsibleHeroDemo">
+    <CollapsibleHeroDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Collapsible } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Collapsible } from "@cloudflare/kumo/components/collapsible";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Collapsible } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Collapsible label="Question">Answer content goes here.</Collapsible>;
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Single Item</Heading>
+<ComponentExample demo="CollapsibleBasicDemo">
+  <CollapsibleBasicDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Multiple Items</Heading>
+<ComponentExample demo="CollapsibleMultipleDemo">
+  <CollapsibleMultipleDemo client:load />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Collapsible" />
+</ComponentSection>

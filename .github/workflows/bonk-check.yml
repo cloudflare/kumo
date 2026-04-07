@@ -1,0 +1,93 @@
+name: Bonk Check
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  bonk-check:
+    if: github.event.pull_request != null || github.event.issue.pull_request != null || github.event.review != null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for /bonk from a collaborator
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          REVIEW_BODY: ${{ github.event.review.body || '' }}
+          REVIEW_USER: ${{ github.event.review.user.login || '' }}
+        run: |
+          set -euo pipefail
+
+          is_collaborator() {
+            local user="$1"
+            local status
+            status=$(gh api "repos/$REPOSITORY/collaborators/$user" -i 2>/dev/null | head -1 | awk '{print $2}')
+            [ "$status" = "204" ]
+          }
+
+          if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_review" ]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            PR_NUMBER="${{ github.event.issue.number }}"
+            SHA=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')
+          fi
+
+          echo "pr=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+          FOUND=false
+
+          if [ "$EVENT_NAME" = "pull_request_review" ] && printf '%s' "$REVIEW_BODY" | grep -q '/bonk'; then
+            if is_collaborator "$REVIEW_USER"; then
+              FOUND=true
+              echo "found=true" >> "$GITHUB_OUTPUT"
+              echo "bonk_user=$REVIEW_USER" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+          if [ "$FOUND" = "false" ]; then
+            COMMENTS=$(gh api "repos/$REPOSITORY/issues/$PR_NUMBER/comments" --paginate | jq -r '.[] | @base64')
+
+            while IFS= read -r encoded; do
+              [ -z "$encoded" ] && continue
+
+              BODY=$(printf '%s' "$encoded" | base64 --decode | jq -r '.body')
+              USER=$(printf '%s' "$encoded" | base64 --decode | jq -r '.user.login')
+
+              if printf '%s' "$BODY" | grep -q '/bonk' && is_collaborator "$USER"; then
+                FOUND=true
+                echo "found=true" >> "$GITHUB_OUTPUT"
+                echo "bonk_user=$USER" >> "$GITHUB_OUTPUT"
+                break
+              fi
+            done <<< "$COMMENTS"
+          fi
+
+          if [ "$FOUND" = "false" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summarize result
+        run: |
+          if [ "${{ steps.check.outputs.found }}" = "true" ]; then
+            echo "✅ /bonk called by ${{ steps.check.outputs.bonk_user }}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ /bonk has not been called on this PR by a collaborator" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Require /bonk
+        if: steps.check.outputs.found != 'true'
+        run: |
+          echo "::error::/bonk has not been called on this PR by a collaborator"
+          exit 1

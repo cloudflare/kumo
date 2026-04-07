@@ -1,42 +1,39 @@
 import { Badge } from "@cloudflare/kumo";
 
-export function BadgeVariantsDemo() {
+export function BadgeSemanticVariantsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Badge variant="primary">Primary</Badge>
       <Badge variant="secondary">Secondary</Badge>
-      <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="error">Error</Badge>
+      <Badge variant="success">Success</Badge>
+      <Badge variant="warning">Warning</Badge>
+      <Badge variant="info">Info</Badge>
       <Badge variant="outline">Outline</Badge>
       <Badge variant="beta">Beta</Badge>
     </div>
   );
 }
 
-export function BadgePrimaryDemo() {
-  return <Badge variant="primary">Primary</Badge>;
-}
-
-export function BadgeSecondaryDemo() {
-  return <Badge variant="secondary">Secondary</Badge>;
-}
-
-export function BadgeDestructiveDemo() {
-  return <Badge variant="destructive">Destructive</Badge>;
-}
-
-export function BadgeOutlineDemo() {
-  return <Badge variant="outline">Outline</Badge>;
-}
-
-export function BadgeBetaDemo() {
-  return <Badge variant="beta">Beta</Badge>;
+export function BadgeColorVariantsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Badge variant="neutral">Neutral</Badge>
+      <Badge variant="red">Red</Badge>
+      <Badge variant="orange">Orange</Badge>
+      <Badge variant="green">Green</Badge>
+      <Badge variant="teal">Teal</Badge>
+      <Badge variant="blue">Blue</Badge>
+      <Badge variant="purple">Purple</Badge>
+    </div>
+  );
 }
 
 export function BadgeInSentenceDemo() {
   return (
     <p className="flex items-center gap-2">
       Workers
-      <Badge variant="beta">Beta</Badge>
+      <Badge variant="secondary">New</Badge>
     </p>
   );
 }

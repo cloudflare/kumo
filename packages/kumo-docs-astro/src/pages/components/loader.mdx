@@ -1,0 +1,80 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Loader"
+description: "A loading spinner to indicate loading state."
+sourceFile: "components/loader"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  LoaderBasicDemo,
+  LoaderCustomSizeDemo,
+} from "~/components/demos/LoaderDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="LoaderBasicDemo">
+    <LoaderBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Loader } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Loader } from "@cloudflare/kumo/components/loader";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Loader } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Loader />;
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Default Size</Heading>
+<ComponentExample demo="LoaderBasicDemo">
+  <LoaderBasicDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom Size</Heading>
+<ComponentExample demo="LoaderCustomSizeDemo">
+  <LoaderCustomSizeDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Loader" />
+</ComponentSection>

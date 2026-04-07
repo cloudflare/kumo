@@ -1,0 +1,103 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Meter"
+description: "A progress/percentage meter component for displaying numeric values within a known range."
+sourceFile: "components/meter"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  MeterBasicDemo,
+  MeterCustomValueDemo,
+  MeterHiddenValueDemo,
+  MeterFullDemo,
+  MeterLowDemo,
+} from "~/components/demos/MeterDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="MeterBasicDemo">
+    <MeterBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Meter } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Meter } from "@cloudflare/kumo/components/meter";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Meter } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Meter label="Storage used" value={65} />;
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic Meter</Heading>
+<p>The default meter displays a label and percentage value.</p>
+<ComponentExample demo="MeterBasicDemo">
+  <MeterBasicDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom Value Display</Heading>
+<p>Use `customValue` to show a custom string instead of the percentage.</p>
+<ComponentExample demo="MeterCustomValueDemo">
+  <MeterCustomValueDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Hidden Value</Heading>
+<p>Set `showValue={false}` to hide the value display.</p>
+<ComponentExample demo="MeterHiddenValueDemo">
+  <MeterHiddenValueDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Full Meter</Heading>
+<p>A meter at 100% capacity.</p>
+<ComponentExample demo="MeterFullDemo">
+  <MeterFullDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Low Value</Heading>
+<p>A meter with a low value.</p>
+<ComponentExample demo="MeterLowDemo">
+  <MeterLowDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Meter" />
+</ComponentSection>

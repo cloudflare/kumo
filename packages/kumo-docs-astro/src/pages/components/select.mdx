@@ -1,0 +1,257 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Select"
+description: "Displays a list of options for the user to pick from—triggered by a button."
+sourceFile: "components/select"
+baseUIComponent: "select"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  SelectBasicDemo,
+  SelectWithoutLabelDemo,
+  SelectWithFieldDemo,
+  SelectPlaceholderDemo,
+  SelectWithTooltipDemo,
+  SelectCustomRenderingDemo,
+  SelectLoadingDemo,
+  SelectLoadingDataDemo,
+  SelectMultipleDemo,
+  SelectComplexDemo,
+  SelectLongListDemo,
+} from "~/components/demos/SelectDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="SelectBasicDemo">
+    <SelectBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Select } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Select } from "@cloudflare/kumo/components/select";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Select } from "@cloudflare/kumo";
+
+export default function Example() {
+  const [value, setValue] = useState("apple");
+
+  return (
+    <Select
+      label="Favorite Fruit"
+      value={value}
+      onValueChange={(v) => setValue(v ?? "apple")}
+      items={{ apple: "Apple", banana: "Banana", cherry: "Cherry" }}
+    />
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic</Heading>
+<p>
+  A select with a visible label. When you provide the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop,
+  the select automatically renders inside a Field wrapper with the label
+  displayed above it.
+</p>
+
+  <ComponentExample demo="SelectBasicDemo">
+    <SelectBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Without Visible Label */}
+
+<ComponentSection>
+  <Heading level={3}>Without Visible Label</Heading>
+  <p>
+    When a visible label isn't needed (e.g., in compact UIs or when context is clear),
+    use `aria-label` for accessibility.
+  </p>
+
+  <ComponentExample demo="SelectWithoutLabelDemo">
+    <SelectWithoutLabelDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* With Description and Error */}
+
+<ComponentSection>
+  <Heading level={3}>With Description and Error</Heading>
+  <p>
+    Select integrates with the Field wrapper to show description text and validation errors.
+  </p>
+
+  <ComponentExample demo="SelectWithFieldDemo">
+    <SelectWithFieldDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Placeholder */}
+
+<ComponentSection>
+  <Heading level={3}>Placeholder</Heading>
+  <p>
+    Use the `placeholder` prop
+    to show text when no value is selected.
+  </p>
+
+  <ComponentExample demo="SelectPlaceholderDemo">
+    <SelectPlaceholderDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Label Tooltip */}
+
+<ComponentSection>
+  <Heading level={3}>Label with Tooltip</Heading>
+  <p>
+    Add a tooltip icon next to the label for additional context using <code
+      class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
+  </p>
+
+  <ComponentExample demo="SelectWithTooltipDemo">
+    <SelectWithTooltipDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Custom Rendering */}
+
+<ComponentSection>
+  <Heading level={3}>Custom Rendering</Heading>
+  <p>
+    A select component that demonstrates custom rendering capabilities for
+    both the trigger button and dropdown options, allowing you to work with
+    complex object data structures instead of simple string values.
+  </p>
+
+<ComponentExample demo="SelectCustomRenderingDemo">
+  <SelectCustomRenderingDemo client:load />
+</ComponentExample>
+
+<p>
+  Select compares value with items to find which one is selected. For object
+  items, it will compare if the object is the same reference not by value by
+  default. If you want to compare object items by value, you can use{" "}
+  <strong>isItemEqualToValue</strong> prop.
+</p>
+
+```tsx
+<Select
+  className="w-[200px]"
+  renderValue={(v) => (
+    <span>
+      {v.emoji} {v.label}
+    </span>
+  )}
+  value={value}
+  onValueChange={(v) => setValue(v)}
+  // Provides custom comparison logic
+  isItemEqualToValue={(item, value) => item.value === value.value}
+>
+  {languages.map((language) => (
+    <Select.Option key={language.value} value={language}>
+      {language.emoji} {language.label}
+    </Select.Option>
+  ))}
+</Select>
+```
+
+</ComponentSection>
+
+{/* Loading */}
+
+<ComponentSection>
+  <Heading level={3}>Loading</Heading>
+  <p>
+    A select component with loading state. The loading state is passed to
+    the component via the <code
+      class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code> prop.
+  </p>
+
+  <ComponentExample demo="SelectLoadingDemo">
+    <div class="flex flex-col gap-4">
+      <p class="text-kumo-strong">Loading State</p>
+      <SelectLoadingDemo client:load />
+      <p class="text-kumo-strong">Loading From Server (simulated 2s delay)</p>
+      <SelectLoadingDataDemo client:load />
+    </div>
+  </ComponentExample>
+</ComponentSection>
+
+{/* Multiple Item */}
+
+<ComponentSection>
+  <Heading level={3}>Multiple Item</Heading>
+  <p>
+    A select component with multiple selection enabled. The value is an
+    array of selected items.
+  </p>
+
+  <ComponentExample demo="SelectMultipleDemo">
+    <SelectMultipleDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* More Example */}
+
+<ComponentSection>
+  <Heading level={3}>More Example</Heading>
+
+  <ComponentExample demo="SelectComplexDemo">
+    <SelectComplexDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Long List - Test scrolling behavior */}
+
+<ComponentSection>
+  <Heading level={3}>Long List (Scrolling Test)</Heading>
+  <p>
+    A select component with many options to test popup scrolling behavior.
+    The popup should scroll smoothly without bounce/overscroll issues.
+  </p>
+
+  <ComponentExample demo="SelectLongListDemo">
+    <SelectLongListDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <Heading level={3}>Select</Heading>
+  <PropsTable component="Select" />
+
+  <Heading level={3}>Select.Option</Heading>
+  <PropsTable component="Select.Option" />
+</ComponentSection>

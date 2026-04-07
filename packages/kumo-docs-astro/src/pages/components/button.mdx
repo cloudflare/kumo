@@ -1,0 +1,210 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Button"
+description: "Displays a button or a component that looks like a button."
+sourceFile: "components/button"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import Heading from "~/components/docs/Heading.astro";
+import {
+  ButtonBasicDemo,
+  ButtonPrimaryDemo,
+  ButtonSecondaryDemo,
+  ButtonGhostDemo,
+  ButtonDestructiveDemo,
+  ButtonOutlineDemo,
+  ButtonSecondaryDestructiveDemo,
+  ButtonSizesDemo,
+  ButtonWithIconDemo,
+  ButtonIconOnlyDemo,
+  ButtonLoadingDemo,
+  ButtonDisabledDemo,
+  ButtonTitleDemo,
+} from "~/components/demos/ButtonDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="ButtonBasicDemo" vrSection="basic" vrTitle="Basic">
+    <ButtonBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+  <CodeBlock code={`import { Button } from "@cloudflare/kumo";`} lang="tsx" />
+  <Heading level={3}>Granular</Heading>
+  <CodeBlock
+    code={`import { Button } from "@cloudflare/kumo/components/button";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Button variant="secondary">Click me</Button>;
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+{/* Variants */}
+
+<Heading level={3}>Variants</Heading>
+
+<h4 class="mb-3 text-base font-medium">Primary</h4>
+<ComponentExample
+  demo="ButtonPrimaryDemo"
+  vrSection="variant-primary"
+  vrTitle="Variant: Primary"
+>
+  <ButtonPrimaryDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Secondary</h4>
+<ComponentExample
+  demo="ButtonSecondaryDemo"
+  vrSection="variant-secondary"
+  vrTitle="Variant: Secondary"
+>
+  <ButtonSecondaryDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Ghost</h4>
+<ComponentExample
+  demo="ButtonGhostDemo"
+  vrSection="variant-ghost"
+  vrTitle="Variant: Ghost"
+>
+  <ButtonGhostDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Destructive</h4>
+<ComponentExample
+  demo="ButtonDestructiveDemo"
+  vrSection="variant-destructive"
+  vrTitle="Variant: Destructive"
+>
+  <ButtonDestructiveDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Outline</h4>
+<ComponentExample
+  demo="ButtonOutlineDemo"
+  vrSection="variant-outline"
+  vrTitle="Variant: Outline"
+>
+  <ButtonOutlineDemo client:visible />
+</ComponentExample>
+
+<h4 class="mb-3 text-base font-medium">Secondary Destructive</h4>
+<ComponentExample
+  demo="ButtonSecondaryDestructiveDemo"
+  vrSection="variant-secondary-destructive"
+  vrTitle="Variant: Secondary Destructive"
+>
+  <ButtonSecondaryDestructiveDemo client:visible />
+</ComponentExample>
+
+{/* Sizes */}
+
+<Heading level={3}>Sizes</Heading>
+<ComponentExample demo="ButtonSizesDemo" vrSection="sizes" vrTitle="Sizes">
+  <ButtonSizesDemo client:visible />
+</ComponentExample>
+
+{/* With Icon */}
+
+<Heading level={3}>With Icon</Heading>
+<ComponentExample
+  demo="ButtonWithIconDemo"
+  vrSection="with-icon"
+  vrTitle="With Icon"
+>
+  <ButtonWithIconDemo client:visible />
+</ComponentExample>
+
+{/* Icon Only */}
+
+<Heading level={3}>Icon Only</Heading>
+<p>
+  For icon-only buttons, use `shape="square"` or `shape="circle"` with the
+  `icon` prop.
+  <strong>Always include `aria-label`</strong>
+  for accessibility — without visible text, screen readers need the label to
+  convey the button's purpose.
+</p>
+<ComponentExample
+  demo="ButtonIconOnlyDemo"
+  vrSection="icon-only"
+  vrTitle="Icon Only"
+>
+  <ButtonIconOnlyDemo client:visible />
+</ComponentExample>
+
+{/* Loading State */}
+
+<Heading level={3}>Loading State</Heading>
+<ComponentExample
+  demo="ButtonLoadingDemo"
+  vrSection="loading"
+  vrTitle="Loading State"
+>
+  <ButtonLoadingDemo client:visible />
+</ComponentExample>
+
+{/* Disabled State */}
+
+<Heading level={3}>Disabled State</Heading>
+<ComponentExample
+  demo="ButtonDisabledDemo"
+  vrSection="disabled"
+  vrTitle="Disabled State"
+>
+  <ButtonDisabledDemo client:visible />
+</ComponentExample>
+
+{/* Title (Tooltip) */}
+
+  <Heading level={3}>Title</Heading>
+  <p>
+    Use the `title` prop to wrap the button in a tooltip. This is useful for
+    icon-only buttons or whenever additional context helps the user understand
+    the action.
+  </p>
+  <ComponentExample
+    demo="ButtonTitleDemo"
+    vrSection="title"
+    vrTitle="Title"
+  >
+    <ButtonTitleDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Button" />
+</ComponentSection>
+
+{/* trigger-vr */}

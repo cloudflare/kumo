@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
+import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 
@@ -52,7 +53,7 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     secondary: {
       classes:
-        "bg-kumo-control !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+        "bg-kumo-base !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-ring data-[state=open]:bg-kumo-base",
       description: "Default button style for most actions",
     },
     ghost: {
@@ -65,12 +66,12 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-control !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-control disabled:bg-kumo-control/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-control",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
-      classes: "bg-kumo-base text-kumo-default ring ring-kumo-line",
+      classes: "bg-transparent text-kumo-default ring ring-kumo-ring",
       description: "Bordered button with transparent background",
     },
   },
@@ -170,6 +171,8 @@ type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: Icon | React.ReactNode;
   /** Shows a loading spinner and disables interaction. */
   loading?: boolean;
+  /** When set, wraps the button in a Tooltip with this content. */
+  title?: React.ReactNode;
 };
 
 type ButtonWithTextProps = ButtonBaseProps & {
@@ -230,17 +233,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "base",
       variant = "secondary",
       icon: IconComponent,
+      title,
       ...props
     },
     ref,
   ) => {
     const { type, ...restProps } = props;
-    return (
+    const button = (
       <button
         ref={ref}
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "outline-none focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
+          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -254,6 +258,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
+
+    if (title) {
+      return (
+        <Tooltip content={title} asChild>
+          {button}
+        </Tooltip>
+      );
+    }
+
+    return button;
   },
 );
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Radio } from "@cloudflare/kumo";
 
+/** Shows a basic controlled radio group */
 export function RadioBasicDemo() {
   const [value, setValue] = useState("email");
   return (
@@ -16,6 +17,7 @@ export function RadioBasicDemo() {
   );
 }
 
+/** Shows the default vertical radio group layout */
 export function RadioDefaultDemo() {
   const [value, setValue] = useState("personal");
   return (
@@ -27,6 +29,7 @@ export function RadioDefaultDemo() {
   );
 }
 
+/** Shows a horizontal radio group layout */
 export function RadioHorizontalDemo() {
   const [value, setValue] = useState("md");
   return (
@@ -43,6 +46,7 @@ export function RadioHorizontalDemo() {
   );
 }
 
+/** Shows a radio group with helper description text */
 export function RadioDescriptionDemo() {
   const [value, setValue] = useState("standard");
   return (
@@ -59,22 +63,43 @@ export function RadioDescriptionDemo() {
   );
 }
 
+/** Shows error state for both default and card radio groups */
 export function RadioErrorDemo() {
   return (
-    <Radio.Group
-      legend="Payment method"
-      error="Please select a payment method to continue"
-    >
-      <Radio.Item label="Credit Card" value="card" variant="error" />
-      <Radio.Item label="PayPal" value="paypal" variant="error" />
-      <Radio.Item label="Bank Transfer" value="bank" variant="error" />
-    </Radio.Group>
+    <div className="grid grid-cols-2 gap-6">
+      <Radio.Group
+        legend="Payment method"
+        error="Please select a payment method to continue"
+      >
+        <Radio.Item label="Credit Card" value="card" variant="error" />
+        <Radio.Item label="PayPal" value="paypal" variant="error" />
+      </Radio.Group>
+      <Radio.Group
+        legend="Payment method"
+        appearance="card"
+        error="Please select a payment method to continue"
+      >
+        <Radio.Item
+          label="Credit Card"
+          description="Pay with Visa, Mastercard, American Express, or Elo."
+          value="card"
+          variant="error"
+        />
+        <Radio.Item
+          label="PayPal"
+          description="Pay with your PayPal account."
+          value="paypal"
+          variant="error"
+        />
+      </Radio.Group>
+    </div>
   );
 }
 
+/** Shows disabled state for both default and card radio groups */
 export function RadioDisabledDemo() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="grid grid-cols-2 gap-6">
       <Radio.Group legend="Disabled group" disabled defaultValue="a">
         <Radio.Item label="Option A" value="a" />
         <Radio.Item label="Option B" value="b" />
@@ -83,15 +108,119 @@ export function RadioDisabledDemo() {
         <Radio.Item label="Available" value="available" />
         <Radio.Item label="Unavailable" value="unavailable" disabled />
       </Radio.Group>
+      <Radio.Group
+        legend="Disabled card group"
+        appearance="card"
+        disabled
+        defaultValue="a"
+      >
+        <Radio.Item
+          label="Option A"
+          description="This option is disabled."
+          value="a"
+        />
+        <Radio.Item
+          label="Option B"
+          description="This option is disabled."
+          value="b"
+        />
+      </Radio.Group>
+      <Radio.Group
+        legend="Individual disabled card"
+        appearance="card"
+        defaultValue="available"
+      >
+        <Radio.Item
+          label="Available"
+          description="This option can be selected."
+          value="available"
+        />
+        <Radio.Item
+          label="Unavailable"
+          description="This option is not available."
+          value="unavailable"
+          disabled
+        />
+      </Radio.Group>
     </div>
   );
 }
 
+/** Shows radio group with labels positioned before the radio control */
 export function RadioControlPositionDemo() {
   return (
     <Radio.Group legend="Preferences" controlPosition="end" defaultValue="a">
       <Radio.Item label="Label before radio" value="a" />
       <Radio.Item label="Another option" value="b" />
+    </Radio.Group>
+  );
+}
+
+/** Shows radio card appearance with Cloudflare plan options */
+export function RadioCardDemo() {
+  const [value, setValue] = useState("free");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+      <Radio.Item
+        label="Business"
+        description="For small businesses operating online."
+        value="business"
+      />
+      <Radio.Item
+        label="Contract"
+        description="For mission-critical applications that are core to your business."
+        value="contract"
+      />
+    </Radio.Group>
+  );
+}
+
+/** Shows radio card appearance in horizontal layout */
+export function RadioCardHorizontalDemo() {
+  const [value, setValue] = useState("free");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      orientation="horizontal"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+      <Radio.Item
+        label="Business"
+        description="For small businesses operating online."
+        value="business"
+      />
+      <Radio.Item
+        label="Contract"
+        description="For mission-critical applications that are core to your business."
+        value="contract"
+      />
     </Radio.Group>
   );
 }

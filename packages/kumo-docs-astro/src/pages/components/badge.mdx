@@ -1,0 +1,69 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Badge"
+description: "Displays a small label for status, categorization, or metadata."
+sourceFile: "components/badge"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  BadgeSemanticVariantsDemo,
+  BadgeColorVariantsDemo,
+  BadgeInSentenceDemo,
+} from "~/components/demos/BadgeDemo";
+
+
+<ComponentExample demo="BadgeSemanticVariantsDemo">
+  <BadgeSemanticVariantsDemo client:visible />
+</ComponentExample>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { Badge } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { Badge } from "@cloudflare/kumo/components/badge";
+```
+
+## Usage
+
+```tsx
+import { Badge } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <Badge variant="secondary">New</Badge>;
+}
+```
+
+## Examples
+
+### Primary Badges
+
+<ComponentExample demo="BadgeSemanticVariantsDemo">
+  <BadgeSemanticVariantsDemo client:visible />
+</ComponentExample>
+
+### Other variants
+
+Other variants for specific products/use cases where the semantic badges aren't enough to convey intended meaning or status.
+
+<ComponentExample demo="BadgeColorVariantsDemo">
+  <BadgeColorVariantsDemo client:visible />
+</ComponentExample>
+
+### In a sentence
+
+<ComponentExample demo="BadgeInSentenceDemo">
+  <BadgeInSentenceDemo client:visible />
+</ComponentExample>
+
+## API Reference
+
+<PropsTable component="Badge" />

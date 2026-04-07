@@ -1,10 +1,6 @@
-import React, {
-  forwardRef,
-  type ComponentPropsWithoutRef,
-  type ComponentPropsWithRef,
-  type ElementType,
-  type PropsWithChildren,
-} from "react";
+import { createElement, forwardRef, type ElementType } from "react";
+import { useRender } from "@base-ui/react/use-render";
+import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "../../utils/cn";
 
 /** Surface color variant definitions. */
@@ -49,71 +45,60 @@ export function surfaceVariants({
   );
 }
 
-type PolymorphicAsProp<E extends ElementType> = {
-  as?: E;
-};
-
-type PolymorphicProps<E extends ElementType> = PropsWithChildren<
-  ComponentPropsWithoutRef<E> & PolymorphicAsProp<E>
->;
-
-type PolymorphicRef<E extends ElementType> = ComponentPropsWithRef<E>["ref"];
-
-const defaultElement = "div";
-
-type SurfacePropsGeneric<E extends ElementType = typeof defaultElement> =
-  PolymorphicProps<E> & KumoSurfaceVariantsProps;
-
 /**
  * Surface component props.
  *
  * @example
  * ```tsx
  * <Surface className="rounded-lg p-4">Card content</Surface>
- * <Surface as="section" className="rounded-lg p-6">Section content</Surface>
+ * <Surface render={<section />} className="rounded-lg p-6">Section content</Surface>
  * ```
  */
-export interface SurfaceProps {
-  /** The HTML element type to render as (e.g. `"div"`, `"section"`, `"article"`). @default "div" */
-  as?: ElementType;
-  /** Surface color variant. @default "primary" */
-  color?: KumoSurfaceColor;
-  /** Additional CSS classes merged via `cn()`. */
-  className?: string;
-  /** Content rendered inside the surface. */
-  children?: React.ReactNode;
-}
-
-type SurfaceComponent = <E extends ElementType = typeof defaultElement>(
-  props: SurfacePropsGeneric<E> & { ref?: PolymorphicRef<E> },
-) => React.JSX.Element;
+export type SurfaceProps = useRender.ComponentProps<"div"> &
+  KumoSurfaceVariantsProps & {
+    /**
+     * @deprecated Use the `render` prop instead.
+     * @example `<Surface render={<section />}>` instead of `<Surface as="section">`
+     */
+    as?: ElementType;
+  };
 
 /**
  * Polymorphic container with consistent background, shadow, and border styling.
+ *
+ * Use the `render` prop to change the underlying element:
+ * ```tsx
+ * <Surface render={<section />} className="rounded-lg p-4">Card content</Surface>
+ * ```
  *
  * @example
  * ```tsx
  * <Surface className="rounded-lg p-4">Card content</Surface>
  * ```
  */
-const SurfaceImpl = function Surface<
-  E extends ElementType = typeof defaultElement,
->(
-  { as, children, className, ...restProps }: SurfacePropsGeneric<E>,
-  ref: PolymorphicRef<E>,
-) {
-  const Component = as ?? defaultElement;
-  return (
-    <Component
-      ref={ref}
-      {...restProps}
-      className={cn("bg-kumo-base shadow-xs ring ring-kumo-line", className)}
-    >
-      {children}
-    </Component>
-  );
-};
+export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
+  function Surface(
+    { color = "primary", className, render, as: asProp, ...props },
+    ref,
+  ) {
+    const defaultProps: useRender.ElementProps<"div"> = {
+      className: cn(
+        "bg-kumo-base shadow-xs ring ring-kumo-line",
+        KUMO_SURFACE_VARIANTS.color[color].classes,
+      ),
+    };
 
-export const Surface = forwardRef(
-  SurfaceImpl as any,
-) as unknown as SurfaceComponent;
+    // Support deprecated `as` prop by converting to a render element.
+    const resolvedRender =
+      render ?? (asProp ? createElement(asProp) : undefined);
+
+    return useRender({
+      defaultTagName: "div",
+      render: resolvedRender,
+      ref,
+      props: mergeProps<"div">(defaultProps, props, { className }),
+    });
+  },
+);
+
+Surface.displayName = "Surface";

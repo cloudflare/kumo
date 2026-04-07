@@ -1,5 +1,456 @@
 # @cloudflare/kumo
 
+## 1.17.0
+
+### Minor Changes
+
+- 355a1b5: Badge: add color-based variants and deprecate semantic variants
+  - Add color variants: `red`, `orange`, `yellow`, `green`, `teal`, `blue`, `neutral`, `inverted`
+  - Add subtle variants for each color (`red-subtle`, `orange-subtle`, etc.) with lighter backgrounds and darker text
+  - Retain `outline` and `beta` variants unchanged
+  - Deprecate `primary` (use `inverted`), `secondary` (use `neutral`), `destructive` (use `red`), `success` (use `green`)
+  - Dark mode support: subtle variants flip to dark backgrounds with light text, regular color variants darken slightly, inverted flips to white bg with black text
+  - Default variant changed from `primary` to `neutral`
+
+- 250a6dd: Add `action` prop to Banner for rendering CTA buttons alongside structured title/description content without resorting to the `children` prop.
+- 8c244d2: Refresh semantic surface color tokens and component surface usage.
+  - Add and adopt `kumo-canvas` as the page-level surface token in theme output and docs usage.
+  - Rebalance neutral token values in `kumo-binding.css` and generated theme variables for improved light/dark surface hierarchy.
+  - Update surface-related component styling (`LayerCard`, `MenuBar`, `Tabs`) to align with the refreshed `canvas`/`elevated`/`recessed` layering model.
+  - Update token usage guidance in `ai/USAGE.md` to reflect page vs component background roles.
+
+- ef15662: Make timeseries' highlighted on hovering a data point
+- cd0c22f: Add Shadow DOM support via `KumoPortalProvider` and `container` prop on all portal-based components
+
+  All overlay components (Dialog, DropdownMenu, Combobox, Select, Tooltip, Popover, CommandPalette, Toast) now support rendering inside Shadow DOM or custom containers.
+
+  **New exports:**
+  - `KumoPortalProvider` - Context provider to set default portal container for all overlays
+  - `PortalContainer` - Type for portal container (HTMLElement, ShadowRoot, or ref)
+
+  **Component updates:**
+  All portal-based components now accept an optional `container` prop:
+  - `Dialog` - `container` prop on Dialog component
+  - `DropdownMenu.Content` - `container` prop
+  - `Combobox.Content` - `container` prop
+  - `Select` - `container` prop
+  - `Tooltip` - `container` prop
+  - `Popover.Content` - `container` prop
+  - `CommandPalette.Root` and `CommandPalette.Dialog` - `container` prop
+  - `Toasty` (Toast provider) - `container` prop
+
+  **Usage:**
+
+  Set once at the app level:
+
+  ```tsx
+  <KumoPortalProvider container={shadowRoot}>
+    <App />
+  </KumoPortalProvider>
+  ```
+
+  Or override per component:
+
+  ```tsx
+  <Dialog container={customContainer}>
+    <Dialog.Title>Modal inside shadow DOM</Dialog.Title>
+  </Dialog>
+  ```
+
+  When no provider or prop is set, components default to `document.body` (existing behavior).
+
+- 17f21f3: SkeletonLine: add `blockHeight` prop to set a container height and vertically center the skeleton line within it
+- d1f697b: Table: add `sticky` prop to `Table.Head` and `Table.Cell` for pinning columns to left/right edges, and `sticky` prop to `Table.Header` for sticky header rows. Uses `isolate` stacking context with `z-0`/`z-1`/`z-2` layering.
+- 56e3640: Add `toml` as a supported language for syntax highlighting in the Code component
+- f0c8952: Add `title` prop to `Button` — wraps the button in a `Tooltip` when provided.
+
+### Patch Changes
+
+- 7721bc5: Checkbox.Group & Radio.Group: remove fieldset border box and simplify styling
+  - Remove `rounded-lg border border-kumo-line p-4` wrapper from both group fieldsets
+  - Downsize legend from `text-lg` to `text-base` with inline-flex layout
+  - Drop `font-medium` from Checkbox.Item and Radio.Item labels
+
+- 6c21970: Fix missing disabled styling on Combobox triggers. `TriggerValue` and `TriggerMultipleWithInput` now apply `opacity-50` and `cursor-not-allowed` when disabled, matching the behaviour of the `Select` component.
+- 0e4247a: Update dialog backdrop overlay to use `bg-kumo-recessed` token
+- 0060bb9: Remove `ai/schemas.ts` from version control (now fully generated at build time)
+- 04a1f07: Fix LayerCard.Primary stacking order when sandwiched between LayerCard.Secondary elements
+- 94d50e2: Fix SensitiveInput focus ring and global CSS pollution
+  - Fix focus ring not showing on container when inner input is focused (focus-within:outline)
+  - Add defensive styles to eye toggle and copy buttons to prevent global CSS pollution
+  - Fix inputVariants parentFocusIndicator using wrong selector ([&:has(:focus-within)] → focus-within:)
+
+- db75c51: SkeletonLine: move `.skeleton-line` styles into `@layer base` so Tailwind utility classes (e.g. `className="h-6"`) can override the default height
+- eb68b35: Tabs indicator now uses `translate-x` for its transition animation, replacing the CSS `left` transition with a GPU-accelerated transform.
+- e21a6df: fix flow component not reflecting padding prop
+- 29c56fd: `Surface`: replace `as` prop with Base UI `render` prop for polymorphism
+
+  The `as` prop used a hand-rolled generic `forwardRef` pattern (with `as any` casts) that conflicted with how the rest of the library handles polymorphism via Base UI's `useRender` hook.
+
+  `Surface` now accepts a `render` prop, consistent with `Link` and other components. The old `as` prop is kept as a deprecated alias and continues to work unchanged — no migration required.
+
+  ```tsx
+  // Still works (deprecated)
+  <Surface as="section">...</Surface>
+
+  // Preferred going forward
+  <Surface render={<section />}>...</Surface>
+  ```
+
+- 9272b4a: Switch: polish squircle styling
+  - Use `ring-inset` on thumb to prevent border protruding beyond the track
+  - Make thumb ring transparent to remove visible border outline
+  - Switch focus indicator from `ring` to `outline` with `outline-offset-2` to avoid clashing with the track's own ring border
+
+- 6b15bac: fix(Tabs): update segmented tab spacing and track styling
+  - Adjust segmented `Tabs` list styling colour to `bg-kumo-recessed` and added `ring` to make the Tabs background more visible
+  - Remove extra edge spacing and keep the segmented track/indicator alignment consistent
+
+- cfe814d: update toast styling to use a subtle ring and background that reflect each state.
+- 7ac73d2: update status text token values for info and danger to improve a11y contrast ratio on banners.
+- dcbf185: Add `truncate` prop to `Text` component. When `true`, applies `truncate min-w-0` classes to clip overflowing text with an ellipsis.
+
+## 1.16.0
+
+### Minor Changes
+
+- c5f69b9: Make Chart components keyboard focusable with tabindex. Timeseries adds `ariaDescription` prop
+
+### Patch Changes
+
+- b3c44f1: Generate component-registry files at build time, remove from git
+
+  Eliminates contributor friction by generating component-registry.json,
+  component-registry.md, and schemas.ts during the build process instead of
+  tracking them in git. Contributors will no longer see stale diffs or need to
+  manually regenerate these files.
+  - Add ai/component-registry.json and ai/component-registry.md to .gitignore
+  - Convert ai/schemas.ts to a stub file for TypeScript compilation
+  - Add codegen:registry to build script for deterministic generation
+
+- 759f4e8: feat(code): add HCL (HashiCorp Configuration Language) as a supported syntax highlighting language
+- a67fac7: fix(flow): connector lines no longer misalign when the page scrolls or a sidebar shifts the layout
+
+  `getBoundingClientRect` values were stored in React state per node and later subtracted against a freshly-read container rect at connector-draw time. Any layout shift (sidebar open/close, page scroll, inner container scroll) between those two reads produced stale coordinates, causing connector lines to jump out of place or disappear entirely.
+
+  Fix: add `scroll` and `resize` listeners (capture phase) at the `FlowNode`, `FlowParallelNode`, and `FlowNodeList` levels so all rects are remeasured after any layout shift. Connector computation in `FlowNodeList` and `FlowParallelNode` is also moved from the render phase into `useLayoutEffect` so the container rect and node rects are always read in the same synchronous pass.
+
+- 15a344e: Add missing HCL language import to server-side Shiki bundle
+
+  The HCL language was added to SupportedLanguage type and the client-side
+  provider in a previous commit, but the server.tsx BUNDLED_LANGS object
+  was missed. This caused typecheck failures when building.
+
+- 5d8d3a9: Sidebar: polish animations, fix separator reflow bug, improve header spacing
+- 7e82920: Fix connector alignment and spacing between adjacent parallel nodes in Flow diagrams
+
+## 1.15.0
+
+### Minor Changes
+
+- 73f554a: Add success and info toast variants with semantic token styling. Migrate error/warning variants from raw CSS to semantic tokens for consistent theming.
+
+### Patch Changes
+
+- 9fbf3a8: Fix Radio compound component to use Object.assign pattern, enabling sub-component detection (Radio.Group, Radio.Item) in the component registry.
+- 3430785: Revert outline button variant ring width from `ring-2` (2px) back to `ring` (1px) to restore visual consistency with existing dashboard usage.
+
+## 1.14.1
+
+### Patch Changes
+
+- 839b0cb: fix: update styling for mostly-used components with new greyscale tokens (combobox, dialog, input, layerCard, select & tabs) as well as homegrid and component preview backgrounds.
+- 7083a17: Remove es2022 build target that caused Jest/babel-jest test failures in stratus
+
+## 1.14.0
+
+### Minor Changes
+
+- 8b2d6a0: Add radio card appearance via `appearance="card"` prop on Radio.Group and Radio.Item. Cards display a bordered, selectable container with title and description. Also adds `description` prop to Radio.Item for helper text. Supports vertical and horizontal orientations, error state, and disabled state.
+- abbf586: Expose Chart `optionUpdateBehavior` to control how ECharts applies option updates; `notMerge` now defaults to `false`.
+- c6aa554: Add neutral variant to Switch component and improve accessibility
+  - New `variant="neutral"` option: monochrome switch with squircle shape, matching the design from stratus
+  - Improved off-state visibility for default variant with darker background/ring colors
+  - Removed `error` variant (not useful for toggle switches)
+  - Added defensive fallback so invalid variant values don't cause runtime crashes
+
+### Patch Changes
+
+- f2e17d7: removed `outline-none` to bring back focus states on all buttons
+- eba693e: Fix flaky vitest "Closing rpc while fetch was pending" error in deep-imports test
+- db91f50: Fix InputArea label click not focusing textarea. Use FieldBase.Control with render callback to properly associate the label with the textarea element.
+- 80afd4d: Fix TypeScript return types for ShikiProvider and CodeHighlighted components.
+
+  Changed return type from `ReactNode` to `React.JSX.Element` to resolve JSX compatibility errors. This fixes issues when consuming these components in projects with stricter TypeScript configurations (e.g., `skipLibCheck: false`), where `ReactNode` was incorrectly inferred as a valid JSX element return type.
+
+- dc9742d: Fix table header font size to ensure consistent rendering across dashboards with different default font sizes
+- f94fee7: Add dedicated `kumo-placeholder` text color token and use it for Input, InputArea, SensitiveInput, and CommandPalette placeholder text. The new token provides better visual distinction between placeholder and active text in both light and dark modes.
+- 66012b7: Replace the package-level ESLint pass with Oxlint JS plugin coverage for the remaining jsx-a11y rules, and pin the library build to `es2022` with a post-build browser-compat test that blocks newer runtime APIs from shipping in `dist`.
+- e8acdd8: fix(Select): prevent chevron overflow with long multi-select values
+
+  Added `min-w-0 truncate` to the value element and `shrink-0` to the chevron icon so that long option names truncate gracefully instead of pushing the chevron outside the select bounds.
+
+## 1.13.1
+
+### Patch Changes
+
+- c272f6a: Fix combobox caret icon to use text-kumo-subtle with fill-current instead of invalid fill-kumo-subtle token
+- 5e12c15: fix TimeseriesChart brush cursor not activating when loading prop transitions from true to false
+
+## 1.13.0
+
+### Minor Changes
+
+- 56a8b35: add xAxisTickFormat, yAxisTickFormat, and tooltipValueFormat props to TimeseriesChart; deprecate yAxisTickLabelFormat
+
+  ## Deprecation: yAxisTickLabelFormat is deprecated
+
+  If you were using `yAxisTickLabelFormat` to customize tooltip output, switch to `tooltipValueFormat`.
+
+  **Before:**
+
+  ```tsx
+  <TimeseriesChart yAxisTickLabelFormat={(v) => `${v} req/s`} />
+  ```
+
+  **After:**
+
+  ```tsx
+  <TimeseriesChart tooltipValueFormat={(v) => `${v} req/s`} />
+  ```
+
+## 1.12.1
+
+### Patch Changes
+
+- eda8362: Fix combobox caret icon visibility by using fill-kumo-subtle instead of fill-kumo-ring
+
+## 1.12.0
+
+### Minor Changes
+
+- 4d6de27: reorganize greyscale tokens and update color preferences
+
+### Patch Changes
+
+- 2ff49b7: updated button styles for outline and secondary
+- 59f7935: Fix Jest module resolution failures and reduce Shiki bundle size
+
+  **Jest Fix:**
+  - Add `chunkFileNames` config to prevent double-dash filenames (e.g., `combobox--ec3iibR.js`) that Jest cannot resolve
+  - Move chunks to `dist/chunks/` subdirectory for cleaner structure
+
+  **Bundle Size Reduction:**
+  - Switch from full Shiki bundle to fine-grained imports via `shiki/core`
+  - Reduce from ~300 language/theme chunks to ~16 bundled languages
+  - Total JS files reduced from 358 to ~163 (54% reduction)
+
+  **Supported Languages:**
+  `javascript`, `typescript`, `jsx`, `tsx`, `json`, `jsonc`, `html`, `css`, `python`, `yaml`, `markdown`, `graphql`, `sql`, `bash`, `shell`, `diff`
+
+  **Breaking Change:**
+  - `BundledLanguage` type is now deprecated, use `SupportedLanguage` instead
+  - Only the languages listed above are bundled; other Shiki languages are no longer available out of the box
+
+- 9eaf584: Fix npm publish failure by removing cross-package dependency from prepublish hook
+
+## 1.11.0
+
+### Minor Changes
+
+- 140f4ab: **Select: Improved label API to match Input component pattern**
+  - `hideLabel` is now deprecated. When `label` is provided, the label is **visible by default** (previously hidden by default).
+    - For visible labels: `<Select label="Country" />` (no changes needed if you were using `hideLabel={false}`)
+    - For hidden labels: Use `<Select aria-label="Select a country" />` instead of `<Select label="Country" hideLabel={true} />`
+  - **Bug fix**: Placeholder text now displays correctly when using object map `items` format (e.g., `items={{ a: "Option A" }}`). Previously, placeholders only worked with array format items.
+
+  **Backward compatibility**: `hideLabel={true}` still works but shows a deprecation warning in development. Existing code using `hideLabel={false}` requires no changes.
+
+  **Migration guide:**
+
+  ```tsx
+  // Before (label hidden by default)
+  <Select label="Country" />                    // label was sr-only
+  <Select label="Country" hideLabel={false} />  // label was visible
+
+  // After (label visible by default, matching Input)
+  <Select label="Country" />                    // label is now visible
+  <Select aria-label="Country" />               // use aria-label for hidden labels
+  ```
+
+- f1c6392: Add optional `id` prop to `Flow.Node` for stable node identification and connector test IDs
+- da03394: Avoid adding multiple toasts with the same ID. Use a subtle bump animation when a toast with an existing ID is added.
+
+### Patch Changes
+
+- a53ec1b: Fix theme token flicker by generating stable light/dark fallback variables with safer scope and layer precedence.
+- cb121bc: fix: add defensive styles to prevent global CSS pollution
+
+  ## Problem
+
+  When Kumo components are used in applications with aggressive global styles (e.g., Stratus's `cfBaseStyles` layer), certain elements get polluted:
+  - `label { margin-bottom: 1rem }` adds unwanted margins to all labels
+  - `button { background: gray }` affects unstyled button wrappers (e.g., tooltip triggers)
+  - `a { color: var(--text-color-primary) }` can override link colors if the consuming app defines `--text-color-primary` differently
+
+  ## Solution
+
+  Add defensive Tailwind utility classes directly to components. These:
+  1. Reset commonly-polluted properties to safe defaults
+  2. Use `cn()` (tailwind-merge) so consumer styles via `className` still override them
+  3. Are no-ops in clean CSS environments (no visual change in Kumo docs)
+
+  ## Changes
+
+  ### Label margins (`m-0`)
+  - **Label**: `labelVariants()` now includes `m-0`
+  - **Field**: `FieldBase.Label` gets `m-0`
+  - **Checkbox**: label wrapper gets `m-0`
+  - **Radio**: label wrapper gets `m-0`
+  - **Switch**: label wrapper gets `m-0`
+
+  ### Button trigger resets
+  - **Tooltip trigger** (when `!asChild`): `bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0] inline-flex items-center`
+  - **Collapsible trigger**: `bg-transparent border-none shadow-none p-0 m-0`
+
+  ### Link color namespace fix
+  - **Link**: Changed from `text-primary` to `text-kumo-link` to avoid collision with consuming apps that define `--text-color-primary` differently
+
+  ### Label tooltip composition
+  - **Label**: Tooltip trigger now uses `<Button variant="ghost" size="xs" shape="square">` with `asChild`, leveraging composition instead of relying on defensive resets
+
+  ## Docs
+
+  Added "Custom Trigger" section to Tooltip docs demonstrating that `className` can fully override defensive styles when not using `asChild`.
+
+- c6a3fb3: fix(dropdown): use Base UI CheckboxItemIndicator for proper accessibility
+
+  Replace custom Checkbox component with Base UI's CheckboxItemIndicator in DropdownMenuCheckboxItem. The previous implementation nested an interactive Checkbox inside the menuitemcheckbox role, causing duplicate accessibility labels. CheckboxItemIndicator is automatically aria-hidden and only renders when checked, following the standard Base UI pattern.
+
+- 1bfffaa: Fix Field error message line height by adding `leading-snug` for consistent text spacing
+- 5d16fdb: Improve info banner dark mode contrast for WCAG AA compliance. Changes `kumo-info` from `blue-700` (L=48.8%) to `blue-400` (L=70.7%), achieving 7.97:1 contrast ratio against the banner background.
+- 8b964f5: Fix Combobox.TriggerValue icon misalignment caused by inherited line-height
+
+  The caret icon span was inheriting `line-height` from the parent button's `text-base` class, causing the span's height to exceed the icon's height (e.g., 21.5px vs 16px). The icon sits at the top of the span by default, so when the span is centered via `top-1/2 -translate-y-1/2`, the icon appears offset.
+
+  Added `flex items-center` to the icon wrapper to ensure proper vertical centering regardless of inherited styles. This matches the pattern used in TriggerInput.
+
+- 529274d: fix(Pagination): use aria-label instead of label for PageSize select
+
+  The Select component now shows visible labels by default. Since Pagination.PageSize
+  already displays "Per page:" text next to the select, the internal Select should use
+  `aria-label` for accessibility without showing a duplicate visible label.
+
+- 2f0e572: chore(toast): replace inline XIcon with Phosphor icon
+- ee1099d: Prevent password managers autofilling Pagination input field
+- 6dc952f: fix(tabs): improve focus ring and hover styling
+  - Fixed focus ring to use proper `ring-kumo-ring` token instead of browser default blue
+  - Segmented variant: inset focus ring to avoid overlap with adjacent tabs, hidden on active tab
+  - Underline variant: added padding for better focus ring spacing around text
+  - Added subtle hover states for both variants
+
+- 2352344: fix(Tabs): pass TabItem render prop through to Base UI for custom tab rendering (e.g., link-based tabs)
+
+## 1.10.0
+
+### Minor Changes
+
+- 5505610: Add Shiki-powered `CodeHighlighted` component for syntax highlighting
+  - **New entry point**: `@cloudflare/kumo/code` - keeps Shiki out of main bundle
+  - **ShikiProvider**: Lazy-loads Shiki on first render, shares instance across all children
+  - **CodeHighlighted**: Syntax highlighting with line numbers, line highlighting, copy button
+  - **Server utilities**: `@cloudflare/kumo/code/server` for SSR/static highlighting
+  - **Themes**: Ships with `github-light` and `vesper` defaults, supports any Shiki theme
+  - **i18n**: Customizable labels via provider or per-component
+  - **CSS customization**: `--kumo-code-highlight-bg` variable for highlight color
+  - **Deprecates**: Legacy `Code` and `CodeBlock` components (will be removed in v2)
+
+- 003128b: feat(combobox): add size prop with xs, sm, base, lg variants matching Input component
+- 1cad157: feat(flow): make nested lists work inside parallel nodes
+- 9d89256: Add `role` prop to Dialog component supporting both `"dialog"` (default) and `"alertdialog"` ARIA roles
+
+  **New Feature:**
+  - `Dialog.Root` now accepts a `role` prop to specify the dialog's ARIA semantics
+  - When `role="alertdialog"` is used, the dialog uses Base UI's AlertDialog primitives for proper accessibility
+  - This provides correct screen reader announcements for confirmation and destructive action dialogs
+
+  **When to use `role="alertdialog"`:**
+  - Destructive actions (delete, discard, remove)
+  - Confirmation flows requiring explicit user acknowledgment
+  - Actions that cannot be undone
+  - Critical warnings or errors
+
+  **Example:**
+
+  ```tsx
+  // Standard dialog (default)
+  <Dialog.Root>
+    <Dialog.Trigger render={(p) => <Button {...p}>Edit</Button>} />
+    <Dialog>...</Dialog>
+  </Dialog.Root>
+
+  // Alert dialog for destructive actions
+  <Dialog.Root role="alertdialog">
+    <Dialog.Trigger render={(p) => <Button variant="destructive" {...p}>Delete</Button>} />
+    <Dialog>...</Dialog>
+  </Dialog.Root>
+  ```
+
+- e6218d2: Add TimeseriesChart component with ECharts integration, supporting legends, gradient fills, custom axis formatting, loading skeleton state, and configurable color palettes.
+- a7eb061: feat(select): auto-render options from items prop when children omitted
+
+  The Select component now automatically renders Select.Option elements from the items prop when children are not explicitly provided.
+
+### Patch Changes
+
+- 5943e77: Add missing `success` background and tint semantic color tokens (`bg-kumo-success`, `bg-kumo-success-tint`) for parity with `info`, `warning`, and `danger`. Fix `text-kumo-success` dark mode contrast by using `green-400` instead of `green-500`. Add new `success` Badge variant for positive state indicators.
+- 35d5c42: fix(breadcrumbs): improve mobile breadcrumb readability
+
+  breadcrumbs now render a compact mobile trail for deeper hierarchies by collapsing early levels to `...` and keeping the trailing path visible. labels in breadcrumb links and the current page now truncate correctly to prevent stacking or overlap on narrow viewports.
+
+- 02d0d65: fix(badge): prevent crash when unknown variant is passed
+
+  Add defensive fallback to primary variant when an unrecognized variant string is provided to Badge component. This prevents "Cannot read properties of undefined (reading 'classes')" errors when consumers use a variant that doesn't exist in their installed version.
+
+- 3170d65: fix(code): Fix CodeHighlighted dark mode, layout, and SSR issues
+  - Fix dark mode: Make `<pre>` background transparent so container's `bg-kumo-base` handles theming and border-radius is respected
+  - Fix layout: Wrap Shiki output in overflow container to prevent line highlight negative margins from being clipped
+  - Fix width: Add `w-full` to container for proper full-width display
+  - Fix SSR: Remove `"use client"` directive from `@cloudflare/kumo/code/server` entry point so server utilities work in RSC/SSR contexts
+
+- 31ce577: fix(CommandPalette): add explicit text-base class to Item component for consistent 14px font size
+- ee5a632: Fix Select to render description and error when hideLabel is true
+
+  Previously, the `description` and `error` props were silently ignored when
+  `hideLabel` was `true` (the default). Now, helper text and error messages
+  display correctly even when the label is visually hidden.
+
+- 409d32b: Fix TypeScript errors when consumers type-check their projects with kumo installed.
+
+  Previously, TypeScript would attempt to type-check raw `.tsx` and `.ts` source files
+  shipped in the package (block sources in `dist/src/blocks/`, `ai/schemas.ts`, and
+  `scripts/theme-generator/*.ts`), causing build failures in downstream projects.
+
+  This change:
+  - Moves block source files to a separate `dist/blocks-source/` directory
+  - Compiles `ai/schemas.ts` and `scripts/theme-generator/*.ts` to JavaScript
+  - Updates package exports to point to compiled `.js` files with proper `.d.ts` types
+
+- 7816318: fix(inputs): expand small control hit areas
+- e7f0c80: Fix pagination component to properly wrap numbers in `tabular-nums` class for consistent number alignment. Both the page range and total count now use tabular numerals.
+- c0341b4: Simplify Select placeholder implementation by using Base UI's native placeholder prop on SelectBase.Value instead of manually injecting placeholder items into the items array. This provides a cleaner, more intuitive API that aligns with standard HTML select behavior while maintaining backward compatibility with the null-value placeholder pattern.
+- 35d5c42: fix(breadcrumbs): enhance mobile breadcrumb display for better readability
+- abb7f8c: Add `variant="compact"` prop to Table.Header for a more condensed header style
+- 8972cc4: Fix Combobox group label styling to use semantic token and correct padding
+- bb49d4b: Standardize z-index usage with isolation containment
+  - Add `isolation: isolate` to components with internal stacking (Tabs, MenuBar, InputGroup, Flow/Parallel)
+  - Simplify internal z-index values to `z-0`/`z-1`/`z-2` instead of arbitrary values like `z-10`/`z-20`
+  - Remove superfluous `z-10` from CommandPalette List
+  - Update Toast viewport to `z-1` (matching Base UI's documented pattern)
+  - Update ClipboardText viewport to use `isolate` instead of `z-50`
+
+  This prevents z-index values from leaking outside component boundaries.
+
 ## 1.9.0
 
 ### Minor Changes

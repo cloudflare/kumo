@@ -5,18 +5,19 @@ import {
   Button,
   Checkbox,
   ClipboardText,
-  CodeBlock,
   Collapsible,
   Combobox,
   DatePicker,
   Dialog,
   DropdownMenu,
+  Flow,
   Grid,
   GridItem,
   Input,
   InputArea,
   Label,
   LayerCard,
+  Link,
   Loader,
   MenuBar,
   Meter,
@@ -36,6 +37,7 @@ import {
   TooltipProvider,
   useKumoToastManager,
 } from "@cloudflare/kumo";
+import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -53,7 +55,7 @@ const componentRoutes: Record<string, string> = {
   button: "/components/button",
   checkbox: "/components/checkbox",
   "clipboard-text": "/components/clipboard-text",
-  code: "/components/code",
+  "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
@@ -61,13 +63,15 @@ const componentRoutes: Record<string, string> = {
   dialog: "/components/dialog",
   dropdown: "/components/dropdown",
   empty: "/components/empty",
+  flow: "/components/flow",
   grid: "/components/grid",
   input: "/components/input",
-  "input-area": "/components/input",
+  "input-area": "/components/input-area",
   label: "/components/label",
   "layer-card": "/components/layer-card",
+  link: "/components/link",
   loader: "/components/loader",
-  menubar: "/components/menu-bar",
+  "menu-bar": "/components/menu-bar",
   meter: "/components/meter",
   pagination: "/components/pagination",
   popover: "/components/popover",
@@ -104,6 +108,9 @@ function ToastTriggerButton() {
 export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
+  const [collapsibleOpen, setCollapsibleOpen] = useState(false);
+  const [menuBarActive, setMenuBarActive] = useState<number | undefined>(0);
+  const [paginationPage, setPaginationPage] = useState(1);
   const [value, setValue] = useState<{ id: string; value: string } | null>(
     null,
   );
@@ -141,6 +148,7 @@ export function HomeGrid() {
       id: "select",
       Component: (
         <Select
+          aria-label="Select version"
           className="w-[200px]"
           renderValue={(v) => {
             const labels: Record<string, string> = {
@@ -265,7 +273,11 @@ export function HomeGrid() {
       name: "Collapsible",
       id: "collapsible",
       Component: (
-        <Collapsible label="What is Kumo?">
+        <Collapsible
+          label="What is Kumo?"
+          open={collapsibleOpen}
+          onOpenChange={setCollapsibleOpen}
+        >
           Kumo is Cloudflare's component library.
         </Collapsible>
       ),
@@ -313,16 +325,23 @@ export function HomeGrid() {
       name: "Surface",
       id: "surface",
       Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-base text-sm text-kumo-subtle">
+        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-canvas text-sm text-kumo-subtle">
           <em>To put things over.</em>
         </Surface>
       ),
     },
     {
-      name: "Code",
-      id: "code",
+      name: "CodeHighlighted",
+      id: "code-highlighted",
       Component: (
-        <CodeBlock lang="ts" code={`const a = callMyFunction("hello")`} />
+        <ShikiProvider engine="javascript" languages={["typescript"]}>
+          <CodeHighlighted
+            lang="typescript"
+            code={`const sum = (a: number, b: number) => {
+  return a + b;
+};`}
+          />
+        </ShikiProvider>
       ),
     },
     {
@@ -362,11 +381,11 @@ export function HomeGrid() {
       id: "badge",
       Component: (
         <div className="flex flex-col gap-2">
-          <Badge variant="primary">Primary</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="beta">Beta</Badge>
-          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="blue">Blue</Badge>
+          <Badge variant="green">Green</Badge>
+          <Badge variant="orange">Orange</Badge>
+          <Badge variant="neutral">Neutral</Badge>
+          <Badge variant="red">Red</Badge>
         </div>
       ),
     },
@@ -383,7 +402,15 @@ export function HomeGrid() {
       name: "Pagination",
       id: "pagination",
       Component: (
-        <Pagination page={1} perPage={10} totalCount={100} setPage={() => {}} />
+        <Pagination
+          page={paginationPage}
+          perPage={10}
+          totalCount={100}
+          setPage={setPaginationPage}
+          className="w-auto"
+        >
+          <Pagination.Controls />
+        </Pagination>
       ),
     },
     {
@@ -395,20 +422,28 @@ export function HomeGrid() {
       name: "Meter",
       id: "meter",
       Component: (
-        <div className="w-full px-4">
-          <Meter value={75} label="My meter" customValue="100 / 5,000" />
-        </div>
+        <Meter value={75} label="My meter" customValue="100 / 5,000" />
       ),
     },
     {
       name: "MenuBar",
-      id: "menubar",
+      id: "menu-bar",
       Component: (
         <MenuBar
-          isActive={0}
+          isActive={menuBarActive}
           options={[
-            { icon: <TextBolderIcon />, onClick: () => {}, tooltip: "Bold" },
-            { icon: <TextItalicIcon />, onClick: () => {}, tooltip: "Italic" },
+            {
+              icon: <TextBolderIcon />,
+              onClick: () =>
+                setMenuBarActive(menuBarActive === 0 ? undefined : 0),
+              tooltip: "Bold",
+            },
+            {
+              icon: <TextItalicIcon />,
+              onClick: () =>
+                setMenuBarActive(menuBarActive === 1 ? undefined : 1),
+              tooltip: "Italic",
+            },
           ]}
         />
       ),
@@ -417,7 +452,7 @@ export function HomeGrid() {
       name: "DatePicker",
       id: "date-picker",
       Component: (
-        <div className="scale-90">
+        <div className="-m-4 scale-85">
           <DatePicker mode="single" />
         </div>
       ),
@@ -445,6 +480,31 @@ export function HomeGrid() {
       id: "command-palette",
       Component: (
         <Button icon={MagnifyingGlassIcon}>Open Command Palette</Button>
+      ),
+    },
+    {
+      name: "Flow",
+      id: "flow",
+      Component: (
+        <Flow>
+          <Flow.Node>Step 1</Flow.Node>
+          <Flow.Node>Step 2</Flow.Node>
+        </Flow>
+      ),
+    },
+    {
+      name: "Link",
+      id: "link",
+      Component: (
+        <div className="flex flex-col gap-2 text-sm">
+          <Link href="#">Default link</Link>
+          <Link href="#" variant="current">
+            Current color link
+          </Link>
+          <Link href="#" variant="plain">
+            Plain link
+          </Link>
+        </div>
       ),
     },
     {
@@ -569,7 +629,7 @@ export function HomeGrid() {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-elevated"
+            className="relative flex aspect-square items-center justify-center bg-kumo-canvas"
             key={c.name}
           >
             {route ? (
@@ -584,9 +644,11 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            {c.Component ?? (
-              <p className="text-base font-medium text-kumo-subtle">TBD</p>
-            )}
+            <div className="flex w-full items-center justify-center p-8">
+              {c.Component ?? (
+                <p className="text-base font-medium text-kumo-subtle">TBD</p>
+              )}
+            </div>
           </li>
         );
       })}

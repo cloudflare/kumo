@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { PortalContainer } from "../../utils/portal-provider";
 
 /** A single highlight range within a string [startIndex, endIndex] (inclusive) */
 export type HighlightRange = [number, number];
@@ -61,6 +62,12 @@ export interface CommandPaletteRootProps<TGroup, TItem = TGroup> {
    * If not provided, assumes items is a flat array of selectable items.
    */
   getSelectableItems?: (items: TGroup[]) => TItem[];
+  /**
+   * Container element for the portal. Use this to render the command palette inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
 }
 
 /**

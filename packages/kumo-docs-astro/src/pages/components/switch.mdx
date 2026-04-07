@@ -1,0 +1,136 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Switch"
+description: "A two-state button that can be either on or off."
+sourceFile: "components/switch"
+baseUIComponent: "switch"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  SwitchBasicDemo,
+  SwitchOffDemo,
+  SwitchOnDemo,
+  SwitchDisabledDemo,
+  SwitchNeutralDemo,
+  SwitchNeutralStatesDemo,
+  SwitchVariantsDemo,
+  SwitchSizesDemo,
+  SwitchCustomIdDemo,
+} from "~/components/demos/SwitchDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="SwitchBasicDemo">
+    <SwitchBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Switch } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Switch } from "@cloudflare/kumo/components/switch";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Switch } from "@cloudflare/kumo";
+import { useState } from "react";
+
+export default function Example() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Switch checked={checked} onCheckedChange={(val) => setChecked(val)} />
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Off State</Heading>
+<ComponentExample demo="SwitchOffDemo">
+  <SwitchOffDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>On State</Heading>
+<ComponentExample demo="SwitchOnDemo">
+  <SwitchOnDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Disabled</Heading>
+<ComponentExample demo="SwitchDisabledDemo">
+  <SwitchDisabledDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Variants</Heading>
+<p>
+  The Switch supports two variants: `default` (blue when on) and `neutral`
+  (monochrome). Both use a squircle shape.
+</p>
+<ComponentExample demo="SwitchVariantsDemo">
+  <SwitchVariantsDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Neutral Variant</Heading>
+<p>
+  The neutral variant uses monochrome colors and a squircle shape, ideal for
+  subtle, less prominent toggles.
+</p>
+<ComponentExample demo="SwitchNeutralDemo">
+  <SwitchNeutralDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Neutral States</Heading>
+<ComponentExample demo="SwitchNeutralStatesDemo">
+  <SwitchNeutralStatesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Sizes</Heading>
+<p>Three sizes available: `sm`, `base` (default), and `lg`.</p>
+<ComponentExample demo="SwitchSizesDemo">
+  <SwitchSizesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom ID</Heading>
+<p>
+  When a custom `id` is provided, clicking the label still toggles the switch.
+  The `id` is forwarded to Base UI so the label's `htmlFor` stays in sync.
+</p>
+<ComponentExample demo="SwitchCustomIdDemo">
+  <SwitchCustomIdDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Switch" />
+</ComponentSection>

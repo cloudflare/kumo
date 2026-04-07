@@ -1,0 +1,207 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Contributing"
+description: "Learn how to contribute to Kumo, from setup and workflows to PR and release guidelines. Everything you need for setup, development, quality checks, and PR process is documented here."
+---
+
+## Before You Start
+
+For non-trivial changes, start with alignment before coding:
+
+- Comment on an existing issue or open one first.
+- Confirm scope, API direction, and migration impact.
+- For small fixes/docs tweaks, you can go straight to a PR.
+
+---
+
+## 1. Get Set Up Once
+
+From repo root:
+
+```bash
+pnpm install
+pnpm build
+```
+
+Requirements:
+
+- Node `^24.12.0`
+- pnpm `>=10.21.0`
+
+Recommended local setup:
+
+- Use a Node version manager (`nvm`, `fnm`, etc.).
+- Use VS Code and select the workspace TypeScript version.
+- If dependencies changed after rebase, run `pnpm install` again.
+
+### Repository Access and Branching
+
+Internal contributors normally clone and push directly to `cloudflare/kumo`:
+
+```bash
+git clone https://github.com/cloudflare/kumo.git
+git switch -c <branch-name>
+git push -u origin <branch-name>
+```
+
+If you do not have write access, contact your manager or Kumo maintainers.
+
+---
+
+## 2. Pick the Right Contribution Type
+
+Use this to decide where your change belongs:
+
+- **Component**: reusable UI primitive in `packages/kumo/src/components/`
+- **Block**: installable composition pattern in `packages/kumo/src/blocks/`
+- **Docs only**: docs/demo/navigation updates in `packages/kumo-docs-astro/`
+
+When adding a new **component**, scaffold it (do not create files manually):
+
+```bash
+pnpm --filter @cloudflare/kumo new:component
+```
+
+---
+
+## 3. Start the Dev Loop
+
+Run these in separate terminals:
+
+```bash
+# Terminal 1: watch Kumo package output
+pnpm --filter @cloudflare/kumo dev
+
+# Terminal 2: docs site
+pnpm dev
+```
+
+This gives you a fast loop while verifying your change in the actual docs environment.
+
+---
+
+## 4. Implement the Change
+
+Typical internal change flow:
+
+1. Build the feature in `packages/kumo/src/...`.
+2. Add or update demos in `packages/kumo-docs-astro/src/components/demos/`.
+3. Add/update tests in `packages/kumo`.
+4. Add or update docs pages in `packages/kumo-docs-astro/src/pages/`.
+
+If your demos should appear in registry metadata, keep demo naming exact:
+
+- File: `{Component}Demo.tsx`
+- Export names must end with `Demo`
+
+Implementation expectations:
+
+- Preserve accessibility semantics and keyboard behavior.
+- Keep APIs focused and avoid one-off abstractions.
+- Follow existing Kumo patterns for variants, props, and structure.
+
+---
+
+## 5. Run Validation Before PR
+
+Run these from repo root before opening or updating your PR:
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm --filter @cloudflare/kumo test
+```
+
+If you changed exports/build behavior, also run:
+
+```bash
+pnpm --filter @cloudflare/kumo build
+```
+
+Optional (when relevant):
+
+```bash
+pnpm format
+pnpm --filter @cloudflare/kumo test:run
+```
+
+Windsurf and hooks catch additional issues, but you should still run checks locally before requesting review.
+
+---
+
+## 6. Handle Changesets Correctly
+
+If your change touches `packages/kumo/` and should ship, add a changeset:
+
+```bash
+pnpm changeset
+```
+
+Changeset guidance:
+
+- Use `patch` for bug fixes and low-risk improvements.
+- Use `minor` for new backward-compatible features.
+- Use `major` only for breaking changes.
+- Keep the summary focused on user-visible impact.
+
+If your change is docs-only or non-releasable package work, a changeset is usually not required.
+
+---
+
+## 7. Open and Maintain the PR
+
+- Branch from `main` and push to `origin`.
+- Use PR title format: `[package] short description` (example: `[kumo] add meter warning variant`).
+- Fill in the PR template with testing details and impact.
+- After review starts, prefer follow-up commits over force-pushing rewritten history.
+
+Git hygiene expectations:
+
+- Keep commit history readable before first review.
+- After reviews begin, avoid rewriting already-reviewed commits.
+- Add follow-up commits for feedback (`fixup` commits are fine).
+
+PR review is required before merge.
+
+---
+
+## PR Previews and Tests
+
+- PRs publish prerelease artifacts via `pkg.pr.new` links in CI comments.
+- Every PR should include tests for behavior changes.
+- Most Kumo tests are Vitest-based and live under `packages/kumo`.
+
+---
+
+## Release Process (How Your Change Ships)
+
+- Releases are managed through Changesets.
+- Merged changesets on `main` feed the automated versioning/publish flow.
+- If you need an urgent out-of-cadence release, contact maintainers.
+
+---
+
+## Practical Guidelines
+
+- Use semantic Kumo tokens and avoid raw Tailwind color classes.
+- Compose class names with `cn(...)`.
+- Prefer extending existing patterns over introducing one-off API designs.
+- Include tests for behavior changes, not just rendering snapshots.
+
+Common pitfalls to avoid:
+
+- Do not scaffold components manually; use `new:component`.
+- Do not rely on raw Tailwind color classes (`bg-blue-500`, etc.).
+- Do not skip changesets for releasable `packages/kumo` changes.
+
+---
+
+## Questions?
+If you have any questions for Kumo, please reach out to the team in our Kumo channel.
+
+---
+
+## Related Docs
+
+- Changeset guidance: [`.changeset/README.md`](../../../.changeset/README.md)
+- Kumo package architecture: [`packages/kumo/AGENTS.md`](../../kumo/AGENTS.md)

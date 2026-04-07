@@ -18,13 +18,41 @@ export interface ChangedFilesOptions {
 }
 
 /**
+ * Resolves the head ref to a valid local git ref.
+ * GITHUB_HEAD_REF is a branch name (e.g. "user/feature-branch") which may not
+ * exist as a local ref — especially for fork PRs. Falls back through
+ * GITHUB_SHA → "HEAD" if the branch name doesn't resolve.
+ */
+function resolveHeadRef(): string {
+  const candidates = [
+    process.env.GITHUB_HEAD_REF,
+    process.env.GITHUB_SHA,
+    "HEAD",
+  ].filter(Boolean) as string[];
+
+  for (const ref of candidates) {
+    try {
+      execSync(`git rev-parse --verify ${ref}`, {
+        encoding: "utf8",
+        stdio: "pipe",
+      });
+      return ref;
+    } catch {
+      // ref doesn't exist locally, try next
+    }
+  }
+
+  return "HEAD";
+}
+
+/**
  * Gets the base and head refs for the current CI context
  * Uses GitHub Actions variables with fallback for shallow clones
  */
 export function getGitRefs(): GitRefs {
   // GitHub Actions provides these environment variables
   const baseRef = process.env.GITHUB_BASE_REF;
-  const headRef = process.env.GITHUB_HEAD_REF || process.env.GITHUB_SHA || "HEAD";
+  const headRef = resolveHeadRef();
 
   // If baseRef exists (PR context), verify it's available
   if (baseRef) {
@@ -36,7 +64,7 @@ export function getGitRefs(): GitRefs {
       });
       const fallbackRef = `origin/${baseRef}`;
       console.log(`Using base ref: ${fallbackRef}`);
-      return { baseRef: fallbackRef, headRef };
+      return { baseRef: fallbackRef, headRef: headRef };
     } catch (error) {
       console.warn(
         `  Could not fetch base branch ${baseRef}: ${error}`,

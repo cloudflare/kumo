@@ -1,6 +1,7 @@
 import { Info } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { Button } from "../button";
 import { Tooltip } from "../tooltip";
 
 /** Label variant definitions (currently empty, reserved for future additions). */
@@ -17,7 +18,7 @@ export function labelVariants(_props: KumoLabelVariantsProps = {}) {
   return cn(
     // Base styles - when used standalone, apply text styling
     // When used inside Field, the parent FieldBase.Label provides these styles
-    "text-base font-medium text-kumo-default",
+    "m-0 text-base font-medium text-kumo-default",
   );
 }
 
@@ -98,11 +99,15 @@ export function Label({
         <span className="font-normal text-kumo-strong">(optional)</span>
       )}
       {tooltip && (
-        <Tooltip content={tooltip}>
-          <Info
-            className="size-4 cursor-help text-kumo-strong"
+        <Tooltip content={tooltip} asChild>
+          <Button
+            variant="ghost"
+            size="xs"
+            shape="square"
             aria-label="More information"
-          />
+          >
+            <Info className="size-4" />
+          </Button>
         </Tooltip>
       )}
     </>

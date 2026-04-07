@@ -8,25 +8,78 @@ export const KUMO_BADGE_BASE_STYLES =
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
   variant: {
+    /** Semantic token badges */
     primary: {
-      classes: "bg-kumo-contrast text-kumo-inverse",
-      description: "Default high-emphasis badge for important labels",
+      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
+      description: "Primary badge",
     },
     secondary: {
-      classes: "bg-kumo-fill text-kumo-default",
-      description: "Subtle badge for secondary information",
+      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
+      description: "Secondary badge",
+    },
+    error: {
+      classes: "bg-kumo-danger/60 text-kumo-danger",
+      description: "Error badge",
+    },
+    warning: {
+      classes: "bg-kumo-warning/70 text-kumo-warning",
+      description: "Warning badge",
+    },
+    success: {
+      classes: "bg-kumo-success/70 text-kumo-success",
+      description: "Success badge",
     },
     destructive: {
-      classes: "bg-kumo-danger text-white",
-      description: "Error or danger state indicator",
+      classes: "bg-kumo-badge-red text-white",
+      description: "Deprecated. Use red instead.",
+    },
+    info: {
+      classes: "bg-kumo-info/70 text-kumo-info",
+      description: "Info badge",
+    },
+    beta: {
+      classes:
+        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
+      description: "Indicates beta or experimental features",
     },
     outline: {
       classes: "border border-kumo-fill bg-transparent text-kumo-default",
       description: "Bordered badge with transparent background",
     },
-    beta: {
-      classes: "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
-      description: "Indicates beta or experimental features",
+
+    /** Other color token variants */
+
+    red: {
+      classes: "bg-kumo-badge-red text-white",
+      description: "Red badge",
+    },
+    green: {
+      classes: "bg-kumo-badge-green text-white",
+      description: "Green badge",
+    },
+    neutral: {
+      classes: "bg-kumo-badge-neutral text-white",
+      description: "Neutral badge",
+    },
+    orange: {
+      classes: "bg-kumo-badge-orange text-black",
+      description: "Orange badge",
+    },
+    purple: {
+      classes: "bg-kumo-badge-purple text-white",
+      description: "Purple badge",
+    },
+    teal: {
+      classes: "bg-kumo-badge-teal text-white",
+      description: "Teal badge",
+    },
+    "teal-subtle": {
+      classes: "bg-kumo-badge-teal-subtle text-kumo-badge-teal-subtle",
+      description: "Subtle teal badge",
+    },
+    blue: {
+      classes: "bg-kumo-badge-blue text-white",
+      description: "Blue badge",
     },
   },
 } as const;
@@ -45,11 +98,13 @@ export interface KumoBadgeVariantsProps {
 export function badgeVariants({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
 }: KumoBadgeVariantsProps = {}) {
+  const variantConfig = KUMO_BADGE_VARIANTS.variant[variant];
   return cn(
     // Base styles (exported as KUMO_BADGE_BASE_STYLES for Figma plugin)
     KUMO_BADGE_BASE_STYLES,
-    // Apply variant styles from KUMO_BADGE_VARIANTS
-    KUMO_BADGE_VARIANTS.variant[variant].classes,
+    // Apply variant styles from KUMO_BADGE_VARIANTS (fallback to primary if variant not found)
+    variantConfig?.classes ??
+      KUMO_BADGE_VARIANTS.variant[KUMO_BADGE_DEFAULT_VARIANTS.variant].classes,
   );
 }
 
@@ -61,20 +116,29 @@ export type BadgeVariant = KumoBadgeVariant;
  *
  * @example
  * ```tsx
- * <Badge variant="primary">New</Badge>
- * <Badge variant="destructive">Error</Badge>
- * <Badge variant="beta">Beta</Badge>
+ * <Badge variant="green">Active</Badge>
+ * <Badge variant="red">Error</Badge>
+ * <Badge variant="neutral">Inactive</Badge>
  * ```
  */
 export interface BadgeProps {
   /**
-   * Visual style of the badge.
-   * - `"primary"` — High-emphasis badge for important labels
-   * - `"secondary"` — Subtle badge for secondary information
-   * - `"destructive"` — Error or danger state indicator
+   * Color variant of the badge.
+   * Recommended semantic variants:
+   * - `"primary"` — Primary badge
+   * - `"secondary"` — Secondary badge
+   * - `"error"` — Error badge
+   * - `"warning"` — Warning badge
+   * - `"success"` — Success badge
+   * - `"info"` — Info badge
+   *
+   * Additional token variants:
+   * - `"red"`, `"orange"`, `"green"`, `"teal"`, `"blue"`, `"purple"`, `"neutral"`
+   * - `"teal-subtle"`, `"neutral-subtle"`
+   * - `"inverted"`
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
-   * @default "primary"
+   * @default "secondary"
    */
   variant?: KumoBadgeVariant;
   /** Additional CSS classes merged via `cn()`. */
@@ -88,7 +152,7 @@ export interface BadgeProps {
  *
  * @example
  * ```tsx
- * <Badge variant="primary">Active</Badge>
+ * <Badge variant="green">Active</Badge>
  * ```
  */
 export function Badge({

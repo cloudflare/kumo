@@ -1,0 +1,147 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Skeleton Line"
+description: "A skeleton loading placeholder for text content."
+sourceFile: "primitives/skeleton-line"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import {
+  SkeletonLineDemo,
+  SkeletonLineWidthDemo,
+  SkeletonLineHeightDemo,
+  SkeletonLineBlockHeightDemo,
+  SkeletonLineCardDemo,
+} from "~/components/demos/SkeletonLineDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="SkeletonLineDemo">
+    <SkeletonLineDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+
+```tsx
+import { SkeletonLine } from "@cloudflare/kumo";
+```
+
+</ComponentSection>
+
+{/* Custom Widths */}
+
+<ComponentSection>
+  <Heading level={2}>Custom Widths</Heading>
+  <p class="text-kumo-strong mb-4">
+    Control the randomized width range for more natural-looking skeletons.
+  </p>
+  <ComponentExample demo="SkeletonLineWidthDemo">
+    <SkeletonLineWidthDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Custom Height */}
+
+<ComponentSection>
+  <Heading level={2}>Custom Height</Heading>
+  <p class="text-kumo-strong mb-4">
+    Override the default height using Tailwind utility classes via{" "}
+    <code>className</code>. The default height is <code>0.5rem</code>.
+  </p>
+  <ComponentExample demo="SkeletonLineHeightDemo">
+    <SkeletonLineHeightDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Block Height */}
+
+<ComponentSection>
+  <Heading level={2}>Block Height</Heading>
+  <p class="text-kumo-strong mb-4">
+    Use <code>blockHeight</code> to set the height of a container that
+    vertically centers the skeleton line. Useful when replacing text of a known
+    line height. Accepts a number (treated as <code>px</code>) or any CSS string
+    value.
+  </p>
+  <ComponentExample demo="SkeletonLineBlockHeightDemo">
+    <SkeletonLineBlockHeightDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Card Loading State */}
+
+<ComponentSection>
+  <Heading level={2}>Card Loading State</Heading>
+  <p class="text-kumo-strong mb-4">
+    Use skeleton lines to create loading states for cards and content areas.
+  </p>
+  <ComponentExample demo="SkeletonLineCardDemo">
+    <SkeletonLineCardDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-kumo-line">
+          <th class="px-4 py-3 text-left font-semibold">Prop</th>
+          <th class="px-4 py-3 text-left font-semibold">Type</th>
+          <th class="px-4 py-3 text-left font-semibold">Default</th>
+        </tr>
+      </thead>
+      <tbody class="text-kumo-strong">
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">minWidth</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3 font-mono text-xs">30</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">maxWidth</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3 font-mono text-xs">100</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">minDuration</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3 font-mono text-xs">1.3</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">maxDuration</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3 font-mono text-xs">1.7</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">minDelay</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3 font-mono text-xs">0</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">maxDelay</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3 font-mono text-xs">0.5</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">blockHeight</td>
+          <td class="px-4 py-3 font-mono text-xs">string | number</td>
+          <td class="px-4 py-3 font-mono text-xs">-</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">className</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3 font-mono text-xs">-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ComponentSection>
