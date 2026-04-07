@@ -33,7 +33,7 @@ export const KUMO_INPUT_VARIANTS = {
       description: "Default input appearance",
     },
     error: {
-      classes: "!ring-kumo-danger-tint focus:ring-kumo-danger-tint",
+      classes: "!ring-kumo-danger focus:ring-kumo-danger",
       description: "Error state for validation failures",
     },
   },

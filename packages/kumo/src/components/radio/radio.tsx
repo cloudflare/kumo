@@ -12,7 +12,7 @@ export const KUMO_RADIO_VARIANTS = {
       description: "Default radio appearance",
     },
     error: {
-      classes: "ring-kumo-danger-tint",
+      classes: "ring-kumo-danger",
       description: "Error state for validation failures",
     },
   },
@@ -263,13 +263,13 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             disabled={disabled}
             className={cn(
               "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring",
-              variant === "error" ? "ring-kumo-danger-tint" : "ring-kumo-line",
+              variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
               !disabled &&
                 variant !== "error" &&
                 "group-hover:ring-kumo-ring focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
               !disabled &&
                 variant === "error" &&
-                "focus-visible:ring-kumo-danger-tint focus-visible:outline-offset-3",
+                "focus-visible:ring-kumo-danger focus-visible:outline-offset-3",
               "data-[checked]:bg-kumo-contrast",
             )}
           >
@@ -301,13 +301,13 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
           disabled={disabled}
           className={cn(
             "relative flex h-4 w-4 items-center justify-center rounded-full border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
-            variant === "error" ? "ring-kumo-danger-tint" : "ring-kumo-line",
+            variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
               "group-hover:ring-kumo-ring focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
             !disabled &&
               variant === "error" &&
-              "focus-visible:ring-kumo-danger-tint focus-visible:outline-offset-3",
+              "focus-visible:ring-kumo-danger focus-visible:outline-offset-3",
             "data-[checked]:bg-kumo-contrast",
           )}
         >

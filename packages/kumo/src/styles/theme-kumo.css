@@ -186,42 +186,42 @@
     var(--color-neutral-800, oklch(26.9% 0 0))
   );
 
-  --color-kumo-info: light-dark(
+  --color-kumo-info-tint: light-dark(
     var(--color-blue-100, oklch(93.2% 0.032 255.585)),
     var(--color-blue-900, oklch(37.9% 0.146 265.522))
   );
 
-  --color-kumo-info-tint: light-dark(
+  --color-kumo-info: light-dark(
     var(--color-blue-300, oklch(80.9% 0.105 251.813)),
     var(--color-blue-900, oklch(37.9% 0.146 265.522))
   );
 
-  --color-kumo-warning: light-dark(
+  --color-kumo-warning-tint: light-dark(
     var(--color-yellow-100, oklch(97.3% 0.071 103.193)),
     var(--color-yellow-700, oklch(55.4% 0.135 66.442))
   );
 
-  --color-kumo-warning-tint: light-dark(
+  --color-kumo-warning: light-dark(
     var(--color-yellow-300, oklch(90.5% 0.182 98.111)),
     var(--color-yellow-900, oklch(42.1% 0.095 57.708))
   );
 
-  --color-kumo-danger: light-dark(
+  --color-kumo-danger-tint: light-dark(
     var(--color-red-100, oklch(93.6% 0.032 17.717)),
     var(--color-red-900, oklch(39.6% 0.141 25.723))
   );
 
-  --color-kumo-danger-tint: light-dark(
+  --color-kumo-danger: light-dark(
     var(--color-red-500, oklch(63.7% 0.237 25.331)),
     var(--color-red-900, oklch(39.6% 0.141 25.723))
   );
 
-  --color-kumo-success: light-dark(
+  --color-kumo-success-tint: light-dark(
     var(--color-emerald-100, oklch(95% 0.052 163.051)),
     var(--color-emerald-900, oklch(37.8% 0.077 168.94))
   );
 
-  --color-kumo-success-tint: light-dark(
+  --color-kumo-success: light-dark(
     var(--color-green-300, oklch(87.1% 0.15 154.449)),
     var(--color-green-900, oklch(39.3% 0.095 152.535))
   );
@@ -327,14 +327,14 @@
     --color-kumo-shadow-drop: oklch(0% 0 0 / 0.08);
     --color-kumo-tip-shadow: var(--color-gray-200, oklch(92.8% 0.006 264.531));
     --color-kumo-tip-stroke: transparent;
-    --color-kumo-info: var(--color-blue-100, oklch(93.2% 0.032 255.585));
-    --color-kumo-info-tint: var(--color-blue-300, oklch(80.9% 0.105 251.813));
-    --color-kumo-warning: var(--color-yellow-100, oklch(97.3% 0.071 103.193));
-    --color-kumo-warning-tint: var(--color-yellow-300, oklch(90.5% 0.182 98.111));
-    --color-kumo-danger: var(--color-red-100, oklch(93.6% 0.032 17.717));
-    --color-kumo-danger-tint: var(--color-red-500, oklch(63.7% 0.237 25.331));
-    --color-kumo-success: var(--color-emerald-100, oklch(95% 0.052 163.051));
-    --color-kumo-success-tint: var(--color-green-300, oklch(87.1% 0.15 154.449));
+    --color-kumo-info-tint: var(--color-blue-100, oklch(93.2% 0.032 255.585));
+    --color-kumo-info: var(--color-blue-300, oklch(80.9% 0.105 251.813));
+    --color-kumo-warning-tint: var(--color-yellow-100, oklch(97.3% 0.071 103.193));
+    --color-kumo-warning: var(--color-yellow-300, oklch(90.5% 0.182 98.111));
+    --color-kumo-danger-tint: var(--color-red-100, oklch(93.6% 0.032 17.717));
+    --color-kumo-danger: var(--color-red-500, oklch(63.7% 0.237 25.331));
+    --color-kumo-success-tint: var(--color-emerald-100, oklch(95% 0.052 163.051));
+    --color-kumo-success: var(--color-green-300, oklch(87.1% 0.15 154.449));
     --color-kumo-badge-red: var(--color-red-600, oklch(57.7% 0.245 27.325));
     --color-kumo-badge-orange: var(--color-orange-650, oklch(81.5% 0.197 76));
     --color-kumo-badge-orange-subtle: var(--color-orange-100, oklch(95.4% 0.038 75.164));
@@ -383,14 +383,14 @@
     --color-kumo-shadow-drop: oklch(0% 0 0 / 0.3);
     --color-kumo-tip-shadow: transparent;
     --color-kumo-tip-stroke: var(--color-neutral-800, oklch(26.9% 0 0));
-    --color-kumo-info: var(--color-blue-900, oklch(37.9% 0.146 265.522));
     --color-kumo-info-tint: var(--color-blue-900, oklch(37.9% 0.146 265.522));
-    --color-kumo-warning: var(--color-yellow-700, oklch(55.4% 0.135 66.442));
-    --color-kumo-warning-tint: var(--color-yellow-900, oklch(42.1% 0.095 57.708));
-    --color-kumo-danger: var(--color-red-900, oklch(39.6% 0.141 25.723));
+    --color-kumo-info: var(--color-blue-900, oklch(37.9% 0.146 265.522));
+    --color-kumo-warning-tint: var(--color-yellow-700, oklch(55.4% 0.135 66.442));
+    --color-kumo-warning: var(--color-yellow-900, oklch(42.1% 0.095 57.708));
     --color-kumo-danger-tint: var(--color-red-900, oklch(39.6% 0.141 25.723));
-    --color-kumo-success: var(--color-emerald-900, oklch(37.8% 0.077 168.94));
-    --color-kumo-success-tint: var(--color-green-900, oklch(39.3% 0.095 152.535));
+    --color-kumo-danger: var(--color-red-900, oklch(39.6% 0.141 25.723));
+    --color-kumo-success-tint: var(--color-emerald-900, oklch(37.8% 0.077 168.94));
+    --color-kumo-success: var(--color-green-900, oklch(39.3% 0.095 152.535));
     --color-kumo-badge-red: var(--color-red-700, oklch(50.5% 0.213 27.518));
     --color-kumo-badge-orange: var(--color-orange-650, oklch(81.5% 0.197 76));
     --color-kumo-badge-orange-subtle: var(--color-orange-900, oklch(40.8% 0.123 38.172));

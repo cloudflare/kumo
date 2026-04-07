@@ -367,7 +367,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-info": {
+    "kumo-info-tint": {
       newName: "",
       theme: {
         kumo: {
@@ -376,7 +376,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-info-tint": {
+    "kumo-info": {
       newName: "",
       theme: {
         kumo: {
@@ -385,7 +385,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-warning": {
+    "kumo-warning-tint": {
       newName: "",
       theme: {
         kumo: {
@@ -394,7 +394,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-warning-tint": {
+    "kumo-warning": {
       newName: "",
       theme: {
         kumo: {
@@ -403,7 +403,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-danger": {
+    "kumo-danger-tint": {
       newName: "",
       theme: {
         kumo: {
@@ -412,7 +412,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-danger-tint": {
+    "kumo-danger": {
       newName: "",
       theme: {
         kumo: {
@@ -421,7 +421,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-success": {
+    "kumo-success-tint": {
       newName: "",
       theme: {
         kumo: {
@@ -430,7 +430,7 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-success-tint": {
+    "kumo-success": {
       newName: "",
       theme: {
         kumo: {
