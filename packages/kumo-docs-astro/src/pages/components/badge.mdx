@@ -6,171 +6,64 @@ sourceFile: "components/badge"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
-  BadgeVariantsDemo,
-  BadgeRedDemo,
-  BadgeRedSubtleDemo,
-  BadgeOrangeDemo,
-  BadgeOrangeSubtleDemo,
-  BadgeYellowDemo,
-  BadgeYellowSubtleDemo,
-  BadgeGreenDemo,
-  BadgeGreenSubtleDemo,
-  BadgeTealDemo,
-  BadgeTealSubtleDemo,
-  BadgeBlueDemo,
-  BadgeBlueSubtleDemo,
-  BadgeNeutralDemo,
-  BadgeNeutralSubtleDemo,
-  BadgeInvertedDemo,
-  BadgeOutlineDemo,
-  BadgeBetaDemo,
+  BadgeSemanticVariantsDemo,
+  BadgeColorVariantsDemo,
   BadgeInSentenceDemo,
 } from "~/components/demos/BadgeDemo";
 
-{/* Hero Demo */}
 
-<ComponentSection>
-  <ComponentExample demo="BadgeVariantsDemo">
-    <BadgeVariantsDemo client:visible />
-  </ComponentExample>
-</ComponentSection>
+<ComponentExample demo="BadgeSemanticVariantsDemo">
+  <BadgeSemanticVariantsDemo client:visible />
+</ComponentExample>
 
-{/* Installation */}
+## Installation
 
-<ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
-  <CodeBlock code={`import { Badge } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
-  <CodeBlock
-    code={`import { Badge } from "@cloudflare/kumo/components/badge";`}
-    lang="tsx"
-  />
-</ComponentSection>
+### Barrel
 
-{/* Usage */}
+```tsx
+import { Badge } from "@cloudflare/kumo";
+```
 
-<ComponentSection>
-  <Heading level={2}>Usage</Heading>
+### Granular
+
+```tsx
+import { Badge } from "@cloudflare/kumo/components/badge";
+```
+
+## Usage
 
 ```tsx
 import { Badge } from "@cloudflare/kumo";
 
 export default function Example() {
-  return <Badge variant="neutral">New</Badge>;
+  return <Badge variant="secondary">New</Badge>;
 }
 ```
 
-</ComponentSection>
+## Examples
 
-{/* Examples */}
+### Primary Badges
 
-<ComponentSection>
-  <Heading level={2}>Examples</Heading>
-
-<Heading level={3}>Variants</Heading>
-
-<h4 class="mb-3 text-base font-medium">Red</h4>
-<ComponentExample demo="BadgeRedDemo">
-  <BadgeRedDemo client:visible />
+<ComponentExample demo="BadgeSemanticVariantsDemo">
+  <BadgeSemanticVariantsDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Orange</h4>
-<ComponentExample demo="BadgeOrangeDemo">
-  <BadgeOrangeDemo client:visible />
+### Other variants
+
+Other variants for specific products/use cases where the semantic badges aren't enough to convey intended meaning or status.
+
+<ComponentExample demo="BadgeColorVariantsDemo">
+  <BadgeColorVariantsDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Yellow</h4>
-<ComponentExample demo="BadgeYellowDemo">
-  <BadgeYellowDemo client:visible />
+### In a sentence
+
+<ComponentExample demo="BadgeInSentenceDemo">
+  <BadgeInSentenceDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Green</h4>
-<ComponentExample demo="BadgeGreenDemo">
-  <BadgeGreenDemo client:visible />
-</ComponentExample>
+## API Reference
 
-<h4 class="mb-3 text-base font-medium">Teal</h4>
-<ComponentExample demo="BadgeTealDemo">
-  <BadgeTealDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Blue</h4>
-<ComponentExample demo="BadgeBlueDemo">
-  <BadgeBlueDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Neutral</h4>
-<ComponentExample demo="BadgeNeutralDemo">
-  <BadgeNeutralDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Inverted</h4>
-<ComponentExample demo="BadgeInvertedDemo">
-  <BadgeInvertedDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Outline</h4>
-<ComponentExample demo="BadgeOutlineDemo">
-  <BadgeOutlineDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Beta</h4>
-<ComponentExample demo="BadgeBetaDemo">
-  <BadgeBetaDemo client:visible />
-</ComponentExample>
-
-<Heading level={3}>Subtle variants</Heading>
-
-<h4 class="mb-3 text-base font-medium">Red subtle</h4>
-<ComponentExample demo="BadgeRedSubtleDemo">
-  <BadgeRedSubtleDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Orange subtle</h4>
-<ComponentExample demo="BadgeOrangeSubtleDemo">
-  <BadgeOrangeSubtleDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Yellow subtle</h4>
-<ComponentExample demo="BadgeYellowSubtleDemo">
-  <BadgeYellowSubtleDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Green subtle</h4>
-<ComponentExample demo="BadgeGreenSubtleDemo">
-  <BadgeGreenSubtleDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Teal subtle</h4>
-<ComponentExample demo="BadgeTealSubtleDemo">
-  <BadgeTealSubtleDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Blue subtle</h4>
-<ComponentExample demo="BadgeBlueSubtleDemo">
-  <BadgeBlueSubtleDemo client:visible />
-</ComponentExample>
-
-<h4 class="mb-3 text-base font-medium">Neutral subtle</h4>
-<ComponentExample demo="BadgeNeutralSubtleDemo">
-  <BadgeNeutralSubtleDemo client:visible />
-</ComponentExample>
-
-  <Heading level={3}>In a sentence</Heading>
-  <ComponentExample demo="BadgeInSentenceDemo">
-    <BadgeInSentenceDemo client:visible />
-  </ComponentExample>
-</ComponentSection>
-
-{/* API Reference */}
-
-<ComponentSection>
-  <Heading level={2}>API Reference</Heading>
-  <PropsTable component="Badge" />
-</ComponentSection>
+<PropsTable component="Badge" />
