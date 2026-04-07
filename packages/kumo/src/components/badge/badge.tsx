@@ -29,6 +29,10 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-success/70 text-kumo-success",
       description: "Success badge",
     },
+    destructive: {
+      classes: "bg-kumo-badge-red text-white",
+      description: "Deprecated. Use red instead.",
+    },
     info: {
       classes: "bg-kumo-info/70 text-kumo-info",
       description: "Info badge",
