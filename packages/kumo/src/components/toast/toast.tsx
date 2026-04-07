@@ -48,25 +48,25 @@ export const KUMO_TOAST_VARIANTS = {
     },
     success: {
       classes:
-        "ring-[0.3px] ring-kumo-success bg-kumo-base [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
+        "ring-[0.3px] ring-kumo-success-tint bg-kumo-base [&_[data-toast-icon]]:text-kumo-success [&_[data-toast-title]]:text-kumo-success",
       description: "Success toast for confirmations and positive outcomes",
       icon: CheckCircleIcon,
     },
     error: {
       classes:
-        "ring-[0.3px] ring-kumo-danger bg-kumo-base [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
+        "ring-[0.3px] ring-kumo-danger-tint bg-kumo-base [&_[data-toast-icon]]:text-kumo-danger [&_[data-toast-title]]:text-kumo-danger",
       description: "Error toast for critical issues",
       icon: WarningOctagonIcon,
     },
     warning: {
       classes:
-        "ring-[0.3px] ring-kumo-warning bg-kumo-base [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
+        "ring-[0.3px] ring-kumo-warning-tint bg-kumo-base [&_[data-toast-icon]]:text-kumo-warning [&_[data-toast-title]]:text-kumo-warning",
       description: "Warning toast for cautionary messages",
       icon: WarningIcon,
     },
     info: {
       classes:
-        "ring-[0.3px] ring-kumo-info bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
+        "ring-[0.3px] ring-kumo-info-tint bg-kumo-control [&_[data-toast-icon]]:text-kumo-info [&_[data-toast-title]]:text-kumo-info",
       description: "Info toast for neutral informational messages",
       icon: InfoIcon,
     },
