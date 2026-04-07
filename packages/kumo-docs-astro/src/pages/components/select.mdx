@@ -241,8 +241,7 @@ export default function Example() {
   <Heading level={3}>Disabled Options</Heading>
   <p>
     Options can be disabled with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> prop.
-    When <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabledReason</code> is provided,
-    an info icon with a tooltip explains why the option is unavailable.
+    Disabled options are greyed out and cannot be selected or highlighted via keyboard.
   </p>
 
   <ComponentExample demo="SelectDisabledOptionsDemo">
@@ -256,8 +255,7 @@ export default function Example() {
   <Heading level={3}>Disabled Items (via items prop)</Heading>
   <p>
     The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> object-map prop
-    accepts descriptor objects with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> and{" "}
-    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabledReason</code> alongside
+    accepts descriptor objects with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> alongside
     plain string values.
   </p>
 
@@ -320,11 +318,23 @@ export default function Example() {
 <Heading level={3}>Select.Option</Heading>
 <PropsTable component="Select.Option" />
 
-  <Heading level={3}>Select.Group</Heading>
-  <p>Groups related options together with an accessible <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="group"</code>. Use with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.GroupLabel</code> to provide a visible heading.</p>
+<Heading level={3}>Select.Group</Heading>
+<p>
+  Groups related options together with an accessible{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="group"</code>.
+  Use with{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+    Select.GroupLabel
+  </code>{" "}
+  to provide a visible heading.
+</p>
 
-  <Heading level={3}>Select.GroupLabel</Heading>
-  <p>A visible heading for a <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>. Automatically associated with its parent group for accessibility.</p>
+<Heading level={3}>Select.GroupLabel</Heading>
+<p>
+  A visible heading for a{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>.
+  Automatically associated with its parent group for accessibility.
+</p>
 
   <Heading level={3}>Select.Separator</Heading>
   <p>A visual divider line between option groups. Renders with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="separator"</code>.</p>
