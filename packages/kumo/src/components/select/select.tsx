@@ -1,5 +1,4 @@
 import { Select as SelectBase } from "@base-ui/react/select";
-import { Separator as SeparatorBase } from "@base-ui/react/separator";
 import { CaretUpDownIcon, CheckIcon, Info } from "@phosphor-icons/react";
 import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
@@ -612,7 +611,7 @@ type SeparatorProps = {
  */
 const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
   ({ className }, ref) => (
-    <SeparatorBase
+    <SelectBase.Separator
       ref={ref}
       className={cn("-mx-1 my-1 h-px bg-kumo-line", className)}
     />
