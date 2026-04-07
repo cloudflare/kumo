@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  type KeyboardEvent,
   type ReactNode,
 } from "react";
 import { InputGroup } from "../input";
@@ -17,6 +18,9 @@ import { cn } from "../../utils/cn";
 import { Select } from "../select";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 /** Pagination controls variant definitions. */
 export const KUMO_PAGINATION_VARIANTS = {
@@ -174,12 +178,23 @@ PaginationPageSize.displayName = "Pagination.PageSize";
 // ============================================================================
 
 export interface PaginationControlsProps extends KumoPaginationVariantsProps {
+  /**
+   * How the page number selector is rendered in "full" controls mode.
+   * - `"input"` (default): A text input where users type a page number.
+   * - `"dropdown"`: A dropdown select with all page numbers as options.
+   *
+   * **Note:** `"dropdown"` renders an option for every page, so it is best
+   * suited for small page counts. For large datasets (hundreds of pages or
+   * more) prefer `"input"` to avoid rendering performance overhead.
+   */
+  pageSelector?: "input" | "dropdown";
   /** Additional CSS classes */
   className?: string;
 }
 
 function PaginationControls({
   controls = KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
+  pageSelector = "input",
   className,
 }: PaginationControlsProps) {
   const { page, maxPage, setPage, editingPage, setEditingPage } =
@@ -217,28 +232,52 @@ function PaginationControls({
           >
             <CaretLeftIcon size={16} />
           </InputGroup.Button>
-          {controls === "full" && (
-            <InputGroup.Input
-              style={{ width: 50 }}
-              className="text-center"
-              aria-label="Page number"
-              value={editingPage}
-              onValueChange={(value: string) => {
-                setEditingPage(Number(value));
-              }}
-              onBlur={() => {
-                let number = Math.max(editingPage, 1);
-                number = Math.min(number, maxPage);
-                setPage(number);
-                setEditingPage(number);
-              }}
-              // Prevent password managers from auto-filling
-              autoComplete="off"
-              data-1p-ignore
-              data-lpignore="true"
-              data-form-type="other"
-            />
-          )}
+          {controls === "full" &&
+            (pageSelector === "dropdown" ? (
+              <Select
+                aria-label="Page number"
+                className="rounded-none ring-kumo-line"
+                value={page}
+                onValueChange={(value) => {
+                  const num = value as number;
+                  setPage(num);
+                  setEditingPage(num);
+                }}
+              >
+                {Array.from({ length: maxPage }, (_, i) => i + 1).map((p) => (
+                  <Select.Option key={p} value={p}>
+                    {p}
+                  </Select.Option>
+                ))}
+              </Select>
+            ) : (
+              <InputGroup.Input
+                style={{ width: 50 }}
+                className="text-center"
+                aria-label="Page number"
+                value={editingPage}
+                onValueChange={(value: string) => {
+                  setEditingPage(Number(value));
+                }}
+                onBlur={() => {
+                  const clamped = clamp(editingPage, 1, maxPage);
+                  setPage(clamped);
+                  setEditingPage(clamped);
+                }}
+                onKeyDown={(e: KeyboardEvent) => {
+                  if (e.key === "Enter") {
+                    const clamped = clamp(editingPage, 1, maxPage);
+                    setPage(clamped);
+                    setEditingPage(clamped);
+                  }
+                }}
+                // Prevent password managers from auto-filling
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
+              />
+            ))}
           <InputGroup.Button
             variant="secondary"
             aria-label="Next page"
