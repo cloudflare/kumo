@@ -232,7 +232,6 @@ Input.displayName = "Input";
  *   label="Password"
  *   description="Must be at least 8 characters"
  *   error="Password is too short"
- *   variant="error"
  * />
  */
 export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
