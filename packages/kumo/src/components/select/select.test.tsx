@@ -291,6 +291,234 @@ describe("Select", () => {
     });
   });
 
+  describe("disabled options", () => {
+    it("renders a disabled option that cannot be selected", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a">Option A</Select.Option>
+          <Select.Option value="b" disabled>
+            Option B
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      const disabledOption = options.find((o) =>
+        o.textContent?.includes("Option B"),
+      );
+      expect(disabledOption).toBeTruthy();
+      expect(disabledOption?.getAttribute("aria-disabled")).toBe("true");
+    });
+
+    it("applies disabled styling classes", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a" disabled>
+            Disabled
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const option = screen.getByRole("option");
+      expect(option.className).toContain("data-[disabled]");
+    });
+
+    it("renders info icon with tooltip when disabledReason is provided", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a" disabled disabledReason="Not available">
+            Option A
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      // The Info icon should be rendered inside the option
+      const option = screen.getByRole("option");
+      const infoIcon = option.querySelector("svg");
+      expect(infoIcon).toBeTruthy();
+    });
+
+    it("does not render info icon when option is not disabled", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a" disabledReason="Should not show">
+            Option A
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      // Only the CheckIcon SVG should be present (item indicator), not the Info icon
+      const option = screen.getByRole("option");
+      // The disabledReason tooltip wrapper should not be rendered
+      const tooltipTriggers = option.querySelectorAll(
+        "[class*='pointer-events-auto']",
+      );
+      expect(tooltipTriggers.length).toBe(0);
+    });
+  });
+
+  describe("disabled items via items prop", () => {
+    it("renders disabled options from object-map items with descriptor", async () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          items={{
+            apple: "Apple",
+            banana: {
+              label: "Banana",
+              disabled: true,
+              disabledReason: "Out of season",
+            },
+          }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      expect(options).toHaveLength(2);
+
+      const bananaOption = options.find((o) =>
+        o.textContent?.includes("Banana"),
+      );
+      expect(bananaOption?.getAttribute("aria-disabled")).toBe("true");
+    });
+
+    it("renders enabled options from object-map items with descriptor", async () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          items={{
+            apple: "Apple",
+            banana: { label: "Banana", disabled: false },
+          }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      const bananaOption = options.find((o) =>
+        o.textContent?.includes("Banana"),
+      );
+      expect(bananaOption?.getAttribute("aria-disabled")).not.toBe("true");
+    });
+
+    it("mixes plain ReactNode and descriptor values in items prop", async () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          items={{
+            apple: "Apple",
+            banana: {
+              label: "Banana",
+              disabled: true,
+            },
+            cherry: "Cherry",
+          }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      expect(options).toHaveLength(3);
+    });
+  });
+
+  describe("groups and separators", () => {
+    it("renders Select.Group with Select.GroupLabel", async () => {
+      render(
+        <Select aria-label="Pick a fruit">
+          <Select.Group>
+            <Select.GroupLabel>Fruits</Select.GroupLabel>
+            <Select.Option value="apple">Apple</Select.Option>
+            <Select.Option value="banana">Banana</Select.Option>
+          </Select.Group>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const group = screen.getByRole("group");
+      expect(group).toBeTruthy();
+      expect(screen.getByText("Fruits")).toBeTruthy();
+    });
+
+    it("renders Select.Separator as a visual divider", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a">Option A</Select.Option>
+          <Select.Separator />
+          <Select.Option value="b">Option B</Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      // Separator is inside the portaled popup — query from document
+      const separator = document.querySelector('[role="separator"]');
+      expect(separator).toBeTruthy();
+      expect(separator?.className).toContain("bg-kumo-line");
+    });
+
+    it("renders multiple groups with separators", async () => {
+      render(
+        <Select aria-label="Pick a food">
+          <Select.Group>
+            <Select.GroupLabel>Fruits</Select.GroupLabel>
+            <Select.Option value="apple">Apple</Select.Option>
+          </Select.Group>
+          <Select.Separator />
+          <Select.Group>
+            <Select.GroupLabel>Vegetables</Select.GroupLabel>
+            <Select.Option value="carrot">Carrot</Select.Option>
+          </Select.Group>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const groups = screen.getAllByRole("group");
+      expect(groups).toHaveLength(2);
+
+      expect(screen.getByText("Fruits")).toBeTruthy();
+      expect(screen.getByText("Vegetables")).toBeTruthy();
+
+      // Separator is inside the portaled popup — query from document
+      const separator = document.querySelector('[role="separator"]');
+      expect(separator).toBeTruthy();
+    });
+  });
+
   describe("popup structure", () => {
     it("opens a listbox popup from the trigger", async () => {
       render(

@@ -307,6 +307,135 @@ export function SelectComplexDemo() {
   );
 }
 
+/** Select with disabled options that cannot be selected. */
+export function SelectDisabledOptionsDemo() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Deployment Region"
+      placeholder="Choose a region..."
+      className="w-[250px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+    >
+      <Select.Option value="us-east">US East</Select.Option>
+      <Select.Option value="us-west">US West</Select.Option>
+      <Select.Option
+        value="eu-west"
+        disabled
+        disabledReason="Requires Enterprise plan"
+      >
+        EU West
+      </Select.Option>
+      <Select.Option
+        value="ap-south"
+        disabled
+        disabledReason="Currently at capacity"
+      >
+        AP South
+      </Select.Option>
+    </Select>
+  );
+}
+
+/** Select using the items prop with disabled descriptors. */
+export function SelectDisabledItemsDemo() {
+  const [value, setValue] = useState<string | null>("free");
+
+  return (
+    <Select
+      label="Plan"
+      className="w-[200px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+      items={{
+        free: "Free",
+        pro: "Pro",
+        business: {
+          label: "Business",
+          disabled: true,
+          disabledReason: "Contact sales",
+        },
+        enterprise: {
+          label: "Enterprise",
+          disabled: true,
+          disabledReason: "Contact sales",
+        },
+      }}
+    />
+  );
+}
+
+/** Select with grouped options and separators. */
+export function SelectGroupedDemo() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Food"
+      placeholder="Pick a food..."
+      className="w-[220px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+    >
+      <Select.Group>
+        <Select.GroupLabel>Fruits</Select.GroupLabel>
+        <Select.Option value="apple">Apple</Select.Option>
+        <Select.Option value="banana">Banana</Select.Option>
+        <Select.Option value="cherry">Cherry</Select.Option>
+      </Select.Group>
+      <Select.Separator />
+      <Select.Group>
+        <Select.GroupLabel>Vegetables</Select.GroupLabel>
+        <Select.Option value="carrot">Carrot</Select.Option>
+        <Select.Option value="broccoli">Broccoli</Select.Option>
+        <Select.Option value="spinach">Spinach</Select.Option>
+      </Select.Group>
+    </Select>
+  );
+}
+
+/** Select combining groups, separators, and disabled options with info tooltips. */
+export function SelectGroupedWithDisabledDemo() {
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <Select
+      label="Server Region"
+      placeholder="Select a region..."
+      className="w-[260px]"
+      value={value}
+      onValueChange={(v) => setValue(v as string | null)}
+    >
+      <Select.Group>
+        <Select.GroupLabel>Available</Select.GroupLabel>
+        <Select.Option value="us-east-1">US East (N. Virginia)</Select.Option>
+        <Select.Option value="us-west-2">US West (Oregon)</Select.Option>
+        <Select.Option value="eu-west-1">EU West (Ireland)</Select.Option>
+      </Select.Group>
+      <Select.Separator />
+      <Select.Group>
+        <Select.GroupLabel>Unavailable</Select.GroupLabel>
+        <Select.Option
+          value="ap-south-1"
+          disabled
+          disabledReason="Region at capacity — try again later"
+        >
+          AP South (Mumbai)
+        </Select.Option>
+        <Select.Option
+          value="sa-east-1"
+          disabled
+          disabledReason="Requires Enterprise plan"
+        >
+          SA East (São Paulo)
+        </Select.Option>
+      </Select.Group>
+    </Select>
+  );
+}
+
 // Generate 50 items for long list scrolling test
 const longListItems = Array.from({ length: 50 }, (_, i) => ({
   value: `item-${i + 1}`,
