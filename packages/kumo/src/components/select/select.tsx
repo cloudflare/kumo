@@ -83,7 +83,7 @@ export interface SelectItemDescriptor {
 }
 
 /** Value type accepted by the `items` object-map prop. */
-type SelectItemValue = ReactNode | SelectItemDescriptor;
+export type SelectItemValue = ReactNode | SelectItemDescriptor;
 
 function isItemDescriptor(
   value: SelectItemValue,
@@ -94,7 +94,9 @@ function isItemDescriptor(
   if ("$$typeof" in (value as object)) return false;
   // Promises are not descriptors
   if (value instanceof Promise) return false;
-  return "label" in (value as object);
+  // Must have a defined label (not just the key existing)
+  const candidate = value as unknown as Record<string, unknown>;
+  return "label" in candidate && candidate.label !== undefined;
 }
 
 /**

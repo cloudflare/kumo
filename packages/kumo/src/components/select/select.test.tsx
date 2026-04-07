@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { useState } from "react";
 import { Select } from "./select";
 
@@ -370,6 +370,33 @@ describe("Select", () => {
         "[class*='pointer-events-auto']",
       );
       expect(tooltipTriggers.length).toBe(0);
+    });
+
+    it("does not fire onValueChange when clicking a disabled option", async () => {
+      const handleChange = vi.fn();
+      render(
+        <Select aria-label="Pick one" onValueChange={handleChange}>
+          <Select.Option value="a">Option A</Select.Option>
+          <Select.Option value="b" disabled>
+            Option B
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      const disabledOption = options.find((o) =>
+        o.textContent?.includes("Option B"),
+      );
+
+      await act(async () => {
+        fireEvent.click(disabledOption!);
+      });
+
+      expect(handleChange).not.toHaveBeenCalled();
     });
   });
 
