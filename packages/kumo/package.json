@@ -203,6 +203,10 @@
       "types": "./dist/src/components/table-of-contents/index.d.ts",
       "import": "./dist/components/table-of-contents.js"
     },
+    "./components/tag": {
+      "types": "./dist/src/components/tag/index.d.ts",
+      "import": "./dist/components/tag.js"
+    },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
       "import": "./dist/utils.js"

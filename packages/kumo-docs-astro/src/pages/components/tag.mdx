@@ -1,0 +1,135 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Tag"
+description: "Compact interactive token for filter chips, resource tags, multi-select tokens, and key:value displays."
+sourceFile: "components/tag"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TagBasicDemo,
+  TagWithIconDemo,
+  TagDismissibleDemo,
+  TagClickableDemo,
+  TagKeyDemo,
+  TagAsideDemo,
+  TagDisabledDemo,
+} from "~/components/demos/TagDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="TagWithIconDemo">
+    <TagWithIconDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { Tag } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { Tag } from "@cloudflare/kumo/components/tag";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { Tag } from "@cloudflare/kumo";
+import { GlobeSimpleIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <div className="flex gap-2">
+      <Tag>production</Tag>
+      <Tag icon={<GlobeSimpleIcon size={14} />} onDismiss={() => remove()}>
+        us-east-1
+      </Tag>
+      <Tag tagKey="ENV" aside="3">
+        staging
+      </Tag>
+    </div>
+  );
+}
+```
+
+<p>
+  Tag sits between Badge (static label) and Button (full action). It renders the
+  visual shell and accepts interaction props — `onClick` makes it clickable,
+  `onDismiss` adds a dismiss button. All interaction logic is the consumer's
+  responsibility.
+</p>
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagBasicDemo">
+  <TagBasicDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>With icon</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagWithIconDemo">
+  <TagWithIconDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Dismissible</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagDismissibleDemo">
+  <TagDismissibleDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Composition</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagClickableDemo">
+  <TagClickableDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Key prefix</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagKeyDemo">
+  <TagKeyDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Aside section</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagAsideDemo">
+  <TagAsideDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Disabled</Heading>
+<p>placeholder</p>
+<ComponentExample demo="TagDisabledDemo">
+  <TagDisabledDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="Tag" />
+</ComponentSection>
