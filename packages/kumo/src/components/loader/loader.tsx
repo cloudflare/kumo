@@ -87,7 +87,18 @@ export const Loader = ({
       className={className}
       style={{ height: sizeValue, width: sizeValue }}
       role="status"
-      aria-label="Loading"
+interface LoaderProps {
+  'aria-label'?: string;
+}
+
+export const Loader = ({
+  // ...
+  'aria-label': ariaLabel = 'Loading',
+}: LoaderProps) => {
+  return (
+    <svg
+      role="status"
+      aria-label={ariaLabel}
     >
       <circle
         cx="12"
