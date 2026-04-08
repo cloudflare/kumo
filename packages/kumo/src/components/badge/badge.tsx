@@ -8,37 +8,66 @@ export const KUMO_BADGE_BASE_STYLES =
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
   variant: {
+    /** Semantic token badges */
+    primary: {
+      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
+      description: "Primary badge",
+    },
+    secondary: {
+      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
+      description: "Secondary badge",
+    },
+    error: {
+      classes: "bg-kumo-danger/60 text-kumo-danger",
+      description: "Error badge",
+    },
+    warning: {
+      classes: "bg-kumo-warning/70 text-kumo-warning",
+      description: "Warning badge",
+    },
+    success: {
+      classes: "bg-kumo-success/70 text-kumo-success",
+      description: "Success badge",
+    },
+    destructive: {
+      classes: "bg-kumo-badge-red text-white",
+      description: "Deprecated. Use red instead.",
+    },
+    info: {
+      classes: "bg-kumo-info/70 text-kumo-info",
+      description: "Info badge",
+    },
+    beta: {
+      classes:
+        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
+      description: "Indicates beta or experimental features",
+    },
+    outline: {
+      classes: "border border-kumo-fill bg-transparent text-kumo-default",
+      description: "Bordered badge with transparent background",
+    },
+
+    /** Other color token variants */
+
     red: {
       classes: "bg-kumo-badge-red text-white",
       description: "Red badge",
-    },
-    "red-subtle": {
-      classes: "bg-kumo-badge-red-subtle text-kumo-badge-red-subtle",
-      description: "Subtle red badge",
-    },
-    orange: {
-      classes: "bg-kumo-badge-orange text-white",
-      description: "Orange badge",
-    },
-    "orange-subtle": {
-      classes: "bg-kumo-badge-orange-subtle text-kumo-badge-orange-subtle",
-      description: "Subtle orange badge",
-    },
-    yellow: {
-      classes: "bg-kumo-badge-yellow text-white",
-      description: "Yellow badge",
-    },
-    "yellow-subtle": {
-      classes: "bg-kumo-badge-yellow-subtle text-kumo-badge-yellow-subtle",
-      description: "Subtle yellow badge",
     },
     green: {
       classes: "bg-kumo-badge-green text-white",
       description: "Green badge",
     },
-    "green-subtle": {
-      classes: "bg-kumo-badge-green-subtle text-kumo-badge-green-subtle",
-      description: "Subtle green badge",
+    neutral: {
+      classes: "bg-kumo-badge-neutral text-white",
+      description: "Neutral badge",
+    },
+    orange: {
+      classes: "bg-kumo-badge-orange text-black",
+      description: "Orange badge",
+    },
+    purple: {
+      classes: "bg-kumo-badge-purple text-white",
+      description: "Purple badge",
     },
     teal: {
       classes: "bg-kumo-badge-teal text-white",
@@ -52,56 +81,11 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-badge-blue text-white",
       description: "Blue badge",
     },
-    "blue-subtle": {
-      classes: "bg-kumo-badge-blue-subtle text-kumo-badge-blue-subtle",
-      description: "Subtle blue badge",
-    },
-    neutral: {
-      classes: "bg-kumo-badge-neutral text-white",
-      description: "Neutral badge",
-    },
-    "neutral-subtle": {
-      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
-      description: "Subtle neutral badge",
-    },
-    inverted: {
-      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
-      description: "Inverted badge",
-    },
-    outline: {
-      classes: "border border-kumo-fill bg-transparent text-kumo-default",
-      description: "Bordered badge with transparent background",
-    },
-    beta: {
-      classes:
-        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
-      description: "Indicates beta or experimental features",
-    },
-    /** @deprecated Use `"inverted"` instead. */
-    primary: {
-      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
-      description: "Deprecated. Use inverted instead.",
-    },
-    /** @deprecated Use `"neutral"` instead. */
-    secondary: {
-      classes: "bg-kumo-badge-neutral text-white",
-      description: "Deprecated. Use neutral instead.",
-    },
-    /** @deprecated Use `"red"` instead. */
-    destructive: {
-      classes: "bg-kumo-badge-red text-white",
-      description: "Deprecated. Use red instead.",
-    },
-    /** @deprecated Use `"green"` instead. */
-    success: {
-      classes: "bg-kumo-badge-green text-white",
-      description: "Deprecated. Use green instead.",
-    },
   },
 } as const;
 
 export const KUMO_BADGE_DEFAULT_VARIANTS = {
-  variant: "neutral",
+  variant: "primary",
 } as const;
 
 // Derived types from KUMO_BADGE_VARIANTS
@@ -140,21 +124,21 @@ export type BadgeVariant = KumoBadgeVariant;
 export interface BadgeProps {
   /**
    * Color variant of the badge.
-   * - `"red"` / `"red-subtle"` — Red badge
-   * - `"orange"` / `"orange-subtle"` — Orange badge
-   * - `"yellow"` / `"yellow-subtle"` — Yellow badge
-   * - `"green"` / `"green-subtle"` — Green badge (emerald scale)
-   * - `"teal"` / `"teal-subtle"` — Teal badge
-   * - `"blue"` / `"blue-subtle"` — Blue badge
-   * - `"neutral"` / `"neutral-subtle"` — Neutral badge
-   * - `"inverted"` — Inverted badge (near-black, white in dark mode)
+   * Recommended semantic variants:
+   * - `"primary"` — Primary badge
+   * - `"secondary"` — Secondary badge
+   * - `"error"` — Error badge
+   * - `"warning"` — Warning badge
+   * - `"success"` — Success badge
+   * - `"info"` — Info badge
+   *
+   * Additional token variants:
+   * - `"red"`, `"orange"`, `"green"`, `"teal"`, `"blue"`, `"purple"`, `"neutral"`
+   * - `"teal-subtle"`, `"neutral-subtle"`
+   * - `"inverted"`
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
-   * - `"primary"` — **Deprecated.** Use `"inverted"` instead.
-   * - `"secondary"` — **Deprecated.** Use `"neutral"` instead.
-   * - `"destructive"` — **Deprecated.** Use `"red"` instead.
-   * - `"success"` — **Deprecated.** Use `"green"` instead.
-   * @default "neutral"
+   * @default "secondary"
    */
   variant?: KumoBadgeVariant;
   /** Additional CSS classes merged via `cn()`. */
