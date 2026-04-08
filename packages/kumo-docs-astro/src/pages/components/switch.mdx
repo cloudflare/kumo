@@ -19,6 +19,7 @@ import {
   SwitchNeutralStatesDemo,
   SwitchVariantsDemo,
   SwitchSizesDemo,
+  SwitchCustomIdDemo,
 } from "~/components/demos/SwitchDemo";
 
 {/* Hero Demo */}
@@ -89,8 +90,8 @@ export default function Example() {
 
 <Heading level={3}>Variants</Heading>
 <p>
-  The Switch supports two variants: `default` (blue when on) and
-  `neutral` (monochrome). Both use a squircle shape.
+  The Switch supports two variants: `default` (blue when on) and `neutral`
+  (monochrome). Both use a squircle shape.
 </p>
 <ComponentExample demo="SwitchVariantsDemo">
   <SwitchVariantsDemo client:visible />
@@ -114,6 +115,15 @@ export default function Example() {
 <p>Three sizes available: `sm`, `base` (default), and `lg`.</p>
 <ComponentExample demo="SwitchSizesDemo">
   <SwitchSizesDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom ID</Heading>
+<p>
+  When a custom `id` is provided, clicking the label still toggles the switch.
+  The `id` is forwarded to Base UI so the label's `htmlFor` stays in sync.
+</p>
+<ComponentExample demo="SwitchCustomIdDemo">
+  <SwitchCustomIdDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>

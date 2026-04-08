@@ -101,8 +101,9 @@ export function codeVariants({
   return cn(
     // Base styles
     "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-strong",
-    // Apply lang-specific styles (currently none, but extensible)
-    KUMO_CODE_VARIANTS.lang[lang].classes,
+    // Apply lang-specific styles (fallback to default if lang not in map)
+    KUMO_CODE_VARIANTS.lang[lang]?.classes ??
+      KUMO_CODE_VARIANTS.lang[KUMO_CODE_DEFAULT_VARIANTS.lang].classes,
   );
 }
 

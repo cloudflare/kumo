@@ -26,7 +26,6 @@ export function InputErrorStringDemo() {
       label="Email"
       placeholder="you@example.com"
       value="invalid-email"
-      variant="error"
       error="Please enter a valid email address"
     />
   );
@@ -38,7 +37,6 @@ export function InputErrorObjectDemo() {
       label="Password"
       type="password"
       value="short"
-      variant="error"
       error={{
         message: "Password must be at least 8 characters",
         match: "tooShort",

@@ -9,6 +9,9 @@
   --color-blue-400: oklch(70.7% 0.165 254.624);
   --color-blue-800: oklch(42.4% 0.199 265.638);
 
+  --color-orange-650: oklch(81.5% 0.197 76);
+  --color-teal-650: oklch(54.9% 0.096 184.565);
+
   --color-kumo-neutral-50: oklch(98.75% 0 0);
   --color-kumo-neutral-75: oklch(98% 0 0);
   --color-kumo-neutral-125: oklch(96.5% 0 0);

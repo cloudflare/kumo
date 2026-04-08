@@ -1,0 +1,66 @@
+name: Validate PR Description
+
+on:
+  pull_request:
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        labeled,
+        unlabeled,
+        edited,
+        ready_for_review,
+        converted_to_draft,
+      ]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    # Don't check the Version Packages PR
+    if: github.head_ref != 'changeset-release/main'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-add-pr
+      cancel-in-progress: true
+    timeout-minutes: 30
+    name: Check
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+        id: changes
+        with:
+          filters: |
+            everything_but_markdown:
+              - '!**/*.md'
+
+      - name: Install Dependencies
+        if: steps.changes.outputs.everything_but_markdown == 'true'
+        uses: ./.github/actions/install-dependencies
+        with:
+          turbo-api: ${{ secrets.TURBO_API }}
+          turbo-team: ${{ secrets.TURBO_TEAM }}
+          turbo-token: ${{ secrets.TURBO_TOKEN }}
+          turbo-signature: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+
+      - name: List changed files
+        if: steps.changes.outputs.everything_but_markdown == 'true'
+        id: files
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
+        with:
+          format: "json"
+
+      - run: pnpm tsx tools/deployments/validate-pr-description.ts
+        if: steps.changes.outputs.everything_but_markdown == 'true'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          FILES: ${{ steps.files.outputs.all }}
+          DRAFT: ${{ github.event.pull_request.draft }}
