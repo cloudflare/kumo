@@ -11,7 +11,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       className,
       onValueChange,
       size = "base",
-      variant = "default",
+      variant: variantProp,
       onChange,
       label,
       labelTooltip,
@@ -19,6 +19,19 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       error,
       ...inputProps
     } = props;
+
+    // Deprecation warning for variant="error"
+    if (process.env.NODE_ENV !== "production" && variantProp === "error") {
+      console.warn(
+        '[Kumo InputArea]: variant="error" is deprecated. ' +
+          "Error styling is now automatically applied when the `error` prop is truthy. " +
+          "Simply remove the variant prop and pass an error message instead.",
+      );
+    }
+
+    // Auto-apply error styling when error prop is truthy
+    // Explicit variant prop takes precedence for backwards compatibility
+    const variant = variantProp ?? (error ? "error" : "default");
 
     // Extract required from inputProps to pass to Field for label decoration
     const { required } = inputProps;

@@ -26,7 +26,6 @@ export function InputAreaErrorStringDemo() {
       label="Message"
       placeholder="Enter your message"
       value="Hi"
-      variant="error"
       error="Message must be at least 10 characters"
     />
   );
@@ -37,7 +36,6 @@ export function InputAreaErrorObjectDemo() {
     <InputArea
       label="Feedback"
       value="Bad"
-      variant="error"
       error={{
         message: "Feedback must be at least 20 characters",
         match: "tooShort",
