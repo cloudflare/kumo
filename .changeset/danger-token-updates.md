@@ -4,6 +4,7 @@
 
 Adjust semantic tint usage for status/error ring styles across core form and feedback components.
 
-- Update error ring styling in `Checkbox`, `Radio`, and `Input` to use `*-tint` tokens.
-- Update status ring styling in `Toast` variants (`success`, `error`, `warning`, `info`) to use corresponding `*-tint` tokens.
+- Update background styles in `Badge` and `Banner` components to use `*-tint` tokens.
+- Update `kumo-danger` to a darker token to improve a11y contrast.
+- Update error ring styling in form components to use semantic tokens (now darker with token swap).
 - Update theme generator color mappings used by these tints to improve visual consistency.
