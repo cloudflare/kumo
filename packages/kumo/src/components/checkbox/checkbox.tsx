@@ -15,7 +15,7 @@ export const KUMO_CHECKBOX_VARIANTS = {
   variant: {
     default: {
       classes:
-        "[&:focus-within>span]:ring-kumo-ring [&:hover>span]:ring-kumo-ring",
+        "[&:focus-within>span]:ring-kumo-hairline [&:hover>span]:ring-kumo-hairline",
       description: "Default checkbox appearance",
     },
     error: {
@@ -263,7 +263,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         className={cn(
           "relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
-          !disabled && "hover:ring-kumo-ring focus-visible:ring-kumo-ring",
+          !disabled && "hover:ring-kumo-hairline focus-visible:ring-kumo-hairline",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
@@ -366,7 +366,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             "peer relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
-              "group-hover:ring-kumo-ring hover:ring-kumo-ring focus-visible:ring-kumo-ring",
+              "group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus-visible:ring-kumo-hairline",
             "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           )}
         >

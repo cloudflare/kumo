@@ -4,12 +4,12 @@ title: "Colors"
 description: "Kumo uses semantic color tokens that automatically adapt to light and dark mode. Use these classes in your Tailwind CSS instead of raw color values."
 ---
 
-import Callout from "~/components/docs/Callout.astro";
 import { TailwindColorTokens } from "~/components/demos/ColorsDemo";
+import { Badge } from "@cloudflare/kumo";
 
 ## Usage
 
-Always use semantic tokens instead of raw Tailwind colors. This ensures your UI automatically adapts to light and dark mode.
+Always use semantic tokens instead of raw Tailwind colors. This ensures your UI automatically adapts to light and dark mode, and that your components remain consistent across themes.
 
 **Correct**
 
@@ -31,10 +31,7 @@ Always use semantic tokens instead of raw Tailwind colors. This ensures your UI 
 </div>;
 ```
 
-<Callout type="warning">
-  **Lint rules enforce this:** The `no-primitive-colors` rule will flag any raw
-  Tailwind colors like `bg-blue-500`.
-</Callout>
+> Lint rules enforce this: The `no-primitive-colors` rule will flag any raw Tailwind colors like `bg-blue-500`.
 
 ## Mode
 
@@ -117,6 +114,227 @@ export const AVAILABLE_THEMES = ["kumo", "fedramp", "myTheme"] as const;
 ```
 
 Then run `pnpm codegen:themes` to generate the CSS.
+
+## Semantic Tokens
+
+Tokens are grouped by purpose. Use the token that matches the role of the element, not the color you want to achieve.
+
+Semantic tokens are named by **role**, not by hue. A token like `bg-kumo-danger` communicates intent — it doesn't imply a specific shade of red, and its exact value can change per theme or color mode without touching your component code.
+
+
+### Surface Hierarchy
+
+Surfaces establish depth and layering in the UI. Use them in order from the outermost background inward.
+
+<div style="overflow-x: auto;">
+  <table>
+    <colgroup>
+      <col style="width: 22ch;" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>bg-kumo-canvas</code></td>
+        <td>The outermost page background — sits behind everything</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-base</code></td>
+        <td>Default component background</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-elevated</code></td>
+        <td>Slightly elevated surface, e.g. <code>LayerCard.Secondary</code></td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-recessed</code></td>
+        <td>Recessed surface with a subtly darker fill, e.g. segmented <code>Tabs</code> background</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-tint</code></td>
+        <td>Subtle tinted background for tables or hover states</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-contrast</code></td>
+        <td>High-contrast, inverted background</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Brand
+
+<div style="overflow-x: auto;">
+  <table>
+    <colgroup>
+      <col style="width: 22ch;" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>bg-kumo-brand</code></td>
+        <td>Primary brand background</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-brand-hover</code></td>
+        <td>Hover state for brand backgrounds</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Semantic Status Colors
+
+Each status color comes in two variants: a solid color for icons and indicators, and a `-tint` variant for background fills behind content.
+
+<div style="overflow-x: auto;">
+  <table>
+    <colgroup>
+      <col style="width: 22ch;" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>bg-kumo-info</code></td>
+        <td>Info indicator (icon, dot, bar)</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-success</code></td>
+        <td>Success indicator</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-warning</code></td>
+        <td>Warning indicator</td>
+      </tr>
+      <tr>
+        <td><code>bg-kumo-danger</code></td>
+        <td>Error/destructive indicator</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Use the solid token on icons, status dots, and progress fills. Banners and badges use the solid fills with a reduced opacity.
+
+```tsx
+// Banner with tinted background and solid icon
+<div className="bg-kumo-danger-tint text-kumo-danger">
+  <AlertIcon className="text-kumo-danger" />
+  <p>Something went wrong.</p>
+</div>
+```
+
+### Text Colors
+
+<div style="overflow-x: auto;">
+  <table>
+    <colgroup>
+      <col style="width: 22ch;" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>text-kumo-default</code></td>
+        <td>Primary body text</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-strong</code></td>
+        <td>Secondary text with slightly less contrast than default</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-subtle</code></td>
+        <td>Muted text for descriptions, captions, or secondary labels</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-inactive</code></td>
+        <td>Disabled or inactive text</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-placeholder</code></td>
+        <td>Placeholder text in inputs</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-inverse</code></td>
+        <td>Text intended for use on high-contrast or inverted backgrounds</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-link</code></td>
+        <td>Link text</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-info</code></td>
+        <td>Info-colored text</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-success</code></td>
+        <td>Success-colored text</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-warning</code></td>
+        <td>Warning-colored text</td>
+      </tr>
+      <tr>
+        <td><code>text-kumo-danger</code></td>
+        <td>Error/destructive text</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Borders & Rings
+
+<div style="overflow-x: auto;">
+  <table>
+    <colgroup>
+      <col style="width: 22ch;" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span className="inline-flex items-center gap-2">
+            <code>kumo-hairline</code>
+            <Badge variant="info">New</Badge>
+          </span>
+        </td>
+        <td>A border/ring color to distinguish between flat surfaces where no shadow is present (i.e. <code>LayerCard</code>).</td>
+      </tr>
+      <tr>
+        <td><code>kumo-line</code></td>
+        <td>A thicker border/ring color that defines the edge of an elevated surface alongside a shadow.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ## Token Reference
 

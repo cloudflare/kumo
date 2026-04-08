@@ -1061,7 +1061,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
       // Focus
-      "focus-visible:ring-1 focus-visible:ring-kumo-ring",
+      "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
       // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
       // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
       "group-data-[state=collapsed]/sidebar:px-2",
@@ -1298,7 +1298,7 @@ const SidebarMenuSubButton = forwardRef<
     "text-kumo-default transition-colors duration-150",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
-    "focus-visible:ring-1 focus-visible:ring-kumo-ring",
+    "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
     className,
   );
 

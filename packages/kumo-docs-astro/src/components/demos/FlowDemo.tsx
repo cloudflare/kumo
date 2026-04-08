@@ -62,7 +62,7 @@ export function FlowParallelDemo() {
 export function FlowCustomContentDemo() {
   return (
     <Flow>
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
+      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-hairline" />} />
       <Flow.Node
         render={
           <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
@@ -133,7 +133,7 @@ export function FlowAnchorDemo() {
 export function FlowCenteredDemo() {
   return (
     <Flow align="center">
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-ring" />} />
+      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-hairline" />} />
       <Flow.Node>my-worker</Flow.Node>
       <Flow.Node
         render={

@@ -87,7 +87,7 @@ export const KUMO_TOAST_STYLING = {
     padding: 16,
     borderRadius: 8,
     background: "bg-kumo-base",
-    border: "ring-[0.3px] ring-kumo-ring",
+    border: "ring-[0.3px] ring-kumo-hairline",
     shadow: "shadow-lg",
     gap: 4,
   },
@@ -124,7 +124,7 @@ export function toastVariants({
 }: KumoToastVariantsProps = {}) {
   return cn(
     // Base styles for toast root
-    "rounded-xl ring ring-kumo-ring bg-clip-padding p-4 shadow-lg",
+    "rounded-xl ring ring-kumo-hairline bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
     KUMO_TOAST_VARIANTS.variant[variant].classes,
   );
