@@ -394,7 +394,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             className={cn(
               "flex flex-col",
               "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
-              "rounded-lg shadow-lg ring ring-kumo-ring",
+              "rounded-lg shadow-lg ring ring-kumo-hairline",
               "min-w-[calc(var(--anchor-width)+3px)] py-1.5",
             )}
           >
