@@ -10,7 +10,7 @@ const INVALID_TOKEN_RULE = "invalid-color-token";
 
 // We want to enforce use of Kumo semantic color tokens `--color-kumo-*`.
 // Any Tailwind color utility (e.g. `bg-blue-500`) or legacy semantic
-// utility (e.g. `bg-kumo-ring`, `text-kumo-default`) in class strings should be
+// utility (e.g. `bg-kumo-hairline`, `text-kumo-default`) in class strings should be
 // replaced by semantic tokens / component APIs.
 
 // Matches Tailwind-like color utilities in class strings.

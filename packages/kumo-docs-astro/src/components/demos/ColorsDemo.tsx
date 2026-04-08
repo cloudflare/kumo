@@ -50,16 +50,16 @@ const ColorSwatch: FC<{ label: string; value: string }> = ({
   const hex = useMemo(() => colorToHex(value), [value]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-start gap-2">
       <span
         className="inline-flex h-8 w-8 shrink-0 rounded border border-kumo-fill"
         style={{ background: value }}
       />
-      <div className="flex flex-col text-xs text-kumo-default">
+      <div className="flex min-w-0 flex-col text-xs text-kumo-default">
         <span className="text-[10px] tracking-wide uppercase opacity-70">
           {label}
         </span>
-        <span className="truncate text-[10px] opacity-60">
+        <span className="text-[10px] leading-tight break-normal opacity-60">
           {value}
           {hex && (
             <span className="ml-1 font-mono font-medium text-kumo-default">
@@ -231,15 +231,17 @@ const TokenGrid: FC<{ tokens: ColorToken[] }> = ({ tokens }) => (
     {tokens.map((token: ColorToken) => (
       <div
         key={token.name}
-        className={`flex items-center gap-3 rounded-md border bg-kumo-base px-3 py-2 text-xs ${
+        className={`flex min-w-0 items-center gap-3 rounded-md border bg-kumo-base px-3 py-2 text-xs ${
           token.tokenType === "global"
             ? "border border-kumo-info ring-1 ring-kumo-info/30"
             : "border-kumo-fill"
         }`}
       >
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-medium">{token.name}</span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-xs font-medium break-normal">
+              {token.name}
+            </span>
             {token.tokenType === "global" && (
               <span className="rounded bg-kumo-info/20 px-1.5 py-0.5 text-[10px] font-medium text-kumo-link">
                 global
@@ -274,7 +276,7 @@ export const TailwindColorTokens: FC = () => {
       : 0;
 
   return (
-    <div className="flex flex-col gap-8 bg-kumo-elevated p-8 text-kumo-default">
+    <div className="flex flex-col gap-6 text-kumo-default">
       <div className="flex flex-col gap-1">
         <h2 className="m-0 text-2xl font-semibold">Colors</h2>
         <div className="text-sm text-kumo-default">
@@ -289,7 +291,7 @@ export const TailwindColorTokens: FC = () => {
       </div>
 
       {/* Text Colors Section */}
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold">
           Text Colors ({textColors.length})
         </h2>
@@ -297,7 +299,7 @@ export const TailwindColorTokens: FC = () => {
       </section>
 
       {/* Surface, State, and Theme Colors Section */}
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold">
           Surface, State & Theme Colors ({colors.length})
         </h2>
@@ -306,7 +308,7 @@ export const TailwindColorTokens: FC = () => {
 
       {/* Component Colors Section */}
       {componentGroups.length > 0 && (
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold">
             Component Colors ({componentTokenCount})
           </h2>

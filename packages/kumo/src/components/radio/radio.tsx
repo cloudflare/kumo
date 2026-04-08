@@ -23,7 +23,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-ring bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
@@ -236,7 +236,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
       return (
         <label
           className={cn(
-            "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-ring bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+            "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
             variant === "error" &&
               "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
             disabled
@@ -266,7 +266,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
               variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
               !disabled &&
                 variant !== "error" &&
-                "group-hover:ring-kumo-ring focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+                "group-hover:ring-kumo-hairline focus-visible:ring-kumo-hairline focus-visible:outline-offset-3",
               !disabled &&
                 variant === "error" &&
                 "focus-visible:ring-kumo-danger focus-visible:outline-offset-3",
@@ -304,7 +304,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
-              "group-hover:ring-kumo-ring focus-visible:ring-kumo-ring focus-visible:outline-offset-3",
+              "group-hover:ring-kumo-hairline focus-visible:ring-kumo-hairline focus-visible:outline-offset-3",
             !disabled &&
               variant === "error" &&
               "focus-visible:ring-kumo-danger focus-visible:outline-offset-3",

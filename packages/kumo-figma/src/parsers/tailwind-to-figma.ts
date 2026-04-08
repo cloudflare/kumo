@@ -90,7 +90,7 @@ const COLOR_TO_VARIABLE: Record<string, string> = {
   "bg-kumo-brand": "color-kumo-brand",
   "bg-kumo-brand-hover": "color-kumo-brand-hover",
   "bg-kumo-line": "color-kumo-line",
-  "bg-kumo-ring": "color-kumo-ring",
+  "bg-kumo-hairline": "color-kumo-hairline",
   "bg-kumo-info": "color-kumo-info",
   "bg-kumo-info-tint": "color-kumo-info-tint",
   "bg-kumo-warning": "color-kumo-warning",
@@ -120,7 +120,7 @@ const COLOR_TO_VARIABLE: Record<string, string> = {
 
   // Border colors (use --color-kumo-* tokens)
   "border-kumo-line": "color-kumo-line",
-  "border-kumo-ring": "color-kumo-ring",
+  "border-kumo-hairline": "color-kumo-hairline",
   "border-kumo-brand": "color-kumo-brand",
   "border-kumo-fill": "color-kumo-fill",
   "border-kumo-info": "color-kumo-info",
@@ -128,7 +128,7 @@ const COLOR_TO_VARIABLE: Record<string, string> = {
   "border-kumo-danger": "color-kumo-danger",
   "border-kumo-success": "color-kumo-success",
   "ring-kumo-line": "color-kumo-line",
-  "ring-kumo-ring": "color-kumo-ring",
+  "ring-kumo-hairline": "color-kumo-hairline",
   "ring-kumo-danger": "color-kumo-danger",
 };
 
@@ -442,7 +442,7 @@ export function parseTailwindClasses(classes: string): ParsedStyles {
     // Ring (used as border in some variants)
     if (cls === "ring" || cls.startsWith("ring-")) {
       result.hasBorder = true;
-      // Check for opacity modifier (e.g., ring-kumo-ring/50)
+      // Check for opacity modifier (e.g., ring-kumo-hairline/50)
       const opacityMatch = cls.match(/^(ring-[^/]+)\/([0-9]+)$/);
       if (opacityMatch) {
         const baseClass = opacityMatch[1];

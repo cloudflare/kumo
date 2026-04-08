@@ -154,7 +154,7 @@ className="base-classes"
 Tailwind state prefixes are extractable:
 
 ```typescript
-classes: "bg-kumo-elevated hover:bg-kumo-base focus:ring-kumo-ring disabled:opacity-50";
+classes: "bg-kumo-elevated hover:bg-kumo-base focus:ring-kumo-hairline disabled:opacity-50";
 // Parsed into: { default, hover, focus, disabled } state map
 ```
 

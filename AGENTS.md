@@ -39,7 +39,7 @@ kumo/
 
 ### Styling (CRITICAL)
 
-- **ONLY semantic tokens**: `bg-kumo-base`, `text-kumo-default`, `border-kumo-line`, `ring-kumo-ring`
+- **ONLY semantic tokens**: `bg-kumo-base`, `text-kumo-default`, `border-kumo-line`, `ring-kumo-hairline`
 - **NEVER raw Tailwind colors**: `bg-blue-500`, `text-gray-900` → fails lint
 - **NEVER `dark:` variant**: dark mode automatic via `light-dark()` in CSS custom properties
 - **Exceptions**: `bg-white`, `bg-black`, `text-white`, `text-black`, `transparent`
