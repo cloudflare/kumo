@@ -117,10 +117,9 @@ Then run `pnpm codegen:themes` to generate the CSS.
 
 ## Semantic Tokens
 
-Tokens are grouped by purpose. Use the token that matches the role of the element, not the color you want to achieve.
+We use semantic tokens to group colors by purpose. Use the token that matches the role of the element, not the color you want to achieve.
 
 Semantic tokens are named by **role**, not by hue. A token like `bg-kumo-danger` communicates intent — it doesn't imply a specific shade of red, and its exact value can change per theme or color mode without touching your component code.
-
 
 ### Surface Hierarchy
 
@@ -196,7 +195,7 @@ Surfaces establish depth and layering in the UI. Use them in order from the oute
 
 ### Semantic Status Colors
 
-Each status color comes in two variants: a solid color for icons and indicators, and a `-tint` variant for background fills behind content.
+Each status color comes in two variants: a solid color for icons and indicators, and a `-tint` variant for background fills behind content (i.e. `Badge` or `Banner`).
 
 <div style="overflow-x: auto;">
   <table>
@@ -231,7 +230,7 @@ Each status color comes in two variants: a solid color for icons and indicators,
   </table>
 </div>
 
-Use the solid token on icons, status dots, and progress fills. Banners and badges use the solid fills with a reduced opacity.
+Use the solid token on icons, status dots, borders and rings. Banners and badges use the `-tint` variant with varying opacity values for the different instances.
 
 ```tsx
 // Banner with tinted background and solid icon
