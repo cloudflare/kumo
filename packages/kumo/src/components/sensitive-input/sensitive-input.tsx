@@ -400,7 +400,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           aria-label={mode === "revealed" ? "Hide value" : "Reveal value"}
           tabIndex={showEyeButton ? 0 : -1}
           className={cn(
-            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus-visible:ring-1 focus-visible:ring-kumo-ring focus-visible:rounded-sm",
+            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus-visible:ring-1 focus-visible:ring-kumo-hairline focus-visible:rounded-sm",
             // Defensive styles to prevent global CSS pollution (e.g., button { background: gray })
             "bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 inline-flex items-center justify-center",
             // Match right padding from inputVariants
@@ -427,7 +427,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             onKeyDown={(e) => e.stopPropagation()}
             aria-label={copied ? "Copied" : "Copy to clipboard"}
             className={cn(
-              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-kumo-ring",
+              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-kumo-hairline",
               // Defensive styles to prevent global CSS pollution
               "border-none shadow-none m-0 h-auto min-h-0",
             )}

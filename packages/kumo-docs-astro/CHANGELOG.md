@@ -1,5 +1,30 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.17
+
+### Patch Changes
+
+- cf6b917: Align semantic token documentation and docs presentation updates.
+  - Update `colors.mdx` token documentation structure.
+  - Replaced `kumo-ring` with `kumo-hairline` for border/ring colors and all its instances in kumo components and docs.
+  - Sync `packages/kumo/ai/USAGE.md` token reference categories and descriptions with the docs token guide.
+  - Adjust the typo in the recessed dark token value in theme generator config and regenerate `theme-kumo.css`.
+  - Updated `kumo-fill-hover` token value from `neutral-700` to `neutral-800`
+
+- Updated dependencies [dacf445]
+- Updated dependencies [44c26f5]
+- Updated dependencies [2bb8628]
+- Updated dependencies [e8bcf6f]
+- Updated dependencies [c3beded]
+- Updated dependencies [4a2fb02]
+- Updated dependencies [b1e51a8]
+- Updated dependencies [e676f0b]
+- Updated dependencies [5e4c7b1]
+- Updated dependencies [6458fae]
+- Updated dependencies [cf6b917]
+- Updated dependencies [a685953]
+  - @cloudflare/kumo@1.18.0
+
 ## 1.3.16
 
 ### Patch Changes

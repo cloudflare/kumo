@@ -57,7 +57,7 @@ const wpThemeStyles = `
 
   /* WP borders — very subtle gray */
   --color-kumo-line: #c3c4c7;
-  --color-kumo-ring: #2271b1;
+  --color-kumo-hairline: #2271b1;
 
   /* WP text hierarchy */
   --text-color-kumo-default: #1d2327;

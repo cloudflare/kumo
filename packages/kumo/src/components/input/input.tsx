@@ -29,7 +29,7 @@ export const KUMO_INPUT_VARIANTS = {
   },
   variant: {
     default: {
-      classes: "focus:ring-kumo-ring",
+      classes: "focus:ring-kumo-hairline",
       description: "Default input appearance",
     },
     error: {
@@ -114,8 +114,8 @@ export function inputVariants({
     // Apply variant styles from KUMO_INPUT_VARIANTS
     KUMO_INPUT_VARIANTS.variant[variant].classes,
     // Focus state handling
-    parentFocusIndicator && "focus-within:ring-kumo-ring",
-    focusIndicator && "focus:ring-kumo-ring",
+    parentFocusIndicator && "focus-within:ring-kumo-hairline",
+    focusIndicator && "focus:ring-kumo-hairline",
   );
 }
 

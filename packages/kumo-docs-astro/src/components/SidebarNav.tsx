@@ -192,7 +192,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     <>
       <button
         onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-ring"
+        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline"
       >
         <MagnifyingGlassIcon size={16} className="shrink-0" />
         <span>Search...</span>

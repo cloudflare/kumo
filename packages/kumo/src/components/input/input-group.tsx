@@ -69,7 +69,7 @@ function Root({
           "flex w-full gap-0 border-0 px-0",
           isIndividualFocus
             ? "isolate overflow-visible"
-            : "overflow-hidden shadow-xs ring ring-kumo-line focus-within:ring-kumo-ring",
+            : "overflow-hidden shadow-xs ring ring-kumo-line focus-within:ring-kumo-hairline",
           className,
         )}
       >

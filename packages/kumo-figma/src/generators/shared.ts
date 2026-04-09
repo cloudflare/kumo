@@ -54,7 +54,7 @@ export const VAR_NAMES = {
     brand: "color-kumo-brand",
     brandHover: "color-kumo-brand-hover",
     line: "color-kumo-line",
-    ring: "color-kumo-ring",
+    ring: "color-kumo-hairline",
     tipShadow: "color-kumo-tip-shadow",
     tipStroke: "color-kumo-tip-stroke",
     info: "color-kumo-info",

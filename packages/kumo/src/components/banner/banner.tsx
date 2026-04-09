@@ -10,19 +10,19 @@ export const KUMO_BANNER_VARIANTS = {
   variant: {
     default: {
       classes:
-        "bg-kumo-info/30 border-kumo-info-tint/50 text-kumo-info selection:bg-kumo-info-tint",
+        "bg-kumo-info-tint/30 border-kumo-info/50 text-kumo-info selection:bg-kumo-info",
       iconClasses: "text-kumo-info",
       description: "Informational banner for general messages",
     },
     alert: {
       classes:
-        "bg-kumo-warning/15 border-kumo-warning-tint/50 text-kumo-warning selection:bg-kumo-warning-tint",
+        "bg-kumo-warning-tint/15 border-kumo-warning/50 text-kumo-warning selection:bg-kumo-warning",
       iconClasses: "text-kumo-warning",
       description: "Warning banner for cautionary messages",
     },
     error: {
       classes:
-        "bg-kumo-danger/15 border-kumo-danger-tint/50 text-kumo-danger selection:bg-kumo-danger-tint",
+        "bg-kumo-danger-tint/15 border-kumo-danger/50 text-kumo-danger selection:bg-kumo-danger",
       iconClasses: "text-kumo-danger",
       description: "Error banner for critical issues",
     },

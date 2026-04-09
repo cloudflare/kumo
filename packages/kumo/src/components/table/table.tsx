@@ -228,7 +228,7 @@ const TableResizeHandle = forwardRef<
         "m-0 bg-kumo-base p-0", // Override the stratus button styles
       )}
     >
-      <span className="h-5 w-[2px] rounded bg-kumo-ring" />
+      <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
     </button>
   );
 });

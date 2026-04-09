@@ -22,6 +22,10 @@ import {
   SelectLoadingDataDemo,
   SelectMultipleDemo,
   SelectComplexDemo,
+  SelectDisabledOptionsDemo,
+  SelectDisabledItemsDemo,
+  SelectGroupedDemo,
+  SelectGroupedWithDisabledDemo,
   SelectLongListDemo,
 } from "~/components/demos/SelectDemo";
 
@@ -231,6 +235,65 @@ export default function Example() {
   </ComponentExample>
 </ComponentSection>
 
+{/* Disabled Options */}
+
+<ComponentSection>
+  <Heading level={3}>Disabled Options</Heading>
+  <p>
+    Options can be disabled with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> prop.
+    Disabled options are greyed out and cannot be selected.
+  </p>
+
+  <ComponentExample demo="SelectDisabledOptionsDemo">
+    <SelectDisabledOptionsDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Disabled Items via Prop */}
+
+<ComponentSection>
+  <Heading level={3}>Disabled Items (via items prop)</Heading>
+  <p>
+    The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> object-map prop
+    accepts descriptor objects with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> alongside
+    plain string values.
+  </p>
+
+  <ComponentExample demo="SelectDisabledItemsDemo">
+    <SelectDisabledItemsDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Grouped Options */}
+
+<ComponentSection>
+  <Heading level={3}>Grouped Options</Heading>
+  <p>
+    Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>,{" "}
+    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.GroupLabel</code>, and{" "}
+    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Separator</code> to
+    organize options under labeled headers with visual dividers.
+  </p>
+
+  <ComponentExample demo="SelectGroupedDemo">
+    <SelectGroupedDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Groups with Disabled */}
+
+<ComponentSection>
+  <Heading level={3}>Groups with Disabled Options</Heading>
+  <p>
+    Combine groups, separators, and disabled options with info tooltips to
+    clearly separate available and unavailable choices.
+  </p>
+
+  <ComponentExample demo="SelectGroupedWithDisabledDemo">
+    <SelectGroupedWithDisabledDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
 {/* Long List - Test scrolling behavior */}
 
 <ComponentSection>
@@ -252,6 +315,15 @@ export default function Example() {
   <Heading level={3}>Select</Heading>
   <PropsTable component="Select" />
 
-  <Heading level={3}>Select.Option</Heading>
-  <PropsTable component="Select.Option" />
+<Heading level={3}>Select.Option</Heading>
+<PropsTable component="Select.Option" />
+
+  <Heading level={3}>Select.Group</Heading>
+  <p>Groups related options together with an accessible <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="group"</code>. Use with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.GroupLabel</code> to provide a visible heading.</p>
+
+  <Heading level={3}>Select.GroupLabel</Heading>
+  <p>A visible heading for a <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>. Automatically associated with its parent group for accessibility.</p>
+
+  <Heading level={3}>Select.Separator</Heading>
+  <p>A visual divider line between option groups. Renders with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="separator"</code>.</p>
 </ComponentSection>

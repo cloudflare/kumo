@@ -1,6 +1,6 @@
 import { Select as SelectBase } from "@base-ui/react/select";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
-import { useId } from "react";
+import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
@@ -63,8 +63,36 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants(),
     "justify-between font-normal",
-    "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
+    "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
   );
+}
+
+/**
+ * Shape for items that carry extra metadata (disabled state, tooltip).
+ * Plain `ReactNode` values are still supported for backward compatibility.
+ */
+export interface SelectItemDescriptor {
+  /** Display label for the option. */
+  label: ReactNode;
+  /** When `true`, the option cannot be selected. */
+  disabled?: boolean;
+}
+
+/** Value type accepted by the `items` object-map prop. */
+export type SelectItemValue = ReactNode | SelectItemDescriptor;
+
+function isItemDescriptor(
+  value: SelectItemValue,
+): value is SelectItemDescriptor {
+  if (value === null || value === undefined) return false;
+  if (typeof value !== "object" || Array.isArray(value)) return false;
+  // React elements have $$typeof — exclude them
+  if ("$$typeof" in (value as object)) return false;
+  // Promises are not descriptors
+  if (value instanceof Promise) return false;
+  // Must have a defined label (not just the key existing)
+  const candidate = value as unknown as Record<string, unknown>;
+  return "label" in candidate && candidate.label !== undefined;
 }
 
 /**
@@ -74,16 +102,16 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
  */
 function normalizeItems<T>(
   items:
-    | Record<string, ReactNode>
+    | Record<string, SelectItemValue>
     | ReadonlyArray<{ label: ReactNode; value: T }>,
 ): ReadonlyArray<{ label: ReactNode; value: T }> {
   if (Array.isArray(items)) {
     return items;
   }
   // Convert object map to array format
-  return Object.entries(items).map(([key, label]) => ({
+  return Object.entries(items).map(([key, entry]) => ({
     value: key as T,
-    label,
+    label: isItemDescriptor(entry) ? entry.label : entry,
   }));
 }
 
@@ -94,32 +122,70 @@ function normalizeItems<T>(
  */
 function renderOptionsFromItems<T>(
   items:
-    | Record<string, ReactNode>
+    | Record<string, SelectItemValue>
     | ReadonlyArray<{ label: ReactNode; value: T }>,
 ): ReactNode {
   const normalizedItems = normalizeItems(items);
 
+  // Build a lookup for disabled metadata from object-map items.
+  // Object-map keys are always strings (Record<string, ...>), so the lookup
+  // uses string keys. The array form ({ label, value }[]) does not support
+  // descriptors — consumers should use the children API for that case.
+  const disabledLookup = new Map<string, { disabled?: boolean }>();
+  if (!Array.isArray(items)) {
+    for (const [key, entry] of Object.entries(items)) {
+      if (isItemDescriptor(entry)) {
+        disabledLookup.set(key, { disabled: entry.disabled });
+      }
+    }
+  }
+
   // Filter out null values and render options
   return normalizedItems
     .filter((item) => item.value !== null)
-    .map((item, index) => (
-      <Option
-        key={typeof item.value === "string" ? item.value : `option-${index}`}
-        value={item.value}
-      >
-        {item.label}
-      </Option>
-    ));
+    .map((item, index) => {
+      const key =
+        typeof item.value === "string" ? item.value : `option-${index}`;
+      // When items is an object-map, value is always a string key from
+      // Object.entries. When items is an array, disabledLookup is empty.
+      const meta =
+        typeof item.value === "string"
+          ? disabledLookup.get(item.value)
+          : undefined;
+
+      return (
+        <Option key={key} value={item.value} disabled={meta?.disabled}>
+          {item.label}
+        </Option>
+      );
+    });
 }
 
-type SelectPropsGeneric<
-  T,
-  Multiple extends boolean | undefined = false,
-> = SelectBase.Root.Props<T, Multiple> &
+type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
+  SelectBase.Root.Props<T, Multiple>,
+  "items"
+> &
   KumoSelectVariantsProps & {
     multiple?: Multiple;
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
     className?: string;
+    /**
+     * Data structure of items rendered in the popup.
+     * Accepts a plain object map (`{ key: "Label" }`) or an array of `{ label, value }`.
+     *
+     * Object-map values can be a `ReactNode` (backward-compatible) **or** a
+     * `SelectItemDescriptor` for extra metadata:
+     *
+     * ```tsx
+     * items={{
+     *   apple: "Apple",
+     *   banana: { label: "Banana", disabled: true, disabledReason: "Out of season" },
+     * }}
+     * ```
+     */
+    items?:
+      | Record<string, SelectItemValue>
+      | ReadonlyArray<{ label: ReactNode; value: T }>;
     /**
      * Label content for the select.
      * When provided, enables the Field wrapper with a visible label.
@@ -212,6 +278,20 @@ export interface SelectProps {
 }
 
 /**
+ * Select.Option component props.
+ */
+export interface SelectOptionProps {
+  /** The option content. */
+  children: ReactNode;
+  /** The value associated with this option. */
+  value: unknown;
+  /** When `true`, the option cannot be selected. */
+  disabled?: boolean;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+}
+
+/**
  * Dropdown for selecting a value from a list of options.
  * Wraps Base UI Select with Kumo styling and optional Field integration.
  *
@@ -274,9 +354,12 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   const renderedChildren =
     children ?? (props.items ? renderOptionsFromItems(props.items) : null);
 
+  // Exclude Kumo-extended `items` from Base UI spread — we pass `normalizedItems` instead
+  const { items: _items, ...baseProps } = props;
+
   const selectControl = (
     <SelectBase.Root
-      {...props}
+      {...baseProps}
       items={normalizedItems}
       disabled={loading || props.disabled}
     >
@@ -284,7 +367,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         className={cn(
           buttonVariants(),
           "justify-between font-normal",
-          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100",
+          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
           props.disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -311,7 +394,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             className={cn(
               "flex flex-col",
               "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
-              "rounded-lg shadow-lg ring ring-kumo-ring",
+              "rounded-lg shadow-lg ring ring-kumo-hairline",
               "min-w-[calc(var(--anchor-width)+3px)] py-1.5",
             )}
           >
@@ -383,13 +466,22 @@ export function Select<T, Multiple extends boolean | undefined = false>({
 type OptionProps<T> = {
   children: ReactNode;
   value: T;
+  /** When `true`, the option cannot be selected. */
+  disabled?: boolean;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
 };
 
-function Option<T>({ children, value }: OptionProps<T>) {
+function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
   return (
     <SelectBase.Item
       value={value}
-      className="group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
+      disabled={disabled}
+      className={cn(
+        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint",
+        "data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+        className,
+      )}
     >
       <SelectBase.ItemText>{children}</SelectBase.ItemText>
       <SelectBase.ItemIndicator>
@@ -399,5 +491,102 @@ function Option<T>({ children, value }: OptionProps<T>) {
   );
 }
 
+// --- Select.Group ---
+
+type GroupProps = {
+  children: ReactNode;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+};
+
+/**
+ * Groups related options together with an accessible `role="group"`.
+ * Use with `Select.GroupLabel` to provide a visible heading for the group.
+ *
+ * @example
+ * ```tsx
+ * <Select.Group>
+ *   <Select.GroupLabel>Fruits</Select.GroupLabel>
+ *   <Select.Option value="apple">Apple</Select.Option>
+ * </Select.Group>
+ * ```
+ */
+const Group = forwardRef<HTMLDivElement, GroupProps>(
+  ({ children, className }, ref) => (
+    <SelectBase.Group ref={ref} className={cn(className)}>
+      {children}
+    </SelectBase.Group>
+  ),
+);
+Group.displayName = "Select.Group";
+
+// --- Select.GroupLabel ---
+
+type GroupLabelProps = {
+  children: ReactNode;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+};
+
+/**
+ * A visible heading for a `Select.Group`.
+ * Automatically associated with its parent group for accessibility.
+ *
+ * @example
+ * ```tsx
+ * <Select.Group>
+ *   <Select.GroupLabel>Available</Select.GroupLabel>
+ *   <Select.Option value="a">Option A</Select.Option>
+ * </Select.Group>
+ * ```
+ */
+const GroupLabel = forwardRef<HTMLDivElement, GroupLabelProps>(
+  ({ children, className }, ref) => (
+    <SelectBase.GroupLabel
+      ref={ref}
+      className={cn(
+        "px-3.5 py-1.5 text-sm font-semibold text-kumo-subtle",
+        className,
+      )}
+    >
+      {children}
+    </SelectBase.GroupLabel>
+  ),
+);
+GroupLabel.displayName = "Select.GroupLabel";
+
+// --- Select.Separator ---
+
+type SeparatorProps = {
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+};
+
+/**
+ * A visual divider between option groups.
+ *
+ * @example
+ * ```tsx
+ * <Select.Option value="a">Option A</Select.Option>
+ * <Select.Separator />
+ * <Select.Option value="b">Option B</Select.Option>
+ * ```
+ */
+const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
+  ({ className }, ref) => (
+    <SelectBase.Separator
+      ref={ref}
+      className={cn("-mx-1 my-1 h-px bg-kumo-line", className)}
+    />
+  ),
+);
+Separator.displayName = "Select.Separator";
+
+// --- Assign sub-components ---
+
 Select.Option = Option;
+Select.Group = Group;
+Select.GroupLabel = GroupLabel;
+Select.Separator = Separator;
+
 (Select.Option as { displayName?: string }).displayName = "Select.Option";

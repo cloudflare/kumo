@@ -62,6 +62,12 @@ export interface LoaderProps {
    * @default "base"
    */
   size?: KumoLoaderSize | number;
+  /**
+   * Accessible label for the loader, announced by screen readers.
+   * Pass a translated string for internationalization.
+   * @default "Loading"
+   */
+  "aria-label"?: string;
 }
 
 /**
@@ -75,6 +81,7 @@ export interface LoaderProps {
 export const Loader = ({
   className,
   size = KUMO_LOADER_DEFAULT_VARIANTS.size,
+  "aria-label": ariaLabel = "Loading",
 }: LoaderProps) => {
   const sizeValue = loaderVariants({ size });
   return (
@@ -86,6 +93,8 @@ export const Loader = ({
       stroke="currentColor"
       className={className}
       style={{ height: sizeValue, width: sizeValue }}
+      role="status"
+      aria-label={ariaLabel}
     >
       <circle
         cx="12"

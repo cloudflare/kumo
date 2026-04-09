@@ -1,5 +1,58 @@
 # @cloudflare/kumo
 
+## 1.18.0
+
+### Minor Changes
+
+- b1e51a8: Add Enter key navigation to Pagination page number input and new `pageSelector` prop for dropdown mode
+  - The page number input in `Pagination.Controls` now navigates on Enter key press (previously only on blur)
+  - New `pageSelector` prop on `Pagination.Controls`: set to `"dropdown"` to render a Select dropdown instead of a text input for page selection
+
+- e676f0b: Add disabled option support, groups, group labels, and separators to Select
+  - `Select.Option` now accepts `disabled` and `className` props
+  - New `Select.Group` and `Select.GroupLabel` sub-components for organizing options under labeled headers
+  - New `Select.Separator` sub-component for visual dividers between groups
+  - The `items` object-map prop now accepts `SelectItemDescriptor` values with `disabled` metadata
+
+- a685953: Expose `delay` and `closeDelay` props on Tooltip component to control open and close timing. These props are forwarded to the underlying Base UI Trigger component.
+
+### Patch Changes
+
+- dacf445: Input and InputArea now automatically apply error styling when the `error` prop is truthy. You no longer need to set `variant="error"` separately - just pass an error message and the styling is applied automatically. The `variant="error"` prop is now deprecated but still works for backwards compatibility.
+- 44c26f5: Adjust semantic tint usage for status/error ring styles across core form and feedback components.
+  - Update background styles in `Badge` and `Banner` components to use `*-tint` tokens.
+  - Update `kumo-danger` to a darker token to improve a11y contrast.
+  - Update error ring styling in form components to use semantic tokens (now darker with token swap).
+  - Removed `text-color-badge-red-subtle` token in replacement of the `danger` token.
+  - Update theme generator color mappings used by these tints to improve visual consistency.
+
+- 2bb8628: Fix CodeBlock crash when an unsupported `lang` value is passed at runtime. The `codeVariants()` function now uses optional chaining with a nullish coalescing fallback to the default language, matching the defensive pattern already used by `switchVariants()` and `badgeVariants()`.
+- e8bcf6f: fix(select): use ring-kumo-hairline token in Select popup (missed in PR #355)
+- c3beded: Fix Select popup scrolling and height behavior; align popup/list structure with Base UI. Split popup into frame (Popup) and scroll container (List) to match Combobox pattern and fix touch scroll on long lists.
+- 4a2fb02: fix(loader): add ARIA attributes for screen reader accessibility
+
+  Added `role="status"` and `aria-label="Loading"` to the Loader SVG component to make it accessible to screen readers. This resolves a WCAG 2.1 SC 4.1.3 (Status Messages) violation where assistive technology users received no indication that content was loading.
+
+- 5e4c7b1: Refine badge semantics/fill styling and banner tone updates
+  - Rework `Badge` variant model to prioritize semantic variants (`primary`, `secondary`, `error`, `warning`, `success`, `info`) with updated descriptions and `primary` as default.
+  - Keep token color variants for product-specific use cases while updating class mappings so semantic and token variants are distinct.
+  - Slight updates to token color variants to meet a11y contrast requirements.
+  - Update token color variants by replacing `yellow` with `purple` since `yellow` doesn't meet a11y contrast requirements, and keeping docs/demo examples in sync.
+  - Update badge docs demos/content to focus on primary semantic badges and a consolidated "other variants" section.
+  - Adjust banner variant surfaces (`default`, `alert`, `error`) to stronger tinted backgrounds and borders.
+  - Update theme generator badge/semantic token mappings and regenerate `theme-kumo.css` to match the new badge color system.
+
+- 6458fae: Fix Switch label click not toggling when a custom `id` prop is provided
+
+  The `id` was not being forwarded to Base UI's `Switch.Root`, causing a mismatch between the label's `htmlFor` and the button's actual `id`.
+
+- cf6b917: Align semantic token documentation and docs presentation updates.
+  - Update `colors.mdx` token documentation structure.
+  - Replaced `kumo-ring` with `kumo-hairline` for border/ring colors and all its instances in kumo components and docs.
+  - Sync `packages/kumo/ai/USAGE.md` token reference categories and descriptions with the docs token guide.
+  - Adjust the typo in the recessed dark token value in theme generator config and regenerate `theme-kumo.css`.
+  - Updated `kumo-fill-hover` token value from `neutral-700` to `neutral-800`
+
 ## 1.17.0
 
 ### Minor Changes

@@ -73,46 +73,52 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 
 ## Semantic Token Reference
 
+### Surface Hierarchy
+| Token | Purpose |
+|-------|---------|
+| `bg-kumo-canvas` | The outermost page background — sits behind everything |
+| `bg-kumo-base` | Default component background |
+| `bg-kumo-elevated` | Slightly elevated surface, e.g. `LayerCard.Secondary` |
+| `bg-kumo-recessed` | Recessed surface with a subtly darker fill, e.g. segmented `Tabs` background |
+| `bg-kumo-tint` | Subtle tinted background for tables or hover states |
+| `bg-kumo-contrast` | High-contrast, inverted background |
+
+### Brand
+| Token | Purpose |
+|-------|---------|
+| `bg-kumo-brand` | Primary brand background |
+| `bg-kumo-brand-hover` | Hover state for brand backgrounds |
+
+### Semantic Status Colors
+| Token | Purpose |
+|-------|---------|
+| `bg-kumo-info` | Info indicator (icon, dot, bar) |
+| `bg-kumo-success` | Success indicator |
+| `bg-kumo-warning` | Warning indicator |
+| `bg-kumo-danger` | Error/destructive indicator |
+
+Use the solid token on icons, status dots, and progress fills. Banners and badges use the solid fills with a reduced opacity.
+
 ### Text Colors
 | Token | Purpose |
 |-------|---------|
-| `text-kumo-default` | Primary text |
-| `text-kumo-inverse` | Inverse text (on dark backgrounds) |
-| `text-kumo-strong` | Secondary/muted-strong text |
-| `text-kumo-subtle` | Muted/placeholder text |
+| `text-kumo-default` | Primary body text |
+| `text-kumo-strong` | Secondary text with slightly less contrast than default |
+| `text-kumo-subtle` | Muted text for descriptions, captions, or secondary labels |
+| `text-kumo-inactive` | Disabled or inactive text |
+| `text-kumo-placeholder` | Placeholder text in inputs |
+| `text-kumo-inverse` | Text intended for use on high-contrast or inverted backgrounds |
 | `text-kumo-link` | Link text |
+| `text-kumo-info` | Info-colored text |
+| `text-kumo-success` | Success-colored text |
+| `text-kumo-warning` | Warning-colored text |
 | `text-kumo-danger` | Error/destructive text |
-| `text-kumo-success` | Success text |
-| `text-kumo-warning` | Warning text |
-| `text-kumo-brand` | Brand-colored text |
 
-### Background Colors
+### Borders & Rings
 | Token | Purpose |
 |-------|---------|
-| `bg-kumo-surface` | Page background |
-| `bg-kumo-base` | Component background |
-| `bg-kumo-elevated` | Slightly elevated surface |
-| `bg-kumo-recessed` | Recessed surface with a darker colour |
-| `bg-kumo-overlay` | Overlay/hover background |
-| `bg-kumo-contrast` | High-contrast background (inverted) |
-| `bg-kumo-control` | Form control background |
-| `bg-kumo-fill` | Muted fill (borders, badges) |
-| `bg-kumo-fill-hover` | Hover state for fills |
-| `bg-kumo-tint` | Subtle tinted background |
-| `bg-kumo-interact` | Interactive element background |
-| `bg-kumo-brand` | Brand primary background |
-| `bg-kumo-brand-hover` | Brand hover background |
-| `bg-kumo-danger` | Error/destructive background |
-| `bg-kumo-success` | Success background |
-| `bg-kumo-warning` | Warning background |
-
-### Border/Ring Colors
-| Token | Purpose |
-|-------|---------|
-| `border-kumo-fill` | Default border |
-| `border-kumo-line` | Subtle separator line |
-| `ring-kumo-line` | Default ring (input borders) |
-| `ring-kumo-ring` | Focus ring |
+| `kumo-hairline` | A border/ring color to distinguish between flat surfaces where no shadow is present (i.e. `LayerCard`). |
+| `kumo-line` | A thicker border/ring color that defines the edge of an elevated surface alongside a shadow. |
 
 ## Icons
 
