@@ -767,7 +767,7 @@ function PanelInput({
         placeholder={placeholder}
         className={cn(
           "flex-1 border-none bg-transparent text-base kumo-input-placeholder",
-          "outline-none focus:ring-kumo-focus focus:ring-1",
+          "outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px]",
           className,
         )}
         onKeyDown={handleKeyDown}

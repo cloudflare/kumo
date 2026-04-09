@@ -14,7 +14,7 @@ export function collapsibleVariants(_props: KumoCollapsibleVariantsProps = {}) {
     "bg-transparent border-none shadow-none p-0 m-0",
     // Base styles for the trigger
     "flex cursor-pointer items-center gap-1 text-sm text-kumo-link select-none",
-    "focus:outline-none kumo-focus-visible-emphasis rounded-sm",
+    "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand rounded-sm",
   );
 }
 
