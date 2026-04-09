@@ -78,11 +78,11 @@ function getTrackColors(
   }
   return isNeutral
     ? checked
-      ? "bg-kumo-base ring-kumo-line"
-      : "bg-kumo-elevated ring-kumo-line"
+      ? "bg-[color:light-dark(var(--color-neutral-500),var(--color-kumo-base))] ring-[color:light-dark(var(--color-neutral-600),var(--color-neutral-700))]"
+      : "bg-[color:light-dark(var(--color-neutral-150),var(--color-kumo-base))] ring-kumo-line"
     : checked
       ? "bg-blue-500 ring-blue-600"
-      : "bg-kumo-recessed ring-kumo-line";
+      : "bg-[color:light-dark(var(--color-neutral-200),var(--color-neutral-700))] ring-[color:light-dark(var(--color-neutral-300),var(--color-neutral-600))]";
 }
 
 function getThumbColors(
@@ -95,11 +95,11 @@ function getThumbColors(
   }
   return isNeutral
     ? checked
-      ? "bg-kumo-base ring-kumo-hairline"
-      : "bg-kumo-base ring-kumo-line"
+      ? "bg-kumo-base ring-[color:light-dark(var(--color-neutral-600),var(--color-neutral-700))]"
+      : "bg-kumo-base ring-[color:light-dark(var(--color-neutral-300),var(--color-neutral-850))]"
     : checked
-      ? "bg-kumo-base ring-blue-600"
-      : "bg-kumo-base ring-kumo-line";
+      ? "bg-kumo-base ring-[color:light-dark(var(--color-blue-600),var(--color-blue-500))]"
+      : "bg-kumo-base ring-[color:light-dark(var(--color-neutral-300),var(--color-neutral-850))]";
 }
 
 const SwitchGroupContext = createContext<{ controlFirst: boolean }>({
