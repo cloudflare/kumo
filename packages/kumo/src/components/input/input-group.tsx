@@ -68,8 +68,8 @@ function Root({
           inputVariants({ size, parentFocusIndicator: !isIndividualFocus }),
           "flex w-full gap-0 border-0 px-0",
           isIndividualFocus
-            ? "isolate overflow-visible"
-            : "overflow-hidden shadow-xs ring ring-kumo-line focus-within:ring-kumo-hairline",
+            ? "isolate overflow-visible"  
+            : "overflow-hidden shadow-xs ring ring-kumo-line focus-within:ring-kumo-focus/50",
           className,
         )}
       >
@@ -110,12 +110,12 @@ function Input(props: InputProps) {
       className={cn(
         "flex h-full items-center rounded-none border-0 bg-kumo-base font-sans",
         "grow px-2",
-        isIndividualFocus
-          ? "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline"
-          : "focus:border-kumo-fill",
-        props.className,
-      )}
-    />
+          isIndividualFocus
+            ? "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline-none focus:ring-kumo-focus/50"
+            : "focus:border-kumo-focus/50 focus:ring-kumo-focus/50",
+            props.className,
+        )}
+      />
   );
 }
 
@@ -149,13 +149,13 @@ function Button({
     <ButtonExternal
       {...props}
       size={context?.size}
-      className={cn(
-        "h-full! rounded-none disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
-        isIndividualFocus &&
-          "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline",
-        className,
-      )}
-    >
+        className={cn(
+          "h-full! rounded-none disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
+          isIndividualFocus &&
+            "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:ring-kumo-focus/50 focus-visible:ring-kumo-focus focus-visible:ring-2",
+          className,
+        )}
+      >
       {children}
     </ButtonExternal>
   );

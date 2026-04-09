@@ -27,7 +27,7 @@ export const KUMO_SELECT_STYLING = {
     height: 36, // h-9
     paddingX: 12, // px-3
     borderRadius: 8, // rounded-lg
-    background: "color-secondary",
+    background: "bg-kumo-elevated",
     text: "text-color-surface",
     ring: "color-border",
     fontSize: 16, // text-base
@@ -42,8 +42,8 @@ export const KUMO_SELECT_STYLING = {
     check: { name: "ph-check", size: 20 },
   },
   popup: {
-    background: "color-secondary",
-    ring: "color-border",
+    background: "bg-kumo-elevated",
+    ring: "border-kumo-line",
     borderRadius: 8, // rounded-lg
     padding: 6, // p-1.5
   },
@@ -63,7 +63,7 @@ export function selectVariants(_props: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants(),
     "justify-between font-normal",
-    "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
+    "focus:opacity-100 focus:ring-kumo-focus/50 *:in-focus:opacity-100",
   );
 }
 
@@ -365,9 +365,9 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     >
       <SelectBase.Trigger
         className={cn(
-          buttonVariants(),
+          buttonVariants({ variant: "secondary" }),
           "justify-between font-normal",
-          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
+          "focus:opacity-100 focus:ring-kumo-focus/50 *:in-focus:opacity-100",
           props.disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -394,7 +394,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             className={cn(
               "flex flex-col",
               "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
-              "rounded-lg shadow-lg ring ring-kumo-hairline",
+              "rounded-lg shadow-lg ring ring-kumo-line",
               "min-w-[calc(var(--anchor-width)+3px)] py-1.5",
             )}
           >
@@ -478,7 +478,7 @@ function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
       value={value}
       disabled={disabled}
       className={cn(
-        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint",
+        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-focus data-highlighted:bg-kumo-tint",
         "data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,
       )}
