@@ -67,6 +67,41 @@ export function switchVariants({
 export type SwitchSize = KumoSwitchSize;
 export type SwitchVariant = KumoSwitchVariant;
 
+// Shared color helper functions
+function getTrackColors(
+  disabled: boolean | undefined,
+  isNeutral: boolean,
+  checked: boolean,
+): string {
+  if (disabled) {
+    return "bg-neutral-100 ring-neutral-200";
+  }
+  return isNeutral
+    ? checked
+      ? "bg-kumo-base ring-kumo-line"
+      : "bg-kumo-base ring-kumo-line"
+    : checked
+      ? "bg-kumo-brand ring-kumo-brand"
+      : "bg-kumo-recessed ring-kumo-line";
+}
+
+function getThumbColors(
+  disabled: boolean | undefined,
+  isNeutral: boolean,
+  checked: boolean,
+): string {
+  if (disabled) {
+    return "bg-neutral-300 ring-neutral-300";
+  }
+  return isNeutral
+    ? checked
+      ? "ring-kumo-hairline bg-kumo-base"
+      : "bg-kumo-base ring-kumo-line"
+    : checked
+      ? "ring-kumo-brand bg-kumo-base"
+      : "bg-kumo-base ring-kumo-line";
+}
+
 const SwitchGroupContext = createContext<{ controlFirst: boolean }>({
   controlFirst: true,
 });
@@ -163,35 +198,16 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           };
           const s = sizeStyles[size];
 
-          // Resolved: Improved logic with main branch styling updates
-          const getTrackColors = () => {
-            if (disabled) {
-              return "bg-neutral-100 ring-neutral-200 opacity-50";
-            }
-            return isNeutral
-              ? state.checked
-                ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
-              : state.checked
-                ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
-                : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
-          };
-
-          const getThumbColors = () => {
-            if (disabled) {
-              return "bg-neutral-300 ring-neutral-300";
-            }
-            return isNeutral
-              ? state.checked
-                ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
-                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
-              : state.checked
-                ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
-                : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
-          };
-
-          const trackColors = getTrackColors();
-          const thumbColors = getThumbColors();
+          const trackColors = getTrackColors(
+            disabled,
+            isNeutral,
+            state.checked,
+          );
+          const thumbColors = getThumbColors(
+            disabled,
+            isNeutral,
+            state.checked,
+          );
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
@@ -216,7 +232,8 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             state.checked ? s.slide : "left-0",
           );
 
-          const role = (props.role as string | undefined) ?? baseRole ?? "switch";
+          const role =
+            (props.role as string | undefined) ?? baseRole ?? "switch";
           const checkedA11yProps =
             role === "switch"
               ? { "aria-checked": state.checked }
@@ -318,15 +335,15 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             const getTrackColors = () => {
               if (disabled) {
-                return "bg-neutral-100 ring-neutral-200 opacity-50";
+                return "bg-neutral-100 ring-neutral-200";
               }
               return isNeutral
                 ? state.checked
-                  ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-                  : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+                  ? "bg-kumo-base ring-kumo-line"
+                  : "bg-kumo-base ring-kumo-line"
                 : state.checked
-                  ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
-                  : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
+                  ? "bg-kumo-brand ring-kumo-brand"
+                  : "bg-kumo-recessed ring-kumo-line";
             };
 
             const getThumbColors = () => {
@@ -335,11 +352,11 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               }
               return isNeutral
                 ? state.checked
-                  ? "ring-neutral-600 dark:ring-neutral-200 bg-kumo-base dark:bg-neutral-400"
-                  : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700"
+                  ? "ring-kumo-hairline bg-kumo-base"
+                  : "bg-kumo-base ring-kumo-line"
                 : state.checked
-                  ? "ring-blue-600 dark:ring-blue-100 bg-kumo-base dark:bg-blue-300"
-                  : "bg-kumo-base dark:bg-neutral-850 ring-neutral-300 dark:ring-neutral-700";
+                  ? "ring-kumo-brand bg-kumo-base"
+                  : "bg-kumo-base ring-kumo-line";
             };
 
             const trackColors = getTrackColors();
