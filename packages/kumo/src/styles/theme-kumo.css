@@ -25,7 +25,7 @@
 
   --text-color-kumo-subtle: light-dark(
     var(--color-neutral-500, oklch(55.6% 0 0)),
-    var(--color-kumo-neutral-50, oklch(97.5% 0 0))
+    var(--color-neutral-400, oklch(70.8% 0 0))
   );
 
   --text-color-kumo-inactive: light-dark(
@@ -351,7 +351,7 @@
     --text-color-kumo-default: var(--color-neutral-100, oklch(97% 0 0));
     --text-color-kumo-inverse: var(--color-neutral-900, oklch(20.5% 0 0));
     --text-color-kumo-strong: var(--color-neutral-400, oklch(70.8% 0 0));
-    --text-color-kumo-subtle: var(--color-kumo-neutral-50, oklch(97.5% 0 0));
+    --text-color-kumo-subtle: var(--color-neutral-400, oklch(70.8% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-600, oklch(70.8% 0 0));
     --text-color-kumo-placeholder: var(--color-neutral-500, oklch(55.6% 0 0));
     --text-color-kumo-brand: #f6821f;
