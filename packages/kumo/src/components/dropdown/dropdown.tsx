@@ -425,25 +425,34 @@ DropdownMenuRadioItemIndicator.displayName = "DropdownMenuRadioItemIndicator";
 /**
  * Custom Trigger that converts a single child element to the `render` prop
  * to avoid nested button issues with base-ui's Menu.Trigger.
+ *
+ * When an explicit `render` prop is provided, children are passed through
+ * to the rendered element.
  */
 const DropdownMenuTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
 >(({ children, render, ...props }, ref) => {
-  // If render prop is provided, use it directly
-  // Otherwise, convert single child element to render prop
+  // If render prop is explicitly provided, use it and pass children through
+  if (render) {
+    return (
+      <DropdownMenuPrimitive.Trigger ref={ref} {...props} render={render}>
+        {children}
+      </DropdownMenuPrimitive.Trigger>
+    );
+  }
+
+  // Otherwise, auto-promote single child element to render prop
   const childElement = React.isValidElement(children) ? children : null;
-  const effectiveRender = render ?? childElement;
 
   return (
     <DropdownMenuPrimitive.Trigger
       ref={ref}
       {...props}
-      {...(effectiveRender && {
-        render: effectiveRender as React.ReactElement<Record<string, unknown>>,
+      {...(childElement && {
+        render: childElement as React.ReactElement<Record<string, unknown>>,
       })}
     >
-      {/* Only pass children if not using as render prop */}
       {childElement ? undefined : children}
     </DropdownMenuPrimitive.Trigger>
   );
