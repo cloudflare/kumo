@@ -48,6 +48,9 @@ export type KumoTableStickyColumn = keyof typeof KUMO_TABLE_VARIANTS.sticky;
  *   - `z-0` — normal cells (default)
  *   - `z-1` — sticky body cells (`<td>`)
  *   - `z-2` — sticky header cells (`<th>`) so they sit above sticky body cells
+ *
+ * Header cells use `:has()` to detect if they're in a compact header (which has
+ * `bg-kumo-elevated`) and adjust both the background and gradient fade colors.
  */
 const stickyColumnClasses = (
   side: KumoTableStickyColumn,
@@ -55,15 +58,30 @@ const stickyColumnClasses = (
   element: "head" | "cell",
 ) => {
   const base = KUMO_TABLE_VARIANTS.sticky[side].classes;
-  const fade =
-    side === "right"
-      ? // Gradient fades from transparent on the left to opaque on the right
-        "before:pointer-events-none before:absolute before:inset-y-0 before:-left-6 before:w-6 before:bg-gradient-to-r before:from-transparent before:to-kumo-base"
-      : "before:pointer-events-none before:absolute before:inset-y-0 before:-right-6 before:w-6 before:bg-gradient-to-l before:from-transparent before:to-kumo-base";
-
   const z = element === "head" ? "z-2" : "z-1";
 
-  return cn(base, z, "bg-kumo-base", fade);
+  const fadePosition = side === "right" ? "before:-left-6" : "before:-right-6";
+  const fadeBase =
+    "before:pointer-events-none before:absolute before:inset-y-0 before:w-6";
+
+  if (element === "cell") {
+    // Body cells always use kumo-base
+    const fade =
+      side === "right"
+        ? "before:bg-gradient-to-r before:from-transparent before:to-kumo-base"
+        : "before:bg-gradient-to-l before:from-transparent before:to-kumo-base";
+    return cn(base, z, "bg-kumo-base", fadeBase, fadePosition, fade);
+  }
+
+  // Header cells: use kumo-base by default, kumo-elevated when in compact header
+  // The compact header applies a data attribute we can target with :has()
+  const bg = "bg-kumo-base group-data-[compact]/header:bg-kumo-elevated";
+  const fade =
+    side === "right"
+      ? "before:bg-gradient-to-r before:from-transparent before:to-kumo-base group-data-[compact]/header:before:to-kumo-elevated"
+      : "before:bg-gradient-to-l before:from-transparent before:to-kumo-base group-data-[compact]/header:before:to-kumo-elevated";
+
+  return cn(base, z, bg, fadeBase, fadePosition, fade);
 };
 
 export const KUMO_TABLE_DEFAULT_VARIANTS = {
@@ -133,14 +151,22 @@ const TableHeader = forwardRef<
     sticky?: boolean;
   }
 >(({ variant = "default", sticky, ...props }, ref) => {
+  const isCompact = variant === "compact";
   const className = cn(
-    variant === "compact" &&
-      "[&_th]:bg-kumo-elevated [&_th]:py-2 text-xs text-kumo-strong",
+    "group/header",
+    isCompact && "[&_th]:bg-kumo-elevated [&_th]:py-2 text-xs text-kumo-strong",
     sticky && "[&_th]:sticky [&_th]:top-0 [&_th]:z-1",
     props.className,
   );
 
-  return <thead ref={ref} {...props} className={className} />;
+  return (
+    <thead
+      ref={ref}
+      {...props}
+      className={className}
+      {...(isCompact && { "data-compact": "" })}
+    />
+  );
 });
 
 const TableHead = forwardRef<

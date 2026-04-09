@@ -14,6 +14,7 @@ import {
   DropdownBasicDemo,
   DropdownCheckboxDemo,
   DropdownNestedDemo,
+  DropdownAvatarTriggerDemo,
   DropdownLinkItemDemo,
 } from "~/components/demos/DropdownDemo";
 
@@ -94,6 +95,16 @@ export default function Example() {
 </p>
 <ComponentExample demo="DropdownNestedDemo">
   <DropdownNestedDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Custom Trigger with Avatar</Heading>
+<p>
+  Use the `render` prop to customize the trigger element while passing children
+  to render inside it. This is useful when you need a non-button trigger (like
+  an avatar) wrapped in an accessible button element.
+</p>
+<ComponentExample demo="DropdownAvatarTriggerDemo">
+  <DropdownAvatarTriggerDemo client:load />
 </ComponentExample>
 
 <Heading level={3}>Navigation Links</Heading>
