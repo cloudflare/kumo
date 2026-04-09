@@ -262,7 +262,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             value={value}
             disabled={disabled}
             className={cn(
-              "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring ring-2 focus:outline-none focus:ring-kumo-focus focus:ring-2 focus-visible:ring-kumo-focus focus-visible:ring-2",
+              "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring ring-2 focus:outline-none focus:ring-kumo-focus focus:ring-2 kumo-focus-visible-emphasis",
               variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
               !disabled &&
                 variant !== "error" &&
@@ -304,10 +304,10 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
-              "group-hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-kumo-focus focus-visible:ring-2 focus-visible:outline-offset-3",
+              "group-hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 kumo-focus-visible-emphasis focus-visible:outline-offset-3",
             !disabled &&
               variant === "error" &&
-              "focus:ring-kumo-focus focus:ring-2 focus-visible:ring-kumo-focus focus-visible:ring-2 focus-visible:outline-offset-3",
+              "focus:ring-kumo-focus focus:ring-2 kumo-focus-visible-emphasis focus-visible:outline-offset-3",
             "data-[checked]:bg-kumo-contrast",
           )}
         >

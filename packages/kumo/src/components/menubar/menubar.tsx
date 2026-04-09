@@ -46,7 +46,7 @@ const MenuOption = ({
     <Tooltip content={tooltip} asChild>
       <button
         className={cn(
-          "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-1 focus:outline-none focus:ring-kumo-focus/50 focus-visible:z-1 focus-visible:ring-kumo-focus focus-visible:ring-2",
+          "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-1 focus:outline-none focus:ring-kumo-focus/50 focus-visible:z-1 kumo-focus-visible-emphasis",
           {
             "z-2 bg-kumo-base shadow-xs transition-colors": isActive === id,
           },
