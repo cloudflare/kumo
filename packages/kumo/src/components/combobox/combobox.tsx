@@ -340,13 +340,14 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
         <XIcon size={iconStyles.iconSize} />
       </ComboboxBase.Clear>
 
-      <ComboboxBase.Trigger className="p-0">
-        <ComboboxBase.Icon
-          className={cn(
-            "absolute top-1/2 flex -translate-y-1/2 cursor-pointer text-kumo-subtle",
-            iconStyles.caretRight,
-          )}
-        >
+      <ComboboxBase.Trigger
+        className={cn(
+          "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
+          "m-0 bg-transparent p-0", // Reset Stratus global button styles
+          iconStyles.caretRight,
+        )}
+      >
+        <ComboboxBase.Icon>
           <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
