@@ -335,8 +335,8 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Primary focus ring/border color",
       theme: {
         kumo: {
-          light: "#ffb06b",
-          dark: "#f6821f",
+          light: "var(--color-kumo-neutral-950, oklch(15% 0 0))",
+          dark: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
         },
       },
     },
