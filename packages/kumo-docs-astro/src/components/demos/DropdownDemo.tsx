@@ -144,6 +144,33 @@ export function DropdownNestedDemo() {
 }
 
 /**
+ * Demonstrates using the render prop with children to compose a custom trigger
+ * that contains other elements. The render prop provides the trigger element,
+ * while children are rendered inside it.
+ */
+export function DropdownAvatarTriggerDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger
+        render={<button type="button" className="rounded-full" />}
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-kumo-brand text-sm font-medium text-white">
+          MR
+        </span>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item icon={UserIcon}>Profile</DropdownMenu.Item>
+        <DropdownMenu.Item icon={GearIcon}>Settings</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item icon={SignOutIcon} variant="danger">
+          Log out
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/**
  * Demonstrates the new LinkItem component for navigation links.
  * Use LinkItem instead of Item with href for cleaner, more semantic links.
  */
