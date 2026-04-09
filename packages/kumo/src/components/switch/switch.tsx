@@ -79,7 +79,7 @@ function getTrackColors(
   return isNeutral
     ? checked
       ? "bg-kumo-base ring-kumo-line"
-      : "bg-kumo-base ring-kumo-line"
+      : "bg-kumo-elevated ring-kumo-line"
     : checked
       ? "bg-kumo-brand ring-kumo-brand"
       : "bg-kumo-recessed ring-kumo-line";
@@ -95,10 +95,10 @@ function getThumbColors(
   }
   return isNeutral
     ? checked
-      ? "ring-kumo-hairline bg-kumo-base"
+      ? "bg-kumo-base ring-kumo-hairline"
       : "bg-kumo-base ring-kumo-line"
     : checked
-      ? "ring-kumo-brand bg-kumo-base"
+      ? "bg-kumo-base ring-kumo-brand"
       : "bg-kumo-base ring-kumo-line";
 }
 
