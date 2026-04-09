@@ -57,6 +57,7 @@ const componentItems: NavItem[] = [
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
   { label: "InputArea", href: "/components/input-area" },
+  { label: "Kumo Locale Provider", href: "/components/locale-provider" },
   { label: "Label", href: "/components/label" },
   { label: "Layer Card", href: "/components/layer-card" },
   { label: "Link", href: "/components/link" },
@@ -246,7 +247,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                   LI_STYLE,
                   "pl-4",
                   activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
+                  LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
@@ -324,7 +325,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                   LI_STYLE,
                   "pl-4",
                   activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
+                  LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}
