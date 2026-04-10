@@ -1679,8 +1679,8 @@ const SidebarCollapsibleTrigger = CollapsibleBase.Trigger;
  *
  * Animation flow:
  * - **Opening**: `data-starting-style` (h=0) → `data-open` (h=measured) — transition up
- * - **Closing**: `data-open` removed + `data-ending-style` (h=0) — transition down
- * - **Closed**: `data-closed` (h=0) — stays collapsed while mounted
+ * - **Closing**: `data-open` removed, measured height retained until `data-ending-style` (h=0) — transition down
+ * - **Closed**: `data-closed` while hidden/mounted; no extra height override needed
  */
 const SidebarCollapsibleContent = forwardRef<
   HTMLDivElement,
@@ -1691,13 +1691,17 @@ const SidebarCollapsibleContent = forwardRef<
     keepMounted={keepMounted}
     className={cn(
       "overflow-hidden",
-      // Default: show at measured height (when data-open, no override matches)
+      // Default: keep the measured height that Base UI writes to --collapsible-panel-height.
+      // This must also remain true during the initial close frame so the exit transition has
+      // a real starting height before data-ending-style flips it to 0.
       "h-[var(--collapsible-panel-height)]",
       // Transition height — matches production NavGroup easing
       "transition-[height] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
       "motion-reduce:transition-none",
-      // Closed / animating in / animating out: height 0
-      "data-[closed]:h-0 data-[starting-style]:h-0 data-[ending-style]:h-0",
+      // Only force height 0 during the active enter/exit transition phases.
+      // Applying h-0 for data-closed snaps the panel shut before Base UI adds
+      // data-ending-style, skipping the collapse animation.
+      "data-[starting-style]:h-0 data-[ending-style]:h-0",
       className,
     )}
     {...props}
