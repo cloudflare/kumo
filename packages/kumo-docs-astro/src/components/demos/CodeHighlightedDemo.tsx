@@ -286,7 +286,7 @@ export function CodeHighlightedCustomHighlightDemo() {
           />
         </div>
 
-        <div className="flex flex-wrap gap-6 rounded-md border border-kumo-line bg-kumo-elevated p-4">
+        <div className="flex flex-wrap gap-6 rounded-md border border-kumo-hairline bg-kumo-elevated p-4">
           <label className="flex flex-col gap-2">
             <span className="text-sm text-kumo-subtle">Hue: {hue}°</span>
             <input

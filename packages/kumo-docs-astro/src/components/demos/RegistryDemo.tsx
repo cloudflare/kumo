@@ -51,7 +51,7 @@ const ComponentCard: FC<{
   );
 
   return (
-    <div className="rounded-lg border border-kumo-line bg-kumo-base">
+    <div className="rounded-lg border border-kumo-hairline bg-kumo-base">
       <button
         type="button"
         onClick={onToggle}
@@ -65,7 +65,7 @@ const ComponentCard: FC<{
       </button>
 
       {isExpanded && (
-        <div className="border-t border-kumo-line p-4">
+        <div className="border-t border-kumo-hairline p-4">
           {/* Import */}
           <div className="mb-4">
             <h4 className="mb-2 text-xs font-medium text-kumo-subtle uppercase">
@@ -180,19 +180,19 @@ export const ComponentRegistryView: FC = () => {
     <div className="flex flex-col gap-6">
       {/* Stats */}
       <div className="flex flex-wrap gap-4 text-sm">
-        <div className="rounded-lg border border-kumo-line bg-kumo-base px-4 py-2">
+        <div className="rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2">
           <span className="font-semibold text-kumo-default">
             {Object.keys(registry.components).length}
           </span>
           <span className="ml-1 text-kumo-subtle">components</span>
         </div>
-        <div className="rounded-lg border border-kumo-line bg-kumo-base px-4 py-2">
+        <div className="rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2">
           <span className="font-semibold text-kumo-default">
             {categories.length}
           </span>
           <span className="ml-1 text-kumo-subtle">categories</span>
         </div>
-        <div className="rounded-lg border border-kumo-line bg-kumo-base px-4 py-2">
+        <div className="rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2">
           <span className="text-kumo-subtle">v</span>
           <span className="font-semibold text-kumo-default">{registry.version}</span>
         </div>

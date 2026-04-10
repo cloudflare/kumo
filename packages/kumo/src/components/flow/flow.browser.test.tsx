@@ -309,7 +309,7 @@ const ExpandableNode = forwardRef<
     <li
       ref={ref}
       {...props}
-      className="rounded-lg bg-kumo-base ring ring-kumo-line overflow-hidden"
+      className="rounded-lg bg-kumo-base ring ring-kumo-hairline overflow-hidden"
     >
       <button
         type="button"
@@ -319,7 +319,7 @@ const ExpandableNode = forwardRef<
         {title}
       </button>
       {open && (
-        <div className="border-t border-kumo-line px-3 py-2 text-sm">
+        <div className="border-t border-kumo-hairline px-3 py-2 text-sm">
           {children}
         </div>
       )}

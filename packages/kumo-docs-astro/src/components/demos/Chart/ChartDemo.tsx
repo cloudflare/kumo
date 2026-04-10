@@ -311,7 +311,7 @@ export function LegendDefaultDemo() {
     <div className="space-y-4">
       <h3 className="text-sm font-medium">Active State</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem
           name="Requests"
           color={ChartPalette.semantic("Neutral", isDarkMode)}
@@ -333,7 +333,7 @@ export function LegendDefaultDemo() {
 
       <h3 className="text-sm font-medium mt-12">Inactive State</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem
           name="Requests"
           color={ChartPalette.semantic("Neutral", isDarkMode)}
@@ -502,7 +502,7 @@ export function ChartExampleDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line gap-4 px-2 mb-2">
+        <div className="flex divide-x divide-kumo-hairline gap-4 px-2 mb-2">
           <ChartLegend.LargeItem
             name="P99"
             color={ChartPalette.semantic("Attention", isDarkMode)}

@@ -111,9 +111,9 @@ export function StickyDocHeader({
       {/* Sticky header bar */}
       <header
         ref={headerRef}
-        className="sticky flex h-12 top-12 md:top-0 z-10 border-b border-kumo-line bg-kumo-elevated"
+        className="sticky flex h-12 top-12 md:top-0 z-10 border-b border-kumo-hairline bg-kumo-elevated"
       >
-        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-line">
+        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-hairline">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",

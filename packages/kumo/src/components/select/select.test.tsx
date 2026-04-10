@@ -470,7 +470,7 @@ describe("Select", () => {
       // Separator is inside the portaled popup — query from document
       const separator = document.querySelector('[role="separator"]');
       expect(separator).toBeTruthy();
-      expect(separator?.className).toContain("bg-kumo-line");
+      expect(separator?.className).toContain("bg-kumo-hairline");
     });
 
     it("renders multiple groups with separators", async () => {

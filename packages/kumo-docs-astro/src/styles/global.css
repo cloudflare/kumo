@@ -44,17 +44,17 @@ html {
   --tw-prose-bold: var(--color-kumo-default);
   --tw-prose-counters: var(--color-kumo-subtle);
   --tw-prose-bullets: var(--color-kumo-strong);
-  --tw-prose-hr: var(--color-kumo-line);
+  --tw-prose-hr: var(--color-kumo-hairline);
   --tw-prose-quotes: var(--color-kumo-default);
-  --tw-prose-quote-borders: var(--color-kumo-line);
+  --tw-prose-quote-borders: var(--color-kumo-hairline);
   --tw-prose-captions: var(--color-kumo-subtle);
   --tw-prose-kbd: var(--color-kumo-default);
   --tw-prose-kbd-shadows: transparent;
   --tw-prose-code: var(--color-kumo-default);
   --tw-prose-pre-code: var(--color-kumo-default);
   --tw-prose-pre-bg: var(--color-kumo-canvas);
-  --tw-prose-th-borders: var(--color-kumo-line);
-  --tw-prose-td-borders: var(--color-kumo-line);
+  --tw-prose-th-borders: var(--color-kumo-hairline);
+  --tw-prose-td-borders: var(--color-kumo-hairline);
 
   /* Dark mode — same tokens, they auto-adapt via light-dark() */
   --tw-prose-invert-body: var(--color-kumo-strong);
@@ -64,17 +64,17 @@ html {
   --tw-prose-invert-bold: var(--color-kumo-default);
   --tw-prose-invert-counters: var(--color-kumo-subtle);
   --tw-prose-invert-bullets: var(--color-kumo-strong);
-  --tw-prose-invert-hr: var(--color-kumo-line);
+  --tw-prose-invert-hr: var(--color-kumo-hairline);
   --tw-prose-invert-quotes: var(--color-kumo-default);
-  --tw-prose-invert-quote-borders: var(--color-kumo-line);
+  --tw-prose-invert-quote-borders: var(--color-kumo-hairline);
   --tw-prose-invert-captions: var(--color-kumo-subtle);
   --tw-prose-invert-kbd: var(--color-kumo-default);
   --tw-prose-invert-kbd-shadows: transparent;
   --tw-prose-invert-code: var(--color-kumo-default);
   --tw-prose-invert-pre-code: var(--color-kumo-default);
   --tw-prose-invert-pre-bg: var(--color-kumo-canvas);
-  --tw-prose-invert-th-borders: var(--color-kumo-line);
-  --tw-prose-invert-td-borders: var(--color-kumo-line);
+  --tw-prose-invert-th-borders: var(--color-kumo-hairline);
+  --tw-prose-invert-td-borders: var(--color-kumo-hairline);
 }
 
 /* Inline code styling — match existing site style */
@@ -82,7 +82,7 @@ html {
   font-weight: 500;
   font-size: 0.875em;
   background-color: var(--color-kumo-base);
-  border: 1px solid var(--color-kumo-line);
+  border: 1px solid var(--color-kumo-hairline);
   border-radius: 0.25rem;
   padding: 0.125rem 0.375rem;
   font-family:
@@ -141,7 +141,7 @@ html {
 /* kbd styling */
 .kumo-prose :where(kbd) {
   background-color: var(--color-kumo-control);
-  border: 1px solid var(--color-kumo-line);
+  border: 1px solid var(--color-kumo-hairline);
   border-radius: 0.25rem;
   padding: 0.125rem 0.375rem;
   font-size: 0.875em;
@@ -158,7 +158,7 @@ html {
   width: 100%;
 }
 .kumo-prose :where(thead) {
-  border-bottom-color: var(--color-kumo-line);
+  border-bottom-color: var(--color-kumo-hairline);
 }
 .kumo-prose :where(thead th) {
   color: var(--color-kumo-default);
@@ -189,7 +189,7 @@ html {
 pre.astro-code {
   overflow: hidden;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-kumo-line);
+  border: 1px solid var(--color-kumo-hairline);
   margin: 1rem 0;
 }
 

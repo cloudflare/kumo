@@ -514,28 +514,28 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         </span>
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ↑
             </kbd>
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ↓
             </kbd>
             <span>navigate</span>
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ↵
             </kbd>
             <span>open</span>
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ⌘↵
             </kbd>
             <span>new tab</span>
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               esc
             </kbd>
             <span>close</span>

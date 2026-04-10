@@ -17,7 +17,7 @@ const { shortcuts } = Astro.props;
       <span class="flex items-center gap-1">
         {keys.map((key, i) => (
           <>
-            <kbd class="inline-flex items-center justify-center rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-xs font-medium min-w-[1.5rem]">
+            <kbd class="inline-flex items-center justify-center rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5 text-xs font-medium min-w-[1.5rem]">
               {key}
             </kbd>
             {i < keys.length - 1 && <span class="text-kumo-subtle text-xs">+</span>}
