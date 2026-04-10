@@ -288,11 +288,11 @@ export function FlowDiagram({
           paddingBottom: padding.y,
           paddingLeft: padding.x,
           paddingRight: padding.x,
-          cursor: canPan && !isPanning ? "grab" : undefined,
+          cursor: canvas && canPan && !isPanning ? "grab" : undefined,
         }}
-        onPanStart={handlePanStart}
-        onPan={handlePan}
-        onPanEnd={handlePanEnd}
+        onPanStart={canvas ? handlePanStart : undefined}
+        onPan={canvas ? handlePan : undefined}
+        onPanEnd={canvas ? handlePanEnd : undefined}
       >
         <motion.div
           data-testid="flow-contents"
