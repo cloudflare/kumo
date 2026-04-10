@@ -16,6 +16,7 @@ import {
   FlowSequentialParallelDemo,
   FlowExpandableDemo,
   FlowDynamicNodeDemo,
+  FlowWithCodeBlockDemo,
 } from "../../components/demos/FlowDemo";
 ---
 
@@ -173,6 +174,19 @@ import {
       </p>
       <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
         <FlowExpandableDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        FlowWithCodeBlockDemo
+      </h2>
+      <p class="text-kumo-subtle">
+        Flow diagram with a code block node — verifies syntax highlighting works
+        inside a flow node (canvas disabled)
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
+        <FlowWithCodeBlockDemo client:visible />
       </div>
     </section>
   </div>
