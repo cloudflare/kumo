@@ -95,6 +95,15 @@ export {
   KUMO_DELETE_RESOURCE_DEFAULT_VARIANTS,
   type DeleteResourceProps,
 } from "./blocks/delete-resource";
+export {
+  CreateResource,
+  CreateResourceStep,
+  KUMO_CREATE_RESOURCE_VARIANTS,
+  KUMO_CREATE_RESOURCE_DEFAULT_VARIANTS,
+  type CreateResourceProps,
+  type CreateResourceStepProps,
+  type CreateResourceStepItem,
+} from "./blocks/create-resource";
 export { Loader, SkeletonLine } from "./components/loader";
 export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";

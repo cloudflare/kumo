@@ -1,0 +1,411 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Create Resource"
+description: "A full-page, multi-step wizard with animated card stack transitions for creating resources."
+sourceFile: "blocks/create-resource"
+---
+
+import Heading from "~/components/docs/Heading.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import Callout from "~/components/docs/Callout.astro";
+import {
+  CreateResourceHeroDemo,
+  CreateResourceBasicDemo,
+  CreateResourceNestedDemo,
+} from "~/components/demos/CreateResourceDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="CreateResourceHeroDemo">
+    <CreateResourceHeroDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <p>
+    CreateResource is a <strong>block</strong> - a CLI-installed component that
+    you own and can customize. Unlike regular components, blocks are copied into
+    your project so you have full control over the code.
+  </p>
+  <div class="space-y-4">
+    <div>
+      <p>**1. Initialize Kumo config (first time only)**</p>
+
+```bash
+npx @cloudflare/kumo init
+```
+
+</div>
+<div>
+<p>**2. Install the block**</p>
+
+```bash
+npx @cloudflare/kumo add CreateResource
+```
+
+</div>
+<div>
+<p>**3. Import from your local path**</p>
+
+```tsx
+// The path depends on your kumo.json blocksDir setting
+// Default: src/components/kumo/
+import {
+  CreateResource,
+  CreateResourceStep,
+} from "./components/kumo/create-resource/create-resource";
+```
+
+    </div>
+
+  </div>
+  <Callout type="info">
+    <strong>Why blocks?</strong> Creation flows often need product-specific
+    customization - validation logic, async operations, conditional steps, and
+    custom layouts. Blocks give you full ownership of the code while providing a
+    solid starting point.
+  </Callout>
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { useState } from "react";
+import {
+  CreateResource,
+  CreateResourceStep,
+} from "./components/kumo/create-resource/create-resource";
+import { Breadcrumbs, Button, Input } from "@cloudflare/kumo";
+
+export default function CreateTunnel() {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+
+  const steps = [
+    {
+      key: "name",
+      label: "Name your tunnel",
+      content: (
+        <CreateResourceStep
+          title="Name your tunnel"
+          description="Give your tunnel a name to identify it."
+          footer={
+            <>
+              <div />
+              <Button
+                variant="primary"
+                disabled={!name.trim()}
+                onClick={() => setStep(1)}
+              >
+                Next
+              </Button>
+            </>
+          }
+        >
+          <Input
+            label="Tunnel name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </CreateResourceStep>
+      ),
+    },
+    {
+      key: "confirm",
+      label: "Confirm",
+      content: (
+        <CreateResourceStep
+          title="Confirm creation"
+          footer={
+            <>
+              <Button variant="ghost" onClick={() => setStep(0)}>
+                Back
+              </Button>
+              <Button variant="primary" onClick={handleCreate}>
+                Create tunnel
+              </Button>
+            </>
+          }
+        >
+          <p>Create tunnel "{name}"?</p>
+        </CreateResourceStep>
+      ),
+    },
+  ];
+
+  return (
+    <CreateResource
+      breadcrumbs={
+        <Breadcrumbs>
+          <Breadcrumbs.Link href="/tunnels">Tunnels</Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Current>Create</Breadcrumbs.Current>
+        </Breadcrumbs>
+      }
+      onClose={() => navigate("/tunnels")}
+      step={step}
+      onStepChange={setStep}
+      steps={steps}
+    />
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Architecture */}
+
+<ComponentSection>
+  <Heading level={2}>Architecture</Heading>
+  <p>
+    The CreateResource block follows a data-driven, controlled component
+    pattern:
+  </p>
+  <ul class="list-disc space-y-2 pl-6">
+    <li>
+      <strong>Controlled state:</strong> You own the step index and manage
+      navigation through `step` and `onStepChange` props.
+    </li>
+    <li>
+      <strong>Step definitions:</strong> Pass an array of step objects with
+      `key`, `label`, and `content`. Each step's content is typically a
+      `CreateResourceStep`.
+    </li>
+    <li>
+      <strong>Consumer-owned navigation:</strong> The block handles layout and
+      animation. You handle validation, async operations, and button rendering
+      in each step's `footer`.
+    </li>
+    <li>
+      <strong>Exit handling:</strong> Use the `onClose` callback to handle
+      routing when the user clicks the X button.
+    </li>
+  </ul>
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Basic</Heading>
+<p>
+  A simplified single-step wizard with appliance type selection and dynamic
+  fields.
+</p>
+<ComponentExample demo="CreateResourceBasicDemo">
+  <CreateResourceBasicDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Nested Creation</Heading>
+  <p>A creation flow that includes inline sub-resource creation, such as adding a custom item within the main wizard.</p>
+  <ComponentExample demo="CreateResourceNestedDemo">
+    <CreateResourceNestedDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Accessibility */}
+
+<ComponentSection>
+  <Heading level={2}>Accessibility</Heading>
+  <ul class="list-disc space-y-2 pl-6">
+    <li>
+      <strong>Focus management:</strong> Focus automatically moves to each step
+      after animation completes.
+    </li>
+    <li>
+      <strong>Focus trap:</strong> Tab navigation is constrained to the current
+      step's content, the previous step card (for back navigation), and the
+      close button.
+    </li>
+    <li>
+      <strong>Keyboard navigation:</strong> Previous step cards can be activated
+      with Enter or Space.
+    </li>
+    <li>
+      <strong>Reduced motion:</strong> Respects `prefers-reduced-motion` -
+      animations are disabled when the user prefers reduced motion.
+    </li>
+  </ul>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  
+  <Heading level={3}>CreateResource</Heading>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-kumo-line">
+          <th class="px-4 py-3 text-left font-semibold">Prop</th>
+          <th class="px-4 py-3 text-left font-semibold">Type</th>
+          <th class="px-4 py-3 text-left font-semibold">Default</th>
+          <th class="px-4 py-3 text-left font-semibold">Description</th>
+        </tr>
+      </thead>
+      <tbody class="text-kumo-strong">
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">breadcrumbs</td>
+          <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Content for the header breadcrumb area</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">onClose</td>
+          <td class="px-4 py-3 font-mono text-xs">() =&gt; void</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Called when the X button is clicked</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">step</td>
+          <td class="px-4 py-3 font-mono text-xs">number</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Current active step index (controlled)</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">onStepChange</td>
+          <td class="px-4 py-3 font-mono text-xs">(step: number) =&gt; void</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Called when navigating to a different step</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">steps</td>
+          <td class="px-4 py-3 font-mono text-xs">CreateResourceStepItem[]</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Array of step definitions</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">headerActions</td>
+          <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Optional slot between breadcrumbs and close button</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">size</td>
+          <td class="px-4 py-3 font-mono text-xs">"base" | "lg"</td>
+          <td class="px-4 py-3">"base"</td>
+          <td class="px-4 py-3">Width of the card stack</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">lockNavigation</td>
+          <td class="px-4 py-3 font-mono text-xs">boolean</td>
+          <td class="px-4 py-3">false</td>
+          <td class="px-4 py-3">Prevents clicking sidebar/previous steps to navigate back</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">hideStepNavigation</td>
+          <td class="px-4 py-3 font-mono text-xs">boolean</td>
+          <td class="px-4 py-3">false</td>
+          <td class="px-4 py-3">Hides sidebar and stacked card peek-back interaction</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">closeButtonRef</td>
+          <td class="px-4 py-3 font-mono text-xs">RefObject&lt;HTMLButtonElement&gt;</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Ref to the close button for external focus management</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">className</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3">—</td>
+          <td class="px-4 py-3">Additional class for the outer container</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<Heading level={3}>CreateResourceStepItem</Heading>
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-line">
+        <th class="px-4 py-3 text-left font-semibold">Property</th>
+        <th class="px-4 py-3 text-left font-semibold">Type</th>
+        <th class="px-4 py-3 text-left font-semibold">Description</th>
+      </tr>
+    </thead>
+    <tbody class="text-kumo-strong">
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">key</td>
+        <td class="px-4 py-3 font-mono text-xs">string</td>
+        <td class="px-4 py-3">Unique identifier for the step</td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">label</td>
+        <td class="px-4 py-3 font-mono text-xs">string</td>
+        <td class="px-4 py-3">Label shown in the sidebar navigation</td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">content</td>
+        <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+        <td class="px-4 py-3">
+          The step content (typically a CreateResourceStep)
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">showError</td>
+        <td class="px-4 py-3 font-mono text-xs">boolean</td>
+        <td class="px-4 py-3">
+          Whether to show an error indicator on this step
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-line">
+        <td class="px-4 py-3 font-mono text-xs">hideFromNavigation</td>
+        <td class="px-4 py-3 font-mono text-xs">boolean</td>
+        <td class="px-4 py-3">Hide this step from the sidebar navigation</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <Heading level={3}>CreateResourceStep</Heading>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-kumo-line">
+          <th class="px-4 py-3 text-left font-semibold">Prop</th>
+          <th class="px-4 py-3 text-left font-semibold">Type</th>
+          <th class="px-4 py-3 text-left font-semibold">Description</th>
+        </tr>
+      </thead>
+      <tbody class="text-kumo-strong">
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">title</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3">Step heading</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">description</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3">Step description text</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">footer</td>
+          <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+          <td class="px-4 py-3">Footer content (typically Back/Next buttons)</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">children</td>
+          <td class="px-4 py-3 font-mono text-xs">ReactNode</td>
+          <td class="px-4 py-3">Step body content</td>
+        </tr>
+        <tr class="border-b border-kumo-line">
+          <td class="px-4 py-3 font-mono text-xs">className</td>
+          <td class="px-4 py-3 font-mono text-xs">string</td>
+          <td class="px-4 py-3">Additional class for the card</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ComponentSection>

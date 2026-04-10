@@ -91,6 +91,7 @@ const chartItems: NavItem[] = [
 const blockItems: NavItem[] = [
   { label: "Page Header", href: "/blocks/page-header" },
   { label: "Resource List", href: "/blocks/resource-list" },
+  { label: "Create Resource", href: "/blocks/create-resource" },
   { label: "Delete Resource", href: "/blocks/delete-resource" },
 ];
 
