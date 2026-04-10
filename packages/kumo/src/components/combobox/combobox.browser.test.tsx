@@ -112,7 +112,7 @@ describe("Combobox Playwright Interactions", () => {
     });
 
     test("trigger button (caret icon) can be clicked to open listbox", async () => {
-      const { container, getByPlaceholder, getByRole } = await render(
+      const { getByPlaceholder, getByRole } = await render(
         <Combobox items={fruits}>
           <Combobox.TriggerInput placeholder="Search fruits..." />
           <Combobox.Content>
@@ -172,7 +172,7 @@ describe("Combobox Playwright Interactions", () => {
     });
 
     test("trigger button can be located with CSS adjacent sibling selector (+button)", async () => {
-      const { container, getByPlaceholder, getByRole } = await render(
+      const { getByPlaceholder, getByRole } = await render(
         <Combobox items={fruits}>
           <Combobox.TriggerInput placeholder="Search fruits..." />
           <Combobox.Content>
