@@ -214,7 +214,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             // Adopting main's improved accessibility focus styles
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
             // Keeping your improved fluid animation
-            "transition-[background-color,box-shadow] duration-250 ease-out motion-reduce:transition-none",
+            "transition-[background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
             "disabled:cursor-not-allowed",
             s.track,
             squircleRadius,
@@ -228,7 +228,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             s.thumb,
             squircleRadius,
             thumbColors,
-            "transition-[left,background-color,box-shadow] duration-250 ease-out motion-reduce:transition-none",
+            "transition-[left,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
             state.checked ? s.slide : "left-0",
           );
 
@@ -365,7 +365,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
-              "transition-[background-color,box-shadow] duration-250 ease-out motion-reduce:transition-none",
+              "transition-[background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
               "disabled:cursor-not-allowed",
               s.track,
               squircleRadius,
@@ -378,7 +378,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               s.thumb,
               squircleRadius,
               thumbColors,
-              "transition-[left,background-color,box-shadow] duration-250 ease-out motion-reduce:transition-none",
+              "transition-[left,background-color,box-shadow] duration-250 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
               state.checked ? s.slide : "left-0",
             );
 
