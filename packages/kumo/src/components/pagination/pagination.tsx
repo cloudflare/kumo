@@ -236,7 +236,7 @@ function PaginationControls({
             (pageSelector === "dropdown" ? (
               <Select
                 aria-label="Page number"
-                className="rounded-none ring-kumo-line"
+                className="rounded-none ring-kumo-hairline"
                 value={page}
                 onValueChange={(value) => {
                   const num = value as number;
@@ -324,7 +324,7 @@ function PaginationSeparator({ className }: PaginationSeparatorProps) {
   return (
     <div
       data-slot="pagination-separator"
-      className={cn("mx-2 h-6 border-l border-kumo-line", className)}
+      className={cn("mx-2 h-6 border-l border-kumo-hairline", className)}
     />
   );
 }

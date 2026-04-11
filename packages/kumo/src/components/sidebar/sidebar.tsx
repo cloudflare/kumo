@@ -389,10 +389,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-kumo-base text-kumo-default",
             variant === "sidebar" &&
               (side === "left"
-                ? "border-r border-kumo-line"
-                : "border-l border-kumo-line"),
+                ? "border-r border-kumo-hairline"
+                : "border-l border-kumo-hairline"),
             variant === "floating" &&
-              "m-2 rounded-lg border border-kumo-line shadow-lg",
+              "m-2 rounded-lg border border-kumo-hairline shadow-lg",
             className,
           )}
           {...props}
@@ -469,10 +469,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
           isResizing && "transition-none!",
           variant === "sidebar" &&
             (side === "left"
-              ? "border-r border-kumo-line"
-              : "border-l border-kumo-line"),
+              ? "border-r border-kumo-hairline"
+              : "border-l border-kumo-hairline"),
           variant === "floating" &&
-            "m-2 rounded-lg border border-kumo-line shadow-lg",
+            "m-2 rounded-lg border border-kumo-hairline shadow-lg",
           className,
         )}
         {...props}
@@ -511,7 +511,7 @@ const SidebarHeader = forwardRef<
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex items-center gap-2 border-b border-kumo-line px-2 py-3",
+      "flex items-center gap-2 border-b border-kumo-hairline px-2 py-3",
       "overflow-hidden",
       // Collapsed: just remove border, keep same height
       "group-data-[state=collapsed]/sidebar:border-b-0",
@@ -580,7 +580,7 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex min-w-0 flex-col gap-2 border-t border-kumo-line px-2 py-2",
+      "flex min-w-0 flex-col gap-2 border-t border-kumo-hairline px-2 py-2",
       // Collapsed: remove border, tighten padding
       "group-data-[state=collapsed]/sidebar:border-t-0 group-data-[state=collapsed]/sidebar:py-1",
       className,
@@ -1183,7 +1183,7 @@ const SidebarMenuBadge = forwardRef<
     ref={ref}
     data-sidebar="menu-badge"
     className={cn(
-      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
+      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-hairline",
       "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
@@ -1221,7 +1221,7 @@ const SidebarMenuSub = forwardRef<
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-line p-0 pl-2.5",
+      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-hairline p-0 pl-2.5",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1365,7 +1365,7 @@ const SidebarSeparator = forwardRef<
   <hr
     ref={ref}
     data-sidebar="separator"
-    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-line", className)}
+    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-hairline", className)}
     {...props}
   />
 ));
@@ -1402,7 +1402,7 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
       data-sidebar="input"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-line",
+        "bg-kumo-base text-kumo-subtle ring ring-kumo-hairline",
         "transition-[color,background-color,padding,box-shadow] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
         "hover:bg-kumo-overlay",
         // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
@@ -1679,8 +1679,8 @@ const SidebarCollapsibleTrigger = CollapsibleBase.Trigger;
  *
  * Animation flow:
  * - **Opening**: `data-starting-style` (h=0) → `data-open` (h=measured) — transition up
- * - **Closing**: `data-open` removed + `data-ending-style` (h=0) — transition down
- * - **Closed**: `data-closed` (h=0) — stays collapsed while mounted
+ * - **Closing**: `data-open` removed, measured height retained until `data-ending-style` (h=0) — transition down
+ * - **Closed**: `data-closed` while hidden/mounted; no extra height override needed
  */
 const SidebarCollapsibleContent = forwardRef<
   HTMLDivElement,
@@ -1691,13 +1691,17 @@ const SidebarCollapsibleContent = forwardRef<
     keepMounted={keepMounted}
     className={cn(
       "overflow-hidden",
-      // Default: show at measured height (when data-open, no override matches)
+      // Default: keep the measured height that Base UI writes to --collapsible-panel-height.
+      // This must also remain true during the initial close frame so the exit transition has
+      // a real starting height before data-ending-style flips it to 0.
       "h-[var(--collapsible-panel-height)]",
       // Transition height — matches production NavGroup easing
       "transition-[height] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
       "motion-reduce:transition-none",
-      // Closed / animating in / animating out: height 0
-      "data-[closed]:h-0 data-[starting-style]:h-0 data-[ending-style]:h-0",
+      // Only force height 0 during the active enter/exit transition phases.
+      // Applying h-0 for data-closed snaps the panel shut before Base UI adds
+      // data-ending-style, skipping the collapse animation.
+      "data-[starting-style]:h-0 data-[ending-style]:h-0",
       className,
     )}
     {...props}

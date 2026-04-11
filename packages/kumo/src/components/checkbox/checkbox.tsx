@@ -262,7 +262,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         onCheckedChange={handleCheckedChange}
         className={cn(
           "relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
-          variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
+          variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
           !disabled && "hover:ring-kumo-hairline focus-visible:ring-kumo-hairline",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
@@ -364,7 +364,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           onCheckedChange={handleCheckedChange}
           className={cn(
             "peer relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
-            variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
+            variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
             !disabled &&
               "group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus-visible:ring-kumo-hairline",
             "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",

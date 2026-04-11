@@ -16,6 +16,7 @@ import {
   TableSelectedRowDemo,
   TableFixedLayoutDemo,
   TableStickyColumnDemo,
+  TableCompactStickyDemo,
   TableFullDemo,
 } from "~/components/demos/TableDemo";
 
@@ -124,6 +125,12 @@ export default function Example() {
 </p>
 <ComponentExample demo="TableStickyColumnDemo">
   <TableStickyColumnDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Compact Header with Sticky Column</Heading>
+<p>Combining `variant="compact"` on `Table.Header` with `sticky` columns.</p>
+<ComponentExample demo="TableCompactStickyDemo">
+  <TableCompactStickyDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Full Example</Heading>

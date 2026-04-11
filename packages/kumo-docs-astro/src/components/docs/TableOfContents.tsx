@@ -132,7 +132,7 @@ export function TableOfContents({
               .getElementById(slug)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full appearance-none rounded-lg border border-kumo-line bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
+          className="w-full appearance-none rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
         >
           {headings.map((heading) => (
             <option key={heading.slug} value={heading.slug}>
@@ -157,7 +157,7 @@ export function TableOfContents({
       </p>
       <nav
         aria-label="Table of contents"
-        className="relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-line"
+        className="relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-hairline"
         ref={navRef}
       >
         {headings.map((heading) => {

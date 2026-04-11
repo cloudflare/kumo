@@ -157,7 +157,7 @@ export function Tabs({
         activateOnFocus={activateOnFocus}
         className={cn(
           "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-line/70",
+          isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70",
           isUnderline && "h-7 gap-4 border-b border-kumo-hairline pb-2",
           listClassName,
         )}
@@ -188,7 +188,7 @@ export function Tabs({
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
                 "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&
-                  "top-(--active-tab-top) h-(--active-tab-height) rounded-md bg-kumo-base shadow-sm ring ring-kumo-hairline",
+                  "top-(--active-tab-top) h-(--active-tab-height) rounded-md bg-kumo-base shadow-sm ring ring-kumo-line",
                 isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
                 indicatorClassName,
               )}

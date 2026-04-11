@@ -56,7 +56,7 @@ const wpThemeStyles = `
   --color-kumo-interact: #c3c4c7;
 
   /* WP borders — very subtle gray */
-  --color-kumo-line: #c3c4c7;
+  --color-kumo-hairline: #c3c4c7;
   --color-kumo-hairline: #2271b1;
 
   /* WP text hierarchy */
@@ -300,7 +300,7 @@ function WPTopBar({
   onToggleDarkMode: () => void;
 }) {
   return (
-    <div className="flex h-[48px] items-center justify-between border-b border-kumo-line bg-kumo-elevated px-4">
+    <div className="flex h-[48px] items-center justify-between border-b border-kumo-hairline bg-kumo-elevated px-4">
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-semibold text-kumo-default">Posts</h1>
         <Button variant="primary" size="sm">
@@ -418,7 +418,7 @@ export function KumoPressDemo() {
       <div
         data-theme="wordpress"
         data-mode={darkMode ? "dark" : undefined}
-        className="flex h-[720px] overflow-hidden rounded-xl border border-kumo-line bg-kumo-elevated font-sans shadow-lg"
+        className="flex h-[720px] overflow-hidden rounded-xl border border-kumo-hairline bg-kumo-elevated font-sans shadow-lg"
       >
         {/* Sidebar */}
         <div

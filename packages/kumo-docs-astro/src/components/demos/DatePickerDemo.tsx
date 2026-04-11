@@ -226,7 +226,7 @@ export function DatePickerRangeWithPresetsDemo() {
       </Popover.Trigger>
       <Popover.Content className="p-0">
         <div className="flex">
-          <div className="flex flex-col gap-1 border-r border-kumo-line p-2 text-sm">
+          <div className="flex flex-col gap-1 border-r border-kumo-hairline p-2 text-sm">
             {presets.map((preset) => {
               const isActive = isPresetActive(preset);
               return (

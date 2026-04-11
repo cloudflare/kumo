@@ -53,7 +53,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-neutral-500, oklch(55.6% 0 0))",
-          dark: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
+          dark: "var(--color-neutral-400, oklch(70.8% 0 0))",
         },
       },
     },
@@ -166,7 +166,8 @@ export const THEME_CONFIG: ThemeConfig = {
     },
     "kumo-badge-inverted": {
       newName: "",
-      description: "Text color for inverted badge (white in light, black in dark)",
+      description:
+        "Text color for inverted badge (white in light, black in dark)",
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
@@ -194,7 +195,7 @@ export const THEME_CONFIG: ThemeConfig = {
           dark: "#5b697c",
         },
       },
-    }, 
+    },
     "kumo-elevated": {
       newName: "",
       theme: {
@@ -312,7 +313,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(14.5% 0 0 / 0.1)",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "var(--color-kumo-neutral-750, oklch(32% 0 0))",
         },
       },
     },
@@ -321,7 +322,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
-          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
+          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
         },
         fedramp: {
           light: "#c8d4e5",
@@ -554,7 +555,8 @@ export const THEME_CONFIG: ThemeConfig = {
     // Inverted
     "kumo-badge-inverted": {
       newName: "",
-      description: "Inverted badge background (near-black in light, white in dark)",
+      description:
+        "Inverted badge background (near-black in light, white in dark)",
       theme: {
         kumo: {
           light: "var(--color-neutral-950, oklch(14.5% 0 0))",

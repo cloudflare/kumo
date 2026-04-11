@@ -118,7 +118,7 @@ export function PopoverCustomContentDemo() {
             <p className="text-sm text-kumo-subtle">jane@example.com</p>
           </div>
         </div>
-        <div className="mt-3 flex gap-2 border-t border-kumo-line pt-3">
+        <div className="mt-3 flex gap-2 border-t border-kumo-hairline pt-3">
           <Button variant="secondary" size="sm" className="flex-1">
             Profile
           </Button>

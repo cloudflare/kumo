@@ -424,7 +424,7 @@ function SwitchGroup({
     <SwitchGroupContext.Provider value={{ controlFirst }}>
       <Fieldset.Root
         className={cn(
-          "flex flex-col gap-4 rounded-lg border border-kumo-line p-4",
+          "flex flex-col gap-4 rounded-lg border border-kumo-hairline p-4",
           className,
         )}
         disabled={disabled}

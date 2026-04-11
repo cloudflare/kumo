@@ -249,7 +249,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
         ref={buttonRef}
         size={sizeConfig.buttonSize}
         variant="ghost"
-        className="rounded-none border-l! border-kumo-line! px-3 relative overflow-hidden transition-all duration-200"
+        className="rounded-none border-l! border-kumo-hairline! px-3 relative overflow-hidden transition-all duration-200"
         onClick={copyToClipboard}
         aria-label={copyAction}
       >
