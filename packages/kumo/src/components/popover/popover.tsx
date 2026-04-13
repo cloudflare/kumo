@@ -72,7 +72,7 @@ type BasePopoverTriggerProps = ComponentPropsWithoutRef<
 export type PopoverTriggerProps = BasePopoverTriggerProps & {
   /**
    * @deprecated Use the `render` prop instead.
-   * @example `<Popover.Trigger render={<Button />}>` instead of `<Popover.Trigger asChild><Button /></Popover.Trigger>`
+   * @example `<Popover.Trigger render={<Button />}>Open</Popover.Trigger>` instead of `<Popover.Trigger asChild><Button>Open</Button></Popover.Trigger>`
    */
   asChild?: boolean;
 };
@@ -85,6 +85,7 @@ function PopoverTrigger({
   ...props
 }: PopoverTriggerProps) {
   // Support both render prop (preferred) and deprecated asChild pattern
+  // When using asChild, children IS the render element, so don't pass it as children
   const resolvedRender =
     render ??
     (asChild ? (children as BasePopoverTriggerProps["render"]) : undefined);
@@ -95,7 +96,7 @@ function PopoverTrigger({
       render={resolvedRender}
       {...props}
     >
-      {resolvedRender ? undefined : children}
+      {asChild ? undefined : children}
     </PopoverBase.Trigger>
   );
 }
@@ -284,7 +285,7 @@ type BasePopoverCloseProps = ComponentPropsWithoutRef<typeof PopoverBase.Close>;
 export type PopoverCloseProps = BasePopoverCloseProps & {
   /**
    * @deprecated Use the `render` prop instead.
-   * @example `<Popover.Close render={<Button />}>` instead of `<Popover.Close asChild><Button /></Popover.Close>`
+   * @example `<Popover.Close render={<Button />}>Close</Popover.Close>` instead of `<Popover.Close asChild><Button>Close</Button></Popover.Close>`
    */
   asChild?: boolean;
 };
@@ -297,13 +298,14 @@ function PopoverClose({
   ...props
 }: PopoverCloseProps) {
   // Support both render prop (preferred) and deprecated asChild pattern
+  // When using asChild, children IS the render element, so don't pass it as children
   const resolvedRender =
     render ??
     (asChild ? (children as BasePopoverCloseProps["render"]) : undefined);
 
   return (
     <PopoverBase.Close className={className} render={resolvedRender} {...props}>
-      {resolvedRender ? undefined : children}
+      {asChild ? undefined : children}
     </PopoverBase.Close>
   );
 }

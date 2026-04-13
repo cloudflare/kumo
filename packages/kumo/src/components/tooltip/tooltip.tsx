@@ -77,7 +77,9 @@ type TooltipAlign = "start" | "center" | "end";
  *
  * @example
  * ```tsx
- * <Tooltip content="Add new item" render={<Button shape="square" icon={PlusIcon} />} />
+ * <Tooltip content="Add new item" render={<Button shape="square" icon={PlusIcon} />}>
+ *   Add
+ * </Tooltip>
  * ```
  */
 export type TooltipProps = BaseTooltipProps &
@@ -91,7 +93,7 @@ export type TooltipProps = BaseTooltipProps &
     align?: TooltipAlign;
     /**
      * @deprecated Use the `render` prop instead.
-     * @example `<Tooltip render={<Button />}>` instead of `<Tooltip asChild><Button /></Tooltip>`
+     * @example `<Tooltip render={<Button />}>Label</Tooltip>` instead of `<Tooltip asChild><Button>Label</Button></Tooltip>`
      */
     asChild?: boolean;
     /** Additional CSS classes merged via `cn()`. */
@@ -115,8 +117,8 @@ export type TooltipProps = BaseTooltipProps &
      */
     delay?: number;
     /**
-     * Element to render as the tooltip trigger. Props are merged onto this element.
-     * @example `<Tooltip content="Save" render={<Button>Save</Button>} />`
+     * Element to render as the tooltip trigger. Children are passed to this element.
+     * @example `<Tooltip content="Save" render={<Button />}>Save</Tooltip>`
      */
     render?: TriggerProps["render"];
   };
@@ -127,7 +129,9 @@ export type TooltipProps = BaseTooltipProps &
  *
  * @example
  * ```tsx
- * <Tooltip content="Save changes" render={<Button variant="primary">Save</Button>} />
+ * <Tooltip content="Save changes" render={<Button variant="primary" />}>
+ *   Save
+ * </Tooltip>
  * ```
  */
 export function Tooltip({
@@ -147,6 +151,7 @@ export function Tooltip({
   const container = containerProp ?? contextContainer ?? undefined;
 
   // Support both render prop (preferred) and deprecated asChild pattern
+  // When using asChild, children IS the render element, so don't pass it as children
   const resolvedRender =
     render ?? (asChild ? (children as TriggerProps["render"]) : undefined);
   const shouldUseRender = resolvedRender !== undefined;
@@ -166,7 +171,7 @@ export function Tooltip({
         )}
         render={resolvedRender}
       >
-        {shouldUseRender ? undefined : (children as ReactNode)}
+        {asChild ? undefined : (children as ReactNode)}
       </TooltipBase.Trigger>
       <TooltipBase.Portal container={container}>
         <TooltipBase.Positioner align={align} side={side} sideOffset={10}>
