@@ -17,6 +17,7 @@ import {
   PopoverPositionDemo,
   PopoverCustomContentDemo,
   PopoverOpenOnHoverDemo,
+  PopoverVirtualAnchorDemo,
 } from "~/components/demos/PopoverDemo";
 
 {/* Hero Demo */}
@@ -183,6 +184,17 @@ export default function Example() {
   <PopoverOpenOnHoverDemo client:load />
 </ComponentExample>
 
+<Heading level={3}>Virtual Anchor</Heading>
+<p>
+  Use the `anchor` prop on `Popover.Content` to position the popover against an
+  element other than the trigger, or against a virtual point (e.g., a `DOMRect`
+  from `getBoundingClientRect()`). This is useful when the trigger and the
+  desired anchor are in different component trees.
+</p>
+<ComponentExample demo="PopoverVirtualAnchorDemo">
+  <PopoverVirtualAnchorDemo client:load />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -204,9 +216,10 @@ export default function Example() {
 <Heading level={3}>Popover.Content</Heading>
 <p>
   The container for popover content. Controls positioning via `side`, `align`,
-  `sideOffset`, and `alignOffset` props. Use `positionMethod="fixed"` (the
-  default) when the popover needs to escape stacking contexts, such as when
-  inside sticky headers.
+  `sideOffset`, and `alignOffset` props. Use the `anchor` prop to position
+  against a custom element or virtual point instead of the trigger. Use
+  `positionMethod="fixed"` when the popover needs to escape stacking contexts,
+  such as when inside sticky headers.
 </p>
 <PropsTable component="Popover.Content" />
 

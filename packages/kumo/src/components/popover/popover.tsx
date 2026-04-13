@@ -102,6 +102,10 @@ PopoverTrigger.displayName = "Popover.Trigger";
 /** Alignment options for popover positioning */
 type PopoverAlign = "start" | "center" | "end";
 
+type BasePopoverPositionerProps = ComponentPropsWithoutRef<
+  typeof PopoverBase.Positioner
+>;
+
 /**
  * Popover content panel props.
  *
@@ -113,6 +117,28 @@ type PopoverAlign = "start" | "center" | "end";
  * ```
  */
 export type PopoverContentProps = KumoPopoverVariantsProps & {
+  /**
+   * An element to position the popup against.
+   * By default, the popup will be positioned against the trigger.
+   *
+   * Accepts a DOM element, a ref to a DOM element, a virtual element
+   * (object with a `getBoundingClientRect` method), or a function
+   * returning any of these.
+   *
+   * This is useful when the popover trigger and the desired anchor point
+   * are in different component trees, or when positioning against a
+   * coordinate (e.g., a `DOMRect` from `getBoundingClientRect()`).
+   *
+   * @example Virtual element (e.g., anchoring to a DOMRect)
+   * ```tsx
+   * <Popover open={open} onOpenChange={setOpen}>
+   *   <Popover.Content anchor={{ getBoundingClientRect: () => anchorRect }}>
+   *     <p>Anchored content</p>
+   *   </Popover.Content>
+   * </Popover>
+   * ```
+   */
+  anchor?: BasePopoverPositionerProps["anchor"];
   /**
    * How to align the popover relative to the trigger.
    * @default "center"
@@ -153,6 +179,7 @@ function PopoverContent({
   sideOffset = 8,
   alignOffset = 0,
   positionMethod = "absolute",
+  anchor,
   className,
   container: containerProp,
 }: PopoverContentProps) {
@@ -162,6 +189,7 @@ function PopoverContent({
   return (
     <PopoverBase.Portal container={container}>
       <PopoverBase.Positioner
+        anchor={anchor}
         align={align}
         alignOffset={alignOffset}
         side={side}
