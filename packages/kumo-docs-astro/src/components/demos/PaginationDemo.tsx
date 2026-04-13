@@ -208,16 +208,17 @@ export function PaginationI18nDemo() {
         lastPage: "Dernière page",
         pageNumber: "Numéro de page",
         pageSize: "Taille de page",
-        perPageLabel: "Par page :",
-        showingInfo: (range, total) => (
-          <>
-            Affichage de <span className="tabular-nums">{range}</span> sur{" "}
-            <span className="tabular-nums">{total}</span>
-          </>
-        ),
       }}
     >
-      <Pagination.Info />
+      <Pagination.Info>
+        {({ pageShowingRange, totalCount }) => (
+          <>
+            Affichage de{" "}
+            <span className="tabular-nums">{pageShowingRange}</span> sur{" "}
+            <span className="tabular-nums">{totalCount}</span>
+          </>
+        )}
+      </Pagination.Info>
       <Pagination.Controls />
     </Pagination>
   );

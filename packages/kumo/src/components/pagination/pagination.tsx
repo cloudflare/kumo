@@ -29,6 +29,10 @@ const clamp = (value: number, min: number, max: number) =>
 /**
  * Labels for internationalization of Pagination component.
  * All labels have English defaults and can be overridden for other locales.
+ *
+ * Note: To customize the "Showing X-Y of Z" text, use the `children` render prop
+ * on `Pagination.Info` instead. To customize the "Per page:" label, use the
+ * `label` prop on `Pagination.PageSize`.
  */
 export interface PaginationLabels {
   /** Aria label for the first page button. @default "First page" */
@@ -43,13 +47,6 @@ export interface PaginationLabels {
   pageNumber?: string;
   /** Aria label for the page size select. @default "Page size" */
   pageSize?: string;
-  /** Label text shown before the page size selector. @default "Per page:" */
-  perPageLabel?: string;
-  /**
-   * Function to format the "Showing X-Y of Z" info text.
-   * @default (range, total) => `Showing ${range} of ${total}`
-   */
-  showingInfo?: (range: string, total: number) => ReactNode;
 }
 
 const DEFAULT_LABELS: Required<PaginationLabels> = {
@@ -59,13 +56,6 @@ const DEFAULT_LABELS: Required<PaginationLabels> = {
   lastPage: "Last page",
   pageNumber: "Page number",
   pageSize: "Page size",
-  perPageLabel: "Per page:",
-  showingInfo: (range, total) => (
-    <>
-      Showing <span className="tabular-nums">{range}</span> of{" "}
-      <span className="tabular-nums">{total}</span>
-    </>
-  ),
 };
 
 /** Pagination controls variant definitions. */
@@ -149,14 +139,17 @@ export interface PaginationInfoProps {
 }
 
 function PaginationInfo({ children, className }: PaginationInfoProps) {
-  const { page, perPage, totalCount, pageShowingRange, labels } =
+  const { page, perPage, totalCount, pageShowingRange } =
     usePaginationContext();
 
-  const content = children
-    ? children({ page, perPage, totalCount, pageShowingRange })
-    : totalCount && totalCount > 0
-      ? labels.showingInfo(pageShowingRange, totalCount)
-      : null;
+  const content = children ? (
+    children({ page, perPage, totalCount, pageShowingRange })
+  ) : totalCount && totalCount > 0 ? (
+    <>
+      Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
+      <span className="tabular-nums">{totalCount}</span>
+    </>
+  ) : null;
 
   return (
     <div
@@ -183,7 +176,7 @@ export interface PaginationPageSizeProps {
   options?: number[];
   /**
    * Label text shown before the selector.
-   * @default "Per page:" (or i18n override from Pagination labels prop)
+   * @default "Per page:"
    */
   label?: ReactNode;
   /** Additional CSS classes */
@@ -194,21 +187,17 @@ function PaginationPageSize({
   value,
   onChange,
   options = DEFAULT_PAGE_SIZE_OPTIONS as unknown as number[],
-  label,
+  label = "Per page:",
   className,
 }: PaginationPageSizeProps) {
   const { labels } = usePaginationContext();
-  // Use explicit label if provided, otherwise fall back to i18n label from context
-  const displayLabel = label ?? labels.perPageLabel;
 
   return (
     <div
       data-slot="pagination-page-size"
       className={cn("flex items-center gap-2", className)}
     >
-      {displayLabel && (
-        <span className="text-sm text-kumo-strong">{displayLabel}</span>
-      )}
+      {label && <span className="text-sm text-kumo-strong">{label}</span>}
       <Select
         aria-label={labels.pageSize}
         value={value}
@@ -404,7 +393,12 @@ interface PaginationBaseProps {
   /** Additional CSS classes for the container */
   className?: string;
   /**
-   * Labels for internationalization. All labels have English defaults.
+   * Labels for internationalization of aria-labels. All labels have English defaults.
+   *
+   * For visible text like "Showing X of Y", use render props on sub-components:
+   * - `Pagination.Info` children for the info text
+   * - `Pagination.PageSize` label prop for the "Per page:" text
+   *
    * @example
    * ```tsx
    * <Pagination
@@ -415,8 +409,6 @@ interface PaginationBaseProps {
    *     lastPage: "Dernière page",
    *     pageNumber: "Numéro de page",
    *     pageSize: "Taille de page",
-   *     perPageLabel: "Par page :",
-   *     showingInfo: (range, total) => `Affichage de ${range} sur ${total}`,
    *   }}
    *   // ...
    * />
@@ -587,7 +579,12 @@ function PaginationRoot(props: PaginationProps) {
     if (text) {
       return text({ page, perPage, totalCount, pageShowingRange });
     } else if (totalCount && totalCount > 0) {
-      return labels.showingInfo(pageShowingRange, totalCount);
+      return (
+        <>
+          Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
+          <span className="tabular-nums">{totalCount}</span>
+        </>
+      );
     }
     return null;
   };
