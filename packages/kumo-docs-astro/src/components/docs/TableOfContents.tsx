@@ -41,12 +41,21 @@ export function TableOfContents({
   headings: headingsProp,
   layout = "sidebar",
 }: TableOfContentsProps) {
+  // Track whether we've hydrated to avoid SSR/client mismatch when scraping
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const headings = useMemo(() => {
     if (headingsProp && headingsProp.length > 0) {
       return headingsProp.filter((h) => h.depth <= 2);
     }
+    // Only scrape after mount to avoid hydration mismatch
+    if (!hasMounted) return [];
     return scrapeHeadings();
-  }, [headingsProp]);
+  }, [headingsProp, hasMounted]);
 
   const [activeId, setActiveId] = useState<string>(headings[0]?.slug ?? "");
 
