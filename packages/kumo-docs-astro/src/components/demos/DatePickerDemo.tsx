@@ -104,12 +104,10 @@ export function DatePickerPopoverDemo() {
   return (
     <Popover>
       <Popover.Trigger
-        render={
-          <Button variant="outline" icon={CalendarDotsIcon}>
-            {date ? date.toLocaleDateString() : "Pick a date"}
-          </Button>
-        }
-      />
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {date ? date.toLocaleDateString() : "Pick a date"}
+      </Popover.Trigger>
       <Popover.Content className="p-3">
         <DatePicker mode="single" selected={date} onChange={setDate} />
       </Popover.Content>
@@ -132,12 +130,10 @@ export function DatePickerRangePopoverDemo() {
   return (
     <Popover>
       <Popover.Trigger
-        render={
-          <Button variant="outline" icon={CalendarDotsIcon}>
-            {formatRange()}
-          </Button>
-        }
-      />
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {formatRange()}
+      </Popover.Trigger>
       <Popover.Content className="p-3">
         <DatePicker
           mode="range"
@@ -228,12 +224,10 @@ export function DatePickerRangeWithPresetsDemo() {
   return (
     <Popover>
       <Popover.Trigger
-        render={
-          <Button variant="outline" icon={CalendarDotsIcon}>
-            {formatRange()}
-          </Button>
-        }
-      />
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {formatRange()}
+      </Popover.Trigger>
       <Popover.Content className="p-0">
         <div className="flex">
           <div className="flex flex-col gap-1 border-r border-kumo-hairline p-2 text-sm">
