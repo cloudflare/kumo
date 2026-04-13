@@ -78,19 +78,25 @@ export function TooltipDelayDemo() {
         <Tooltip
           content="Opens after 1 second"
           delay={1000}
-          render={<Button variant="secondary">1s open delay</Button>}
-        />
+          render={<Button variant="secondary" />}
+        >
+          1s open delay
+        </Tooltip>
         <Tooltip
           content="Stays open 500ms after leaving"
           closeDelay={500}
-          render={<Button variant="secondary">500ms close delay</Button>}
-        />
+          render={<Button variant="secondary" />}
+        >
+          500ms close delay
+        </Tooltip>
         <Tooltip
           content="Instant open, stays 1s"
           delay={0}
           closeDelay={1000}
-          render={<Button variant="secondary">Instant + 1s close</Button>}
-        />
+          render={<Button variant="secondary" />}
+        >
+          Instant + 1s close
+        </Tooltip>
       </div>
     </TooltipProvider>
   );

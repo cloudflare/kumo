@@ -562,7 +562,7 @@ export function HomeGrid() {
       id: "popover",
       Component: (
         <Popover>
-          <Popover.Trigger render={<Button>Open Popover</Button>} />
+          <Popover.Trigger render={<Button />}>Open Popover</Popover.Trigger>
           <Popover.Content>
             <Popover.Title>Popover Title</Popover.Title>
             <Popover.Description>This is a popover.</Popover.Description>

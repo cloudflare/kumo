@@ -52,7 +52,11 @@ import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
 import { Tooltip, Button } from "@cloudflare/kumo";
 
 export default function Example() {
-  return <Tooltip content="Tooltip text" render={<Button>Hover me</Button>} />;
+  return (
+    <Tooltip content="Tooltip text" render={<Button />}>
+      Hover me
+    </Tooltip>
+  );
 }
 ```
 
