@@ -21,6 +21,7 @@ import {
   PaginationCompoundCustomInfoDemo,
   PaginationDropdownSelectorDemo,
   PaginationPageSizeRightDemo,
+  PaginationI18nDemo,
 } from "~/components/demos/PaginationDemo";
 
 {/* Hero Demo */}
@@ -182,32 +183,9 @@ export default function Example() {
     Use the `labels` prop to customize all UI strings for different locales. All labels default to English.
   </p>
 
-```tsx
-<Pagination
-  page={page}
-  setPage={setPage}
-  perPage={10}
-  totalCount={100}
-  labels={{
-    firstPage: "Première page",
-    previousPage: "Page précédente",
-    nextPage: "Page suivante",
-    lastPage: "Dernière page",
-    pageNumber: "Numéro de page",
-    pageSize: "Taille de page",
-    perPageLabel: "Par page :",
-    showingInfo: (range, total) => (
-      <>
-        Affichage de <span className="tabular-nums">{range}</span> sur{" "}
-        <span className="tabular-nums">{total}</span>
-      </>
-    ),
-  }}
->
-  <Pagination.Info />
-  <Pagination.Controls />
-</Pagination>
-```
+<ComponentExample demo="PaginationI18nDemo">
+  <PaginationI18nDemo client:visible />
+</ComponentExample>
 
 </ComponentSection>
 
