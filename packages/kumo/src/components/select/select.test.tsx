@@ -4,6 +4,22 @@ import { useState } from "react";
 import { Select } from "./select";
 
 describe("Select", () => {
+  describe("size", () => {
+    it("applies size classes to the trigger", () => {
+      const { container } = render(
+        <Select aria-label="Pick one" size="xs">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = container.querySelector('[role="combobox"]');
+      expect(trigger).toBeTruthy();
+      expect(trigger?.className).toContain("h-5");
+      expect(trigger?.className).toContain("px-1.5");
+      expect(trigger?.className).toContain("text-xs");
+    });
+  });
+
   describe("label visibility (new behavior)", () => {
     it("shows visible label by default when label prop is provided", () => {
       render(
