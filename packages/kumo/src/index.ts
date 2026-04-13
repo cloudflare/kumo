@@ -161,11 +161,19 @@ export {
 export {
   Link,
   linkVariants,
+  KUMO_NAVIGATE_EVENT,
+  KUMO_PREFETCH_EVENT,
+  KumoNavigateEvent,
+  KumoPrefetchEvent,
   KUMO_LINK_VARIANTS,
   KUMO_LINK_DEFAULT_VARIANTS,
+  useClientRouting,
   type LinkProps,
+  type KumoLinkEventDetail,
   type KumoLinkVariant,
   type KumoLinkVariantsProps,
+  type UseClientRoutingHandlers,
+  type UseClientRoutingOptions,
 } from "./components/link";
 export { Breadcrumbs, type BreadcrumbsProps } from "./components/breadcrumbs";
 export { Empty, type EmptyProps } from "./components/empty";

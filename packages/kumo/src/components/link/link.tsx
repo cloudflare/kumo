@@ -1,4 +1,9 @@
-import { forwardRef, type SVGProps } from "react";
+import {
+  forwardRef,
+  type FocusEvent,
+  type MouseEvent,
+  type SVGProps,
+} from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "../../utils/cn";
@@ -6,6 +11,12 @@ import {
   useLinkComponent,
   type LinkComponentProps,
 } from "../../utils/link-provider";
+import {
+  KumoNavigateEvent,
+  KumoPrefetchEvent,
+  shouldUseClientRouter,
+  type KumoLinkEventSource,
+} from "./client-routing";
 
 /**
  * ExternalIcon - Visual indicator for links that open in a new tab/window.
@@ -97,7 +108,13 @@ export function linkVariants({
  */
 export type LinkProps = useRender.ComponentProps<"a"> &
   LinkComponentProps &
-  KumoLinkVariantsProps;
+  KumoLinkVariantsProps & {
+    disabled?: boolean;
+  };
+
+function getAnchorFromEventTarget(target: EventTarget | null) {
+  return target instanceof HTMLAnchorElement ? target : null;
+}
 
 /**
  * Link component for consistent inline text links.
@@ -105,6 +122,10 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  * Supports composition via `render` prop for framework-specific routing:
  * - Without render: renders via LinkProvider (default anchor or configured component)
  * - With render: merges props onto the provided element with proper ref/event handling
+ *
+ * When the link is eligible for client-side navigation, custom navigation events are
+ * dispatched on interaction, which can be handled with the `useClientRouting` hook
+ * to integrate with the application's client-side router.
  *
  * @example Basic usage
  * ```tsx
@@ -126,7 +147,16 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  * ```
  */
 const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
-  { className, variant = "inline", render, ...props },
+  {
+    className,
+    disabled = false,
+    onClick,
+    onFocus,
+    onMouseEnter,
+    variant = "inline",
+    render,
+    ...props
+  },
   ref,
 ) {
   const LinkComponent = useLinkComponent();
@@ -138,10 +168,89 @@ const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     ),
   };
 
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(event);
+
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
+
+    const anchor = getAnchorFromEventTarget(event.currentTarget);
+    if (!anchor) {
+      return;
+    }
+
+    if (!shouldUseClientRouter(anchor, event)) {
+      return;
+    }
+
+    const handledByClientRouting =
+      anchor.dispatchEvent(
+        new KumoNavigateEvent({
+          href: anchor.href,
+          anchor,
+          nativeEvent: event.nativeEvent,
+          source: "click",
+        }),
+      ) === false;
+
+    if (handledByClientRouting) {
+      event.preventDefault();
+    }
+  };
+
+  const handlePrefetch = (
+    event: MouseEvent<HTMLAnchorElement> | FocusEvent<HTMLAnchorElement>,
+    source: Extract<KumoLinkEventSource, "hover" | "focus">,
+  ) => {
+    if (event.defaultPrevented || disabled) {
+      return;
+    }
+
+    const anchor = getAnchorFromEventTarget(event.currentTarget);
+    if (!anchor) {
+      return;
+    }
+
+    if (!shouldUseClientRouter(anchor)) {
+      return;
+    }
+
+    anchor.dispatchEvent(
+      new KumoPrefetchEvent({
+        href: anchor.href,
+        anchor,
+        nativeEvent: event.nativeEvent,
+        source,
+      }),
+    );
+  };
+
+  const handleMouseEnter = (event: MouseEvent<HTMLAnchorElement>) => {
+    onMouseEnter?.(event);
+    handlePrefetch(event, "hover");
+  };
+
+  const handleFocus = (event: FocusEvent<HTMLAnchorElement>) => {
+    onFocus?.(event);
+    handlePrefetch(event, "focus");
+  };
+
   const element = useRender({
     render: render ?? <LinkComponent />,
     ref,
-    props: mergeProps<"a">(defaultProps, props, { className }),
+    props: mergeProps<"a">(defaultProps, props, {
+      "aria-disabled": disabled || undefined,
+      className,
+      onClick: handleClick,
+      onMouseEnter: handleMouseEnter,
+      onFocus: handleFocus,
+    }),
   });
 
   return element;
