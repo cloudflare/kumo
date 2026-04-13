@@ -52,11 +52,7 @@ import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
 import { Tooltip, Button } from "@cloudflare/kumo";
 
 export default function Example() {
-  return (
-    <Tooltip content="Tooltip text" asChild>
-      <Button>Hover me</Button>
-    </Tooltip>
-  );
+  return <Tooltip content="Tooltip text" render={<Button>Hover me</Button>} />;
 }
 ```
 
@@ -108,9 +104,7 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
 </TooltipProvider>
 
 // Then use Tooltip anywhere inside
-<Tooltip content="Add" asChild>
-  <Button shape="square" icon={PlusIcon} />
-</Tooltip>
+<Tooltip content="Add" render={<Button shape="square" icon={PlusIcon} />} />
 ```
 
 </ComponentSection>

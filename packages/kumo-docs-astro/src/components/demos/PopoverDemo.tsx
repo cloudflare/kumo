@@ -5,9 +5,11 @@ import { BellIcon, DotsThree } from "@phosphor-icons/react";
 export function PopoverHeroDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button shape="square" icon={BellIcon} aria-label="Notifications" />
-      </Popover.Trigger>
+      <Popover.Trigger
+        render={
+          <Button shape="square" icon={BellIcon} aria-label="Notifications" />
+        }
+      />
       <Popover.Content>
         <Popover.Title>Notifications</Popover.Title>
         <Popover.Description>
@@ -21,9 +23,7 @@ export function PopoverHeroDemo() {
 export function PopoverBasicDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>Open Popover</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button>Open Popover</Button>} />
       <Popover.Content>
         <Popover.Title>Popover Title</Popover.Title>
         <Popover.Description>
@@ -37,20 +37,20 @@ export function PopoverBasicDemo() {
 export function PopoverWithCloseDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>Open Settings</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button>Open Settings</Button>} />
       <Popover.Content>
         <Popover.Title>Settings</Popover.Title>
         <Popover.Description>
           Configure your preferences below.
         </Popover.Description>
         <div className="mt-3">
-          <Popover.Close asChild>
-            <Button variant="secondary" size="sm">
-              Close
-            </Button>
-          </Popover.Close>
+          <Popover.Close
+            render={
+              <Button variant="secondary" size="sm">
+                Close
+              </Button>
+            }
+          />
         </div>
       </Popover.Content>
     </Popover>
@@ -61,9 +61,7 @@ export function PopoverPositionDemo() {
   return (
     <div className="flex flex-wrap gap-4">
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Bottom</Button>
-        </Popover.Trigger>
+        <Popover.Trigger render={<Button variant="secondary">Bottom</Button>} />
         <Popover.Content side="bottom">
           <Popover.Title>Bottom</Popover.Title>
           <Popover.Description>
@@ -73,9 +71,7 @@ export function PopoverPositionDemo() {
       </Popover>
 
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Top</Button>
-        </Popover.Trigger>
+        <Popover.Trigger render={<Button variant="secondary">Top</Button>} />
         <Popover.Content side="top">
           <Popover.Title>Top</Popover.Title>
           <Popover.Description>Popover on top.</Popover.Description>
@@ -83,9 +79,7 @@ export function PopoverPositionDemo() {
       </Popover>
 
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Left</Button>
-        </Popover.Trigger>
+        <Popover.Trigger render={<Button variant="secondary">Left</Button>} />
         <Popover.Content side="left">
           <Popover.Title>Left</Popover.Title>
           <Popover.Description>Popover on left.</Popover.Description>
@@ -93,9 +87,7 @@ export function PopoverPositionDemo() {
       </Popover>
 
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Right</Button>
-        </Popover.Trigger>
+        <Popover.Trigger render={<Button variant="secondary">Right</Button>} />
         <Popover.Content side="right">
           <Popover.Title>Right</Popover.Title>
           <Popover.Description>Popover on right.</Popover.Description>
@@ -108,9 +100,7 @@ export function PopoverPositionDemo() {
 export function PopoverCustomContentDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>User Profile</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button>User Profile</Button>} />
       <Popover.Content className="w-64">
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-full bg-kumo-recessed" />
@@ -123,11 +113,13 @@ export function PopoverCustomContentDemo() {
           <Button variant="secondary" size="sm" className="flex-1">
             Profile
           </Button>
-          <Popover.Close asChild>
-            <Button variant="ghost" size="sm" className="flex-1">
-              Sign Out
-            </Button>
-          </Popover.Close>
+          <Popover.Close
+            render={
+              <Button variant="ghost" size="sm" className="flex-1">
+                Sign Out
+              </Button>
+            }
+          />
         </div>
       </Popover.Content>
     </Popover>
@@ -137,9 +129,11 @@ export function PopoverCustomContentDemo() {
 export function PopoverOpenOnHoverDemo() {
   return (
     <Popover>
-      <Popover.Trigger openOnHover delay={200} asChild>
-        <Button variant="secondary">Hover Me</Button>
-      </Popover.Trigger>
+      <Popover.Trigger
+        openOnHover
+        delay={200}
+        render={<Button variant="secondary">Hover Me</Button>}
+      />
       <Popover.Content>
         <Popover.Title>Hover Triggered</Popover.Title>
         <Popover.Description>
@@ -147,11 +141,13 @@ export function PopoverOpenOnHoverDemo() {
           interactive content like buttons and links.
         </Popover.Description>
         <div className="mt-3">
-          <Popover.Close asChild>
-            <Button variant="secondary" size="sm">
-              Got it
-            </Button>
-          </Popover.Close>
+          <Popover.Close
+            render={
+              <Button variant="secondary" size="sm">
+                Got it
+              </Button>
+            }
+          />
         </div>
       </Popover.Content>
     </Popover>
@@ -234,11 +230,13 @@ export function PopoverVirtualAnchorDemo() {
             The popover anchors to the selected row, not the icon button.
           </Popover.Description>
           <div className="mt-3">
-            <Popover.Close asChild>
-              <Button size="sm" variant="secondary">
-                Close
-              </Button>
-            </Popover.Close>
+            <Popover.Close
+              render={
+                <Button size="sm" variant="secondary">
+                  Close
+                </Button>
+              }
+            />
           </div>
         </Popover.Content>
       </Popover>

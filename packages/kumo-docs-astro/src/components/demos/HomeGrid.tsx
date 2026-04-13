@@ -242,16 +242,23 @@ export function HomeGrid() {
       Component: (
         <TooltipProvider>
           <div className="flex gap-2">
-            <Tooltip content="Add" asChild open>
-              <Button shape="square" icon={PlusIcon} aria-label="Add" />
-            </Tooltip>
-            <Tooltip content="Change language" asChild>
-              <Button
-                shape="square"
-                icon={TranslateIcon}
-                aria-label="Change language"
-              />
-            </Tooltip>
+            <Tooltip
+              content="Add"
+              open
+              render={
+                <Button shape="square" icon={PlusIcon} aria-label="Add" />
+              }
+            />
+            <Tooltip
+              content="Change language"
+              render={
+                <Button
+                  shape="square"
+                  icon={TranslateIcon}
+                  aria-label="Change language"
+                />
+              }
+            />
           </div>
         </TooltipProvider>
       ),

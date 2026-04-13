@@ -70,7 +70,10 @@ type BasePopoverTriggerProps = ComponentPropsWithoutRef<
 >;
 
 export type PopoverTriggerProps = BasePopoverTriggerProps & {
-  /** When true, the trigger element will be the child element */
+  /**
+   * @deprecated Use the `render` prop instead.
+   * @example `<Popover.Trigger render={<Button />}>` instead of `<Popover.Trigger asChild><Button /></Popover.Trigger>`
+   */
   asChild?: boolean;
 };
 
@@ -78,17 +81,21 @@ function PopoverTrigger({
   children,
   className,
   asChild,
+  render,
   ...props
 }: PopoverTriggerProps) {
+  // Support both render prop (preferred) and deprecated asChild pattern
+  const resolvedRender =
+    render ??
+    (asChild ? (children as BasePopoverTriggerProps["render"]) : undefined);
+
   return (
     <PopoverBase.Trigger
       className={className}
-      render={
-        asChild ? (children as BasePopoverTriggerProps["render"]) : undefined
-      }
+      render={resolvedRender}
       {...props}
     >
-      {asChild ? undefined : children}
+      {resolvedRender ? undefined : children}
     </PopoverBase.Trigger>
   );
 }
@@ -275,7 +282,10 @@ PopoverDescription.displayName = "Popover.Description";
 type BasePopoverCloseProps = ComponentPropsWithoutRef<typeof PopoverBase.Close>;
 
 export type PopoverCloseProps = BasePopoverCloseProps & {
-  /** When true, the close element will be the child element */
+  /**
+   * @deprecated Use the `render` prop instead.
+   * @example `<Popover.Close render={<Button />}>` instead of `<Popover.Close asChild><Button /></Popover.Close>`
+   */
   asChild?: boolean;
 };
 
@@ -283,17 +293,17 @@ function PopoverClose({
   children,
   className,
   asChild,
+  render,
   ...props
 }: PopoverCloseProps) {
+  // Support both render prop (preferred) and deprecated asChild pattern
+  const resolvedRender =
+    render ??
+    (asChild ? (children as BasePopoverCloseProps["render"]) : undefined);
+
   return (
-    <PopoverBase.Close
-      className={className}
-      render={
-        asChild ? (children as BasePopoverCloseProps["render"]) : undefined
-      }
-      {...props}
-    >
-      {asChild ? undefined : children}
+    <PopoverBase.Close className={className} render={resolvedRender} {...props}>
+      {resolvedRender ? undefined : children}
     </PopoverBase.Close>
   );
 }
@@ -348,9 +358,7 @@ function ArrowSvg(props: React.ComponentProps<"svg">) {
  * @example
  * ```tsx
  * <Popover>
- *   <Popover.Trigger asChild>
- *     <Button>Open</Button>
- *   </Popover.Trigger>
+ *   <Popover.Trigger render={<Button>Open</Button>} />
  *   <Popover.Content>
  *     <Popover.Title>Notifications</Popover.Title>
  *     <Popover.Description>You are all caught up!</Popover.Description>
