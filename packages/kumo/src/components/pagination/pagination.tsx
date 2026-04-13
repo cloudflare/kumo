@@ -22,6 +22,52 @@ const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+// ============================================================================
+// i18n Labels
+// ============================================================================
+
+/**
+ * Labels for internationalization of Pagination component.
+ * All labels have English defaults and can be overridden for other locales.
+ */
+export interface PaginationLabels {
+  /** Aria label for the first page button. @default "First page" */
+  firstPage?: string;
+  /** Aria label for the previous page button. @default "Previous page" */
+  previousPage?: string;
+  /** Aria label for the next page button. @default "Next page" */
+  nextPage?: string;
+  /** Aria label for the last page button. @default "Last page" */
+  lastPage?: string;
+  /** Aria label for the page number input/select. @default "Page number" */
+  pageNumber?: string;
+  /** Aria label for the page size select. @default "Page size" */
+  pageSize?: string;
+  /** Label text shown before the page size selector. @default "Per page:" */
+  perPageLabel?: string;
+  /**
+   * Function to format the "Showing X-Y of Z" info text.
+   * @default (range, total) => `Showing ${range} of ${total}`
+   */
+  showingInfo?: (range: string, total: number) => ReactNode;
+}
+
+const DEFAULT_LABELS: Required<PaginationLabels> = {
+  firstPage: "First page",
+  previousPage: "Previous page",
+  nextPage: "Next page",
+  lastPage: "Last page",
+  pageNumber: "Page number",
+  pageSize: "Page size",
+  perPageLabel: "Per page:",
+  showingInfo: (range, total) => (
+    <>
+      Showing <span className="tabular-nums">{range}</span> of{" "}
+      <span className="tabular-nums">{total}</span>
+    </>
+  ),
+};
+
 /** Pagination controls variant definitions. */
 export const KUMO_PAGINATION_VARIANTS = {
   controls: {
@@ -71,6 +117,7 @@ interface PaginationContextValue {
   setPage: (page: number) => void;
   editingPage: number;
   setEditingPage: (page: number) => void;
+  labels: Required<PaginationLabels>;
 }
 
 const PaginationContext = createContext<PaginationContextValue | null>(null);
@@ -102,17 +149,14 @@ export interface PaginationInfoProps {
 }
 
 function PaginationInfo({ children, className }: PaginationInfoProps) {
-  const { page, perPage, totalCount, pageShowingRange } =
+  const { page, perPage, totalCount, pageShowingRange, labels } =
     usePaginationContext();
 
-  const content = children ? (
-    children({ page, perPage, totalCount, pageShowingRange })
-  ) : totalCount && totalCount > 0 ? (
-    <>
-      Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
-      <span className="tabular-nums">{totalCount}</span>
-    </>
-  ) : null;
+  const content = children
+    ? children({ page, perPage, totalCount, pageShowingRange })
+    : totalCount && totalCount > 0
+      ? labels.showingInfo(pageShowingRange, totalCount)
+      : null;
 
   return (
     <div
@@ -137,7 +181,10 @@ export interface PaginationPageSizeProps {
   onChange: (size: number) => void;
   /** Available page size options */
   options?: number[];
-  /** Label text shown before the selector */
+  /**
+   * Label text shown before the selector.
+   * @default "Per page:" (or i18n override from Pagination labels prop)
+   */
   label?: ReactNode;
   /** Additional CSS classes */
   className?: string;
@@ -147,17 +194,23 @@ function PaginationPageSize({
   value,
   onChange,
   options = DEFAULT_PAGE_SIZE_OPTIONS as unknown as number[],
-  label = "Per page:",
+  label,
   className,
 }: PaginationPageSizeProps) {
+  const { labels } = usePaginationContext();
+  // Use explicit label if provided, otherwise fall back to i18n label from context
+  const displayLabel = label ?? labels.perPageLabel;
+
   return (
     <div
       data-slot="pagination-page-size"
       className={cn("flex items-center gap-2", className)}
     >
-      {label && <span className="text-sm text-kumo-strong">{label}</span>}
+      {displayLabel && (
+        <span className="text-sm text-kumo-strong">{displayLabel}</span>
+      )}
       <Select
-        aria-label="Page size"
+        aria-label={labels.pageSize}
         value={value}
         onValueChange={(v) => onChange(v as number)}
       >
@@ -197,7 +250,7 @@ function PaginationControls({
   pageSelector = "input",
   className,
 }: PaginationControlsProps) {
-  const { page, maxPage, setPage, editingPage, setEditingPage } =
+  const { page, maxPage, setPage, editingPage, setEditingPage, labels } =
     usePaginationContext();
 
   return (
@@ -210,7 +263,7 @@ function PaginationControls({
           {controls === "full" && (
             <InputGroup.Button
               variant="secondary"
-              aria-label="First page"
+              aria-label={labels.firstPage}
               disabled={page <= 1}
               onClick={() => {
                 setPage(1);
@@ -222,7 +275,7 @@ function PaginationControls({
           )}
           <InputGroup.Button
             variant="secondary"
-            aria-label="Previous page"
+            aria-label={labels.previousPage}
             disabled={page <= 1}
             onClick={() => {
               const previousPage = Math.max(page - 1, 1);
@@ -235,7 +288,7 @@ function PaginationControls({
           {controls === "full" &&
             (pageSelector === "dropdown" ? (
               <Select
-                aria-label="Page number"
+                aria-label={labels.pageNumber}
                 className="rounded-none ring-kumo-hairline"
                 value={page}
                 onValueChange={(value) => {
@@ -254,7 +307,7 @@ function PaginationControls({
               <InputGroup.Input
                 style={{ width: 50 }}
                 className="text-center"
-                aria-label="Page number"
+                aria-label={labels.pageNumber}
                 value={editingPage}
                 onValueChange={(value: string) => {
                   setEditingPage(Number(value));
@@ -280,7 +333,7 @@ function PaginationControls({
             ))}
           <InputGroup.Button
             variant="secondary"
-            aria-label="Next page"
+            aria-label={labels.nextPage}
             disabled={page === maxPage}
             onClick={() => {
               const nextPage = Math.min(page + 1, maxPage);
@@ -293,7 +346,7 @@ function PaginationControls({
           {controls === "full" && (
             <InputGroup.Button
               variant="secondary"
-              aria-label="Last page"
+              aria-label={labels.lastPage}
               disabled={page === maxPage}
               onClick={() => {
                 setPage(maxPage);
@@ -350,6 +403,26 @@ interface PaginationBaseProps {
   totalCount?: number;
   /** Additional CSS classes for the container */
   className?: string;
+  /**
+   * Labels for internationalization. All labels have English defaults.
+   * @example
+   * ```tsx
+   * <Pagination
+   *   labels={{
+   *     firstPage: "Première page",
+   *     previousPage: "Page précédente",
+   *     nextPage: "Page suivante",
+   *     lastPage: "Dernière page",
+   *     pageNumber: "Numéro de page",
+   *     pageSize: "Taille de page",
+   *     perPageLabel: "Par page :",
+   *     showingInfo: (range, total) => `Affichage de ${range} sur ${total}`,
+   *   }}
+   *   // ...
+   * />
+   * ```
+   */
+  labels?: PaginationLabels;
 }
 
 /**
@@ -392,8 +465,7 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  * ```
  */
 export interface PaginationLegacyProps
-  extends PaginationBaseProps,
-    KumoPaginationVariantsProps {
+  extends PaginationBaseProps, KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {
@@ -442,7 +514,15 @@ export type PaginationProps = PaginationCompoundProps | PaginationLegacyProps;
  * ```
  */
 function PaginationRoot(props: PaginationProps) {
-  const { page = 1, perPage, totalCount, setPage, children, className } = props;
+  const {
+    page = 1,
+    perPage,
+    totalCount,
+    setPage,
+    children,
+    className,
+    labels: labelsProp,
+  } = props;
 
   // Extract legacy props (only present when children is not provided)
   const text = "text" in props ? props.text : undefined;
@@ -451,6 +531,12 @@ function PaginationRoot(props: PaginationProps) {
       ? (props.controls ?? KUMO_PAGINATION_DEFAULT_VARIANTS.controls)
       : KUMO_PAGINATION_DEFAULT_VARIANTS.controls;
   const [editingPage, setEditingPage] = useState<number>(1);
+
+  // Merge provided labels with defaults
+  const labels = useMemo<Required<PaginationLabels>>(
+    () => ({ ...DEFAULT_LABELS, ...labelsProp }),
+    [labelsProp],
+  );
 
   useEffect(() => {
     setEditingPage(page);
@@ -479,6 +565,7 @@ function PaginationRoot(props: PaginationProps) {
     setPage,
     editingPage,
     setEditingPage,
+    labels,
   };
 
   // Compound component mode: render children within context
@@ -500,12 +587,7 @@ function PaginationRoot(props: PaginationProps) {
     if (text) {
       return text({ page, perPage, totalCount, pageShowingRange });
     } else if (totalCount && totalCount > 0) {
-      return (
-        <>
-          Showing <span className="tabular-nums">{pageShowingRange}</span> of{" "}
-          <span className="tabular-nums">{totalCount}</span>
-        </>
-      );
+      return labels.showingInfo(pageShowingRange, totalCount);
     }
     return null;
   };
