@@ -54,8 +54,8 @@ describe("validateDescription", () => {
         WITH_CHANGESET,
       );
       assert.ok(
-        errors.includes(
-          "Your PR must have bonk review, or provide justification for why automated review is not possible",
+        errors.some(
+          (e) => e.includes("bonk review") && e.includes("same line"),
         ),
       );
     });
@@ -74,8 +74,8 @@ describe("validateDescription", () => {
         WITH_CHANGESET,
       );
       assert.ok(
-        errors.includes(
-          "Your PR must have bonk review, or provide justification for why automated review is not possible",
+        errors.some(
+          (e) => e.includes("bonk review") && e.includes("same line"),
         ),
       );
     });
@@ -94,11 +94,7 @@ describe("validateDescription", () => {
         NO_LABELS,
         WITH_CHANGESET,
       );
-      assert.ok(
-        errors.includes(
-          "Your PR must have bonk review, or provide justification for why automated review is not possible",
-        ),
-      );
+      assert.ok(errors.some((e) => e.includes("bonk review")));
     });
 
     it("allows indented checkboxes", () => {
@@ -124,6 +120,18 @@ describe("validateDescription", () => {
 - Tests
 -  [x]  Tests included/updated
       `;
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        NO_LABELS,
+        WITH_CHANGESET,
+      );
+      assert.deepStrictEqual(errors, []);
+    });
+
+    it("allows tabs in indentation", () => {
+      const body =
+        "- Reviews\n\t- [x] bonk has reviewed the change\n- Tests\n\t- [x] Tests included/updated";
       const errors = validateDescription(
         "Test PR",
         body,
@@ -197,9 +205,7 @@ describe("validateDescription", () => {
         WITH_CHANGESET,
       );
       assert.ok(
-        errors.includes(
-          "Your PR must include tests, or provide justification for why no tests are required",
-        ),
+        errors.some((e) => e.includes("tests") && e.includes("same line")),
       );
     });
 
@@ -217,9 +223,7 @@ describe("validateDescription", () => {
         WITH_CHANGESET,
       );
       assert.ok(
-        errors.includes(
-          "Your PR must include tests, or provide justification for why no tests are required",
-        ),
+        errors.some((e) => e.includes("tests") && e.includes("same line")),
       );
     });
 
@@ -238,11 +242,7 @@ describe("validateDescription", () => {
         NO_LABELS,
         WITH_CHANGESET,
       );
-      assert.ok(
-        errors.includes(
-          "Your PR must include tests, or provide justification for why no tests are required",
-        ),
-      );
+      assert.ok(errors.some((e) => e.includes("tests")));
     });
   });
 

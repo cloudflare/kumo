@@ -55,7 +55,8 @@ export function validateDescription(
     )
   ) {
     errors.push(
-      "Your PR must have bonk review, or provide justification for why automated review is not possible",
+      "Your PR must have bonk review, or provide justification for why automated review is not possible. " +
+        "If providing a justification, it must be on the same line as the checkbox (e.g., '- [x] automated review not possible because: reason here').",
     );
   }
 
@@ -74,7 +75,8 @@ export function validateDescription(
     )
   ) {
     errors.push(
-      "Your PR must include tests, or provide justification for why no tests are required",
+      "Your PR must include tests, or provide justification for why no tests are required. " +
+        "If providing a justification, it must be on the same line as the checkbox.",
     );
   }
 
