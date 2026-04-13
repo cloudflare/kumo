@@ -45,7 +45,6 @@ Set `data-mode` on a parent element to control light/dark mode. Never use Tailwi
 <html data-mode="dark">   // Dark mode
 
 // Components automatically adapt - no dark: variants needed
-
 <div className="bg-kumo-base text-kumo-default" />`} lang="tsx" />
 
 ## Themes
@@ -64,7 +63,6 @@ Themes override semantic token values while preserving the same token names. Set
 </div>
 
 // Themes work with both light and dark mode
-
 <html data-mode="dark" data-theme="fedramp">`} lang="tsx" />
 
 ### Theme Generator
@@ -75,11 +73,9 @@ Themes are defined in a centralized config and generated as CSS files. The theme
 pnpm --filter @cloudflare/kumo codegen:themes --list
 
 # Generate theme CSS files
-
 pnpm --filter @cloudflare/kumo codegen:themes
 
 # Preview changes without writing files
-
 pnpm --filter @cloudflare/kumo codegen:themes --dry-run`} lang="bash" />
 
 Theme config: `packages/kumo/scripts/theme-generator/config.ts`
@@ -138,44 +134,27 @@ Surfaces establish depth and layering in the UI. Use them in order from the oute
     </thead>
     <tbody>
       <tr>
-        <td>
-          <code>bg-kumo-canvas</code>
-        </td>
+        <td><code>bg-kumo-canvas</code></td>
         <td>The outermost page background — sits behind everything</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-base</code>
-        </td>
+        <td><code>bg-kumo-base</code></td>
         <td>Default component background</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-elevated</code>
-        </td>
-        <td>
-          Slightly elevated surface, e.g. <code>LayerCard.Secondary</code>
-        </td>
+        <td><code>bg-kumo-elevated</code></td>
+        <td>Slightly elevated surface, e.g. <code>LayerCard.Secondary</code></td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-recessed</code>
-        </td>
-        <td>
-          Recessed surface with a subtly darker fill, e.g. segmented{" "}
-          <code>Tabs</code> background
-        </td>
+        <td><code>bg-kumo-recessed</code></td>
+        <td>Recessed surface with a subtly darker fill, e.g. segmented <code>Tabs</code> background</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-tint</code>
-        </td>
+        <td><code>bg-kumo-tint</code></td>
         <td>Subtle tinted background for tables or hover states</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-contrast</code>
-        </td>
+        <td><code>bg-kumo-contrast</code></td>
         <td>High-contrast, inverted background</td>
       </tr>
     </tbody>
@@ -198,15 +177,11 @@ Surfaces establish depth and layering in the UI. Use them in order from the oute
     </thead>
     <tbody>
       <tr>
-        <td>
-          <code>bg-kumo-brand</code>
-        </td>
+        <td><code>bg-kumo-brand</code></td>
         <td>Primary brand background</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-brand-hover</code>
-        </td>
+        <td><code>bg-kumo-brand-hover</code></td>
         <td>Hover state for brand backgrounds</td>
       </tr>
     </tbody>
@@ -231,27 +206,19 @@ Each status color comes in two variants: a solid color for icons and indicators,
     </thead>
     <tbody>
       <tr>
-        <td>
-          <code>bg-kumo-info</code>
-        </td>
+        <td><code>bg-kumo-info</code></td>
         <td>Info indicator (icon, dot, bar)</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-success</code>
-        </td>
+        <td><code>bg-kumo-success</code></td>
         <td>Success indicator</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-warning</code>
-        </td>
+        <td><code>bg-kumo-warning</code></td>
         <td>Warning indicator</td>
       </tr>
       <tr>
-        <td>
-          <code>bg-kumo-danger</code>
-        </td>
+        <td><code>bg-kumo-danger</code></td>
         <td>Error/destructive indicator</td>
       </tr>
     </tbody>
@@ -285,69 +252,47 @@ Use the solid token on icons, status dots, borders and rings. Banners and badges
     </thead>
     <tbody>
       <tr>
-        <td>
-          <code>text-kumo-default</code>
-        </td>
+        <td><code>text-kumo-default</code></td>
         <td>Primary body text</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-strong</code>
-        </td>
+        <td><code>text-kumo-strong</code></td>
         <td>Secondary text with slightly less contrast than default</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-subtle</code>
-        </td>
+        <td><code>text-kumo-subtle</code></td>
         <td>Muted text for descriptions, captions, or secondary labels</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-inactive</code>
-        </td>
+        <td><code>text-kumo-inactive</code></td>
         <td>Disabled or inactive text</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-placeholder</code>
-        </td>
+        <td><code>text-kumo-placeholder</code></td>
         <td>Placeholder text in inputs</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-inverse</code>
-        </td>
+        <td><code>text-kumo-inverse</code></td>
         <td>Text intended for use on high-contrast or inverted backgrounds</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-link</code>
-        </td>
+        <td><code>text-kumo-link</code></td>
         <td>Link text</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-info</code>
-        </td>
+        <td><code>text-kumo-info</code></td>
         <td>Info-colored text</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-success</code>
-        </td>
+        <td><code>text-kumo-success</code></td>
         <td>Success-colored text</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-warning</code>
-        </td>
+        <td><code>text-kumo-warning</code></td>
         <td>Warning-colored text</td>
       </tr>
       <tr>
-        <td>
-          <code>text-kumo-danger</code>
-        </td>
+        <td><code>text-kumo-danger</code></td>
         <td>Error/destructive text</td>
       </tr>
     </tbody>
@@ -376,19 +321,11 @@ Use the solid token on icons, status dots, borders and rings. Banners and badges
             <Badge variant="info">New</Badge>
           </span>
         </td>
-        <td>
-          A border/ring color to distinguish between flat surfaces where no
-          shadow is present (i.e. <code>LayerCard</code>).
-        </td>
+        <td>A border/ring color to distinguish between flat surfaces where no shadow is present (i.e. <code>LayerCard</code>).</td>
       </tr>
       <tr>
-        <td>
-          <code>kumo-hairline</code>
-        </td>
-        <td>
-          A thicker border/ring color that defines the edge of an elevated
-          surface alongside a shadow.
-        </td>
+        <td><code>kumo-hairline</code></td>
+        <td>A thicker border/ring color that defines the edge of an elevated surface alongside a shadow.</td>
       </tr>
     </tbody>
   </table>
