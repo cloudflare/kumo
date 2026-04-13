@@ -7,6 +7,7 @@ sourceFile: "components/meter"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -31,15 +32,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Meter } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { Meter } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Meter } from "@cloudflare/kumo/components/meter";
-```
+<CodeBlock
+  code={`import { Meter } from "@cloudflare/kumo/components/meter";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -48,13 +48,11 @@ import { Meter } from "@cloudflare/kumo/components/meter";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { Meter } from "@cloudflare/kumo";
+<CodeBlock code={`import { Meter } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Meter label="Storage used" value={65} />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

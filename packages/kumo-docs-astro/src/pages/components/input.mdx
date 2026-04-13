@@ -55,8 +55,7 @@ import {
     Use the `label` prop to enable the built-in Field wrapper with label, description, and error support.
   </p>
 
-```tsx
-import { Input } from "@cloudflare/kumo";
+<CodeBlock code={`import { Input } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -66,8 +65,7 @@ export default function Example() {
       description="We'll never share your email"
     />
   );
-}
-```
+}`} lang="tsx" />
 
 <Heading level={3}>Bare Input (Custom Layouts)</Heading>
 <p>
@@ -75,13 +73,11 @@ export default function Example() {
   or `aria-labelledby` for accessibility.
 </p>
 
-```tsx
-import { Input } from "@cloudflare/kumo";
+<CodeBlock code={`import { Input } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Input placeholder="Search..." aria-label="Search products" />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

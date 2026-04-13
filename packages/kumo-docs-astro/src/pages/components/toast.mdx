@@ -7,6 +7,7 @@ sourceFile: "components/toast"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -37,15 +38,17 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Toasty, useKumoToastManager } from "@cloudflare/kumo";
-```
+<CodeBlock
+  code={`import { Toasty, useKumoToastManager } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";
-```
+<CodeBlock
+  code={`import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -57,8 +60,7 @@ import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";
     The toast system consists of two parts: the `Toasty` provider component and the `useKumoToastManager()` hook for triggering toasts.
   </p>
 
-```tsx
-import { Toasty, useKumoToastManager, Button } from "@cloudflare/kumo";
+<CodeBlock code={`import { Toasty, useKumoToastManager, Button } from "@cloudflare/kumo";
 
 function ToastTrigger() {
   const toastManager = useKumoToastManager();
@@ -84,8 +86,7 @@ export default function App() {
       {/* Rest of your app */}
     </Toasty>
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
@@ -97,14 +98,12 @@ export default function App() {
     Wrap your application (or a section of it) with the `Toasty` provider. This sets up the toast context and renders the toast viewport.
   </p>
 
-```tsx
-// In your app root or layout
+<CodeBlock code={`// In your app root or layout
 import { Toasty } from "@cloudflare/kumo";
 
 export function Layout({ children }) {
   return <Toasty>{children}</Toasty>;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
@@ -199,8 +198,7 @@ export function Layout({ children }) {
 <Heading level={3}>useKumoToastManager()</Heading>
 <p>A hook that returns the toast manager for creating toasts.</p>
 
-```tsx
-const toastManager = useKumoToastManager();
+<CodeBlock code={`const toastManager = useKumoToastManager();
 
 // Add a toast
 toastManager.add(options);
@@ -210,8 +208,7 @@ toastManager.promise(asyncFn(), {
   loading: options,
   success: (data) => options,
   error: (err) => options,
-});
-```
+});`} lang="tsx" />
 
 <Heading level={3}>Toast Options</Heading>
 <p>Options passed to `toastManager.add()` and promise handlers.</p>

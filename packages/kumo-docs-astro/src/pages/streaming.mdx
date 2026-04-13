@@ -5,6 +5,7 @@ description: "Render AI-generated UI from JSON using Kumo's auto-generated schem
 ---
 
 import Callout from "~/components/docs/Callout.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 
 ## Overview
 
@@ -35,21 +36,21 @@ The generated schemas in `ai/schemas.ts` include:
 
 ## Installation
 
-```ts
-import {
+<CodeBlock
+  code={`import {
   createKumoCatalog,
   initCatalog,
   resolveProps,
   evaluateVisibility,
-} from "@cloudflare/kumo/catalog";
-```
+} from "@cloudflare/kumo/catalog";`}
+  lang="ts"
+/>
 
 ## Creating a Catalog
 
 Create a catalog instance that validates AI-generated JSON against the auto-generated schemas:
 
-```ts
-import { createKumoCatalog, initCatalog } from "@cloudflare/kumo/catalog";
+<CodeBlock code={`import { createKumoCatalog, initCatalog } from "@cloudflare/kumo/catalog";
 
 // Create a catalog with optional actions
 const catalog = createKumoCatalog({
@@ -67,15 +68,14 @@ const result = catalog.validateTree(aiGeneratedJson);
 if (result.success) {
   // Render the validated tree
   renderTree(result.data);
-}
-```
+}`} lang="ts" />
 
 ## UI Tree Format
 
 The UI tree uses a flat structure optimized for LLM generation and streaming. Elements reference each other by key rather than nesting, enabling progressive rendering as elements stream in.
 
-```json
-{
+<CodeBlock
+  code={`{
   "root": "card-1",
   "elements": {
     "card-1": {
@@ -114,8 +114,9 @@ The UI tree uses a flat structure optimized for LLM generation and streaming. El
       }
     }
   }
-}
-```
+}`}
+  lang="json"
+/>
 
 **Why a flat structure?**
 
@@ -128,8 +129,7 @@ The UI tree uses a flat structure optimized for LLM generation and streaming. El
 
 Props can reference values from a data model using JSON Pointer paths. This allows the AI to declare data bindings that your application resolves at render time.
 
-```ts
-import { resolveProps, resolveDynamicValue } from "@cloudflare/kumo/catalog";
+<CodeBlock code={`import { resolveProps, resolveDynamicValue } from "@cloudflare/kumo/catalog";
 
 // Data model backing the UI
 const dataModel = {
@@ -155,15 +155,13 @@ const resolved = resolveProps(props, dataModel);
 
 // Or resolve individual values
 const name = resolveDynamicValue({ path: "/user/name" }, dataModel);
-// "Alice"
-```
+// "Alice"`} lang="ts" />
 
 ## Visibility Conditions
 
 Elements can be conditionally rendered based on data values, authentication state, or complex logic expressions.
 
-```ts
-import {
+<CodeBlock code={`import {
   evaluateVisibility,
   createVisibilityContext,
 } from "@cloudflare/kumo/catalog";
@@ -203,8 +201,7 @@ evaluateVisibility(
     ],
   },
   ctx,
-);
-```
+);`} lang="ts" />
 
 ### Available Operators
 
@@ -221,8 +218,7 @@ evaluateVisibility(
 
 Elements can declare actions that your application handles. The AI describes the intent, and your handlers execute the logic.
 
-```ts
-// In your UI tree element
+<CodeBlock code={`// In your UI tree element
 {
   "key": "delete-btn",
   "type": "Button",
@@ -254,19 +250,17 @@ const catalog = createKumoCatalog({
     delete_item: {
       description: "Delete an item by ID",
       params: {
-        itemId: { type: "string", description: "Item ID to delete" }
-      }
-    }
-  }
-});
-```
+        itemId: { type: "string", description: "Item ID to delete" },
+      },
+    },
+  },
+});`} lang="ts" />
 
 ## Validation
 
 The catalog validates AI-generated JSON against auto-generated Zod schemas derived from component TypeScript types.
 
-```ts
-// Validate a complete tree
+<CodeBlock code={`// Validate a complete tree
 const result = catalog.validateTree(aiJson);
 
 if (result.success) {
@@ -289,15 +283,13 @@ catalog.hasComponent("Foobar"); // false
 
 // List all component names
 console.log(catalog.componentNames);
-// ["Badge", "Banner", "Button", ...]
-```
+// ["Badge", "Banner", "Button", ...]`} lang="ts" />
 
 ## AI Prompt Generation
 
 Generate prompts describing the catalog for AI models:
 
-```ts
-const prompt = catalog.generatePrompt();
+<CodeBlock code={`const prompt = catalog.generatePrompt();
 
 // Returns markdown describing:
 // - Available components
@@ -306,21 +298,19 @@ const prompt = catalog.generatePrompt();
 // - Dynamic value syntax
 
 // Use in your LLM prompt
-const systemPrompt = `
+const systemPrompt = \`
 You are a UI generation assistant.
 
-${catalog.generatePrompt()}
+\${catalog.generatePrompt()}
 
 Generate UI based on the user's request.
-`;
-```
+\`;`} lang="ts" />
 
 ## Type Exports
 
 All types are exported for TypeScript integration:
 
-```ts
-import type {
+<CodeBlock code={`import type {
   // Core types
   UIElement,
   UITree,
@@ -348,15 +338,13 @@ import type {
   KumoCatalog,
   CatalogConfig,
   ValidationResult,
-} from "@cloudflare/kumo/catalog";
-```
+} from "@cloudflare/kumo/catalog";`} lang="ts" />
 
 ## Full Example
 
 A complete example showing catalog creation, validation, and rendering:
 
-```tsx
-import {
+<CodeBlock code={`import {
   createKumoCatalog,
   initCatalog,
   resolveProps,
@@ -439,8 +427,7 @@ function renderElement(element, elements) {
 
 // 5. Render the tree
 const tree = result.data;
-const ui = renderElement(tree.elements[tree.root], tree.elements);
-```
+const ui = renderElement(tree.elements[tree.root], tree.elements);`} lang="tsx" />
 
 ## Key Benefits
 

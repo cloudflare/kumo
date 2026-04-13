@@ -8,6 +8,7 @@ baseUIComponent: "switch"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -36,15 +37,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Switch } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { Switch } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Switch } from "@cloudflare/kumo/components/switch";
-```
+<CodeBlock
+  code={`import { Switch } from "@cloudflare/kumo/components/switch";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -53,8 +53,7 @@ import { Switch } from "@cloudflare/kumo/components/switch";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { Switch } from "@cloudflare/kumo";
+<CodeBlock code={`import { Switch } from "@cloudflare/kumo";
 import { useState } from "react";
 
 export default function Example() {
@@ -63,8 +62,7 @@ export default function Example() {
   return (
     <Switch checked={checked} onCheckedChange={(val) => setChecked(val)} />
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

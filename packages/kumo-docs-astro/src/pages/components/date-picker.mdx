@@ -6,6 +6,7 @@ sourceFile: "components/date-picker"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
@@ -34,18 +35,20 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { DatePicker, type DateRange } from "@cloudflare/kumo";
-```
+<CodeBlock
+  code={`import { DatePicker, type DateRange } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import {
+<CodeBlock
+  code={`import {
   DatePicker,
   type DateRange,
-} from "@cloudflare/kumo/components/date-picker";
-```
+} from "@cloudflare/kumo/components/date-picker";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -59,16 +62,14 @@ import {
     `range`.
   </p>
 
-```tsx
-import { useState } from "react";
+<CodeBlock code={`import { useState } from "react";
 import { DatePicker } from "@cloudflare/kumo";
 
 export default function Example() {
   const [date, setDate] = useState<Date>();
 
   return <DatePicker mode="single" selected={date} onChange={setDate} />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
@@ -148,8 +149,7 @@ export default function Example() {
     Here's a complete example showing how to compose DatePicker with Popover:
   </p>
 
-```tsx
-import { useState } from "react";
+<CodeBlock code={`import { useState } from "react";
 import { DatePicker, Popover, Button } from "@cloudflare/kumo";
 import { CalendarDotsIcon } from "@phosphor-icons/react";
 
@@ -172,8 +172,7 @@ export function DatePickerDropdown() {
       </Popover.Content>
     </Popover>
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

@@ -5,6 +5,7 @@ description: "A card component with a layered visual effect, perfect for navigat
 sourceFile: "components/layer-card"
 ---
 
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -29,15 +30,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { LayerCard } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { LayerCard } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { LayerCard } from "@cloudflare/kumo/components/layer-card";
-```
+<CodeBlock
+  code={`import { LayerCard } from "@cloudflare/kumo/components/layer-card";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -46,8 +46,7 @@ import { LayerCard } from "@cloudflare/kumo/components/layer-card";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { LayerCard } from "@cloudflare/kumo";
+<CodeBlock code={`import { LayerCard } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -56,8 +55,7 @@ export default function Example() {
       <LayerCard.Primary>Learn how to use Kumo components</LayerCard.Primary>
     </LayerCard>
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

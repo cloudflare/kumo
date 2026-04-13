@@ -7,6 +7,7 @@ sourceFile: "code"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   CodeHighlightedBasicDemo,
@@ -57,9 +58,10 @@ import {
     CodeHighlighted is exported from a separate entry point to avoid bundling Shiki for apps that don't need it.
   </p>
 
-```tsx
-import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-```
+<CodeBlock
+  code={`import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";`}
+  lang="tsx"
+/>
 
   <div class="mt-4 rounded-md border border-kumo-warning/20 bg-kumo-warning/5 p-4">
     <p class="text-sm text-kumo-strong">
@@ -78,8 +80,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
     All `CodeHighlighted` components inside share the same Shiki instance.
   </p>
 
-```tsx
-import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+<CodeBlock code={`import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 
 export function App() {
   return (
@@ -91,8 +92,7 @@ export function App() {
       <CodeHighlighted code="const x = 1;" lang="typescript" />
     </ShikiProvider>
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
@@ -207,21 +207,18 @@ export function App() {
 
 <h4 class="mb-3 text-base font-medium">One-off highlighting</h4>
 
-```tsx
-// Next.js RSC or Astro
+<CodeBlock code={`// Next.js RSC or Astro
 import { highlightCode } from "@cloudflare/kumo/code/server";
 
 export default async function Page() {
-  const html = await highlightCode(`const x = 1;`, "typescript");
+  const html = await highlightCode(\`const x = 1;\`, "typescript");
 
   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
-}
-```
+}`} lang="tsx" />
 
 <h4 class="mb-3 text-base font-medium">Reusable highlighter</h4>
 
-```tsx
-// For multiple highlights, reuse the highlighter
+<CodeBlock code={`// For multiple highlights, reuse the highlighter
 import { createServerHighlighter } from "@cloudflare/kumo/code/server";
 
 const highlighter = await createServerHighlighter({
@@ -231,8 +228,7 @@ const highlighter = await createServerHighlighter({
 const html1 = highlighter.highlight(code1, "tsx");
 const html2 = highlighter.highlight(code2, "bash");
 
-highlighter.dispose(); // Clean up when done
-```
+highlighter.dispose(); // Clean up when done`} lang="tsx" />
 
 </ComponentSection>
 
@@ -244,8 +240,7 @@ highlighter.dispose(); // Clean up when done
     Use `useShikiHighlighter` for custom implementations.
   </p>
 
-```tsx
-import { useShikiHighlighter } from "@cloudflare/kumo/code";
+<CodeBlock code={`import { useShikiHighlighter } from "@cloudflare/kumo/code";
 
 function CustomCodeBlock({ code, lang }) {
   const { highlight, isLoading, isReady, error } = useShikiHighlighter();
@@ -274,8 +269,7 @@ function CustomCodeBlock({ code, lang }) {
   }
 
   return <pre dangerouslySetInnerHTML={{ __html: html }} />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
@@ -287,8 +281,7 @@ function CustomCodeBlock({ code, lang }) {
     Customize button labels at the provider level for all code blocks, or override per-component.
   </p>
 
-```tsx
-// Set labels at the provider level for all code blocks
+<CodeBlock code={`// Set labels at the provider level for all code blocks
 <ShikiProvider
   engine="javascript"
   languages={["tsx", "bash"]}
@@ -298,13 +291,13 @@ function CustomCodeBlock({ code, lang }) {
 </ShikiProvider>
 
 // Or override at the component level
+
 <CodeHighlighted
   code={code}
   lang="tsx"
   showCopyButton
   labels={{ copy: "Copy code", copied: "Done!" }}
-/>
-```
+/>`} lang="tsx" />
 
 </ComponentSection>
 
@@ -315,8 +308,7 @@ function CustomCodeBlock({ code, lang }) {
 
 <Heading level={3}>Next.js App Router</Heading>
 
-```tsx
-// app/providers.tsx
+<CodeBlock code={`// app/providers.tsx
 "use client";
 
 import { ShikiProvider } from "@cloudflare/kumo/code";
@@ -340,8 +332,7 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
-}
-```
+}`} lang="tsx" />
 
 <Heading level={3}>Astro (Static)</Heading>
 <p>
@@ -349,17 +340,16 @@ export default function RootLayout({ children }) {
   JavaScript.
 </p>
 
-```tsx
----
+<CodeBlock code={`---
 // src/components/CodeBlock.astro
 import { highlightCode } from "@cloudflare/kumo/code/server";
 
 const { code, lang } = Astro.props;
 const html = await highlightCode(code, lang);
+
 ---
 
-<div class="code-block" set:html={html} />
-```
+<div class="code-block" set:html={html} />`} lang="tsx" />
 
 </ComponentSection>
 
@@ -417,8 +407,7 @@ const html = await highlightCode(code, lang);
     They will be removed in v2.0.
   </p>
 
-```tsx
-// Before (deprecated)
+<CodeBlock code={`// Before (deprecated)
 import { Code, CodeBlock } from "@cloudflare/kumo";
 <CodeBlock code="const x = 1;" lang="ts" />
 
@@ -426,13 +415,14 @@ import { Code, CodeBlock } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 
 // Once at app root
+
 <ShikiProvider engine="javascript" languages={["tsx"]}>
   <App />
 </ShikiProvider>
 
 // In components
-<CodeHighlighted code="const x = 1;" lang="tsx" />
-```
+
+<CodeHighlighted code="const x = 1;" lang="tsx" />`} lang="tsx" />
 
 </ComponentSection>
 

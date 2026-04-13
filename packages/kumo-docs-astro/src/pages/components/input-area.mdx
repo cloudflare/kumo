@@ -5,6 +5,7 @@ description: "A multi-line text input for longer content with built-in label, de
 sourceFile: "components/input"
 ---
 
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -37,15 +38,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { InputArea } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { InputArea } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { InputArea } from "@cloudflare/kumo/components/input";
-```
+<CodeBlock
+  code={`import { InputArea } from "@cloudflare/kumo/components/input";`}
+  lang="tsx"
+/>
 
 `Textarea` is also exported as an alias for `InputArea` for discoverability when migrating from other libraries.
 
@@ -62,8 +62,7 @@ import { InputArea } from "@cloudflare/kumo/components/input";
   description, and error support.
 </p>
 
-```tsx
-import { InputArea } from "@cloudflare/kumo";
+<CodeBlock code={`import { InputArea } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -73,8 +72,7 @@ export default function Example() {
       description="Provide details about your project"
     />
   );
-}
-```
+}`} lang="tsx" />
 
 <Heading level={3}>Bare InputArea (Custom Layouts)</Heading>
 
@@ -83,13 +81,11 @@ export default function Example() {
   `aria-label` or `aria-labelledby` for accessibility.
 </p>
 
-```tsx
-import { InputArea } from "@cloudflare/kumo";
+<CodeBlock code={`import { InputArea } from "@cloudflare/kumo";
 
 export default function Example() {
   return <InputArea placeholder="Add notes..." aria-label="Notes" rows={3} />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

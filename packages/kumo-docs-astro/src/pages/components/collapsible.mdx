@@ -7,6 +7,7 @@ baseUIComponent: "collapsible"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
@@ -30,15 +31,17 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Collapsible } from "@cloudflare/kumo";
-```
+<CodeBlock
+  code={`import { Collapsible } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Collapsible } from "@cloudflare/kumo/components/collapsible";
-```
+<CodeBlock
+  code={`import { Collapsible } from "@cloudflare/kumo/components/collapsible";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -47,13 +50,11 @@ import { Collapsible } from "@cloudflare/kumo/components/collapsible";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { Collapsible } from "@cloudflare/kumo";
+<CodeBlock code={`import { Collapsible } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Collapsible label="Question">Answer content goes here.</Collapsible>;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
