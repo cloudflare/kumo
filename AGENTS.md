@@ -66,6 +66,27 @@ kumo/
 - **Pre-push hook**: Lefthook validates before push. Bypass: `git push --no-verify`
 - **AI agents NEVER**: `pnpm version`, `pnpm release`, `pnpm publish:beta`, `pnpm release:production`
 
+### Pull Request Descriptions
+
+PR descriptions are validated by CI. Include this checklist at the end of your PR body:
+
+```markdown
+- Reviews
+- [ ] bonk has reviewed the change
+- [x] automated review not possible because: <your reason here>
+- Tests
+- [ ] Tests included/updated
+- [ ] Automated tests not possible - manual testing has been completed as follows: <description>
+- [x] Additional testing not necessary because: <your reason here>
+```
+
+Rules:
+
+- Check ONE option in each section (Reviews and Tests)
+- If providing a justification (`because:` or `as follows:`), text must follow on the same line
+- Indentation is flexible — nested under headers is fine
+- Skip validation entirely with the `skip-pr-description-validation` label
+
 ## ANTI-PATTERNS
 
 | Pattern                        | Why                                                          | Instead                                     |
