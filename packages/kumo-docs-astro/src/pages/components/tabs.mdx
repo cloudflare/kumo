@@ -7,7 +7,6 @@ sourceFile: "components/tabs"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -32,14 +31,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { Tabs } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Tabs } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Tabs } from "@cloudflare/kumo/components/tabs";`}
-  lang="tsx"
-/>
+```tsx
+import { Tabs } from "@cloudflare/kumo/components/tabs";
+```
 
 </ComponentSection>
 
@@ -48,7 +48,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Tabs } from "@cloudflare/kumo";
+```tsx
+import { Tabs } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -60,7 +61,8 @@ export default function Example() {
       selectedValue="overview"
     />
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

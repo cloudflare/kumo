@@ -49,7 +49,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { useState } from "react";
+```tsx
+import { useState } from "react";
 import { Combobox } from "@cloudflare/kumo";
 
 const fruits = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
@@ -72,7 +73,8 @@ export default function Example() {
       </Combobox.Content>
     </Combobox>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 
@@ -135,10 +137,7 @@ export default function Example() {
 
 <ComponentSection>
   <Heading level={3}>Disabled</Heading>
-  <p>
-    Pass the `disabled` prop to prevent interaction. Works with both
-    `TriggerInput` and `TriggerValue`.
-  </p>
+  <p>Pass the `disabled` prop to prevent interaction. Works with both `TriggerInput` and `TriggerValue`.</p>
   <ComponentExample demo="ComboboxDisabledDemo">
     <ComboboxDisabledDemo client:load />
   </ComponentExample>
@@ -161,17 +160,17 @@ export default function Example() {
     To customize the max height, pass a className to <code class="text-surface">Combobox.Content</code>:
   </p>
 
-<CodeBlock code={`// Shorter dropdown (200px)
+```tsx
+// Shorter dropdown (200px)
 <Combobox.Content className="max-h-[200px]">
 
 // Taller dropdown (500px)
-
 <Combobox.Content className="max-h-[500px]">
 
 // Use Tailwind presets
-
 <Combobox.Content className="max-h-64">  // 256px
-<Combobox.Content className="max-h-96">  // 384px (same as default)`} lang="tsx" />
+<Combobox.Content className="max-h-96">  // 384px (same as default)
+```
 
 </ComponentSection>
 

@@ -5,7 +5,6 @@ description: "Get started with Kumo by installing the package and importing comp
 ---
 
 import Callout from "~/components/docs/Callout.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 
 export const kumoVersion =
   typeof __KUMO_VERSION__ !== "undefined" ? __KUMO_VERSION__ : "latest";
@@ -20,25 +19,30 @@ Install Kumo using your preferred package manager. The current version is <code>
 
 **npm**
 
-<CodeBlock code={`npm install @cloudflare/kumo`} lang="bash" />
+```bash
+npm install @cloudflare/kumo
+```
 
 **pnpm**
 
-<CodeBlock code={`pnpm add @cloudflare/kumo`} lang="bash" />
+```bash
+pnpm add @cloudflare/kumo
+```
 
 **yarn**
 
-<CodeBlock code={`yarn add @cloudflare/kumo`} lang="bash" />
+```bash
+yarn add @cloudflare/kumo
+```
 
 **Peer Dependencies**
 
 Kumo requires the following peer dependencies. Most React projects will already have these installed:
 
-<CodeBlock
-  code={`# Required peer dependencies
-pnpm add react react-dom @phosphor-icons/react`}
-  lang="bash"
-/>
+```bash
+# Required peer dependencies
+pnpm add react react-dom @phosphor-icons/react
+```
 
 ## Import Components
 
@@ -46,18 +50,16 @@ Import components from the main package or use granular imports for better tree-
 
 **Main Package Import**
 
-<CodeBlock
-  code={`import { Button, Input, Surface } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { Button, Input, Surface } from "@cloudflare/kumo";
+```
 
 **Granular Import (Recommended)**
 
-<CodeBlock
-  code={`import { Button } from "@cloudflare/kumo/components/button";
-import { Input } from "@cloudflare/kumo/components/input";`}
-  lang="tsx"
-/>
+```tsx
+import { Button } from "@cloudflare/kumo/components/button";
+import { Input } from "@cloudflare/kumo/components/input";
+```
 
 ## Base UI Primitives
 
@@ -65,21 +67,19 @@ Kumo is built on top of [Base UI](https://base-ui.com), a library of unstyled, a
 
 **Barrel Import (Convenient)**
 
-<CodeBlock
-  code={`// Import multiple primitives at once
-import { Popover, Slider, Accordion } from "@cloudflare/kumo/primitives";`}
-  lang="tsx"
-/>
+```tsx
+// Import multiple primitives at once
+import { Popover, Slider, Accordion } from "@cloudflare/kumo/primitives";
+```
 
 **Granular Imports (Recommended for Performance)**
 
-<CodeBlock
-  code={`// Import individual primitives for better tree-shaking
+```tsx
+// Import individual primitives for better tree-shaking
 import { Popover } from "@cloudflare/kumo/primitives/popover";
 import { Slider } from "@cloudflare/kumo/primitives/slider";
-import { Accordion } from "@cloudflare/kumo/primitives/accordion";`}
-  lang="tsx"
-/>
+import { Accordion } from "@cloudflare/kumo/primitives/accordion";
+```
 
 Granular imports result in smaller bundle sizes by only including the primitives you actually use.
 
@@ -114,12 +114,14 @@ If your application uses Tailwind CSS, add Kumo's source files to your content c
   styles (e.g. Dialogs not centered).
 </Callout>
 
-<CodeBlock code={`/* app.css or main.css */
+```css
+/* app.css or main.css */
 @source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
 @import "@cloudflare/kumo/styles/tailwind";
 @import "tailwindcss";
 
-/_ Your custom styles _/`} lang="css" />
+/* Your custom styles */
+```
 
 <Callout type="info">
   The `@source` path is relative to your CSS file. Adjust it based on your
@@ -133,11 +135,10 @@ Note: You can also use the default export `@cloudflare/kumo/styles` which is equ
 
 If your application doesn't use Tailwind CSS, use the standalone build which includes all compiled styles:
 
-<CodeBlock
-  code={`// In your app entry point (e.g., main.tsx, index.tsx)
-import "@cloudflare/kumo/styles/standalone";`}
-  lang="tsx"
-/>
+```tsx
+// In your app entry point (e.g., main.tsx, index.tsx)
+import "@cloudflare/kumo/styles/standalone";
+```
 
 The standalone build includes all Tailwind utilities and Kumo component styles pre-compiled. No Tailwind configuration needed!
 
@@ -147,18 +148,18 @@ Here's a complete example of using Kumo components with Tailwind CSS:
 
 **CSS File (app.css)**
 
-<CodeBlock
-  code={`@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+```css
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
 @import "@cloudflare/kumo/styles/tailwind";
-@import "tailwindcss";`}
-  lang="css"
-/>
+@import "tailwindcss";
+```
 
 Note: The `@source` path is relative to your CSS file. Adjust it based on your project structure.
 
 **Component File (App.tsx)**
 
-<CodeBlock code={`import { Button, Input, Surface } from "@cloudflare/kumo";
+```tsx
+import { Button, Input, Surface } from "@cloudflare/kumo";
 import "./app.css";
 
 export default function App() {
@@ -169,7 +170,8 @@ export default function App() {
       <Button variant="primary">Submit</Button>
     </Surface>
   );
-}`} lang="tsx" />
+}
+```
 
 ## Blocks vs Components
 
@@ -179,10 +181,9 @@ Kumo provides two types of building blocks for your application:
 
 Components are published as NPM exports and can be imported directly from the package. These are the core UI primitives like `Button`, `Input`, and `Dialog`.
 
-<CodeBlock
-  code={`import { Button, Input, Dialog } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { Button, Input, Dialog } from "@cloudflare/kumo";
+```
 
 Use components when you need consistent, pre-styled UI primitives that integrate seamlessly with your application. Components are versioned, tree-shakeable, and receive automatic updates.
 
@@ -190,23 +191,22 @@ Use components when you need consistent, pre-styled UI primitives that integrate
 
 Blocks are higher-level compositions (like `PageHeader` and `ResourceListPage`) that are installed via the Kumo CLI. Blocks give you full ownership of the code, allowing you to customize them to your specific needs.
 
-<CodeBlock code={`# Initialize Kumo configuration
+```bash
+# Initialize Kumo configuration
 npx @cloudflare/kumo init
 
 # List available blocks
-
 npx @cloudflare/kumo blocks
 
 # Install a block
-
-npx @cloudflare/kumo add PageHeader`} lang="bash" />
+npx @cloudflare/kumo add PageHeader
+```
 
 After installation, blocks live in your project (e.g., `src/components/kumo/`) and can be customized as needed. The CLI automatically transforms imports from relative paths to `@cloudflare/kumo` for seamless integration.
 
-<CodeBlock
-  code={`import { PageHeader } from "src/components/kumo/page-header/page-header";`}
-  lang="tsx"
-/>
+```tsx
+import { PageHeader } from "src/components/kumo/page-header/page-header";
+```
 
 <Callout type="info">
   <strong>When to use blocks:</strong>
@@ -222,7 +222,8 @@ After installation, blocks live in your project (e.g., `src/components/kumo/`) a
 
 Kumo also exports utility functions for common tasks:
 
-<CodeBlock code={`import { cn, safeRandomId, LinkProvider } from "@cloudflare/kumo";
+```tsx
+import { cn, safeRandomId, LinkProvider } from "@cloudflare/kumo";
 
 // Merge class names with Tailwind
 const className = cn("base-class", condition && "conditional-class");
@@ -231,5 +232,5 @@ const className = cn("base-class", condition && "conditional-class");
 const id = safeRandomId();
 
 // Configure link component for your framework
-
-<LinkProvider component={YourLinkComponent}>{/* Your app */}</LinkProvider>;`} lang="tsx" />
+<LinkProvider component={YourLinkComponent}>{/* Your app */}</LinkProvider>;
+```

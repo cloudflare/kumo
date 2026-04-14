@@ -5,7 +5,6 @@ description: "A styled anchor component for inline text links with multiple vari
 sourceFile: "components/link"
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -31,14 +30,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { Link } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Link } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Link } from "@cloudflare/kumo/components/link";`}
-  lang="tsx"
-/>
+```tsx
+import { Link } from "@cloudflare/kumo/components/link";
+```
 
 </ComponentSection>
 
@@ -51,7 +51,8 @@ import {
     The default Link component renders an underlined anchor with primary color styling.
   </p>
 
-<CodeBlock code={`import { Link } from "@cloudflare/kumo";
+```tsx
+import { Link } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -59,7 +60,8 @@ export default function Example() {
       Read our <Link href="/docs">documentation</Link> for more details.
     </p>
   );
-}`} lang="tsx" />
+}
+```
 
 <Heading level={3}>External Links</Heading>
 <p>
@@ -67,7 +69,8 @@ export default function Example() {
   tab.
 </p>
 
-<CodeBlock code={`import { Link } from "@cloudflare/kumo";
+```tsx
+import { Link } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -79,7 +82,8 @@ export default function Example() {
       Visit Cloudflare <Link.ExternalIcon />
     </Link>
   );
-}`} lang="tsx" />
+}
+```
 
 <Heading level={3}>Framework Integration (render prop)</Heading>
 <p>
@@ -87,7 +91,8 @@ export default function Example() {
   components like React Router's Link or Next.js Link.
 </p>
 
-<CodeBlock code={`import { Link } from "@cloudflare/kumo";
+```tsx
+import { Link } from "@cloudflare/kumo";
 import { Link as RouterLink } from "react-router-dom";
 
 export default function Example() {
@@ -96,7 +101,8 @@ export default function Example() {
       Dashboard
     </Link>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 
@@ -236,12 +242,11 @@ export default function Example() {
   attributes.
 </p>
 
-<CodeBlock
-  code={`<Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+```tsx
+<Link href="https://example.com" target="_blank" rel="noopener noreferrer">
   External Site <Link.ExternalIcon />
-</Link>`}
-  lang="tsx"
-/>
+</Link>
+```
 
 </ComponentSection>
 

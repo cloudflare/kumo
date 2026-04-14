@@ -7,7 +7,6 @@ sourceFile: "components/table"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -35,14 +34,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { Table } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Table } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Table } from "@cloudflare/kumo/components/table";`}
-  lang="tsx"
-/>
+```tsx
+import { Table } from "@cloudflare/kumo/components/table";
+```
 
 </ComponentSection>
 
@@ -51,7 +51,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Table, LayerCard } from "@cloudflare/kumo";
+```tsx
+import { Table, LayerCard } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -76,7 +77,8 @@ export default function Example() {
       </LayerCard.Primary>
     </LayerCard>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 
@@ -191,7 +193,8 @@ export default function Example() {
     For advanced features like sorting, filtering, and resizable columns, integrate with <a href="https://tanstack.com/table" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">TanStack Table</a>. The Table component is designed to work seamlessly with TanStack's headless API.
   </p>
 
-<CodeBlock code={`import {
+```tsx
+import {
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -244,7 +247,8 @@ function DataTable({ data, columns }) {
       </Table.Body>
     </Table>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

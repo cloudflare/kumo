@@ -7,7 +7,6 @@ sourceFile: "components/menubar"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -30,14 +29,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { MenuBar } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { MenuBar } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { MenuBar } from "@cloudflare/kumo/components/menubar";`}
-  lang="tsx"
-/>
+```tsx
+import { MenuBar } from "@cloudflare/kumo/components/menubar";
+```
 
 </ComponentSection>
 
@@ -46,7 +46,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { MenuBar } from "@cloudflare/kumo";
+```tsx
+import { MenuBar } from "@cloudflare/kumo";
 import { TextBolderIcon } from "@phosphor-icons/react";
 
 export default function Example() {
@@ -62,7 +63,8 @@ export default function Example() {
       ]}
     />
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

@@ -7,7 +7,6 @@ baseUIComponent: "menu"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
@@ -33,17 +32,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock
-  code={`import { DropdownMenu } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { DropdownMenu } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { DropdownMenu } from "@cloudflare/kumo/components/dropdown";`}
-  lang="tsx"
-/>
+```tsx
+import { DropdownMenu } from "@cloudflare/kumo/components/dropdown";
+```
 
 </ComponentSection>
 
@@ -52,7 +49,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { DropdownMenu, Button } from "@cloudflare/kumo";
+```tsx
+import { DropdownMenu, Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -64,7 +62,8 @@ export default function Example() {
       </DropdownMenu.Content>
     </DropdownMenu>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

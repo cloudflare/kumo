@@ -5,13 +5,14 @@ description: "Access component documentation and install blocks from your termin
 ---
 
 import { CLITerminal } from "~/components/demos/CLIDemo";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 
 ## Installation
 
 The Kumo CLI is available via npx. No installation required.
 
-<CodeBlock code={`npx @cloudflare/kumo help`} lang="bash" />
+```bash
+npx @cloudflare/kumo help
+```
 
 ## Commands
 
@@ -19,31 +20,31 @@ The Kumo CLI is available via npx. No installation required.
 
 Install copy-paste blocks into your project for full customization.
 
-<CodeBlock code={`# Initialize kumo.json configuration
+```bash
+# Initialize kumo.json configuration
 npx @cloudflare/kumo init
 
 # List all available blocks
-
 npx @cloudflare/kumo blocks
 
 # Install a block to your project
-
-npx @cloudflare/kumo add PageHeader`} lang="bash" />
+npx @cloudflare/kumo add PageHeader
+```
 
 ### Component Registry
 
 Access component documentation directly from your terminal.
 
-<CodeBlock code={`# List all Kumo components with categories
+```bash
+# List all Kumo components with categories
 npx @cloudflare/kumo ls
 
 # Get detailed documentation for a component
-
 npx @cloudflare/kumo doc Button
 
 # Get documentation for all components
-
-npx @cloudflare/kumo docs`} lang="bash" />
+npx @cloudflare/kumo docs
+```
 
 ## Try it out
 

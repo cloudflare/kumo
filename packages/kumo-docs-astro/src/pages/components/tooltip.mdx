@@ -8,7 +8,6 @@ baseUIComponent: "tooltip"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -32,17 +31,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock
-  code={`import { Tooltip, TooltipProvider } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { Tooltip, TooltipProvider } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";`}
-  lang="tsx"
-/>
+```tsx
+import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
+```
 
 </ComponentSection>
 
@@ -51,7 +48,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Tooltip, Button } from "@cloudflare/kumo";
+```tsx
+import { Tooltip, Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -59,7 +57,8 @@ export default function Example() {
       <Button>Hover me</Button>
     </Tooltip>
   );
-}`} lang="tsx" />
+}
+```
 
 For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovider).
 
@@ -102,16 +101,17 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
   app root or layout — not around each individual `Tooltip`.
 </p>
 
-<CodeBlock code={`// Wrap your app or layout once
+```tsx
+// Wrap your app or layout once
 <TooltipProvider>
   <App />
 </TooltipProvider>
 
 // Then use Tooltip anywhere inside
-
 <Tooltip content="Add" asChild>
   <Button shape="square" icon={PlusIcon} />
-</Tooltip>`} lang="tsx" />
+</Tooltip>
+```
 
 </ComponentSection>
 

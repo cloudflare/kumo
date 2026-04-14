@@ -6,7 +6,6 @@ sourceFile: "components/command-palette"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import KeyboardShortcuts from "~/components/docs/KeyboardShortcuts.astro";
@@ -32,17 +31,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock
-  code={`import { CommandPalette } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { CommandPalette } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { CommandPalette } from "@cloudflare/kumo/components/command-palette";`}
-  lang="tsx"
-/>
+```tsx
+import { CommandPalette } from "@cloudflare/kumo/components/command-palette";
+```
 
 </ComponentSection>
 
@@ -56,7 +53,8 @@ import {
     styling for command palette interfaces.
   </p>
 
-<CodeBlock code={`import { useState } from "react";
+```tsx
+import { useState } from "react";
 import { CommandPalette } from "@cloudflare/kumo";
 
 interface Item {
@@ -103,7 +101,8 @@ export default function Example() {
       </CommandPalette.Root>
     </>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 
@@ -224,7 +223,8 @@ export default function Example() {
 
 <Heading level={3}>CommandPalette.Root Props</Heading>
 
-<CodeBlock code={`interface CommandPaletteRootProps<TGroup, TItem> {
+```tsx
+interface CommandPaletteRootProps<TGroup, TItem> {
   // Dialog state
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -243,12 +243,13 @@ export default function Example() {
   getSelectableItems?: (items: TGroup[]) => TItem[];
 
   children: React.ReactNode;
-}`} lang="tsx" />
+}
+```
 
 <Heading level={3}>CommandPalette.ResultItem Props</Heading>
 
-<CodeBlock
-  code={`interface CommandPaletteResultItemProps<T> {
+```tsx
+interface CommandPaletteResultItemProps<T> {
   value: T;
   title: string;
   breadcrumbs?: string[];
@@ -260,8 +261,7 @@ export default function Example() {
   showArrow?: boolean; // default: true
   external?: boolean; // shows external link icon
   nonInteractive?: boolean;
-}`}
-  lang="tsx"
-/>
+}
+```
 
 </ComponentSection>

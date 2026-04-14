@@ -5,7 +5,6 @@ description: "Generate Figma components from Kumo definitions using the Figma pl
 ---
 
 import Callout from "~/components/docs/Callout.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 
 ## Kumo Figma Plugin
 
@@ -21,7 +20,9 @@ Follow these steps to build and test the Figma plugin locally on any Figma file.
 
 From the repository root, run:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo-figma build`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo-figma build
+```
 
 This generates theme data, loader data, and icons, then bundles the plugin code into `src/code.js`.
 
@@ -59,10 +60,9 @@ The token sync script requires environment variables to authenticate with the Fi
 1. Get a [Figma personal access token](https://www.figma.com/developers/api#authentication) from Figma Settings → Personal Access Tokens
 2. Copy the environment template:
 
-<CodeBlock
-  code={`cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env`}
-  lang="bash"
-/>
+```bash
+cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env
+```
 
 3. Configure the environment variables in `.env`
 
@@ -74,13 +74,12 @@ The token sync script requires environment variables to authenticate with the Fi
 | `FIGMA_FILE_KEY`        | Yes      | The file key from your Figma URL: `figma.com/file/{FILE_KEY}/...` |
 | `FIGMA_COLLECTION_NAME` | No       | Variable collection name in Figma. Defaults to `kumo-colors`      |
 
-<CodeBlock
-  code={`# packages/kumo-figma/scripts/.env
+```bash
+# packages/kumo-figma/scripts/.env
 FIGMA_TOKEN=figd_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 FIGMA_FILE_KEY=sKKZc6pC6W1TtzWBLxDGSU
-FIGMA_COLLECTION_NAME=kumo-colors`}
-  lang="bash"
-/>
+FIGMA_COLLECTION_NAME=kumo-colors
+```
 
 <Callout type="warning">
   **Security:** Never commit your Figma token. The `.env` file is gitignored.
@@ -92,10 +91,9 @@ Before generating components, sync Kumo's semantic color tokens to Figma. This c
 
 ### Run Token Sync
 
-<CodeBlock
-  code={`pnpm --filter @cloudflare/kumo-figma figma:sync`}
-  lang="bash"
-/>
+```bash
+pnpm --filter @cloudflare/kumo-figma figma:sync
+```
 
 This parses tokens from `theme-kumo.css`, resolves `light-dark()` values for both modes, and pushes them to Figma via the Variables API.
 
@@ -134,7 +132,8 @@ The plugin uses **destructive sync** — it purges all existing generated conten
 
 The typical workflow when updating components:
 
-<CodeBlock code={`# 1. Make changes to Kumo components
+```bash
+# 1. Make changes to Kumo components
 # ...edit packages/kumo/src/components/...
 
 # 2. Regenerate component registry
@@ -146,7 +145,8 @@ pnpm --filter @cloudflare/kumo-figma figma:sync
 # 4. Build the plugin
 pnpm --filter @cloudflare/kumo-figma build
 
-# 5. Run in Figma: Plugins > Development > Kumo UI Kit Generator`} lang="bash" />
+# 5. Run in Figma: Plugins > Development > Kumo UI Kit Generator
+```
 
 ## Plugin Architecture
 
@@ -175,10 +175,9 @@ If a component doesn't need Figma representation (utility or layout-only), add i
 
 The target Figma file needs the variable collection. Run the token sync script first:
 
-<CodeBlock
-  code={`pnpm --filter @cloudflare/kumo-figma figma:sync`}
-  lang="bash"
-/>
+```bash
+pnpm --filter @cloudflare/kumo-figma figma:sync
+```
 
 ### "Variable not found: color-primary"
 

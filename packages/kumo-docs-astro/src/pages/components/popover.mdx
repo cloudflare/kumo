@@ -8,7 +8,6 @@ baseUIComponent: "popover"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -35,14 +34,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { Popover } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Popover } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Popover } from "@cloudflare/kumo/components/popover";`}
-  lang="tsx"
-/>
+```tsx
+import { Popover } from "@cloudflare/kumo/components/popover";
+```
 
 </ComponentSection>
 
@@ -51,7 +51,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Popover, Button } from "@cloudflare/kumo";
+```tsx
+import { Popover, Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -65,7 +66,8 @@ export default function Example() {
       </Popover.Content>
     </Popover>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

@@ -47,7 +47,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Banner } from "@cloudflare/kumo";
+```tsx
+import { Banner } from "@cloudflare/kumo";
 import { Info } from "@phosphor-icons/react";
 
 export default function Example() {
@@ -58,7 +59,8 @@ export default function Example() {
       description="A new version is ready to install."
     />
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 
@@ -89,15 +91,15 @@ export default function Example() {
   <BannerWithIconDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With action</Heading>
-<ComponentExample demo="BannerWithActionDemo">
-  <BannerWithActionDemo client:visible />
-</ComponentExample>
+  <Heading level={3}>With action</Heading>
+  <ComponentExample demo="BannerWithActionDemo">
+    <BannerWithActionDemo client:visible />
+  </ComponentExample>
 
-<Heading level={3}>With multiple actions</Heading>
-<ComponentExample demo="BannerWithActionsDemo">
-  <BannerWithActionsDemo client:visible />
-</ComponentExample>
+  <Heading level={3}>With multiple actions</Heading>
+  <ComponentExample demo="BannerWithActionsDemo">
+    <BannerWithActionsDemo client:visible />
+  </ComponentExample>
 
   <Heading level={3}>Custom content</Heading>
   <ComponentExample demo="BannerCustomContentDemo">

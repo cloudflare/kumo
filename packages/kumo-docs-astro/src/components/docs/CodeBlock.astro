@@ -1,6 +1,5 @@
 ---
 import { Code } from "astro:components";
-import { CopyCodeButton } from "./CopyCodeButton";
 
 interface Props {
   code: string;
@@ -10,12 +9,12 @@ interface Props {
 const { code, lang = "tsx" } = Astro.props;
 ---
 
-<div class="not-prose code-block relative">
-  <CopyCodeButton client:load code={code} />
-
-  <Code
-    code={code}
-    lang={lang}
+<div
+  class="not-prose code-block"
+>
+  <Code 
+    code={code} 
+    lang={lang} 
     themes={{
       light: "github-light",
       dark: "vesper"
@@ -38,7 +37,7 @@ const { code, lang = "tsx" } = Astro.props;
     color: var(--shiki-light) !important;
     background-color: var(--shiki-light-bg) !important;
   }
-
+  
   /* Dark mode - use dark theme colors */
   [data-mode="dark"] .code-block .astro-code,
   [data-mode="dark"] .code-block .astro-code span {

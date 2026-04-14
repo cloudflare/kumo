@@ -5,7 +5,6 @@ description: "A label component for form fields with support for required/option
 sourceFile: "components/label"
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -32,14 +31,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { Label } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Label } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Label } from "@cloudflare/kumo/components/label";`}
-  lang="tsx"
-/>
+```tsx
+import { Label } from "@cloudflare/kumo/components/label";
+```
 
 </ComponentSection>
 
@@ -52,7 +52,8 @@ import {
     Label features are automatically available through form components like `Input`, `Select`, `Checkbox`, and `Switch` via the `required` and `labelTooltip` props.
   </p>
 
-<CodeBlock code={`import { Input } from "@cloudflare/kumo";
+```tsx
+import { Input } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -67,16 +68,19 @@ export default function Example() {
       />
     </>
   );
-}`} lang="tsx" />
+}
+```
 
 <Heading level={3}>Standalone Label</Heading>
 <p>For custom form layouts, use the `Label` component directly.</p>
 
-<CodeBlock code={`import { Label } from "@cloudflare/kumo";
+```tsx
+import { Label } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Label tooltip="This field is mandatory">Username</Label>;
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

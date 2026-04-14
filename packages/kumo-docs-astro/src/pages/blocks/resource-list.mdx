@@ -9,7 +9,6 @@ import Heading from "~/components/docs/Heading.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import Callout from "~/components/docs/Callout.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import {
   ResourceListBasicDemo,
   ResourceListWithUsageDemo,
@@ -37,24 +36,27 @@ import {
     <div>
       <p>**1. Initialize Kumo config (first time only)**</p>
 
-<CodeBlock code={`npx @cloudflare/kumo init`} lang="bash" />
+```bash
+npx @cloudflare/kumo init
+```
 
 </div>
 <div>
 <p>**2. Install the block**</p>
 
-<CodeBlock code={`npx @cloudflare/kumo add ResourceListPage`} lang="bash" />
+```bash
+npx @cloudflare/kumo add ResourceListPage
+```
 
 </div>
 <div>
 <p>**3. Import from your local path**</p>
 
-<CodeBlock
-  code={`// The path depends on your kumo.json blocksDir setting
+```tsx
+// The path depends on your kumo.json blocksDir setting
 // Default: src/components/kumo/
-import { ResourceListPage } from "./components/kumo/resource-list/resource-list";`}
-  lang="tsx"
-/>
+import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
+```
 
     </div>
 
@@ -71,7 +73,8 @@ import { ResourceListPage } from "./components/kumo/resource-list/resource-list"
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
+```tsx
+import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
 import { Surface } from "@cloudflare/kumo";
 import { DatabaseIcon } from "@phosphor-icons/react";
 
@@ -85,7 +88,8 @@ export default function DatabasesPage() {
       <Surface className="p-6">{/* Your resource list content */}</Surface>
     </ResourceListPage>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

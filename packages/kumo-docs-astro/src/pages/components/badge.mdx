@@ -6,13 +6,13 @@ sourceFile: "components/badge"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   BadgeSemanticVariantsDemo,
   BadgeColorVariantsDemo,
   BadgeInSentenceDemo,
 } from "~/components/demos/BadgeDemo";
+
 
 <ComponentExample demo="BadgeSemanticVariantsDemo">
   <BadgeSemanticVariantsDemo client:visible />
@@ -22,22 +22,25 @@ import {
 
 ### Barrel
 
-<CodeBlock code={`import { Badge } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Badge } from "@cloudflare/kumo";
+```
 
 ### Granular
 
-<CodeBlock
-  code={`import { Badge } from "@cloudflare/kumo/components/badge";`}
-  lang="tsx"
-/>
+```tsx
+import { Badge } from "@cloudflare/kumo/components/badge";
+```
 
 ## Usage
 
-<CodeBlock code={`import { Badge } from "@cloudflare/kumo";
+```tsx
+import { Badge } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Badge variant="secondary">New</Badge>;
-}`} lang="tsx" />
+}
+```
 
 ## Examples
 

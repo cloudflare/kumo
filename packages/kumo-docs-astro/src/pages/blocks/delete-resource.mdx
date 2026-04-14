@@ -10,7 +10,6 @@ import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import Callout from "~/components/docs/Callout.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import {
   DeleteResourceBasicDemo,
   DeleteResourceErrorDemo,
@@ -38,24 +37,27 @@ import {
     <div>
       <p>**1. Initialize Kumo config (first time only)**</p>
 
-<CodeBlock code={`npx @cloudflare/kumo init`} lang="bash" />
+```bash
+npx @cloudflare/kumo init
+```
 
 </div>
 <div>
 <p>**2. Install the block**</p>
 
-<CodeBlock code={`npx @cloudflare/kumo add DeleteResource`} lang="bash" />
+```bash
+npx @cloudflare/kumo add DeleteResource
+```
 
 </div>
 <div>
 <p>**3. Import from your local path**</p>
 
-<CodeBlock
-  code={`// The path depends on your kumo.json blocksDir setting
+```tsx
+// The path depends on your kumo.json blocksDir setting
 // Default: src/components/kumo/
-import { DeleteResource } from "./components/kumo/delete-resource/delete-resource";`}
-  lang="tsx"
-/>
+import { DeleteResource } from "./components/kumo/delete-resource/delete-resource";
+```
 
     </div>
 
@@ -72,7 +74,8 @@ import { DeleteResource } from "./components/kumo/delete-resource/delete-resourc
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { useState } from "react";
+```tsx
+import { useState } from "react";
 import { DeleteResource } from "./components/kumo/delete-resource/delete-resource";
 import { Button } from "@cloudflare/kumo";
 
@@ -105,7 +108,8 @@ export default function Example() {
       />
     </>
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

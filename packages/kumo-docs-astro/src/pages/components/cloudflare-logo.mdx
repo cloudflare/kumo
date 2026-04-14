@@ -6,7 +6,6 @@ sourceFile: "components/cloudflare-logo"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
@@ -35,25 +34,23 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock
-  code={`import {
+```tsx
+import {
   CloudflareLogo,
   PoweredByCloudflare,
   generateCloudflareLogoSvg,
-} from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+} from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import {
+```tsx
+import {
   CloudflareLogo,
   PoweredByCloudflare,
   generateCloudflareLogoSvg,
-} from "@cloudflare/kumo/components/cloudflare-logo";`}
-  lang="tsx"
-/>
+} from "@cloudflare/kumo/components/cloudflare-logo";
+```
 
 </ComponentSection>
 
@@ -62,11 +59,13 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { CloudflareLogo } from "@cloudflare/kumo";
+```tsx
+import { CloudflareLogo } from "@cloudflare/kumo";
 
 export default function Example() {
   return <CloudflareLogo className="w-36" />;
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 
@@ -146,7 +145,8 @@ export default function Example() {
     Use <code>generateCloudflareLogoSvg()</code> to get copy-paste ready SVG markup for non-React contexts.
   </p>
 
-<CodeBlock code={`import { generateCloudflareLogoSvg } from "@cloudflare/kumo";
+```tsx
+import { generateCloudflareLogoSvg } from "@cloudflare/kumo";
 
 // Generate glyph SVG (cloud only)
 const glyphSvg = generateCloudflareLogoSvg({ variant: "glyph" });
@@ -159,8 +159,9 @@ const blackSvg = generateCloudflareLogoSvg({ color: "black" });
 
 // Copy to clipboard
 await navigator.clipboard.writeText(
-generateCloudflareLogoSvg({ variant: "glyph", color: "color" }),
-);`} lang="tsx" />
+  generateCloudflareLogoSvg({ variant: "glyph", color: "color" }),
+);
+```
 
 </ComponentSection>
 

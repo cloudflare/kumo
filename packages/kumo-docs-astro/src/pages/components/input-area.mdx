@@ -5,7 +5,6 @@ description: "A multi-line text input for longer content with built-in label, de
 sourceFile: "components/input"
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -38,14 +37,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { InputArea } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { InputArea } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { InputArea } from "@cloudflare/kumo/components/input";`}
-  lang="tsx"
-/>
+```tsx
+import { InputArea } from "@cloudflare/kumo/components/input";
+```
 
 `Textarea` is also exported as an alias for `InputArea` for discoverability when migrating from other libraries.
 
@@ -62,7 +62,8 @@ import {
   description, and error support.
 </p>
 
-<CodeBlock code={`import { InputArea } from "@cloudflare/kumo";
+```tsx
+import { InputArea } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -72,7 +73,8 @@ export default function Example() {
       description="Provide details about your project"
     />
   );
-}`} lang="tsx" />
+}
+```
 
 <Heading level={3}>Bare InputArea (Custom Layouts)</Heading>
 
@@ -81,11 +83,13 @@ export default function Example() {
   `aria-label` or `aria-labelledby` for accessibility.
 </p>
 
-<CodeBlock code={`import { InputArea } from "@cloudflare/kumo";
+```tsx
+import { InputArea } from "@cloudflare/kumo";
 
 export default function Example() {
   return <InputArea placeholder="Add notes..." aria-label="Notes" rows={3} />;
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

@@ -6,7 +6,6 @@ sourceFile: "components/clipboard-text"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
@@ -33,17 +32,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock
-  code={`import { ClipboardText } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { ClipboardText } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";`}
-  lang="tsx"
-/>
+```tsx
+import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";
+```
 
 </ComponentSection>
 
@@ -52,11 +49,13 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { ClipboardText } from "@cloudflare/kumo";
+```tsx
+import { ClipboardText } from "@cloudflare/kumo";
 
 export default function Example() {
   return <ClipboardText text="Copy this text" />;
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

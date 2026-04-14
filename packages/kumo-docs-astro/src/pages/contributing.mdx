@@ -4,8 +4,6 @@ title: "Contributing"
 description: "Learn how to contribute to Kumo, from setup and workflows to PR and release guidelines. Everything you need for setup, development, quality checks, and PR process is documented here."
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
-
 ## Before You Start
 
 For non-trivial changes, start with alignment before coding:
@@ -20,11 +18,10 @@ For non-trivial changes, start with alignment before coding:
 
 From repo root:
 
-<CodeBlock
-  code={`pnpm install
-pnpm build`}
-  lang="bash"
-/>
+```bash
+pnpm install
+pnpm build
+```
 
 Requirements:
 
@@ -41,12 +38,11 @@ Recommended local setup:
 
 Internal contributors normally clone and push directly to `cloudflare/kumo`:
 
-<CodeBlock
-  code={`git clone https://github.com/cloudflare/kumo.git
+```bash
+git clone https://github.com/cloudflare/kumo.git
 git switch -c <branch-name>
-git push -u origin <branch-name>`}
-  lang="bash"
-/>
+git push -u origin <branch-name>
+```
 
 If you do not have write access, contact your manager or Kumo maintainers.
 
@@ -62,7 +58,9 @@ Use this to decide where your change belongs:
 
 When adding a new **component**, scaffold it (do not create files manually):
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo new:component`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo new:component
+```
 
 ---
 
@@ -70,12 +68,13 @@ When adding a new **component**, scaffold it (do not create files manually):
 
 Run these in separate terminals:
 
-<CodeBlock code={`# Terminal 1: watch Kumo package output
+```bash
+# Terminal 1: watch Kumo package output
 pnpm --filter @cloudflare/kumo dev
 
 # Terminal 2: docs site
-
-pnpm dev`} lang="bash" />
+pnpm dev
+```
 
 This gives you a fast loop while verifying your change in the actual docs environment.
 
@@ -107,24 +106,24 @@ Implementation expectations:
 
 Run these from repo root before opening or updating your PR:
 
-<CodeBlock
-  code={`pnpm lint
+```bash
+pnpm lint
 pnpm typecheck
-pnpm --filter @cloudflare/kumo test`}
-  lang="bash"
-/>
+pnpm --filter @cloudflare/kumo test
+```
 
 If you changed exports/build behavior, also run:
 
-<CodeBlock code={`pnpm --filter @cloudflare/kumo build`} lang="bash" />
+```bash
+pnpm --filter @cloudflare/kumo build
+```
 
 Optional (when relevant):
 
-<CodeBlock
-  code={`pnpm format
-pnpm --filter @cloudflare/kumo test:run`}
-  lang="bash"
-/>
+```bash
+pnpm format
+pnpm --filter @cloudflare/kumo test:run
+```
 
 Windsurf and hooks catch additional issues, but you should still run checks locally before requesting review.
 
@@ -134,7 +133,9 @@ Windsurf and hooks catch additional issues, but you should still run checks loca
 
 If your change touches `packages/kumo/` and should ship, add a changeset:
 
-<CodeBlock code={`pnpm changeset`} lang="bash" />
+```bash
+pnpm changeset
+```
 
 Changeset guidance:
 
@@ -196,7 +197,6 @@ Common pitfalls to avoid:
 ---
 
 ## Questions?
-
 If you have any questions for Kumo, please reach out to the team in our Kumo channel.
 
 ---

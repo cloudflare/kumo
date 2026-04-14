@@ -5,7 +5,6 @@ description: "A component to display when there's no content or data to show, wi
 sourceFile: "components/empty"
 ---
 
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -32,7 +31,9 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
 
-<CodeBlock code={`import { Empty } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Empty } from "@cloudflare/kumo";
+```
 
 </ComponentSection>
 
@@ -41,7 +42,8 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Empty } from "@cloudflare/kumo";
+```tsx
+import { Empty } from "@cloudflare/kumo";
 import { PackageIcon } from "@phosphor-icons/react";
 
 export default function Example() {
@@ -53,7 +55,8 @@ export default function Example() {
       commandLine="npm install @kumo/ui"
     />
   );
-}`} lang="tsx" />
+}
+```
 
 </ComponentSection>
 

@@ -7,7 +7,6 @@ sourceFile: "primitives/skeleton-line"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import {
   SkeletonLineDemo,
@@ -30,10 +29,9 @@ import {
 <ComponentSection>
   <Heading level={2}>Installation</Heading>
 
-<CodeBlock
-  code={`import { SkeletonLine } from "@cloudflare/kumo";`}
-  lang="tsx"
-/>
+```tsx
+import { SkeletonLine } from "@cloudflare/kumo";
+```
 
 </ComponentSection>
 

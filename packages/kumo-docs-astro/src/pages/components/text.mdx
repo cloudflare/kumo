@@ -7,7 +7,6 @@ sourceFile: "components/text"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -29,14 +28,15 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-<CodeBlock code={`import { Text } from "@cloudflare/kumo";`} lang="tsx" />
+```tsx
+import { Text } from "@cloudflare/kumo";
+```
 
 <Heading level={3}>Granular</Heading>
 
-<CodeBlock
-  code={`import { Text } from "@cloudflare/kumo/components/text";`}
-  lang="tsx"
-/>
+```tsx
+import { Text } from "@cloudflare/kumo/components/text";
+```
 
 </ComponentSection>
 
@@ -45,11 +45,13 @@ import {
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-<CodeBlock code={`import { Text } from "@cloudflare/kumo";
+```tsx
+import { Text } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Text>Your content here</Text>;
-}`} lang="tsx" />
+}
+```
 
 <section class="mt-8 space-y-4">
   <h3 class="text-lg font-semibold">Restrictions</h3>
@@ -57,36 +59,33 @@ export default function Example() {
     The `bold` and `size` props are intentionally restricted to the `base`, `secondary`, `success`, and `error` text variants.
   </p>
 
-<CodeBlock
-  code={`<Text size="sm" bold>Body</Text>
+```tsx
+<Text size="sm" bold>Body</Text>
 <Text variant="secondary" bold>Body secondary</Text>
 <Text variant="success" size="lg">Success</Text>
-<Text variant="error">Error</Text>`}
-  lang="tsx"
-/>
+<Text variant="error">Error</Text>
+```
 
 <p class="text-kumo-strong">
   Monospace variants (`mono` and `mono-secondary`) can only set `size` to `lg`
   and cannot use the `bold` prop:
 </p>
 
-<CodeBlock
-  code={`<Text variant="mono">Monospace</Text>
+```tsx
+<Text variant="mono">Monospace</Text>
 <Text variant="mono" size="lg">Monospace</Text>
-<Text variant="mono" bold>Monospace</Text> // Doesn't compile`}
-  lang="tsx"
-/>
+<Text variant="mono" bold>Monospace</Text> // Doesn't compile
+```
 
 <p class="text-kumo-strong">
   Headings (i.e. `h1`, `h2` and `h3` variants) cannot use these props at all:
 </p>
 
-<CodeBlock
-  code={`<Text variant="h1" bold>
+```tsx
+<Text variant="h1" bold>
   Heading 1
-</Text> // Doesn't compile`}
-  lang="tsx"
-/>
+</Text> // Doesn't compile
+```
 
 </section>
 
@@ -103,10 +102,9 @@ export default function Example() {
     <TextTruncateDemo client:visible />
   </ComponentExample>
 
-<CodeBlock
-  code={`<Text truncate>This is a long piece of text that will be truncated...</Text>`}
-  lang="tsx"
-/>
+```tsx
+<Text truncate>This is a long piece of text that will be truncated...</Text>
+```
 
 </ComponentSection>
 
