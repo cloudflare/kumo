@@ -4,6 +4,7 @@ import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
+import { KUMO_INPUT_VARIANTS, type KumoInputSize } from "../input/input";
 import { SkeletonLine } from "../loader";
 import { Field, type FieldErrorMatch } from "../field/field";
 import {
@@ -11,12 +12,14 @@ import {
   type PortalContainer,
 } from "../../utils/portal-provider";
 
-/** Select variant definitions (currently empty, reserved for future additions). */
+/** Select variant definitions. */
 export const KUMO_SELECT_VARIANTS = {
-  // Select currently has no variant options but structure is ready for future additions
+  size: KUMO_INPUT_VARIANTS.size,
 } as const;
 
-export const KUMO_SELECT_DEFAULT_VARIANTS = {} as const;
+export const KUMO_SELECT_DEFAULT_VARIANTS = {
+  size: "base",
+} as const;
 
 /**
  * Select component styling metadata for Figma plugin code generation
@@ -57,15 +60,39 @@ export const KUMO_SELECT_STYLING = {
 } as const;
 
 // Derived types from KUMO_SELECT_VARIANTS
-export interface KumoSelectVariantsProps {}
+export type KumoSelectSize = keyof typeof KUMO_SELECT_VARIANTS.size;
 
-export function selectVariants(_props: KumoSelectVariantsProps = {}) {
+export interface KumoSelectVariantsProps {
+  /**
+   * Size of the select trigger. Matches Input component sizes.
+   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
+   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
+   * - `"base"` — Default size (h-9 / 36px)
+   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * @default "base"
+   */
+  size?: KumoSelectSize;
+}
+
+export function selectVariants({
+  size = KUMO_SELECT_DEFAULT_VARIANTS.size,
+}: KumoSelectVariantsProps = {}) {
   return cn(
-    buttonVariants(),
+    buttonVariants({ size }),
     "justify-between font-normal",
     "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
   );
 }
+
+const triggerIconStyles: Record<
+  KumoInputSize,
+  { iconSize: number; className: string }
+> = {
+  xs: { iconSize: 12, className: "text-kumo-subtle" },
+  sm: { iconSize: 14, className: "text-kumo-subtle" },
+  base: { iconSize: 16, className: "text-kumo-subtle" },
+  lg: { iconSize: 18, className: "text-kumo-subtle" },
+};
 
 /**
  * Shape for items that carry extra metadata (disabled state, tooltip).
@@ -239,6 +266,8 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 export interface SelectProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Size of the select trigger. Matches Input component sizes. */
+  size?: KumoSelectSize;
   /**
    * Label content for the select.
    * When provided, enables the Field wrapper with a visible label above the select.
@@ -311,6 +340,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   hideLabel,
   placeholder,
   loading,
+  size = KUMO_SELECT_DEFAULT_VARIANTS.size,
   labelTooltip,
   description,
   error,
@@ -365,9 +395,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     >
       <SelectBase.Trigger
         className={cn(
-          buttonVariants(),
-          "justify-between font-normal",
-          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
+          selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -379,13 +407,21 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         ) : (
           <SelectBase.Value
             placeholder={placeholder}
-            className="min-w-0 truncate"
+            className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
           >
             {renderValue}
           </SelectBase.Value>
         )}
-        <SelectBase.Icon className="flex shrink-0 items-center">
-          <CaretUpDownIcon />
+        <SelectBase.Icon
+          className={cn(
+            "flex shrink-0 items-center",
+            triggerIconStyles[size].className,
+          )}
+        >
+          <CaretUpDownIcon
+            size={triggerIconStyles[size].iconSize}
+            className="fill-current"
+          />
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal container={container}>

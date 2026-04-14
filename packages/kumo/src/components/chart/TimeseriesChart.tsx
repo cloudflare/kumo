@@ -261,7 +261,10 @@ export function TimeseriesChart({
             .map((param: any) => {
               const value = param?.value?.[1];
               const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
-              return `${param.marker} ${param.seriesName}: <strong>${formatFn ? formatFn(value) : value}</strong>`;
+              const formattedValue = formatFn
+                ? escapeHtml(String(formatFn(value)))
+                : escapeHtml(String(value));
+              return `${param.marker} ${escapeHtml(String(param.seriesName))}: <strong>${formattedValue}</strong>`;
             })
             .join("<br/>");
 
@@ -489,6 +492,12 @@ function colorWithOpacity(color: string, alpha: number): string {
 /** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
 function pad(n: number) {
   return n.toString().padStart(2, "0");
+}
+
+function escapeHtml(str: string): string {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 /**

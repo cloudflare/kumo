@@ -953,11 +953,10 @@ SidebarMenuItem.displayName = "Sidebar.MenuItem";
 
 export type SidebarMenuButtonSize = "base" | "sm";
 
-export interface SidebarMenuButtonProps
-  extends Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    "className" | "children"
-  > {
+export interface SidebarMenuButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "className" | "children"
+> {
   icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   active?: boolean;
   /**
@@ -1104,14 +1103,10 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     }
 
     // Wrap in Tooltip when collapsed and tooltip text is provided.
-    // Use asChild so TooltipTrigger merges onto the button/link via render prop
+    // Use render prop so Tooltip merges onto the button/link
     // instead of wrapping it in another <button> (which would cause invalid nesting).
     if (state === "collapsed" && tooltip) {
-      button = (
-        <Tooltip content={tooltip} side="right" asChild>
-          {button}
-        </Tooltip>
-      );
+      button = <Tooltip content={tooltip} side="right" render={button} />;
     }
 
     // Auto-wrap in <li> when not already inside a MenuItem
@@ -1264,8 +1259,7 @@ SidebarMenuSubItem.displayName = "Sidebar.MenuSubItem";
 // Sidebar MenuSubButton
 // ============================================================================
 
-export interface SidebarMenuSubButtonProps
-  extends ComponentPropsWithoutRef<"button"> {
+export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"button"> {
   /** Marks this sub-item as currently active/selected. @default false */
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
@@ -1525,15 +1519,8 @@ const SidebarResizeHandle = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => {
-  const {
-    side,
-    resizable,
-    setIsResizing,
-    setWidth,
-    setOpen,
-    open,
-    minWidth,
-  } = useSidebar();
+  const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth } =
+    useSidebar();
   const startX = useRef(0);
   const startWidth = useRef(0);
   const wasCollapsed = useRef(false);

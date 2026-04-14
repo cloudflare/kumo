@@ -12,11 +12,15 @@ export function DatePickerSingleDemo() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DatePicker mode="single" selected={date} onChange={d => {
-        if (d) {
-          setDate(d);
-        }
-      }} />
+      <DatePicker
+        mode="single"
+        selected={date}
+        onChange={(d) => {
+          if (d) {
+            setDate(d);
+          }
+        }}
+      />
       <p className="text-sm text-kumo-subtle">
         Selected: {date ? date.toLocaleDateString() : "None"}
       </p>
@@ -99,10 +103,10 @@ export function DatePickerPopoverDemo() {
 
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button variant="outline" icon={CalendarDotsIcon}>
-          {date ? date.toLocaleDateString() : "Pick a date"}
-        </Button>
+      <Popover.Trigger
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {date ? date.toLocaleDateString() : "Pick a date"}
       </Popover.Trigger>
       <Popover.Content className="p-3">
         <DatePicker mode="single" selected={date} onChange={setDate} />
@@ -125,10 +129,10 @@ export function DatePickerRangePopoverDemo() {
 
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button variant="outline" icon={CalendarDotsIcon}>
-          {formatRange()}
-        </Button>
+      <Popover.Trigger
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {formatRange()}
       </Popover.Trigger>
       <Popover.Content className="p-3">
         <DatePicker
@@ -219,10 +223,10 @@ export function DatePickerRangeWithPresetsDemo() {
 
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button variant="outline" icon={CalendarDotsIcon}>
-          {formatRange()}
-        </Button>
+      <Popover.Trigger
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {formatRange()}
       </Popover.Trigger>
       <Popover.Content className="p-0">
         <div className="flex">
@@ -234,10 +238,11 @@ export function DatePickerRangeWithPresetsDemo() {
                   key={preset.label}
                   type="button"
                   onClick={() => handlePresetClick(preset)}
-                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${isActive
-                    ? "bg-kumo-bg-inverse text-kumo-text-inverse"
-                    : "text-kumo-strong hover:bg-kumo-control"
-                    }`}
+                  className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${
+                    isActive
+                      ? "bg-kumo-bg-inverse text-kumo-text-inverse"
+                      : "text-kumo-strong hover:bg-kumo-control"
+                  }`}
                 >
                   {preset.label}
                 </button>

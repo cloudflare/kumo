@@ -242,16 +242,23 @@ export function HomeGrid() {
       Component: (
         <TooltipProvider>
           <div className="flex gap-2">
-            <Tooltip content="Add" asChild open>
-              <Button shape="square" icon={PlusIcon} aria-label="Add" />
-            </Tooltip>
-            <Tooltip content="Change language" asChild>
-              <Button
-                shape="square"
-                icon={TranslateIcon}
-                aria-label="Change language"
-              />
-            </Tooltip>
+            <Tooltip
+              content="Add"
+              open
+              render={
+                <Button shape="square" icon={PlusIcon} aria-label="Add" />
+              }
+            />
+            <Tooltip
+              content="Change language"
+              render={
+                <Button
+                  shape="square"
+                  icon={TranslateIcon}
+                  aria-label="Change language"
+                />
+              }
+            />
           </div>
         </TooltipProvider>
       ),
@@ -555,7 +562,7 @@ export function HomeGrid() {
       id: "popover",
       Component: (
         <Popover>
-          <Popover.Trigger render={<Button>Open Popover</Button>} />
+          <Popover.Trigger render={<Button />}>Open Popover</Popover.Trigger>
           <Popover.Content>
             <Popover.Title>Popover Title</Popover.Title>
             <Popover.Description>This is a popover.</Popover.Description>

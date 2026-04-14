@@ -4,9 +4,12 @@ import { Info, PlusIcon, TranslateIcon } from "@phosphor-icons/react";
 export function TooltipHeroDemo() {
   return (
     <TooltipProvider>
-      <Tooltip content="Add new item" asChild>
-        <Button shape="square" icon={PlusIcon} aria-label="Add new item" />
-      </Tooltip>
+      <Tooltip
+        content="Add new item"
+        render={
+          <Button shape="square" icon={PlusIcon} aria-label="Add new item" />
+        }
+      />
     </TooltipProvider>
   );
 }
@@ -14,9 +17,10 @@ export function TooltipHeroDemo() {
 export function TooltipBasicDemo() {
   return (
     <TooltipProvider>
-      <Tooltip content="Add" asChild>
-        <Button shape="square" icon={PlusIcon} aria-label="Add" />
-      </Tooltip>
+      <Tooltip
+        content="Add"
+        render={<Button shape="square" icon={PlusIcon} aria-label="Add" />}
+      />
     </TooltipProvider>
   );
 }
@@ -25,23 +29,27 @@ export function TooltipMultipleDemo() {
   return (
     <TooltipProvider>
       <div className="flex gap-2">
-        <Tooltip content="Add" asChild>
-          <Button shape="square" icon={PlusIcon} aria-label="Add" />
-        </Tooltip>
-        <Tooltip content="Change language" asChild>
-          <Button
-            shape="square"
-            icon={TranslateIcon}
-            aria-label="Change language"
-          />
-        </Tooltip>
+        <Tooltip
+          content="Add"
+          render={<Button shape="square" icon={PlusIcon} aria-label="Add" />}
+        />
+        <Tooltip
+          content="Change language"
+          render={
+            <Button
+              shape="square"
+              icon={TranslateIcon}
+              aria-label="Change language"
+            />
+          }
+        />
       </div>
     </TooltipProvider>
   );
 }
 
 /**
- * Without `asChild`, Tooltip wraps children in an internal button element.
+ * Without `render`, Tooltip wraps children in an internal button element.
  * Defensive styles are applied by default, but you can fully customize
  * the trigger by passing className - your styles override the defaults.
  */
@@ -67,23 +75,27 @@ export function TooltipDelayDemo() {
   return (
     <TooltipProvider>
       <div className="flex gap-4">
-        <Tooltip content="Opens after 1 second" delay={1000} asChild>
-          <Button variant="secondary">1s open delay</Button>
+        <Tooltip
+          content="Opens after 1 second"
+          delay={1000}
+          render={<Button variant="secondary" />}
+        >
+          1s open delay
         </Tooltip>
         <Tooltip
           content="Stays open 500ms after leaving"
           closeDelay={500}
-          asChild
+          render={<Button variant="secondary" />}
         >
-          <Button variant="secondary">500ms close delay</Button>
+          500ms close delay
         </Tooltip>
         <Tooltip
           content="Instant open, stays 1s"
           delay={0}
           closeDelay={1000}
-          asChild
+          render={<Button variant="secondary" />}
         >
-          <Button variant="secondary">Instant + 1s close</Button>
+          Instant + 1s close
         </Tooltip>
       </div>
     </TooltipProvider>

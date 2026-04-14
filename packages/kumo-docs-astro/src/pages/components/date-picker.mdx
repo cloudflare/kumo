@@ -158,10 +158,10 @@ export function DatePickerDropdown() {
 
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button variant="outline" icon={CalendarDotsIcon}>
-          {date ? date.toLocaleDateString() : "Pick a date"}
-        </Button>
+      <Popover.Trigger
+        render={<Button variant="outline" icon={CalendarDotsIcon} />}
+      >
+        {date ? date.toLocaleDateString() : "Pick a date"}
       </Popover.Trigger>
       <Popover.Content className="p-3">
         <DatePicker

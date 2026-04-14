@@ -57,9 +57,7 @@ import { Popover, Button } from "@cloudflare/kumo";
 export default function Example() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>Open</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button />}>Open</Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Popover Title</Popover.Title>
         <Popover.Description>Popover content goes here.</Popover.Description>
@@ -208,7 +206,7 @@ export default function Example() {
 
 <Heading level={3}>Popover.Trigger</Heading>
 <p>
-  A button that opens the popover when clicked. Use `asChild` to render your own
+  A button that opens the popover when clicked. Use `render` to render your own
   element.
 </p>
 <PropsTable component="Popover.Trigger" />
@@ -233,8 +231,8 @@ export default function Example() {
 
 <Heading level={3}>Popover.Close</Heading>
 <p>
-  A button that closes the popover when clicked. Use `asChild` to render your
-  own element.
+  A button that closes the popover when clicked. Use `render` to render your own
+  element.
 </p>
 <PropsTable component="Popover.Close" />
 

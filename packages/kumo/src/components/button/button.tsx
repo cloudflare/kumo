@@ -260,11 +260,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (title) {
-      return (
-        <Tooltip content={title} asChild>
-          {button}
-        </Tooltip>
-      );
+      return <Tooltip content={title} render={button} />;
     }
 
     return button;
