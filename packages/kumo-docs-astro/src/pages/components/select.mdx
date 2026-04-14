@@ -13,6 +13,7 @@ import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   SelectBasicDemo,
+  SelectSizesDemo,
   SelectWithoutLabelDemo,
   SelectWithFieldDemo,
   SelectPlaceholderDemo,
@@ -89,6 +90,20 @@ export default function Example() {
 
   <ComponentExample demo="SelectBasicDemo">
     <SelectBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Sizes */}
+
+<ComponentSection>
+  <Heading level={3}>Sizes</Heading>
+  <p>
+    Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">size</code> prop
+    to match Input sizing (xs, sm, base, lg).
+  </p>
+
+  <ComponentExample demo="SelectSizesDemo">
+    <SelectSizesDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
@@ -318,11 +333,23 @@ export default function Example() {
 <Heading level={3}>Select.Option</Heading>
 <PropsTable component="Select.Option" />
 
-  <Heading level={3}>Select.Group</Heading>
-  <p>Groups related options together with an accessible <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="group"</code>. Use with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.GroupLabel</code> to provide a visible heading.</p>
+<Heading level={3}>Select.Group</Heading>
+<p>
+  Groups related options together with an accessible{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="group"</code>.
+  Use with{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+    Select.GroupLabel
+  </code>{" "}
+  to provide a visible heading.
+</p>
 
-  <Heading level={3}>Select.GroupLabel</Heading>
-  <p>A visible heading for a <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>. Automatically associated with its parent group for accessibility.</p>
+<Heading level={3}>Select.GroupLabel</Heading>
+<p>
+  A visible heading for a{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>.
+  Automatically associated with its parent group for accessibility.
+</p>
 
   <Heading level={3}>Select.Separator</Heading>
   <p>A visual divider line between option groups. Renders with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="separator"</code>.</p>
