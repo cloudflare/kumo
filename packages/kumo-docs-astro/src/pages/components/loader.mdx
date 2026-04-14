@@ -5,6 +5,7 @@ description: "A loading spinner to indicate loading state."
 sourceFile: "components/loader"
 ---
 
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -28,15 +29,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Loader } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { Loader } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Loader } from "@cloudflare/kumo/components/loader";
-```
+<CodeBlock
+  code={`import { Loader } from "@cloudflare/kumo/components/loader";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -45,13 +45,11 @@ import { Loader } from "@cloudflare/kumo/components/loader";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { Loader } from "@cloudflare/kumo";
+<CodeBlock code={`import { Loader } from "@cloudflare/kumo";
 
 export default function Example() {
   return <Loader />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

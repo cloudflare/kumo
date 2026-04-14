@@ -5,6 +5,7 @@ description: "A group of components for building directed flow diagrams with nod
 sourceFile: "components/flow"
 ---
 
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import Heading from "~/components/docs/Heading.astro";
@@ -36,15 +37,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Flow } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { Flow } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Flow } from "@cloudflare/kumo/components/flow";
-```
+<CodeBlock
+  code={`import { Flow } from "@cloudflare/kumo/components/flow";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -61,8 +61,7 @@ import { Flow } from "@cloudflare/kumo/components/flow";
     branching paths.
   </p>
 
-```tsx
-import { Flow } from "@cloudflare/kumo";
+<CodeBlock code={`import { Flow } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -72,8 +71,7 @@ export default function Example() {
       <Flow.Node>Step 3</Flow.Node>
     </Flow>
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

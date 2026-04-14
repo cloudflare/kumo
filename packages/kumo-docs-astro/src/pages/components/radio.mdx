@@ -8,6 +8,7 @@ baseUIComponent: "radio-group"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -36,15 +37,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Radio } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { Radio } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Radio } from "@cloudflare/kumo/components/radio";
-```
+<CodeBlock
+  code={`import { Radio } from "@cloudflare/kumo/components/radio";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -53,8 +53,7 @@ import { Radio } from "@cloudflare/kumo/components/radio";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { Radio } from "@cloudflare/kumo";
+<CodeBlock code={`import { Radio } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
@@ -63,8 +62,7 @@ export default function Example() {
       <Radio.Item label="Option B" value="b" />
     </Radio.Group>
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

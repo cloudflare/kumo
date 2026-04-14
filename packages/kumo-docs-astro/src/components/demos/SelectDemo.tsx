@@ -16,6 +16,54 @@ export function SelectBasicDemo() {
   );
 }
 
+/** Select trigger sizes (xs/sm/base/lg) matching Input and Combobox. */
+export function SelectSizesDemo() {
+  return (
+    <div className="grid gap-4">
+      <div className="flex items-center gap-3">
+        <span className="w-10 text-sm text-kumo-subtle">xs</span>
+        <Select
+          aria-label="Select size xs"
+          size="xs"
+          className="w-[200px]"
+          placeholder="Choose..."
+          items={{ a: "Option A", b: "Option B" }}
+        />
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="w-10 text-sm text-kumo-subtle">sm</span>
+        <Select
+          aria-label="Select size sm"
+          size="sm"
+          className="w-[200px]"
+          placeholder="Choose..."
+          items={{ a: "Option A", b: "Option B" }}
+        />
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="w-10 text-sm text-kumo-subtle">base</span>
+        <Select
+          aria-label="Select size base"
+          size="base"
+          className="w-[200px]"
+          placeholder="Choose..."
+          items={{ a: "Option A", b: "Option B" }}
+        />
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="w-10 text-sm text-kumo-subtle">lg</span>
+        <Select
+          aria-label="Select size lg"
+          size="lg"
+          className="w-[200px]"
+          placeholder="Choose..."
+          items={{ a: "Option A", b: "Option B" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 /** Select without visible label - use aria-label for accessibility. */
 export function SelectWithoutLabelDemo() {
   const [value, setValue] = useState("apple");

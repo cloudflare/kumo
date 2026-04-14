@@ -7,6 +7,7 @@ sourceFile: "components/pagination"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -38,15 +39,14 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { Pagination } from "@cloudflare/kumo";
-```
+<CodeBlock code={`import { Pagination } from "@cloudflare/kumo";`} lang="tsx" />
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { Pagination } from "@cloudflare/kumo/components/pagination";
-```
+<CodeBlock
+  code={`import { Pagination } from "@cloudflare/kumo/components/pagination";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -55,8 +55,7 @@ import { Pagination } from "@cloudflare/kumo/components/pagination";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { useState } from "react";
+<CodeBlock code={`import { useState } from "react";
 import { Pagination } from "@cloudflare/kumo";
 
 export default function Example() {
@@ -65,8 +64,7 @@ export default function Example() {
   return (
     <Pagination page={page} setPage={setPage} perPage={10} totalCount={100} />
   );
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 

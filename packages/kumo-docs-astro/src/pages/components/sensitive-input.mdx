@@ -7,6 +7,7 @@ sourceFile: "components/sensitive-input"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
 import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -30,15 +31,17 @@ import {
   <Heading level={2}>Installation</Heading>
   <Heading level={3}>Barrel</Heading>
 
-```tsx
-import { SensitiveInput } from "@cloudflare/kumo";
-```
+<CodeBlock
+  code={`import { SensitiveInput } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
 
 <Heading level={3}>Granular</Heading>
 
-```tsx
-import { SensitiveInput } from "@cloudflare/kumo/components/sensitive-input";
-```
+<CodeBlock
+  code={`import { SensitiveInput } from "@cloudflare/kumo/components/sensitive-input";`}
+  lang="tsx"
+/>
 
 </ComponentSection>
 
@@ -47,13 +50,11 @@ import { SensitiveInput } from "@cloudflare/kumo/components/sensitive-input";
 <ComponentSection>
   <Heading level={2}>Usage</Heading>
 
-```tsx
-import { SensitiveInput } from "@cloudflare/kumo";
+<CodeBlock code={`import { SensitiveInput } from "@cloudflare/kumo";
 
 export default function Example() {
   return <SensitiveInput label="Secret" defaultValue="my-secret-key" />;
-}
-```
+}`} lang="tsx" />
 
 </ComponentSection>
 
