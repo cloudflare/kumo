@@ -12,6 +12,7 @@ import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   LayerCardDemo,
   LayerCardBasicDemo,
+  LayerCardSurfaceDemo,
   LayerCardMultipleDemo,
 } from "~/components/demos/LayerCardDemo";
 
@@ -59,6 +60,25 @@ export default function Example() {
 }
 ```
 
+<p>
+  <code>LayerCard</code> also supports a simple surface-style mode for cases
+  where you do not need a secondary header row. In those cases, render content
+  directly inside <code>LayerCard</code> instead of wrapping it in
+  <code>LayerCard.Primary</code>.
+</p>
+
+```tsx
+import { LayerCard } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <LayerCard className="w-[250px] p-4">
+      Learn how to use Kumo components
+    </LayerCard>
+  );
+}
+```
+
 </ComponentSection>
 
 {/* Examples */}
@@ -69,6 +89,15 @@ export default function Example() {
 <Heading level={3}>Basic Card</Heading>
 <ComponentExample demo="LayerCardBasicDemo">
   <LayerCardBasicDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Surface-style Card</Heading>
+<p>
+  For simple card containers, render content directly inside <code>LayerCard</code>
+  without <code>LayerCard.Primary</code>.
+</p>
+<ComponentExample demo="LayerCardSurfaceDemo">
+  <LayerCardSurfaceDemo client:visible />
 </ComponentExample>
 
 <Heading level={3}>Multiple Cards</Heading>

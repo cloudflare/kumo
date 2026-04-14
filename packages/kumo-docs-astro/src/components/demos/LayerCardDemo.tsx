@@ -34,6 +34,14 @@ export function LayerCardBasicDemo() {
   );
 }
 
+export function LayerCardSurfaceDemo() {
+  return (
+    <LayerCard className="w-[250px] p-4">
+      <p className="text-sm text-kumo-subtle">Quick start guide for new users</p>
+    </LayerCard>
+  );
+}
+
 export function LayerCardMultipleDemo() {
   return (
     <div className="flex gap-4">

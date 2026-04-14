@@ -70,7 +70,6 @@ const componentItems: NavItem[] = [
   { label: "Sensitive Input", href: "/components/sensitive-input" },
   { label: "Sidebar", href: "/components/sidebar" },
   { label: "Skeleton Line", href: "/components/skeleton-line" },
-  { label: "Surface", href: "/components/surface" },
   { label: "Switch", href: "/components/switch" },
   { label: "Table", href: "/components/table" },
   { label: "Tabs", href: "/components/tabs" },
