@@ -1,12 +1,15 @@
+import { useState, useRef } from "react";
 import { Popover, Button } from "@cloudflare/kumo";
-import { BellIcon } from "@phosphor-icons/react";
+import { BellIcon, DotsThree } from "@phosphor-icons/react";
 
 export function PopoverHeroDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button shape="square" icon={BellIcon} aria-label="Notifications" />
-      </Popover.Trigger>
+      <Popover.Trigger
+        render={
+          <Button shape="square" icon={BellIcon} aria-label="Notifications" />
+        }
+      />
       <Popover.Content>
         <Popover.Title>Notifications</Popover.Title>
         <Popover.Description>
@@ -20,9 +23,7 @@ export function PopoverHeroDemo() {
 export function PopoverBasicDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>Open Popover</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button />}>Open Popover</Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Popover Title</Popover.Title>
         <Popover.Description>
@@ -36,19 +37,15 @@ export function PopoverBasicDemo() {
 export function PopoverWithCloseDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>Open Settings</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button />}>Open Settings</Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Settings</Popover.Title>
         <Popover.Description>
           Configure your preferences below.
         </Popover.Description>
         <div className="mt-3">
-          <Popover.Close asChild>
-            <Button variant="secondary" size="sm">
-              Close
-            </Button>
+          <Popover.Close render={<Button variant="secondary" size="sm" />}>
+            Close
           </Popover.Close>
         </div>
       </Popover.Content>
@@ -60,8 +57,8 @@ export function PopoverPositionDemo() {
   return (
     <div className="flex flex-wrap gap-4">
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Bottom</Button>
+        <Popover.Trigger render={<Button variant="secondary" />}>
+          Bottom
         </Popover.Trigger>
         <Popover.Content side="bottom">
           <Popover.Title>Bottom</Popover.Title>
@@ -72,8 +69,8 @@ export function PopoverPositionDemo() {
       </Popover>
 
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Top</Button>
+        <Popover.Trigger render={<Button variant="secondary" />}>
+          Top
         </Popover.Trigger>
         <Popover.Content side="top">
           <Popover.Title>Top</Popover.Title>
@@ -82,8 +79,8 @@ export function PopoverPositionDemo() {
       </Popover>
 
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Left</Button>
+        <Popover.Trigger render={<Button variant="secondary" />}>
+          Left
         </Popover.Trigger>
         <Popover.Content side="left">
           <Popover.Title>Left</Popover.Title>
@@ -92,8 +89,8 @@ export function PopoverPositionDemo() {
       </Popover>
 
       <Popover>
-        <Popover.Trigger asChild>
-          <Button variant="secondary">Right</Button>
+        <Popover.Trigger render={<Button variant="secondary" />}>
+          Right
         </Popover.Trigger>
         <Popover.Content side="right">
           <Popover.Title>Right</Popover.Title>
@@ -107,9 +104,7 @@ export function PopoverPositionDemo() {
 export function PopoverCustomContentDemo() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>User Profile</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button />}>User Profile</Popover.Trigger>
       <Popover.Content className="w-64">
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-full bg-kumo-recessed" />
@@ -118,14 +113,14 @@ export function PopoverCustomContentDemo() {
             <p className="text-sm text-kumo-subtle">jane@example.com</p>
           </div>
         </div>
-        <div className="mt-3 flex gap-2 border-t border-kumo-line pt-3">
+        <div className="mt-3 flex gap-2 border-t border-kumo-hairline pt-3">
           <Button variant="secondary" size="sm" className="flex-1">
             Profile
           </Button>
-          <Popover.Close asChild>
-            <Button variant="ghost" size="sm" className="flex-1">
-              Sign Out
-            </Button>
+          <Popover.Close
+            render={<Button variant="ghost" size="sm" className="flex-1" />}
+          >
+            Sign Out
           </Popover.Close>
         </div>
       </Popover.Content>
@@ -136,8 +131,12 @@ export function PopoverCustomContentDemo() {
 export function PopoverOpenOnHoverDemo() {
   return (
     <Popover>
-      <Popover.Trigger openOnHover delay={200} asChild>
-        <Button variant="secondary">Hover Me</Button>
+      <Popover.Trigger
+        openOnHover
+        delay={200}
+        render={<Button variant="secondary" />}
+      >
+        Hover Me
       </Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Hover Triggered</Popover.Title>
@@ -146,13 +145,97 @@ export function PopoverOpenOnHoverDemo() {
           interactive content like buttons and links.
         </Popover.Description>
         <div className="mt-3">
-          <Popover.Close asChild>
-            <Button variant="secondary" size="sm">
-              Got it
-            </Button>
+          <Popover.Close render={<Button variant="secondary" size="sm" />}>
+            Got it
           </Popover.Close>
         </div>
       </Popover.Content>
     </Popover>
+  );
+}
+
+/** Popover anchored to a virtual element instead of a trigger. */
+export function PopoverVirtualAnchorDemo() {
+  const [selectedRow, setSelectedRow] = useState<string | null>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
+
+  const rows = [
+    { id: "1", name: "api-gateway", status: "Active" },
+    { id: "2", name: "auth-service", status: "Active" },
+    { id: "3", name: "worker-prod", status: "Paused" },
+  ];
+
+  const handleEdit = (id: string) => {
+    const row = rowRefs.current.get(id);
+    if (row) {
+      setAnchorRect(row.getBoundingClientRect());
+      setSelectedRow(id);
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <div className="overflow-hidden rounded-lg border border-kumo-hairline">
+        <table className="w-full text-sm">
+          <thead className="bg-kumo-elevated">
+            <tr>
+              <th className="px-4 py-2 text-left font-medium">Name</th>
+              <th className="px-4 py-2 text-left font-medium">Status</th>
+              <th className="w-12 px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-kumo-hairline">
+            {rows.map((row) => (
+              <tr
+                key={row.id}
+                ref={(el) => {
+                  if (el) rowRefs.current.set(row.id, el);
+                }}
+                className={
+                  selectedRow === row.id ? "bg-kumo-recessed" : "bg-kumo-base"
+                }
+              >
+                <td className="px-4 py-2 font-mono">{row.name}</td>
+                <td className="px-4 py-2 text-kumo-subtle">{row.status}</td>
+                <td className="px-4 py-2">
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    shape="square"
+                    icon={DotsThree}
+                    aria-label={`Actions for ${row.name}`}
+                    onClick={() => handleEdit(row.id)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Popover
+        open={!!selectedRow}
+        onOpenChange={(open) => !open && setSelectedRow(null)}
+      >
+        <Popover.Content
+          side="left"
+          anchor={
+            anchorRect ? { getBoundingClientRect: () => anchorRect } : undefined
+          }
+        >
+          <Popover.Title>
+            Edit {rows.find((r) => r.id === selectedRow)?.name}
+          </Popover.Title>
+          <Popover.Description>
+            The popover anchors to the selected row, not the icon button.
+          </Popover.Description>
+          <div className="mt-3">
+            <Popover.Close render={<Button size="sm" variant="secondary" />}>
+              Close
+            </Popover.Close>
+          </div>
+        </Popover.Content>
+      </Popover>
+    </div>
   );
 }

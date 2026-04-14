@@ -66,7 +66,7 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
@@ -260,11 +260,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (title) {
-      return (
-        <Tooltip content={title} asChild>
-          {button}
-        </Tooltip>
-      );
+      return <Tooltip content={title} render={button} />;
     }
 
     return button;

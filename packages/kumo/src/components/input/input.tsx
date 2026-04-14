@@ -106,7 +106,7 @@ export function inputVariants({
 }: KumoInputVariantsProps = {}) {
   return cn(
     // Base styles
-    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line",
+    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-hairline",
     // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
     "kumo-input-placeholder disabled:text-kumo-subtle",
     // Apply size styles from KUMO_INPUT_VARIANTS
@@ -150,16 +150,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   // A11y enforcement: warn in dev if no accessible name provided
   if (process.env.NODE_ENV !== "production") {
     const hasLabel = Boolean(label);
-    const hasPlaceholderAndAriaLabel = Boolean(
-      inputProps.placeholder && inputProps["aria-label"],
-    );
+    const hasAriaLabel = Boolean(inputProps["aria-label"]);
     const hasAriaLabelledBy = Boolean(inputProps["aria-labelledby"]);
 
-    if (!hasLabel && !hasPlaceholderAndAriaLabel && !hasAriaLabelledBy) {
+    if (!hasLabel && !hasAriaLabel && !hasAriaLabelledBy) {
       console.warn(
         "[Kumo Input]: Input must have an accessible name. Provide either:\n" +
           "  - label prop: <Input label='Email' />\n" +
-          "  - placeholder + aria-label: <Input placeholder='Email' aria-label='Email address' />\n" +
+          "  - aria-label: <Input aria-label='Email address' />\n" +
           "  - aria-labelledby for custom label association",
       );
     }

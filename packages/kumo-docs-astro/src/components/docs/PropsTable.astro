@@ -44,7 +44,7 @@ const hasDescriptions =
     <div class="not-prose overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b border-kumo-line">
+          <tr class="border-b border-kumo-hairline">
             <th class="px-4 py-3 text-left font-semibold">Prop</th>
             <th class="px-4 py-3 text-left font-semibold">Type</th>
             <th class="px-4 py-3 text-left font-semibold">Default</th>
@@ -63,7 +63,7 @@ const hasDescriptions =
             let description = prop.description || "";
 
             return (
-              <tr class="border-b border-kumo-line">
+              <tr class="border-b border-kumo-hairline">
                 <td class="px-4 py-3 font-mono text-xs">
                   {propName}
                   {isRequired && <span class="text-kumo-danger ml-0.5">*</span>}

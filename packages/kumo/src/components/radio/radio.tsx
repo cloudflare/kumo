@@ -8,7 +8,7 @@ import { Radio as BaseRadio } from "@base-ui/react/radio";
 export const KUMO_RADIO_VARIANTS = {
   variant: {
     default: {
-      classes: "ring-kumo-line",
+      classes: "ring-kumo-hairline",
       description: "Default radio appearance",
     },
     error: {
@@ -263,7 +263,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
             disabled={disabled}
             className={cn(
               "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring",
-              variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
+              variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
               !disabled &&
                 variant !== "error" &&
                 "group-hover:ring-kumo-hairline focus-visible:ring-kumo-hairline focus-visible:outline-offset-3",
@@ -301,7 +301,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
           disabled={disabled}
           className={cn(
             "relative flex h-4 w-4 items-center justify-center rounded-full border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
-            variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
+            variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
             !disabled &&
               variant !== "error" &&
               "group-hover:ring-kumo-hairline focus-visible:ring-kumo-hairline focus-visible:outline-offset-3",

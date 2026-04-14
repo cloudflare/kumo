@@ -21,6 +21,7 @@ import {
   PaginationCompoundCustomInfoDemo,
   PaginationDropdownSelectorDemo,
   PaginationPageSizeRightDemo,
+  PaginationI18nDemo,
 } from "~/components/demos/PaginationDemo";
 
 {/* Hero Demo */}
@@ -172,6 +173,20 @@ export default function Example() {
     >
       <PaginationDropdownSelectorDemo client:visible />
     </ComponentExample>
+</ComponentSection>
+
+{/* Internationalization */}
+
+<ComponentSection>
+  <Heading level={2}>Internationalization</Heading>
+  <p>
+    Use the `labels` prop to customize all UI strings for different locales. All labels default to English.
+  </p>
+
+<ComponentExample demo="PaginationI18nDemo">
+  <PaginationI18nDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}

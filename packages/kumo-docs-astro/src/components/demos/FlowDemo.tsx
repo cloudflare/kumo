@@ -11,7 +11,7 @@ const ExpandableNode = forwardRef<
     <li
       ref={ref}
       {...props}
-      className="rounded-lg shadow bg-kumo-base ring ring-kumo-line overflow-hidden"
+      className="rounded-lg shadow bg-kumo-base ring ring-kumo-hairline overflow-hidden"
     >
       <button
         type="button"
@@ -24,7 +24,7 @@ const ExpandableNode = forwardRef<
         />
       </button>
       {open && (
-        <div className="border-t border-kumo-line px-3 py-2 text-sm text-kumo-subtle">
+        <div className="border-t border-kumo-hairline px-3 py-2 text-sm text-kumo-subtle">
           {children}
         </div>
       )}
@@ -100,7 +100,7 @@ export function FlowAnchorDemo() {
       <Flow.Node>Load balancer</Flow.Node>
       <Flow.Node
         render={
-          <li className="shadow-none rounded-lg ring ring-kumo-line bg-kumo-overlay">
+          <li className="shadow-none rounded-lg ring ring-kumo-hairline bg-kumo-overlay">
             <Flow.Anchor
               type="end"
               render={
@@ -112,7 +112,7 @@ export function FlowAnchorDemo() {
             <Flow.Anchor
               type="start"
               render={
-                <div className="bg-kumo-base rounded ring ring-kumo-line shadow px-2 py-1.5 m-1.5 mt-0">
+                <div className="bg-kumo-base rounded ring ring-kumo-hairline shadow px-2 py-1.5 m-1.5 mt-0">
                   Bindings
                   <span className="text-kumo-subtle w-5 ml-3">2</span>
                 </div>
@@ -137,7 +137,7 @@ export function FlowCenteredDemo() {
       <Flow.Node>my-worker</Flow.Node>
       <Flow.Node
         render={
-          <li className="py-6 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line">
+          <li className="py-6 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-hairline">
             Taller node
           </li>
         }
@@ -149,7 +149,7 @@ export function FlowCenteredDemo() {
 /** Large flow diagram demonstrating panning */
 export function FlowPanningDemo() {
   return (
-    <Flow className="rounded-lg border border-kumo-line">
+    <Flow className="rounded-lg border border-kumo-hairline">
       <Flow.Node>Start</Flow.Node>
       <Flow.Node>Authenticate</Flow.Node>
       <Flow.Node>Validate</Flow.Node>
@@ -226,9 +226,9 @@ export function FlowSidebarBugDemo() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="relative overflow-hidden rounded-lg ring ring-kumo-line bg-kumo-base min-h-64 flex flex-col">
+    <div className="relative overflow-hidden rounded-lg ring ring-kumo-hairline bg-kumo-base min-h-64 flex flex-col">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 border-b border-kumo-line px-3 py-2 shrink-0">
+      <div className="flex items-center gap-2 border-b border-kumo-hairline px-3 py-2 shrink-0">
         <button
           type="button"
           onClick={() => setSidebarOpen((v) => !v)}
@@ -246,7 +246,7 @@ export function FlowSidebarBugDemo() {
       <div className="flex flex-1 min-h-0">
         {/* Sidebar */}
         <div
-          className="shrink-0 overflow-hidden transition-[width] duration-300 border-r border-kumo-line bg-kumo-elevated"
+          className="shrink-0 overflow-hidden transition-[width] duration-300 border-r border-kumo-hairline bg-kumo-elevated"
           style={{ width: sidebarOpen ? 160 : 0 }}
         >
           <div className="w-40 p-3 space-y-1">
