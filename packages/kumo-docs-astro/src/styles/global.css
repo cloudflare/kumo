@@ -224,16 +224,13 @@ pre.astro-code {
    ========================================================================== */
 
 .code-block-copy-btn {
-  @apply absolute top-3 right-3 z-10 flex items-center justify-center size-[1.625rem] rounded-md cursor-pointer border-none focus-visible:outline-none;
+  @apply absolute top-3 right-3 z-10 flex items-center justify-center size-[1.625rem] rounded-md cursor-pointer border-none shadow-none select-none focus-visible:ring-1;
   background: var(--color-kumo-base);
   color: var(--text-color-kumo-subtle);
+  ring-color: var(--color-kumo-hairline);
 
   &:hover {
     background: var(--color-kumo-tint);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--color-kumo-ring);
   }
 }
 
