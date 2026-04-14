@@ -16,6 +16,7 @@ import {
   BreadcrumbsWithClipboardDemo,
   BreadcrumbsLoadingDemo,
   BreadcrumbsRootDemo,
+  BreadcrumbsOverflowDemo,
 } from "~/components/demos/BreadcrumbsDemo";
 
 <ComponentSection>
@@ -66,6 +67,17 @@ import {
   <Heading level={3}>Clipboard</Heading>
   <ComponentExample demo="BreadcrumbsWithClipboardDemo">
     <BreadcrumbsWithClipboardDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+  <Heading level={3}>Overflow (Prototype)</Heading>
+  <p>
+    When breadcrumbs overflow their container, items collapse into a dropdown
+    menu. Drag the slider to resize and watch items collapse.
+  </p>
+  <ComponentExample demo="BreadcrumbsOverflowDemo">
+    <BreadcrumbsOverflowDemo client:load />
   </ComponentExample>
 </ComponentSection>
 

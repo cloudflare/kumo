@@ -167,7 +167,13 @@ export {
   type KumoLinkVariant,
   type KumoLinkVariantsProps,
 } from "./components/link";
-export { Breadcrumbs, type BreadcrumbsProps } from "./components/breadcrumbs";
+export {
+  Breadcrumbs,
+  type BreadcrumbItem,
+  type BreadcrumbsProps,
+  type BreadcrumbsItemsProps,
+  type BreadcrumbsCombinedProps,
+} from "./components/breadcrumbs";
 export { Empty, type EmptyProps } from "./components/empty";
 export {
   Grid,
