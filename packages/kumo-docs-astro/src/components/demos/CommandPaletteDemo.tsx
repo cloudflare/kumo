@@ -146,13 +146,13 @@ export function CommandPaletteBasicDemo() {
         </CommandPalette.List>
         <CommandPalette.Footer>
           <span className="flex items-center gap-2">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5 text-[10px]">
               ↑↓
             </kbd>
             <span>Navigate</span>
           </span>
           <span className="flex items-center gap-2">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5 text-[10px]">
               ↵
             </kbd>
             <span>Select</span>
@@ -359,13 +359,13 @@ export function CommandPaletteResultItemDemo() {
         </CommandPalette.List>
         <CommandPalette.Footer>
           <span className="flex items-center gap-2">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5 text-[10px]">
               ↑↓
             </kbd>
             <span>Navigate</span>
           </span>
           <span className="flex items-center gap-2">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5 text-[10px]">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5 text-[10px]">
               ⌘↵
             </kbd>
             <span>Open in new tab</span>

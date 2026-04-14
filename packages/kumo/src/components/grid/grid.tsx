@@ -159,7 +159,7 @@ export function gridItemVariants({
   return cn(
     mobileDivider &&
       variant === "4up" &&
-      "border-b border-kumo-line pb-8 md:border-b-0 md:pb-0",
+      "border-b border-kumo-hairline pb-8 md:border-b-0 md:pb-0",
   );
 }
 

@@ -218,7 +218,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         ))}
       </ul>
 
-      <div className="my-4 border-b border-kumo-line" />
+      <div className="my-4 border-b border-kumo-hairline" />
 
       <div className="mb-4">
         {/* Components Section */}
@@ -348,7 +348,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-canvas px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:hidden",
         )}
       >
         <Button
@@ -366,12 +366,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-canvas md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas md:hidden",
           "transition-transform duration-300 will-change-transform",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3">
+        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-hairline px-3">
           <h1 className="text-base font-medium">Kumo</h1>
           <Button
             variant="ghost"
@@ -396,10 +396,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block",
-          "border-r border-kumo-line",
+          "border-r border-kumo-hairline",
         )}
       >
-        <div className="relative h-12 border-b border-kumo-line">
+        <div className="relative h-12 border-b border-kumo-hairline">
           <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
@@ -426,11 +426,11 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
           "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
-            ? "translate-x-0 border-r border-kumo-line"
+            ? "translate-x-0 border-r border-kumo-hairline"
             : "-translate-x-full",
         )}
       >
-        <div className="h-12 flex-none border-b border-kumo-line" />
+        <div className="h-12 flex-none border-b border-kumo-hairline" />
 
         <div
           ref={desktopScrollRef}

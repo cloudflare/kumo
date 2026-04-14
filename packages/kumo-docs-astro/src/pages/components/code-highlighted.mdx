@@ -374,7 +374,7 @@ const html = await highlightCode(code, lang);
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>
-        <tr class="border-b border-kumo-line">
+        <tr class="border-b border-kumo-hairline">
           <th class="py-2 pr-4 text-left font-medium">Scenario</th>
           <th class="py-2 pr-4 text-left font-medium">Languages</th>
           <th class="py-2 pr-4 text-left font-medium">Engine</th>
@@ -382,13 +382,13 @@ const html = await highlightCode(code, lang);
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b border-kumo-line/50">
+        <tr class="border-b border-kumo-hairline/50">
           <td class="py-2 pr-4">Minimal</td>
           <td class="py-2 pr-4">tsx, json</td>
           <td class="py-2 pr-4">JS</td>
           <td class="py-2">~75 KB</td>
         </tr>
-        <tr class="border-b border-kumo-line/50">
+        <tr class="border-b border-kumo-hairline/50">
           <td class="py-2 pr-4">Standard</td>
           <td class="py-2 pr-4">tsx, ts, bash, json, css, yaml</td>
           <td class="py-2 pr-4">JS</td>
@@ -445,7 +445,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead>
-      <tr class="border-b border-kumo-line">
+      <tr class="border-b border-kumo-hairline">
         <th class="py-2 pr-4 text-left font-medium">Prop</th>
         <th class="py-2 pr-4 text-left font-medium">Type</th>
         <th class="py-2 pr-4 text-left font-medium">Required</th>
@@ -453,7 +453,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
       </tr>
     </thead>
     <tbody>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>engine</code>
         </td>
@@ -465,7 +465,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
           JS is smaller (~50KB), WASM is more accurate (~180KB)
         </td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>languages</code>
         </td>
@@ -475,7 +475,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
         <td class="py-2 pr-4">Yes</td>
         <td class="py-2">Languages to support (e.g., ["tsx", "bash"])</td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>labels</code>
         </td>
@@ -503,7 +503,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead>
-      <tr class="border-b border-kumo-line">
+      <tr class="border-b border-kumo-hairline">
         <th class="py-2 pr-4 text-left font-medium">Prop</th>
         <th class="py-2 pr-4 text-left font-medium">Type</th>
         <th class="py-2 pr-4 text-left font-medium">Required</th>
@@ -511,7 +511,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
       </tr>
     </thead>
     <tbody>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>code</code>
         </td>
@@ -521,7 +521,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
         <td class="py-2 pr-4">Yes</td>
         <td class="py-2">Source code to display</td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>lang</code>
         </td>
@@ -533,7 +533,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
           Language identifier (must be in provider's languages)
         </td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>showLineNumbers</code>
         </td>
@@ -543,7 +543,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
         <td class="py-2 pr-4">No</td>
         <td class="py-2">Display line numbers</td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>highlightLines</code>
         </td>
@@ -553,7 +553,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
         <td class="py-2 pr-4">No</td>
         <td class="py-2">Lines to emphasize (1-indexed)</td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>showCopyButton</code>
         </td>
@@ -563,7 +563,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
         <td class="py-2 pr-4">No</td>
         <td class="py-2">Show copy-to-clipboard button</td>
       </tr>
-      <tr class="border-b border-kumo-line/50">
+      <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">
           <code>labels</code>
         </td>
@@ -591,24 +591,24 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>
-        <tr class="border-b border-kumo-line">
+        <tr class="border-b border-kumo-hairline">
           <th class="py-2 pr-4 text-left font-medium">Property</th>
           <th class="py-2 pr-4 text-left font-medium">Type</th>
           <th class="py-2 text-left font-medium">Description</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b border-kumo-line/50">
+        <tr class="border-b border-kumo-hairline/50">
           <td class="py-2 pr-4"><code>highlight</code></td>
           <td class="py-2 pr-4"><code>(code, lang, options?) =&gt; string | null</code></td>
           <td class="py-2">Returns highlighted HTML, or null if not ready</td>
         </tr>
-        <tr class="border-b border-kumo-line/50">
+        <tr class="border-b border-kumo-hairline/50">
           <td class="py-2 pr-4"><code>isLoading</code></td>
           <td class="py-2 pr-4"><code>boolean</code></td>
           <td class="py-2">True while Shiki is loading</td>
         </tr>
-        <tr class="border-b border-kumo-line/50">
+        <tr class="border-b border-kumo-hairline/50">
           <td class="py-2 pr-4"><code>isReady</code></td>
           <td class="py-2 pr-4"><code>boolean</code></td>
           <td class="py-2">True when highlight() is safe to call</td>

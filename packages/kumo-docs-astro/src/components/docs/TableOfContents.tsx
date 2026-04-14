@@ -41,12 +41,21 @@ export function TableOfContents({
   headings: headingsProp,
   layout = "sidebar",
 }: TableOfContentsProps) {
+  // Track whether we've hydrated to avoid SSR/client mismatch when scraping
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const headings = useMemo(() => {
     if (headingsProp && headingsProp.length > 0) {
       return headingsProp.filter((h) => h.depth <= 2);
     }
+    // Only scrape after mount to avoid hydration mismatch
+    if (!hasMounted) return [];
     return scrapeHeadings();
-  }, [headingsProp]);
+  }, [headingsProp, hasMounted]);
 
   const [activeId, setActiveId] = useState<string>(headings[0]?.slug ?? "");
 
@@ -132,7 +141,7 @@ export function TableOfContents({
               .getElementById(slug)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full appearance-none rounded-lg border border-kumo-line bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
+          className="w-full appearance-none rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
         >
           {headings.map((heading) => (
             <option key={heading.slug} value={heading.slug}>
@@ -157,7 +166,7 @@ export function TableOfContents({
       </p>
       <nav
         aria-label="Table of contents"
-        className="relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-line"
+        className="relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-hairline"
         ref={navRef}
       >
         {headings.map((heading) => {

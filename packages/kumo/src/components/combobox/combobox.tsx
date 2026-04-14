@@ -308,7 +308,20 @@ const triggerInputIconStyles: Record<
   },
 };
 
-function TriggerInput(props: ComboboxBase.Input.Props) {
+function TriggerInput({
+  clearLabel = "Clear selection",
+  showOptionsLabel = "Show options",
+  ...props
+}: ComboboxBase.Input.Props & {
+  /** Accessible label for the clear button. Pass a translated string for i18n.
+   * @default "Clear selection"
+   */
+  clearLabel?: string;
+  /** Accessible label for the dropdown trigger. Pass a translated string for i18n.
+   * @default "Show options"
+   */
+  showOptionsLabel?: string;
+}) {
   const size = useContext(ComboboxSizeContext);
   const iconStyles = triggerInputIconStyles[size];
 
@@ -331,6 +344,7 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
       />
 
       <ComboboxBase.Clear
+        aria-label={clearLabel}
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-0",
@@ -340,13 +354,15 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
         <XIcon size={iconStyles.iconSize} />
       </ComboboxBase.Clear>
 
-      <ComboboxBase.Trigger className="p-0">
-        <ComboboxBase.Icon
-          className={cn(
-            "absolute top-1/2 flex -translate-y-1/2 cursor-pointer text-kumo-subtle",
-            iconStyles.caretRight,
-          )}
-        >
+      <ComboboxBase.Trigger
+        aria-label={showOptionsLabel}
+        className={cn(
+          "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
+          "m-0 bg-transparent p-0", // Reset Stratus global button styles
+          iconStyles.caretRight,
+        )}
+      >
+        <ComboboxBase.Icon>
           <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
@@ -424,25 +440,34 @@ function Group(props: ComboboxBase.Group.Props) {
   return (
     <ComboboxBase.Group
       {...props}
-      className="border-t border-kumo-line mt-2 pt-2 first:border-t-0 first:mt-0 first:pt-0"
+      className="border-t border-kumo-hairline mt-2 pt-2 first:border-t-0 first:mt-0 first:pt-0"
     />
   );
 }
 
-function Chip(props: ComboboxBase.Chip.Props) {
+function Chip({
+  removeLabel = "Remove",
+  ...props
+}: ComboboxBase.Chip.Props & {
+  /** Accessible label for the chip remove button. Pass a translated string for i18n.
+   * @default "Remove"
+   */
+  removeLabel?: string;
+}) {
   return (
     <ComboboxBase.Chip
       {...props}
       className={cn(
         "flex items-center gap-2.5", // Layout
         "h-6 pl-2 pr-[3px]", // Dimensions
-        "rounded-sm ring-1 ring-kumo-line", // Border
+        "rounded-sm ring-1 ring-kumo-hairline", // Border
         "bg-kumo-overlay", // Background
         "text-sm", // Typography
       )}
     >
       {props.children}
       <ComboboxBase.ChipRemove
+        aria-label={removeLabel}
         className={cn(
           "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
           "bg-transparent flex",

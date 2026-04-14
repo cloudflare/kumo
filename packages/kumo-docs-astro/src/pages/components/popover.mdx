@@ -17,6 +17,7 @@ import {
   PopoverPositionDemo,
   PopoverCustomContentDemo,
   PopoverOpenOnHoverDemo,
+  PopoverVirtualAnchorDemo,
 } from "~/components/demos/PopoverDemo";
 
 {/* Hero Demo */}
@@ -56,9 +57,7 @@ import { Popover, Button } from "@cloudflare/kumo";
 export default function Example() {
   return (
     <Popover>
-      <Popover.Trigger asChild>
-        <Button>Open</Button>
-      </Popover.Trigger>
+      <Popover.Trigger render={<Button />}>Open</Popover.Trigger>
       <Popover.Content>
         <Popover.Title>Popover Title</Popover.Title>
         <Popover.Description>Popover content goes here.</Popover.Description>
@@ -79,7 +78,7 @@ export default function Example() {
     different purpose than tooltips. Understanding when to use each is important
     for accessibility and user experience.
   </p>
-  <div class="overflow-hidden rounded-lg border border-kumo-line">
+  <div class="overflow-hidden rounded-lg border border-kumo-hairline">
     <table class="w-full text-sm">
       <thead class="bg-kumo-elevated">
         <tr>
@@ -88,7 +87,7 @@ export default function Example() {
           <th class="px-4 py-3 text-left font-semibold">Popover</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-kumo-line">
+      <tbody class="divide-y divide-kumo-hairline">
         <tr>
           <td class="px-4 py-3 font-medium">Purpose</td>
           <td class="px-4 py-3 text-kumo-subtle">
@@ -183,6 +182,17 @@ export default function Example() {
   <PopoverOpenOnHoverDemo client:load />
 </ComponentExample>
 
+<Heading level={3}>Virtual Anchor</Heading>
+<p>
+  Use the `anchor` prop on `Popover.Content` to position the popover against an
+  element other than the trigger, or against a virtual point (e.g., a `DOMRect`
+  from `getBoundingClientRect()`). This is useful when the trigger and the
+  desired anchor are in different component trees.
+</p>
+<ComponentExample demo="PopoverVirtualAnchorDemo">
+  <PopoverVirtualAnchorDemo client:load />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -196,7 +206,7 @@ export default function Example() {
 
 <Heading level={3}>Popover.Trigger</Heading>
 <p>
-  A button that opens the popover when clicked. Use `asChild` to render your own
+  A button that opens the popover when clicked. Use `render` to render your own
   element.
 </p>
 <PropsTable component="Popover.Trigger" />
@@ -204,9 +214,10 @@ export default function Example() {
 <Heading level={3}>Popover.Content</Heading>
 <p>
   The container for popover content. Controls positioning via `side`, `align`,
-  `sideOffset`, and `alignOffset` props. Use `positionMethod="fixed"` (the
-  default) when the popover needs to escape stacking contexts, such as when
-  inside sticky headers.
+  `sideOffset`, and `alignOffset` props. Use the `anchor` prop to position
+  against a custom element or virtual point instead of the trigger. Use
+  `positionMethod="fixed"` when the popover needs to escape stacking contexts,
+  such as when inside sticky headers.
 </p>
 <PropsTable component="Popover.Content" />
 
@@ -220,8 +231,8 @@ export default function Example() {
 
 <Heading level={3}>Popover.Close</Heading>
 <p>
-  A button that closes the popover when clicked. Use `asChild` to render your
-  own element.
+  A button that closes the popover when clicked. Use `render` to render your own
+  element.
 </p>
 <PropsTable component="Popover.Close" />
 

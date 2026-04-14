@@ -64,7 +64,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className={cn(pageHeaderVariants({ spacing }), className)}>
-      <div className="border-b border-kumo-line">{breadcrumbs}</div>
+      <div className="border-b border-kumo-hairline">{breadcrumbs}</div>
 
       {(title || description) && (
         <div className="flex flex-col gap-2 py-3 pl-3">
@@ -82,7 +82,7 @@ export function PageHeader({
       )}
 
       {tabs && (
-        <div className="flex w-full items-center justify-between border-b border-kumo-line pt-1 pb-3 pl-3">
+        <div className="flex w-full items-center justify-between border-b border-kumo-hairline pt-1 pb-3 pl-3">
           <Tabs
             tabs={tabs}
             selectedValue={defaultTab}

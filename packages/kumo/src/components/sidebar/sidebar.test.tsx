@@ -1,3 +1,4 @@
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import {
   Sidebar,
@@ -111,5 +112,22 @@ describe("Sidebar", () => {
 
   it("should throw when useSidebar is called outside provider", () => {
     expect(() => useSidebar()).toThrow();
+  });
+
+  it("should preserve measured height on closed sidebar collapsible content until exit transition runs", () => {
+    render(
+      <SidebarCollapsible>
+        <SidebarCollapsibleContent data-testid="sidebar-collapsible-content">
+          Content
+        </SidebarCollapsibleContent>
+      </SidebarCollapsible>,
+    );
+
+    const panel = screen.getByTestId("sidebar-collapsible-content");
+
+    expect(panel.className).toContain("h-[var(--collapsible-panel-height)]");
+    expect(panel.className).toContain("data-[starting-style]:h-0");
+    expect(panel.className).toContain("data-[ending-style]:h-0");
+    expect(panel.className).not.toContain("data-[closed]:h-0");
   });
 });

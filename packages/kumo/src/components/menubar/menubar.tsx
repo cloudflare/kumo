@@ -58,7 +58,25 @@ const MenuOption = ({
         </IconContext.Provider>
       </button>
     </Tooltip>
+  const button = (
+    <button
+      aria-label={tooltip}
+      className={cn(
+        "focus:inset-ring-focus relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-elevated first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-1 focus:outline-none focus-visible:z-1 focus-visible:inset-ring-[0.5]",
+        {
+          "z-2 bg-kumo-base shadow-xs transition-colors ring ring-kumo-line/40":
+            isActive === id,
+        },
+      )}
+      onClick={onClick}
+    >
+      <IconContext.Provider value={{ size: 18 }} {...({} as any)}>
+        {icon}
+      </IconContext.Provider>
+    </button>
   );
+
+  return <Tooltip content={tooltip} render={button} />;
 };
 
 /**
@@ -118,7 +136,7 @@ export const MenuBar = ({
   return (
     <nav
       className={cn(
-        "isolate flex rounded-lg border border-kumo-fill bg-kumo-recessed pl-px shadow-xs transition-colors",
+        "isolate flex rounded-lg ring ring-kumo-line bg-kumo-recessed pl-px shadow-xs transition-colors",
         className,
       )}
       ref={menuRef}
