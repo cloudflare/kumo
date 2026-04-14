@@ -7,7 +7,7 @@ import {
 } from "react";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
 import { AlertDialog as AlertDialogBase } from "@base-ui/react/alert-dialog";
-import { Surface } from "../surface";
+import { LayerCard } from "../layer-card";
 import { cn } from "../../utils/cn";
 import {
   usePortalContainer,
@@ -228,7 +228,7 @@ function DialogContent({
   return (
     <BasePortal container={container}>
       <BaseBackdrop className="fixed inset-0 bg-kumo-recessed opacity-80 transition-all duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
-      <Surface
+      <LayerCard
         render={<BasePopup />}
         className={cn(dialogVariants({ size }), className)}
         style={
@@ -243,7 +243,7 @@ function DialogContent({
         }
       >
         {children}
-      </Surface>
+      </LayerCard>
     </BasePortal>
   );
 }

@@ -27,7 +27,6 @@ import {
   Select,
   SensitiveInput,
   SkeletonLine,
-  Surface,
   Switch,
   Table,
   Tabs,
@@ -79,7 +78,6 @@ const componentRoutes: Record<string, string> = {
   select: "/components/select",
   "sensitive-input": "/components/sensitive-input",
   "skeleton-line": "/components/skeleton-line",
-  surface: "/components/surface",
   switch: "/components/switch",
   table: "/components/table",
   tabs: "/components/tabs",
@@ -326,15 +324,6 @@ export function HomeGrid() {
           <SkeletonLine minWidth={100} />
           <SkeletonLine minWidth={50} maxWidth={150} />
         </div>
-      ),
-    },
-    {
-      name: "Surface",
-      id: "surface",
-      Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-canvas text-sm text-kumo-subtle">
-          <em>To put things over.</em>
-        </Surface>
       ),
     },
     {

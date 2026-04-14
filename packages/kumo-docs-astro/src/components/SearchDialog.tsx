@@ -24,6 +24,7 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
+  "Surface", // Deprecated compatibility export; no dedicated docs page
 ]);
 
 /**
@@ -154,7 +155,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "sensitive-input":
     "A masked input for sensitive values like API keys and passwords.",
   "skeleton-line": "A skeleton loading placeholder for text content.",
-  surface: "A container component that provides a styled surface for content.",
   switch: "A two-state toggle button that can be either on or off.",
   table:
     "A table component for displaying tabular data with selection support.",
