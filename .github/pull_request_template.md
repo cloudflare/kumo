@@ -11,12 +11,11 @@ The following selections do not need to be completed if this PR only contains ch
 
 - Reviews
   - [ ] bonk has reviewed the change
-  - [ ] automated review not possible because: 
+  - [ ] automated review not possible because: <!-- explain why -->
 - Tests
   - [ ] Tests included/updated
-  - [ ] Automated tests not possible - manual testing has been completed as follows:
-  - [ ] Additional testing not necessary because:
-
+  - [ ] Automated tests not possible - manual testing has been completed as follows: <!-- describe testing -->
+  - [ ] Additional testing not necessary because: <!-- explain why -->
 
 <!--
 Have you read our [Contributing guide](https://github.com/cloudflare/kumo/blob/main/CONTRIBUTING.md)?

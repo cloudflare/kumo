@@ -313,7 +313,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(14.5% 0 0 / 0.1)",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "var(--color-kumo-neutral-750, oklch(32% 0 0))",
         },
       },
     },
@@ -322,7 +322,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
-          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
+          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
         },
         fedramp: {
           light: "#c8d4e5",

@@ -247,7 +247,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           const trackColors = isNeutral
             ? state.checked
               ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-              : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+              : "bg-neutral-150 dark:bg-kumo-base ring-kumo-hairline"
             : state.checked
               ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
               : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
@@ -397,7 +397,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             const trackColors = isNeutral
               ? state.checked
                 ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-hairline"
               : state.checked
                 ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
                 : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
@@ -474,7 +474,7 @@ function SwitchGroup({
     <SwitchGroupContext.Provider value={{ controlFirst }}>
       <Fieldset.Root
         className={cn(
-          "flex flex-col gap-4 rounded-lg border border-kumo-line p-4",
+          "flex flex-col gap-4 rounded-lg border border-kumo-hairline p-4",
           className,
         )}
         disabled={disabled}

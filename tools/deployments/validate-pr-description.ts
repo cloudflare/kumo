@@ -44,29 +44,39 @@ export function validateDescription(
   }
 
   // Validate bonk review
+  // Flexible: allows optional leading whitespace/indentation
+  // Uses [ \t]* (space/tab only) after colon to require justification on same line
   if (
     !(
-      /- \[x\] bonk has reviewed the change/i.test(body) ||
-      /- \[x\] automated review not possible because:\s*.+/i.test(body)
+      /^\s*-\s*\[x\]\s*bonk has reviewed the change/im.test(body) ||
+      /^\s*-\s*\[x\]\s*automated review not possible because:[ \t]*\S/im.test(
+        body,
+      )
     )
   ) {
     errors.push(
-      "Your PR must have bonk review, or provide justification for why automated review is not possible",
+      "Your PR must have bonk review, or provide justification for why automated review is not possible. " +
+        "If providing a justification, it must be on the same line as the checkbox (e.g., '- [x] automated review not possible because: reason here').",
     );
   }
 
   // Validate tests
+  // Flexible: allows optional leading whitespace/indentation
+  // Uses [ \t]* (space/tab only) after colon to require justification on same line
   if (
     !(
-      /- \[x\] Tests included\/updated/i.test(body) ||
-      /- \[x\] Automated tests not possible - manual testing has been completed as follows:\s*.+/i.test(
+      /^\s*-\s*\[x\]\s*Tests included\/updated/im.test(body) ||
+      /^\s*-\s*\[x\]\s*Automated tests not possible - manual testing has been completed as follows:[ \t]*\S/im.test(
         body,
       ) ||
-      /- \[x\] Additional testing not necessary because:\s*.+/i.test(body)
+      /^\s*-\s*\[x\]\s*Additional testing not necessary because:[ \t]*\S/im.test(
+        body,
+      )
     )
   ) {
     errors.push(
-      "Your PR must include tests, or provide justification for why no tests are required",
+      "Your PR must include tests, or provide justification for why no tests are required. " +
+        "If providing a justification, it must be on the same line as the checkbox.",
     );
   }
 
