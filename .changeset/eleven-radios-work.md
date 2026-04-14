@@ -4,4 +4,6 @@
 
 fix(pagination): add ARIA attributes for screen reader accessibility
 
-Wrapped pagination controls in `<nav aria-label="Pagination">` for proper landmark navigation. Added `aria-live="polite"` and `aria-atomic="true"` to the "Showing X-Y of Z" text so screen readers announce page changes.
+- Wrap pagination controls in `<nav>` for proper landmark navigation
+- Add `aria-live="polite"` and `aria-atomic="true"` to status text for page change announcements
+- Add `navigation` to `PaginationLabels` for i18n customization of the nav aria-label

@@ -35,6 +35,8 @@ const clamp = (value: number, min: number, max: number) =>
  * `label` prop on `Pagination.PageSize`.
  */
 export interface PaginationLabels {
+  /** Aria label for the navigation landmark. @default "Pagination" */
+  navigation?: string;
   /** Aria label for the first page button. @default "First page" */
   firstPage?: string;
   /** Aria label for the previous page button. @default "Previous page" */
@@ -50,6 +52,7 @@ export interface PaginationLabels {
 }
 
 const DEFAULT_LABELS: Required<PaginationLabels> = {
+  navigation: "Pagination",
   firstPage: "First page",
   previousPage: "Previous page",
   nextPage: "Next page",
@@ -247,7 +250,7 @@ function PaginationControls({
       data-slot="pagination-controls"
       className={cn("grow flex flex-col items-end", className)}
     >
-      <nav aria-label="Pagination">
+      <nav aria-label={labels.navigation}>
         <InputGroup focusMode="individual">
           {controls === "full" && (
             <InputGroup.Button
