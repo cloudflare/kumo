@@ -395,9 +395,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     >
       <SelectBase.Trigger
         className={cn(
-          buttonVariants({ variant: "secondary" }),
-          "justify-between font-normal",
-          "focus:opacity-100 focus:ring-kumo-focus/50 *:in-focus:opacity-100",
           selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
           className,

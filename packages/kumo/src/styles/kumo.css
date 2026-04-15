@@ -54,14 +54,6 @@
   animation: refresh 1s linear infinite;
 }
 
-/* Strong keyboard focus style: crisp inner ring + soft outer halo */
-.kumo-focus-visible-emphasis:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--color-kumo-focus),
-    0 0 0 8px color-mix(in oklab, var(--color-kumo-focus) 22%, transparent);
-}
-
 /* ============================================
    react-day-picker styles for Calendar/DatePicker
    ============================================ */

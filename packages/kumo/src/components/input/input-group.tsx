@@ -110,12 +110,12 @@ function Input(props: InputProps) {
       className={cn(
         "flex h-full items-center rounded-none border-0 bg-kumo-base font-sans",
         "grow px-2",
-          isIndividualFocus
-            ? "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px]"
-            : "focus:border-kumo-focus/50 focus:ring-kumo-focus/50 focus:ring-[1.5px]",
-            props.className,
-        )}
-      />
+        isIndividualFocus
+          ? "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px]"
+          : "focus:border-kumo-focus/50 focus:ring-kumo-focus/50 focus:ring-[1.5px]",
+        props.className,
+      )}
+    />
   );
 }
 
@@ -149,13 +149,13 @@ function Button({
     <ButtonExternal
       {...props}
       size={context?.size}
-        className={cn(
-          "h-full! rounded-none disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
-          isIndividualFocus &&
-            "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
-          className,
-        )}
-      >
+      className={cn(
+        "h-full! rounded-none disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
+        isIndividualFocus &&
+          "relative ring ring-kumo-line first:rounded-l-[inherit] last:rounded-r-[inherit] focus:z-1 focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        className,
+      )}
+    >
       {children}
     </ButtonExternal>
   );
