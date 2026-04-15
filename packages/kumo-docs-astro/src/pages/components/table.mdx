@@ -56,25 +56,23 @@ import { Table, LayerCard } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
-    <LayerCard>
-      <LayerCard.Primary className="p-0">
-        <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Name</Table.Head>
-              <Table.Head>Email</Table.Head>
-              <Table.Head>Role</Table.Head>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>John Doe</Table.Cell>
-              <Table.Cell>john@example.com</Table.Cell>
-              <Table.Cell>Admin</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
-      </LayerCard.Primary>
+    <LayerCard className="p-0">
+      <Table>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head>Name</Table.Head>
+            <Table.Head>Email</Table.Head>
+            <Table.Head>Role</Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>John Doe</Table.Cell>
+            <Table.Cell>john@example.com</Table.Cell>
+            <Table.Cell>Admin</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>
     </LayerCard>
   );
 }

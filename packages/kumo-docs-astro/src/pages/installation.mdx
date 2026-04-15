@@ -51,7 +51,7 @@ Import components from the main package or use granular imports for better tree-
 **Main Package Import**
 
 ```tsx
-import { Button, Input, Surface } from "@cloudflare/kumo";
+import { Button, Input, LayerCard } from "@cloudflare/kumo";
 ```
 
 **Granular Import (Recommended)**
@@ -159,16 +159,16 @@ Note: The `@source` path is relative to your CSS file. Adjust it based on your p
 **Component File (App.tsx)**
 
 ```tsx
-import { Button, Input, Surface } from "@cloudflare/kumo";
+import { Button, Input, LayerCard } from "@cloudflare/kumo";
 import "./app.css";
 
 export default function App() {
   return (
-    <Surface className="p-6 rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Welcome to Kumo</h1>
+    <LayerCard className="rounded-lg p-6">
+      <h1 className="mb-4 text-2xl font-bold">Welcome to Kumo</h1>
       <Input placeholder="Enter your name..." className="mb-4" />
       <Button variant="primary">Submit</Button>
-    </Surface>
+    </LayerCard>
   );
 }
 ```

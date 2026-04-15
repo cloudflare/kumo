@@ -100,6 +100,7 @@ html {
 .kumo-prose :where(a):not(:where(.not-prose, .not-prose *)) {
   text-decoration: none;
 }
+
 .kumo-prose :where(a):not(:where(.not-prose, .not-prose *)):hover {
   text-decoration: underline;
 }
@@ -157,9 +158,11 @@ html {
 .kumo-prose :where(table) {
   width: 100%;
 }
+
 .kumo-prose :where(thead) {
   border-bottom-color: var(--color-kumo-hairline);
 }
+
 .kumo-prose :where(thead th) {
   color: var(--color-kumo-default);
   font-weight: 600;
@@ -185,7 +188,16 @@ html {
    Dual theme support: light (github-light) and dark (vesper)
    ========================================================================== */
 
-/* Container styling for all code blocks (markdown + CodeBlock component) */
+/* Code block inside wrapper — extra right padding so text clears the copy button */
+.code-block .astro-code {
+  padding: 0.875rem 2rem 0.875rem 1rem;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+/* Container styling for standalone code blocks (not yet wrapped by JS) */
 pre.astro-code {
   overflow: hidden;
   border-radius: 0.5rem;
@@ -205,4 +217,61 @@ pre.astro-code {
 [data-mode="dark"] .astro-code span {
   color: var(--shiki-dark) !important;
   background-color: var(--shiki-dark-bg) !important;
+}
+
+/* ==========================================================================
+   Code block copy button
+   ========================================================================== */
+
+.code-block-copy-btn {
+  @apply absolute top-3 right-3 z-10 flex items-center justify-center size-[1.625rem] rounded-md cursor-pointer border-none shadow-none select-none focus-visible:ring-1;
+  background: var(--color-kumo-base);
+  color: var(--text-color-kumo-subtle);
+  ring-color: var(--color-kumo-hairline);
+
+  &:hover {
+    background: var(--color-kumo-tint);
+  }
+}
+
+/* Icon wrapper — relative + overflow-hidden for slide animation */
+.code-block-copy-btn__icons {
+  @apply relative overflow-hidden size-4;
+}
+
+/* Both icons stacked absolutely */
+.code-block-copy-btn__icon {
+  @apply absolute inset-0 flex items-center justify-center;
+  transition:
+    transform 200ms,
+    opacity 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-block-copy-btn__icon {
+    transition: none;
+  }
+}
+
+/* Check icon: hidden below by default, slides up when copied */
+.code-block-copy-btn__icon--check {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+/* Copy icon: visible by default, slides up when copied */
+.code-block-copy-btn__icon--copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Copied state */
+.code-block-copy-btn[data-copied] .code-block-copy-btn__icon--check {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.code-block-copy-btn[data-copied] .code-block-copy-btn__icon--copy {
+  opacity: 0;
+  transform: translateY(-100%);
 }

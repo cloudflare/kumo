@@ -11,7 +11,7 @@
  *
  * **Component categories:**
  * - **Action:** Button, ClipboardText
- * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Text
+ * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Surface (deprecated), Text
  * - **Feedback:** Banner, Loader, Toast
  * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
  * - **Layout:** Grid, Surface
@@ -100,6 +100,9 @@ export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
 export { Select } from "./components/select";
+/**
+ * @deprecated Use {@link LayerCard} instead.
+ */
 export { Surface } from "./components/surface";
 export { Switch } from "./components/switch";
 export { Tabs, type TabsProps, type TabsItem } from "./components/tabs";
