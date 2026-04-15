@@ -191,6 +191,10 @@
       "types": "./dist/src/components/sidebar/index.d.ts",
       "import": "./dist/components/sidebar.js"
     },
+    "./components/table-of-contents": {
+      "types": "./dist/src/components/table-of-contents/index.d.ts",
+      "import": "./dist/components/table-of-contents.js"
+    },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
       "import": "./dist/utils.js"

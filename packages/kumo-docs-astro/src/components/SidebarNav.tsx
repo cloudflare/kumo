@@ -72,6 +72,7 @@ const componentItems: NavItem[] = [
   { label: "Skeleton Line", href: "/components/skeleton-line" },
   { label: "Switch", href: "/components/switch" },
   { label: "Table", href: "/components/table" },
+  { label: "Table of Contents", href: "/components/table-of-contents" },
   { label: "Tabs", href: "/components/tabs" },
   { label: "Text", href: "/components/text" },
   { label: "Toast", href: "/components/toast" },
