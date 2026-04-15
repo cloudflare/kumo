@@ -1,5 +1,6 @@
 import { forwardRef, useState } from "react";
 import { Flow } from "@cloudflare/kumo";
+import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 import { CaretDownIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
 
 const ExpandableNode = forwardRef<
@@ -62,7 +63,9 @@ export function FlowParallelDemo() {
 export function FlowCustomContentDemo() {
   return (
     <Flow>
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-hairline" />} />
+      <Flow.Node
+        render={<li className="rounded-full size-4 bg-kumo-hairline" />}
+      />
       <Flow.Node
         render={
           <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
@@ -133,7 +136,9 @@ export function FlowAnchorDemo() {
 export function FlowCenteredDemo() {
   return (
     <Flow align="center">
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-hairline" />} />
+      <Flow.Node
+        render={<li className="rounded-full size-4 bg-kumo-hairline" />}
+      />
       <Flow.Node>my-worker</Flow.Node>
       <Flow.Node
         render={
@@ -300,6 +305,35 @@ export function FlowSequentialParallelDemo() {
       </Flow.Parallel>
       <Flow.Node>Return Response</Flow.Node>
     </Flow>
+  );
+}
+
+/** Flow diagram with a code block node to verify syntax highlighting works */
+export function FlowWithCodeBlockDemo() {
+  return (
+    <ShikiProvider engine="javascript" languages={["typescript", "bash"]}>
+      <Flow canvas={false}>
+        <Flow.Node>Receive Request</Flow.Node>
+        <Flow.Node
+          render={
+            <li className="rounded-lg ring ring-kumo-line bg-kumo-base overflow-hidden min-w-64">
+              <div className="px-3 py-2 text-sm font-medium text-kumo-default border-b border-kumo-line">
+                Handler
+              </div>
+              <CodeHighlighted
+                code={`export default {
+  async fetch(req: Request) {
+    return new Response("ok");
+  },
+}`}
+                lang="typescript"
+              />
+            </li>
+          }
+        />
+        <Flow.Node>Return Response</Flow.Node>
+      </Flow>
+    </ShikiProvider>
   );
 }
 
