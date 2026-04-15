@@ -343,7 +343,7 @@ describe("Sidebar.Collapsible", () => {
     );
 
     const content = screen.getByTestId("cc");
-    expect(content.getAttribute("inert")).toBeDefined();
+    expect(content.hasAttribute("inert")).toBe(true);
   });
 
   it("open content does not have aria-hidden", () => {
@@ -884,7 +884,7 @@ describe("Sidebar.SlidingViews", () => {
 
     const zoneView = screen.getByText("Zone Nav").closest("[data-sidebar='sliding-view']");
     // React renders inert="" as a string attribute; check it exists in the DOM
-    expect(zoneView?.getAttribute("inert")).toBeDefined();
+    expect(zoneView?.hasAttribute("inert")).toBe(true);
   });
 
   it("active view does not have inert attribute", () => {

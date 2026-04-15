@@ -92,9 +92,9 @@ export type SidebarCollapsible = "icon" | "offcanvas" | "none";
 // Constants
 // ============================================================================
 
-const SIDEBAR_WIDTH = "16.25rem";
-const SIDEBAR_WIDTH_ICON = "57px";
-const MOBILE_BREAKPOINT = 768;
+const SIDEBAR_WIDTH = KUMO_SIDEBAR_STYLING.width.expanded;
+const SIDEBAR_WIDTH_ICON = KUMO_SIDEBAR_STYLING.width.icon;
+const MOBILE_BREAKPOINT = KUMO_SIDEBAR_STYLING.mobile.breakpoint;
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
 const SIDEBAR_EASING = "cubic-bezier(0.77,0,0.175,1)";
 
@@ -476,6 +476,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       startPeek,
       stopPeek,
       contained,
+      isPeeking,
     } = useSidebar();
 
     // Peek handlers — only active when collapsed and peekable
@@ -606,7 +607,6 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const collapsedWidth =
       collapsible === "icon" ? "var(--sidebar-width-icon)" : "0px";
     const expandedWidth = resizable ? `${width}px` : "var(--sidebar-width)";
-    const isPeeking = state === "peeking";
 
     // Rail width: based on open state only — stays collapsed during peek
     const railWidth = open ? expandedWidth : collapsedWidth;
@@ -1854,8 +1854,11 @@ const SidebarCollapsibleTrigger = forwardRef<
 
   const renderProps = render.props as Record<string, unknown>;
 
-  // Merge trigger props onto the render element
+  // Merge trigger props onto the render element.
+  // Spread ...props first so consumer props (e.g. className, data-*)
+  // are forwarded, but explicit keys below are never clobbered.
   return React.cloneElement(render, {
+    ...props,
     ref,
     "aria-expanded": isOpen,
     "aria-controls": contentId,
@@ -1866,6 +1869,10 @@ const SidebarCollapsibleTrigger = forwardRef<
       if (typeof renderProps.onClick === "function") {
         (renderProps.onClick as (e: React.MouseEvent) => void)(e);
       }
+      // Preserve any onClick passed directly on the trigger
+      if (typeof (props as Record<string, unknown>).onClick === "function") {
+        ((props as Record<string, unknown>).onClick as (e: React.MouseEvent) => void)(e);
+      }
     },
     children: (
       <>
@@ -1873,7 +1880,6 @@ const SidebarCollapsibleTrigger = forwardRef<
         {children}
       </>
     ),
-    ...props,
   } as Record<string, unknown>);
 });
 
@@ -1902,7 +1908,7 @@ const SidebarCollapsibleContent = forwardRef<
       role="region"
       data-sidebar="collapsible-content"
       aria-hidden={!isOpen}
-      {...(!isOpen ? ({ inert: "" } as Record<string, string>) : {})}
+      {...(!isOpen ? ({ inert: true } as Record<string, unknown>) : {})}
       className={cn(
         "grid",
         // Animate height via grid-rows
@@ -1965,7 +1971,7 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
           isActive ? "visible" : "invisible pointer-events-none",
           className,
         )}
-        {...(isActive ? {} : ({ inert: "" } as Record<string, string>))}
+        {...(isActive ? {} : ({ inert: true } as Record<string, unknown>))}
         {...props}
       >
         {children}
