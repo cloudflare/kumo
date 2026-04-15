@@ -354,6 +354,34 @@ export function SelectComplexDemo() {
   );
 }
 
+/** Select using the compound Select.Value API for custom value rendering. */
+export function SelectValueCompoundDemo() {
+  const [value, setValue] = useState<(typeof authors)[0] | null>(null);
+
+  return (
+    <Select
+      label="Author"
+      description="Using Select.Value compound component"
+      className="w-[200px]"
+      onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}
+      value={value}
+      isItemEqualToValue={(item, value) => item?.id === value?.id}
+    >
+      <Select.Value placeholder="Select an author...">
+        {(value) => (value as (typeof authors)[0] | null)?.name}
+      </Select.Value>
+      {authors.map((author) => (
+        <Select.Option key={author.id} value={author}>
+          <div className="flex w-[300px] items-center justify-between gap-2">
+            <Text>{author.name}</Text>
+            <Text variant="secondary">{author.title}</Text>
+          </div>
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}
+
 interface Region {
   value: string;
   label: string;

@@ -391,9 +391,24 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // This fixes placeholder not showing with object map items
   const normalizedItems = props.items ? normalizeItems(props.items) : undefined;
 
-  // Auto-render children from items if children not provided
-  const renderedChildren =
-    children ?? (props.items ? renderOptionsFromItems(props.items) : null);
+  // Auto-render children from items if no explicit children provided
+  const renderedChildren = children
+    ? children
+    : props.items
+      ? renderOptionsFromItems(props.items)
+      : null;
+
+  // Wrap renderValue to handle null values properly:
+  // - When value is null, show placeholder (Base UI ignores placeholder when children fn provided)
+  // - When value is non-null, call user's renderValue
+  const valueChildrenFn = renderValue
+    ? (value: unknown) => {
+        if (value == null) {
+          return <span className="text-kumo-placeholder">{placeholder}</span>;
+        }
+        return renderValue(value as never);
+      }
+    : undefined;
 
   // Exclude Kumo-extended `items` from Base UI spread — we pass `normalizedItems` instead
   const { items: _items, ...baseProps } = props;
@@ -420,18 +435,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             placeholder={placeholder}
             className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
           >
-            {renderValue
-              ? (value: unknown) => {
-                  if (value == null) {
-                    return (
-                      <span className="text-kumo-placeholder">
-                        {placeholder}
-                      </span>
-                    );
-                  }
-                  return renderValue(value as never);
-                }
-              : undefined}
+            {valueChildrenFn}
           </SelectBase.Value>
         )}
         <SelectBase.Icon

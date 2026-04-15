@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "./*.tsx",
+    "./*.ts",
+    "../src/**/*.ts",
+    "../src/**/*.tsx",
+    "../ai/**/*.ts"
+  ]
+}
