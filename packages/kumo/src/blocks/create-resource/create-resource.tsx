@@ -115,7 +115,7 @@ export interface CreateResourceStepItem {
 export interface CreateResourceProps extends KumoCreateResourceVariantsProps {
   /** Content rendered in the left side of the header bar (e.g., Breadcrumbs) */
   breadcrumbs: ReactNode;
-  /** Called when the X button is clicked */
+  /** Called when the X button is clicked or when navigating back via breadcrumb */
   onClose: () => void;
   /**
    * Called when the "Ask AI" button is clicked.
@@ -139,6 +139,8 @@ export interface CreateResourceProps extends KumoCreateResourceVariantsProps {
   closeButtonRef?: RefObject<HTMLButtonElement>;
   /** Additional class for the outer container */
   className?: string;
+  /** Width of any sidebar that should push the content (e.g., AI sidebar) */
+  sidebarWidth?: number | string;
 }
 
 // =============================================================================
@@ -175,6 +177,7 @@ export function CreateResource({
   hideStepNavigation = false,
   closeButtonRef: externalCloseButtonRef,
   className,
+  sidebarWidth = 0,
 }: CreateResourceProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeStepFocusable, setActiveStepFocusable] = useState(true);
@@ -182,7 +185,7 @@ export function CreateResource({
   const containerRef = useRef<HTMLDivElement>(null);
   const portalContainerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const internalCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const internalCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const isInitialMount = useRef(true);
 
   // Check for reduced motion preference (SSR-safe)
@@ -379,38 +382,57 @@ export function CreateResource({
     return () => container.removeEventListener("keydown", handleKeyDown);
   }, [step, activeStepFocusable, hideStepNavigation, lockNavigation]);
 
+  // Calculate the right offset based on sidebar width
+  const sidebarWidthValue =
+    typeof sidebarWidth === "number" ? `${sidebarWidth}px` : sidebarWidth;
+
   return (
     <KumoPortalProvider container={portalContainerRef}>
       <div
         ref={containerRef}
         className={cn(
-          "fixed inset-0 z-50 flex flex-col bg-kumo-elevated",
+          "fixed inset-0 z-50 flex flex-col bg-kumo-elevated transition-[right] duration-300 ease-in-out",
           className,
         )}
+        style={{
+          right: sidebarWidth ? sidebarWidthValue : 0,
+        }}
       >
         {/* Portal container for nested overlays (Select, Dropdown, etc.) */}
         <div
           ref={portalContainerRef}
-          className="absolute inset-0 z-50 pointer-events-none"
+          className="absolute inset-0 z-50 pointer-events-none [&>*]:pointer-events-auto"
         />
 
         {/* Header bar */}
-        <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-4 sm:px-6">
-          <div className="flex min-w-0 flex-1 items-center">{breadcrumbs}</div>
+        <header className="sticky top-0 z-40 flex h-[58px] shrink-0 items-center justify-between border-b border-kumo-line bg-kumo-elevated px-4 sm:px-6">
+          <div
+            className="flex min-w-0 flex-1 items-center"
+            onClick={(e: React.MouseEvent) => {
+              // Intercept clicks on breadcrumb links and close the wizard
+              const target = e.target as HTMLElement;
+              if (target.closest("a")) {
+                e.preventDefault();
+                onClose();
+              }
+            }}
+          >
+            {breadcrumbs}
+          </div>
           <div className="ml-auto flex items-center gap-1">
             {onAskAI && (
               <Button
                 variant="ghost"
-                size="sm"
+                className="h-8"
                 onClick={onAskAI}
                 icon={
                   <SparkleIcon
                     weight="fill"
-                    className="size-4 text-kumo-subtle"
+                    className="size-4 -translate-y-[1px] text-kumo-subtle"
                   />
                 }
               >
-                <span className="hidden sm:inline">Ask AI</span>
+                <span className="hidden md:inline">Ask AI</span>
               </Button>
             )}
             {headerActions}
@@ -421,7 +443,7 @@ export function CreateResource({
               ref={mergeCloseButtonRef}
               variant="ghost"
               shape="square"
-              size="sm"
+              className="h-8"
               aria-label="Close"
               onClick={onClose}
             >
@@ -443,7 +465,7 @@ export function CreateResource({
               <nav
                 ref={sidebarRef}
                 aria-label="Wizard steps"
-                className="absolute left-full hidden w-max translate-x-5 flex-col lg:flex"
+                className="absolute left-full hidden w-max -ml-2 translate-x-5 flex-col lg:flex"
               >
                 {steps
                   .filter((item) => !item.hideFromNavigation)
@@ -456,7 +478,7 @@ export function CreateResource({
                     const isClickable = isCompleted && !lockNavigation;
 
                     const sharedClassName = cn(
-                      "flex w-full items-center gap-2 rounded-lg py-2 text-kumo-subtle transition-colors duration-300",
+                      "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-kumo-subtle transition-colors duration-300",
                       isCurrent && "text-kumo-default",
                     );
 
@@ -476,7 +498,7 @@ export function CreateResource({
                           aria-label={`Go back to ${item.label ?? "previous step"}`}
                           className={cn(
                             sharedClassName,
-                            "cursor-pointer hover:bg-kumo-fill-hover",
+                            "cursor-pointer bg-transparent hover:bg-kumo-fill-hover",
                           )}
                           onClick={() => onStepChange(originalIndex)}
                         >
@@ -534,7 +556,7 @@ export function CreateResource({
                     isPreviousStep &&
                       !hideStepNavigation &&
                       !lockNavigation &&
-                      "cursor-pointer hover:opacity-100 focus:opacity-100 [&_button,[href]]:pointer-events-none after:pointer-events-none after:absolute after:inset-x-0 after:bottom-8 after:top-0 after:rounded-xl after:ring-1 after:ring-transparent after:transition-all focus-visible:after:ring-kumo-hairline",
+                      "cursor-pointer hover:opacity-100 focus:opacity-100 [&_button,[href]]:pointer-events-none after:pointer-events-none after:absolute after:inset-x-0 after:bottom-8 after:top-0 after:rounded-xl after:ring-1 after:ring-transparent after:transition-all focus-visible:after:ring-kumo-line",
                     isAnimating && "animating",
                     // Hide non-active steps when hideStepNavigation is true
                     hideStepNavigation &&

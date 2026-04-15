@@ -16,12 +16,15 @@ import {
   Table,
   LayerCard,
   Radio,
+  Link,
+  DropdownMenu,
 } from "@cloudflare/kumo";
 import {
   SubwayIcon,
   TrashIcon,
   MagnifyingGlassIcon,
   PlusIcon,
+  DotsThreeIcon,
 } from "@phosphor-icons/react";
 import { createPortal } from "react-dom";
 
@@ -36,6 +39,8 @@ export function CreateResourceHeroDemo() {
   const [tunnelName, setTunnelName] = useState("");
   const [selectedOS, setSelectedOS] = useState("macOS");
   const [selectedArch, setSelectedArch] = useState("arm64");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarWidth = 450;
 
   useEffect(() => {
     setMounted(true);
@@ -43,6 +48,7 @@ export function CreateResourceHeroDemo() {
 
   const handleClose = () => {
     setOpen(false);
+    setIsSidebarOpen(false);
     // Reset state when closing
     setTimeout(() => {
       setStep(0);
@@ -50,6 +56,10 @@ export function CreateResourceHeroDemo() {
       setSelectedOS("macOS");
       setSelectedArch("arm64");
     }, 300);
+  };
+
+  const handleAskAI = () => {
+    setIsSidebarOpen(true);
   };
 
   const steps = [
@@ -212,25 +222,53 @@ export function CreateResourceHeroDemo() {
       {mounted &&
         open &&
         createPortal(
-          <CreateResource
-            breadcrumbs={
-              <Breadcrumbs>
-                <Breadcrumbs.Link href="#">
-                  <span className="flex items-center gap-1.5">
-                    <SubwayIcon className="size-4" />
-                    Tunnels
-                  </span>
-                </Breadcrumbs.Link>
-                <Breadcrumbs.Separator />
-                <Breadcrumbs.Current>Create</Breadcrumbs.Current>
-              </Breadcrumbs>
-            }
-            onClose={handleClose}
-            onAskAI={() => alert("Wire this up to your AI sidebar context!")}
-            step={step}
-            onStepChange={setStep}
-            steps={steps}
-          />,
+          <>
+            <CreateResource
+              breadcrumbs={
+                <Breadcrumbs>
+                  <Breadcrumbs.Link href="#">
+                    <span className="flex items-center gap-1.5">
+                      <SubwayIcon className="size-4" />
+                      Tunnels
+                    </span>
+                  </Breadcrumbs.Link>
+                  <Breadcrumbs.Separator />
+                  <Breadcrumbs.Current>Create</Breadcrumbs.Current>
+                </Breadcrumbs>
+              }
+              onClose={handleClose}
+              onAskAI={handleAskAI}
+              step={step}
+              onStepChange={setStep}
+              steps={steps}
+              sidebarWidth={isSidebarOpen ? sidebarWidth : 0}
+            />
+            {/* Simulated AI Sidebar */}
+            <div
+              className={`fixed right-0 top-0 h-full border-l border-kumo-line bg-kumo-overlay transition-transform duration-300 ease-in-out z-[1150] flex flex-col ${
+                isSidebarOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+              style={{ width: sidebarWidth }}
+            >
+              <div className="flex h-[58px] items-center justify-between border-b border-kumo-line px-4">
+                <Text variant="heading3">Ask AI</Text>
+                <Button
+                  variant="ghost"
+                  shape="square"
+                  className="h-8"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="flex-1 p-4">
+                <Text variant="secondary" size="sm">
+                  This is a simulated AI sidebar. In your app, wire up the
+                  onAskAI callback to open your actual AI assistant.
+                </Text>
+              </div>
+            </div>
+          </>,
           document.body,
         )}
     </>
@@ -252,6 +290,8 @@ export function CreateResourceBasicDemo() {
   const [physicalAppliances, setPhysicalAppliances] = useState([
     { id: 1, name: "", serialNumber: "", profile: "" },
   ]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarWidth = 450;
 
   useEffect(() => {
     setMounted(true);
@@ -259,6 +299,7 @@ export function CreateResourceBasicDemo() {
 
   const handleClose = () => {
     setOpen(false);
+    setIsSidebarOpen(false);
     setTimeout(() => {
       setStep(0);
       setApplianceType("virtual");
@@ -268,6 +309,10 @@ export function CreateResourceBasicDemo() {
         { id: 1, name: "", serialNumber: "", profile: "" },
       ]);
     }, 300);
+  };
+
+  const handleAskAI = () => {
+    setIsSidebarOpen(true);
   };
 
   const addPhysicalAppliance = () => {
@@ -493,22 +538,50 @@ export function CreateResourceBasicDemo() {
       {mounted &&
         open &&
         createPortal(
-          <CreateResource
-            breadcrumbs={
-              <Breadcrumbs>
-                <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
-                <Breadcrumbs.Separator />
-                <Breadcrumbs.Current>Create</Breadcrumbs.Current>
-              </Breadcrumbs>
-            }
-            onClose={handleClose}
-            onAskAI={() => alert("Wire this up to your AI sidebar context!")}
-            step={step}
-            onStepChange={setStep}
-            steps={steps}
-            hideStepNavigation
-            size="lg"
-          />,
+          <>
+            <CreateResource
+              breadcrumbs={
+                <Breadcrumbs>
+                  <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+                  <Breadcrumbs.Separator />
+                  <Breadcrumbs.Current>Create</Breadcrumbs.Current>
+                </Breadcrumbs>
+              }
+              onClose={handleClose}
+              onAskAI={handleAskAI}
+              step={step}
+              onStepChange={setStep}
+              steps={steps}
+              hideStepNavigation
+              size="lg"
+              sidebarWidth={isSidebarOpen ? sidebarWidth : 0}
+            />
+            {/* Simulated AI Sidebar */}
+            <div
+              className={`fixed right-0 top-0 h-full border-l border-kumo-line bg-kumo-overlay transition-transform duration-300 ease-in-out z-[1150] flex flex-col ${
+                isSidebarOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+              style={{ width: sidebarWidth }}
+            >
+              <div className="flex h-[58px] items-center justify-between border-b border-kumo-line px-4">
+                <Text variant="heading3">Ask AI</Text>
+                <Button
+                  variant="ghost"
+                  shape="square"
+                  className="h-8"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="flex-1 p-4">
+                <Text variant="secondary" size="sm">
+                  This is a simulated AI sidebar. In your app, wire up the
+                  onAskAI callback to open your actual AI assistant.
+                </Text>
+              </div>
+            </div>
+          </>,
           document.body,
         )}
     </>
@@ -519,6 +592,21 @@ export function CreateResourceBasicDemo() {
 // Nested Creation Demo - Creating a sub-resource within a creation flow
 // =============================================================================
 
+interface Application {
+  id: string;
+  name: string;
+  category: string;
+  type: "Custom" | "Managed";
+}
+
+interface CustomAppFormData {
+  name: string;
+  type: string;
+  hostnames: string;
+  ipSubnets: string;
+  sourceSubnets: string;
+}
+
 export function CreateResourceNestedDemo() {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -527,22 +615,13 @@ export function CreateResourceNestedDemo() {
   const [breakoutPort, setBreakoutPort] = useState("port-1");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [editingAppId, setEditingAppId] = useState<string | null>(null);
+  const [viewingManagedApp, setViewingManagedApp] = useState<Application | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarWidth = 450;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleClose = () => {
-    setOpen(false);
-    setTimeout(() => {
-      setStep(0);
-      setSelectedApps([]);
-      setBreakoutPort("port-1");
-      setShowCustomForm(false);
-    }, 300);
-  };
-
-  const applications = [
+  // Temporary apps list that includes any custom apps added during this session
+  const [applications, setApplications] = useState<Application[]>([
     { id: "app-1", name: "Salesforce", category: "CRM", type: "Custom" },
     {
       id: "app-2",
@@ -588,7 +667,43 @@ export function CreateResourceNestedDemo() {
     },
     { id: "app-14", name: "Zendesk", category: "Support", type: "Managed" },
     { id: "app-15", name: "HubSpot", category: "CRM", type: "Managed" },
-  ];
+  ]);
+
+  const [customApp, setCustomApp] = useState<CustomAppFormData>({
+    name: "",
+    type: "",
+    hostnames: "",
+    ipSubnets: "",
+    sourceSubnets: "",
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleClose = () => {
+    setOpen(false);
+    setIsSidebarOpen(false);
+    setTimeout(() => {
+      setStep(0);
+      setSelectedApps([]);
+      setBreakoutPort("port-1");
+      setShowCustomForm(false);
+      setEditingAppId(null);
+      setViewingManagedApp(null);
+      setCustomApp({
+        name: "",
+        type: "",
+        hostnames: "",
+        ipSubnets: "",
+        sourceSubnets: "",
+      });
+    }, 300);
+  };
+
+  const handleAskAI = () => {
+    setIsSidebarOpen(true);
+  };
 
   const filteredApplications = applications.filter((app) =>
     app.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -616,6 +731,78 @@ export function CreateResourceNestedDemo() {
     }
   };
 
+  const handleEditApp = (app: Application) => {
+    // Only allow editing custom apps
+    if (app.type !== "Custom") return;
+
+    setEditingAppId(app.id);
+    setCustomApp({
+      name: app.name,
+      type: app.category,
+      hostnames: "",
+      ipSubnets: "",
+      sourceSubnets: "",
+    });
+    setShowCustomForm(true);
+  };
+
+  const handleViewApp = (app: Application) => {
+    // For managed apps, show read-only view
+    setEditingAppId(null);
+    setCustomApp({
+      name: app.name,
+      type: app.category,
+      hostnames: "",
+      ipSubnets: "",
+      sourceSubnets: "",
+    });
+    setShowCustomForm(true);
+    setViewingManagedApp(app);
+  };
+
+  const handleDeleteApp = (appId: string) => {
+    setApplications((prev) => prev.filter((app) => app.id !== appId));
+    setSelectedApps((prev) => prev.filter((id) => id !== appId));
+  };
+
+  const handleAddCustomApp = () => {
+    if (!customApp.name.trim()) return;
+
+    if (editingAppId) {
+      // Update existing custom app
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === editingAppId
+            ? { ...app, name: customApp.name, category: customApp.type || "Custom" }
+            : app,
+        ),
+      );
+      setEditingAppId(null);
+    } else {
+      // Create new custom app
+      const tempId = `temp-custom-${Date.now()}`;
+      const newApp: Application = {
+        id: tempId,
+        name: customApp.name,
+        category: customApp.type || "Custom",
+        type: "Custom",
+      };
+
+      setApplications((prev) => [newApp, ...prev]);
+      setSelectedApps((prev) => [...prev, tempId]);
+    }
+
+    setCustomApp({
+      name: "",
+      type: "",
+      hostnames: "",
+      ipSubnets: "",
+      sourceSubnets: "",
+    });
+    setShowCustomForm(false);
+    setViewingManagedApp(null);
+  };
+
   const steps = [
     {
       key: "assign",
@@ -625,17 +812,56 @@ export function CreateResourceNestedDemo() {
           title="Assign application breakout traffic"
           description="Select applications and configure the preferred breakout port."
           footer={
-            <>
-              <div />
-              <Button
-                variant="primary"
-                onClick={() => setStep(1)}
-                disabled={selectedApps.length === 0}
-              >
-                Continue{" "}
-                {selectedApps.length > 0 ? `(${selectedApps.length})` : ""}
-              </Button>
-            </>
+            showCustomForm ? (
+              viewingManagedApp ? (
+                <>
+                  <div />
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      setShowCustomForm(false);
+                      setViewingManagedApp(null);
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setShowCustomForm(false);
+                      setEditingAppId(null);
+                      setViewingManagedApp(null);
+                    }}
+                  >
+                    Skip
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleAddCustomApp}
+                    disabled={!customApp.name.trim()}
+                  >
+                    {editingAppId
+                      ? "Save changes"
+                      : "Confirm adding to application list"}
+                  </Button>
+                </>
+              )
+            ) : (
+              <>
+                <div />
+                <Button
+                  variant="primary"
+                  onClick={() => setStep(1)}
+                  disabled={selectedApps.length === 0}
+                >
+                  Continue{" "}
+                  {selectedApps.length > 0 ? `(${selectedApps.length})` : ""}
+                </Button>
+              </>
+            )
           }
         >
           {!showCustomForm ? (
@@ -657,7 +883,18 @@ export function CreateResourceNestedDemo() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => setShowCustomForm(true)}
+                  onClick={() => {
+                    setEditingAppId(null);
+                    setViewingManagedApp(null);
+                    setCustomApp({
+                      name: "",
+                      type: "",
+                      hostnames: "",
+                      ipSubnets: "",
+                      sourceSubnets: "",
+                    });
+                    setShowCustomForm(true);
+                  }}
                 >
                   <PlusIcon className="size-4" />
                   Add a custom application
@@ -689,6 +926,7 @@ export function CreateResourceNestedDemo() {
                         <Table.Head>Name</Table.Head>
                         <Table.Head>Category</Table.Head>
                         <Table.Head>Type</Table.Head>
+                        <Table.Head />
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -699,9 +937,57 @@ export function CreateResourceNestedDemo() {
                             onValueChange={() => toggleApp(app.id)}
                             label={`Select ${app.name}`}
                           />
-                          <Table.Cell>{app.name}</Table.Cell>
+                          <Table.Cell>
+                            <Link
+                              variant="current"
+                              onClick={() =>
+                                app.type === "Custom"
+                                  ? handleEditApp(app)
+                                  : handleViewApp(app)
+                              }
+                            >
+                              {app.name}
+                            </Link>
+                          </Table.Cell>
                           <Table.Cell>{app.category}</Table.Cell>
                           <Table.Cell>{app.type}</Table.Cell>
+                          <Table.Cell>
+                            <DropdownMenu>
+                              <DropdownMenu.Trigger>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  shape="square"
+                                  aria-label="Menu"
+                                >
+                                  <DotsThreeIcon size={16} weight="bold" />
+                                </Button>
+                              </DropdownMenu.Trigger>
+                              <DropdownMenu.Content align="end">
+                                {app.type === "Custom" ? (
+                                  <>
+                                    <DropdownMenu.Item
+                                      onClick={() => handleEditApp(app)}
+                                    >
+                                      Edit
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Item
+                                      variant="danger"
+                                      onClick={() => handleDeleteApp(app.id)}
+                                    >
+                                      Delete
+                                    </DropdownMenu.Item>
+                                  </>
+                                ) : (
+                                  <DropdownMenu.Item
+                                    onClick={() => handleViewApp(app)}
+                                  >
+                                    View details
+                                  </DropdownMenu.Item>
+                                )}
+                              </DropdownMenu.Content>
+                            </DropdownMenu>
+                          </Table.Cell>
                         </Table.Row>
                       ))}
                     </Table.Body>
@@ -714,45 +1000,77 @@ export function CreateResourceNestedDemo() {
               <div className="relative flex items-center -mx-6 px-4">
                 <div className="absolute inset-x-0 h-px bg-kumo-hairline" />
                 <div className="relative bg-kumo-base px-2">
-                  <Label className="text-xs">Add a custom application</Label>
+                  <Label className="text-xs">
+                    {viewingManagedApp
+                      ? "View details"
+                      : editingAppId
+                        ? "Edit application"
+                        : "Add a custom application"}
+                  </Label>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Input
                   label="Name"
                   placeholder="Display name for the app"
+                  value={customApp.name}
+                  onChange={(e) =>
+                    setCustomApp((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   className="w-full"
+                  disabled={!!viewingManagedApp}
                 />
                 <Input
-                  label="Type"
+                  label="Category"
                   placeholder="Category of the app"
+                  value={customApp.type}
+                  onChange={(e) =>
+                    setCustomApp((prev) => ({ ...prev, type: e.target.value }))
+                  }
                   className="w-full"
+                  disabled={!!viewingManagedApp}
                 />
               </div>
-              <Input
-                label="Hostnames (optional)"
-                placeholder="FQDNs to associate with traffic decisions"
-                className="w-full"
-              />
-              <Input
-                label="IP Subnets (optional)"
-                placeholder="IPv4 CIDRs to associate with traffic decisions"
-                className="w-full"
-              />
-              <Input
-                label="Source Subnets (optional)"
-                placeholder="IPv4 CIDRs to associate with traffic decisions"
-                className="w-full"
-              />
-              <div className="flex gap-2 justify-start">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowCustomForm(false)}
-                >
-                  Confirm adding to application list
-                </Button>
-              </div>
+              {!viewingManagedApp && (
+                <>
+                  <Input
+                    label="Hostnames (optional)"
+                    placeholder="FQDNs to associate with traffic decisions"
+                    value={customApp.hostnames}
+                    onChange={(e) =>
+                      setCustomApp((prev) => ({
+                        ...prev,
+                        hostnames: e.target.value,
+                      }))
+                    }
+                    className="w-full"
+                  />
+                  <Input
+                    label="IP Subnets (optional)"
+                    placeholder="IPv4 CIDRs to associate with traffic decisions"
+                    value={customApp.ipSubnets}
+                    onChange={(e) =>
+                      setCustomApp((prev) => ({
+                        ...prev,
+                        ipSubnets: e.target.value,
+                      }))
+                    }
+                    className="w-full"
+                  />
+                  <Input
+                    label="Source Subnets (optional)"
+                    placeholder="IPv4 CIDRs to associate with traffic decisions"
+                    value={customApp.sourceSubnets}
+                    onChange={(e) =>
+                      setCustomApp((prev) => ({
+                        ...prev,
+                        sourceSubnets: e.target.value,
+                      }))
+                    }
+                    className="w-full"
+                  />
+                </>
+              )}
             </div>
           )}
         </CreateResourceStep>
@@ -800,19 +1118,48 @@ export function CreateResourceNestedDemo() {
       {mounted &&
         open &&
         createPortal(
-          <CreateResource
-            breadcrumbs={
-              <Breadcrumbs>
-                <Breadcrumbs.Link href="#">Network</Breadcrumbs.Link>
-                <Breadcrumbs.Separator />
-                <Breadcrumbs.Current>Breakout Traffic</Breadcrumbs.Current>
-              </Breadcrumbs>
-            }
-            onClose={handleClose}
-            step={step}
-            onStepChange={setStep}
-            steps={steps}
-          />,
+          <>
+            <CreateResource
+              breadcrumbs={
+                <Breadcrumbs>
+                  <Breadcrumbs.Link href="#">Network</Breadcrumbs.Link>
+                  <Breadcrumbs.Separator />
+                  <Breadcrumbs.Current>Breakout Traffic</Breadcrumbs.Current>
+                </Breadcrumbs>
+              }
+              onClose={handleClose}
+              onAskAI={handleAskAI}
+              step={step}
+              onStepChange={setStep}
+              steps={steps}
+              sidebarWidth={isSidebarOpen ? sidebarWidth : 0}
+            />
+            {/* Simulated AI Sidebar */}
+            <div
+              className={`fixed right-0 top-0 h-full border-l border-kumo-line bg-kumo-overlay transition-transform duration-300 ease-in-out z-[1150] flex flex-col ${
+                isSidebarOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+              style={{ width: sidebarWidth }}
+            >
+              <div className="flex h-[58px] items-center justify-between border-b border-kumo-line px-4">
+                <Text variant="heading3">Ask AI</Text>
+                <Button
+                  variant="ghost"
+                  shape="square"
+                  className="h-8"
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="flex-1 p-4">
+                <Text variant="secondary" size="sm">
+                  This is a simulated AI sidebar. In your app, wire up the
+                  onAskAI callback to open your actual AI assistant.
+                </Text>
+              </div>
+            </div>
+          </>,
           document.body,
         )}
     </>
