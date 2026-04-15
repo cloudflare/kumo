@@ -262,7 +262,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         onCheckedChange={handleCheckedChange}
         className={cn(
           "relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
-          variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
+          variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
           !disabled &&
             "hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
