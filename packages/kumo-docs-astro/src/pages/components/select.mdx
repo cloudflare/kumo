@@ -23,7 +23,6 @@ import {
   SelectLoadingDataDemo,
   SelectMultipleDemo,
   SelectComplexDemo,
-  SelectValueCompoundDemo,
   SelectDisabledOptionsDemo,
   SelectDisabledItemsDemo,
   SelectGroupedDemo,
@@ -284,31 +283,6 @@ export default function Example() {
 
   <ComponentExample demo="SelectComplexDemo">
     <SelectComplexDemo client:load />
-  </ComponentExample>
-</ComponentSection>
-
-{/* Select.Value Compound Component */}
-
-<ComponentSection>
-  <Heading level={3}>Custom Value Display (Select.Value)</Heading>
-  <p>
-    For full control over how the selected value is displayed, use the{" "}
-    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Value</code>{" "}
-    compound component. The children function receives the value (or <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">null</code>{" "}
-    when nothing is selected), making it clear you need to handle the empty state.
-  </p>
-
-```tsx
-<Select>
-  <Select.Value placeholder="Select a user...">
-    {(value) => value?.name}
-  </Select.Value>
-  <Select.Option value={user1}>{user1.name}</Select.Option>
-</Select>
-```
-
-  <ComponentExample demo="SelectValueCompoundDemo">
-    <SelectValueCompoundDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
