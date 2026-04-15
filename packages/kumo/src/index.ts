@@ -215,6 +215,7 @@ export {
   ChartPalette,
   TimeseriesChart,
   ChartLegend,
+  type KumoChartOption,
 } from "./components/chart";
 
 // Sidebar
