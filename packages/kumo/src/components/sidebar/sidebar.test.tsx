@@ -600,9 +600,10 @@ describe("Sidebar peeking", () => {
     );
 
     const sidebar = document.querySelector("[data-sidebar='sidebar']") as HTMLElement;
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']") as HTMLElement;
     expect(sidebar.getAttribute("data-state")).toBe("collapsed");
 
-    fireEvent.mouseEnter(sidebar);
+    fireEvent.mouseEnter(peekZone);
 
     expect(sidebar.getAttribute("data-state")).toBe("peeking");
   });
@@ -617,13 +618,13 @@ describe("Sidebar peeking", () => {
       { peekable: true },
     );
 
-    const sidebar = document.querySelector("[data-sidebar='sidebar']") as HTMLElement;
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']") as HTMLElement;
 
-    fireEvent.mouseEnter(sidebar);
-    expect(sidebar.getAttribute("data-state")).toBe("peeking");
+    fireEvent.mouseEnter(peekZone);
+    expect(document.querySelector("[data-sidebar='sidebar']")?.getAttribute("data-state")).toBe("peeking");
 
-    fireEvent.mouseLeave(sidebar);
-    expect(sidebar.getAttribute("data-state")).toBe("collapsed");
+    fireEvent.mouseLeave(peekZone);
+    expect(document.querySelector("[data-sidebar='sidebar']")?.getAttribute("data-state")).toBe("collapsed");
   });
 
   it("does not enter peeking state when peekable=false", () => {
@@ -636,10 +637,10 @@ describe("Sidebar peeking", () => {
       { peekable: false },
     );
 
-    const sidebar = document.querySelector("[data-sidebar='sidebar']") as HTMLElement;
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']") as HTMLElement;
 
-    fireEvent.mouseEnter(sidebar);
-    expect(sidebar.getAttribute("data-state")).toBe("collapsed");
+    fireEvent.mouseEnter(peekZone);
+    expect(document.querySelector("[data-sidebar='sidebar']")?.getAttribute("data-state")).toBe("collapsed");
   });
 
   it("does not peek when sidebar is expanded", () => {
@@ -657,9 +658,10 @@ describe("Sidebar peeking", () => {
     );
 
     const sidebar = document.querySelector("[data-sidebar='sidebar']") as HTMLElement;
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']") as HTMLElement;
     expect(sidebar.getAttribute("data-state")).toBe("expanded");
 
-    fireEvent.mouseEnter(sidebar);
+    fireEvent.mouseEnter(peekZone);
     // Should remain expanded, not switch to peeking
     expect(sidebar.getAttribute("data-state")).toBe("expanded");
   });
@@ -672,58 +674,63 @@ describe("Sidebar peeking", () => {
 describe("Sidebar.Footer peek prevention", () => {
   beforeEach(() => mockDesktopViewport());
 
-  it("hovering the footer does not leave sidebar in peeking state", () => {
-    renderCollapsedSidebar(
-      <>
-        <Sidebar.Content>
-          <Sidebar.Menu>
-            <Sidebar.MenuButton>Home</Sidebar.MenuButton>
-          </Sidebar.Menu>
-        </Sidebar.Content>
-        <Sidebar.Footer data-testid="footer">
-          <Sidebar.Trigger />
-        </Sidebar.Footer>
-      </>,
-      { peekable: true },
+  // NOTE: Footer tests render directly (not via renderCollapsedSidebar)
+  // because the helper wraps children in a fragment, and Children.toArray
+  // does not flatten fragments — so the Footer would not be separated from
+  // content and would end up inside the peek-zone.
+
+  it("footer is rendered outside the peek-zone so hovering it cannot trigger peek", () => {
+    render(
+      <Sidebar.Provider defaultOpen={false} peekable className="min-h-0 h-full">
+        <Sidebar>
+          <Sidebar.Content>
+            <Sidebar.Menu>
+              <Sidebar.MenuButton>Home</Sidebar.MenuButton>
+            </Sidebar.Menu>
+          </Sidebar.Content>
+          <Sidebar.Footer data-testid="footer">
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+      </Sidebar.Provider>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='sidebar']") as HTMLElement;
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']") as HTMLElement;
     const footer = screen.getByTestId("footer");
 
-    // In a real browser, entering the sidebar via the footer fires mouseenter
-    // on both the aside and the footer. The footer's handler calls stopPeek(),
-    // and React 18 batches both updates. Net effect: no peek.
-    fireEvent.mouseEnter(sidebar);
-    fireEvent.mouseEnter(footer);
-
-    // Should be collapsed — footer cancels any peek
-    expect(sidebar.getAttribute("data-state")).toBe("collapsed");
+    // The architectural guarantee: footer is a sibling of the peek-zone,
+    // not a descendant. In a real browser, mouseenter on the footer cannot
+    // reach the peek-zone's onMouseEnter handler (mouseenter doesn't bubble).
+    // happy-dom's event model cannot accurately test this, so we verify the
+    // DOM structure directly.
+    expect(peekZone.contains(footer)).toBe(false);
   });
 
   it("moving mouse from content to footer cancels active peek", () => {
-    renderCollapsedSidebar(
-      <>
-        <Sidebar.Content>
-          <Sidebar.Menu>
-            <Sidebar.MenuButton>Home</Sidebar.MenuButton>
-          </Sidebar.Menu>
-        </Sidebar.Content>
-        <Sidebar.Footer data-testid="footer">
-          <Sidebar.Trigger />
-        </Sidebar.Footer>
-      </>,
-      { peekable: true },
+    render(
+      <Sidebar.Provider defaultOpen={false} peekable className="min-h-0 h-full">
+        <Sidebar>
+          <Sidebar.Content>
+            <Sidebar.Menu>
+              <Sidebar.MenuButton>Home</Sidebar.MenuButton>
+            </Sidebar.Menu>
+          </Sidebar.Content>
+          <Sidebar.Footer data-testid="footer">
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+      </Sidebar.Provider>,
     );
 
     const sidebar = document.querySelector("[data-sidebar='sidebar']") as HTMLElement;
-    const footer = screen.getByTestId("footer");
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']") as HTMLElement;
 
-    // Start peek via sidebar content area
-    fireEvent.mouseEnter(sidebar);
+    // Start peek via peek-zone (content area)
+    fireEvent.mouseEnter(peekZone);
     expect(sidebar.getAttribute("data-state")).toBe("peeking");
 
-    // Move to footer — should cancel the peek
-    fireEvent.mouseEnter(footer);
+    // Move to footer — mouse leaves peek-zone, cancelling the peek
+    fireEvent.mouseLeave(peekZone);
     expect(sidebar.getAttribute("data-state")).toBe("collapsed");
   });
 });

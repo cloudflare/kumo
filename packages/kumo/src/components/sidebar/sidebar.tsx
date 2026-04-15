@@ -475,6 +475,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       peekable,
       startPeek,
       stopPeek,
+      contained,
     } = useSidebar();
 
     // Peek handlers — only active when collapsed and peekable
@@ -606,7 +607,6 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       collapsible === "icon" ? "var(--sidebar-width-icon)" : "0px";
     const expandedWidth = resizable ? `${width}px` : "var(--sidebar-width)";
     const isPeeking = state === "peeking";
-    const { contained } = useSidebar();
 
     // Rail width: based on open state only — stays collapsed during peek
     const railWidth = open ? expandedWidth : collapsedWidth;
@@ -633,7 +633,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
           // overflow-visible allows the content container to overlay when peeking
           "overflow-visible",
           // Transition rail width
-          "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
+          "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
           "motion-reduce:transition-none",
           isResizing && "transition-none!",
           className,
@@ -651,7 +651,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             "min-w-0 overflow-hidden whitespace-nowrap",
             "bg-(--sidebar-bg) text-kumo-default",
             // Transition content width
-            "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
+            "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
             "motion-reduce:transition-none",
             isResizing && "transition-none!",
             // When collapsed/peeking: positioned out of flow to overlay content
@@ -679,6 +679,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 a fresh mouseenter, correctly triggering peek. Matches Stratus
                 where NavFooter is a sibling of the peek-handling div. */}
             <div
+              data-sidebar="peek-zone"
               className="flex min-h-0 flex-1 flex-col"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
@@ -1949,6 +1950,7 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
   ({ value, className, children, ...props }, ref) => {
     const isActive = useContext(SlidingViewActiveContext) === value;
     const shouldReduceMotion = useContext(SlidingViewReducedMotionContext);
+    const { animationDuration } = useSidebar();
 
     return (
       <div
@@ -1956,15 +1958,11 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
         data-sidebar="sliding-view"
         data-surface-key={value}
         aria-hidden={!isActive}
+        style={!isActive ? { transitionDelay: shouldReduceMotion ? "0ms" : `${animationDuration}ms` } : undefined}
         className={cn(
           "flex h-full min-w-full w-full shrink-0 flex-col",
           "transition-[visibility] duration-0",
-          isActive
-            ? "visible"
-            : cn(
-              "invisible pointer-events-none",
-              shouldReduceMotion ? "delay-0" : "delay-250",
-            ),
+          isActive ? "visible" : "invisible pointer-events-none",
           className,
         )}
         {...(isActive ? {} : ({ inert: "" } as Record<string, string>))}
@@ -2078,11 +2076,11 @@ SidebarSlidingViews.displayName = "Sidebar.SlidingViews";
  * `.Content`, `.Footer`, `.Group`, `.GroupLabel`,
  * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuBadge`,
  * `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`,
- * `.Input`, `.Trigger`, `.Rail`, `.MenuChevron`,
+ * `.Trigger`, `.Rail`, `.MenuChevron`,
  * `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`,
  * `.SlidingViews`, `.SlidingView`.
  *
- * Built on `@base-ui/react/collapsible` + `@base-ui/react/dialog`.
+ * Built on `@base-ui/react/dialog`.
  *
  * @example
  * ```tsx
