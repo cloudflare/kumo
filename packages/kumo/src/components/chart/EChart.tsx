@@ -1,5 +1,9 @@
 import type * as echarts from "echarts/core";
-import type { EChartsOption, SetOptionOpts } from "echarts";
+import type {
+  EChartsOption,
+  SetOptionOpts,
+  TooltipComponentOption,
+} from "echarts";
 import { forwardRef, useEffect, useRef } from "react";
 import { cn } from "../../utils";
 import { CHART_DARK_COLORS, CHART_LIGHT_COLORS } from "./Color";
@@ -26,6 +30,26 @@ type EChartsMouseEventParams = {
   value?: number | any[];
   /** Resolved color of the series or data item */
   color?: string;
+};
+
+/**
+ * Tooltip options with the `formatter` property removed and replaced with
+ * `dangerousHtmlFormatter` to make the security implications more explicit.
+ */
+export type SafeTooltipOption = Omit<TooltipComponentOption, "formatter"> & {
+  /**
+   * USE WITH CAUTION: Use this only for trusted HTML content.
+   * When building tooltip HTML with user-provided data, always sanitize
+   * the input to prevent XSS vulnerabilities. Recommended: use
+   * `encodeHTML` from `echarts/format` to escape HTML special characters.
+   */
+  dangerousHtmlFormatter?: TooltipComponentOption["formatter"];
+};
+
+export type KumoChartOption = {
+  [K in keyof EChartsOption]: K extends "tooltip"
+    ? SafeTooltipOption | SafeTooltipOption[] | undefined
+    : EChartsOption[K];
 };
 
 /**
@@ -107,7 +131,7 @@ export interface ChartProps {
    */
   echarts: typeof echarts;
   /** ECharts option object — passed through to `chart.setOption()` */
-  options: EChartsOption;
+  options: KumoChartOption;
   /**
    * Additional options passed as the second argument to `chart.setOption()`.
    * Defaults to `{ notMerge: false, lazyUpdate: true }`.
@@ -125,6 +149,25 @@ export interface ChartProps {
   /** Subset of ECharts events to listen for. Handlers are bound/unbound reactively. */
   onEvents?: Partial<ChartEvents>;
 }
+
+const transformTooltip = (tooltipObj: SafeTooltipOption) => {
+  const { dangerousHtmlFormatter, ...restOfTooltip } = tooltipObj;
+  return {
+    ...restOfTooltip,
+    formatter: dangerousHtmlFormatter,
+  };
+};
+
+const prepareChartOptions = (options: KumoChartOption): EChartsOption => {
+  if (!options.tooltip) return options;
+
+  return {
+    ...options,
+    tooltip: Array.isArray(options.tooltip)
+      ? options.tooltip.map(transformTooltip)
+      : transformTooltip(options.tooltip),
+  };
+};
 
 /**
  * Chart — a low-level wrapper around [Apache ECharts](https://echarts.apache.org).
@@ -209,7 +252,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const chart = chartRef.current;
     if (!chart) return;
 
-    chart.setOption(options, {
+    chart.setOption(prepareChartOptions(options), {
       notMerge: false,
       lazyUpdate: true,
       ...optionUpdateBehavior,
