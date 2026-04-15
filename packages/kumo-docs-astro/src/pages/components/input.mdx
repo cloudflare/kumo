@@ -23,6 +23,8 @@ import {
   InputOptionalFieldDemo,
   InputLabelTooltipDemo,
   InputReactNodeLabelDemo,
+  InputControlledOnChangeDemo,
+  InputControlledOnValueChangeDemo,
 } from "~/components/demos/InputDemo";
 
 {/* Hero Demo */}
@@ -144,6 +146,25 @@ export default function Example() {
 <p>The `label` prop accepts ReactNode for rich formatting.</p>
 <ComponentExample demo="InputReactNodeLabelDemo">
   <InputReactNodeLabelDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Controlled with onChange</Heading>
+<p>
+  The standard React `onChange` handler receives the full event object. Use
+  `e.target.value` to get the value.
+</p>
+<ComponentExample demo="InputControlledOnChangeDemo">
+  <InputControlledOnChangeDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>Controlled with onValueChange</Heading>
+<p>
+  `onValueChange` is a convenience handler from Base UI that gives you the
+  string value directly — no event unwrapping needed. This is the same pattern
+  used by `Select`, `Combobox`, and `Radio.Group`.
+</p>
+<ComponentExample demo="InputControlledOnValueChangeDemo">
+  <InputControlledOnValueChangeDemo client:load />
 </ComponentExample>
 
 <Heading level={3}>Bare Input (No Label)</Heading>

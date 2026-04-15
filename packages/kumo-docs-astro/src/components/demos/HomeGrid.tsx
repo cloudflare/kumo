@@ -29,6 +29,7 @@ import {
   SkeletonLine,
   Switch,
   Table,
+  TableOfContents,
   Tabs,
   Text,
   Toasty,
@@ -80,6 +81,7 @@ const componentRoutes: Record<string, string> = {
   "skeleton-line": "/components/skeleton-line",
   switch: "/components/switch",
   table: "/components/table",
+  "table-of-contents": "/components/table-of-contents",
   tabs: "/components/tabs",
   text: "/components/text",
   toast: "/components/toast",
@@ -600,6 +602,20 @@ export function HomeGrid() {
             </Table.Row>
           </Table.Body>
         </Table>
+      ),
+    },
+    {
+      name: "TableOfContents",
+      id: "table-of-contents",
+      Component: (
+        <TableOfContents>
+          <TableOfContents.Title>On this page</TableOfContents.Title>
+          <TableOfContents.List>
+            <TableOfContents.Item active>Introduction</TableOfContents.Item>
+            <TableOfContents.Item>Installation</TableOfContents.Item>
+            <TableOfContents.Item>Usage</TableOfContents.Item>
+          </TableOfContents.List>
+        </TableOfContents>
       ),
     },
     {

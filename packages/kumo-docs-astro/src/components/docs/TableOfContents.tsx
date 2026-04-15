@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { cn } from "@cloudflare/kumo";
-import { CaretDown } from "@phosphor-icons/react";
+import { TableOfContents as TOC } from "@cloudflare/kumo";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 export interface TocHeading {
   depth: number;
@@ -149,7 +149,7 @@ export function TableOfContents({
             </option>
           ))}
         </select>
-        <CaretDown
+        <CaretDownIcon
           size={16}
           weight="bold"
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-kumo-subtle"
@@ -160,43 +160,20 @@ export function TableOfContents({
 
   // Sidebar layout (default)
   return (
-    <section>
-      <p className="mb-3 text-xs font-semibold tracking-wide text-kumo-subtle uppercase">
-        On this page
-      </p>
-      <nav
-        aria-label="Table of contents"
-        className="relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-hairline"
-        ref={navRef}
-      >
-        {headings.map((heading) => {
-          const isActive = activeId === heading.slug;
-          return (
-            <a
-              key={heading.slug}
-              href={`#${heading.slug}`}
-              onClick={() => handleClick(heading.slug)}
-              className={cn(
-                "group relative block truncate rounded-md py-1 pl-5 text-sm no-underline transition-all duration-500",
-                isActive
-                  ? "text-kumo-default font-medium"
-                  : "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default hover:font-medium",
-              )}
-            >
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "absolute inset-y-0 left-0.5 w-0.5 rounded-full transition-all duration-200",
-                  isActive
-                    ? "bg-kumo-brand opacity-100"
-                    : "bg-kumo-brand opacity-0 group-hover:opacity-60",
-                )}
-              />
-              <span className="block min-w-0 leading-5">{heading.text}</span>
-            </a>
-          );
-        })}
-      </nav>
-    </section>
+    <TOC>
+      <TOC.Title>On this page</TOC.Title>
+      <TOC.List ref={navRef}>
+        {headings.map((heading) => (
+          <TOC.Item
+            key={heading.slug}
+            href={`#${heading.slug}`}
+            active={activeId === heading.slug}
+            onClick={() => handleClick(heading.slug)}
+          >
+            {heading.text}
+          </TOC.Item>
+        ))}
+      </TOC.List>
+    </TOC>
   );
 }

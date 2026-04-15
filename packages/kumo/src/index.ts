@@ -260,6 +260,17 @@ export {
   type SidebarMenuSubButtonProps,
   type SidebarInputProps,
 } from "./components/sidebar";
+export {
+  TableOfContents,
+  type TableOfContentsProps,
+  type TableOfContentsTitleProps,
+  type TableOfContentsListProps,
+  type TableOfContentsItemProps,
+  type TableOfContentsGroupProps,
+  KUMO_TABLE_OF_CONTENTS_VARIANTS,
+  KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
+  type KumoTableOfContentsState,
+} from "./components/table-of-contents";
 // PLOP_INJECT_EXPORT
 
 // Utils
