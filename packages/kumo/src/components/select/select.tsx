@@ -194,6 +194,17 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 > &
   KumoSelectVariantsProps & {
     multiple?: Multiple;
+    /**
+     * A function that returns a `ReactNode` to format the selected value.
+     * Only called when a value is selected — use `placeholder` for the empty state.
+     * @example
+     * ```tsx
+     * <Select
+     *   placeholder="Select a user..."
+     *   renderValue={(user) => user.name}
+     * />
+     * ```
+     */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
     className?: string;
     /**
@@ -409,7 +420,18 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             placeholder={placeholder}
             className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
           >
-            {renderValue}
+            {renderValue
+              ? (value: unknown) => {
+                  if (value == null) {
+                    return (
+                      <span className="text-kumo-placeholder">
+                        {placeholder}
+                      </span>
+                    );
+                  }
+                  return renderValue(value as never);
+                }
+              : undefined}
           </SelectBase.Value>
         )}
         <SelectBase.Icon

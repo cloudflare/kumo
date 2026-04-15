@@ -139,9 +139,19 @@ export default function Example() {
 <ComponentSection>
   <Heading level={3}>Placeholder</Heading>
   <p>
-    Use the `placeholder` prop
-    to show text when no value is selected.
+    Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> prop
+    to show text when no value is selected. When using <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to
+    customize the display of selected values, the placeholder is shown instead of
+    calling <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> when the value is <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">null</code>.
   </p>
+
+```tsx
+<Select
+  placeholder="Select a user..."
+  value={user}
+  renderValue={(user) => user.name} // Only called when user is not null
+/>
+```
 
   <ComponentExample demo="SelectPlaceholderDemo">
     <SelectPlaceholderDemo client:load />
@@ -167,9 +177,9 @@ export default function Example() {
 <ComponentSection>
   <Heading level={3}>Custom Rendering</Heading>
   <p>
-    A select component that demonstrates custom rendering capabilities for
-    both the trigger button and dropdown options, allowing you to work with
-    complex object data structures instead of simple string values.
+    Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to customize how the selected value
+    appears in the trigger button. This is useful when working with complex object
+    data structures instead of simple string values.
   </p>
 
 <ComponentExample demo="SelectCustomRenderingDemo">
@@ -177,15 +187,27 @@ export default function Example() {
 </ComponentExample>
 
 <p>
+  The{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code>{" "}
+  function is only called when a value is selected. Use{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code>{" "}
+  to define what to show when no value is selected.
+</p>
+
+<p>
   Select compares value with items to find which one is selected. For object
   items, it will compare if the object is the same reference not by value by
   default. If you want to compare object items by value, you can use{" "}
-  <strong>isItemEqualToValue</strong> prop.
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+    isItemEqualToValue
+  </code>{" "}
+  prop.
 </p>
 
 ```tsx
 <Select
   className="w-[200px]"
+  placeholder="Select a language..."
   renderValue={(v) => (
     <span>
       {v.emoji} {v.label}
@@ -229,11 +251,25 @@ export default function Example() {
 {/* Multiple Item */}
 
 <ComponentSection>
-  <Heading level={3}>Multiple Item</Heading>
+  <Heading level={3}>Multiple Selection</Heading>
   <p>
-    A select component with multiple selection enabled. The value is an
-    array of selected items.
+    Enable multiple selection with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">multiple</code> prop.
+    The value becomes an array of selected items. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> for the empty state
+    and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to customize how selections are displayed.
   </p>
+
+```tsx
+<Select
+  multiple
+  placeholder="Select columns..."
+  value={selectedColumns}
+  renderValue={(columns) => columns.join(", ")}
+  onValueChange={setSelectedColumns}
+>
+  <Select.Option value="name">Name</Select.Option>
+  <Select.Option value="email">Email</Select.Option>
+</Select>
+```
 
   <ComponentExample demo="SelectMultipleDemo">
     <SelectMultipleDemo client:load />
