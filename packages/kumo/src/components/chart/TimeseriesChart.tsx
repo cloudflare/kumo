@@ -1,8 +1,8 @@
 import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
-import type { EChartsOption } from "echarts";
+import type { EChartsOption, SeriesOption } from "echarts";
 import { useEffect, useMemo, useRef } from "react";
-import { Chart, ChartEvents } from "./EChart";
+import { Chart, ChartEvents, KumoChartOption } from "./EChart";
 
 /** A single data series rendered on a `TimeseriesChart` */
 export interface TimeseriesData {
@@ -221,7 +221,6 @@ export function TimeseriesChart({
         ...(ariaDescription && { label: { description: ariaDescription } }),
       },
       brush: {
-        snapToData: true,
         xAxisIndex: "all" as const,
         brushType: "lineX" as const,
         brushMode: "single" as const,
@@ -236,8 +235,9 @@ export function TimeseriesChart({
       },
       tooltip: {
         trigger: "axis" as const,
+        appendTo: "body",
         axisPointer: { type: "shadow" as const },
-        formatter: (params: any) => {
+        dangerousHtmlFormatter: (params) => {
           const items = Array.isArray(params) ? params : [params];
 
           // Track seen series names to avoid duplicates in tooltip
@@ -250,11 +250,16 @@ export function TimeseriesChart({
             return true;
           });
 
-          const first = filteredParams[0];
+          const first = filteredParams[0] as {
+            value?: [number, number];
+            axisValue?: number;
+          };
+
           const ts = first?.value?.[0] ?? first?.axisValue;
+
           const header =
             ts != null
-              ? `<div style="font-weight:600;margin-bottom:4px;">${formatTimestamp(ts)}</div>`
+              ? `<div style="font-weight:600;margin-bottom:4px;">${echarts.format.encodeHTML(formatTimestamp(ts))}</div>`
               : "";
 
           const rows = filteredParams
@@ -262,9 +267,10 @@ export function TimeseriesChart({
               const value = param?.value?.[1];
               const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
               const formattedValue = formatFn
-                ? escapeHtml(String(formatFn(value)))
-                : escapeHtml(String(value));
-              return `${param.marker} ${escapeHtml(String(param.seriesName))}: <strong>${formattedValue}</strong>`;
+                ? echarts.format.encodeHTML(String(formatFn(value)))
+                : echarts.format.encodeHTML(String(value));
+
+              return `${param.marker} ${echarts.format.encodeHTML(param.seriesName)}: <strong>${formattedValue}</strong>`;
             })
             .join("<br/>");
 
@@ -313,8 +319,8 @@ export function TimeseriesChart({
         top: 24,
         bottom: xAxisName ? 30 : 24,
       },
-      series: transformSeries,
-    };
+      series: transformSeries as SeriesOption[],
+    } satisfies KumoChartOption;
   }, [
     data,
     xAxisName,
@@ -492,12 +498,6 @@ function colorWithOpacity(color: string, alpha: number): string {
 /** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
 function pad(n: number) {
   return n.toString().padStart(2, "0");
-}
-
-function escapeHtml(str: string): string {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
 }
 
 /**

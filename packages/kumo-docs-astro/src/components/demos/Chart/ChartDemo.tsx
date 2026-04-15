@@ -6,7 +6,7 @@ import {
   LayerCard,
 } from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
-import type { EChartsOption } from "echarts";
+import type { KumoChartOption } from "@cloudflare/kumo";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -41,8 +41,8 @@ export function PieChartDemo() {
       ({
         animation: true,
         animationDuration: 2000,
-        toolbox: {
-          show: false,
+        tooltip: {
+          show: true,
         },
         series: [
           {
@@ -56,7 +56,7 @@ export function PieChartDemo() {
             ],
           },
         ],
-      }) as EChartsOption,
+      }) satisfies KumoChartOption,
     [],
   );
 
@@ -287,7 +287,7 @@ export function PieChartPreviewDemo() {
             ],
           },
         ],
-      }) as EChartsOption,
+      }) satisfies KumoChartOption,
     [],
   );
 
@@ -424,7 +424,7 @@ export function BarChartDemo() {
   const data = useMemo(
     () => [
       {
-        name: "Requests",
+        name: "Requests where age > 10",
         data: buildSeriesData(0, 20, 3_600_000, 1),
         color: ChartPalette.semantic("Neutral", isDarkMode),
       },
@@ -445,6 +445,7 @@ export function BarChartDemo() {
       data={data}
       xAxisName="Time (UTC)"
       yAxisName="Count"
+      tooltipValueFormat={(r) => r.toFixed(2)}
     />
   );
 }
@@ -537,6 +538,72 @@ export function ChartExampleDemo() {
         />
       </LayerCard.Primary>
     </LayerCard>
+  );
+}
+
+/**
+ * Custom chart with HTML tooltip using dangerousHtmlFormatter.
+ * USE WITH CAUTION: Only use dangerousHtmlFormatter for trusted HTML content.
+ * Always sanitize any user-provided data using echarts.format.encodeHTML
+ * or similar utilities to prevent XSS vulnerabilities.
+ */
+export function CustomTooltipChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const options = useMemo<KumoChartOption>(
+    () => ({
+      tooltip: {
+        trigger: "item",
+        // Use dangerousHtmlFormatter instead of formatter to make the
+        // security implications explicit. Only use with trusted content.
+        dangerousHtmlFormatter: (params: any) => {
+          // IMPORTANT: Always escape ALL dynamic values using encodeHTML
+          // from echarts/format before including in HTML. This prevents
+          // XSS attacks from malicious data like:
+          // { name: "<img src=x onerror=alert('xss')>", value: "..." }
+          const safeName = echarts.format.encodeHTML(params.name);
+          const safeValue = echarts.format.encodeHTML(String(params.value));
+          const safePercent = echarts.format.encodeHTML(
+            String(Math.round(params.percent)),
+          );
+
+          return `
+            <div style="padding: 8px;">
+              <div style="font-weight: 600; margin-bottom: 4px;">${safeName}</div>
+              <div>Value: <strong>${safeValue}</strong></div>
+              <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">
+                ${safePercent}% of total
+              </div>
+            </div>
+          `;
+        },
+      },
+      series: [
+        {
+          type: "pie",
+          data: [
+            { value: 101, name: "Series A" },
+            { value: 202, name: "Series B" },
+            // Malicious series name to demonstrate XSS protection via encodeHTML.
+            // Without encoding, this would render an alert popup. With encodeHTML,
+            // it safely displays as plain text.
+            { value: 150, name: "<img src=x onerror=alert('XSS')>" },
+            { value: 303, name: "Series C" },
+            { value: 404, name: "Series D" },
+          ],
+        },
+      ],
+    }),
+    [],
+  );
+
+  return (
+    <Chart
+      echarts={echarts}
+      options={options}
+      height={400}
+      isDarkMode={isDarkMode}
+    />
   );
 }
 
