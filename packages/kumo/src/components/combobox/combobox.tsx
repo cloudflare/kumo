@@ -308,7 +308,20 @@ const triggerInputIconStyles: Record<
   },
 };
 
-function TriggerInput(props: ComboboxBase.Input.Props) {
+function TriggerInput({
+  clearLabel = "Clear selection",
+  showOptionsLabel = "Show options",
+  ...props
+}: ComboboxBase.Input.Props & {
+  /** Accessible label for the clear button. Pass a translated string for i18n.
+   * @default "Clear selection"
+   */
+  clearLabel?: string;
+  /** Accessible label for the dropdown trigger. Pass a translated string for i18n.
+   * @default "Show options"
+   */
+  showOptionsLabel?: string;
+}) {
   const size = useContext(ComboboxSizeContext);
   const iconStyles = triggerInputIconStyles[size];
 
@@ -331,6 +344,7 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
       />
 
       <ComboboxBase.Clear
+        aria-label={clearLabel}
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-0",
@@ -341,6 +355,7 @@ function TriggerInput(props: ComboboxBase.Input.Props) {
       </ComboboxBase.Clear>
 
       <ComboboxBase.Trigger
+        aria-label={showOptionsLabel}
         className={cn(
           "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
           "m-0 bg-transparent p-0", // Reset Stratus global button styles
@@ -430,7 +445,15 @@ function Group(props: ComboboxBase.Group.Props) {
   );
 }
 
-function Chip(props: ComboboxBase.Chip.Props) {
+function Chip({
+  removeLabel = "Remove",
+  ...props
+}: ComboboxBase.Chip.Props & {
+  /** Accessible label for the chip remove button. Pass a translated string for i18n.
+   * @default "Remove"
+   */
+  removeLabel?: string;
+}) {
   return (
     <ComboboxBase.Chip
       {...props}
@@ -444,6 +467,7 @@ function Chip(props: ComboboxBase.Chip.Props) {
     >
       {props.children}
       <ComboboxBase.ChipRemove
+        aria-label={removeLabel}
         className={cn(
           "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
           "bg-transparent flex",

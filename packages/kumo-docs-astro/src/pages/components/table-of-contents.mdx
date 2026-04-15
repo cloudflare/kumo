@@ -1,0 +1,162 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Table of Contents"
+description: "Presentational compound component for section navigation with an active indicator bar."
+sourceFile: "components/table-of-contents"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import Heading from "~/components/docs/Heading.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TableOfContentsBasicDemo,
+  TableOfContentsInteractiveDemo,
+  TableOfContentsNoActiveDemo,
+  TableOfContentsGroupDemo,
+  TableOfContentsWithoutTitleDemo,
+  TableOfContentsRenderPropDemo,
+} from "~/components/demos/TableOfContentsDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="TableOfContentsBasicDemo">
+    <TableOfContentsBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+  <Heading level={2}>Installation</Heading>
+  <Heading level={3}>Barrel</Heading>
+
+```tsx
+import { TableOfContents } from "@cloudflare/kumo";
+```
+
+<Heading level={3}>Granular</Heading>
+
+```tsx
+import { TableOfContents } from "@cloudflare/kumo/components/table-of-contents";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+  <Heading level={2}>Usage</Heading>
+
+```tsx
+import { TableOfContents } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <TableOfContents>
+      <TableOfContents.Title>On this page</TableOfContents.Title>
+      <TableOfContents.List>
+        <TableOfContents.Item href="#intro" active>
+          Introduction
+        </TableOfContents.Item>
+        <TableOfContents.Item href="#api">API Reference</TableOfContents.Item>
+      </TableOfContents.List>
+    </TableOfContents>
+  );
+}
+```
+
+<p>
+  This component is purely presentational. All interaction logic — scroll
+  tracking, `IntersectionObserver`, active state management — is left to the
+  consumer.
+</p>
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+  <Heading level={2}>Examples</Heading>
+
+<Heading level={3}>Interactive</Heading>
+<p>
+  Click an item to set it as active. The consumer controls state via `active`
+  and `onClick`.
+</p>
+<ComponentExample demo="TableOfContentsInteractiveDemo">
+  <TableOfContentsInteractiveDemo client:load />
+</ComponentExample>
+
+<Heading level={3}>No active item</Heading>
+<p>
+  When no item has `active` set, all items show the default subtle text style
+  with a hover indicator.
+</p>
+<ComponentExample demo="TableOfContentsNoActiveDemo">
+  <TableOfContentsNoActiveDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Groups</Heading>
+<p>
+  Use `TableOfContents.Group` to organize items into labeled sections with
+  indented children.
+</p>
+<ComponentExample demo="TableOfContentsGroupDemo">
+  <TableOfContentsGroupDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Without title</Heading>
+<p>
+  The title sub-component is optional — use `TableOfContents.List` directly if
+  you don't need a heading.
+</p>
+<ComponentExample demo="TableOfContentsWithoutTitleDemo">
+  <TableOfContentsWithoutTitleDemo client:visible />
+</ComponentExample>
+
+<Heading level={3}>Custom element</Heading>
+<p>
+  Use the `render` prop to swap the default anchor for a button, router link, or
+  any element.
+</p>
+<ComponentExample demo="TableOfContentsRenderPropDemo">
+  <TableOfContentsRenderPropDemo client:load />
+</ComponentExample>
+
+```tsx
+// React Router
+<TableOfContents.Item render={<Link to="/intro" />} active>
+  Introduction
+</TableOfContents.Item>
+
+// Next.js
+<TableOfContents.Item render={<Link href="/intro" />} active>
+  Introduction
+</TableOfContents.Item>
+
+// Button (no navigation)
+<TableOfContents.Item render={<button type="button" />} onClick={handleClick}>
+  Introduction
+</TableOfContents.Item>
+```
+
+**With Next.js**
+
+```tsx
+import Link from "next/link";
+
+<TableOfContents.Item render={<Link />} href="/intro" active>
+  Introduction
+</TableOfContents.Item>;
+```
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+  <Heading level={2}>API Reference</Heading>
+  <PropsTable component="TableOfContents" />
+</ComponentSection>

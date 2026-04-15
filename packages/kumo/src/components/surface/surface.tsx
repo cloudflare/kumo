@@ -1,7 +1,6 @@
-import { createElement, forwardRef, type ElementType } from "react";
-import { useRender } from "@base-ui/react/use-render";
-import { mergeProps } from "@base-ui/react/merge-props";
+import { createElement, type ElementType } from "react";
 import { cn } from "../../utils/cn";
+import { LayerCard, type LayerCardProps } from "../layer-card/layer-card";
 
 /** Surface color variant definitions. */
 export const KUMO_SURFACE_VARIANTS = {
@@ -37,16 +36,14 @@ export interface KumoSurfaceVariantsProps {
 export function surfaceVariants({
   color = KUMO_SURFACE_DEFAULT_VARIANTS.color,
 }: KumoSurfaceVariantsProps = {}) {
-  return cn(
-    // Base styles
-    "shadow-xs ring ring-kumo-line",
-    // Apply color-specific styles
-    KUMO_SURFACE_VARIANTS.color[color].classes,
-  );
+  return KUMO_SURFACE_VARIANTS.color[color].classes;
 }
 
 /**
  * Surface component props.
+ *
+ * @deprecated Use `LayerCard` instead. `Surface` is now a compatibility wrapper
+ * around `LayerCard` for simple one-layer card containers.
  *
  * @example
  * ```tsx
@@ -54,7 +51,7 @@ export function surfaceVariants({
  * <Surface render={<section />} className="rounded-lg p-6">Section content</Surface>
  * ```
  */
-export type SurfaceProps = useRender.ComponentProps<"div"> &
+export type SurfaceProps = LayerCardProps &
   KumoSurfaceVariantsProps & {
     /**
      * @deprecated Use the `render` prop instead.
@@ -64,41 +61,33 @@ export type SurfaceProps = useRender.ComponentProps<"div"> &
   };
 
 /**
- * Polymorphic container with consistent background, shadow, and border styling.
+ * @deprecated Use `LayerCard` instead.
  *
- * Use the `render` prop to change the underlying element:
- * ```tsx
- * <Surface render={<section />} className="rounded-lg p-4">Card content</Surface>
- * ```
+ * Polymorphic compatibility wrapper that preserves the `Surface` API while
+ * delegating rendering and styling to `LayerCard`.
  *
  * @example
  * ```tsx
- * <Surface className="rounded-lg p-4">Card content</Surface>
+ * <LayerCard className="rounded-lg p-4">Card content</LayerCard>
  * ```
  */
-export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
-  function Surface(
-    { color = "primary", className, render, as: asProp, ...props },
-    ref,
-  ) {
-    const defaultProps: useRender.ElementProps<"div"> = {
-      className: cn(
-        "bg-kumo-base shadow-xs ring ring-kumo-line",
-        KUMO_SURFACE_VARIANTS.color[color].classes,
-      ),
-    };
-
-    // Support deprecated `as` prop by converting to a render element.
-    const resolvedRender =
-      render ?? (asProp ? createElement(asProp) : undefined);
-
-    return useRender({
-      defaultTagName: "div",
-      render: resolvedRender,
-      ref,
-      props: mergeProps<"div">(defaultProps, props, { className }),
-    });
-  },
-);
+export const Surface = function Surface({
+  color = "primary",
+  className,
+  render,
+  as,
+  ...props
+}: SurfaceProps) {
+  const resolvedRender = render ?? (as ? createElement(as) : undefined);
+  return (
+    <LayerCard
+      className={cn("overflow-visible rounded-none", className)}
+      render={resolvedRender}
+      {...props}
+      data-surface-color={color}
+      data-deprecated="surface"
+    />
+  );
+};
 
 Surface.displayName = "Surface";

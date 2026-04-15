@@ -15,7 +15,7 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 
-import { Surface } from "../surface";
+import { LayerCard } from "../layer-card";
 import { Loader } from "../loader";
 import { cn } from "../../utils";
 import {
@@ -163,7 +163,7 @@ function Dialog({
           className="fixed inset-0 bg-kumo-overlay opacity-80 transition-all duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0"
           onClick={handleBackdropClick}
         />
-        <Surface
+        <LayerCard
           render={<DialogBase.Popup />}
           className={cn(
             "fixed top-[10vh] left-1/2 w-full max-w-2xl -translate-x-1/2",
@@ -181,7 +181,7 @@ function Dialog({
           <DialogContext.Provider value={{ onClose: handleClose }}>
             {children}
           </DialogContext.Provider>
-        </Surface>
+        </LayerCard>
       </DialogBase.Portal>
     </DialogBase.Root>
   );

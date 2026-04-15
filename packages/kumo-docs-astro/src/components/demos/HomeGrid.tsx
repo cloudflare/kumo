@@ -27,9 +27,9 @@ import {
   Select,
   SensitiveInput,
   SkeletonLine,
-  Surface,
   Switch,
   Table,
+  TableOfContents,
   Tabs,
   Text,
   Toasty,
@@ -79,9 +79,9 @@ const componentRoutes: Record<string, string> = {
   select: "/components/select",
   "sensitive-input": "/components/sensitive-input",
   "skeleton-line": "/components/skeleton-line",
-  surface: "/components/surface",
   switch: "/components/switch",
   table: "/components/table",
+  "table-of-contents": "/components/table-of-contents",
   tabs: "/components/tabs",
   text: "/components/text",
   toast: "/components/toast",
@@ -326,15 +326,6 @@ export function HomeGrid() {
           <SkeletonLine minWidth={100} />
           <SkeletonLine minWidth={50} maxWidth={150} />
         </div>
-      ),
-    },
-    {
-      name: "Surface",
-      id: "surface",
-      Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-canvas text-sm text-kumo-subtle">
-          <em>To put things over.</em>
-        </Surface>
       ),
     },
     {
@@ -611,6 +602,20 @@ export function HomeGrid() {
             </Table.Row>
           </Table.Body>
         </Table>
+      ),
+    },
+    {
+      name: "TableOfContents",
+      id: "table-of-contents",
+      Component: (
+        <TableOfContents>
+          <TableOfContents.Title>On this page</TableOfContents.Title>
+          <TableOfContents.List>
+            <TableOfContents.Item active>Introduction</TableOfContents.Item>
+            <TableOfContents.Item>Installation</TableOfContents.Item>
+            <TableOfContents.Item>Usage</TableOfContents.Item>
+          </TableOfContents.List>
+        </TableOfContents>
       ),
     },
     {
