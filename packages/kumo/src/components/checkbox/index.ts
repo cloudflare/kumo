@@ -1,8 +1,10 @@
 export {
   Checkbox,
+  CheckboxLegend,
   KUMO_CHECKBOX_VARIANTS,
   KUMO_CHECKBOX_DEFAULT_VARIANTS,
   type CheckboxProps,
+  type CheckboxLegendProps,
   type CheckboxGroupProps,
   type CheckboxItemProps,
   type KumoCheckboxVariant,

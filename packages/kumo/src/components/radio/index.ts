@@ -1,10 +1,12 @@
 export {
   Radio,
   RadioGroup,
+  RadioLegend,
   KUMO_RADIO_VARIANTS,
   KUMO_RADIO_DEFAULT_VARIANTS,
   radioVariants,
   type RadioGroupProps,
+  type RadioLegendProps,
   type RadioItemProps,
   type RadioControlPosition,
   type KumoRadioVariant,
