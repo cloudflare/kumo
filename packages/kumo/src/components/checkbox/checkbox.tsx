@@ -470,9 +470,6 @@ function CheckboxGroup({
   );
 }
 
-// Export CheckboxLegend directly for external usage
-export { CheckboxLegend };
-
 // Compound component
 export const Checkbox = Object.assign(CheckboxBase, {
   Item: CheckboxItem,

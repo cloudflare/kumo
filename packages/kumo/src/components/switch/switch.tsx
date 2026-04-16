@@ -528,9 +528,6 @@ function SwitchGroup({
   );
 }
 
-// Export SwitchLegend directly for external usage
-export { SwitchLegend };
-
 // Compound component
 export const Switch = Object.assign(SwitchBase, {
   Item: SwitchItem,

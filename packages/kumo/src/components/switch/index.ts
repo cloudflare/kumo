@@ -1,6 +1,5 @@
 export {
   Switch,
-  SwitchLegend,
   KUMO_SWITCH_VARIANTS,
   KUMO_SWITCH_DEFAULT_VARIANTS,
   type SwitchProps,

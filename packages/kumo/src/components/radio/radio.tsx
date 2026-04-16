@@ -420,8 +420,8 @@ function RadioGroup({
 
 RadioGroup.displayName = "Radio.Group";
 
-// Export RadioGroup and RadioLegend directly for external usage
-export { RadioGroup, RadioLegend };
+// Export RadioGroup directly for external usage
+export { RadioGroup };
 
 /**
  * Radio — radio button group for single-select choices.
