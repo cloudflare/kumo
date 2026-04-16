@@ -1,0 +1,94 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Chart Colors"
+description: "Semantic and categorical colour tokens for Cloudflare dashboard charts."
+sourceFile: "components/chart/Color.ts"
+---
+
+import {
+  ChartColorSystemsDemo,
+  SemanticColorsDemo,
+  CategoricalColorsDemo,
+  CategoricalCvdDemo,
+  CategoricalLineChartDemo,
+  CategoricalBarChartDemo,
+  CategoricalDonutChartDemo,
+  SequentialColorsDemo,
+  SequentialHeatmapDemo,
+} from "~/components/demos/Chart/ColorDemo";
+import { Banner } from "@cloudflare/kumo";
+
+Chart colours in Kumo are split into three systems — **semantic** tokens for data with inherent
+polarity, a **categorical** palette for nominal series and a **sequential** scale for density encoding. Using the right system for the data type is the most important colour decision in a chart.
+
+## Colour systems
+
+<div class="mb-6">
+<p>
+Charts in the dashboard serve different jobs, so colour is not “one-size-fits-all.”
+To avoid misreading data, we use different colour systems based on the data task.
+</p>
+</div>
+
+<ChartColorSystemsDemo client:visible />
+
+## Semantic tokens
+
+<div class="mb-6">
+<p>
+Semantic chart colours should be used when the data has inherent polarity, i.e. status, severity and health data. Semantic colours communicate to the user that this data needs their attention and an action might be required.
+
+Semantic chart colours are derived from our existing badge/status semantic tokens so meaning stays consistent across components and contexts. We intentionally adjust hue/chroma for charts to be less visually aggressive than badges to reduce visual fatigue and false urgency.
+</p>
+</div>
+
+<div class="mb-6 flex flex-col gap-6">
+<SemanticColorsDemo client:visible />
+<CategoricalBarChartDemo client:visible />
+</div>
+
+## Categorical palette
+
+<div class="mb-6">
+<p>
+Use the categorical palette when the data has no inherent polarity. The palette is ordered for maximum perceptual distance between adjacent slots to ensure it's CVD friendly and the data is easily distinguishable.
+</p>
+</div>
+
+<CategoricalColorsDemo client:visible />
+
+<div class="my-4">
+<p>
+  Categorical colours are tested using a CVD simulator to ensure they remain distinguishable for users with colour vision deficiency. Here's an example of what the categorical colours might look like to someone with deuteranopia.
+</p>
+</div>
+
+<div class="mb-6 flex flex-col gap-6">
+<CategoricalCvdDemo client:visible />
+<CategoricalLineChartDemo client:visible />
+<Banner
+  title="Pattern + colour"
+  description="Color alone should not be used to convey information. When implementing line charts, ensure that you're using patterns (e.g. dashes/dots) on top of the color palette to differentiate between data points. Since dots and dashes appear lighter, we avoid pairing them with light colours since those lines can fade out."
+/>
+<CategoricalDonutChartDemo client:visible />
+</div>
+
+## Sequential scale
+
+<div class="mb-6">
+<p>
+A 5-step single-hue scale for encoding **density** — use when a single metric varies in
+magnitude across a set of values and colour intensity should reinforce that magnitude.
+Common uses: choropleth maps (traffic volume by country), heatmaps, and histogram fills.
+The sequential scale is not appropriate for categorical series differentiation — use the
+categorical palette for that.
+
+Darker steps encode higher values in light mode; lighter steps encode higher values in
+dark mode so the most prominent colour always corresponds to the highest magnitude.
+</p>
+</div>
+
+<div class="mb-6 flex flex-col gap-6">
+<SequentialColorsDemo client:visible /> 
+<SequentialHeatmapDemo client:visible />
+</div>
