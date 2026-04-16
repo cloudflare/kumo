@@ -488,7 +488,7 @@ SwitchItem.displayName = "Switch.Item";
 function SwitchLegend({ children, className }: SwitchLegendProps) {
   return (
     <Fieldset.Legend
-      className={cn("text-lg font-medium text-kumo-default", className)}
+      className={cn("text-base font-medium text-kumo-default", className)}
     >
       {children}
     </Fieldset.Legend>
@@ -510,14 +510,11 @@ function SwitchGroup({
   return (
     <SwitchGroupContext.Provider value={{ controlFirst }}>
       <Fieldset.Root
-        className={cn(
-          "flex flex-col gap-4 rounded-lg border border-kumo-hairline p-4",
-          className,
-        )}
+        className={cn("flex flex-col gap-4", className)}
         disabled={disabled}
       >
         {legend && (
-          <Fieldset.Legend className="text-lg font-medium text-kumo-default">
+          <Fieldset.Legend className="text-base font-medium text-kumo-default">
             {legend}
           </Fieldset.Legend>
         )}
