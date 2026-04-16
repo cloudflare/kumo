@@ -8,7 +8,6 @@ baseUIComponent: "radio-group"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   RadioBasicDemo,
@@ -33,14 +32,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Radio } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Radio } from "@cloudflare/kumo/components/radio";
@@ -51,7 +52,8 @@ import { Radio } from "@cloudflare/kumo/components/radio";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Radio } from "@cloudflare/kumo";
@@ -71,9 +73,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Default (Vertical)</Heading>
+## Examples
+
+### Default (Vertical)
+
 <p>
   Radio groups display vertically by default. Each radio has a label displayed
   to its right.
@@ -82,7 +86,8 @@ export default function Example() {
   <RadioDefaultDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Horizontal</Heading>
+### Horizontal
+
 <p>
   Use `orientation="horizontal"` for inline layouts. Items wrap when there isn't
   enough space.
@@ -91,19 +96,22 @@ export default function Example() {
   <RadioHorizontalDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Description</Heading>
+### With Description
+
 <p>Add helper text below the radio items using the `description` prop.</p>
 <ComponentExample demo="RadioDescriptionDemo">
   <RadioDescriptionDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Control Position</Heading>
+### Control Position
+
 <p>Use `controlPosition="end"` to place labels before radio buttons.</p>
 <ComponentExample demo="RadioControlPositionDemo">
   <RadioControlPositionDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Radio Card</Heading>
+### Radio Card
+
 <p>
   Use `appearance="card"` on the group to display each option as a selectable
   card. Combine with the `description` prop on each item for richer content.
@@ -112,7 +120,8 @@ export default function Example() {
   <RadioCardDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Radio Card (Horizontal)</Heading>
+### Radio Card (Horizontal)
+
 <p>
   Combine `appearance="card"` with `orientation="horizontal"` for a side-by-side
   card layout.
@@ -121,13 +130,15 @@ export default function Example() {
   <RadioCardHorizontalDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Error</Heading>
+### With Error
+
 <p>Show validation errors at the group level using the `error` prop.</p>
 <ComponentExample demo="RadioErrorDemo">
   <RadioErrorDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Disabled</Heading>
+### Disabled
+
 <p>Disable the entire group or individual items.</p>
 <ComponentExample demo="RadioDisabledDemo">
   <RadioDisabledDemo client:visible />
@@ -138,13 +149,16 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Radio.Group</Heading>
+## API Reference
+
+### Radio.Group
+
 <p>Container for radio buttons with legend, description, and error support.</p>
 <PropsTable component="Radio.Group" />
 
-<Heading level={3}>Radio.Item</Heading>
+### Radio.Item
+
 <p>Individual radio button within Radio.Group.</p>
 <PropsTable component="Radio.Item" />
 
@@ -153,22 +167,30 @@ export default function Example() {
 {/* Accessibility */}
 
 <ComponentSection>
-  <Heading level={2}>Accessibility</Heading>
+
+## Accessibility
+
   <div class="space-y-4 text-sm">
     <div>
-      <h3 class="mb-2 font-semibold">Semantic HTML</h3>
+
+      ### Semantic HTML
+
       <p class="text-kumo-strong">
         Radio.Group uses semantic `<fieldset>` and `<legend>` elements for proper grouping and screen reader announcement.
       </p>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
+
+      ### Keyboard Navigation
+
       <p class="text-kumo-strong">
         <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Up/Down</kbd> or <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Arrow Left/Right</kbd> moves between options. <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd> selects the focused option. <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus to and from the radio group.
       </p>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Screen Readers</h3>
+
+      ### Screen Readers
+
       <p class="text-kumo-strong">
         Each radio is announced with its label and selection state. The group legend provides context for all options.
       </p>

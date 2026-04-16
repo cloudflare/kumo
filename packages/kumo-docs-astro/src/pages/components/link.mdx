@@ -7,7 +7,6 @@ sourceFile: "components/link"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   LinkBasicDemo,
   LinkInParagraphDemo,
@@ -27,14 +26,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Link } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Link } from "@cloudflare/kumo/components/link";
@@ -45,8 +46,11 @@ import { Link } from "@cloudflare/kumo/components/link";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
-  <Heading level={3}>Basic Link</Heading>
+
+## Usage
+
+### Basic Link
+
   <p>
     The default Link component renders an underlined anchor with primary color styling.
   </p>
@@ -63,7 +67,8 @@ export default function Example() {
 }
 ```
 
-<Heading level={3}>External Links</Heading>
+### External Links
+
 <p>
   Use the `Link.ExternalIcon` subcomponent to indicate links that open in a new
   tab.
@@ -85,7 +90,8 @@ export default function Example() {
 }
 ```
 
-<Heading level={3}>Framework Integration (render prop)</Heading>
+### Framework Integration (render prop)
+
 <p>
   Use the `render` prop to compose Link styles onto framework-specific routing
   components like React Router's Link or Next.js Link.
@@ -109,15 +115,18 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Inline in Paragraph</Heading>
+## Examples
+
+### Inline in Paragraph
+
 <p>Links flow naturally within paragraph text with proper underline offset.</p>
 <ComponentExample demo="LinkInParagraphDemo">
   <LinkInParagraphDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>External Link with Icon</Heading>
+### External Link with Icon
+
 <p>
   Use `Link.ExternalIcon` to visually indicate links that navigate away from
   your site.
@@ -126,7 +135,8 @@ export default function Example() {
   <LinkExternalDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Current Variant (Color Inheritance)</Heading>
+### Current Variant (Color Inheritance)
+
 <p>
   The `current` variant inherits color from its parent, useful for links within
   colored contexts like alerts.
@@ -135,7 +145,8 @@ export default function Example() {
   <LinkCurrentVariantDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Composition with render prop</Heading>
+### Composition with render prop
+
 <p>
   The `render` prop lets you compose Link styling onto any element, enabling
   integration with framework routing components.
@@ -149,9 +160,11 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Link Props</Heading>
+## API Reference
+
+### Link Props
+
 <p>Extends all native anchor element attributes.</p>
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
@@ -202,7 +215,8 @@ export default function Example() {
   </table>
 </div>
 
-<Heading level={3}>Variants</Heading>
+### Variants
+
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead>
@@ -236,7 +250,8 @@ export default function Example() {
   </table>
 </div>
 
-<Heading level={3}>Link.ExternalIcon</Heading>
+### Link.ExternalIcon
+
 <p>
   SVG icon component to indicate external links. Accepts all SVG element
   attributes.
@@ -253,10 +268,14 @@ export default function Example() {
 {/* Design Guidelines */}
 
 <ComponentSection>
-  <Heading level={2}>Design Guidelines</Heading>
+
+## Design Guidelines
+
   <div class="space-y-4 text-sm">
     <div>
-      <h3 class="mb-2 font-semibold">When to Use Each Variant</h3>
+
+      ### When to Use Each Variant
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>
           <strong>inline</strong>: Default choice for links within body text
@@ -272,7 +291,9 @@ export default function Example() {
       </ul>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">External Link Indicators</h3>
+
+      ### External Link Indicators
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>Always use `Link.ExternalIcon` for links that open in new tabs</li>
         <li>
@@ -284,7 +305,9 @@ export default function Example() {
       </ul>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Framework Integration</h3>
+
+      ### Framework Integration
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>
           Use the `render` prop with React Router, Next.js, or other framework
@@ -301,7 +324,9 @@ export default function Example() {
       </ul>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Accessibility</h3>
+
+      ### Accessibility
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>Links are keyboard focusable by default</li>
         <li>

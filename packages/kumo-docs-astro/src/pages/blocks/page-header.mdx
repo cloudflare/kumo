@@ -5,7 +5,6 @@ description: "A composite component that combines breadcrumbs and tabs for page 
 sourceFile: "blocks/page-header"
 ---
 
-import Heading from "~/components/docs/Heading.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
@@ -31,7 +30,9 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
+
   <p>
     PageHeader is a <strong>block</strong> - a CLI-installed component that you
     own and can customize. Unlike regular components, blocks are copied into
@@ -71,7 +72,8 @@ import { PageHeader } from "./components/kumo/page-header/page-header";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { PageHeader } from "./components/kumo/page-header/page-header";
@@ -107,39 +109,47 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic</Heading>
+## Examples
+
+### Basic
+
 <ComponentExample demo="PageHeaderBasicDemo">
   <PageHeaderBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Icons</Heading>
+### With Icons
+
 <ComponentExample demo="PageHeaderWithIconsDemo">
   <PageHeaderWithIconsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Tabs</Heading>
+### With Tabs
+
 <ComponentExample demo="PageHeaderWithTabsDemo">
   <PageHeaderWithTabsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Actions</Heading>
+### With Actions
+
 <ComponentExample demo="PageHeaderWithActionsDemo">
   <PageHeaderWithActionsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Title</Heading>
+### With Title
+
 <ComponentExample demo="PageHeaderWithTitleDemo">
   <PageHeaderWithTitleDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Title and Description</Heading>
+### With Title and Description
+
 <ComponentExample demo="PageHeaderWithTitleDescriptionDemo">
   <PageHeaderWithTitleDescriptionDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Complete Example</Heading>
+### Complete Example
+
   <p>Combining breadcrumbs, title, description, tabs, and actions.</p>
   <ComponentExample demo="PageHeaderCompleteDemo">
     <PageHeaderCompleteDemo client:visible />
@@ -149,10 +159,13 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="PageHeader" />
 
-  <Heading level={3}>TabsItem</Heading>
+### TabsItem
+
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>

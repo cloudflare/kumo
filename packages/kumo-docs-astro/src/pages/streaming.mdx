@@ -10,7 +10,7 @@ import Callout from "~/components/docs/Callout.astro";
 
 The Kumo catalog module enables rendering UI from JSON structures, designed specifically for AI-generated interfaces. It provides runtime validation, data binding, conditional rendering, and action handling for JSON-based UI trees.
 
-**Schemas Derived from Your Codebase**
+#### Schemas Derived from Your Codebase
 
 Unlike approaches that require maintaining separate schema definitions, Kumo automatically derives validation schemas from your actual component TypeScript types. When you update a component's props, the validation schemas update automatically via the component registry codegen process. No manual synchronization required — your schemas are always in sync with your components.
 
@@ -117,7 +117,7 @@ The UI tree uses a flat structure optimized for LLM generation and streaming. El
 }
 ```
 
-**Why a flat structure?**
+#### Why a flat structure?
 
 - Elements can be rendered as soon as they arrive (streaming)
 - Easy updates without deep tree traversal

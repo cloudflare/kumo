@@ -7,7 +7,6 @@ sourceFile: "components/date-picker"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   DatePickerSingleDemo,
@@ -31,14 +30,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { DatePicker, type DateRange } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import {
@@ -52,7 +53,9 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
+
   <p>
     DatePicker supports three selection modes: `single`,
     `multiple`, and
@@ -75,15 +78,18 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Single Date Selection</Heading>
+## Examples
+
+### Single Date Selection
+
 <p>Select a single date. The most common use case for date pickers.</p>
 <ComponentExample demo="DatePickerSingleDemo">
   <DatePickerSingleDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Multiple Date Selection</Heading>
+### Multiple Date Selection
+
 <p>
   Select multiple individual dates. Use `max` to limit the number of selections.
 </p>
@@ -91,7 +97,8 @@ export default function Example() {
   <DatePickerMultipleDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Date Range Selection</Heading>
+### Date Range Selection
+
 <p>
   Select a continuous range of dates. Works well with `numberOfMonths={2}` for a
   side-by-side view.
@@ -100,13 +107,15 @@ export default function Example() {
   <DatePickerRangeDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Range with Min/Max Constraints</Heading>
+### Range with Min/Max Constraints
+
 <p>Constrain the range length using `min` and `max` props (in days/nights).</p>
 <ComponentExample demo="DatePickerRangeMinMaxDemo">
   <DatePickerRangeMinMaxDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>With Popover</Heading>
+### With Popover
+
 <p>
   Compose with the
   <a href="/components/popover" class="text-kumo-link hover:underline">
@@ -118,19 +127,22 @@ export default function Example() {
   <DatePickerPopoverDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Date Range with Popover</Heading>
+### Date Range with Popover
+
 <p>A date range picker in a popover with two months displayed.</p>
 <ComponentExample demo="DatePickerRangePopoverDemo">
   <DatePickerRangePopoverDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Date Range with Presets</Heading>
+### Date Range with Presets
+
 <p>Combine the date picker with preset options for quick selection.</p>
 <ComponentExample demo="DatePickerRangeWithPresetsDemo">
   <DatePickerRangeWithPresetsDemo client:load />
 </ComponentExample>
 
-  <Heading level={3}>Disabled Dates with Usage Limits</Heading>
+### Disabled Dates with Usage Limits
+
   <p>
     Use the `disabled` prop to make certain dates unselectable,
     and `footer` to display usage information.
@@ -143,7 +155,9 @@ export default function Example() {
 {/* Full Popover Example */}
 
 <ComponentSection>
-  <Heading level={2}>Full Popover Example</Heading>
+
+## Full Popover Example
+
   <p>
     Here's a complete example showing how to compose DatePicker with Popover:
   </p>
@@ -180,7 +194,9 @@ export function DatePickerDropdown() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <p>
     DatePicker forwards all props to <a href="https://daypicker.dev/api/interfaces/PropsBase" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">react-day-picker</a>. 
     Key props include:
@@ -200,7 +216,8 @@ export function DatePickerDropdown() {
     See the <a href="https://daypicker.dev/docs" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">react-day-picker documentation</a> for the full API.
   </p>
 
-  <Heading level={3}>Differences from react-day-picker</Heading>
+### Differences from react-day-picker
+
   <p>
     For consistency with other Kumo form components, DatePicker uses `onChange` instead of react-day-picker's `onSelect`.
     Full type inference is preserved — TypeScript will correctly narrow the callback signature based on the `mode` prop.

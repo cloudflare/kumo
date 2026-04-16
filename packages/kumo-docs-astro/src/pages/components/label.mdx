@@ -7,7 +7,6 @@ sourceFile: "components/label"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   LabelBasicDemo,
   LabelOptionalFieldDemo,
@@ -28,14 +27,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Label } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Label } from "@cloudflare/kumo/components/label";
@@ -46,8 +47,11 @@ import { Label } from "@cloudflare/kumo/components/label";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
-  <Heading level={3}>With Form Components (Recommended)</Heading>
+
+## Usage
+
+### With Form Components (Recommended)
+
   <p>
     Label features are automatically available through form components like `Input`, `Select`, `Checkbox`, and `Switch` via the `required` and `labelTooltip` props.
   </p>
@@ -71,7 +75,8 @@ export default function Example() {
 }
 ```
 
-<Heading level={3}>Standalone Label</Heading>
+### Standalone Label
+
 <p>For custom form layouts, use the `Label` component directly.</p>
 
 ```tsx
@@ -87,33 +92,39 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Optional Field</Heading>
+## Examples
+
+### Optional Field
+
 <p>Shows gray "(optional)" text when `required={false}`.</p>
 <ComponentExample demo="LabelOptionalFieldDemo">
   <LabelOptionalFieldDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Tooltip</Heading>
+### With Tooltip
+
 <p>Shows an info icon with a tooltip for additional context.</p>
 <ComponentExample demo="LabelWithTooltipDemo">
   <LabelWithTooltipDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>ReactNode Label Content</Heading>
+### ReactNode Label Content
+
 <p>Labels support ReactNode content for rich formatting.</p>
 <ComponentExample demo="LabelReactNodeDemo">
   <LabelReactNodeDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Form with Mixed Fields</Heading>
+### Form with Mixed Fields
+
 <p>Real-world example showing required and optional fields together.</p>
 <ComponentExample demo="LabelFormMixedDemo">
   <LabelFormMixedDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Standalone Label</Heading>
+### Standalone Label
+
 <p>Use Label directly for custom layouts or non-form contexts.</p>
 <ComponentExample demo="LabelStandaloneDemo">
   <LabelStandaloneDemo client:visible />
@@ -124,9 +135,11 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Label Props</Heading>
+## API Reference
+
+### Label Props
+
 <p>Props for the standalone Label component:</p>
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
@@ -169,7 +182,8 @@ export default function Example() {
   </table>
 </div>
 
-<Heading level={3}>Form Component Label Props</Heading>
+### Form Component Label Props
+
 <p>
   These props are available on Input, InputArea, Select, Checkbox, Switch,
   SensitiveInput, and Combobox:
@@ -217,10 +231,14 @@ export default function Example() {
 {/* Design Guidelines */}
 
 <ComponentSection>
-  <Heading level={2}>Design Guidelines</Heading>
+
+## Design Guidelines
+
   <div class="space-y-4 text-sm">
     <div>
-      <h3 class="mb-2 font-semibold">When to Use Optional Indicators</h3>
+
+      ### When to Use Optional Indicators
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>
           Use "(optional)" for optional fields when most fields are required
@@ -230,7 +248,9 @@ export default function Example() {
       </ul>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">When to Use Tooltips</h3>
+
+      ### When to Use Tooltips
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>Provide additional context that doesn't fit in the label</li>
         <li>Explain format requirements or validation rules</li>
@@ -239,7 +259,9 @@ export default function Example() {
       </ul>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Accessibility</h3>
+
+      ### Accessibility
+
       <ul class="ml-4 list-disc space-y-1 text-kumo-strong">
         <li>
           Optional indicators are purely visual - use the `required` attribute

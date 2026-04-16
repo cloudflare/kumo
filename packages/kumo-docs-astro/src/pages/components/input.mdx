@@ -9,7 +9,6 @@ baseUIComponent: "input"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   InputBasicDemo,
@@ -38,10 +37,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Input } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Input } from "@cloudflare/kumo/components/input";`}
     lang="tsx"
@@ -51,8 +55,11 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
-  <Heading level={3}>With Built-in Field (Recommended)</Heading>
+
+## Usage
+
+### With Built-in Field (Recommended)
+
   <p>
     Use the `label` prop to enable the built-in Field wrapper with label, description, and error support.
   </p>
@@ -71,7 +78,8 @@ export default function Example() {
 }
 ```
 
-<Heading level={3}>Bare Input (Custom Layouts)</Heading>
+### Bare Input (Custom Layouts)
+
 <p>
   For custom form layouts, use Input without `label`. Must provide `aria-label`
   or `aria-labelledby` for accessibility.
@@ -90,9 +98,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>With Label and Description</Heading>
+## Examples
+
+### With Label and Description
+
 <p>
   The `label` prop enables the built-in Field wrapper with automatic vertical
   layout (label above input).
@@ -101,7 +111,8 @@ export default function Example() {
   <InputWithLabelDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Error (String)</Heading>
+### With Error (String)
+
 <p>
   Pass `error` as a string for simple error messages. Error styling is
   automatically applied when the `error` prop is truthy.
@@ -110,7 +121,8 @@ export default function Example() {
   <InputErrorStringDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Error (Validation Object)</Heading>
+### With Error (Validation Object)
+
 <p>
   Pass `error` as an object with `message` and `match` for HTML5 validation.
   Error shows when field validity matches.
@@ -119,36 +131,42 @@ export default function Example() {
   <InputErrorObjectDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Input Sizes</Heading>
+### Input Sizes
+
 <p>Four sizes available: `xs`, `sm`, `base` (default), `lg`.</p>
 <ComponentExample demo="InputSizesDemo">
   <InputSizesDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Disabled</Heading>
+### Disabled
+
 <ComponentExample demo="InputDisabledDemo">
   <InputDisabledDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Optional Field</Heading>
+### Optional Field
+
 <p>Set `required={false}` to show "(optional)" text after the label.</p>
 <ComponentExample demo="InputOptionalFieldDemo">
   <InputOptionalFieldDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Label Tooltip</Heading>
+### With Label Tooltip
+
 <p>Use `labelTooltip` to add an info icon with additional context on hover.</p>
 <ComponentExample demo="InputLabelTooltipDemo">
   <InputLabelTooltipDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>ReactNode Label</Heading>
+### ReactNode Label
+
 <p>The `label` prop accepts ReactNode for rich formatting.</p>
 <ComponentExample demo="InputReactNodeLabelDemo">
   <InputReactNodeLabelDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Controlled with onChange</Heading>
+### Controlled with onChange
+
 <p>
   The standard React `onChange` handler receives the full event object. Use
   `e.target.value` to get the value.
@@ -157,7 +175,8 @@ export default function Example() {
   <InputControlledOnChangeDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Controlled with onValueChange</Heading>
+### Controlled with onValueChange
+
 <p>
   `onValueChange` is a convenience handler from Base UI that gives you the
   string value directly — no event unwrapping needed. This is the same pattern
@@ -167,7 +186,8 @@ export default function Example() {
   <InputControlledOnValueChangeDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Bare Input (No Label)</Heading>
+### Bare Input (No Label)
+
 <p>
   Input without `label` renders as a bare input. Must provide `aria-label` for
   accessibility.
@@ -176,7 +196,8 @@ export default function Example() {
   <InputBareDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Input Types</Heading>
+### Input Types
+
   <p>
     Supports all HTML input types: `text`, `email`, `password`, `number`, `tel`, `url`, etc.
   </p>
@@ -188,13 +209,16 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <p>
     Input accepts all standard HTML input attributes plus the following:
   </p>
   <PropsTable component="Input" />
 
-  <Heading level={3}>Validation Error Types</Heading>
+### Validation Error Types
+
   <p>
     When using `error` as an object, the `match` property corresponds to HTML5 ValidityState values:
   </p>
@@ -247,10 +271,14 @@ export default function Example() {
 {/* Accessibility */}
 
 <ComponentSection>
-  <Heading level={2}>Accessibility</Heading>
+
+## Accessibility
+
   <div class="space-y-4 text-sm">
     <div>
-      <h3 class="mb-2 font-semibold">Label Requirement</h3>
+
+      ### Label Requirement
+
       <p class="text-kumo-strong">
         Inputs require an accessible name via one of:
       </p>
@@ -264,7 +292,9 @@ export default function Example() {
       </p>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Error Association</h3>
+
+      ### Error Association
+
       <p class="text-kumo-strong">
         Error messages are automatically associated with the input via ARIA
         attributes for screen reader announcement.

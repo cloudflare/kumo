@@ -7,7 +7,6 @@ sourceFile: "components/text"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TextVariantsDemo,
@@ -25,14 +24,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Text } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Text } from "@cloudflare/kumo/components/text";
@@ -43,7 +44,8 @@ import { Text } from "@cloudflare/kumo/components/text";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Text } from "@cloudflare/kumo";
@@ -54,7 +56,9 @@ export default function Example() {
 ```
 
 <section class="mt-8 space-y-4">
-  <h3 class="text-lg font-semibold">Restrictions</h3>
+
+  ### Restrictions
+
   <p class="text-kumo-strong">
     The `bold` and `size` props are intentionally restricted to the `base`, `secondary`, `success`, and `error` text variants.
   </p>
@@ -94,7 +98,9 @@ export default function Example() {
 {/* Truncate */}
 
 <ComponentSection>
-  <Heading level={2}>Truncate</Heading>
+
+## Truncate
+
   <p class="text-kumo-strong">
     Use the `truncate` prop to clip overflowing text with an ellipsis. This adds `truncate min-w-0` classes, which is useful when `Text` is inside a flex or grid container.
   </p>
@@ -111,6 +117,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Text" />
 </ComponentSection>

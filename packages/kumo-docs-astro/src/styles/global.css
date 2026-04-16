@@ -36,45 +36,71 @@ html {
    ========================================================================== */
 
 .kumo-prose {
-  /* Base typography token overrides */
-  --tw-prose-body: var(--color-kumo-strong);
-  --tw-prose-headings: var(--color-kumo-default);
-  --tw-prose-lead: var(--color-kumo-strong);
-  --tw-prose-links: var(--color-kumo-link);
-  --tw-prose-bold: var(--color-kumo-default);
-  --tw-prose-counters: var(--color-kumo-subtle);
-  --tw-prose-bullets: var(--color-kumo-strong);
+  /* Base letter-spacing for prose content */
+  letter-spacing: -0.01em;
+
+  /* Body text */
+  --tw-prose-body: var(--text-color-kumo-default);
+  /* Headings */
+  --tw-prose-headings: var(--text-color-kumo-default);
+  /* Lead paragraphs */
+  --tw-prose-lead: var(--text-color-kumo-default);
+  /* Link color */
+  --tw-prose-links: var(--text-color-kumo-link);
+  /* Bold text */
+  --tw-prose-bold: var(--text-color-kumo-strong);
+  /* List counters (ordered lists) */
+  --tw-prose-counters: var(--text-color-kumo-subtle);
+  /* Bullet markers */
+  --tw-prose-bullets: var(--text-color-kumo-default);
+  /* Horizontal rules */
   --tw-prose-hr: var(--color-kumo-hairline);
-  --tw-prose-quotes: var(--color-kumo-default);
+  /* Blockquote text */
+  --tw-prose-quotes: var(--text-color-kumo-default);
+  /* Blockquote left border */
   --tw-prose-quote-borders: var(--color-kumo-hairline);
-  --tw-prose-captions: var(--color-kumo-subtle);
-  --tw-prose-kbd: var(--color-kumo-default);
+  /* Figure captions */
+  --tw-prose-captions: var(--text-color-kumo-subtle);
+  /* Keyboard input */
+  --tw-prose-kbd: var(--text-color-kumo-default);
+  /* Keyboard shadow */
   --tw-prose-kbd-shadows: transparent;
-  --tw-prose-code: var(--color-kumo-default);
-  --tw-prose-pre-code: var(--color-kumo-default);
+  /* Inline code */
+  --tw-prose-code: var(--text-color-kumo-default);
+  /* Code inside pre blocks */
+  --tw-prose-pre-code: var(--text-color-kumo-default);
+  /* Pre block background */
   --tw-prose-pre-bg: var(--color-kumo-canvas);
+  /* Table header borders */
   --tw-prose-th-borders: var(--color-kumo-hairline);
+  /* Table cell borders */
   --tw-prose-td-borders: var(--color-kumo-hairline);
 
   /* Dark mode — same tokens, they auto-adapt via light-dark() */
-  --tw-prose-invert-body: var(--color-kumo-strong);
-  --tw-prose-invert-headings: var(--color-kumo-default);
-  --tw-prose-invert-lead: var(--color-kumo-strong);
-  --tw-prose-invert-links: var(--color-kumo-link);
-  --tw-prose-invert-bold: var(--color-kumo-default);
-  --tw-prose-invert-counters: var(--color-kumo-subtle);
-  --tw-prose-invert-bullets: var(--color-kumo-strong);
+  --tw-prose-invert-body: var(--text-color-kumo-default);
+  --tw-prose-invert-headings: var(--text-color-kumo-default);
+  --tw-prose-invert-lead: var(--text-color-kumo-default);
+  --tw-prose-invert-links: var(--text-color-kumo-link);
+  --tw-prose-invert-bold: var(--text-color-kumo-strong);
+  --tw-prose-invert-counters: var(--text-color-kumo-subtle);
+  --tw-prose-invert-bullets: var(--text-color-kumo-default);
   --tw-prose-invert-hr: var(--color-kumo-hairline);
-  --tw-prose-invert-quotes: var(--color-kumo-default);
+  --tw-prose-invert-quotes: var(--text-color-kumo-default);
   --tw-prose-invert-quote-borders: var(--color-kumo-hairline);
-  --tw-prose-invert-captions: var(--color-kumo-subtle);
-  --tw-prose-invert-kbd: var(--color-kumo-default);
+  --tw-prose-invert-captions: var(--text-color-kumo-subtle);
+  --tw-prose-invert-kbd: var(--text-color-kumo-default);
   --tw-prose-invert-kbd-shadows: transparent;
-  --tw-prose-invert-code: var(--color-kumo-default);
-  --tw-prose-invert-pre-code: var(--color-kumo-default);
+  --tw-prose-invert-code: var(--text-color-kumo-default);
+  --tw-prose-invert-pre-code: var(--text-color-kumo-default);
   --tw-prose-invert-pre-bg: var(--color-kumo-canvas);
   --tw-prose-invert-th-borders: var(--color-kumo-hairline);
   --tw-prose-invert-td-borders: var(--color-kumo-hairline);
+}
+
+/* Reset prose styles inside not-prose wrappers */
+.kumo-prose .not-prose {
+  letter-spacing: normal;
+  line-height: normal;
 }
 
 /* Inline code styling — match existing site style */
@@ -88,6 +114,7 @@ html {
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
+  letter-spacing: normal;
 }
 
 /* Remove backtick decoration from inline code */
@@ -105,38 +132,51 @@ html {
   text-decoration: underline;
 }
 
-/* Headings — use Heading component anchor style where possible */
+/* Heading anchor links */
+.kumo-prose :where(h2, h3, h4):not(:where(.not-prose, .not-prose *)) a {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+/* Headings — shared spacing and tracking */
 .kumo-prose :where(h2, h3, h4):not(:where(.not-prose, .not-prose *)) {
   scroll-margin-top: 6rem;
-  margin-bottom: 1rem 0;
+  margin-bottom: 1rem;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
-/* Typography Styling */
-.kumo-prose :where(h2):not(:where(.not-prose, .not-prose *)) {
-  font-size: 1.5rem;
+/* Adjacent sibling spacing after headings */
+.kumo-prose :where(h2, h3, h4):not(:where(.not-prose, .not-prose *)) + * {
+  margin-top: 0;
 }
 
-.kumo-prose :where(h3):not(:where(.not-prose, .not-prose *)) {
-  font-size: 1.25rem;
-}
-
+/* Paragraphs */
 .kumo-prose :where(p):not(:where(.not-prose, .not-prose *)) {
-  margin: 0.5rem 0;
+  @apply text-base leading-relaxed;
 }
 
-.kumo-prose :where(ul):not(:where(.not-prose, .not-prose *)) {
+/* Adjacent sibling spacing between paragraphs */
+.kumo-prose :where(p + p):not(:where(.not-prose, .not-prose *)) {
+  margin-top: 0.75rem;
+}
+
+/* Unordered and ordered lists */
+.kumo-prose :where(ul, ol):not(:where(.not-prose, .not-prose *)) {
+  @apply text-base leading-relaxed;
   margin: 0;
   margin-bottom: 1rem;
 }
 
-/* Divider styling */
-.kumo-prose :where(hr) {
-  justify-self: center;
-  width: 100%;
-  margin: 4rem 0;
-  padding: 0;
+/* List items */
+.kumo-prose :where(li):not(:where(.not-prose, .not-prose *)) {
+  @apply text-base leading-relaxed;
+}
+
+/* Horizontal rule */
+.kumo-prose :where(hr):not(:where(.not-prose, .not-prose *)) {
+  margin: 1.5rem 0;
 }
 
 /* kbd styling */
@@ -149,9 +189,16 @@ html {
   box-shadow: none;
 }
 
-/* Pre / code blocks — don't interfere with our CodeBlock component */
-.kumo-prose :where(pre) {
+/* Pre / code blocks — better defaults for changelog <pre> without affecting
+   CodeBlock (wrapped in .not-prose) or Shiki blocks (inline styles override) */
+.kumo-prose :where(pre):not(:where(.not-prose, .not-prose *)) {
+  @apply text-base;
+  background-color: var(--tw-prose-pre-bg);
+  border: 1px solid var(--color-kumo-hairline);
   border-radius: 0.5rem;
+  letter-spacing: normal;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
 }
 
 /* Table styling */
@@ -159,19 +206,21 @@ html {
   width: 100%;
 }
 
+/* Table header border */
 .kumo-prose :where(thead) {
   border-bottom-color: var(--color-kumo-hairline);
 }
 
+/* Table header cells */
 .kumo-prose :where(thead th) {
-  color: var(--color-kumo-default);
+  color: var(--text-color-kumo-strong);
   font-weight: 600;
 }
 
 /* Blockquote */
 .kumo-prose :where(blockquote) {
   border-left-color: var(--color-kumo-brand);
-  color: var(--color-kumo-strong);
+  color: var(--text-color-kumo-default);
   font-style: normal;
 }
 
@@ -227,7 +276,7 @@ pre.astro-code {
   @apply absolute top-3 right-3 z-10 flex items-center justify-center size-[1.625rem] rounded-md cursor-pointer border-none shadow-none select-none focus-visible:ring-1;
   background: var(--color-kumo-base);
   color: var(--text-color-kumo-subtle);
-  ring-color: var(--color-kumo-hairline);
+  --tw-ring-color: var(--color-kumo-hairline);
 
   &:hover {
     background: var(--color-kumo-tint);
