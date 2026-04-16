@@ -679,9 +679,7 @@ describe("jsonSchemaTypeToString", () => {
   });
 });
 
-// =============================================================================
 // Tests for sub-component detection utilities
-// =============================================================================
 
 import { writeFileSync, unlinkSync, mkdtempSync } from "node:fs";
 import { join } from "node:path";
