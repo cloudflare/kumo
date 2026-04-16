@@ -7,7 +7,6 @@ sourceFile: "components/input"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   InputAreaBasicDemo,
@@ -34,14 +33,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { InputArea } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { InputArea } from "@cloudflare/kumo/components/input";
@@ -54,8 +55,10 @@ import { InputArea } from "@cloudflare/kumo/components/input";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
-  <Heading level={3}>With Built-in Field (Recommended)</Heading>
+
+## Usage
+
+### With Built-in Field (Recommended)
 
 <p>
   Use the `label` prop to enable the built-in Field wrapper with label,
@@ -76,7 +79,7 @@ export default function Example() {
 }
 ```
 
-<Heading level={3}>Bare InputArea (Custom Layouts)</Heading>
+### Bare InputArea (Custom Layouts)
 
 <p>
   For custom form layouts, use InputArea without `label`. Must provide
@@ -96,43 +99,51 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>With Label</Heading>
+## Examples
+
+### With Label
+
 <ComponentExample demo="InputAreaWithLabelDemo">
   <InputAreaWithLabelDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Row Count</Heading>
+### Custom Row Count
+
 <p>Use the `rows` prop to control the initial height.</p>
 <ComponentExample demo="InputAreaRowsDemo">
   <InputAreaRowsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Error State (String)</Heading>
+### Error State (String)
+
 <p>Error styling is automatically applied when the `error` prop is truthy.</p>
 <ComponentExample demo="InputAreaErrorStringDemo">
   <InputAreaErrorStringDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Error State (Object)</Heading>
+### Error State (Object)
+
 <p>Use an error object with `match` for constraint validation.</p>
 <ComponentExample demo="InputAreaErrorObjectDemo">
   <InputAreaErrorObjectDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Sizes</Heading>
+### Sizes
+
 <p>Four sizes available: `xs`, `sm`, `base` (default), `lg`.</p>
 <ComponentExample demo="InputAreaSizesDemo">
   <InputAreaSizesDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Disabled</Heading>
+### Disabled
+
 <ComponentExample demo="InputAreaDisabledDemo">
   <InputAreaDisabledDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Bare InputArea</Heading>
+### Bare InputArea
+
 <p>
   InputArea without `label` renders as a bare textarea. Must provide
   `aria-label` for accessibility.
@@ -141,19 +152,22 @@ export default function Example() {
   <InputAreaBareDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Optional Field</Heading>
+### Optional Field
+
 <p>Set `required={false}` to show "(optional)" text after the label.</p>
 <ComponentExample demo="InputAreaOptionalFieldDemo">
   <InputAreaOptionalFieldDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Label with Tooltip</Heading>
+### Label with Tooltip
+
 <p>Use `labelTooltip` to add an info icon with additional context on hover.</p>
 <ComponentExample demo="InputAreaLabelTooltipDemo">
   <InputAreaLabelTooltipDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>React Node Label</Heading>
+### React Node Label
+
 <p>The `label` prop accepts ReactNode for rich formatting.</p>
 <ComponentExample demo="InputAreaReactNodeLabelDemo">
   <InputAreaReactNodeLabelDemo client:visible />
@@ -164,7 +178,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
 
 <p>
   InputArea accepts all standard HTML textarea attributes plus the following:
@@ -177,27 +192,26 @@ export default function Example() {
 {/* Accessibility */}
 
 <ComponentSection>
-  <Heading level={2}>Accessibility</Heading>
 
-<h3 class="mb-2 font-semibold">Label Requirement</h3>
+## Accessibility
 
-<p class="text-kumo-strong">
-  InputArea requires an accessible name via one of:
-</p>
+### Label Requirement
 
-<ul class="ml-4 list-disc space-y-1 text-kumo-strong">
+<p>InputArea requires an accessible name via one of:</p>
+
+<ul class="ml-4 list-disc space-y-1">
   <li>`label` prop (recommended)</li>
   <li>`placeholder` + `aria-label` for bare textareas</li>
   <li>`aria-labelledby` for custom label association</li>
 </ul>
 
-<p class="mt-2 text-kumo-strong">
+<p class="mt-2">
   Missing accessible names trigger console warnings in development.
 </p>
 
-<h3 class="mb-2 mt-4 font-semibold">Error Association</h3>
+### Error Association
 
-<p class="text-kumo-strong">
+<p>
   Error messages are automatically associated with the textarea via ARIA
   attributes for screen reader announcement.
 </p>

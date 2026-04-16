@@ -99,6 +99,11 @@ export function markdownPages(): AstroIntegration {
 
             const markdown = htmlToMarkdown(html);
 
+            if (!markdown.trim()) {
+              skipped++;
+              continue;
+            }
+
             // changelog/all/index.html → changelog.md, others → sibling .md
             const mdFile = htmlFile.endsWith(changelogAllPage)
               ? join(outDir, "changelog.md")

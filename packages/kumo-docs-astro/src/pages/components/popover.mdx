@@ -8,7 +8,6 @@ baseUIComponent: "popover"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   PopoverHeroDemo,
@@ -31,14 +30,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Popover } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Popover } from "@cloudflare/kumo/components/popover";
@@ -49,7 +50,8 @@ import { Popover } from "@cloudflare/kumo/components/popover";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Popover, Button } from "@cloudflare/kumo";
@@ -72,7 +74,9 @@ export default function Example() {
 {/* Popover vs Tooltip */}
 
 <ComponentSection>
-  <Heading level={2}>Popover vs Tooltip</Heading>
+
+## Popover vs Tooltip
+
   <p>
     While popovers can be triggered on hover (using `openOnHover`), they serve a
     different purpose than tooltips. Understanding when to use each is important
@@ -143,19 +147,23 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic Popover</Heading>
+## Examples
+
+### Basic Popover
+
 <ComponentExample demo="PopoverBasicDemo">
   <PopoverBasicDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>With Close Button</Heading>
+### With Close Button
+
 <ComponentExample demo="PopoverWithCloseDemo">
   <PopoverWithCloseDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Positioning</Heading>
+### Positioning
+
 <p>
   Use the `side` prop to control where the popover appears relative to the
   trigger.
@@ -164,7 +172,8 @@ export default function Example() {
   <PopoverPositionDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Custom Content</Heading>
+### Custom Content
+
 <p>
   Popovers can contain any content, including custom layouts with avatars,
   buttons, and more.
@@ -173,7 +182,8 @@ export default function Example() {
   <PopoverCustomContentDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Open on Hover</Heading>
+### Open on Hover
+
 <p>
   Use `openOnHover` on the trigger to open the popover when the user hovers over
   it. You can also specify a `delay` in milliseconds before the popover appears.
@@ -182,7 +192,8 @@ export default function Example() {
   <PopoverOpenOnHoverDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Virtual Anchor</Heading>
+### Virtual Anchor
+
 <p>
   Use the `anchor` prop on `Popover.Content` to position the popover against an
   element other than the trigger, or against a virtual point (e.g., a `DOMRect`
@@ -198,20 +209,24 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Popover</Heading>
+## API Reference
+
+### Popover
+
 <p>The root component that manages the popover's open state.</p>
 <PropsTable component="Popover" />
 
-<Heading level={3}>Popover.Trigger</Heading>
+### Popover.Trigger
+
 <p>
   A button that opens the popover when clicked. Use `render` to render your own
   element.
 </p>
 <PropsTable component="Popover.Trigger" />
 
-<Heading level={3}>Popover.Content</Heading>
+### Popover.Content
+
 <p>
   The container for popover content. Controls positioning via `side`, `align`,
   `sideOffset`, and `alignOffset` props. Use the `anchor` prop to position
@@ -221,15 +236,18 @@ export default function Example() {
 </p>
 <PropsTable component="Popover.Content" />
 
-<Heading level={3}>Popover.Title</Heading>
+### Popover.Title
+
 <p>A heading that labels the popover for accessibility.</p>
 <PropsTable component="Popover.Title" />
 
-<Heading level={3}>Popover.Description</Heading>
+### Popover.Description
+
 <p>A paragraph providing additional context about the popover content.</p>
 <PropsTable component="Popover.Description" />
 
-<Heading level={3}>Popover.Close</Heading>
+### Popover.Close
+
 <p>
   A button that closes the popover when clicked. Use `render` to render your own
   element.

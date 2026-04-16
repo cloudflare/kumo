@@ -10,7 +10,6 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   CheckboxBasicDemo,
   CheckboxDefaultDemo,
@@ -34,10 +33,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Checkbox } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Checkbox } from "@cloudflare/kumo/components/checkbox";`}
     lang="tsx"
@@ -47,7 +51,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Checkbox } from "@cloudflare/kumo";
@@ -62,9 +67,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Default</Heading>
+## Examples
+
+### Default
+
 <p>
   Checkbox with built-in label. The label automatically displays in a horizontal
   layout (checkbox before label).
@@ -73,29 +80,34 @@ export default function Example() {
   <CheckboxDefaultDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Checked</Heading>
+### Checked
+
 <ComponentExample demo="CheckboxCheckedDemo">
   <CheckboxCheckedDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Indeterminate</Heading>
+### Indeterminate
+
 <p>Used for "select all" patterns when some but not all items are selected.</p>
 <ComponentExample demo="CheckboxIndeterminateDemo">
   <CheckboxIndeterminateDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Label First Layout</Heading>
+### Label First Layout
+
 <p>Use `controlFirst={false}` to place the label before the checkbox.</p>
 <ComponentExample demo="CheckboxLabelFirstDemo">
   <CheckboxLabelFirstDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Disabled</Heading>
+### Disabled
+
 <ComponentExample demo="CheckboxDisabledDemo">
   <CheckboxDisabledDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Error</Heading>
+### Error
+
 <p>
   Error variant provides visual styling (red ring). For error messages, use
   Checkbox.Group.
@@ -104,7 +116,8 @@ export default function Example() {
   <CheckboxErrorDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Checkbox Group</Heading>
+### Checkbox Group
+
 <p>
   Group multiple checkboxes with a legend, description, and shared error
   messages. Uses Checkbox.Group and Checkbox.Item.
@@ -113,7 +126,8 @@ export default function Example() {
   <CheckboxGroupDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Checkbox Group with Error</Heading>
+### Checkbox Group with Error
+
   <p>
     Show validation errors at the group level. Error replaces description
     when present.
@@ -126,19 +140,23 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Checkbox</Heading>
+## API Reference
+
+### Checkbox
+
 <p>Single checkbox component with built-in label and horizontal layout.</p>
 <PropsTable component="Checkbox" />
 
-<Heading level={3}>Checkbox.Group</Heading>
+### Checkbox.Group
+
 <p>
   Wrapper for multiple checkboxes with legend, description, and error support.
 </p>
 <PropsTable component="Checkbox.Group" />
 
-  <Heading level={3}>Checkbox.Item</Heading>
+### Checkbox.Item
+
   <p>Individual checkbox within Checkbox.Group.</p>
   <PropsTable component="Checkbox.Item" />
 </ComponentSection>
@@ -146,18 +164,24 @@ export default function Example() {
 {/* Accessibility */}
 
 <ComponentSection>
-  <Heading level={2}>Accessibility</Heading>
+
+## Accessibility
+
   <div class="space-y-4 text-sm">
     <div>
-      <h3 class="mb-2 font-semibold">Label Requirement</h3>
-      <p class="text-kumo-strong">
+
+      ### Label Requirement
+
+      <p>
         Single checkboxes require a `label` prop or `aria-label` for accessibility.
         Missing labels trigger console warnings in development.
       </p>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Keyboard Navigation</h3>
-      <p class="text-kumo-strong">
+
+      ### Keyboard Navigation
+
+      <p>
         <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd> toggles
         the checkbox.
         <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus
@@ -165,8 +189,10 @@ export default function Example() {
       </p>
     </div>
     <div>
-      <h3 class="mb-2 font-semibold">Screen Readers</h3>
-      <p class="text-kumo-strong">
+
+      ### Screen Readers
+
+      <p>
         Checkbox.Group uses semantic `<fieldset>` and `<legend>` elements for
         proper grouping announcement.
       </p>

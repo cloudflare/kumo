@@ -7,7 +7,6 @@ sourceFile: "components/toast"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   ToastBasicDemo,
@@ -34,14 +33,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Toasty, useKumoToastManager } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";
@@ -52,7 +53,9 @@ import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
+
   <p>
     The toast system consists of two parts: the `Toasty` provider component and the `useKumoToastManager()` hook for triggering toasts.
   </p>
@@ -92,7 +95,9 @@ export default function App() {
 {/* Setup */}
 
 <ComponentSection>
-  <Heading level={2}>Setup</Heading>
+
+## Setup
+
   <p>
     Wrap your application (or a section of it) with the `Toasty` provider. This sets up the toast context and renders the toast viewport.
   </p>
@@ -111,33 +116,39 @@ export function Layout({ children }) {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Title and Description</Heading>
+## Examples
+
+### Title and Description
+
 <p>A complete toast with both title and description.</p>
 <ComponentExample demo="ToastBasicDemo">
   <ToastBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Title Only</Heading>
+### Title Only
+
 <p>A simple toast with just a title for brief messages.</p>
 <ComponentExample demo="ToastTitleOnlyDemo">
   <ToastTitleOnlyDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Description Only</Heading>
+### Description Only
+
 <p>A toast with only a description for more detailed messages.</p>
 <ComponentExample demo="ToastDescriptionOnlyDemo">
   <ToastDescriptionOnlyDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Success Variant</Heading>
+### Success Variant
+
 <p>Use the success variant for confirmations and positive outcomes.</p>
 <ComponentExample demo="ToastSuccessDemo">
   <ToastSuccessDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Multiple Toasts</Heading>
+### Multiple Toasts
+
 <p>
   Multiple toasts stack and animate smoothly. Hover over the stack to expand
   them.
@@ -146,37 +157,43 @@ export function Layout({ children }) {
   <ToastMultipleDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Error Variant</Heading>
+### Error Variant
+
 <p>Use the error variant for critical issues that need attention.</p>
 <ComponentExample demo="ToastErrorDemo">
   <ToastErrorDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Warning Variant</Heading>
+### Warning Variant
+
 <p>Use the warning variant for cautionary messages.</p>
 <ComponentExample demo="ToastWarningDemo">
   <ToastWarningDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Info Variant</Heading>
+### Info Variant
+
 <p>Use the info variant for neutral informational messages.</p>
 <ComponentExample demo="ToastInfoDemo">
   <ToastInfoDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Content</Heading>
+### Custom Content
+
 <p>Use the content prop to render completely custom toast content.</p>
 <ComponentExample demo="ToastCustomContentDemo">
   <ToastCustomContentDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Action Buttons</Heading>
+### Action Buttons
+
 <p>Add action buttons to toasts for user interaction.</p>
 <ComponentExample demo="ToastActionsDemo">
   <ToastActionsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Promise</Heading>
+### Promise
+
 <p>
   Use the promise method to show loading, success, and error states
   automatically.
@@ -190,13 +207,16 @@ export function Layout({ children }) {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Toasty</Heading>
+## API Reference
+
+### Toasty
+
 <p>The provider component that wraps your app and manages the toast system.</p>
 <PropsTable component="Toasty" />
 
-<Heading level={3}>useKumoToastManager()</Heading>
+### useKumoToastManager()
+
 <p>A hook that returns the toast manager for creating toasts.</p>
 
 ```tsx
@@ -213,16 +233,17 @@ toastManager.promise(asyncFn(), {
 });
 ```
 
-<Heading level={3}>Toast Options</Heading>
+### Toast Options
+
 <p>Options passed to `toastManager.add()` and promise handlers.</p>
 <div class="overflow-x-auto">
   <table class="w-full text-left text-sm">
     <thead>
       <tr class="border-b border-kumo-hairline">
-        <th class="py-3 pr-4 font-semibold text-kumo-default">Prop</th>
-        <th class="py-3 pr-4 font-semibold text-kumo-default">Type</th>
-        <th class="py-3 pr-4 font-semibold text-kumo-default">Default</th>
-        <th class="py-3 font-semibold text-kumo-default">Description</th>
+        <th class="py-3 pr-4 font-semibold">Prop</th>
+        <th class="py-3 pr-4 font-semibold">Type</th>
+        <th class="py-3 pr-4 font-semibold">Default</th>
+        <th class="py-3 font-semibold">Description</th>
       </tr>
     </thead>
     <tbody class="text-kumo-subtle">
