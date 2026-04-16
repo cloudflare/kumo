@@ -17,25 +17,25 @@ The `@cloudflare/kumo` package is published to the public npm registry. No speci
 
 Install Kumo using your preferred package manager. The current version is <code>v{kumoVersion}</code>.
 
-**npm**
+#### npm
 
 ```bash
 npm install @cloudflare/kumo
 ```
 
-**pnpm**
+#### pnpm
 
 ```bash
 pnpm add @cloudflare/kumo
 ```
 
-**yarn**
+#### yarn
 
 ```bash
 yarn add @cloudflare/kumo
 ```
 
-**Peer Dependencies**
+#### Peer Dependencies
 
 Kumo requires the following peer dependencies. Most React projects will already have these installed:
 
@@ -48,13 +48,13 @@ pnpm add react react-dom @phosphor-icons/react
 
 Import components from the main package or use granular imports for better tree-shaking:
 
-**Main Package Import**
+#### Main Package Import
 
 ```tsx
 import { Button, Input, LayerCard } from "@cloudflare/kumo";
 ```
 
-**Granular Import (Recommended)**
+#### Granular Import (Recommended)
 
 ```tsx
 import { Button } from "@cloudflare/kumo/components/button";
@@ -65,14 +65,14 @@ import { Input } from "@cloudflare/kumo/components/input";
 
 Kumo is built on top of [Base UI](https://base-ui.com), a library of unstyled, accessible React components. For advanced use cases where you need access to the underlying primitives, Kumo re-exports all 37 Base UI components with both barrel and granular imports:
 
-**Barrel Import (Convenient)**
+#### Barrel Import (Convenient)
 
 ```tsx
 // Import multiple primitives at once
 import { Popover, Slider, Accordion } from "@cloudflare/kumo/primitives";
 ```
 
-**Granular Imports (Recommended for Performance)**
+#### Granular Imports (Recommended for Performance)
 
 ```tsx
 // Import individual primitives for better tree-shaking
@@ -146,7 +146,7 @@ The standalone build includes all Tailwind utilities and Kumo component styles p
 
 Here's a complete example of using Kumo components with Tailwind CSS:
 
-**CSS File (app.css)**
+#### CSS File (app.css)
 
 ```css
 @source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
@@ -156,7 +156,7 @@ Here's a complete example of using Kumo components with Tailwind CSS:
 
 Note: The `@source` path is relative to your CSS file. Adjust it based on your project structure.
 
-**Component File (App.tsx)**
+#### Component File (App.tsx)
 
 ```tsx
 import { Button, Input, LayerCard } from "@cloudflare/kumo";
@@ -192,13 +192,17 @@ Use components when you need consistent, pre-styled UI primitives that integrate
 Blocks are higher-level compositions (like `PageHeader` and `ResourceListPage`) that are installed via the Kumo CLI. Blocks give you full ownership of the code, allowing you to customize them to your specific needs.
 
 ```bash
+
 # Initialize Kumo configuration
+
 npx @cloudflare/kumo init
 
 # List available blocks
+
 npx @cloudflare/kumo blocks
 
 # Install a block
+
 npx @cloudflare/kumo add PageHeader
 ```
 

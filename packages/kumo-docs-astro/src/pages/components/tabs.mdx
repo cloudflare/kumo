@@ -7,7 +7,6 @@ sourceFile: "components/tabs"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TabsDefaultDemo,
@@ -28,14 +27,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Tabs } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Tabs } from "@cloudflare/kumo/components/tabs";
@@ -46,7 +47,8 @@ import { Tabs } from "@cloudflare/kumo/components/tabs";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Tabs } from "@cloudflare/kumo";
@@ -69,17 +71,20 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Variants</Heading>
+## Examples
 
-<h4 class="mb-3 text-base font-medium">Segmented (Default)</h4>
+### Variants
+
+#### Segmented (Default)
+
 <p>A pill-shaped indicator slides between tabs on a subtle background.</p>
 <ComponentExample demo="TabsSegmentedDemo">
   <TabsSegmentedDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Underline</h4>
+#### Underline
+
 <p>
   A bottom border with a primary-colored indicator. The active tab has bolder
   text for emphasis.
@@ -88,13 +93,15 @@ export default function Example() {
   <TabsUnderlineDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Controlled</Heading>
+### Controlled
+
 <p>Use the `value` and `onValueChange` props for controlled state.</p>
 <ComponentExample demo="TabsControlledDemo">
   <TabsControlledDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Many Tabs</Heading>
+### Many Tabs
+
 <p>Tabs automatically scroll horizontally when there are many items.</p>
 <ComponentExample demo="TabsManyDemo">
   <TabsManyDemo client:visible />
@@ -105,10 +112,13 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Tabs" />
 
-<Heading level={3}>TabsItem</Heading>
+### TabsItem
+
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead>

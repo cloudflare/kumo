@@ -7,7 +7,6 @@ sourceFile: "components/table-of-contents"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TableOfContentsBasicDemo,
@@ -29,14 +28,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { TableOfContents } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { TableOfContents } from "@cloudflare/kumo/components/table-of-contents";
@@ -47,7 +48,8 @@ import { TableOfContents } from "@cloudflare/kumo/components/table-of-contents";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { TableOfContents } from "@cloudflare/kumo";
@@ -78,9 +80,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Interactive</Heading>
+## Examples
+
+### Interactive
+
 <p>
   Click an item to set it as active. The consumer controls state via `active`
   and `onClick`.
@@ -89,7 +93,8 @@ export default function Example() {
   <TableOfContentsInteractiveDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>No active item</Heading>
+### No active item
+
 <p>
   When no item has `active` set, all items show the default subtle text style
   with a hover indicator.
@@ -98,7 +103,8 @@ export default function Example() {
   <TableOfContentsNoActiveDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Groups</Heading>
+### Groups
+
 <p>
   Use `TableOfContents.Group` to organize items into labeled sections with
   indented children.
@@ -107,7 +113,8 @@ export default function Example() {
   <TableOfContentsGroupDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Without title</Heading>
+### Without title
+
 <p>
   The title sub-component is optional — use `TableOfContents.List` directly if
   you don't need a heading.
@@ -116,7 +123,8 @@ export default function Example() {
   <TableOfContentsWithoutTitleDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom element</Heading>
+### Custom element
+
 <p>
   Use the `render` prop to swap the default anchor for a button, router link, or
   any element.
@@ -142,7 +150,7 @@ export default function Example() {
 </TableOfContents.Item>
 ```
 
-**With Next.js**
+#### With Next.js
 
 ```tsx
 import Link from "next/link";
@@ -157,6 +165,8 @@ import Link from "next/link";
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="TableOfContents" />
 </ComponentSection>

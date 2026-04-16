@@ -7,7 +7,6 @@ sourceFile: "components/empty"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   EmptyDemo,
@@ -29,7 +28,8 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
 
 ```tsx
 import { Empty } from "@cloudflare/kumo";
@@ -40,7 +40,8 @@ import { Empty } from "@cloudflare/kumo";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Empty } from "@cloudflare/kumo";
@@ -63,9 +64,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic</Heading>
+## Examples
+
+### Basic
+
 <ComponentExample demo="EmptyBasicDemo">
   <EmptyBasicDemo client:visible />
 </ComponentExample>
@@ -75,7 +78,9 @@ export default function Example() {
 {/* Sizes */}
 
 <ComponentSection>
-  <Heading level={2}>Sizes</Heading>
+
+## Sizes
+
   <p>Empty states come in three sizes to fit different container contexts.</p>
   <ComponentExample demo="EmptySizesDemo">
     <EmptySizesDemo client:visible />
@@ -85,7 +90,9 @@ export default function Example() {
 {/* With Command Line */}
 
 <ComponentSection>
-  <Heading level={2}>With Command Line</Heading>
+
+## With Command Line
+
   <p>Include a copyable command to help users get started.</p>
   <ComponentExample demo="EmptyWithCommandDemo">
     <EmptyWithCommandDemo client:visible />
@@ -95,7 +102,9 @@ export default function Example() {
 {/* With Actions */}
 
 <ComponentSection>
-  <Heading level={2}>With Actions</Heading>
+
+## With Actions
+
   <p>Add custom action buttons using the contents prop.</p>
   <ComponentExample demo="EmptyWithActionsDemo">
     <EmptyWithActionsDemo client:visible />
@@ -105,7 +114,9 @@ export default function Example() {
 {/* Minimal */}
 
 <ComponentSection>
-  <Heading level={2}>Minimal</Heading>
+
+## Minimal
+
   <p>At minimum, only a title is required.</p>
   <ComponentExample demo="EmptyMinimalDemo">
     <EmptyMinimalDemo client:visible />
@@ -115,6 +126,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Empty" />
 </ComponentSection>

@@ -7,7 +7,6 @@ sourceFile: "primitives/skeleton-line"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   SkeletonLineDemo,
   SkeletonLineWidthDemo,
@@ -27,7 +26,8 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
 
 ```tsx
 import { SkeletonLine } from "@cloudflare/kumo";
@@ -38,8 +38,10 @@ import { SkeletonLine } from "@cloudflare/kumo";
 {/* Custom Widths */}
 
 <ComponentSection>
-  <Heading level={2}>Custom Widths</Heading>
-  <p class="text-kumo-strong mb-4">
+
+## Custom Widths
+
+  <p class="mb-4">
     Control the randomized width range for more natural-looking skeletons.
   </p>
   <ComponentExample demo="SkeletonLineWidthDemo">
@@ -50,8 +52,10 @@ import { SkeletonLine } from "@cloudflare/kumo";
 {/* Custom Height */}
 
 <ComponentSection>
-  <Heading level={2}>Custom Height</Heading>
-  <p class="text-kumo-strong mb-4">
+
+## Custom Height
+
+  <p class="mb-4">
     Override the default height using Tailwind utility classes via{" "}
     <code>className</code>. The default height is <code>0.5rem</code>.
   </p>
@@ -63,8 +67,10 @@ import { SkeletonLine } from "@cloudflare/kumo";
 {/* Block Height */}
 
 <ComponentSection>
-  <Heading level={2}>Block Height</Heading>
-  <p class="text-kumo-strong mb-4">
+
+## Block Height
+
+  <p class="mb-4">
     Use <code>blockHeight</code> to set the height of a container that
     vertically centers the skeleton line. Useful when replacing text of a known
     line height. Accepts a number (treated as <code>px</code>) or any CSS string
@@ -78,8 +84,10 @@ import { SkeletonLine } from "@cloudflare/kumo";
 {/* Card Loading State */}
 
 <ComponentSection>
-  <Heading level={2}>Card Loading State</Heading>
-  <p class="text-kumo-strong mb-4">
+
+## Card Loading State
+
+  <p class="mb-4">
     Use skeleton lines to create loading states for cards and content areas.
   </p>
   <ComponentExample demo="SkeletonLineCardDemo">
@@ -90,7 +98,9 @@ import { SkeletonLine } from "@cloudflare/kumo";
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>
@@ -100,7 +110,7 @@ import { SkeletonLine } from "@cloudflare/kumo";
           <th class="px-4 py-3 text-left font-semibold">Default</th>
         </tr>
       </thead>
-      <tbody class="text-kumo-strong">
+      <tbody>
         <tr class="border-b border-kumo-hairline">
           <td class="px-4 py-3 font-mono text-xs">minWidth</td>
           <td class="px-4 py-3 font-mono text-xs">number</td>
