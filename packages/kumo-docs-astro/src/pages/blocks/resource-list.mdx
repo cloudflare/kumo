@@ -5,7 +5,6 @@ description: "A layout component for resource list pages with optional sidebar c
 sourceFile: "blocks/resource-list"
 ---
 
-import Heading from "~/components/docs/Heading.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import Callout from "~/components/docs/Callout.astro";
@@ -26,7 +25,9 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
+
   <p>
     ResourceListPage is a <strong>block</strong> - a CLI-installed component
     that you own and can customize. Unlike regular components, blocks are copied
@@ -71,7 +72,8 @@ import { ResourceListPage } from "./components/kumo/resource-list/resource-list"
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { ResourceListPage } from "./components/kumo/resource-list/resource-list";
@@ -96,15 +98,18 @@ export default function DatabasesPage() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic</Heading>
+## Examples
+
+### Basic
+
 <p>A minimal resource list page with title, description, and icon.</p>
 <ComponentExample demo="ResourceListBasicDemo">
   <ResourceListBasicDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>With Usage Sidebar</Heading>
+### With Usage Sidebar
+
   <p>Include a sidebar with usage examples or quick start guides.</p>
   <ComponentExample demo="ResourceListWithUsageDemo">
     <ResourceListWithUsageDemo client:visible />
@@ -114,7 +119,9 @@ export default function DatabasesPage() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>

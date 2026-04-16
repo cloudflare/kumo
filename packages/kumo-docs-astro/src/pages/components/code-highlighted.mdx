@@ -7,7 +7,6 @@ sourceFile: "code"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   CodeHighlightedBasicDemo,
   CodeHighlightedTypeScriptDemo,
@@ -40,7 +39,9 @@ import {
 {/* Overview */}
 
 <ComponentSection>
-  <Heading level={2}>Overview</Heading>
+
+## Overview
+
   <p>
     A Shiki-powered syntax highlighter. Supports 200+ languages with TextMate
     grammars, dual light/dark themes, and lazy loading. Exported from a separate
@@ -52,7 +53,9 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
+
   <p>
     CodeHighlighted is exported from a separate entry point to avoid bundling Shiki for apps that don't need it.
   </p>
@@ -72,7 +75,9 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 {/* Basic Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Basic Usage</Heading>
+
+## Basic Usage
+
   <p>
     Wrap your app with `ShikiProvider` to configure Shiki once.
     All `CodeHighlighted` components inside share the same Shiki instance.
@@ -99,71 +104,84 @@ export function App() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Languages</Heading>
+## Examples
+
+### Languages
+
 <p>
   CodeHighlighted supports 200+ languages through Shiki. Only load the languages
   you need.
 </p>
 
-<h4 class="mb-3 text-base font-medium">TypeScript</h4>
+#### TypeScript
+
 <ComponentExample demo="CodeHighlightedTypeScriptDemo">
   <CodeHighlightedTypeScriptDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">React / TSX</h4>
+#### React / TSX
+
 <ComponentExample demo="CodeHighlightedReactDemo">
   <CodeHighlightedReactDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Bash / Shell</h4>
+#### Bash / Shell
+
 <ComponentExample demo="CodeHighlightedBashDemo">
   <CodeHighlightedBashDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">JSON</h4>
+#### JSON
+
 <ComponentExample demo="CodeHighlightedJsonDemo">
   <CodeHighlightedJsonDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">CSS</h4>
+#### CSS
+
 <ComponentExample demo="CodeHighlightedCssDemo">
   <CodeHighlightedCssDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Highlight Lines</Heading>
+### Highlight Lines
+
 <p>Emphasize specific lines with `highlightLines` (1-indexed).</p>
 <ComponentExample demo="CodeHighlightedHighlightLinesDemo">
   <CodeHighlightedHighlightLinesDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Highlight Color</Heading>
+### Custom Highlight Color
+
 <p>
   Customize the highlight color with the `--kumo-code-highlight-bg` CSS
   variable.
 </p>
 <CodeHighlightedCustomHighlightDemo client:load />
 
-<Heading level={3}>Line Numbers</Heading>
+### Line Numbers
+
 <p>Display line numbers with `showLineNumbers` .</p>
 <ComponentExample demo="CodeHighlightedLineNumbersDemo">
   <CodeHighlightedLineNumbersDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Copy Button</Heading>
+### Copy Button
+
 <p>Add a copy-to-clipboard button with `showCopyButton` .</p>
 <ComponentExample demo="CodeHighlightedCopyButtonDemo">
   <CodeHighlightedCopyButtonDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Full Featured</Heading>
+### Full Featured
+
 <p>Combine all features for a complete code display experience.</p>
 <ComponentExample demo="CodeHighlightedFullFeaturedDemo">
   <CodeHighlightedFullFeaturedDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Shared Provider</Heading>
+### Shared Provider
+
   <p>
     Multiple code blocks can share a single `ShikiProvider`.
     Shiki loads once and is reused for all blocks.
@@ -176,7 +194,9 @@ export function App() {
 {/* Themes */}
 
 <ComponentSection>
-  <Heading level={2}>Themes</Heading>
+
+## Themes
+
   <p>
     CodeHighlighted uses hardcoded themes for consistent styling across all Kumo
     applications:
@@ -200,12 +220,14 @@ export function App() {
 {/* Server-Side Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Server-Side Usage</Heading>
+
+## Server-Side Usage
+
   <p>
     For SSR frameworks (Next.js RSC, Astro, Remix), use the server utilities to highlight at build time.
   </p>
 
-<h4 class="mb-3 text-base font-medium">One-off highlighting</h4>
+#### One-off highlighting
 
 ```tsx
 // Next.js RSC or Astro
@@ -218,7 +240,7 @@ export default async function Page() {
 }
 ```
 
-<h4 class="mb-3 text-base font-medium">Reusable highlighter</h4>
+#### Reusable highlighter
 
 ```tsx
 // For multiple highlights, reuse the highlighter
@@ -239,7 +261,9 @@ highlighter.dispose(); // Clean up when done
 {/* Custom Hook */}
 
 <ComponentSection>
-  <Heading level={2}>Custom Hook</Heading>
+
+## Custom Hook
+
   <p>
     Use `useShikiHighlighter` for custom implementations.
   </p>
@@ -282,7 +306,9 @@ function CustomCodeBlock({ code, lang }) {
 {/* Internationalization */}
 
 <ComponentSection>
-  <Heading level={2}>Internationalization</Heading>
+
+## Internationalization
+
   <p>
     Customize button labels at the provider level for all code blocks, or override per-component.
   </p>
@@ -311,9 +337,10 @@ function CustomCodeBlock({ code, lang }) {
 {/* Framework Integration */}
 
 <ComponentSection>
-  <Heading level={2}>Framework Integration</Heading>
 
-<Heading level={3}>Next.js App Router</Heading>
+## Framework Integration
+
+### Next.js App Router
 
 ```tsx
 // app/providers.tsx
@@ -343,7 +370,8 @@ export default function RootLayout({ children }) {
 }
 ```
 
-<Heading level={3}>Astro (Static)</Heading>
+### Astro (Static)
+
 <p>
   For static sites, use server-side highlighting for zero client-side
   JavaScript.
@@ -366,7 +394,9 @@ const html = await highlightCode(code, lang);
 {/* Bundle Size */}
 
 <ComponentSection>
-  <Heading level={2}>Bundle Size</Heading>
+
+## Bundle Size
+
   <p>
     Shiki is lazy-loaded on first render. The size depends on your
     configuration:
@@ -411,7 +441,9 @@ const html = await highlightCode(code, lang);
 {/* Migration */}
 
 <ComponentSection>
-  <Heading level={2}>Migration from Code/CodeBlock</Heading>
+
+## Migration from Code/CodeBlock
+
   <p>
     The legacy `Code` and `CodeBlock` components are deprecated.
     They will be removed in v2.0.
@@ -439,9 +471,11 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>ShikiProvider Props</Heading>
+## API Reference
+
+### ShikiProvider Props
+
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead>
@@ -499,7 +533,8 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
   </table>
 </div>
 
-<Heading level={3}>CodeHighlighted Props</Heading>
+### CodeHighlighted Props
+
 <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead>
@@ -587,7 +622,8 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
   </table>
 </div>
 
-  <Heading level={3}>useShikiHighlighter Return Value</Heading>
+### useShikiHighlighter Return Value
+
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>

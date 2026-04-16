@@ -9,7 +9,6 @@ baseUIComponent: "select"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   SelectBasicDemo,
@@ -41,10 +40,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Select } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Select } from "@cloudflare/kumo/components/select";`}
     lang="tsx"
@@ -54,7 +58,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Select } from "@cloudflare/kumo";
@@ -78,9 +83,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic</Heading>
+## Examples
+
+### Basic
+
 <p>
   A select with a visible label. When you provide the{" "}
   <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">label</code> prop,
@@ -96,7 +103,9 @@ export default function Example() {
 {/* Sizes */}
 
 <ComponentSection>
-  <Heading level={3}>Sizes</Heading>
+
+### Sizes
+
   <p>
     Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">size</code> prop
     to match Input sizing (xs, sm, base, lg).
@@ -110,7 +119,9 @@ export default function Example() {
 {/* Without Visible Label */}
 
 <ComponentSection>
-  <Heading level={3}>Without Visible Label</Heading>
+
+### Without Visible Label
+
   <p>
     When a visible label isn't needed (e.g., in compact UIs or when context is clear),
     use `aria-label` for accessibility.
@@ -124,7 +135,9 @@ export default function Example() {
 {/* With Description and Error */}
 
 <ComponentSection>
-  <Heading level={3}>With Description and Error</Heading>
+
+### With Description and Error
+
   <p>
     Select integrates with the Field wrapper to show description text and validation errors.
   </p>
@@ -137,7 +150,9 @@ export default function Example() {
 {/* Placeholder */}
 
 <ComponentSection>
-  <Heading level={3}>Placeholder</Heading>
+
+### Placeholder
+
   <p>
     Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> prop
     to show text when no value is selected. When using <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to
@@ -161,7 +176,9 @@ export default function Example() {
 {/* Label Tooltip */}
 
 <ComponentSection>
-  <Heading level={3}>Label with Tooltip</Heading>
+
+### Label with Tooltip
+
   <p>
     Add a tooltip icon next to the label for additional context using <code
       class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
@@ -175,7 +192,9 @@ export default function Example() {
 {/* Custom Rendering */}
 
 <ComponentSection>
-  <Heading level={3}>Custom Rendering</Heading>
+
+### Custom Rendering
+
   <p>
     Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to customize how the selected value
     appears in the trigger button. This is useful when working with complex object
@@ -231,7 +250,9 @@ export default function Example() {
 {/* Loading */}
 
 <ComponentSection>
-  <Heading level={3}>Loading</Heading>
+
+### Loading
+
   <p>
     A select component with loading state. The loading state is passed to
     the component via the <code
@@ -251,7 +272,9 @@ export default function Example() {
 {/* Multiple Item */}
 
 <ComponentSection>
-  <Heading level={3}>Multiple Selection</Heading>
+
+### Multiple Selection
+
   <p>
     Enable multiple selection with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">multiple</code> prop.
     The value becomes an array of selected items. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> for the empty state
@@ -279,7 +302,8 @@ export default function Example() {
 {/* More Example */}
 
 <ComponentSection>
-  <Heading level={3}>More Example</Heading>
+
+### More Example
 
   <ComponentExample demo="SelectComplexDemo">
     <SelectComplexDemo client:load />
@@ -289,7 +313,9 @@ export default function Example() {
 {/* Disabled Options */}
 
 <ComponentSection>
-  <Heading level={3}>Disabled Options</Heading>
+
+### Disabled Options
+
   <p>
     Options can be disabled with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> prop.
     Disabled options are greyed out and cannot be selected.
@@ -303,7 +329,9 @@ export default function Example() {
 {/* Disabled Items via Prop */}
 
 <ComponentSection>
-  <Heading level={3}>Disabled Items (via items prop)</Heading>
+
+### Disabled Items (via items prop)
+
   <p>
     The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> object-map prop
     accepts descriptor objects with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> alongside
@@ -318,7 +346,9 @@ export default function Example() {
 {/* Grouped Options */}
 
 <ComponentSection>
-  <Heading level={3}>Grouped Options</Heading>
+
+### Grouped Options
+
   <p>
     Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>,{" "}
     <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.GroupLabel</code>, and{" "}
@@ -334,7 +364,9 @@ export default function Example() {
 {/* Groups with Disabled */}
 
 <ComponentSection>
-  <Heading level={3}>Groups with Disabled Options</Heading>
+
+### Groups with Disabled Options
+
   <p>
     Combine groups, separators, and disabled options with info tooltips to
     clearly separate available and unavailable choices.
@@ -348,7 +380,9 @@ export default function Example() {
 {/* Long List - Test scrolling behavior */}
 
 <ComponentSection>
-  <Heading level={3}>Long List (Scrolling Test)</Heading>
+
+### Long List (Scrolling Test)
+
   <p>
     A select component with many options to test popup scrolling behavior.
     The popup should scroll smoothly without bounce/overscroll issues.
@@ -362,14 +396,19 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
-  <Heading level={3}>Select</Heading>
+
+## API Reference
+
+### Select
+
   <PropsTable component="Select" />
 
-<Heading level={3}>Select.Option</Heading>
+### Select.Option
+
 <PropsTable component="Select.Option" />
 
-<Heading level={3}>Select.Group</Heading>
+### Select.Group
+
 <p>
   Groups related options together with an accessible{" "}
   <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="group"</code>.
@@ -380,13 +419,15 @@ export default function Example() {
   to provide a visible heading.
 </p>
 
-<Heading level={3}>Select.GroupLabel</Heading>
+### Select.GroupLabel
+
 <p>
   A visible heading for a{" "}
   <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>.
   Automatically associated with its parent group for accessibility.
 </p>
 
-  <Heading level={3}>Select.Separator</Heading>
+### Select.Separator
+
   <p>A visual divider line between option groups. Renders with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">role="separator"</code>.</p>
 </ComponentSection>

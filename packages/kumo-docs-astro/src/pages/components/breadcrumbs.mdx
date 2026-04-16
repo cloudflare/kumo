@@ -9,7 +9,6 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   BreadcrumbsDemo,
   BreadcrumbsWithIconsDemo,
@@ -25,7 +24,9 @@ import {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
+
   <CodeBlock
     code={`import { Breadcrumbs } from "@cloudflare/kumo";`}
     lang="tsx"
@@ -33,57 +34,73 @@ import {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
+
   <ComponentExample demo="BreadcrumbsDemo">
     <BreadcrumbsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-  <Heading level={3}>Basic</Heading>
+## Examples
+
+### Basic
+
   <ComponentExample demo="BreadcrumbsDemo">
     <BreadcrumbsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Loading</Heading>
+
+### Loading
+
   <ComponentExample demo="BreadcrumbsLoadingDemo">
     <BreadcrumbsLoadingDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Root</Heading>
+
+### Root
+
   <ComponentExample demo="BreadcrumbsRootDemo">
     <BreadcrumbsRootDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Clipboard</Heading>
+
+### Clipboard
+
   <ComponentExample demo="BreadcrumbsWithClipboardDemo">
     <BreadcrumbsWithClipboardDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Breadcrumbs</Heading>
+## API Reference
+
+### Breadcrumbs
+
 <PropsTable component="Breadcrumbs" />
 
-<Heading level={3}>Breadcrumbs.Link</Heading>
+### Breadcrumbs.Link
+
 <PropsTable component="Breadcrumbs.Link" />
 
-<Heading level={3}>Breadcrumbs.Current</Heading>
+### Breadcrumbs.Current
+
 <PropsTable component="Breadcrumbs.Current" />
 
-<Heading level={3}>Breadcrumbs.Separator</Heading>
+### Breadcrumbs.Separator
+
 <PropsTable component="Breadcrumbs.Separator" />
 
-  <Heading level={3}>Breadcrumbs.Clipboard</Heading>
+### Breadcrumbs.Clipboard
+
   <PropsTable component="Breadcrumbs.Clipboard" />
 </ComponentSection>

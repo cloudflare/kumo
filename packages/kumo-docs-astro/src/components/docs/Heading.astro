@@ -1,5 +1,5 @@
 ---
-import { LinkSimple } from "@phosphor-icons/react";
+import { LinkSimple as LinkSimpleIcon } from "@phosphor-icons/react";
 
 interface Props {
   level: 2 | 3 | 4;
@@ -23,9 +23,9 @@ const slug =
 
 // Define styles for each heading level
 const levelStyles = {
-  2: "mb-4 text-2xl font-bold",
+  2: "mb-4 text-2xl font-semibold",
   3: "mb-4 text-xl font-semibold",
-  4: "mb-3 text-base font-medium",
+  4: "mb-3 text-base font-semibold",
 };
 
 // Dynamic tag - must be capitalized for Astro
@@ -35,7 +35,7 @@ const baseStyles = levelStyles[level];
 
 <Element
   id={slug}
-  class:list={["group relative scroll-mt-24", baseStyles, className]}
+  class:list={["group relative scroll-mt-24 tracking-[-0.02em]", baseStyles, className]}
 >
   <a
     href={`#${slug}`}
@@ -45,7 +45,7 @@ const baseStyles = levelStyles[level];
       class="absolute -left-6 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
       aria-hidden="true"
     >
-      <LinkSimple className="size-4 text-kumo-subtle" />
+      <LinkSimpleIcon className="size-4 text-kumo-subtle" />
     </span>
     <slot />
   </a>

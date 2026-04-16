@@ -7,7 +7,6 @@ sourceFile: "components/cloudflare-logo"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   CloudflareLogoBasicDemo,
   CloudflareLogoGlyphDemo,
@@ -31,8 +30,10 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import {
@@ -42,7 +43,7 @@ import {
 } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import {
@@ -57,7 +58,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { CloudflareLogo } from "@cloudflare/kumo";
@@ -72,9 +74,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Glyph Only</Heading>
+## Examples
+
+### Glyph Only
+
 <p>
   Use <code>variant="glyph"</code> to display just the cloud icon without the
   wordmark.
@@ -83,18 +87,21 @@ export default function Example() {
   <CloudflareLogoGlyphDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Color Variants</Heading>
+### Color Variants
+
 <p>The logo supports three color schemes: brand colors, black, and white.</p>
 <ComponentExample demo="CloudflareLogoColorVariantsDemo">
   <CloudflareLogoColorVariantsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Glyph Color Variants</Heading>
+### Glyph Color Variants
+
 <ComponentExample demo="CloudflareLogoGlyphVariantsDemo">
   <CloudflareLogoGlyphVariantsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Sizing</Heading>
+### Sizing
+
 <p>
   Size the logo using CSS width classes. The height adjusts automatically to
   maintain aspect ratio.
@@ -103,7 +110,8 @@ export default function Example() {
   <CloudflareLogoSizesDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Brand Assets Menu</Heading>
+### Brand Assets Menu
+
   <p>
     Combine with DropdownMenu to create a brand assets menu. Use <code>generateCloudflareLogoSvg()</code> to
     get copy-paste ready SVG markup.
@@ -116,22 +124,27 @@ export default function Example() {
 {/* PoweredByCloudflare */}
 
 <ComponentSection>
-  <Heading level={2}>PoweredByCloudflare</Heading>
+
+## PoweredByCloudflare
+
   <p>
     A pre-built "Powered by Cloudflare" badge component for footers and attribution.
   </p>
 
-<Heading level={3}>Basic Usage</Heading>
+### Basic Usage
+
 <ComponentExample demo="PoweredByCloudflareBasicDemo">
   <PoweredByCloudflareBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Color Variants</Heading>
+### Color Variants
+
 <ComponentExample demo="PoweredByCloudflareVariantsDemo">
   <PoweredByCloudflareVariantsDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Footer Example</Heading>
+### Footer Example
+
   <ComponentExample demo="PoweredByCloudflareFooterDemo">
     <PoweredByCloudflareFooterDemo client:visible />
   </ComponentExample>
@@ -140,7 +153,9 @@ export default function Example() {
 {/* SVG Generation */}
 
 <ComponentSection>
-  <Heading level={2}>SVG Generation</Heading>
+
+## SVG Generation
+
   <p>
     Use <code>generateCloudflareLogoSvg()</code> to get copy-paste ready SVG markup for non-React contexts.
   </p>
@@ -168,7 +183,9 @@ await navigator.clipboard.writeText(
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <p>
     CloudflareLogo extends <code>SVGSVGElement</code> and accepts all standard SVG attributes.
   </p>
@@ -205,7 +222,8 @@ await navigator.clipboard.writeText(
     </table>
   </div>
 
-  <Heading level={3}>PoweredByCloudflare</Heading>
+### PoweredByCloudflare
+
   <p>
     Extends <code>HTMLAnchorElement</code> and accepts all standard anchor attributes.
   </p>

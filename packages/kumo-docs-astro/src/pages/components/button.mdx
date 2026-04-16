@@ -9,7 +9,6 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   ButtonBasicDemo,
   ButtonPrimaryDemo,
@@ -37,10 +36,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Button } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Button } from "@cloudflare/kumo/components/button";`}
     lang="tsx"
@@ -50,7 +54,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Button } from "@cloudflare/kumo";
@@ -65,13 +70,15 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
+
+## Examples
 
 {/* Variants */}
 
-<Heading level={3}>Variants</Heading>
+### Variants
 
-<h4 class="mb-3 text-base font-medium">Primary</h4>
+#### Primary
+
 <ComponentExample
   demo="ButtonPrimaryDemo"
   vrSection="variant-primary"
@@ -80,7 +87,8 @@ export default function Example() {
   <ButtonPrimaryDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Secondary</h4>
+#### Secondary
+
 <ComponentExample
   demo="ButtonSecondaryDemo"
   vrSection="variant-secondary"
@@ -89,7 +97,8 @@ export default function Example() {
   <ButtonSecondaryDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Ghost</h4>
+#### Ghost
+
 <ComponentExample
   demo="ButtonGhostDemo"
   vrSection="variant-ghost"
@@ -98,7 +107,8 @@ export default function Example() {
   <ButtonGhostDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Destructive</h4>
+#### Destructive
+
 <ComponentExample
   demo="ButtonDestructiveDemo"
   vrSection="variant-destructive"
@@ -107,7 +117,8 @@ export default function Example() {
   <ButtonDestructiveDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Outline</h4>
+#### Outline
+
 <ComponentExample
   demo="ButtonOutlineDemo"
   vrSection="variant-outline"
@@ -116,7 +127,8 @@ export default function Example() {
   <ButtonOutlineDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Secondary Destructive</h4>
+#### Secondary Destructive
+
 <ComponentExample
   demo="ButtonSecondaryDestructiveDemo"
   vrSection="variant-secondary-destructive"
@@ -127,14 +139,16 @@ export default function Example() {
 
 {/* Sizes */}
 
-<Heading level={3}>Sizes</Heading>
+### Sizes
+
 <ComponentExample demo="ButtonSizesDemo" vrSection="sizes" vrTitle="Sizes">
   <ButtonSizesDemo client:visible />
 </ComponentExample>
 
 {/* With Icon */}
 
-<Heading level={3}>With Icon</Heading>
+### With Icon
+
 <ComponentExample
   demo="ButtonWithIconDemo"
   vrSection="with-icon"
@@ -145,7 +159,8 @@ export default function Example() {
 
 {/* Icon Only */}
 
-<Heading level={3}>Icon Only</Heading>
+### Icon Only
+
 <p>
   For icon-only buttons, use `shape="square"` or `shape="circle"` with the
   `icon` prop.
@@ -163,7 +178,8 @@ export default function Example() {
 
 {/* Loading State */}
 
-<Heading level={3}>Loading State</Heading>
+### Loading State
+
 <ComponentExample
   demo="ButtonLoadingDemo"
   vrSection="loading"
@@ -174,7 +190,8 @@ export default function Example() {
 
 {/* Disabled State */}
 
-<Heading level={3}>Disabled State</Heading>
+### Disabled State
+
 <ComponentExample
   demo="ButtonDisabledDemo"
   vrSection="disabled"
@@ -185,7 +202,8 @@ export default function Example() {
 
 {/* Title (Tooltip) */}
 
-  <Heading level={3}>Title</Heading>
+### Title
+
   <p>
     Use the `title` prop to wrap the button in a tooltip. This is useful for
     icon-only buttons or whenever additional context helps the user understand
@@ -203,7 +221,9 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Button" />
 </ComponentSection>
 
