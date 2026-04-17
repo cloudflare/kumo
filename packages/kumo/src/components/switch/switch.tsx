@@ -15,9 +15,9 @@ import { Fieldset } from "@base-ui/react/fieldset";
 export const KUMO_SWITCH_VARIANTS = {
   size: {
     xs: {
-      classes: "h-4.5 w-7",
+      classes: "h-4.5 w-7 min-h-6 min-w-6",
       description:
-        "Extra-small switch for inline badges, pills, and compact toolbars",
+        "Extra-small switch for inline badges, pills, and compact toolbars. Track is visually compact but touch target meets WCAG 2.5.8 minimum (24x24px).",
     },
     sm: {
       classes: "h-5.5 w-8.5",
