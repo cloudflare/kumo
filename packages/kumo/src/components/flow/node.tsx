@@ -193,7 +193,13 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         "data-node-index": index,
         "data-node-id": id,
         "data-testid": renderProps["data-testid"] ?? id,
-        style: { cursor: "default", ...renderProps.style },
+        style: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          cursor: "default",
+          ...renderProps.style,
+        },
         children: renderProps.children ?? children,
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
     } else {
@@ -201,8 +207,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
       element = (
         <li
           ref={mergedRef}
-          className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line"
-          style={{ cursor: "default" }}
+          className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line absolute cursor-default top-0 left-0"
           data-node-index={index}
           data-node-id={id}
           data-testid={id}

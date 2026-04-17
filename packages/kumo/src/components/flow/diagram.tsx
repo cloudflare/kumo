@@ -128,8 +128,6 @@ export function FlowDiagram({
     edges: new Set(),
   });
 
-  console.log(flowState);
-
   const reportNodeSize = useCallback(
     (id: string, width: number, height: number) => {
       setFlowState((prev) => {
@@ -156,7 +154,12 @@ export function FlowDiagram({
   }, []);
 
   const flowStateContextValue = useMemo(
-    () => ({ reportNodeSize, reportEdges, state: flowState }),
+    () => ({
+      reportNodeSize,
+      reportEdges,
+      state: flowState,
+      containerRef: contentRef,
+    }),
     [reportNodeSize, reportEdges, flowState],
   );
 
@@ -419,6 +422,8 @@ type FlowStateContextValue = {
   reportNodeSize: (id: string, width: number, height: number) => void;
   reportEdges: (edges: Set<string>) => void;
   state: FlowState;
+  /** Ref to the root flow content container. Nodes use this to compute their absolute position. */
+  containerRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const FlowStateContext = createContext<FlowStateContextValue | null>(null);
@@ -591,19 +596,8 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
 
   return (
     <DescendantsProvider value={descendants}>
-      <div className="relative" ref={containerRef}>
-        <ul
-          className={cn(
-            "ml-0 list-none",
-            orientation === "vertical"
-              ? "grid auto-rows-min gap-16"
-              : "flex gap-16",
-            orientation === "horizontal" &&
-              (align === "center" ? "items-center" : "items-start"),
-          )}
-        >
-          {children}
-        </ul>
+      <div ref={containerRef}>
+        <ul className="ml-0 list-none">{children}</ul>
         <div className="absolute inset-0 pointer-events-none">
           <Connectors connectors={connectors} orientation={orientation} />
         </div>

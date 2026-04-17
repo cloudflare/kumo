@@ -74,10 +74,7 @@ type FlowParallelNodeProps = {
   align?: "start" | "end";
 };
 
-export function FlowParallelNode({
-  children,
-  align = "start",
-}: FlowParallelNodeProps) {
+export function FlowParallelNode({ children }: FlowParallelNodeProps) {
   const { orientation } = useDiagramContext();
   const descendants = useNodeGroup();
 
@@ -408,24 +405,8 @@ export function FlowParallelNode({
     };
   }, [computeLinks]);
 
-  const previousIsParallel = getPrevious()?.props?.kind === "parallel";
-
   return (
-    <div
-      ref={containerRef}
-      className={cn(
-        "relative isolate",
-        orientation === "horizontal" ? "px-16 -mr-16" : "py-16 -mb-16",
-        orientation === "horizontal"
-          ? previousIsParallel
-            ? "-ml-3"
-            : "-ml-16"
-          : previousIsParallel
-            ? "-mt-3"
-            : "-mt-16",
-      )}
-      data-node-index={index}
-    >
+    <div ref={containerRef} data-node-index={index}>
       <div className="absolute inset-0 pointer-events-none z-1">
         {links && (
           <Connectors connectors={links.connectors} orientation={orientation}>
@@ -446,16 +427,7 @@ export function FlowParallelNode({
           </Connectors>
         )}
       </div>
-      <ul
-        className={cn(
-          "gap-5 list-none flex",
-          align === "start" ? "items-start" : "items-end",
-          orientation === "horizontal"
-            ? "flex-col ml-0"
-            : "gap-5 w-fit mx-auto",
-        )}
-        ref={contentRef}
-      >
+      <ul className="list-none ml-0" ref={contentRef}>
         <DescendantsProvider value={descendants}>
           {children}
         </DescendantsProvider>
