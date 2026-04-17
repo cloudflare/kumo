@@ -13,7 +13,12 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { useNode, type NodeData, type RectLike } from "./diagram";
+import {
+  useFlowStateContext,
+  useNode,
+  type NodeData,
+  type RectLike,
+} from "./diagram";
 import { useDescendantsContext } from "./use-children";
 
 // Utility to merge refs
@@ -75,6 +80,24 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     const { measurementEpoch, notifySizeChange } =
       useDescendantsContext<NodeData>();
 
+    const nodeProps = useMemo(
+      () => ({
+        kind: "node" as const,
+        disabled,
+        ...measurements,
+      }),
+      [measurements, disabled],
+    );
+
+    const { index, id } = useNode(nodeProps, idProp);
+
+    const { reportNodeSize } = useFlowStateContext();
+
+    // Keep a stable ref to the current id so remeasure doesn't need it as a
+    // dependency (avoiding re-creating the callback on every render).
+    const idRef = useRef(id);
+    idRef.current = id;
+
     const remeasure = useCallback(() => {
       if (!nodeRef.current) return;
 
@@ -94,18 +117,9 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         if (JSON.stringify(m) === JSON.stringify(newVal)) return m;
         return newVal;
       });
-    }, []);
 
-    const nodeProps = useMemo(
-      () => ({
-        parallel: false,
-        disabled,
-        ...measurements,
-      }),
-      [measurements, disabled],
-    );
-
-    const { index, id } = useNode(nodeProps, idProp);
+      reportNodeSize(idRef.current, nodeRect.width, nodeRect.height);
+    }, [reportNodeSize]);
 
     /**
      * Observe the node element for size changes so that connectors update even

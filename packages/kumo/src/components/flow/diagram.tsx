@@ -27,6 +27,7 @@ import {
   useOptionalDescendantsContext,
   type DescendantInfo,
 } from "./use-children";
+import { computeEdges } from "./flow-layout";
 
 const DEFAULT_PADDING = {
   y: 64,
@@ -121,6 +122,43 @@ export function FlowDiagram({
 
   const [isPanning, setIsPanning] = useState(false);
   const [canPan, setCanPan] = useState(false);
+
+  const [flowState, setFlowState] = useState<FlowState>({
+    nodes: {},
+    edges: new Set(),
+  });
+
+  console.log(flowState);
+
+  const reportNodeSize = useCallback(
+    (id: string, width: number, height: number) => {
+      setFlowState((prev) => {
+        const existing = prev.nodes[id];
+        if (existing?.width === width && existing?.height === height)
+          return prev;
+        return {
+          ...prev,
+          nodes: {
+            ...prev.nodes,
+            [id]: { ...existing, width, height },
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const reportEdges = useCallback((edges: Set<string>) => {
+    setFlowState((prev) => {
+      const merged = new Set([...prev.edges, ...edges]);
+      return { ...prev, edges: merged };
+    });
+  }, []);
+
+  const flowStateContextValue = useMemo(
+    () => ({ reportNodeSize, reportEdges, state: flowState }),
+    [reportNodeSize, reportEdges, flowState],
+  );
 
   useEffect(() => {
     if (!canvas) return;
@@ -279,57 +317,62 @@ export function FlowDiagram({
   );
 
   return (
-    <DiagramContext.Provider value={contextValue}>
-      <motion.div
-        ref={wrapperRef}
-        className={cn("relative overflow-hidden grow isolate group", className)}
-        style={{
-          paddingTop: padding.y,
-          paddingBottom: padding.y,
-          paddingLeft: padding.x,
-          paddingRight: padding.x,
-          cursor: canPan && !isPanning ? "grab" : undefined,
-        }}
-        onPanStart={handlePanStart}
-        onPan={handlePan}
-        onPanEnd={handlePanEnd}
-      >
+    <FlowStateContext.Provider value={flowStateContextValue}>
+      <DiagramContext.Provider value={contextValue}>
         <motion.div
-          data-testid="flow-contents"
-          ref={contentRef}
-          className="w-max mx-auto"
-          style={{ x, y }}
+          ref={wrapperRef}
+          className={cn(
+            "relative overflow-hidden grow isolate group",
+            className,
+          )}
+          style={{
+            paddingTop: padding.y,
+            paddingBottom: padding.y,
+            paddingLeft: padding.x,
+            paddingRight: padding.x,
+            cursor: canPan && !isPanning ? "grab" : undefined,
+          }}
+          onPanStart={handlePanStart}
+          onPan={handlePan}
+          onPanEnd={handlePanEnd}
         >
-          <FlowNodeList>{children}</FlowNodeList>
+          <motion.div
+            data-testid="flow-contents"
+            ref={contentRef}
+            className="w-max mx-auto"
+            style={{ x, y }}
+          >
+            <FlowNodeList>{children}</FlowNodeList>
+          </motion.div>
+
+          {/* Vertical scrollbar */}
+          {canScrollY && (
+            <div className="absolute right-1 top-1 bottom-1 w-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
+              <motion.div
+                className="absolute w-full rounded-full bg-kumo-fill"
+                style={{
+                  height: `${scrollThumbHeight}%`,
+                  top: scrollTop,
+                }}
+              />
+            </div>
+          )}
+
+          {/* Horizontal scrollbar */}
+          {canScrollX && (
+            <div className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
+              <motion.div
+                className="absolute h-full rounded-full bg-kumo-fill"
+                style={{
+                  width: `${scrollThumbWidth}%`,
+                  left: scrollLeft,
+                }}
+              />
+            </div>
+          )}
         </motion.div>
-
-        {/* Vertical scrollbar */}
-        {canScrollY && (
-          <div className="absolute right-1 top-1 bottom-1 w-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
-            <motion.div
-              className="absolute w-full rounded-full bg-kumo-fill"
-              style={{
-                height: `${scrollThumbHeight}%`,
-                top: scrollTop,
-              }}
-            />
-          </div>
-        )}
-
-        {/* Horizontal scrollbar */}
-        {canScrollX && (
-          <div className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
-            <motion.div
-              className="absolute h-full rounded-full bg-kumo-fill"
-              style={{
-                width: `${scrollThumbWidth}%`,
-                left: scrollLeft,
-              }}
-            />
-          </div>
-        )}
-      </motion.div>
-    </DiagramContext.Provider>
+      </DiagramContext.Provider>
+    </FlowStateContext.Provider>
   );
 }
 
@@ -346,12 +389,47 @@ export type RectLike = {
   height: number;
 };
 
-export type NodeData = {
-  parallel?: boolean;
+type NodeDataBase = {
   disabled?: boolean;
   start?: RectLike | null;
   end?: RectLike | null;
 };
+
+export type NodeData =
+  | (NodeDataBase & { kind: "node" })
+  | (NodeDataBase & { kind: "parallel"; children: string[] })
+  | (NodeDataBase & { kind: "list"; children: string[] });
+
+// ============================================================================
+// FlowState
+// ============================================================================
+
+export type FlowState = {
+  nodes: {
+    [id: string]: {
+      width: number;
+      height: number;
+      position?: { x: number; y: number };
+    };
+  };
+  edges: Set<string>;
+};
+
+type FlowStateContextValue = {
+  reportNodeSize: (id: string, width: number, height: number) => void;
+  reportEdges: (edges: Set<string>) => void;
+  state: FlowState;
+};
+
+const FlowStateContext = createContext<FlowStateContextValue | null>(null);
+
+export function useFlowStateContext(): FlowStateContextValue {
+  const context = useContext(FlowStateContext);
+  if (context === null) {
+    throw new Error("useFlowStateContext must be used within a FlowDiagram");
+  }
+  return context;
+}
 
 export const useNodeGroup = () => useDescendants<NodeData>();
 
@@ -407,6 +485,7 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
   const descendants = useNodeGroup();
   const containerRef = useRef<HTMLDivElement>(null);
   const [connectors, setConnectors] = useState<Connector[]>([]);
+  const { reportEdges } = useFlowStateContext();
 
   const computeConnectors = useCallback(() => {
     const edges: Connector[] = [];
@@ -420,7 +499,11 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
       const currentNode = nodes[i];
       const nextNode = nodes[i + 1];
 
-      if (currentNode.props?.parallel || nextNode.props?.parallel) continue;
+      if (
+        currentNode.props?.kind === "parallel" ||
+        nextNode.props?.kind === "parallel"
+      )
+        continue;
 
       const currentRect = getNodeRect(currentNode, { type: "start" });
       const nextRect = getNodeRect(nextNode, { type: "end" });
@@ -453,6 +536,14 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
   }, [computeConnectors]);
 
   /**
+   * Recompute edges whenever the descendants change. This is the measurement
+   * phase's edge computation — pure, no DOM access.
+   */
+  useLayoutEffect(() => {
+    reportEdges(computeEdges(descendants.descendants));
+  }, [descendants.descendants, reportEdges]);
+
+  /**
    * Recompute on scroll/resize: the container shifts in the viewport without
    * any ResizeObserver firing, so we must re-read all rects explicitly.
    */
@@ -481,12 +572,18 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
 
   const nodeProps = useMemo(
     () => ({
-      parallel: false,
+      kind: "list" as const,
+      children: descendants.descendants.map((d) => d.id),
       disabled: false,
       start: startAnchor,
       end: endAnchor,
     }),
-    [JSON.stringify(startAnchor), JSON.stringify(endAnchor)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      JSON.stringify(startAnchor),
+      JSON.stringify(endAnchor),
+      JSON.stringify(descendants.descendants.map((d) => d.id)),
+    ],
   );
 
   // Register with parent context if we're nested (e.g., inside Flow.Parallel)

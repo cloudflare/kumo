@@ -96,9 +96,18 @@ export function FlowParallelNode({
 
   const { index, getPrevious, getNext } = useNode(
     useMemo(
-      () => ({ parallel: true, start: startAnchor, end: endAnchor }),
+      () => ({
+        kind: "parallel" as const,
+        children: descendants.descendants.map((d) => d.id),
+        start: startAnchor,
+        end: endAnchor,
+      }),
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [JSON.stringify(startAnchor), JSON.stringify(endAnchor)],
+      [
+        JSON.stringify(startAnchor),
+        JSON.stringify(endAnchor),
+        JSON.stringify(descendants.descendants.map((d) => d.id)),
+      ],
     ),
   );
 
@@ -399,7 +408,7 @@ export function FlowParallelNode({
     };
   }, [computeLinks]);
 
-  const previousIsParallel = getPrevious()?.props?.parallel === true;
+  const previousIsParallel = getPrevious()?.props?.kind === "parallel";
 
   return (
     <div
