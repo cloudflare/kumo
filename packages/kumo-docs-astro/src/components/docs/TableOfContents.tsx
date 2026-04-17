@@ -8,6 +8,11 @@ export interface TocHeading {
   text: string;
 }
 
+interface HeadingGroup {
+  h2: TocHeading;
+  h3s: TocHeading[];
+}
+
 interface TableOfContentsProps {
   /** Static headings (MDX pages). Omit to scrape from the DOM (.astro pages). */
   headings?: TocHeading[];
@@ -19,7 +24,7 @@ interface TableOfContentsProps {
 }
 
 /**
- * Scrape h2 elements from the rendered `.kumo-prose` container.
+ * Scrape h2 and h3 elements from the rendered `.kumo-prose` container.
  * Only runs client-side for .astro pages that don't pass headings statically.
  */
 function scrapeHeadings(): TocHeading[] {
@@ -28,13 +33,29 @@ function scrapeHeadings(): TocHeading[] {
   const content = document.querySelector(".kumo-prose");
   if (!content) return [];
 
-  return Array.from(content.querySelectorAll("h2"))
+  return Array.from(content.querySelectorAll("h2, h3"))
     .filter((el) => el.id)
     .map((el) => ({
-      depth: 2,
+      depth: Number(el.tagName[1]),
       slug: el.id,
       text: el.textContent?.trim() ?? "",
     }));
+}
+
+/**
+ * Group a flat list of headings into h2 → h3[] pairs for nested TOC rendering.
+ * h3 headings that appear before any h2 are dropped.
+ */
+function groupHeadings(headings: TocHeading[]): HeadingGroup[] {
+  const groups: HeadingGroup[] = [];
+  for (const heading of headings) {
+    if (heading.depth === 2) {
+      groups.push({ h2: heading, h3s: [] });
+    } else if (heading.depth === 3 && groups.length > 0) {
+      groups[groups.length - 1].h3s.push(heading);
+    }
+  }
+  return groups;
 }
 
 export function TableOfContents({
@@ -50,7 +71,7 @@ export function TableOfContents({
 
   const headings = useMemo(() => {
     if (headingsProp && headingsProp.length > 0) {
-      return headingsProp.filter((h) => h.depth <= 2);
+      return headingsProp.filter((h) => h.depth <= 3);
     }
     // Only scrape after mount to avoid hydration mismatch
     if (!hasMounted) return [];
@@ -143,10 +164,16 @@ export function TableOfContents({
           }}
           className="w-full appearance-none rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
         >
-          {headings.map((heading) => (
-            <option key={heading.slug} value={heading.slug}>
-              {heading.text}
-            </option>
+          {groupHeadings(headings).map((group) => (
+            <optgroup key={group.h2.slug} label={group.h2.text}>
+              <option value={group.h2.slug}>{group.h2.text}</option>
+              {group.h3s.map((h3) => (
+                <option key={h3.slug} value={h3.slug}>
+                  {"  "}
+                  {h3.text}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
         <CaretDownIcon
@@ -163,16 +190,40 @@ export function TableOfContents({
     <TOC>
       <TOC.Title>On this page</TOC.Title>
       <TOC.List ref={navRef}>
-        {headings.map((heading) => (
-          <TOC.Item
-            key={heading.slug}
-            href={`#${heading.slug}`}
-            active={activeId === heading.slug}
-            onClick={() => handleClick(heading.slug)}
-          >
-            {heading.text}
-          </TOC.Item>
-        ))}
+        {groupHeadings(headings).map((group) => {
+          if (group.h3s.length === 0) {
+            return (
+              <TOC.Item
+                key={group.h2.slug}
+                href={`#${group.h2.slug}`}
+                active={activeId === group.h2.slug}
+                onClick={() => handleClick(group.h2.slug)}
+              >
+                {group.h2.text}
+              </TOC.Item>
+            );
+          }
+          return (
+            <TOC.Group
+              key={group.h2.slug}
+              label={group.h2.text}
+              href={`#${group.h2.slug}`}
+              active={activeId === group.h2.slug}
+              onClick={() => handleClick(group.h2.slug)}
+            >
+              {group.h3s.map((h3) => (
+                <TOC.Item
+                  key={h3.slug}
+                  href={`#${h3.slug}`}
+                  active={activeId === h3.slug}
+                  onClick={() => handleClick(h3.slug)}
+                >
+                  {h3.text}
+                </TOC.Item>
+              ))}
+            </TOC.Group>
+          );
+        })}
       </TOC.List>
     </TOC>
   );

@@ -75,6 +75,7 @@ export function TableOfContentsNoActiveDemo() {
   );
 }
 
+/** Shows both group modes: clickable group labels (with `href`) and plain title labels (without `href`). */
 export function TableOfContentsGroupDemo() {
   return (
     <DemoWrapper>
@@ -84,6 +85,14 @@ export function TableOfContentsGroupDemo() {
           <TableOfContents.Item active className="cursor-pointer">
             Overview
           </TableOfContents.Item>
+          <TableOfContents.Group label="Examples" href="#examples-demo">
+            <TableOfContents.Item className="cursor-pointer">
+              Basic example
+            </TableOfContents.Item>
+            <TableOfContents.Item className="cursor-pointer">
+              Advanced example
+            </TableOfContents.Item>
+          </TableOfContents.Group>
           <TableOfContents.Group label="Getting Started">
             <TableOfContents.Item className="cursor-pointer">
               Installation
@@ -92,7 +101,7 @@ export function TableOfContentsGroupDemo() {
               Configuration
             </TableOfContents.Item>
           </TableOfContents.Group>
-          <TableOfContents.Group label="API">
+          <TableOfContents.Group label="API" href="#api-demo">
             <TableOfContents.Item className="cursor-pointer">
               Props
             </TableOfContents.Item>

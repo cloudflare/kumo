@@ -54,6 +54,8 @@ import type { ComponentStyling, ComponentType } from "../../src/registry/types";
 export interface SubComponentConfig {
   /** Sub-component name (e.g., "Root", "Trigger", "Content") */
   name: string;
+  /** Resolved variable name from the Object.assign value (e.g., "TableOfContentsTitle") */
+  valueName: string;
   /** Props type name if available */
   propsType: string | null;
   /** Description extracted from JSDoc or generated */
