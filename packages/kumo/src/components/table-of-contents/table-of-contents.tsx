@@ -6,11 +6,11 @@ export const KUMO_TABLE_OF_CONTENTS_VARIANTS = {
   state: {
     default: {
       classes:
-        "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default hover:font-medium",
+        "text-kumo-subtle hover:border-kumo-line hover:text-kumo-default hover:font-medium",
       description: "Inactive section link",
     },
     active: {
-      classes: "text-kumo-default font-medium",
+      classes: "border-kumo-brand font-medium text-kumo-default",
       description: "Currently visible / active section",
     },
   },
@@ -24,10 +24,7 @@ export type KumoTableOfContentsState =
   keyof typeof KUMO_TABLE_OF_CONTENTS_VARIANTS.state;
 
 const ITEM_BASE =
-  "group relative block w-full truncate rounded-md py-1 pl-5 text-sm text-left no-underline transition-all duration-500";
-
-const INDICATOR_BASE =
-  "absolute inset-y-0 left-0.5 w-0.5 rounded-full transition-all duration-200 bg-kumo-brand";
+  "block w-full truncate border-l-2 border-transparent py-0.5 pl-4 text-sm text-left no-underline";
 
 export type TableOfContentsProps = React.HTMLAttributes<HTMLElement>;
 
@@ -57,16 +54,16 @@ const TableOfContentsTitle = forwardRef<
   />
 ));
 
-export type TableOfContentsListProps = React.HTMLAttributes<HTMLDivElement>;
+export type TableOfContentsListProps = React.HTMLAttributes<HTMLUListElement>;
 
 const TableOfContentsList = forwardRef<
-  HTMLDivElement,
+  HTMLUListElement,
   TableOfContentsListProps
 >(({ className, ...props }, ref) => (
-  <div
+  <ul
     ref={ref}
     className={cn(
-      "relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-line",
+      "flex flex-col gap-2 border-l-2 border-kumo-hairline",
       className,
     )}
     {...props}
@@ -101,16 +98,7 @@ const TableOfContentsItem = forwardRef<
   const combinedClassName = cn(ITEM_BASE, stateClasses, className);
 
   const innerContent = (
-    <>
-      <span
-        aria-hidden="true"
-        className={cn(
-          INDICATOR_BASE,
-          active ? "opacity-100" : "opacity-0 group-hover:opacity-60",
-        )}
-      />
-      <span className="block min-w-0 leading-5">{children}</span>
-    </>
+    <span className="block min-w-0 leading-5">{children}</span>
   );
 
   const sharedProps = {
@@ -123,44 +111,73 @@ const TableOfContentsItem = forwardRef<
 
   // If a render prop is provided, clone it with our props
   if (render && isValidElement(render)) {
-    return cloneElement(render, sharedProps);
+    return <li className="-ml-0.5">{cloneElement(render, sharedProps)}</li>;
   }
 
   // Default to anchor tag
-  // oxlint-disable-next-line anchor-has-content -- children are in sharedProps
-  return <a {...sharedProps} />;
+  return (
+    <li className="-ml-0.5">
+      {/* oxlint-disable-next-line anchor-has-content -- children are in sharedProps */}
+      <a {...sharedProps} />
+    </li>
+  );
 });
 
 export interface TableOfContentsGroupProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
+  React.HTMLAttributes<HTMLLIElement>,
   "title"
 > {
   /** Label displayed above the group's items. */
   label: string;
-  /** URL the group label links to. */
+  /** URL the group label links to. When provided, the label renders as a clickable link with item styling. */
   href?: string;
+  /** Whether this group's label represents the currently active section. Only applies when `href` is provided. */
+  active?: boolean;
 }
 
+const NESTED_UL_CLASSES =
+  "flex flex-col gap-2 border-l-2 border-kumo-hairline [&>li>a]:pl-7 [&>li>button]:pl-7";
+
 const TableOfContentsGroup = forwardRef<
-  HTMLDivElement,
+  HTMLLIElement,
   TableOfContentsGroupProps
->(({ label, href, className, children, ...props }, ref) => (
-  <div ref={ref} className={cn("mt-3", className)} {...props}>
-    {href ? (
-      <a
-        href={href}
-        className="mb-1.5 block pl-5 text-xs font-medium text-kumo-subtle no-underline hover:text-kumo-default"
+>(({ label, href, active = false, className, children, ...props }, ref) => {
+  if (href) {
+    const stateClasses = active
+      ? KUMO_TABLE_OF_CONTENTS_VARIANTS.state.active.classes
+      : KUMO_TABLE_OF_CONTENTS_VARIANTS.state.default.classes;
+
+    return (
+      <li
+        ref={ref}
+        className={cn("-ml-0.5 flex flex-col gap-2", className)}
+        {...props}
       >
-        {label}
-      </a>
-    ) : (
-      <p className="mb-1.5 pl-5 text-xs font-medium text-kumo-subtle">
+        <a
+          href={href}
+          aria-current={active ? ("true" as const) : undefined}
+          className={cn(ITEM_BASE, stateClasses)}
+        >
+          <span className="block min-w-0 leading-5">{label}</span>
+        </a>
+        <ul className={cn(NESTED_UL_CLASSES)}>{children}</ul>
+      </li>
+    );
+  }
+
+  return (
+    <li
+      ref={ref}
+      className={cn("-ml-0.5 flex flex-col gap-2", className)}
+      {...props}
+    >
+      <p className="py-0.5 pl-4 text-sm leading-5 font-medium text-kumo-subtle">
         {label}
       </p>
-    )}
-    <div className="space-y-1.5 pl-3">{children}</div>
-  </div>
-));
+      <ul className={cn(NESTED_UL_CLASSES)}>{children}</ul>
+    </li>
+  );
+});
 
 TableOfContentsRoot.displayName = "TableOfContents";
 TableOfContentsTitle.displayName = "TableOfContents.Title";

@@ -107,7 +107,9 @@ export default function Example() {
 
 <p>
   Use `TableOfContents.Group` to organize items into labeled sections with
-  indented children.
+  indented children. Groups support two modes: pass an `href` to make the group
+  label a clickable link (like "Examples" and "API" below), or omit it for a
+  plain non-interactive title (like "Getting Started").
 </p>
 <ComponentExample demo="TableOfContentsGroupDemo">
   <TableOfContentsGroupDemo client:visible />
@@ -133,31 +135,30 @@ export default function Example() {
   <TableOfContentsRenderPropDemo client:load />
 </ComponentExample>
 
+#### React Router
+
 ```tsx
-// React Router
 <TableOfContents.Item render={<Link to="/intro" />} active>
-  Introduction
-</TableOfContents.Item>
-
-// Next.js
-<TableOfContents.Item render={<Link href="/intro" />} active>
-  Introduction
-</TableOfContents.Item>
-
-// Button (no navigation)
-<TableOfContents.Item render={<button type="button" />} onClick={handleClick}>
   Introduction
 </TableOfContents.Item>
 ```
 
-#### With Next.js
+#### Next.js
 
 ```tsx
 import Link from "next/link";
 
-<TableOfContents.Item render={<Link />} href="/intro" active>
+<TableOfContents.Item render={<Link href="/intro" />} active>
   Introduction
 </TableOfContents.Item>;
+```
+
+#### Button (no navigation)
+
+```tsx
+<TableOfContents.Item render={<button type="button" />} onClick={handleClick}>
+  Introduction
+</TableOfContents.Item>
 ```
 
 </ComponentSection>
@@ -168,5 +169,31 @@ import Link from "next/link";
 
 ## API Reference
 
-  <PropsTable component="TableOfContents" />
+### `TableOfContents`
+
+<p>Root nav container with a default `aria-label` of "Table of contents".</p>
+<PropsTable component="TableOfContents" />
+
+### `TableOfContents.Title`
+
+<p>Optional uppercase heading displayed above the list (renders a `<p>`).</p>
+<PropsTable component="TableOfContents.Title" />
+
+### `TableOfContents.List`
+
+<p>List container with a left border rail.</p>
+<PropsTable component="TableOfContents.List" />
+
+### `TableOfContents.Item`
+
+<p>
+  Individual navigation link. Set `active` for the current section. Use the
+  `render` prop to swap the anchor for a router link or button.
+</p>
+<PropsTable component="TableOfContents.Item" />
+
+### `TableOfContents.Group`
+
+<p>Groups items under a labeled section with indented children. Pass `href` to make the label a clickable link, or omit for a plain title.</p>
+<PropsTable component="TableOfContents.Group" />
 </ComponentSection>
