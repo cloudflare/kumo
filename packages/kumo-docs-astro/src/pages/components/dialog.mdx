@@ -9,7 +9,6 @@ baseUIComponent: "dialog"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   DialogBasicDemo,
@@ -32,10 +31,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Dialog } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Dialog } from "@cloudflare/kumo/components/dialog";`}
     lang="tsx"
@@ -45,7 +49,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Dialog, Button } from "@cloudflare/kumo";
@@ -77,7 +82,9 @@ export default function Example() {
 {/* Dialog vs Alert Dialog */}
 
 <ComponentSection>
-  <Heading level={2}>Dialog vs Alert Dialog</Heading>
+
+## Dialog vs Alert Dialog
+
   <p>
     The Dialog component supports two ARIA roles to properly convey semantic
     meaning to assistive technologies:
@@ -118,27 +125,28 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic Dialog</Heading>
+## Examples
+
+### Basic Dialog
+
 <ComponentExample demo="DialogBasicDemo">
   <DialogBasicDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>
-  Alert Dialog (<code class="font-normal">role="alertdialog"</code>)
-</Heading>
+### Alert Dialog (`role="alertdialog"`)
+
 <p>
   For destructive or confirmation dialogs, use `role="alertdialog"` on
   `Dialog.Root`. This provides proper accessibility semantics by rendering the
   dialog with `role="alertdialog"` instead of `role="dialog"`.
 </p>
 <div class="mb-4 rounded-lg border border-kumo-info/30 bg-kumo-info/10 p-4 text-sm text-kumo-info">
-  <p class="font-medium mb-2">
+  <p class="font-medium mb-2 text-sm">
     When to use{" "}
     <code class="bg-kumo-info/20 px-1 rounded">role="alertdialog"</code>:
   </p>
-  <ul class="list-disc list-inside space-y-1 ml-2">
+  <ul class="list-disc list-inside space-y-1 ml-2 mb-0">
     <li>Destructive actions (delete, discard, remove)</li>
     <li>Confirmation flows requiring explicit user acknowledgment</li>
     <li>Actions that cannot be undone</li>
@@ -149,10 +157,8 @@ export default function Example() {
   <DialogAlertDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>
-  Confirmation Dialog (with{" "}
-  <code class="font-normal">disablePointerDismissal</code>)
-</Heading>
+### Confirmation Dialog (with `disablePointerDismissal`)
+
 <p>
   For confirmation dialogs that should not be dismissed by clicking outside, use
   `disablePointerDismissal` on `Dialog.Root`. This can be combined with
@@ -162,24 +168,28 @@ export default function Example() {
   <DialogConfirmationDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>With Actions</Heading>
+### With Actions
+
 <ComponentExample demo="DialogWithActionsDemo">
   <DialogWithActionsDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>With Select</Heading>
+### With Select
+
 <p>Dialog containing a Select dropdown.</p>
 <ComponentExample demo="DialogWithSelectDemo">
   <DialogWithSelectDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>With Combobox</Heading>
+### With Combobox
+
 <p>Dialog containing a Combobox for searchable selection.</p>
 <ComponentExample demo="DialogWithComboboxDemo">
   <DialogWithComboboxDemo client:load />
 </ComponentExample>
 
-  <Heading level={3}>With Dropdown</Heading>
+### With Dropdown
+
   <p>Dialog containing a Dropdown menu.</p>
   <ComponentExample demo="DialogWithDropdownDemo">
     <DialogWithDropdownDemo client:load />
@@ -189,13 +199,16 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Dialog</Heading>
+## API Reference
+
+### Dialog
+
 <p>The main dialog container that renders the modal overlay and popup.</p>
 <PropsTable component="Dialog" />
 
-<Heading level={3}>Dialog.Root</Heading>
+### Dialog.Root
+
 <p>
   Controls the open state of the dialog. Doesn't render its own HTML element.
 </p>
@@ -233,19 +246,23 @@ export default function Example() {
 </div>
 <PropsTable component="Dialog.Root" />
 
-<Heading level={3}>Dialog.Trigger</Heading>
+### Dialog.Trigger
+
 <p>A button that opens the dialog when clicked.</p>
 <PropsTable component="Dialog.Trigger" />
 
-<Heading level={3}>Dialog.Title</Heading>
+### Dialog.Title
+
 <p>A heading that labels the dialog for accessibility.</p>
 <PropsTable component="Dialog.Title" />
 
-<Heading level={3}>Dialog.Description</Heading>
+### Dialog.Description
+
 <p>A paragraph providing additional context about the dialog.</p>
 <PropsTable component="Dialog.Description" />
 
-  <Heading level={3}>Dialog.Close</Heading>
+### Dialog.Close
+
   <p>A button that closes the dialog when clicked.</p>
   <PropsTable component="Dialog.Close" />
 </ComponentSection>

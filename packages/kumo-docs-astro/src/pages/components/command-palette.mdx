@@ -7,7 +7,6 @@ sourceFile: "components/command-palette"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import KeyboardShortcuts from "~/components/docs/KeyboardShortcuts.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
@@ -28,14 +27,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { CommandPalette } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { CommandPalette } from "@cloudflare/kumo/components/command-palette";
@@ -46,7 +47,9 @@ import { CommandPalette } from "@cloudflare/kumo/components/command-palette";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
+
   <p>
     CommandPalette is a compound component built on Base UI's Autocomplete
     primitive. It provides accessible keyboard navigation and customizable
@@ -109,7 +112,9 @@ export default function Example() {
 {/* Keyboard Navigation */}
 
 <ComponentSection>
-  <Heading level={2}>Keyboard Navigation</Heading>
+
+## Keyboard Navigation
+
   <p>Built-in keyboard navigation is provided automatically:</p>
   <KeyboardShortcuts
     shortcuts={[
@@ -124,27 +129,32 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>With Grouped Items</Heading>
+## Examples
+
+### With Grouped Items
+
 <p>Group related commands together with labels.</p>
 <ComponentExample demo="CommandPaletteBasicDemo">
   <CommandPaletteBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Simple Flat List</Heading>
+### Simple Flat List
+
 <p>For simpler use cases, use a flat array of items without grouping.</p>
 <ComponentExample demo="CommandPaletteSimpleDemo">
   <CommandPaletteSimpleDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Loading State</Heading>
+### Loading State
+
 <p>Show a loading spinner while fetching results.</p>
 <ComponentExample demo="CommandPaletteLoadingDemo">
   <CommandPaletteLoadingDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>ResultItem with Breadcrumbs</Heading>
+### ResultItem with Breadcrumbs
+
   <p>
     Use `ResultItem` for rich items with
     breadcrumbs, icons, and optional text highlighting.
@@ -157,60 +167,76 @@ export default function Example() {
 {/* Component Parts */}
 
 <ComponentSection>
-  <Heading level={2}>Component Parts</Heading>
 
-<Heading level={3}>CommandPalette.Root</Heading>
+## Component Parts
+
+### CommandPalette.Root
+
 <p>
   The main wrapper that combines Dialog + Panel. Manages open state and
   Autocomplete functionality.
 </p>
 
-<Heading level={3}>CommandPalette.Dialog</Heading>
+### CommandPalette.Dialog
+
 <p>
   Modal dialog wrapper. Use with Panel for swappable content (e.g., drill-down
   navigation).
 </p>
 
-<Heading level={3}>CommandPalette.Panel</Heading>
+### CommandPalette.Panel
+
 <p>
   Autocomplete panel without dialog. Use inside Dialog for content that can swap
   without re-mounting.
 </p>
 
-<Heading level={3}>CommandPalette.Input</Heading>
+### CommandPalette.Input
+
 <p>Search input field with auto-focus and keyboard handling.</p>
 
-<Heading level={3}>CommandPalette.List</Heading>
+### CommandPalette.List
+
 <p>Scrollable container for results.</p>
 
-<Heading level={3}>CommandPalette.Results</Heading>
+### CommandPalette.Results
+
 <p>Render prop iterator for items/groups.</p>
 
-<Heading level={3}>CommandPalette.Group</Heading>
+### CommandPalette.Group
+
 <p>Category grouping container.</p>
 
-<Heading level={3}>CommandPalette.GroupLabel</Heading>
+### CommandPalette.GroupLabel
+
 <p>Section header text within a group.</p>
 
-<Heading level={3}>CommandPalette.Items</Heading>
+### CommandPalette.Items
+
 <p>Render prop iterator for items within a group.</p>
 
-<Heading level={3}>CommandPalette.Item</Heading>
+### CommandPalette.Item
+
 <p>Basic selectable item.</p>
 
-<Heading level={3}>CommandPalette.ResultItem</Heading>
+### CommandPalette.ResultItem
+
 <p>Rich item with breadcrumbs, icons, and text highlighting.</p>
 
-<Heading level={3}>CommandPalette.HighlightedText</Heading>
+### CommandPalette.HighlightedText
+
 <p>Renders text with highlighted portions based on match indices.</p>
 
-<Heading level={3}>CommandPalette.Empty</Heading>
+### CommandPalette.Empty
+
 <p>Empty state when no results match.</p>
 
-<Heading level={3}>CommandPalette.Loading</Heading>
+### CommandPalette.Loading
+
 <p>Loading spinner state.</p>
 
-  <Heading level={3}>CommandPalette.Footer</Heading>
+### CommandPalette.Footer
+
   <p>
     Footer for keyboard hints or other content.
   </p>
@@ -219,9 +245,10 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>CommandPalette.Root Props</Heading>
+## API Reference
+
+### CommandPalette.Root Props
 
 ```tsx
 interface CommandPaletteRootProps<TGroup, TItem> {
@@ -246,7 +273,7 @@ interface CommandPaletteRootProps<TGroup, TItem> {
 }
 ```
 
-<Heading level={3}>CommandPalette.ResultItem Props</Heading>
+### CommandPalette.ResultItem Props
 
 ```tsx
 interface CommandPaletteResultItemProps<T> {

@@ -150,10 +150,34 @@ export type CheckboxProps = {
  * </Checkbox.Group>
  * ```
  */
+/**
+ * Props for Checkbox.Legend — a composable sub-component for labeling a Checkbox.Group.
+ *
+ * Place as a direct child of `<Checkbox.Group>` to provide a styled, accessible legend.
+ * Accepts `className` for full styling control (e.g. `className="sr-only"` to visually hide).
+ *
+ * @example
+ * ```tsx
+ * <Checkbox.Group>
+ *   <Checkbox.Legend className="sr-only">Preferences</Checkbox.Legend>
+ *   <Checkbox.Item label="Email" value="email" />
+ * </Checkbox.Group>
+ * ```
+ */
+export interface CheckboxLegendProps {
+  /** Legend content */
+  children: ReactNode;
+  /** Additional CSS classes (e.g. "sr-only" to visually hide the legend) */
+  className?: string;
+}
+
 export interface CheckboxGroupProps {
-  /** Legend text for the group */
-  legend: string;
-  /** Child Checkbox.Item components */
+  /**
+   * Legend text for the group.
+   * For more control over legend styling, omit this prop and use `<Checkbox.Legend>` as a child instead.
+   */
+  legend?: string;
+  /** Child Checkbox.Item components (and optionally a Checkbox.Legend) */
   children: ReactNode;
   /** Error message for the group (only appears in groups, not single checkboxes) */
   error?: string;
@@ -265,6 +289,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
           !disabled &&
             "hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+            "hover:ring-kumo-hairline focus-visible:ring-kumo-hairline",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
@@ -393,6 +418,19 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
 
 CheckboxItem.displayName = "Checkbox.Item";
 
+// Checkbox.Legend — composable legend sub-component for Checkbox.Group
+function CheckboxLegend({ children, className }: CheckboxLegendProps) {
+  return (
+    <Fieldset.Legend
+      className={cn("text-base font-medium text-kumo-default", className)}
+    >
+      {children}
+    </Fieldset.Legend>
+  );
+}
+
+CheckboxLegend.displayName = "Checkbox.Legend";
+
 // Checkbox.Group with built-in Fieldset and CheckboxGroup
 function CheckboxGroup({
   legend,
@@ -417,9 +455,11 @@ function CheckboxGroup({
         disabled={disabled}
       >
         <Fieldset.Root className={cn("flex flex-col gap-4", className)}>
-          <Fieldset.Legend className="text-base font-medium text-kumo-default">
-            {legend}
-          </Fieldset.Legend>
+          {legend && (
+            <Fieldset.Legend className="text-base font-medium text-kumo-default">
+              {legend}
+            </Fieldset.Legend>
+          )}
           <div className="flex flex-col gap-2">{children}</div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
           {description && (
@@ -435,6 +475,7 @@ function CheckboxGroup({
 export const Checkbox = Object.assign(CheckboxBase, {
   Item: CheckboxItem,
   Group: CheckboxGroup,
+  Legend: CheckboxLegend,
 });
 
 Checkbox.displayName = "Checkbox";

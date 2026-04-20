@@ -1,5 +1,32 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.3.18
+
+### Patch Changes
+
+- 547c7fa: Updated the token value for `kumo-line` and `kumo-hairline` in dark mode so they are more visible.
+  - replace `kumo-line` usages with `kumo-hairline` across Kumo components and docs UI/content styles
+  - use `ring-kumo-line` for shadowed surfaces (for example combobox, dialog, select, dropdown, toast, and related surface wrappers)
+  - adjust theme token configuration and generated styles to support updated neutral/hairline appearance
+
+- Updated dependencies [da6eee1]
+- Updated dependencies [4785c43]
+- Updated dependencies [1e7ba10]
+- Updated dependencies [2682319]
+- Updated dependencies [a0f2b18]
+- Updated dependencies [9eb1306]
+- Updated dependencies [4565baa]
+- Updated dependencies [4dfdc3f]
+- Updated dependencies [98e3170]
+- Updated dependencies [9c3cdbf]
+- Updated dependencies [27bcd59]
+- Updated dependencies [a8adf02]
+- Updated dependencies [547c7fa]
+- Updated dependencies [58b5777]
+- Updated dependencies [460a603]
+- Updated dependencies [0cae077]
+  - @cloudflare/kumo@1.19.0
+
 ## 1.3.17
 
 ### Patch Changes

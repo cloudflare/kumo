@@ -1,0 +1,364 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  SelectStrictNullChecksDemo,
+  SelectRenderValuePlaceholderDemo,
+  SelectItemsArrayDemo,
+  SelectItemsObjectMapDemo,
+  SelectMultipleDemo,
+  SelectControlledVsUncontrolledDemo,
+  SelectGroupedOptionsDemo,
+  SelectFieldIntegrationDemo,
+  SelectSizeVariantsDemo,
+  SelectLoadingStateDemo,
+  SelectDisabledOptionsDemo,
+  SelectInferenceDemo,
+} from "../../components/demos/SelectStressTestDemo";
+
+const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono overflow-x-auto whitespace-pre text-kumo-default";
+---
+
+<BaseLayout title="Select Stress Test">
+  <div class="p-16 space-y-12 max-w-[900px] mx-auto mb-64">
+    <div>
+      <h1 class="text-2xl font-bold text-kumo-strong">Select Component Stress Test</h1>
+      <p class="mt-2 text-kumo-subtle">
+        Comprehensive tests for Select component edge cases, TypeScript inference,
+        and API interactions. Used to verify fixes for the strictNullChecks bug
+        and renderValue/placeholder behavior.
+      </p>
+    </div>
+
+    <!-- 1. strictNullChecks Bug Test -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">1. strictNullChecks Bug</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          <code class="bg-kumo-tint px-1 rounded">value=&#123;objectOrNull&#125;</code> should not cause T to infer as <code class="bg-kumo-tint px-1 rounded">never</code>.
+          The onValueChange callback should receive <code class="bg-kumo-tint px-1 rounded">User | null</code>.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectStrictNullChecksDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`const [selected, setSelected] = useState<User | null>(null);
+
+<Select<User>
+  label="Select User"
+  placeholder="Choose a user..."
+  value={selected}
+  onValueChange={(value) => setSelected(value)}  // value: User | null
+  renderValue={(user) => <span>{user.name}</span>}
+>
+  {users.map((user) => (
+    <Select.Option key={user.id} value={user}>
+      {user.name}
+    </Select.Option>
+  ))}
+</Select>`}</pre>
+    </section>
+
+    <!-- 2. renderValue + placeholder -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">2. renderValue + placeholder</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          <code class="bg-kumo-tint px-1 rounded">renderValue</code> is only called with non-null values.
+          The placeholder shows when no value is selected.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectRenderValuePlaceholderDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`<Select<Country>
+  label="Select Country"
+  placeholder="Pick a country..."      // Shows when value is null
+  value={country}
+  onValueChange={setCountry}
+  renderValue={(c) => (                // Only called when c is non-null
+    <span>{c.flag} {c.name}</span>
+  )}
+>
+  {countries.map((c) => (
+    <Select.Option key={c.code} value={c}>
+      {c.flag} {c.name}
+    </Select.Option>
+  ))}
+</Select>`}</pre>
+    </section>
+
+    <!-- 3. items array -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">3. items Array Prop</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Using <code class="bg-kumo-tint px-1 rounded">items</code> prop with array of <code class="bg-kumo-tint px-1 rounded">&#123; label, value &#125;</code> objects.
+          Auto-generates Select.Option elements.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectItemsArrayDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`const priorities: Priority[] = [
+  { level: 1, name: "Critical", color: "text-kumo-danger" },
+  { level: 2, name: "High", color: "text-kumo-warning" },
+  // ...
+];
+
+<Select<Priority>
+  label="Priority"
+  placeholder="Select priority..."
+  value={priority}
+  onValueChange={setPriority}
+  items={priorities.map((p) => ({
+    label: <span className={p.color}>[{p.level}] {p.name}</span>,
+    value: p,
+  }))}
+  renderValue={(p) => (
+    <span className={p.color}>[{p.level}] {p.name}</span>
+  )}
+/>`}</pre>
+    </section>
+
+    <!-- 4. items object map -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">4. items Object Map</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Using <code class="bg-kumo-tint px-1 rounded">items</code> prop with object map.
+          Supports <code class="bg-kumo-tint px-1 rounded">SelectItemDescriptor</code> for disabled options.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectItemsObjectMapDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`<Select
+  label="Status"
+  placeholder="Select status..."
+  value={status}
+  onValueChange={setStatus}
+  items={{
+    active: "Active",                              // Simple string label
+    pending: "Pending",
+    inactive: "Inactive",
+    archived: { label: "Archived", disabled: true }, // SelectItemDescriptor
+  }}
+/>`}</pre>
+    </section>
+
+    <!-- 5. Multiple selection -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">5. Multiple Selection</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          <code class="bg-kumo-tint px-1 rounded">multiple</code> mode with object values.
+          <code class="bg-kumo-tint px-1 rounded">renderValue</code> receives <code class="bg-kumo-tint px-1 rounded">T[]</code> instead of <code class="bg-kumo-tint px-1 rounded">T</code>.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectMultipleDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+
+<Select<User, true>                    // Note: second generic is true
+  label="Select Users"
+  placeholder="Choose users..."
+  multiple                             // Enable multi-select
+  value={selectedUsers}                // T[] not T
+  onValueChange={setSelectedUsers}     // (users: User[]) => void
+  renderValue={(users) => (            // users is User[]
+    <span>{users.map((u) => u.name).join(", ")}</span>
+  )}
+>
+  {users.map((user) => (
+    <Select.Option key={user.id} value={user}>
+      {user.name}
+    </Select.Option>
+  ))}
+</Select>`}</pre>
+    </section>
+
+    <!-- 6. Controlled vs Uncontrolled -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">6. Controlled vs Uncontrolled</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Toggle between controlled (<code class="bg-kumo-tint px-1 rounded">value</code>) and uncontrolled (<code class="bg-kumo-tint px-1 rounded">defaultValue</code>) modes.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectControlledVsUncontrolledDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`// Controlled: you manage the state
+const [value, setValue] = useState<string | null>(null);
+<Select
+  value={value}
+  onValueChange={setValue}
+  items={{ apple: "Apple", banana: "Banana" }}
+/>
+
+// Uncontrolled: component manages state internally
+<Select
+  defaultValue="banana"
+  items={{ apple: "Apple", banana: "Banana" }}
+/>`}</pre>
+    </section>
+
+    <!-- 7. Grouped options -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">7. Groups and Separators</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Using compound components for structured option lists.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectGroupedOptionsDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`<Select label="Category" placeholder="Select...">
+  <Select.Group>
+    <Select.GroupLabel>Fruits</Select.GroupLabel>
+    <Select.Option value="apple">Apple</Select.Option>
+    <Select.Option value="banana">Banana</Select.Option>
+  </Select.Group>
+  <Select.Separator />
+  <Select.Group>
+    <Select.GroupLabel>Vegetables</Select.GroupLabel>
+    <Select.Option value="carrot">Carrot</Select.Option>
+    <Select.Option value="broccoli">Broccoli</Select.Option>
+  </Select.Group>
+</Select>`}</pre>
+    </section>
+
+    <!-- 8. Field integration -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">8. Field Integration</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Auto-wraps with Field component when <code class="bg-kumo-tint px-1 rounded">label</code> is provided.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectFieldIntegrationDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`<Select
+  label="Required Field"
+  placeholder="This field is required..."
+  required                             // Shows required indicator
+  value={value}
+  onValueChange={setValue}
+  description="Helper text below"      // Shows description
+  error={!value ? "Required" : undefined}  // Shows error message
+  labelTooltip="Tooltip on hover"      // Info icon with tooltip
+  items={{ a: "Option A", b: "Option B" }}
+/>`}</pre>
+    </section>
+
+    <!-- 9. Size variants -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">9. Size Variants</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          All four sizes match Input component sizing.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectSizeVariantsDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`<Select size="xs" ... />  // Extra small: h-5 (20px)
+<Select size="sm" ... />  // Small: h-6.5 (26px)
+<Select size="base" ... /> // Default: h-9 (36px)
+<Select size="lg" ... />  // Large: h-10 (40px)`}</pre>
+    </section>
+
+    <!-- 10. Loading state -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">10. Loading State</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Shows skeleton and disables interaction while loading.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectLoadingStateDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`const [loading, setLoading] = useState(true);
+
+<Select
+  label="Data Loading"
+  placeholder="Select when loaded..."
+  loading={loading}  // Shows SkeletonLine, disables trigger
+  items={{ ... }}
+/>`}</pre>
+    </section>
+
+    <!-- 11. Disabled options -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">11. Disabled Options</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          Individual options can be disabled via <code class="bg-kumo-tint px-1 rounded">SelectItemDescriptor</code> or <code class="bg-kumo-tint px-1 rounded">disabled</code> prop on Option.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectDisabledOptionsDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`// Via items prop with SelectItemDescriptor
+<Select
+  items={{
+    available: "Available",
+    disabled: { label: "Disabled", disabled: true },
+  }}
+/>
+
+// Via Select.Option prop
+<Select>
+  <Select.Option value="available">Available</Select.Option>
+  <Select.Option value="disabled" disabled>Disabled</Select.Option>
+</Select>`}</pre>
+    </section>
+
+    <!-- 12. Type inference -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">12. Type Inference (No Explicit Generic)</h2>
+        <p class="text-sm text-kumo-subtle mt-1">
+          TypeScript infers types from usage when possible.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <SelectInferenceDemo client:visible />
+      </div>
+      <pre class={codeBlockClass}>{`// No explicit <T> - inferred from items/value
+const [value, setValue] = useState<string | null>(null);
+
+<Select
+  value={value}
+  onValueChange={(v) => setValue(v)}  // v inferred as string | null
+  items={{ foo: "Foo", bar: "Bar" }}
+/>
+
+// With explicit generic for complex types
+<Select<User>
+  value={user}
+  onValueChange={setUser}
+  renderValue={(u) => u.name}  // u is User, not unknown
+>
+  ...
+</Select>`}</pre>
+    </section>
+
+    <!-- Summary -->
+    <section class="mt-16 p-6 rounded-lg bg-kumo-tint">
+      <h2 class="text-lg font-semibold text-kumo-strong mb-4">Test Coverage Summary</h2>
+      <ul class="space-y-2 text-sm text-kumo-default">
+        <li><strong>TypeScript:</strong> strictNullChecks, generic inference, callback typing</li>
+        <li><strong>API:</strong> renderValue, placeholder, items (array/object)</li>
+        <li><strong>Modes:</strong> controlled, uncontrolled, single, multiple</li>
+        <li><strong>Field:</strong> label, description, error, required, tooltip</li>
+        <li><strong>States:</strong> loading, disabled options, size variants</li>
+        <li><strong>Compound:</strong> Group, GroupLabel, Separator, Option</li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

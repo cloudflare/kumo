@@ -9,7 +9,6 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   BannerVariantsDemo,
   BannerDefaultDemo,
@@ -32,10 +31,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Banner } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Banner } from "@cloudflare/kumo/components/banner";`}
     lang="tsx"
@@ -45,7 +49,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Banner } from "@cloudflare/kumo";
@@ -67,41 +72,49 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Variants</Heading>
+## Examples
 
-<h4 class="mb-3 text-base font-medium">Default</h4>
+### Variants
+
+#### Default
+
 <ComponentExample demo="BannerDefaultDemo">
   <BannerDefaultDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Alert</h4>
+#### Alert
+
 <ComponentExample demo="BannerAlertDemo">
   <BannerAlertDemo client:visible />
 </ComponentExample>
 
-<h4 class="mb-3 text-base font-medium">Error</h4>
+#### Error
+
 <ComponentExample demo="BannerErrorDemo">
   <BannerErrorDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With icon</Heading>
+### With icon
+
 <ComponentExample demo="BannerWithIconDemo">
   <BannerWithIconDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>With action</Heading>
+### With action
+
   <ComponentExample demo="BannerWithActionDemo">
     <BannerWithActionDemo client:visible />
   </ComponentExample>
 
-  <Heading level={3}>With multiple actions</Heading>
+### With multiple actions
+
   <ComponentExample demo="BannerWithActionsDemo">
     <BannerWithActionsDemo client:visible />
   </ComponentExample>
 
-  <Heading level={3}>Custom content</Heading>
+### Custom content
+
   <ComponentExample demo="BannerCustomContentDemo">
     <BannerCustomContentDemo client:visible />
   </ComponentExample>
@@ -110,6 +123,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Banner" />
 </ComponentSection>

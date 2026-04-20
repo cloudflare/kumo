@@ -335,13 +335,12 @@ export function SelectComplexDemo() {
     <Select
       label="Author"
       description="Select the primary author for this document"
+      placeholder="Select an author"
       className="w-[200px]"
       onValueChange={(v) => setValue(v as (typeof authors)[0] | null)}
       value={value}
       isItemEqualToValue={(item, value) => item?.id === value?.id}
-      renderValue={(author) => {
-        return author?.name ?? "Select an author";
-      }}
+      renderValue={(author) => author.name}
     >
       {authors.map((author) => (
         <Select.Option key={author.id} value={author}>
@@ -355,9 +354,22 @@ export function SelectComplexDemo() {
   );
 }
 
+interface Region {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+const regions: Region[] = [
+  { value: "us-east", label: "US East" },
+  { value: "us-west", label: "US West" },
+  { value: "eu-west", label: "EU West", disabled: true },
+  { value: "ap-south", label: "AP South", disabled: true },
+];
+
 /** Select with disabled options that cannot be selected. */
 export function SelectDisabledOptionsDemo() {
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<Region | null>(null);
 
   return (
     <Select
@@ -365,16 +377,18 @@ export function SelectDisabledOptionsDemo() {
       placeholder="Choose a region..."
       className="w-[250px]"
       value={value}
-      onValueChange={(v) => setValue(v as string | null)}
+      onValueChange={(v) => setValue(v as Region | null)}
+      isItemEqualToValue={(item, val) => item.value === val.value}
     >
-      <Select.Option value="us-east">US East</Select.Option>
-      <Select.Option value="us-west">US West</Select.Option>
-      <Select.Option value="eu-west" disabled>
-        EU West
-      </Select.Option>
-      <Select.Option value="ap-south" disabled>
-        AP South
-      </Select.Option>
+      {regions.map((region) => (
+        <Select.Option
+          key={region.value}
+          value={region}
+          disabled={region.disabled}
+        >
+          {region.label}
+        </Select.Option>
+      ))}
     </Select>
   );
 }
@@ -400,8 +414,24 @@ export function SelectDisabledItemsDemo() {
 }
 
 /** Select with grouped options and separators. */
+const foods = {
+  fruits: [
+    { value: "apple", label: "Apple" },
+    { value: "banana", label: "Banana" },
+    { value: "cherry", label: "Cherry" },
+  ],
+  vegetables: [
+    { value: "carrot", label: "Carrot" },
+    { value: "broccoli", label: "Broccoli" },
+    { value: "spinach", label: "Spinach" },
+  ],
+};
+
+type Food = (typeof foods.fruits)[0];
+
+/** Select with grouped options organized under labeled headers. */
 export function SelectGroupedDemo() {
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<Food | null>(null);
 
   return (
     <Select
@@ -409,28 +439,48 @@ export function SelectGroupedDemo() {
       placeholder="Pick a food..."
       className="w-[220px]"
       value={value}
-      onValueChange={(v) => setValue(v as string | null)}
+      onValueChange={(v) => setValue(v as Food | null)}
+      isItemEqualToValue={(item, val) => item.value === val.value}
     >
       <Select.Group>
         <Select.GroupLabel>Fruits</Select.GroupLabel>
-        <Select.Option value="apple">Apple</Select.Option>
-        <Select.Option value="banana">Banana</Select.Option>
-        <Select.Option value="cherry">Cherry</Select.Option>
+        {foods.fruits.map((food) => (
+          <Select.Option key={food.value} value={food}>
+            {food.label}
+          </Select.Option>
+        ))}
       </Select.Group>
       <Select.Separator />
       <Select.Group>
         <Select.GroupLabel>Vegetables</Select.GroupLabel>
-        <Select.Option value="carrot">Carrot</Select.Option>
-        <Select.Option value="broccoli">Broccoli</Select.Option>
-        <Select.Option value="spinach">Spinach</Select.Option>
+        {foods.vegetables.map((food) => (
+          <Select.Option key={food.value} value={food}>
+            {food.label}
+          </Select.Option>
+        ))}
       </Select.Group>
     </Select>
   );
 }
 
 /** Select combining groups, separators, and disabled options. */
+const serverRegions = {
+  available: [
+    { value: "us-east-1", label: "US East (N. Virginia)" },
+    { value: "us-west-2", label: "US West (Oregon)" },
+    { value: "eu-west-1", label: "EU West (Ireland)" },
+  ],
+  unavailable: [
+    { value: "ap-south-1", label: "AP South (Mumbai)" },
+    { value: "sa-east-1", label: "SA East (São Paulo)" },
+  ],
+};
+
+type ServerRegion = (typeof serverRegions.available)[0];
+
+/** Grouped select with disabled options and info tooltips. */
 export function SelectGroupedWithDisabledDemo() {
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<ServerRegion | null>(null);
 
   return (
     <Select
@@ -438,23 +488,25 @@ export function SelectGroupedWithDisabledDemo() {
       placeholder="Select a region..."
       className="w-[260px]"
       value={value}
-      onValueChange={(v) => setValue(v as string | null)}
+      onValueChange={(v) => setValue(v as ServerRegion | null)}
+      isItemEqualToValue={(item, val) => item.value === val.value}
     >
       <Select.Group>
         <Select.GroupLabel>Available</Select.GroupLabel>
-        <Select.Option value="us-east-1">US East (N. Virginia)</Select.Option>
-        <Select.Option value="us-west-2">US West (Oregon)</Select.Option>
-        <Select.Option value="eu-west-1">EU West (Ireland)</Select.Option>
+        {serverRegions.available.map((region) => (
+          <Select.Option key={region.value} value={region}>
+            {region.label}
+          </Select.Option>
+        ))}
       </Select.Group>
       <Select.Separator />
       <Select.Group>
         <Select.GroupLabel>Unavailable</Select.GroupLabel>
-        <Select.Option value="ap-south-1" disabled>
-          AP South (Mumbai)
-        </Select.Option>
-        <Select.Option value="sa-east-1" disabled>
-          SA East (São Paulo)
-        </Select.Option>
+        {serverRegions.unavailable.map((region) => (
+          <Select.Option key={region.value} value={region} disabled>
+            {region.label}
+          </Select.Option>
+        ))}
       </Select.Group>
     </Select>
   );
@@ -466,9 +518,11 @@ const longListItems = Array.from({ length: 50 }, (_, i) => ({
   label: `Option ${i + 1}`,
 }));
 
+type LongListItem = (typeof longListItems)[0];
+
 /** Select with a long list to test popup scrolling behavior. */
 export function SelectLongListDemo() {
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<LongListItem | null>(null);
 
   return (
     <Select
@@ -477,10 +531,11 @@ export function SelectLongListDemo() {
       placeholder="Choose an option..."
       className="w-[220px]"
       value={value}
-      onValueChange={(v) => setValue(v as string | null)}
+      onValueChange={(v) => setValue(v as LongListItem | null)}
+      isItemEqualToValue={(item, val) => item.value === val.value}
     >
       {longListItems.map((item) => (
-        <Select.Option key={item.value} value={item.value}>
+        <Select.Option key={item.value} value={item}>
           {item.label}
         </Select.Option>
       ))}

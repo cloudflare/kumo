@@ -7,7 +7,6 @@ sourceFile: "components/table-of-contents"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TableOfContentsBasicDemo,
@@ -29,14 +28,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { TableOfContents } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { TableOfContents } from "@cloudflare/kumo/components/table-of-contents";
@@ -47,7 +48,8 @@ import { TableOfContents } from "@cloudflare/kumo/components/table-of-contents";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { TableOfContents } from "@cloudflare/kumo";
@@ -78,9 +80,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Interactive</Heading>
+## Examples
+
+### Interactive
+
 <p>
   Click an item to set it as active. The consumer controls state via `active`
   and `onClick`.
@@ -89,7 +93,8 @@ export default function Example() {
   <TableOfContentsInteractiveDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>No active item</Heading>
+### No active item
+
 <p>
   When no item has `active` set, all items show the default subtle text style
   with a hover indicator.
@@ -98,16 +103,20 @@ export default function Example() {
   <TableOfContentsNoActiveDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Groups</Heading>
+### Groups
+
 <p>
   Use `TableOfContents.Group` to organize items into labeled sections with
-  indented children.
+  indented children. Groups support two modes: pass an `href` to make the group
+  label a clickable link (like "Examples" and "API" below), or omit it for a
+  plain non-interactive title (like "Getting Started").
 </p>
 <ComponentExample demo="TableOfContentsGroupDemo">
   <TableOfContentsGroupDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Without title</Heading>
+### Without title
+
 <p>
   The title sub-component is optional — use `TableOfContents.List` directly if
   you don't need a heading.
@@ -116,7 +125,8 @@ export default function Example() {
   <TableOfContentsWithoutTitleDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom element</Heading>
+### Custom element
+
 <p>
   Use the `render` prop to swap the default anchor for a button, router link, or
   any element.
@@ -125,31 +135,30 @@ export default function Example() {
   <TableOfContentsRenderPropDemo client:load />
 </ComponentExample>
 
+#### React Router
+
 ```tsx
-// React Router
 <TableOfContents.Item render={<Link to="/intro" />} active>
-  Introduction
-</TableOfContents.Item>
-
-// Next.js
-<TableOfContents.Item render={<Link href="/intro" />} active>
-  Introduction
-</TableOfContents.Item>
-
-// Button (no navigation)
-<TableOfContents.Item render={<button type="button" />} onClick={handleClick}>
   Introduction
 </TableOfContents.Item>
 ```
 
-**With Next.js**
+#### Next.js
 
 ```tsx
 import Link from "next/link";
 
-<TableOfContents.Item render={<Link />} href="/intro" active>
+<TableOfContents.Item render={<Link href="/intro" />} active>
   Introduction
 </TableOfContents.Item>;
+```
+
+#### Button (no navigation)
+
+```tsx
+<TableOfContents.Item render={<button type="button" />} onClick={handleClick}>
+  Introduction
+</TableOfContents.Item>
 ```
 
 </ComponentSection>
@@ -157,6 +166,34 @@ import Link from "next/link";
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
-  <PropsTable component="TableOfContents" />
+
+## API Reference
+
+### `TableOfContents`
+
+<p>Root nav container with a default `aria-label` of "Table of contents".</p>
+<PropsTable component="TableOfContents" />
+
+### `TableOfContents.Title`
+
+<p>Optional uppercase heading displayed above the list (renders a `<p>`).</p>
+<PropsTable component="TableOfContents.Title" />
+
+### `TableOfContents.List`
+
+<p>List container with a left border rail.</p>
+<PropsTable component="TableOfContents.List" />
+
+### `TableOfContents.Item`
+
+<p>
+  Individual navigation link. Set `active` for the current section. Use the
+  `render` prop to swap the anchor for a router link or button.
+</p>
+<PropsTable component="TableOfContents.Item" />
+
+### `TableOfContents.Group`
+
+<p>Groups items under a labeled section with indented children. Pass `href` to make the label a clickable link, or omit for a plain title.</p>
+<PropsTable component="TableOfContents.Group" />
 </ComponentSection>

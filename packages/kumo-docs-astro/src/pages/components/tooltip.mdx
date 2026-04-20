@@ -8,7 +8,6 @@ baseUIComponent: "tooltip"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TooltipHeroDemo,
@@ -28,14 +27,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Tooltip, TooltipProvider } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
@@ -46,7 +47,8 @@ import { Tooltip, TooltipProvider } from "@cloudflare/kumo/components/tooltip";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Tooltip, Button } from "@cloudflare/kumo";
@@ -67,19 +69,23 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic Tooltip</Heading>
+## Examples
+
+### Basic Tooltip
+
 <ComponentExample demo="TooltipBasicDemo">
   <TooltipBasicDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Multiple Tooltips</Heading>
+### Multiple Tooltips
+
 <ComponentExample demo="TooltipMultipleDemo">
   <TooltipMultipleDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Delay Control</Heading>
+### Delay Control
+
 <p>
   Use `delay` to control how long to wait before opening (default: 600ms) and
   `closeDelay` to control how long to wait before closing (default: 0ms).
@@ -93,7 +99,7 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
 {/* TooltipProvider */}
 
 <ComponentSection>
-  <Heading level={2} id="tooltipprovider">TooltipProvider</Heading>
+## TooltipProvider
 
 <p>
   `TooltipProvider` groups multiple tooltips so that after the first tooltip has
@@ -116,6 +122,8 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Tooltip" />
 </ComponentSection>

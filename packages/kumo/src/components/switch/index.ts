@@ -3,6 +3,7 @@ export {
   KUMO_SWITCH_VARIANTS,
   KUMO_SWITCH_DEFAULT_VARIANTS,
   type SwitchProps,
+  type SwitchLegendProps,
   type SwitchGroupProps,
   type SwitchItemProps,
   type KumoSwitchSize,

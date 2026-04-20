@@ -7,7 +7,6 @@ sourceFile: "components/menubar"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   MenuBarBasicDemo,
@@ -26,14 +25,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { MenuBar } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { MenuBar } from "@cloudflare/kumo/components/menubar";
@@ -44,7 +45,8 @@ import { MenuBar } from "@cloudflare/kumo/components/menubar";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { MenuBar } from "@cloudflare/kumo";
@@ -71,14 +73,17 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Text Formatting</Heading>
+## Examples
+
+### Text Formatting
+
 <ComponentExample demo="MenuBarTextFormattingDemo">
   <MenuBarTextFormattingDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Without Active State</Heading>
+### Without Active State
+
   <ComponentExample demo="MenuBarNoActiveDemo">
     <MenuBarNoActiveDemo client:visible />
   </ComponentExample>
@@ -87,6 +92,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="MenuBar" />
 </ComponentSection>
