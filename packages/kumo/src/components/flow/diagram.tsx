@@ -4,7 +4,6 @@ import {
   useContext,
   useEffect,
   useId,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -15,11 +14,10 @@ import {
   useMotionTemplate,
   useMotionValue,
   useTransform,
-  type MotionValue,
   type PanInfo,
 } from "motion/react";
 import { cn } from "../../utils/cn";
-import { Connectors, type Connector } from "./connectors";
+import { FlowConnectors } from "./connectors";
 import {
   DescendantsProvider,
   useDescendantIndex,
@@ -27,7 +25,15 @@ import {
   useOptionalDescendantsContext,
   type DescendantInfo,
 } from "./use-children";
-import { computeEdges } from "./flow-layout";
+import {
+  computeEdges,
+  computePositions,
+  computeDiagramRect,
+  type FlowState,
+  type TreeNode,
+} from "./flow-layout";
+
+export type { FlowState, TreeNode };
 
 const DEFAULT_PADDING = {
   y: 64,
@@ -41,37 +47,7 @@ function isEventFromNode(target: EventTarget | null): boolean {
 /** Minimum scrollbar thumb size in percentage to ensure visibility */
 const MIN_SCROLLBAR_THUMB_SIZE = 10;
 
-// Vertical orientation is currently a no-op
-type Orientation = "horizontal" | "vertical";
-type Align = "start" | "center";
-
-interface DiagramContextValue {
-  orientation: Orientation;
-  align: Align;
-  x: MotionValue<number>;
-  y: MotionValue<number>;
-  /** Ref to the canvas viewport wrapper element */
-  wrapperRef: React.RefObject<HTMLDivElement | null>;
-}
-
-const DiagramContext = createContext<DiagramContextValue | null>(null);
-
-export function useDiagramContext(): DiagramContextValue {
-  const context = useContext(DiagramContext);
-  if (context === null) {
-    throw new Error("useDiagramContext must be used within a FlowDiagram");
-  }
-  return context;
-}
-
 interface FlowDiagramProps {
-  orientation?: Orientation;
-  /**
-   * Controls vertical alignment of nodes in horizontal orientation.
-   * - `start`: Nodes align to the top (default)
-   * - `center`: Nodes are vertically centered
-   */
-  align?: Align;
   /**
    * Whether to render the pannable canvas wrapper.
    * - `true`: Renders with pannable canvas, scrollbars, and pan gestures (default)
@@ -94,8 +70,6 @@ interface FlowDiagramProps {
 }
 
 export function FlowDiagram({
-  orientation = "horizontal",
-  align = "start",
   canvas = true,
   padding: requestedPadding,
   onOverflowChange,
@@ -123,44 +97,93 @@ export function FlowDiagram({
   const [isPanning, setIsPanning] = useState(false);
   const [canPan, setCanPan] = useState(false);
 
-  const [flowState, setFlowState] = useState<FlowState>({
-    nodes: {},
-    edges: new Set(),
-  });
+  const [nodes, setNodes] = useState<FlowState["nodes"]>({});
+  const [rootDescendants, setRootDescendants] = useState<
+    DescendantInfo<NodeData>[]
+  >([]);
+  // Maps each list/parallel node's id to its own immediate descendants,
+  // populated by reportDescendants calls from nested FlowNodeList and
+  // FlowParallelNode components.
+  const [childrenByParent, setChildrenByParent] = useState<
+    Map<string, DescendantInfo<NodeData>[]>
+  >(new Map());
 
-  const reportNodeSize = useCallback(
-    (id: string, width: number, height: number) => {
-      setFlowState((prev) => {
-        const existing = prev.nodes[id];
-        if (existing?.width === width && existing?.height === height)
+  const reportNode = useCallback(
+    (
+      id: string,
+      props: { width: number; height: number; disabled?: boolean },
+    ) => {
+      setNodes((prev) => {
+        const existing = prev[id];
+        if (
+          existing?.width === props.width &&
+          existing?.height === props.height &&
+          existing?.disabled === props.disabled
+        )
           return prev;
-        return {
-          ...prev,
-          nodes: {
-            ...prev.nodes,
-            [id]: { ...existing, width, height },
-          },
-        };
+        return { ...prev, [id]: props };
       });
     },
     [],
   );
 
-  const reportEdges = useCallback((edges: Set<string>) => {
-    setFlowState((prev) => {
-      const merged = new Set([...prev.edges, ...edges]);
-      return { ...prev, edges: merged };
+  const removeNode = useCallback((id: string) => {
+    setNodes((prev) => {
+      if (!(id in prev)) return prev;
+      const next = { ...prev };
+      delete next[id];
+      return next;
     });
   }, []);
 
+  const reportDescendants = useCallback(
+    (id: string | null, descendants: DescendantInfo<NodeData>[]) => {
+      if (id === null) {
+        setRootDescendants((prev) => {
+          if (JSON.stringify(prev) === JSON.stringify(descendants)) return prev;
+          return descendants;
+        });
+      } else {
+        setChildrenByParent((prev) => {
+          const existing = prev.get(id);
+          if (JSON.stringify(existing) === JSON.stringify(descendants))
+            return prev;
+          const next = new Map(prev);
+          next.set(id, descendants);
+          return next;
+        });
+      }
+    },
+    [],
+  );
+
+  // Derive the tree from root descendants synchronously — never stored in state.
+  const tree = descendantsToTree(rootDescendants, childrenByParent);
+  const flowState: FlowState = { nodes, tree };
+
+  // Derive edges, positions, and diagram size synchronously — never stored in state.
+  const edges = computeEdges(flowState);
+  const nodePositions = computePositions(flowState);
+  const diagramRect = computeDiagramRect(nodePositions, flowState);
+
   const flowStateContextValue = useMemo(
     () => ({
-      reportNodeSize,
-      reportEdges,
-      state: flowState,
-      containerRef: contentRef,
+      reportNode,
+      removeNode,
+      reportDescendants,
+      nodePositions,
+      edges,
     }),
-    [reportNodeSize, reportEdges, flowState],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      reportNode,
+      removeNode,
+      reportDescendants,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(nodePositions),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(edges),
+    ],
   );
 
   useEffect(() => {
@@ -314,116 +337,100 @@ export function FlowDiagram({
   const scrollTop = useMotionTemplate`${scrollbarYPercent}%`;
   const scrollLeft = useMotionTemplate`${scrollbarXPercent}%`;
 
-  const contextValue = useMemo(
-    () => ({ orientation, align, x, y, wrapperRef }),
-    [orientation, align, x, y],
-  );
-
   return (
     <FlowStateContext.Provider value={flowStateContextValue}>
-      <DiagramContext.Provider value={contextValue}>
+      <motion.div
+        ref={wrapperRef}
+        className={cn("grow overflow-hidden isolate group", className)}
+        style={{
+          paddingTop: padding.y,
+          paddingBottom: padding.y,
+          paddingLeft: padding.x,
+          paddingRight: padding.x,
+          cursor: canPan && !isPanning ? "grab" : undefined,
+        }}
+        onPanStart={handlePanStart}
+        onPan={handlePan}
+        onPanEnd={handlePanEnd}
+      >
         <motion.div
-          ref={wrapperRef}
-          className={cn(
-            "relative overflow-hidden grow isolate group",
-            className,
-          )}
+          data-testid="flow-contents"
+          ref={contentRef}
+          className="mx-auto relative"
           style={{
-            paddingTop: padding.y,
-            paddingBottom: padding.y,
-            paddingLeft: padding.x,
-            paddingRight: padding.x,
-            cursor: canPan && !isPanning ? "grab" : undefined,
+            x,
+            y,
+            width: diagramRect.width || undefined,
+            height: diagramRect.height || undefined,
           }}
-          onPanStart={handlePanStart}
-          onPan={handlePan}
-          onPanEnd={handlePanEnd}
         >
-          <motion.div
-            data-testid="flow-contents"
-            ref={contentRef}
-            className="w-max mx-auto"
-            style={{ x, y }}
-          >
-            <FlowNodeList>{children}</FlowNodeList>
-          </motion.div>
-
-          {/* Vertical scrollbar */}
-          {canScrollY && (
-            <div className="absolute right-1 top-1 bottom-1 w-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
-              <motion.div
-                className="absolute w-full rounded-full bg-kumo-fill"
-                style={{
-                  height: `${scrollThumbHeight}%`,
-                  top: scrollTop,
-                }}
-              />
-            </div>
-          )}
-
-          {/* Horizontal scrollbar */}
-          {canScrollX && (
-            <div className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
-              <motion.div
-                className="absolute h-full rounded-full bg-kumo-fill"
-                style={{
-                  width: `${scrollThumbWidth}%`,
-                  left: scrollLeft,
-                }}
-              />
-            </div>
-          )}
+          <FlowNodeList>{children}</FlowNodeList>
+          <div className="absolute inset-0 pointer-events-none">
+            <FlowConnectors
+              edges={edges}
+              nodePositions={nodePositions}
+              nodes={flowState.nodes}
+            />
+          </div>
         </motion.div>
-      </DiagramContext.Provider>
+
+        {/* Vertical scrollbar */}
+        {canScrollY && (
+          <div className="absolute right-1 top-1 bottom-1 w-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
+            <motion.div
+              className="absolute w-full rounded-full bg-kumo-fill"
+              style={{
+                height: `${scrollThumbHeight}%`,
+                top: scrollTop,
+              }}
+            />
+          </div>
+        )}
+
+        {/* Horizontal scrollbar */}
+        {canScrollX && (
+          <div className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
+            <motion.div
+              className="absolute h-full rounded-full bg-kumo-fill"
+              style={{
+                width: `${scrollThumbWidth}%`,
+                left: scrollLeft,
+              }}
+            />
+          </div>
+        )}
+      </motion.div>
     </FlowStateContext.Provider>
   );
 }
 
-// ---
-
-export type RectLike = {
-  x: number;
-  y: number;
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
-  width: number;
-  height: number;
-};
-
-type NodeDataBase = {
-  disabled?: boolean;
-  start?: RectLike | null;
-  end?: RectLike | null;
-};
-
 export type NodeData =
-  | (NodeDataBase & { kind: "node" })
-  | (NodeDataBase & { kind: "parallel"; children: string[] })
-  | (NodeDataBase & { kind: "list"; children: string[] });
+  | { kind: "node"; disabled?: boolean }
+  | { kind: "parallel"; disabled?: boolean; children: string[] }
+  | { kind: "list"; disabled?: boolean; children: string[] };
 
 // ============================================================================
-// FlowState
+// FlowState context
 // ============================================================================
-
-export type FlowState = {
-  nodes: {
-    [id: string]: {
-      width: number;
-      height: number;
-      position?: { x: number; y: number };
-    };
-  };
-  edges: Set<string>;
-};
 
 type FlowStateContextValue = {
-  reportNodeSize: (id: string, width: number, height: number) => void;
-  reportEdges: (edges: Set<string>) => void;
-  state: FlowState;
-  /** Ref to the root flow content container. Nodes use this to compute their absolute position. */
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  reportNode: (
+    id: string,
+    props: { width: number; height: number; disabled?: boolean },
+  ) => void;
+  removeNode: (id: string) => void;
+  /**
+   * Report immediate descendants from a list/parallel node.
+   * Pass `null` as `id` for the root FlowNodeList.
+   */
+  reportDescendants: (
+    id: string | null,
+    descendants: DescendantInfo<NodeData>[],
+  ) => void;
+  /** Derived node positions (computed synchronously from FlowState). */
+  nodePositions: Record<string, { x: number; y: number }>;
+  /** Derived edges (computed synchronously from FlowState). */
+  edges: [string, string][];
 };
 
 const FlowStateContext = createContext<FlowStateContextValue | null>(null);
@@ -449,27 +456,39 @@ export const useOptionalNode = (props: NodeData) => {
   const parentContext = useOptionalDescendantsContext<NodeData>();
   const id = useId();
 
-  // Claim render order during render if we have a parent context
   const renderOrder = parentContext?.claimRenderOrder(id) ?? -1;
 
-  const unregisterRef = useRef<(() => void) | null>(null);
+  // Keep mutable refs so the mount/unmount effect always has current values.
+  const registerRef = useRef(parentContext?.register);
+  registerRef.current = parentContext?.register;
+  const propsRef = useRef(props);
+  propsRef.current = props;
+  const renderOrderRef = useRef(renderOrder);
+  renderOrderRef.current = renderOrder;
 
+  // Mount: register once. Unmount: unregister.
   useEffect(() => {
-    if (!parentContext?.register) return;
+    if (!registerRef.current) return;
+    const { unregister } = registerRef.current(
+      id,
+      renderOrderRef.current,
+      propsRef.current,
+    );
+    return unregister;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
-    const { unregister } = parentContext.register(id, renderOrder, props);
-
-    if (!unregisterRef.current) {
-      unregisterRef.current = unregister;
-    }
-
-    return () => {
-      if (unregisterRef.current) {
-        unregisterRef.current();
-        unregisterRef.current = null;
-      }
-    };
-  }, [id, renderOrder, props, parentContext?.register]);
+  // Prop / order updates: keep stored entry fresh without remove→re-add cycle.
+  // `props` is excluded from deps for the same reason as in useDescendantIndex:
+  // it is recreated every render (contains `tree` objects), so including it
+  // causes register() → setRegisteredDescendants() → re-render → infinite loop.
+  // propsRef.current is updated synchronously each render so the effect always
+  // uses the latest value.
+  useEffect(() => {
+    if (!registerRef.current) return;
+    registerRef.current(id, renderOrder, propsRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, renderOrder]);
 
   if (!parentContext) return null;
 
@@ -477,131 +496,75 @@ export const useOptionalNode = (props: NodeData) => {
   return { index, id };
 };
 
-export const getNodeRect = (
-  node: DescendantInfo<NodeData> | undefined,
-  { type = "start" }: { type?: "start" | "end" },
-): RectLike | null => {
-  if (!node) return null;
-  return node.props[type] ?? null;
-};
+/**
+ * Recursively build a TreeNode from a flat list of registered descendants.
+ *
+ * Each descendant only carries `kind` and `children` (IDs of its own
+ * immediate children). The full tree is reconstructed bottom-up using the
+ * descendants maps that each list/parallel node maintains locally.
+ */
+function descendantsToTree(
+  descendants: DescendantInfo<NodeData>[],
+  childrenByParent: Map<string, DescendantInfo<NodeData>[]> = new Map(),
+): TreeNode {
+  return {
+    kind: "list",
+    children: descendants.map((d) => descendantToTreeNode(d, childrenByParent)),
+  };
+}
+
+function descendantToTreeNode(
+  d: DescendantInfo<NodeData>,
+  childrenByParent: Map<string, DescendantInfo<NodeData>[]>,
+): TreeNode {
+  if (d.props.kind === "node") return { kind: "node", id: d.id };
+  const ownDescendants = childrenByParent.get(d.id) ?? [];
+  return {
+    kind: d.props.kind,
+    children: ownDescendants.map((child) =>
+      descendantToTreeNode(child, childrenByParent),
+    ),
+  };
+}
 
 export function FlowNodeList({ children }: { children: ReactNode }) {
-  const { orientation, align } = useDiagramContext();
   const descendants = useNodeGroup();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [connectors, setConnectors] = useState<Connector[]>([]);
-  const { reportEdges } = useFlowStateContext();
+  const { reportDescendants } = useFlowStateContext();
 
-  const computeConnectors = useCallback(() => {
-    const edges: Connector[] = [];
-    const nodes = descendants.descendants;
-    const containerRect = containerRef.current?.getBoundingClientRect();
-
-    const offsetX = containerRect?.left ?? 0;
-    const offsetY = containerRect?.top ?? 0;
-
-    for (let i = 0; i < nodes.length - 1; i++) {
-      const currentNode = nodes[i];
-      const nextNode = nodes[i + 1];
-
-      if (
-        currentNode.props?.kind === "parallel" ||
-        nextNode.props?.kind === "parallel"
-      )
-        continue;
-
-      const currentRect = getNodeRect(currentNode, { type: "start" });
-      const nextRect = getNodeRect(nextNode, { type: "end" });
-
-      if (currentRect && nextRect) {
-        const isDisabled =
-          currentNode.props.disabled || nextNode.props.disabled;
-        edges.push({
-          x1: currentRect.left - offsetX + currentRect.width,
-          y1: currentRect.top - offsetY + currentRect.height / 2,
-          x2: nextRect.left - offsetX,
-          y2: nextRect.top - offsetY + nextRect.height / 2,
-          disabled: isDisabled,
-          single: true,
-          fromId: currentNode.id,
-          toId: nextNode.id,
-        });
-      }
-    }
-
-    setConnectors(edges);
-  }, [descendants.descendants]);
-
-  /**
-   * Recompute connectors after layout so that containerRect and node rects are
-   * read in the same synchronous pass — preventing stale-rect mismatches.
-   */
-  useLayoutEffect(() => {
-    computeConnectors();
-  }, [computeConnectors]);
-
-  /**
-   * Recompute edges whenever the descendants change. This is the measurement
-   * phase's edge computation — pure, no DOM access.
-   */
-  useLayoutEffect(() => {
-    reportEdges(computeEdges(descendants.descendants));
-  }, [descendants.descendants, reportEdges]);
-
-  /**
-   * Recompute on scroll/resize: the container shifts in the viewport without
-   * any ResizeObserver firing, so we must re-read all rects explicitly.
-   */
-  useEffect(() => {
-    window.addEventListener("scroll", computeConnectors, {
-      capture: true,
-      passive: true,
-    });
-    window.addEventListener("resize", computeConnectors, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", computeConnectors, {
-        capture: true,
-      });
-      window.removeEventListener("resize", computeConnectors);
-    };
-  }, [computeConnectors]);
-
-  // Get the first and last node's anchor points for parent registration
-  const firstNode = descendants.descendants[0];
-  const lastNode = descendants.descendants[descendants.descendants.length - 1];
-
-  // Use the first node's "end" anchor as our "end" (incoming connector point)
-  // Use the last node's "start" anchor as our "start" (outgoing connector point)
-  const endAnchor = firstNode?.props?.end ?? null;
-  const startAnchor = lastNode?.props?.start ?? null;
+  // Only structural info (kind, id, children) is keyed — not DOM rects —
+  // to avoid re-computing on every measurement update.
+  const structuralKey = JSON.stringify(
+    descendants.descendants.map((d) => ({
+      id: d.id,
+      kind: d.props.kind,
+      children: d.props.kind !== "node" ? d.props.children : undefined,
+    })),
+  );
 
   const nodeProps = useMemo(
     () => ({
       kind: "list" as const,
       children: descendants.descendants.map((d) => d.id),
       disabled: false,
-      start: startAnchor,
-      end: endAnchor,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      JSON.stringify(startAnchor),
-      JSON.stringify(endAnchor),
-      JSON.stringify(descendants.descendants.map((d) => d.id)),
-    ],
+    [structuralKey],
   );
 
-  // Register with parent context if we're nested (e.g., inside Flow.Parallel)
-  useOptionalNode(nodeProps);
+  // Register with parent context if nested (e.g., inside Flow.Parallel).
+  // Returns null when this is the root FlowNodeList (no parent context).
+  const registration = useOptionalNode(nodeProps);
+
+  // Report our immediate descendants upward so FlowDiagram can reconstruct
+  // the full tree. Root list uses null as id; nested lists use their own id.
+  useEffect(() => {
+    reportDescendants(registration?.id ?? null, descendants.descendants);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [structuralKey, reportDescendants, registration?.id]);
 
   return (
     <DescendantsProvider value={descendants}>
-      <div ref={containerRef}>
-        <ul className="ml-0 list-none">{children}</ul>
-        <div className="absolute inset-0 pointer-events-none">
-          <Connectors connectors={connectors} orientation={orientation} />
-        </div>
-      </div>
+      <ul className="ml-0 list-none">{children}</ul>
     </DescendantsProvider>
   );
 }

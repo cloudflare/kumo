@@ -310,6 +310,28 @@ export function FlowSequentialParallelDemo() {
   );
 }
 
+/** Flow diagram where a node can be dynamically added and removed */
+export function FlowDynamicNodeDemo() {
+  const [showMiddle, setShowMiddle] = useState(false);
+
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <button
+        type="button"
+        onClick={() => setShowMiddle((v) => !v)}
+        className="rounded-md px-3 py-1.5 text-sm font-medium ring ring-kumo-line bg-kumo-elevated hover:bg-kumo-base text-kumo-default transition-colors"
+      >
+        {showMiddle ? "Remove middle node" : "Add middle node"}
+      </button>
+      <Flow>
+        <Flow.Node>Start</Flow.Node>
+        {showMiddle && <Flow.Node>Middle</Flow.Node>}
+        <Flow.Node>End</Flow.Node>
+      </Flow>
+    </div>
+  );
+}
+
 /** Flow diagram with expandable nodes in a parallel group */
 export function FlowExpandableDemo() {
   return (

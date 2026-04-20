@@ -1,90 +1,210 @@
-import type { DescendantInfo } from "./use-children";
-import type { NodeData } from "./diagram";
+// =============================================================================
+// Types
+// =============================================================================
+
+export type TreeNode =
+  | { kind: "list" | "parallel"; children: TreeNode[] }
+  | { kind: "node"; id: string };
+
+export type FlowState = {
+  nodes: {
+    [id: string]: {
+      width: number;
+      height: number;
+      disabled?: boolean;
+    };
+  };
+  tree: TreeNode;
+};
+
+export type Edges = [string, string][];
+export type NodePositions = Record<string, { x: number; y: number }>;
+export type DiagramRect = { width: number; height: number };
+
+// =============================================================================
+// computeEdges
+// =============================================================================
 
 /**
- * Computes edges between flow nodes based on the component hierarchy encoded
- * in the flat `descendants` array.
+ * Computes edges between flow nodes from the tree stored in FlowState.
  *
  * Rules (from spec):
- * 1. Adjacent `node` entries are connected directly.
+ * 1. Adjacent `node` entries in a list are connected directly.
  * 2. A `node` adjacent to a `parallel` group connects to all of that group's
- *    immediate children (first child for incoming, last child for outgoing).
+ *    immediate entry/exit points.
  * 3. Adjacent `parallel` groups are NOT connected to one another.
- * 4. A `list` group connects externally to its first and last child only.
- *
- * Edges are returned as a `Set<string>` where each entry is formatted as
- * `"<from>—<to>"` (using an em dash as the separator).
+ * 4. A `list` group connects externally to its first and last node only.
  *
  * The function is pure — it does not access the DOM and has no side effects.
  */
-export function computeEdges(
-  descendants: DescendantInfo<NodeData>[],
-): Set<string> {
-  const edges = new Set<string>();
+export function computeEdges(flowState: FlowState): Edges {
+  const edges: Edges = [];
+  collectEdges(flowState.tree, edges);
+  return edges;
+}
 
-  function addEdge(from: string, to: string) {
-    edges.add(`${from}—${to}`);
+/**
+ * Returns the IDs of "entry points" for a tree node — the first node(s) that
+ * would receive an incoming edge when something connects into this subtree.
+ */
+function entryIds(node: TreeNode): string[] {
+  if (node.kind === "node") return [node.id];
+  if (node.kind === "parallel") {
+    return node.children.flatMap((child) => entryIds(child));
+  }
+  // list: only the first child is the entry point
+  if (node.children.length === 0) return [];
+  return entryIds(node.children[0]);
+}
+
+/**
+ * Returns the IDs of "exit points" for a tree node — the last node(s) that
+ * would emit an outgoing edge when something connects out of this subtree.
+ */
+function exitIds(node: TreeNode): string[] {
+  if (node.kind === "node") return [node.id];
+  if (node.kind === "parallel") {
+    return node.children.flatMap((child) => exitIds(child));
+  }
+  // list: only the last child is the exit point
+  if (node.children.length === 0) return [];
+  return exitIds(node.children[node.children.length - 1]);
+}
+
+/**
+ * Recursively processes a tree node, collecting edges into `edges`.
+ */
+function collectEdges(node: TreeNode, edges: Edges) {
+  if (node.kind === "node") return;
+
+  if (node.kind === "parallel") {
+    for (const child of node.children) {
+      collectEdges(child, edges);
+    }
+    return;
   }
 
-  /**
-   * Returns the IDs that act as "exit points" (outgoing connection targets)
-   * for a given descendant. For a plain node this is just [id]. For a
-   * parallel/list group it's the last child of each branch.
-   */
-  function exitIds(d: DescendantInfo<NodeData>): string[] {
-    if (d.props.kind === "node") return [d.id];
-    if (d.props.kind === "parallel") {
-      // Each child is a branch; last node of each branch is an exit point.
-      // Since children are ordered, the last child is d.props.children[last].
-      // For a parallel group the children are the direct children registered
-      // under it — each child is itself either a node, list, or nested parallel.
-      // At this level we simply return all children as exit points because each
-      // branch ends at its own last node (which it reports as its child ID).
-      return d.props.children;
-    }
-    if (d.props.kind === "list") {
-      // A list connects externally only via its last child.
-      const last = d.props.children[d.props.children.length - 1];
-      return last ? [last] : [];
-    }
-    return [];
+  // node.kind === "list": recurse children, then connect adjacent pairs
+  for (const child of node.children) {
+    collectEdges(child, edges);
   }
 
-  /**
-   * Returns the IDs that act as "entry points" (incoming connection sources)
-   * for a given descendant. For a plain node this is just [id]. For a
-   * parallel/list group it's the first child of each branch.
-   */
-  function entryIds(d: DescendantInfo<NodeData>): string[] {
-    if (d.props.kind === "node") return [d.id];
-    if (d.props.kind === "parallel") {
-      return d.props.children;
-    }
-    if (d.props.kind === "list") {
-      const first = d.props.children[0];
-      return first ? [first] : [];
-    }
-    return [];
-  }
+  for (let i = 0; i < node.children.length - 1; i++) {
+    const current = node.children[i];
+    const next = node.children[i + 1];
 
-  for (let i = 0; i < descendants.length - 1; i++) {
-    const current = descendants[i];
-    const next = descendants[i + 1];
+    // Rule 3: adjacent parallel groups are not connected
+    if (current.kind === "parallel" && next.kind === "parallel") continue;
 
-    // Rule 3: adjacent parallel groups are not connected.
-    if (current.props.kind === "parallel" && next.props.kind === "parallel") {
-      continue;
-    }
-
-    const froms = exitIds(current);
-    const tos = entryIds(next);
-
-    for (const from of froms) {
-      for (const to of tos) {
-        addEdge(from, to);
+    for (const from of exitIds(current)) {
+      for (const to of entryIds(next)) {
+        edges.push([from, to]);
       }
     }
   }
+}
 
-  return edges;
+// =============================================================================
+// computePositions
+// =============================================================================
+
+/**
+ * Computes pixel positions for every node in the flow.
+ *
+ * - List children are laid out horizontally, separated by `columnGap`.
+ * - Parallel children are laid out vertically, separated by `rowGap`.
+ * - A parallel group occupies the width of its widest child branch.
+ *
+ * Returns a map of node ID → `{ x, y }` (top-left corner, relative to the
+ * flow container origin).
+ *
+ * This function is pure — it does not access the DOM.
+ */
+export function computePositions(
+  flowState: FlowState,
+  { columnGap = 64, rowGap = 16 } = {},
+): NodePositions {
+  const positions: NodePositions = {};
+
+  /**
+   * Recursively lay out a subtree, writing absolute positions into `positions`.
+   *
+   * @returns `{ width, height }` — the bounding box of this subtree
+   */
+  function layout(
+    node: TreeNode,
+    originX: number,
+    originY: number,
+  ): { width: number; height: number } {
+    if (node.kind === "node") {
+      const measured = flowState.nodes[node.id];
+      const w = measured?.width ?? 0;
+      const h = measured?.height ?? 0;
+      positions[node.id] = { x: originX, y: originY };
+      return { width: w, height: h };
+    }
+
+    if (node.kind === "list") {
+      // Place children left-to-right
+      let cursorX = originX;
+      let totalHeight = 0;
+
+      for (let i = 0; i < node.children.length; i++) {
+        const child = node.children[i];
+        const { width, height } = layout(child, cursorX, originY);
+        cursorX += width;
+        if (i < node.children.length - 1) cursorX += columnGap;
+        totalHeight = Math.max(totalHeight, height);
+      }
+
+      return { width: cursorX - originX, height: totalHeight };
+    }
+
+    // node.kind === "parallel": place children top-to-bottom
+    let cursorY = originY;
+    let maxWidth = 0;
+
+    for (let i = 0; i < node.children.length; i++) {
+      const child = node.children[i];
+      const { width, height } = layout(child, originX, cursorY);
+      maxWidth = Math.max(maxWidth, width);
+      cursorY += height;
+      if (i < node.children.length - 1) cursorY += rowGap;
+    }
+
+    return { width: maxWidth, height: cursorY - originY };
+  }
+
+  layout(flowState.tree, 0, 0);
+
+  return positions;
+}
+
+// =============================================================================
+// computeDiagramRect
+// =============================================================================
+
+/**
+ * Returns the bounding rectangle of the entire diagram.
+ *
+ * - `width`  = x of the rightmost node's left edge + that node's width
+ * - `height` = y of the bottommost node's top edge + that node's height
+ *
+ * This function is pure — it does not access the DOM.
+ */
+export function computeDiagramRect(
+  positions: NodePositions,
+  flowState: FlowState,
+): DiagramRect {
+  let width = 0;
+  let height = 0;
+
+  for (const [id, pos] of Object.entries(positions)) {
+    const node = flowState.nodes[id];
+    if (!node) continue;
+    width = Math.max(width, pos.x + node.width);
+    height = Math.max(height, pos.y + node.height);
+  }
+
+  return { width, height };
 }

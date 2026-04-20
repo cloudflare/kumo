@@ -1,4 +1,5 @@
 import { forwardRef, useId, type ReactNode } from "react";
+import type { Edges, NodePositions, FlowState } from "./flow-layout";
 
 export interface Connector {
   x1: number;
@@ -149,6 +150,57 @@ export function createRoundedPath(
   ];
 
   return commands.join(" ");
+}
+
+// =============================================================================
+// FlowConnectors
+// =============================================================================
+
+type FlowConnectorsProps = {
+  edges: Edges;
+  nodePositions: NodePositions;
+  nodes: FlowState["nodes"];
+};
+
+/**
+ * Draws every edge in the flow using only computed positions and measured
+ * node sizes — no DOM rect lookups needed.
+ *
+ * Each edge connects the right-center of the source node to the left-center
+ * of the target node.
+ *
+ * Intended to be rendered once at the top-level Flow component, absolutely
+ * positioned to overlay the entire diagram.
+ */
+export function FlowConnectors({
+  edges,
+  nodePositions,
+  nodes,
+}: FlowConnectorsProps) {
+  const connectors: Connector[] = [];
+
+  for (const [fromId, toId] of edges) {
+    const fromPos = nodePositions[fromId];
+    const toPos = nodePositions[toId];
+    const fromNode = nodes[fromId];
+    const toNode = nodes[toId];
+
+    if (!fromPos || !toPos || !fromNode || !toNode) continue;
+
+    connectors.push({
+      // right-center of the source node
+      x1: fromPos.x + fromNode.width,
+      y1: fromPos.y + fromNode.height / 2,
+      // left-center of the target node
+      x2: toPos.x,
+      y2: toPos.y + toNode.height / 2,
+      fromId,
+      toId,
+      single: true,
+    });
+  }
+
+  return <Connectors connectors={connectors} orientation="horizontal" />;
 }
 
 export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
