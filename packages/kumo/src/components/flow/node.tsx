@@ -13,6 +13,8 @@ import {
 } from "react";
 import { useFlowStateContext, useNode, type NodeData } from "./diagram";
 
+type AnchorType = "start" | "end" | "both";
+
 // Utility to merge refs
 function mergeRefs<T>(
   ...refs: (React.Ref<T> | undefined)[]
@@ -67,10 +69,23 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     const { index, id } = useNode(nodeProps, idProp);
     const { reportNode, removeNode, nodePositions } = useFlowStateContext();
 
+    // Refs that FlowAnchor children write into. Read by reportSize so that
+    // anchor offsets are always included in the same reportNode call —
+    // avoiding the state-batching race where reportAnchor fires before the
+    // node entry exists in the nodes map.
+    const startAnchorOffsetRef = useRef<number | undefined>(undefined);
+    const endAnchorOffsetRef = useRef<number | undefined>(undefined);
+
     const reportSize = useCallback(() => {
       if (!nodeRef.current) return;
       const { width, height } = nodeRef.current.getBoundingClientRect();
-      reportNode(id, { width, height, disabled });
+      reportNode(id, {
+        width,
+        height,
+        disabled,
+        startAnchorOffset: startAnchorOffsetRef.current,
+        endAnchorOffset: endAnchorOffsetRef.current,
+      });
     }, [reportNode, id, disabled]);
 
     useLayoutEffect(() => {
@@ -83,6 +98,43 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         removeNode(id);
       };
     }, [reportSize, removeNode, id]);
+
+    const registerAnchor = useCallback(
+      (type: AnchorType, el: HTMLElement | null) => {
+        const writeOffsets = (offset: number | undefined) => {
+          if (type === "start" || type === "both")
+            startAnchorOffsetRef.current = offset;
+          if (type === "end" || type === "both")
+            endAnchorOffsetRef.current = offset;
+        };
+
+        if (!el) {
+          writeOffsets(undefined);
+          reportSize();
+          return;
+        }
+
+        const measure = () => {
+          if (!nodeRef.current) return;
+          const anchorRect = el.getBoundingClientRect();
+          const nodeRect = nodeRef.current.getBoundingClientRect();
+          writeOffsets(anchorRect.top - nodeRect.top + anchorRect.height / 2);
+          reportSize();
+        };
+
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(el);
+        return () => observer.disconnect();
+      },
+      // reportSize is stable within a render cycle; it changes only when
+      // id/disabled/reportNode change, which also triggers FlowNode's own
+      // ResizeObserver to re-report. Safe to omit here.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [id],
+    );
+
+    const anchorContext = useMemo(() => ({ registerAnchor }), [registerAnchor]);
 
     const position = nodePositions[id];
     const mergedRef = mergeRefs(ref, nodeRef);
@@ -128,7 +180,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     }
 
     return (
-      <FlowNodeAnchorContext.Provider value={NOOP_ANCHOR_CONTEXT}>
+      <FlowNodeAnchorContext.Provider value={anchorContext}>
         {element}
       </FlowNodeAnchorContext.Provider>
     );
@@ -142,19 +194,15 @@ FlowNode.displayName = "Flow.Node";
 // =============================================================================
 
 type FlowNodeAnchorContextType = {
-  registerStartAnchor: (ref: HTMLElement | null) => void;
-  registerEndAnchor: (ref: HTMLElement | null) => void;
+  registerAnchor: (
+    type: AnchorType,
+    el: HTMLElement | null,
+  ) => (() => void) | undefined;
 };
 
 const FlowNodeAnchorContext = createContext<FlowNodeAnchorContextType | null>(
   null,
 );
-
-// Stable no-op context value — anchors are not used for layout yet (spec: TBD)
-const NOOP_ANCHOR_CONTEXT: FlowNodeAnchorContextType = {
-  registerStartAnchor: () => {},
-  registerEndAnchor: () => {},
-};
 
 /**
  * FlowAnchor component props.
@@ -185,22 +233,41 @@ export type FlowAnchorProps = {
 };
 
 export const FlowAnchor = forwardRef<HTMLElement, FlowAnchorProps>(
-  function FlowAnchor({ render, children }, ref) {
+  function FlowAnchor({ type, render, children }, ref) {
     const context = useContext(FlowNodeAnchorContext);
 
     if (!context) {
       throw new Error("Flow.Anchor must be used within Flow.Node");
     }
 
+    const anchorRef = useRef<HTMLElement>(null);
+    const mergedRef = mergeRefs(ref, anchorRef);
+
+    const { registerAnchor } = context;
+    const anchorType = type ?? "both";
+
+    useLayoutEffect(() => {
+      const el = anchorRef.current;
+      if (!el) return;
+      const cleanup = registerAnchor(anchorType, el);
+      return () => {
+        cleanup?.();
+        registerAnchor(anchorType, null);
+      };
+      // registerAnchor is stable (memoized in FlowNode); anchorType is
+      // unlikely to change at runtime but including it is correct.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [anchorType, registerAnchor]);
+
     if (render && isValidElement(render)) {
       const renderProps = render.props as { children?: ReactNode };
       return cloneElement(render, {
-        ref,
+        ref: mergedRef,
         children: renderProps.children ?? children,
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
     }
 
-    return <div ref={ref as React.Ref<HTMLDivElement>}>{children}</div>;
+    return <div ref={mergedRef as React.Ref<HTMLDivElement>}>{children}</div>;
   },
 );
 

@@ -19,16 +19,15 @@ By maunally calculating layout, we get to control exactly where each Flow node s
 
 - **Width and height of flow nodes are NOT known ahead of time**. Flow nodes can be arbitrarily rendered using the `render` prop, so we cannot make any assumptions on the size of the flow node without measuring the DOM.
 
-
 ### Phases
 
-There are two phases to this implementation:
+There are three phases to this implementation:
 
 1. **Measurement**, where both the width and height of each flow node is recorded and the tree of nodes is derived from the React component structure.
 2. **Layout**, where the positions of each flow node is computed based on the results of (a) and (b) in the measurement phase.
 3. **Render**, where the edges between each node is drawn as an SVG path based on the computed coordinates from the layout phase.
 
-### Measurement
+## Measurement
 
 **Measuring flow nodes**
 
@@ -182,7 +181,7 @@ Tree:
 }
 ```
 
-### Layout
+## Layout
 
 In the layout phase, the edges and positions of the nodes are derived from the tree stored in state. **Derived is the keyword here**—neither edges nor node positions should be stored in state:
 
@@ -494,9 +493,58 @@ Output:
 }
 ```
 
-**Anchors**
+### Anchors
 
-TBD
+By default, arrows will link to the center point of every `Flow.Node`. Users can adjust this by using the `Flow.Anchor` component:
+
+```tsx
+<Flow.Node>
+  <Flow.Anchor>Header</Flow.Anchor>
+  <div>Some body content</div>
+</Flow.Node>
+```
+
+Now, arrows will link to the midpoint of the "Header" text instead of the entire node.
+
+Anchors can accept a `type` prop that can either be `start`, `end`, or `both`, defaulting to `both`.
+
+- `type === "start"` — arrows starting at the node will be positioned against the anchor, but arrows ending at the node will remain at the node's centerpoint.
+- `type === "end"` — arrows ending at the node will be positioned against the anchor, but arrows starting at the node will remain at the node's centerpoint.
+- `type === "both"` — both incoming _and_ outgoing arrows will be positioned against the anchor.
+
+```tsx
+<Flow.Node>A</Flow.Node>
+<Flow.Node>
+  <header>Header</header>
+  <div>Body</div>
+  <Flow.Anchor type="start">Footer</Flow.Anchor>
+</Flow.Node>
+<Flow.Node>B</Flow.Node>
+```
+
+```
+A -|   Header  |-> B
+   |-> Body    |
+       Footer -|
+```
+
+```tsx
+<Flow.Node>A</Flow.Node>
+<Flow.Node>
+  <Flow.Anchor type="end">Header</Flow.Anchor>
+  <div>Body</div>
+  <Flow.Anchor type="start">Footer</Flow.Anchor>
+</Flow.Node>
+<Flow.Node>B</Flow.Node>
+```
+
+```
+A --> Header  |-> B
+      Body    |
+      Footer -|
+```
+
+To implement this, we need to differentiate between the node's _size_ and _anchor points_.
 
 ### Render
 

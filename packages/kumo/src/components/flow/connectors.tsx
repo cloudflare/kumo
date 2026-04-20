@@ -188,12 +188,12 @@ export function FlowConnectors({
     if (!fromPos || !toPos || !fromNode || !toNode) continue;
 
     connectors.push({
-      // right-center of the source node
+      // right edge of the source node; Y uses anchor midpoint when available
       x1: fromPos.x + fromNode.width,
-      y1: fromPos.y + fromNode.height / 2,
-      // left-center of the target node
+      y1: fromPos.y + (fromNode.startAnchorOffset ?? fromNode.height / 2),
+      // left edge of the target node; Y uses anchor midpoint when available
       x2: toPos.x,
-      y2: toPos.y + toNode.height / 2,
+      y2: toPos.y + (toNode.endAnchorOffset ?? toNode.height / 2),
       fromId,
       toId,
       single: true,

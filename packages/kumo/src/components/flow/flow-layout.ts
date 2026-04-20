@@ -12,6 +12,10 @@ export type FlowState = {
       width: number;
       height: number;
       disabled?: boolean;
+      /** Y offset from the node's top edge to the outgoing anchor's midpoint. */
+      startAnchorOffset?: number;
+      /** Y offset from the node's top edge to the incoming anchor's midpoint. */
+      endAnchorOffset?: number;
     };
   };
   tree: TreeNode;

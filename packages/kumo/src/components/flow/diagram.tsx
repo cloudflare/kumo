@@ -111,14 +111,22 @@ export function FlowDiagram({
   const reportNode = useCallback(
     (
       id: string,
-      props: { width: number; height: number; disabled?: boolean },
+      props: {
+        width: number;
+        height: number;
+        disabled?: boolean;
+        startAnchorOffset?: number;
+        endAnchorOffset?: number;
+      },
     ) => {
       setNodes((prev) => {
         const existing = prev[id];
         if (
           existing?.width === props.width &&
           existing?.height === props.height &&
-          existing?.disabled === props.disabled
+          existing?.disabled === props.disabled &&
+          existing?.startAnchorOffset === props.startAnchorOffset &&
+          existing?.endAnchorOffset === props.endAnchorOffset
         )
           return prev;
         return { ...prev, [id]: props };
@@ -416,7 +424,13 @@ export type NodeData =
 type FlowStateContextValue = {
   reportNode: (
     id: string,
-    props: { width: number; height: number; disabled?: boolean },
+    props: {
+      width: number;
+      height: number;
+      disabled?: boolean;
+      startAnchorOffset?: number;
+      endAnchorOffset?: number;
+    },
   ) => void;
   removeNode: (id: string) => void;
   /**
