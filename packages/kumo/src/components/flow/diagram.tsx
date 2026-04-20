@@ -422,7 +422,7 @@ export function FlowDiagram({
 
 export type NodeData =
   | { kind: "node"; disabled?: boolean }
-  | { kind: "parallel"; disabled?: boolean; children: string[] }
+  | { kind: "parallel"; disabled?: boolean; children: string[]; align?: "end" }
   | { kind: "list"; disabled?: boolean; children: string[] };
 
 // ============================================================================
@@ -541,12 +541,13 @@ function descendantToTreeNode(
 ): TreeNode {
   if (d.props.kind === "node") return { kind: "node", id: d.id };
   const ownDescendants = childrenByParent.get(d.id) ?? [];
-  return {
-    kind: d.props.kind,
-    children: ownDescendants.map((child) =>
-      descendantToTreeNode(child, childrenByParent),
-    ),
-  };
+  const children = ownDescendants.map((child) =>
+    descendantToTreeNode(child, childrenByParent),
+  );
+  if (d.props.kind === "parallel") {
+    return { kind: "parallel", children, align: d.props.align };
+  }
+  return { kind: "list", children };
 }
 
 export function FlowNodeList({ children }: { children: ReactNode }) {

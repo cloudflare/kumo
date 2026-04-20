@@ -3,7 +3,8 @@
 // =============================================================================
 
 export type TreeNode =
-  | { kind: "list" | "parallel"; children: TreeNode[] }
+  | { kind: "list"; children: TreeNode[] }
+  | { kind: "parallel"; children: TreeNode[]; align?: "end" }
   | { kind: "node"; id: string };
 
 export type FlowAlign = "start" | "center";
@@ -191,6 +192,22 @@ export function computePositions(
     }
 
     // node.kind === "parallel": place children top-to-bottom
+    if (node.align === "end") {
+      // Two-pass: measure widths first, then position right-aligned.
+      const sizes = node.children.map((child) => layout(child, 0, 0, {}));
+      const maxWidth = sizes.reduce((max, s) => Math.max(max, s.width), 0);
+
+      let cursorY = originY;
+      for (let i = 0; i < node.children.length; i++) {
+        const childX = originX + maxWidth - sizes[i].width;
+        layout(node.children[i], childX, cursorY, out);
+        cursorY += sizes[i].height;
+        if (i < node.children.length - 1) cursorY += rowGap;
+      }
+
+      return { width: maxWidth, height: cursorY - originY };
+    }
+
     let cursorY = originY;
     let maxWidth = 0;
 

@@ -4,9 +4,11 @@ import { DescendantsProvider } from "./use-children";
 
 type FlowParallelNodeProps = {
   children: ReactNode;
+  /** When "end", each branch is right-aligned to the widest branch. */
+  align?: "end";
 };
 
-export function FlowParallelNode({ children }: FlowParallelNodeProps) {
+export function FlowParallelNode({ children, align }: FlowParallelNodeProps) {
   const descendants = useNodeGroup();
   const { reportDescendants } = useFlowStateContext();
 
@@ -24,9 +26,10 @@ export function FlowParallelNode({ children }: FlowParallelNodeProps) {
     () => ({
       kind: "parallel" as const,
       children: descendants.descendants.map((d) => d.id),
+      align,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [structuralKey],
+    [structuralKey, align],
   );
 
   const { index, id } = useNode(nodeProps);
