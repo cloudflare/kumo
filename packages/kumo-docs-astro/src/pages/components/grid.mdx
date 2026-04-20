@@ -7,7 +7,6 @@ sourceFile: "components/grid"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   GridDemo,
@@ -28,7 +27,8 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
 
 ```tsx
 import { Grid, GridItem } from "@cloudflare/kumo";
@@ -39,7 +39,9 @@ import { Grid, GridItem } from "@cloudflare/kumo";
 {/* Grid Variants */}
 
 <ComponentSection>
-  <Heading level={2}>Grid Variants</Heading>
+
+## Grid Variants
+
   <p>
     The Grid component supports multiple column layouts that adapt responsively
     across breakpoints.
@@ -52,7 +54,9 @@ import { Grid, GridItem } from "@cloudflare/kumo";
 {/* Asymmetric Layouts */}
 
 <ComponentSection>
-  <Heading level={2}>Asymmetric Layouts</Heading>
+
+## Asymmetric Layouts
+
   <p>Use asymmetric variants for sidebar/main content layouts.</p>
   <ComponentExample demo="GridAsymmetricDemo">
     <GridAsymmetricDemo client:visible />
@@ -62,7 +66,9 @@ import { Grid, GridItem } from "@cloudflare/kumo";
 {/* Gap Sizes */}
 
 <ComponentSection>
-  <Heading level={2}>Gap Sizes</Heading>
+
+## Gap Sizes
+
   <p>Control the spacing between grid items with the gap prop.</p>
   <ComponentExample demo="GridGapDemo">
     <GridGapDemo client:visible />
@@ -72,7 +78,9 @@ import { Grid, GridItem } from "@cloudflare/kumo";
 {/* Mobile Dividers */}
 
 <ComponentSection>
-  <Heading level={2}>Mobile Dividers</Heading>
+
+## Mobile Dividers
+
   <p>
     Add dividers between items on mobile with the mobileDivider prop (only works
     with the 4up variant).
@@ -85,7 +93,9 @@ import { Grid, GridItem } from "@cloudflare/kumo";
 {/* All Variants */}
 
 <ComponentSection>
-  <Heading level={2}>All Variants</Heading>
+
+## All Variants
+
   <p>Reference for all available grid variants:</p>
   <div class="overflow-x-auto">
     <table class="w-full text-left text-sm">
@@ -95,7 +105,7 @@ import { Grid, GridItem } from "@cloudflare/kumo";
           <th class="py-3 pr-4 font-medium">Description</th>
         </tr>
       </thead>
-      <tbody class="text-kumo-strong">
+      <tbody>
         <tr class="border-b border-kumo-hairline">
           <td class="py-3 pr-4">`2up`</td>
           <td class="py-3 pr-4">1 column mobile, 2 columns medium+</td>
@@ -140,11 +150,15 @@ import { Grid, GridItem } from "@cloudflare/kumo";
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
-  <Heading level={3}>Grid</Heading>
+
+## API Reference
+
+### Grid
+
   <PropsTable component="Grid" />
 
-<Heading level={3}>GridItem</Heading>
+### GridItem
+
 <p>
   GridItem is a wrapper component for grid children. It accepts standard div
   props including `className` and `children`.

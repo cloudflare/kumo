@@ -8,7 +8,6 @@ baseUIComponent: "switch"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   SwitchBasicDemo,
@@ -33,14 +32,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Switch } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Switch } from "@cloudflare/kumo/components/switch";
@@ -51,7 +52,8 @@ import { Switch } from "@cloudflare/kumo/components/switch";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Switch } from "@cloudflare/kumo";
@@ -71,24 +73,29 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Off State</Heading>
+## Examples
+
+### Off State
+
 <ComponentExample demo="SwitchOffDemo">
   <SwitchOffDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>On State</Heading>
+### On State
+
 <ComponentExample demo="SwitchOnDemo">
   <SwitchOnDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Disabled</Heading>
+### Disabled
+
 <ComponentExample demo="SwitchDisabledDemo">
   <SwitchDisabledDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Variants</Heading>
+### Variants
+
 <p>
   The Switch supports two variants: `default` (blue when on) and `neutral`
   (monochrome). Both use a squircle shape.
@@ -97,7 +104,8 @@ export default function Example() {
   <SwitchVariantsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Neutral Variant</Heading>
+### Neutral Variant
+
 <p>
   The neutral variant uses monochrome colors and a squircle shape, ideal for
   subtle, less prominent toggles.
@@ -106,18 +114,21 @@ export default function Example() {
   <SwitchNeutralDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Neutral States</Heading>
+### Neutral States
+
 <ComponentExample demo="SwitchNeutralStatesDemo">
   <SwitchNeutralStatesDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Sizes</Heading>
+### Sizes
+
 <p>Three sizes available: `sm`, `base` (default), and `lg`.</p>
 <ComponentExample demo="SwitchSizesDemo">
   <SwitchSizesDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom ID</Heading>
+### Custom ID
+
 <p>
   When a custom `id` is provided, clicking the label still toggles the switch.
   The `id` is forwarded to Base UI so the label's `htmlFor` stays in sync.
@@ -131,6 +142,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Switch" />
 </ComponentSection>

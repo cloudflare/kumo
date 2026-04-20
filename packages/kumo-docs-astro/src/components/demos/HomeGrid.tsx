@@ -656,7 +656,7 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            <div className="flex w-full items-center justify-center p-8">
+            <div className="flex w-full items-center justify-center p-8 tracking-normal leading-normal">
               {c.Component ?? (
                 <p className="text-base font-medium text-kumo-subtle">TBD</p>
               )}

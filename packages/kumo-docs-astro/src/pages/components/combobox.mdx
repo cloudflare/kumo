@@ -9,7 +9,6 @@ baseUIComponent: "combobox"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   ComboboxDemo,
@@ -34,10 +33,15 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
+
   <CodeBlock code={`import { Combobox } from "@cloudflare/kumo";`} lang="tsx" />
-  <Heading level={3}>Granular</Heading>
+
+### Granular
+
   <CodeBlock
     code={`import { Combobox } from "@cloudflare/kumo/components/combobox";`}
     lang="tsx"
@@ -47,7 +51,8 @@ import {
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { useState } from "react";
@@ -81,9 +86,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Sizes</Heading>
+## Examples
+
+### Sizes
+
 <p>
   The Combobox supports four size variants that match the Input component: `xs`,
   `sm`, `base` (default), and `lg`.
@@ -101,7 +108,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Searchable Item (Inside)</Heading>
+
+### Searchable Item (Inside)
+
   <p>
     A searchable select component inside popup that allows users to filter and
     select.
@@ -112,7 +121,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Grouped</Heading>
+
+### Grouped
+
   <p>Group items into categories using the Group and GroupLabel components.</p>
   <ComponentExample demo="ComboboxGroupedDemo">
     <ComboboxGroupedDemo client:load />
@@ -120,7 +131,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Multiple</Heading>
+
+### Multiple
+
   <p>Allow users to select multiple options from the list.</p>
   <ComponentExample demo="ComboboxMultipleDemo">
     <ComboboxMultipleDemo client:load />
@@ -128,7 +141,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>With Field</Heading>
+
+### With Field
+
   <p>Add label and description using the built-in Field wrapper.</p>
   <ComponentExample demo="ComboboxWithFieldDemo">
     <ComboboxWithFieldDemo client:load />
@@ -136,7 +151,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Disabled</Heading>
+
+### Disabled
+
   <p>Pass the `disabled` prop to prevent interaction. Works with both `TriggerInput` and `TriggerValue`.</p>
   <ComponentExample demo="ComboboxDisabledDemo">
     <ComboboxDisabledDemo client:load />
@@ -144,7 +161,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={3}>Error State</Heading>
+
+### Error State
+
   <p>Display validation errors with the error prop.</p>
   <ComponentExample demo="ComboboxErrorDemo">
     <ComboboxErrorDemo client:load />
@@ -152,7 +171,9 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Customizing Dropdown Height</Heading>
+
+## Customizing Dropdown Height
+
   <p>
     By default, <code class="text-surface">Combobox.Content</code> has a max height of <code class="text-surface">24rem</code> (384px) or the available viewport space, whichever is smaller. The dropdown scrolls automatically when content exceeds this height.
   </p>
@@ -175,22 +196,27 @@ export default function Example() {
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Combobox</Heading>
+## API Reference
+
+### Combobox
+
 <p>Root component for the searchable select.</p>
 <PropsTable component="Combobox" />
 
-<Heading level={3}>Combobox.Content</Heading>
+### Combobox.Content
+
 <p>Dropdown container for the list.</p>
 <PropsTable component="Combobox.Content" />
 
-<Heading level={3}>Combobox.Item</Heading>
+### Combobox.Item
+
 <p>Individual selectable option.</p>
 <PropsTable component="Combobox.Item" />
 
-  <Heading level={3}>Additional Sub-components</Heading>
-  <ul class="list-disc list-inside text-kumo-strong space-y-1">
+### Additional Sub-components
+
+  <ul class="list-disc list-inside space-y-1">
     <li>`Combobox.TriggerInput` - Single-select input trigger</li>
     <li>`Combobox.TriggerValue` - Button trigger showing selected value</li>
     <li>`Combobox.TriggerMultipleWithInput` - Multi-select with chips</li>

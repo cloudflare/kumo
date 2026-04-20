@@ -194,6 +194,17 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 > &
   KumoSelectVariantsProps & {
     multiple?: Multiple;
+    /**
+     * A function that returns a `ReactNode` to format the selected value.
+     * Only called when a value is selected — use `placeholder` for the empty state.
+     * @example
+     * ```tsx
+     * <Select
+     *   placeholder="Select a user..."
+     *   renderValue={(user) => user.name}
+     * />
+     * ```
+     */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
     className?: string;
     /**
@@ -380,9 +391,30 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // This fixes placeholder not showing with object map items
   const normalizedItems = props.items ? normalizeItems(props.items) : undefined;
 
-  // Auto-render children from items if children not provided
-  const renderedChildren =
-    children ?? (props.items ? renderOptionsFromItems(props.items) : null);
+  // Auto-render children from items if no explicit children provided
+  const renderedChildren = children
+    ? children
+    : props.items
+      ? renderOptionsFromItems(props.items)
+      : null;
+
+  // Wrap renderValue to handle null values properly:
+  // - When value is null, show placeholder (Base UI ignores placeholder when children fn provided)
+  // - When value is non-null, call user's renderValue
+  const valueChildrenFn = renderValue
+    ? (value: unknown) => {
+        if (value == null) {
+          // If no placeholder provided, return null to show nothing (same as no renderValue)
+          if (placeholder == null) {
+            return null;
+          }
+          return <span className="text-kumo-placeholder">{placeholder}</span>;
+        }
+        // Cast through `any` as a deliberate type boundary: Base UI passes `unknown`,
+        // but our renderValue expects the generic T (or T[] for multiple)
+        return renderValue(value as any);
+      }
+    : undefined;
 
   // Exclude Kumo-extended `items` from Base UI spread — we pass `normalizedItems` instead
   const { items: _items, ...baseProps } = props;
@@ -409,7 +441,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             placeholder={placeholder}
             className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
           >
-            {renderValue}
+            {valueChildrenFn}
           </SelectBase.Value>
         )}
         <SelectBase.Icon

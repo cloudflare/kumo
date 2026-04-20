@@ -11,7 +11,7 @@ import { Badge } from "@cloudflare/kumo";
 
 Always use semantic tokens instead of raw Tailwind colors. This ensures your UI automatically adapts to light and dark mode, and that your components remain consistent across themes.
 
-**Correct**
+#### Correct
 
 ```tsx
 <div className="bg-kumo-base text-kumo-default border-kumo-hairline">
@@ -20,7 +20,7 @@ Always use semantic tokens instead of raw Tailwind colors. This ensures your UI 
 </div>
 ```
 
-**Incorrect**
+#### Incorrect
 
 ```tsx
 {
@@ -71,13 +71,17 @@ Themes override semantic token values while preserving the same token names. Set
 Themes are defined in a centralized config and generated as CSS files. The theme generator ensures consistency across all themes.
 
 ```bash
+
 # List all tokens and their theme overrides
+
 pnpm --filter @cloudflare/kumo codegen:themes --list
 
 # Generate theme CSS files
+
 pnpm --filter @cloudflare/kumo codegen:themes
 
 # Preview changes without writing files
+
 pnpm --filter @cloudflare/kumo codegen:themes --dry-run
 ```
 

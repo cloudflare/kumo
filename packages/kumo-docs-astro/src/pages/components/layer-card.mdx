@@ -7,7 +7,6 @@ sourceFile: "components/layer-card"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   LayerCardDemo,
@@ -27,14 +26,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { LayerCard } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { LayerCard } from "@cloudflare/kumo/components/layer-card";
@@ -45,7 +46,8 @@ import { LayerCard } from "@cloudflare/kumo/components/layer-card";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { LayerCard } from "@cloudflare/kumo";
@@ -84,14 +86,17 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Basic Card</Heading>
+## Examples
+
+### Basic Card
+
 <ComponentExample demo="LayerCardBasicDemo">
   <LayerCardBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Surface-style Card</Heading>
+### Surface-style Card
+
 <p>
   For simple card containers, render content directly inside <code>LayerCard</code>
   without <code>LayerCard.Primary</code>.
@@ -100,7 +105,8 @@ export default function Example() {
   <LayerCardSurfaceDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Multiple Cards</Heading>
+### Multiple Cards
+
 <ComponentExample demo="LayerCardMultipleDemo">
   <LayerCardMultipleDemo client:visible />
 </ComponentExample>
@@ -110,6 +116,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="LayerCard" />
 </ComponentSection>
