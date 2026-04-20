@@ -19,6 +19,9 @@ import {
   SwitchVariantsDemo,
   SwitchSizesDemo,
   SwitchCustomIdDemo,
+  SwitchGroupDemo,
+  SwitchLegendSrOnlyDemo,
+  SwitchLegendCustomDemo,
 } from "~/components/demos/SwitchDemo";
 
 {/* Hero Demo */}
@@ -137,6 +140,39 @@ export default function Example() {
   <SwitchCustomIdDemo client:visible />
 </ComponentExample>
 
+### Switch Group
+
+<p>
+  Group related switches with `Switch.Group`. Provides a shared legend,
+  description, and error message for the group.
+</p>
+<ComponentExample demo="SwitchGroupDemo">
+  <SwitchGroupDemo client:visible />
+</ComponentExample>
+
+### Visually Hidden Legend
+
+<p>
+  Use `Switch.Legend` with `className="sr-only"` to keep the legend accessible
+  to screen readers while hiding it visually. This is useful when the group is
+  already labeled by a parent `Field` or heading, and showing the legend would
+  create a redundant label.
+</p>
+<ComponentExample demo="SwitchLegendSrOnlyDemo">
+  <SwitchLegendSrOnlyDemo client:visible />
+</ComponentExample>
+
+### Custom Legend Styling
+
+<p>
+  `Switch.Legend` accepts `className` for full control over legend presentation.
+  Use it instead of the `legend` string prop when you need custom typography,
+  colors, or layout.
+</p>
+<ComponentExample demo="SwitchLegendCustomDemo">
+  <SwitchLegendCustomDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -145,5 +181,30 @@ export default function Example() {
 
 ## API Reference
 
-  <PropsTable component="Switch" />
+### Switch
+
+<p>Individual switch toggle with built-in label.</p>
+<PropsTable component="Switch" />
+
+### Switch.Group
+
+<p>
+  Container for multiple switches with legend, description, and error support.
+</p>
+<PropsTable component="Switch.Group" />
+
+### Switch.Legend
+
+<p>
+  Composable legend sub-component for Switch.Group. Accepts `className` for full
+  styling control (e.g. `className="sr-only"` to visually hide). Use instead of
+  the `legend` string prop when you need custom legend styling.
+</p>
+<PropsTable component="Switch.Legend" />
+
+### Switch.Item
+
+<p>Individual switch within Switch.Group.</p>
+<PropsTable component="Switch.Item" />
+
 </ComponentSection>

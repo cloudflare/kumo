@@ -78,6 +78,36 @@ export function CheckboxGroupDemo() {
   );
 }
 
+/** Shows Checkbox.Legend with sr-only to visually hide the legend while keeping it accessible, useful when a parent Field already provides a visible label */
+export function CheckboxLegendSrOnlyDemo() {
+  const [preferences, setPreferences] = useState<string[]>(["email"]);
+  return (
+    <Checkbox.Group value={preferences} onValueChange={setPreferences}>
+      <Checkbox.Legend className="sr-only">
+        Notification preferences
+      </Checkbox.Legend>
+      <Checkbox.Item value="email" label="Email notifications" />
+      <Checkbox.Item value="sms" label="SMS notifications" />
+      <Checkbox.Item value="push" label="Push notifications" />
+    </Checkbox.Group>
+  );
+}
+
+/** Shows Checkbox.Legend with custom styling for full control over legend presentation */
+export function CheckboxLegendCustomDemo() {
+  const [preferences, setPreferences] = useState<string[]>(["email"]);
+  return (
+    <Checkbox.Group value={preferences} onValueChange={setPreferences}>
+      <Checkbox.Legend className="text-sm font-normal text-kumo-subtle">
+        Notification preferences
+      </Checkbox.Legend>
+      <Checkbox.Item value="email" label="Email notifications" />
+      <Checkbox.Item value="sms" label="SMS notifications" />
+      <Checkbox.Item value="push" label="Push notifications" />
+    </Checkbox.Group>
+  );
+}
+
 export function CheckboxGroupErrorDemo() {
   return (
     <Checkbox.Group

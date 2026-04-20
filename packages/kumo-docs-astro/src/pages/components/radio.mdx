@@ -19,6 +19,8 @@ import {
   RadioControlPositionDemo,
   RadioCardDemo,
   RadioCardHorizontalDemo,
+  RadioLegendSrOnlyDemo,
+  RadioLegendCustomDemo,
 } from "~/components/demos/RadioDemo";
 
 {/* Hero Demo */}
@@ -144,6 +146,29 @@ export default function Example() {
   <RadioDisabledDemo client:visible />
 </ComponentExample>
 
+### Visually Hidden Legend
+
+<p>
+  Use `Radio.Legend` with `className="sr-only"` to keep the legend accessible to
+  screen readers while hiding it visually. This is useful when the radio group
+  is already labeled by a parent `Field` or heading, and showing the legend
+  would create a redundant label.
+</p>
+<ComponentExample demo="RadioLegendSrOnlyDemo">
+  <RadioLegendSrOnlyDemo client:visible />
+</ComponentExample>
+
+### Custom Legend Styling
+
+<p>
+  `Radio.Legend` accepts `className` for full control over legend presentation.
+  Use it instead of the `legend` string prop when you need custom typography,
+  colors, or layout.
+</p>
+<ComponentExample demo="RadioLegendCustomDemo">
+  <RadioLegendCustomDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -156,6 +181,15 @@ export default function Example() {
 
 <p>Container for radio buttons with legend, description, and error support.</p>
 <PropsTable component="Radio.Group" />
+
+### Radio.Legend
+
+<p>
+  Composable legend sub-component for Radio.Group. Accepts `className` for full
+  styling control (e.g. `className="sr-only"` to visually hide). Use instead of
+  the `legend` string prop when you need custom legend styling.
+</p>
+<PropsTable component="Radio.Legend" />
 
 ### Radio.Item
 
@@ -195,5 +229,6 @@ export default function Example() {
         Each radio is announced with its label and selection state. The group legend provides context for all options.
       </p>
     </div>
+
   </div>
 </ComponentSection>

@@ -43,7 +43,11 @@ export {
  * @deprecated Use {@link DatePicker} with `mode="range"` instead.
  */
 export { DateRangePicker } from "./components/date-range-picker";
-export { Checkbox, type CheckboxProps } from "./components/checkbox";
+export {
+  Checkbox,
+  type CheckboxProps,
+  type CheckboxLegendProps,
+} from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
@@ -104,7 +108,7 @@ export { Select } from "./components/select";
  * @deprecated Use {@link LayerCard} instead.
  */
 export { Surface } from "./components/surface";
-export { Switch } from "./components/switch";
+export { Switch, type SwitchLegendProps } from "./components/switch";
 export { Tabs, type TabsProps, type TabsItem } from "./components/tabs";
 export { Table } from "./components/table";
 export { Text } from "./components/text";
@@ -139,6 +143,7 @@ export {
   KUMO_RADIO_DEFAULT_VARIANTS,
   radioVariants,
   type RadioGroupProps,
+  type RadioLegendProps,
   type RadioItemProps,
   type RadioControlPosition,
   type KumoRadioVariant,

@@ -20,6 +20,8 @@ import {
   CheckboxErrorDemo,
   CheckboxGroupDemo,
   CheckboxGroupErrorDemo,
+  CheckboxLegendSrOnlyDemo,
+  CheckboxLegendCustomDemo,
 } from "~/components/demos/CheckboxDemo";
 
 {/* Hero Demo */}
@@ -38,7 +40,7 @@ import {
 
 ### Barrel
 
-  <CodeBlock code={`import { Checkbox } from "@cloudflare/kumo";`} lang="tsx" />
+<CodeBlock code={`import { Checkbox } from "@cloudflare/kumo";`} lang="tsx" />
 
 ### Granular
 
@@ -128,13 +130,37 @@ export default function Example() {
 
 ### Checkbox Group with Error
 
-  <p>
-    Show validation errors at the group level. Error replaces description
-    when present.
-  </p>
-  <ComponentExample demo="CheckboxGroupErrorDemo">
-    <CheckboxGroupErrorDemo client:visible />
-  </ComponentExample>
+<p>
+  Show validation errors at the group level. Error replaces description when
+  present.
+</p>
+<ComponentExample demo="CheckboxGroupErrorDemo">
+  <CheckboxGroupErrorDemo client:visible />
+</ComponentExample>
+
+### Visually Hidden Legend
+
+<p>
+  Use `Checkbox.Legend` with `className="sr-only"` to keep the legend accessible
+  to screen readers while hiding it visually. This is useful when the group is
+  already labeled by a parent `Field` or heading, and showing the legend would
+  create a redundant label.
+</p>
+<ComponentExample demo="CheckboxLegendSrOnlyDemo">
+  <CheckboxLegendSrOnlyDemo client:visible />
+</ComponentExample>
+
+### Custom Legend Styling
+
+<p>
+  `Checkbox.Legend` accepts `className` for full control over legend
+  presentation. Use it instead of the `legend` string prop when you need custom
+  typography, colors, or layout.
+</p>
+<ComponentExample demo="CheckboxLegendCustomDemo">
+  <CheckboxLegendCustomDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -154,6 +180,15 @@ export default function Example() {
   Wrapper for multiple checkboxes with legend, description, and error support.
 </p>
 <PropsTable component="Checkbox.Group" />
+
+### Checkbox.Legend
+
+<p>
+  Composable legend sub-component for Checkbox.Group. Accepts `className` for
+  full styling control (e.g. `className="sr-only"` to visually hide). Use
+  instead of the `legend` string prop when you need custom legend styling.
+</p>
+<PropsTable component="Checkbox.Legend" />
 
 ### Checkbox.Item
 
@@ -197,5 +232,6 @@ export default function Example() {
         proper grouping announcement.
       </p>
     </div>
+
   </div>
 </ComponentSection>
