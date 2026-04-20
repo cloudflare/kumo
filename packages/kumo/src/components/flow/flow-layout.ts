@@ -6,6 +6,8 @@ export type TreeNode =
   | { kind: "list" | "parallel"; children: TreeNode[] }
   | { kind: "node"; id: string };
 
+export type FlowAlign = "start" | "center";
+
 export type FlowState = {
   nodes: {
     [id: string]: {
@@ -19,6 +21,7 @@ export type FlowState = {
     };
   };
   tree: TreeNode;
+  align: FlowAlign;
 };
 
 export type Edges = [string, string][];
@@ -129,9 +132,10 @@ export function computePositions(
   { columnGap = 64, rowGap = 16 } = {},
 ): NodePositions {
   const positions: NodePositions = {};
+  const align = flowState.align;
 
   /**
-   * Recursively lay out a subtree, writing absolute positions into `positions`.
+   * Recursively lay out a subtree, writing absolute positions into `out`.
    *
    * @returns `{ width, height }` — the bounding box of this subtree
    */
@@ -139,23 +143,45 @@ export function computePositions(
     node: TreeNode,
     originX: number,
     originY: number,
+    out: NodePositions,
   ): { width: number; height: number } {
     if (node.kind === "node") {
       const measured = flowState.nodes[node.id];
       const w = measured?.width ?? 0;
       const h = measured?.height ?? 0;
-      positions[node.id] = { x: originX, y: originY };
+      out[node.id] = { x: originX, y: originY };
       return { width: w, height: h };
     }
 
     if (node.kind === "list") {
-      // Place children left-to-right
+      if (align === "center") {
+        // Two-pass: measure each child into a scratch map to get heights,
+        // then position with vertical centering into `out`.
+        const sizes = node.children.map((child) => layout(child, 0, 0, {}));
+        const rowHeight = sizes.reduce((max, s) => Math.max(max, s.height), 0);
+
+        let cursorX = originX;
+        for (let i = 0; i < node.children.length; i++) {
+          const childY = originY + (rowHeight - sizes[i].height) / 2;
+          layout(node.children[i], cursorX, childY, out);
+          cursorX += sizes[i].width;
+          if (i < node.children.length - 1) cursorX += columnGap;
+        }
+
+        return { width: cursorX - originX, height: rowHeight };
+      }
+
+      // Default (align === "start"): place children left-to-right at originY
       let cursorX = originX;
       let totalHeight = 0;
 
       for (let i = 0; i < node.children.length; i++) {
-        const child = node.children[i];
-        const { width, height } = layout(child, cursorX, originY);
+        const { width, height } = layout(
+          node.children[i],
+          cursorX,
+          originY,
+          out,
+        );
         cursorX += width;
         if (i < node.children.length - 1) cursorX += columnGap;
         totalHeight = Math.max(totalHeight, height);
@@ -169,8 +195,7 @@ export function computePositions(
     let maxWidth = 0;
 
     for (let i = 0; i < node.children.length; i++) {
-      const child = node.children[i];
-      const { width, height } = layout(child, originX, cursorY);
+      const { width, height } = layout(node.children[i], originX, cursorY, out);
       maxWidth = Math.max(maxWidth, width);
       cursorY += height;
       if (i < node.children.length - 1) cursorY += rowGap;
@@ -179,7 +204,7 @@ export function computePositions(
     return { width: maxWidth, height: cursorY - originY };
   }
 
-  layout(flowState.tree, 0, 0);
+  layout(flowState.tree, 0, 0, positions);
 
   return positions;
 }

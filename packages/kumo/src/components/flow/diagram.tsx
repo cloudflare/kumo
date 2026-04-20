@@ -29,11 +29,12 @@ import {
   computeEdges,
   computePositions,
   computeDiagramRect,
+  type FlowAlign,
   type FlowState,
   type TreeNode,
 } from "./flow-layout";
 
-export type { FlowState, TreeNode };
+export type { FlowAlign, FlowState, TreeNode };
 
 const DEFAULT_PADDING = {
   y: 64,
@@ -55,6 +56,12 @@ interface FlowDiagramProps {
    */
   canvas?: boolean;
   /**
+   * Vertical alignment of nodes within each row.
+   * - `"start"`: Nodes align to the top of the row (default)
+   * - `"center"`: Nodes are vertically centered within the row
+   */
+  align?: FlowAlign;
+  /**
    * Padding around the diagram content within the canvas.
    * - `x`: Horizontal padding in pixels (default: 16)
    * - `y`: Vertical padding in pixels (default: 64)
@@ -71,6 +78,7 @@ interface FlowDiagramProps {
 
 export function FlowDiagram({
   canvas = true,
+  align = "start",
   padding: requestedPadding,
   onOverflowChange,
   className,
@@ -167,7 +175,7 @@ export function FlowDiagram({
 
   // Derive the tree from root descendants synchronously — never stored in state.
   const tree = descendantsToTree(rootDescendants, childrenByParent);
-  const flowState: FlowState = { nodes, tree };
+  const flowState: FlowState = { nodes, tree, align };
 
   // Derive edges, positions, and diagram size synchronously — never stored in state.
   const edges = computeEdges(flowState);
