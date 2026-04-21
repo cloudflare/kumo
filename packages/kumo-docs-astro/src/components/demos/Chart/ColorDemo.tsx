@@ -257,10 +257,7 @@ const COLOR_SYSTEM_ROWS = [
 ];
 
 const semantic = (name: SemanticColorName, isDarkMode = false) =>
-  ChartPalette.semantic(
-    name as unknown as Parameters<typeof ChartPalette.semantic>[0],
-    isDarkMode,
-  );
+  ChartPalette.semantic(name, isDarkMode);
 
 /**
  * Semantic colour tokens table — Attention, Warning, Success, Neutral,
@@ -337,7 +334,7 @@ export function CategoricalColorsDemo() {
           <Table.Body>
             <Table.Row>
               {categoricalColorIndices.map((colorIdx) => {
-                const color = String(ChartPalette.color(colorIdx, isDarkMode));
+                const color = String(ChartPalette.categorical(colorIdx, isDarkMode));
                 return (
                   <Table.Cell key={colorIdx} className="w-1/6">
                     <div className="flex items-center gap-2">
@@ -367,7 +364,7 @@ export function CategoricalCvdDemo() {
   const baseColors = useMemo(
     () =>
       categoricalColorIndices.map((index) =>
-        String(ChartPalette.color(index, isDarkMode)),
+        String(ChartPalette.categorical(index, isDarkMode)),
       ),
     [isDarkMode],
   );
@@ -422,8 +419,7 @@ export function CategoricalCvdDemo() {
  */
 export function SequentialColorsDemo() {
   const isDarkMode = useIsDarkMode();
-  const base = String(ChartPalette.color(0, isDarkMode));
-  const scale = ChartPalette.sequential(base, isDarkMode);
+  const scale = ChartPalette.sequential("blues", isDarkMode);
 
   return (
     <LayerCard>
@@ -468,8 +464,7 @@ export function SequentialColorsDemo() {
  */
 export function SequentialHeatmapDemo() {
   const isDarkMode = useIsDarkMode();
-  const base = String(ChartPalette.color(0, isDarkMode));
-  const scale = ChartPalette.sequential(base, isDarkMode);
+  const scale = ChartPalette.sequential("blues", isDarkMode);
 
   const maxValue = useMemo(
     () => Math.max(...HEATMAP_VALUES.flatMap((row) => row)),
@@ -601,7 +596,7 @@ export function CategoricalLineChartDemo() {
               ),
             ] as [number, number],
         ),
-        color: String(ChartPalette.color(i, isDarkMode)),
+        color: String(ChartPalette.categorical(i, isDarkMode)),
       })),
     [isDarkMode],
   );
@@ -779,7 +774,7 @@ export function CategoricalDonutChartDemo() {
   const options = useMemo(
     (): EChartsOption => ({
       color: COUNTRY_SLICES.map((_, i) =>
-        String(ChartPalette.color(i, isDarkMode)),
+        String(ChartPalette.categorical(i, isDarkMode)),
       ),
       backgroundColor: "transparent",
       tooltip: {

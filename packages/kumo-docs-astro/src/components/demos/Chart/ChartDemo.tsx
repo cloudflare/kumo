@@ -215,7 +215,7 @@ export function IncompleteDataChartDemo() {
       {
         name: "Bandwidth",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0, isDarkMode),
+        color: ChartPalette.categorical(0, isDarkMode),
       },
     ],
     [isDarkMode],
@@ -246,7 +246,7 @@ export function TimeRangeSelectionChartDemo() {
       {
         name: "CPU Usage",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0, isDarkMode),
+        color: ChartPalette.categorical(0, isDarkMode),
       },
     ],
     [isDarkMode],
