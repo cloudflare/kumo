@@ -1,9 +1,16 @@
 import { Combobox as ComboboxBase } from "@base-ui/react/combobox";
-import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
+import {
+  CaretDownIcon,
+  CheckIcon,
+  PlusIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import {
   Fragment,
   createContext,
   useContext,
+  useCallback,
+  useState,
   type PropsWithChildren,
   type ReactNode,
 } from "react";
@@ -42,6 +49,43 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
 // Context to pass size down to sub-components
 const ComboboxSizeContext = createContext<KumoInputSize>("base");
 
+interface KumoCreatableComboboxItem {
+  creatable: string;
+  id: string;
+  value: string;
+}
+
+function isCreatableComboboxItem(
+  item: unknown,
+): item is KumoCreatableComboboxItem {
+  return typeof item === "object" && item !== null && "creatable" in item;
+}
+
+function getComboboxItemText<Value>(
+  item: Value,
+  itemToStringLabel?: (itemValue: Value) => string,
+) {
+  if (itemToStringLabel) {
+    return itemToStringLabel(item);
+  }
+
+  if (typeof item === "string") {
+    return item;
+  }
+
+  if (typeof item === "object" && item !== null) {
+    if ("label" in item && typeof item.label === "string") {
+      return item.label;
+    }
+
+    if ("value" in item && typeof item.value === "string") {
+      return item.value;
+    }
+  }
+
+  return String(item);
+}
+
 // Derived types from KUMO_COMBOBOX_VARIANTS
 export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
 export type KumoComboboxInputSide =
@@ -79,7 +123,9 @@ export type ComboboxSize = KumoComboboxSize;
 export type ComboboxRootProps<
   Value = unknown,
   Multiple extends boolean | undefined = false,
-> = ComboboxBase.Root.Props<Value, Multiple>;
+> = ComboboxBase.Root.Props<Value, Multiple> & {
+  onCreate?: (value: string) => void;
+};
 
 /**
  * Combobox component props (simplified for documentation; the actual Root is generic).
@@ -121,6 +167,11 @@ export interface ComboboxProps extends KumoComboboxVariantsProps {
   value?: unknown;
   /** Callback when selection changes */
   onValueChange?: (value: unknown) => void;
+  /**
+   * Called when the user selects the creatable option.
+   * Update `items` and `value` from this callback to persist the new option.
+   */
+  onCreate?: (value: string) => void;
   /** Enable multi-select mode */
   multiple?: boolean;
   /** Combobox content (trigger, content, items) */
@@ -147,6 +198,17 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   error,
   children,
   size = "base",
+  onCreate,
+  items,
+  value,
+  inputValue,
+  onInputValueChange,
+  onValueChange,
+  onItemHighlighted,
+  itemToStringLabel,
+  itemToStringValue,
+  filter,
+  isItemEqualToValue,
   ...props
 }: ComboboxBase.Root.Props<Value, Multiple> & {
   label?: ReactNode;
@@ -155,10 +217,211 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   description?: ReactNode;
   error?: string | { message: ReactNode; match: FieldErrorMatch };
   size?: KumoComboboxSize;
+  onCreate?: (value: string) => void;
 }) {
+  const [internalInputValue, setInternalInputValue] = useState("");
+  const query =
+    inputValue === undefined ? internalInputValue : String(inputValue);
+
+  const updateInputValue = useCallback(
+    (
+      nextInputValue: string,
+      eventDetails?: ComboboxBase.Root.ChangeEventDetails,
+    ) => {
+      if (onInputValueChange) {
+        onInputValueChange(nextInputValue, eventDetails!);
+        return;
+      }
+
+      setInternalInputValue(nextInputValue);
+    },
+    [onInputValueChange],
+  );
+
+  const normalizedItems = (items ?? []) as Value[];
+  const itemToStringLabelWithCreatable = useCallback(
+    (item: Value | KumoCreatableComboboxItem) =>
+      isCreatableComboboxItem(item)
+        ? item.value
+        : getComboboxItemText(item, itemToStringLabel),
+    [itemToStringLabel],
+  );
+  const itemToStringValueWithCreatable = useCallback(
+    (item: Value | KumoCreatableComboboxItem) => {
+      if (isCreatableComboboxItem(item)) {
+        return item.value;
+      }
+
+      return itemToStringValue
+        ? itemToStringValue(item)
+        : getComboboxItemText(item, itemToStringLabel);
+    },
+    [itemToStringLabel, itemToStringValue],
+  );
+  const filterWithCreatable = useCallback(
+    (
+      item: Value | KumoCreatableComboboxItem,
+      nextQuery: string,
+      itemToString?: (itemValue: Value | KumoCreatableComboboxItem) => string,
+    ) => {
+      if (!filter) {
+        return true;
+      }
+
+      if (isCreatableComboboxItem(item)) {
+        return true;
+      }
+
+      return filter(
+        item,
+        nextQuery,
+        itemToString as ((itemValue: Value) => string) | undefined,
+      );
+    },
+    [filter],
+  );
+  const isItemEqualToValueWithCreatable = useCallback(
+    (
+      item: Value | KumoCreatableComboboxItem,
+      selectedValue: Value | KumoCreatableComboboxItem,
+    ) => {
+      if (
+        isCreatableComboboxItem(item) ||
+        isCreatableComboboxItem(selectedValue)
+      ) {
+        return (
+          isCreatableComboboxItem(item) &&
+          isCreatableComboboxItem(selectedValue) &&
+          item.id === selectedValue.id
+        );
+      }
+
+      return isItemEqualToValue
+        ? isItemEqualToValue(item, selectedValue)
+        : Object.is(item, selectedValue);
+    },
+    [isItemEqualToValue],
+  );
+  const handleItemHighlighted = useCallback(
+    (
+      highlightedValue: Value | KumoCreatableComboboxItem | undefined,
+      eventDetails: ComboboxBase.Root.HighlightEventDetails,
+    ) => {
+      onItemHighlighted?.(
+        isCreatableComboboxItem(highlightedValue)
+          ? undefined
+          : highlightedValue,
+        eventDetails,
+      );
+    },
+    [onItemHighlighted],
+  );
+  const trimmedQuery = query.trim();
+  const loweredQuery = trimmedQuery.toLocaleLowerCase();
+  const exactItemExists =
+    trimmedQuery === "" ||
+    normalizedItems.some(
+      (item) =>
+        itemToStringLabelWithCreatable(item).trim().toLocaleLowerCase() ===
+        loweredQuery,
+    );
+  const itemsForView =
+    onCreate && trimmedQuery !== "" && !exactItemExists
+      ? [
+          ...normalizedItems,
+          {
+            creatable: trimmedQuery,
+            id: `create:${loweredQuery}`,
+            value: `Create \"${trimmedQuery}\"`,
+          } satisfies KumoCreatableComboboxItem,
+        ]
+      : normalizedItems;
+
+  const handleValueChange = useCallback(
+    (
+      nextValue: Value[] | Value | KumoCreatableComboboxItem | null,
+      eventDetails: ComboboxBase.Root.ChangeEventDetails,
+    ) => {
+      const emitValueChange = onValueChange as
+        | ((
+            value: Value[] | Value | null,
+            eventDetails: ComboboxBase.Root.ChangeEventDetails,
+          ) => void)
+        | undefined;
+
+      if (Array.isArray(nextValue)) {
+        const creatableSelection = (nextValue as unknown[]).find(
+          isCreatableComboboxItem,
+        );
+
+        if (creatableSelection) {
+          onCreate?.(creatableSelection.creatable);
+          updateInputValue("", eventDetails);
+          return;
+        }
+
+        emitValueChange?.(nextValue as Value[], eventDetails);
+        updateInputValue("", eventDetails);
+        return;
+      }
+
+      if (isCreatableComboboxItem(nextValue)) {
+        onCreate?.(nextValue.creatable);
+        updateInputValue("", eventDetails);
+        return;
+      }
+
+      emitValueChange?.(nextValue as Value | null, eventDetails);
+
+      if (nextValue !== null) {
+        updateInputValue("", eventDetails);
+      }
+    },
+    [onCreate, onValueChange, updateInputValue],
+  );
+
   const comboboxControl = (
     <ComboboxSizeContext.Provider value={size}>
-      <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
+      <ComboboxBase.Root
+        {...props}
+        items={
+          itemsForView as ComboboxBase.Root.Props<
+            Value | KumoCreatableComboboxItem,
+            Multiple
+          >["items"]
+        }
+        isItemEqualToValue={isItemEqualToValueWithCreatable}
+        value={
+          value as ComboboxBase.Root.Props<
+            Value | KumoCreatableComboboxItem,
+            Multiple
+          >["value"]
+        }
+        inputValue={query}
+        filter={filter ? filterWithCreatable : undefined}
+        itemToStringLabel={itemToStringLabelWithCreatable}
+        itemToStringValue={itemToStringValueWithCreatable}
+        onInputValueChange={
+          updateInputValue as ComboboxBase.Root.Props<
+            Value | KumoCreatableComboboxItem,
+            Multiple
+          >["onInputValueChange"]
+        }
+        onValueChange={
+          handleValueChange as ComboboxBase.Root.Props<
+            Value | KumoCreatableComboboxItem,
+            Multiple
+          >["onValueChange"]
+        }
+        onItemHighlighted={
+          handleItemHighlighted as ComboboxBase.Root.Props<
+            Value | KumoCreatableComboboxItem,
+            Multiple
+          >["onItemHighlighted"]
+        }
+      >
+        {children}
+      </ComboboxBase.Root>
     </ComboboxSizeContext.Provider>
   );
 
@@ -411,8 +674,14 @@ function Input(props: ComboboxBase.Input.Props) {
 
 function List({
   className,
+  children,
   ...props
 }: ComboboxBase.List.Props & { className?: string }) {
+  const renderItem =
+    typeof children === "function"
+      ? (children as (item: unknown) => ReactNode)
+      : undefined;
+
   return (
     <ComboboxBase.List
       {...props}
@@ -420,7 +689,28 @@ function List({
         "min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-pt-2 scroll-pb-2",
         className,
       )}
-    />
+    >
+      {renderItem
+        ? (item: unknown) =>
+            isCreatableComboboxItem(item) ? (
+              <ComboboxBase.Item
+                key={item.id}
+                value={item}
+                className="mx-1.5 flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
+              >
+                <PlusIcon size={14} className="shrink-0" />
+                <span>
+                  Create{" "}
+                  <span className="font-medium">
+                    &quot;{item.creatable}&quot;
+                  </span>
+                </span>
+              </ComboboxBase.Item>
+            ) : (
+              renderItem(item)
+            )
+        : children}
+    </ComboboxBase.List>
   );
 }
 

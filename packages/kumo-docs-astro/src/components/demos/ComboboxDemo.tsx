@@ -199,6 +199,46 @@ export function ComboboxDemo() {
   );
 }
 
+/** Demonstrates creating new options with the onCreate prop. */
+export function ComboboxCreatableDemo() {
+  const [labels, setLabels] = useState([
+    "bug",
+    "documentation",
+    "enhancement",
+    "help wanted",
+    "good first issue",
+  ]);
+  const [value, setValue] = useState<string | null>(null);
+
+  return (
+    <div className="w-80">
+      <Combobox
+        items={labels}
+        value={value}
+        onValueChange={(next) => setValue(next as string | null)}
+        onCreate={(nextLabel: string) => {
+          setLabels((current) =>
+            current.includes(nextLabel) ? current : [...current, nextLabel],
+          );
+          setValue(nextLabel);
+        }}
+      >
+        <Combobox.TriggerInput placeholder="Search or create a label" />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
+
 // Searchable inside popup with TriggerValue
 export function ComboboxSearchableInsideDemo() {
   const [value, setValue] = useState<Language>(languages[0]);
