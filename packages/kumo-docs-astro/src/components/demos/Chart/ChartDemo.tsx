@@ -6,7 +6,7 @@ import {
   LayerCard,
 } from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
-import type { KumoChartOption } from "@cloudflare/kumo";
+import type { EChartsOption } from "echarts";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -36,7 +36,7 @@ echarts.use([
 export function PieChartDemo() {
   const isDarkMode = useIsDarkMode();
 
-  const options = useMemo(
+  const options = useMemo<EChartsOption>(
     () =>
       ({
         animation: true,
@@ -56,7 +56,7 @@ export function PieChartDemo() {
             ],
           },
         ],
-      }) satisfies KumoChartOption,
+      }),
     [],
   );
 
@@ -215,7 +215,7 @@ export function IncompleteDataChartDemo() {
       {
         name: "Bandwidth",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0, isDarkMode),
+        color: ChartPalette.categorical(0, isDarkMode),
       },
     ],
     [isDarkMode],
@@ -246,7 +246,7 @@ export function TimeRangeSelectionChartDemo() {
       {
         name: "CPU Usage",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0, isDarkMode),
+        color: ChartPalette.categorical(0, isDarkMode),
       },
     ],
     [isDarkMode],
@@ -271,7 +271,7 @@ export function TimeRangeSelectionChartDemo() {
 export function PieChartPreviewDemo() {
   const isDarkMode = useIsDarkMode();
 
-  const options = useMemo(
+  const options = useMemo<EChartsOption>(
     () =>
       ({
         toolbox: {
@@ -287,7 +287,7 @@ export function PieChartPreviewDemo() {
             ],
           },
         ],
-      }) satisfies KumoChartOption,
+      }),
     [],
   );
 
@@ -493,7 +493,7 @@ export function ChartExampleDemo() {
       {
         name: "P50",
         data: buildSeriesData(0, 30, 60_000, 0.2),
-        color: ChartPalette.semantic("NeutralLight", isDarkMode),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
       },
     ],
     [isDarkMode],
@@ -524,7 +524,7 @@ export function ChartExampleDemo() {
           />
           <ChartLegend.LargeItem
             name="P50"
-            color={ChartPalette.semantic("NeutralLight", isDarkMode)}
+            color={ChartPalette.semantic("Neutral", isDarkMode)}
             value="10"
             unit="ms"
           />
@@ -550,13 +550,11 @@ export function ChartExampleDemo() {
 export function CustomTooltipChartDemo() {
   const isDarkMode = useIsDarkMode();
 
-  const options = useMemo<KumoChartOption>(
+  const options = useMemo<EChartsOption>(
     () => ({
       tooltip: {
         trigger: "item",
-        // Use dangerousHtmlFormatter instead of formatter to make the
-        // security implications explicit. Only use with trusted content.
-        dangerousHtmlFormatter: (params: any) => {
+        formatter: (params: any) => {
           // IMPORTANT: Always escape ALL dynamic values using encodeHTML
           // from echarts/format before including in HTML. This prevents
           // XSS attacks from malicious data like:
@@ -625,26 +623,22 @@ function buildSeriesData(
   });
 }
 
+function getIsDark() {
+  if (typeof document === "undefined") return false;
+
+  const root = document.documentElement;
+
+  const mode = root.getAttribute("data-mode");
+  if (mode === "dark") return true;
+  if (mode === "light") return false;
+
+  if (root.classList.contains("dark")) return true;
+  if (root.classList.contains("light")) return false;
+
+  return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
+}
+
 function useIsDarkMode() {
-  const getIsDark = () => {
-    if (typeof document === "undefined") return false;
-
-    const root = document.documentElement;
-
-    const mode = root.getAttribute("data-mode");
-    if (mode === "dark") return true;
-    if (mode === "light") return false;
-
-    // 1) Prefer explicit html class contract (Tailwind-style)
-    if (root.classList.contains("dark")) return true;
-    if (root.classList.contains("light")) return false;
-
-    // 2) Otherwise fall back to system preference
-    return (
-      window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false
-    );
-  };
-
   const [isDark, setIsDark] = useState(getIsDark);
 
   useEffect(() => {
