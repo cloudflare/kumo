@@ -84,6 +84,10 @@
       "types": "./dist/src/components/input/index.d.ts",
       "import": "./dist/components/input.js"
     },
+    "./components/input-group": {
+      "types": "./dist/src/components/input-group/index.d.ts",
+      "import": "./dist/components/input-group.js"
+    },
     "./components/layer-card": {
       "types": "./dist/src/components/layer-card/index.d.ts",
       "import": "./dist/components/layer-card.js"

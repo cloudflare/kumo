@@ -7,7 +7,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { InputGroup } from "../input";
+import { InputGroup } from "../input-group";
 import {
   CaretDoubleLeftIcon,
   CaretDoubleRightIcon,
@@ -251,7 +251,7 @@ function PaginationControls({
       className={cn("grow flex flex-col items-end", className)}
     >
       <nav aria-label={labels.navigation}>
-        <InputGroup focusMode="individual">
+        <InputGroup>
           {controls === "full" && (
             <InputGroup.Button
               variant="secondary"

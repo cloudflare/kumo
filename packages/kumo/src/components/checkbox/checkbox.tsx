@@ -5,10 +5,12 @@ import { Label } from "../label";
 import { Fieldset } from "@base-ui/react/fieldset";
 import { Field as FieldBase } from "@base-ui/react/field";
 import { CheckboxGroup as BaseCheckboxGroup } from "@base-ui/react/checkbox-group";
-import {
-  Checkbox as BaseCheckbox,
-  type CheckboxRootChangeEventDetails,
-} from "@base-ui/react/checkbox";
+import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
+
+/** Event details passed to onCheckedChange callback. Re-exported from Base UI. */
+export type CheckboxChangeEventDetails = Parameters<
+  NonNullable<BaseCheckbox.Root.Props["onCheckedChange"]>
+>[1];
 
 /** Checkbox variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_CHECKBOX_VARIANTS = {
@@ -116,13 +118,7 @@ export type CheckboxProps = {
   /** Whether the checkbox is disabled */
   disabled?: boolean;
   /** Callback when the checked state changes */
-  onCheckedChange?: (checked: boolean) => void;
-  /** @deprecated Use onCheckedChange instead */
-  onValueChange?: (checked: boolean) => void;
-  /** @deprecated Use onCheckedChange instead */
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  /** Click handler */
-  onClick?: (event: React.MouseEvent) => void;
+  onCheckedChange?: BaseCheckbox.Root.Props["onCheckedChange"];
   /** Name for form submission */
   name?: string;
   /** Whether the field is required */
@@ -215,9 +211,7 @@ export type CheckboxItemProps = {
   indeterminate?: boolean;
   disabled?: boolean;
   /** Callback when the checked state changes */
-  onCheckedChange?: (checked: boolean) => void;
-  /** @deprecated Use onCheckedChange instead */
-  onValueChange?: (checked: boolean) => void;
+  onCheckedChange?: BaseCheckbox.Root.Props["onCheckedChange"];
   name?: string;
 };
 
@@ -234,8 +228,6 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       labelTooltip,
       controlFirst = true,
       onCheckedChange,
-      onValueChange,
-      onChange,
       required,
       name,
       ...props
@@ -259,23 +251,6 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       }
     }
 
-    // Handle onCheckedChange (preferred) and deprecated onValueChange/onChange
-    const handleCheckedChange = (
-      newChecked: boolean,
-      eventDetails: CheckboxRootChangeEventDetails,
-    ) => {
-      onCheckedChange?.(newChecked);
-      onValueChange?.(newChecked);
-      if (onChange) {
-        // Backwards compatibility: extend native event with target.checked
-        // so existing code using `e.target.checked` continues to work
-        const event = Object.assign(eventDetails.event, {
-          target: { checked: newChecked },
-        });
-        onChange(event as never);
-      }
-    };
-
     const checkboxControl = (
       <BaseCheckbox.Root
         ref={ref}
@@ -283,7 +258,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         checked={checked}
         indeterminate={indeterminate}
         disabled={disabled}
-        onCheckedChange={handleCheckedChange}
+        onCheckedChange={onCheckedChange}
         className={cn(
           "relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
@@ -355,18 +330,11 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
       label,
       value,
       onCheckedChange,
-      onValueChange,
       name,
     },
     ref,
   ) => {
     const { controlFirst } = useContext(CheckboxGroupContext);
-
-    // Handle onCheckedChange (preferred) and deprecated onValueChange
-    const handleCheckedChange = (newChecked: boolean) => {
-      onCheckedChange?.(newChecked);
-      onValueChange?.(newChecked);
-    };
 
     return (
       <label
@@ -386,7 +354,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           checked={checked}
           indeterminate={indeterminate}
           disabled={disabled}
-          onCheckedChange={handleCheckedChange}
+          onCheckedChange={onCheckedChange}
           className={cn(
             "peer relative flex h-4 w-4 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",

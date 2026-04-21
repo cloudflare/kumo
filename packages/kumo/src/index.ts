@@ -47,6 +47,7 @@ export {
   Checkbox,
   type CheckboxProps,
   type CheckboxLegendProps,
+  type CheckboxChangeEventDetails,
 } from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
@@ -90,8 +91,15 @@ export {
   InputArea,
   Textarea,
   type InputAreaProps,
-  InputGroup,
 } from "./components/input";
+export {
+  InputGroup,
+  type InputGroupRootProps,
+  type InputGroupAddonProps,
+  type InputGroupSuffixProps,
+  type InputGroupInputProps,
+  type InputGroupButtonProps,
+} from "./components/input-group";
 export { LayerCard } from "./components/layer-card";
 export {
   DeleteResource,
