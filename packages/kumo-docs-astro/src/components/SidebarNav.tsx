@@ -38,6 +38,7 @@ const staticPages: NavItem[] = [
 ];
 
 const componentItems: NavItem[] = [
+  { label: "Autocomplete", href: "/components/autocomplete" },
   { label: "Badge", href: "/components/badge" },
   { label: "Banner", href: "/components/banner" },
   { label: "Breadcrumbs", href: "/components/breadcrumbs" },

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Autocomplete,
   Badge,
   Banner,
   Button,
@@ -57,6 +58,7 @@ const componentRoutes: Record<string, string> = {
   "clipboard-text": "/components/clipboard-text",
   "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
+  autocomplete: "/components/autocomplete",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
   "date-picker": "/components/date-picker",
@@ -164,6 +166,26 @@ export function HomeGrid() {
           <Select.Option value="active">Active versions</Select.Option>
           <Select.Option value="specific">Specific versions</Select.Option>
         </Select>
+      ),
+    },
+    {
+      name: "Autocomplete",
+      id: "autocomplete",
+      Component: (
+        <Autocomplete
+          items={["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange"]}
+        >
+          <Autocomplete.InputGroup placeholder="Search fruits…" />
+          <Autocomplete.Content>
+            <Autocomplete.List>
+              {(item: string) => (
+                <Autocomplete.Item key={item} value={item}>
+                  {item}
+                </Autocomplete.Item>
+              )}
+            </Autocomplete.List>
+          </Autocomplete.Content>
+        </Autocomplete>
       ),
     },
     {
