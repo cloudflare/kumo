@@ -50,6 +50,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   "date-range-picker": "Input",
   field: "Input",
   input: "Input",
+  "input-group": "Input",
   radio: "Input",
   select: "Input",
   switch: "Input",

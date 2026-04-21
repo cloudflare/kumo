@@ -15,7 +15,6 @@ import {
 } from "~/components/demos/Chart/ChartDemo";
 import { ColorDemo } from "~/components/demos/Chart/ColorDemo";
 import ChartCard from "~/components/demos/Chart/ChartCard.astro";
-import Heading from "~/components/docs/Heading.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 
 <ComponentSection>
@@ -61,7 +60,8 @@ echarts.use([
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Available Charts</Heading>
+
+## Available Charts
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <ChartCard
@@ -84,7 +84,8 @@ echarts.use([
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Coloring</Heading>
+
+## Coloring
 
   <div class="space-y-6">
     <p>
@@ -105,19 +106,22 @@ const series0 = ChartPalette.color(0, isDarkMode);
 </ComponentSection>
 
 <ComponentSection>
-  <Heading level={2}>Legend</Heading>
+
+## Legend
 
 <p class="mb-6">
   Use <code>LegendItem</code> to display chart series information with color
   indicators.
 </p>
 
-<Heading level={3}>LargeItem</Heading>
+### LargeItem
+
 <ComponentExample demo="LegendDefaultDemo">
   <LegendDefaultDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>SmallItem</Heading>
+### SmallItem
+
   <ComponentExample demo="LegendCompactDemo">
     <LegendCompactDemo client:visible />
   </ComponentExample>

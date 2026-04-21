@@ -107,6 +107,10 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/input/index.ts",
           ),
+          "components/input-group": resolve(
+            __dirname,
+            "src/components/input-group/index.ts",
+          ),
           "components/layer-card": resolve(
             __dirname,
             "src/components/layer-card/index.ts",
@@ -192,6 +196,10 @@ export default defineConfig(({ mode }) => {
             "src/components/date-picker/index.ts",
           ),
           "components/flow": resolve(__dirname, "src/components/flow/index.ts"),
+          "components/autocomplete": resolve(
+            __dirname,
+            "src/components/autocomplete/index.ts",
+          ),
           "components/sidebar": resolve(
             __dirname,
             "src/components/sidebar/index.ts",

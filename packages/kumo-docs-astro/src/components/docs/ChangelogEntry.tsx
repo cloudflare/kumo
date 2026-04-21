@@ -11,8 +11,7 @@ const proseStyles = cn(
   "[&>:first-child]:mt-0 [&>:last-child]:mb-0",
   "[&_h1]:text-xl [&_h2]:text-lg [&_h3]:text-base",
   "[&_:is(h1,h2,h3)]:font-semibold [&_:is(h1,h2,h3)]:text-kumo-default",
-  "[&_p]:text-kumo-default",
-  "[&_pre]:overflow-x-auto",
+  "[&_pre]:overflow-x-auto [&_pre]:text-base",
 );
 
 interface ChangelogEntryProps {

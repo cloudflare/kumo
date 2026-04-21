@@ -77,7 +77,7 @@ export function StickyDocHeader({
         >
           <span className="pointer-events-auto flex items-center gap-2 text-base">
             <span className="text-kumo-subtle">/ </span>
-            <span className="font-semibold">{title}</span>
+            <span className="font-semibold tracking-tight">{title}</span>
             {githubSourceUrl && (
               <a
                 href={githubSourceUrl}
@@ -122,7 +122,7 @@ export function StickyDocHeader({
                 : "pointer-events-none opacity-0",
             )}
           >
-            <span className="text-lg font-semibold text-kumo-default">
+            <span className="text-lg font-semibold tracking-tight text-kumo-default">
               {title}
             </span>
             {githubSourceUrl && (

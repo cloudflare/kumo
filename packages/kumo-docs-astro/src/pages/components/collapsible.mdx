@@ -8,7 +8,6 @@ baseUIComponent: "collapsible"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   CollapsibleHeroDemo,
@@ -27,14 +26,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Collapsible } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Collapsible } from "@cloudflare/kumo/components/collapsible";
@@ -45,7 +46,8 @@ import { Collapsible } from "@cloudflare/kumo/components/collapsible";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Collapsible } from "@cloudflare/kumo";
@@ -60,14 +62,17 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Single Item</Heading>
+## Examples
+
+### Single Item
+
 <ComponentExample demo="CollapsibleBasicDemo">
   <CollapsibleBasicDemo client:load />
 </ComponentExample>
 
-<Heading level={3}>Multiple Items</Heading>
+### Multiple Items
+
 <ComponentExample demo="CollapsibleMultipleDemo">
   <CollapsibleMultipleDemo client:load />
 </ComponentExample>
@@ -77,6 +82,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Collapsible" />
 </ComponentSection>

@@ -136,10 +136,34 @@ const RadioGroupContext = createContext<{
  * </Radio.Group>
  * ```
  */
+/**
+ * Props for Radio.Legend — a composable sub-component for labeling a Radio.Group.
+ *
+ * Place as a direct child of `<Radio.Group>` to provide a styled, accessible legend.
+ * Accepts `className` for full styling control (e.g. `className="sr-only"` to visually hide).
+ *
+ * @example
+ * ```tsx
+ * <Radio.Group>
+ *   <Radio.Legend className="sr-only">Paths</Radio.Legend>
+ *   <Radio.Item label="Allow all paths" value="all" />
+ * </Radio.Group>
+ * ```
+ */
+export interface RadioLegendProps {
+  /** Legend content */
+  children: ReactNode;
+  /** Additional CSS classes (e.g. "sr-only" to visually hide the legend) */
+  className?: string;
+}
+
 export interface RadioGroupProps {
-  /** Legend text for the group (required for accessibility) */
-  legend: string;
-  /** Child Radio.Item components */
+  /**
+   * Legend text for the group (required for accessibility).
+   * For more control over legend styling, omit this prop and use `<Radio.Legend>` as a child instead.
+   */
+  legend?: string;
+  /** Child Radio.Item components (and optionally a Radio.Legend) */
   children: ReactNode;
   /** Layout direction of the radio items */
   orientation?: "vertical" | "horizontal";
@@ -326,6 +350,19 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
 
 RadioItem.displayName = "Radio.Item";
 
+// Radio.Legend — composable legend sub-component for Radio.Group
+function RadioLegend({ children, className }: RadioLegendProps) {
+  return (
+    <Fieldset.Legend
+      className={cn("text-base font-medium text-kumo-default", className)}
+    >
+      {children}
+    </Fieldset.Legend>
+  );
+}
+
+RadioLegend.displayName = "Radio.Legend";
+
 // Radio.Group with built-in Fieldset and RadioGroup
 function RadioGroup({
   legend,
@@ -355,9 +392,11 @@ function RadioGroup({
           disabled={disabled}
           className={cn("flex flex-col gap-4", className)}
         >
-          <Fieldset.Legend className="text-base font-medium text-kumo-default">
-            {legend}
-          </Fieldset.Legend>
+          {legend && (
+            <Fieldset.Legend className="text-base font-medium text-kumo-default">
+              {legend}
+            </Fieldset.Legend>
+          )}
           <div
             className={cn(
               orientation === "vertical"
@@ -387,19 +426,28 @@ export { RadioGroup };
 /**
  * Radio — radio button group for single-select choices.
  *
- * Compound component: `Radio.Group` (with built-in Fieldset) and `Radio.Item`.
+ * Compound component: `Radio.Group` (with built-in Fieldset), `Radio.Item`, and `Radio.Legend`.
  * Built on `@base-ui/react/radio-group` + `@base-ui/react/radio`.
  *
  * @example
  * ```tsx
+ * // Simple: legend as a string prop
  * <Radio.Group legend="Notification preference" defaultValue="email">
  *   <Radio.Item label="Email" value="email" />
  *   <Radio.Item label="SMS" value="sms" />
  *   <Radio.Item label="Push" value="push" />
+ * </Radio.Group>
+ *
+ * // Composable: Radio.Legend for full styling control (e.g. visually hidden)
+ * <Radio.Group defaultValue="email">
+ *   <Radio.Legend className="sr-only">Notification preference</Radio.Legend>
+ *   <Radio.Item label="Email" value="email" />
+ *   <Radio.Item label="SMS" value="sms" />
  * </Radio.Group>
  * ```
  */
 export const Radio = Object.assign(RadioGroup, {
   Item: RadioItem,
   Group: RadioGroup,
+  Legend: RadioLegend,
 });

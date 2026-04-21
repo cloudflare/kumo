@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -83,6 +83,10 @@
     "./components/input": {
       "types": "./dist/src/components/input/index.d.ts",
       "import": "./dist/components/input.js"
+    },
+    "./components/input-group": {
+      "types": "./dist/src/components/input-group/index.d.ts",
+      "import": "./dist/components/input-group.js"
     },
     "./components/layer-card": {
       "types": "./dist/src/components/layer-card/index.d.ts",
@@ -186,6 +190,10 @@
     "./components/flow": {
       "types": "./dist/src/components/flow/index.d.ts",
       "import": "./dist/components/flow.js"
+    },
+    "./components/autocomplete": {
+      "types": "./dist/src/components/autocomplete/index.d.ts",
+      "import": "./dist/components/autocomplete.js"
     },
     "./components/sidebar": {
       "types": "./dist/src/components/sidebar/index.d.ts",

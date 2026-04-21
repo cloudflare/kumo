@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Autocomplete,
   Badge,
   Banner,
   Button,
@@ -38,6 +39,7 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -57,6 +59,7 @@ const componentRoutes: Record<string, string> = {
   "clipboard-text": "/components/clipboard-text",
   "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
+  autocomplete: "/components/autocomplete",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
   "date-picker": "/components/date-picker",
@@ -67,6 +70,7 @@ const componentRoutes: Record<string, string> = {
   grid: "/components/grid",
   input: "/components/input",
   "input-area": "/components/input-area",
+  "input-group": "/components/input-group",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   link: "/components/link",
@@ -164,6 +168,26 @@ export function HomeGrid() {
           <Select.Option value="active">Active versions</Select.Option>
           <Select.Option value="specific">Specific versions</Select.Option>
         </Select>
+      ),
+    },
+    {
+      name: "Autocomplete",
+      id: "autocomplete",
+      Component: (
+        <Autocomplete
+          items={["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange"]}
+        >
+          <Autocomplete.InputGroup placeholder="Search fruits…" />
+          <Autocomplete.Content>
+            <Autocomplete.List>
+              {(item: string) => (
+                <Autocomplete.Item key={item} value={item}>
+                  {item}
+                </Autocomplete.Item>
+              )}
+            </Autocomplete.List>
+          </Autocomplete.Content>
+        </Autocomplete>
       ),
     },
     {
@@ -417,6 +441,11 @@ export function HomeGrid() {
       Component: <InputArea placeholder="Enter your name" />,
     },
     {
+      name: "InputGroup",
+      id: "input-group",
+      Component: <InputGroupDemo />,
+    },
+    {
       name: "Meter",
       id: "meter",
       Component: (
@@ -656,7 +685,7 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            <div className="flex w-full items-center justify-center p-8">
+            <div className="flex w-full items-center justify-center p-8 tracking-normal leading-normal">
               {c.Component ?? (
                 <p className="text-base font-medium text-kumo-subtle">TBD</p>
               )}

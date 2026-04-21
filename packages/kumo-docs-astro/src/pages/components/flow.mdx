@@ -7,7 +7,6 @@ sourceFile: "components/flow"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import {
   FlowBasicDemo,
   FlowParallelDemo,
@@ -33,14 +32,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Flow } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Flow } from "@cloudflare/kumo/components/flow";
@@ -51,7 +52,9 @@ import { Flow } from "@cloudflare/kumo/components/flow";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
+
   <p>
     The Flow components work together to create directed flow diagrams. Use
     `Flow` as the container,
@@ -80,21 +83,25 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Sequential Flow</Heading>
+## Examples
+
+### Sequential Flow
+
 <p>A simple linear flow with nodes connected in sequence.</p>
 <ComponentExample demo="FlowBasicDemo">
   <FlowBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Parallel Branches</Heading>
+### Parallel Branches
+
 <p>Use `Flow.Parallel` to create branching paths that run in parallel.</p>
 <ComponentExample demo="FlowParallelDemo">
   <FlowParallelDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Node Styling</Heading>
+### Custom Node Styling
+
 <p>
   Use the `render` prop to completely customize node appearance. The render prop
   accepts a React element that will be used instead of the default styled node.
@@ -103,7 +110,8 @@ export default function Example() {
   <FlowCustomContentDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Centered Alignment</Heading>
+### Centered Alignment
+
 <p>
   Use the `align` prop to vertically center nodes. This is useful when nodes
   have different heights.
@@ -112,13 +120,15 @@ export default function Example() {
   <FlowCenteredDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Complex Flow</Heading>
+### Complex Flow
+
 <p>Combine sequential and parallel nodes to build complex workflows.</p>
 <ComponentExample demo="FlowComplexDemo">
   <FlowComplexDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Anchor Points</Heading>
+### Custom Anchor Points
+
 <p>
   By default, connectors attach to the center of each node. Use `Flow.Anchor`
   with its `render` prop to specify custom attachment points. The `type` prop
@@ -129,7 +139,8 @@ export default function Example() {
   <FlowAnchorDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Panning Large Diagrams</Heading>
+### Panning Large Diagrams
+
 <p>
   When a diagram exceeds its container, Flow automatically enables panning. Drag
   to pan the viewport, or use the scroll wheel. Scrollbars appear on hover to
@@ -139,7 +150,8 @@ export default function Example() {
   <FlowPanningDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Disabled Nodes</Heading>
+### Disabled Nodes
+
 <p>
   Use the `disabled` prop on a node to visually indicate it's inactive.
   Connectors linking to disabled nodes are rendered with reduced opacity.
@@ -148,7 +160,8 @@ export default function Example() {
   <FlowDisabledDemo client:visible />
 </ComponentExample>
 
-  <Heading level={3}>Parallel Node Alignment</Heading>
+### Parallel Node Alignment
+
   <p>
     Use the
     `align` prop on
@@ -167,7 +180,9 @@ export default function Example() {
 {/* Known Issue */}
 
 <ComponentSection>
-  <Heading level={2}>Known Issue: Sidebar / Layout Shift</Heading>
+
+## Known Issue: Sidebar / Layout Shift
+
   <p>
     Toggling the sidebar shifts the Flow container's viewport position. Because
     connector coordinates are computed from stale `getBoundingClientRect` values
@@ -183,9 +198,11 @@ export default function Example() {
 {/* Other Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Other Examples</Heading>
 
-  <Heading level={3}>Nested Node Lists in Parallel</Heading>
+## Other Examples
+
+### Nested Node Lists in Parallel
+
   <p>
     Use
     `Flow.List`
@@ -202,9 +219,11 @@ export default function Example() {
 {/* Components */}
 
 <ComponentSection>
-  <Heading level={2}>Components</Heading>
 
-<Heading level={3}>Flow</Heading>
+## Components
+
+### Flow
+
 <p>
   The root container for flow diagrams. Provides panning and scrolling for large
   diagrams.
@@ -218,7 +237,7 @@ export default function Example() {
         <th class="px-4 py-3 text-left font-semibold">Description</th>
       </tr>
     </thead>
-    <tbody class="text-kumo-strong">
+    <tbody>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono">align</td>
         <td class="px-4 py-3 font-mono">"start" | "center"</td>
@@ -241,7 +260,8 @@ export default function Example() {
   </table>
 </div>
 
-<Heading level={3}>Flow.Node</Heading>
+### Flow.Node
+
 <p>
   A single node in the flow diagram. Renders as a styled card with automatic
   connector points. Use the `render` prop to customize the element.
@@ -255,7 +275,7 @@ export default function Example() {
         <th class="px-4 py-3 text-left font-semibold">Description</th>
       </tr>
     </thead>
-    <tbody class="text-kumo-strong">
+    <tbody>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono">render</td>
         <td class="px-4 py-3 font-mono">ReactElement</td>
@@ -280,7 +300,8 @@ export default function Example() {
   </table>
 </div>
 
-<Heading level={3}>Flow.Anchor</Heading>
+### Flow.Anchor
+
 <p>
   A component that marks a custom attachment point for connectors within a
   Flow.Node. Use this to control exactly where connector lines attach instead of
@@ -295,7 +316,7 @@ export default function Example() {
         <th class="px-4 py-3 text-left font-semibold">Description</th>
       </tr>
     </thead>
-    <tbody class="text-kumo-strong">
+    <tbody>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono">type</td>
         <td class="px-4 py-3 font-mono">"start" | "end"</td>
@@ -318,7 +339,8 @@ export default function Example() {
   </table>
 </div>
 
-<Heading level={3}>Flow.Parallel</Heading>
+### Flow.Parallel
+
 <p>
   A container for parallel branches. Child Flow.Node components are displayed in
   parallel with junction connectors.
@@ -332,7 +354,7 @@ export default function Example() {
         <th class="px-4 py-3 text-left font-semibold">Description</th>
       </tr>
     </thead>
-    <tbody class="text-kumo-strong">
+    <tbody>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono">align</td>
         <td class="px-4 py-3 font-mono">"start" | "end"</td>
@@ -352,7 +374,8 @@ export default function Example() {
   </table>
 </div>
 
-  <Heading level={3}>Flow.List</Heading>
+### Flow.List
+
   <p>
     A container for a sequence of Flow.Node components with automatic
     connectors between them. Use inside Flow.Parallel to create branches
@@ -367,7 +390,7 @@ export default function Example() {
           <th class="px-4 py-3 text-left font-semibold">Description</th>
         </tr>
       </thead>
-      <tbody class="text-kumo-strong">
+      <tbody>
         <tr class="border-b border-kumo-hairline">
           <td class="px-4 py-3 font-mono">children</td>
           <td class="px-4 py-3 font-mono">ReactNode</td>

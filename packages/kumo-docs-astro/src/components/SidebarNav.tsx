@@ -38,6 +38,7 @@ const staticPages: NavItem[] = [
 ];
 
 const componentItems: NavItem[] = [
+  { label: "Autocomplete", href: "/components/autocomplete" },
   { label: "Badge", href: "/components/badge" },
   { label: "Banner", href: "/components/banner" },
   { label: "Breadcrumbs", href: "/components/breadcrumbs" },
@@ -57,6 +58,7 @@ const componentItems: NavItem[] = [
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
   { label: "InputArea", href: "/components/input-area" },
+  { label: "InputGroup", href: "/components/input-group" },
   { label: "Label", href: "/components/label" },
   { label: "Layer Card", href: "/components/layer-card" },
   { label: "Link", href: "/components/link" },

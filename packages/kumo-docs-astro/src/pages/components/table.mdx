@@ -7,7 +7,6 @@ sourceFile: "components/table"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TableBasicDemo,
@@ -31,14 +30,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Table } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Table } from "@cloudflare/kumo/components/table";
@@ -49,7 +50,8 @@ import { Table } from "@cloudflare/kumo/components/table";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Table, LayerCard } from "@cloudflare/kumo";
@@ -83,15 +85,18 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>With Checkboxes</Heading>
+## Examples
+
+### With Checkboxes
+
 <p>Add row selection with `Table.CheckHead` and `Table.CheckCell`.</p>
 <ComponentExample demo="TableWithCheckboxDemo">
   <TableWithCheckboxDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Compact Header</Heading>
+### Compact Header
+
 <p>
   Use `variant="compact"` on `Table.Header` for a more condensed header style.
 </p>
@@ -99,13 +104,15 @@ export default function Example() {
   <TableWithCompactHeaderDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Selected Row</Heading>
+### Selected Row
+
 <p>Use `variant="selected"` on `Table.Row` to highlight selected rows.</p>
 <ComponentExample demo="TableSelectedRowDemo">
   <TableSelectedRowDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Fixed Layout with Column Sizes</Heading>
+### Fixed Layout with Column Sizes
+
 <p>
   For precise control over column widths, set `layout="fixed"` and use
   `colgroup` with `col` elements.
@@ -114,7 +121,8 @@ export default function Example() {
   <TableFixedLayoutDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Sticky Column</Heading>
+### Sticky Column
+
 <p>
   Pin a column to the left or right edge of the scroll container with
   `sticky="left"` or `sticky="right"` on `Table.Head` and `Table.Cell`. The
@@ -125,13 +133,15 @@ export default function Example() {
   <TableStickyColumnDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Compact Header with Sticky Column</Heading>
+### Compact Header with Sticky Column
+
 <p>Combining `variant="compact"` on `Table.Header` with `sticky` columns.</p>
 <ComponentExample demo="TableCompactStickyDemo">
   <TableCompactStickyDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Full Example</Heading>
+### Full Example
+
 <p>
   Complete table with checkboxes, badges, action buttons, and fixed column
   widths.
@@ -145,37 +155,47 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
 
-<Heading level={3}>Table</Heading>
+## API Reference
+
+### Table
+
 <p>Root table component. Renders a semantic `<table>` element.</p>
 <PropsTable component="Table" />
 
-<Heading level={3}>Table.Header</Heading>
+### Table.Header
+
 <p>Table header section. Renders `<thead>`. Set `sticky` to pin the header row to the top of the scroll container.</p>
 
-<Heading level={3}>Table.Body</Heading>
+### Table.Body
+
 <p>Table body section. Renders `<tbody>`.</p>
 
-<Heading level={3}>Table.Row</Heading>
+### Table.Row
+
 <p>Table row. Supports `variant="selected"` for highlighting.</p>
 <PropsTable component="Table.Row" />
 
-<Heading level={3}>Table.Head</Heading>
+### Table.Head
+
 <p>Header cell. Renders `<th>`. Accepts `sticky="left"` or `sticky="right"` to pin the column.</p>
 
-<Heading level={3}>Table.Cell</Heading>
+### Table.Cell
+
 <p>Body cell. Renders `<td>`. Accepts `sticky="left"` or `sticky="right"` to pin the column.</p>
 
-<Heading level={3}>Table.CheckHead</Heading>
+### Table.CheckHead
+
 <p>Header cell with checkbox for "select all" functionality.</p>
 <PropsTable component="Table.CheckHead" />
 
-<Heading level={3}>Table.CheckCell</Heading>
+### Table.CheckCell
+
 <p>Body cell with checkbox for row selection.</p>
 <PropsTable component="Table.CheckCell" />
 
-<Heading level={3}>Table.ResizeHandle</Heading>
+### Table.ResizeHandle
+
 <p>
   Draggable handle for column resizing. Use with TanStack Table or custom resize
   logic.
@@ -186,7 +206,9 @@ export default function Example() {
 {/* TanStack Table Integration */}
 
 <ComponentSection>
-  <Heading level={2}>TanStack Table Integration</Heading>
+
+## TanStack Table Integration
+
   <p>
     For advanced features like sorting, filtering, and resizable columns, integrate with <a href="https://tanstack.com/table" class="text-kumo-link hover:underline" target="_blank" rel="noopener noreferrer">TanStack Table</a>. The Table component is designed to work seamlessly with TanStack's headless API.
   </p>
@@ -253,21 +275,25 @@ function DataTable({ data, columns }) {
 {/* Accessibility */}
 
 <ComponentSection>
-  <Heading level={2}>Accessibility</Heading>
 
-<h3 class="mb-2 font-semibold">Semantic HTML</h3>
-<p class="text-kumo-strong">
+## Accessibility
+
+### Semantic HTML
+
+<p>
   Table uses semantic `<table>`, `<thead>`, `<tbody>`, `<th>`, and `<td>` elements for proper screen reader navigation.
 </p>
 
-<h3 class="mb-2 mt-4 font-semibold">Checkbox Labels</h3>
-<p class="text-kumo-strong">
+### Checkbox Labels
+
+<p>
   Always provide `aria-label` for `Table.CheckHead` and `Table.CheckCell` to
   describe their purpose.
 </p>
 
-<h3 class="mb-2 mt-4 font-semibold">Keyboard Navigation</h3>
-<p class="text-kumo-strong">
+### Keyboard Navigation
+
+<p>
   <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Tab</kbd> moves focus
   through interactive elements. Checkboxes respond to{" "}
   <kbd class="rounded bg-kumo-control px-1.5 py-0.5">Space</kbd>.

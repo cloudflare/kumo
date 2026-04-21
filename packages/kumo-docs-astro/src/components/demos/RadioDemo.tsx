@@ -190,6 +190,33 @@ export function RadioCardDemo() {
   );
 }
 
+/** Shows Radio.Legend with sr-only to visually hide the legend while keeping it accessible, useful when a parent Field already provides a visible label */
+export function RadioLegendSrOnlyDemo() {
+  const [value, setValue] = useState("all");
+  return (
+    <Radio.Group defaultValue="all" value={value} onValueChange={setValue}>
+      <Radio.Legend className="sr-only">Paths</Radio.Legend>
+      <Radio.Item label="Allow all paths" value="all" />
+      <Radio.Item label="Restrict to specific paths" value="specific" />
+    </Radio.Group>
+  );
+}
+
+/** Shows Radio.Legend with custom styling for full control over legend presentation */
+export function RadioLegendCustomDemo() {
+  const [value, setValue] = useState("email");
+  return (
+    <Radio.Group value={value} onValueChange={setValue}>
+      <Radio.Legend className="text-sm font-normal text-kumo-subtle">
+        Notification preference
+      </Radio.Legend>
+      <Radio.Item label="Email" value="email" />
+      <Radio.Item label="SMS" value="sms" />
+      <Radio.Item label="Push notification" value="push" />
+    </Radio.Group>
+  );
+}
+
 /** Shows radio card appearance in horizontal layout */
 export function RadioCardHorizontalDemo() {
   const [value, setValue] = useState("free");
