@@ -90,8 +90,15 @@ export {
   InputArea,
   Textarea,
   type InputAreaProps,
-  InputGroup,
 } from "./components/input";
+export {
+  InputGroup,
+  type InputGroupRootProps,
+  type InputGroupAddonProps,
+  type InputGroupSuffixProps,
+  type InputGroupInputProps,
+  type InputGroupButtonProps,
+} from "./components/input-group";
 export { LayerCard } from "./components/layer-card";
 export {
   DeleteResource,

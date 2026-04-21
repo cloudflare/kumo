@@ -74,6 +74,7 @@ const NON_COLOR_UTILITIES = new Set([
   "current",
   "inherit",
   "none",
+  "auto",
   // Border utilities (not colors)
   "0",
   "2",

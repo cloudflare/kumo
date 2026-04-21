@@ -260,6 +260,45 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       description: "Callback when checkbox value changes",
     },
   },
+  "InputGroup.Addon": {
+    align: {
+      type: '"start" | "end"',
+      description: "Position relative to the input.",
+      default: '"start"',
+    },
+    className: {
+      type: "string",
+      description: "Additional CSS classes.",
+    },
+  },
+  "InputGroup.Button": {
+    tooltip: {
+      type: "ReactNode",
+      description:
+        "When provided, wraps the button in a Tooltip. Automatically sets aria-label from a string value.",
+    },
+    tooltipSide: {
+      type: '"top" | "right" | "bottom" | "left"',
+      description: "Preferred side for the tooltip popup.",
+      default: '"bottom"',
+    },
+    variant: {
+      type: '"primary" | "secondary" | "ghost" | "destructive" | "secondary-destructive" | "outline"',
+      description: "Button visual style. Defaults to ghost.",
+      default: '"ghost"',
+    },
+    size: {
+      type: '"xs" | "sm" | "base" | "lg"',
+      description: "Button size.",
+      default: '"sm"',
+    },
+  },
+  "InputGroup.Suffix": {
+    className: {
+      type: "string",
+      description: "Additional CSS classes.",
+    },
+  },
 };
 
 // =============================================================================
@@ -318,7 +357,12 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     ],
   },
   ClipboardText: {
-    baseTokens: ["bg-kumo-base", "text-kumo-default", "ring-kumo-line", "border-kumo-fill"],
+    baseTokens: [
+      "bg-kumo-base",
+      "text-kumo-default",
+      "ring-kumo-line",
+      "border-kumo-fill",
+    ],
     states: {
       input: ["bg-kumo-control", "text-kumo-default", "ring-kumo-line"],
       text: ["bg-kumo-base", "font-mono"],
@@ -403,7 +447,12 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     },
   },
   Input: {
-    baseTokens: ["bg-kumo-control", "text-kumo-default", "text-kumo-subtle", "ring-kumo-line"],
+    baseTokens: [
+      "bg-kumo-control",
+      "text-kumo-default",
+      "text-kumo-subtle",
+      "ring-kumo-line",
+    ],
     sizeVariants: {
       xs: {
         height: 20,
@@ -473,7 +522,12 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     },
   },
   Dialog: {
-    baseTokens: ["bg-kumo-base", "text-kumo-default", "border-kumo-line", "shadow-m"],
+    baseTokens: [
+      "bg-kumo-base",
+      "text-kumo-default",
+      "border-kumo-line",
+      "shadow-m",
+    ],
     sizeVariants: {
       sm: {
         height: 0, // Dialog height is auto (content-driven)

@@ -39,6 +39,7 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -69,6 +70,7 @@ const componentRoutes: Record<string, string> = {
   grid: "/components/grid",
   input: "/components/input",
   "input-area": "/components/input-area",
+  "input-group": "/components/input-group",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   link: "/components/link",
@@ -437,6 +439,11 @@ export function HomeGrid() {
       name: "InputArea",
       id: "input-area",
       Component: <InputArea placeholder="Enter your name" />,
+    },
+    {
+      name: "InputGroup",
+      id: "input-group",
+      Component: <InputGroupDemo />,
     },
     {
       name: "Meter",
