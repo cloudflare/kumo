@@ -227,3 +227,21 @@
 .kumo-input-placeholder::placeholder {
   color: var(--text-color-kumo-placeholder);
 }
+
+/* InputGroup container mode — native browser outline on keyboard focus.
+   Uses vanilla CSS because Tailwind focus-visible: targets the focused element itself,
+   but we need :has(:focus-visible) to outline the container when a descendant is focused. */
+[data-slot="input-group"][data-focus-mode="container"]:has(:focus-visible) {
+  /* 2px solid matches the browser's default focus ring weight */
+  outline: solid 2px -webkit-focus-ring-color;
+}
+
+/* InputGroup hybrid mode — keyboard outline for the container zone wrapper.
+   Uses outline-offset: -1px to sit on top of the 1px border (same as individual mode)
+   so there's no double visual indicator between the outline and the border. */
+[data-slot="input-group-container-zone"]:has(:focus-visible) {
+  /* 1px to match the individual-mode outline weight (thinner than container's 2px
+     because the zone is nested — a thick outline would overwhelm sibling buttons) */
+  outline: solid 1px -webkit-focus-ring-color;
+  outline-offset: -1px;
+}

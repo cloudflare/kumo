@@ -107,6 +107,10 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/input/index.ts",
           ),
+          "components/input-group": resolve(
+            __dirname,
+            "src/components/input-group/index.ts",
+          ),
           "components/layer-card": resolve(
             __dirname,
             "src/components/layer-card/index.ts",
