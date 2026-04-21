@@ -234,7 +234,7 @@ describe("CommandPalette", () => {
     it("renders empty message when no items match", () => {
       renderCommandPalette({ showEmpty: true });
 
-      expect(screen.getByText("No results found")).toBeTruthy();
+      expect(screen.getByText(/No results found/)).toBeTruthy();
     });
   });
 
