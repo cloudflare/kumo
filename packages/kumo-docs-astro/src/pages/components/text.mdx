@@ -8,6 +8,7 @@ sourceFile: "components/text"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
+import { Text } from "@cloudflare/kumo";
 import {
   TextVariantsDemo,
   TextTruncateDemo,
@@ -56,12 +57,33 @@ export default function Example() {
 ```
 
 <section class="mt-8 space-y-4">
+  <Text variant="heading3" as="h3">Semantic HTML</Text>
+  <Text>
+    The `variant` prop controls visual styling only—it does not determine the HTML element rendered.
+    Use the `as` prop to set the appropriate semantic element for your document outline:
+  </Text>
 
-  ### Restrictions
+```tsx
+// Heading variants render as <span> by default
+<Text variant="heading1">Styled as h1, but renders a span</Text>
 
-  <p>
+// Use `as` to set semantic heading levels
+<Text variant="heading1" as="h1">Page Title</Text>
+<Text variant="heading2" as="h2">Section Title</Text>
+<Text variant="heading1" as="h3">Visually large, but semantically h3</Text>
+```
+
+  <Text>
+    The `as` prop accepts: `"h1"` through `"h6"`, `"p"`, and `"span"`.
+    Body variants default to `"p"`, while heading and mono variants default to `"span"`.
+  </Text>
+</section>
+
+<section class="mt-8 space-y-4">
+  <Text variant="heading3" as="h3">Restrictions</Text>
+  <Text>
     The `bold` and `size` props are intentionally restricted to the `base`, `secondary`, `success`, and `error` text variants.
-  </p>
+  </Text>
 
 ```tsx
 <Text size="sm" bold>Body</Text>
@@ -70,10 +92,10 @@ export default function Example() {
 <Text variant="error">Error</Text>
 ```
 
-<p>
+<Text>
   Monospace variants (`mono` and `mono-secondary`) can only set `size` to `lg`
   and cannot use the `bold` prop:
-</p>
+</Text>
 
 ```tsx
 <Text variant="mono">Monospace</Text>
@@ -81,12 +103,13 @@ export default function Example() {
 <Text variant="mono" bold>Monospace</Text> // Doesn't compile
 ```
 
-<p>
-  Headings (i.e. `h1`, `h2` and `h3` variants) cannot use these props at all:
-</p>
+<Text>
+  Headings (i.e. `heading1`, `heading2` and `heading3` variants) cannot use
+  these props at all:
+</Text>
 
 ```tsx
-<Text variant="h1" bold>
+<Text variant="heading1" bold>
   Heading 1
 </Text> // Doesn't compile
 ```
@@ -101,12 +124,13 @@ export default function Example() {
 
 ## Truncate
 
-  <p>
-    Use the `truncate` prop to clip overflowing text with an ellipsis. This adds `truncate min-w-0` classes, which is useful when `Text` is inside a flex or grid container.
-  </p>
-  <ComponentExample demo="TextTruncateDemo">
-    <TextTruncateDemo client:visible />
-  </ComponentExample>
+<Text>
+  Use the `truncate` prop to clip overflowing text with an ellipsis. This adds `truncate min-w-0` classes, which is useful when `Text` is inside a flex or grid container.
+</Text>
+
+<ComponentExample demo="TextTruncateDemo">
+  <TextTruncateDemo client:visible />
+</ComponentExample>
 
 ```tsx
 <Text truncate>This is a long piece of text that will be truncated...</Text>
