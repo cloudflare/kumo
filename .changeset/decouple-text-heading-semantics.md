@@ -1,5 +1,5 @@
 ---
-"@cloudflare/kumo": minor
+"@cloudflare/kumo": major
 ---
 
 feat(Text): decouple visual heading variants from semantic HTML elements
