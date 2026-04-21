@@ -13,7 +13,6 @@ import {
   LegendCompactDemo,
   ChartExampleDemo,
 } from "~/components/demos/Chart/ChartDemo";
-import { ColorDemo } from "~/components/demos/Chart/ColorDemo";
 import ChartCard from "~/components/demos/Chart/ChartCard.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 
@@ -85,24 +84,13 @@ echarts.use([
 
 <ComponentSection>
 
-## Coloring
+## Color System
 
-  <div class="space-y-6">
-    <p>
-      Use semantic colors for meaning (errors, warnings) and categorical
-      colors for differentiating arbitrary series.
-    </p>
-
-```tsx
-import { ChartPalette } from "@cloudflare/kumo";
-
-const attention = ChartPalette.semantic("Attention", isDarkMode);
-const series0 = ChartPalette.color(0, isDarkMode);
-```
-
-    <ColorDemo />
-
-  </div>
+  <ChartCard
+    title="Color Palette"
+    description="Information about our color system."
+    href="/charts/colors"
+  />
 </ComponentSection>
 
 <ComponentSection>

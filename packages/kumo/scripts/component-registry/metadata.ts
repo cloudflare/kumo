@@ -254,12 +254,6 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       description: "Callback when collapsed state changes",
     },
   },
-  Checkbox: {
-    onValueChange: {
-      type: "(checked: boolean) => void",
-      description: "Callback when checkbox value changes",
-    },
-  },
   "InputGroup.Addon": {
     align: {
       type: '"start" | "end"',
