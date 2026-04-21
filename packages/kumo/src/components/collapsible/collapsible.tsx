@@ -151,12 +151,13 @@ export interface CollapsibleDefaultTriggerProps {
  * </Collapsible.Root>
  * ```
  */
-function CollapsibleDefaultTrigger({
-  children,
-  className,
-}: CollapsibleDefaultTriggerProps) {
+const CollapsibleDefaultTrigger = forwardRef<
+  HTMLButtonElement,
+  CollapsibleDefaultTriggerProps
+>(({ children, className }, ref) => {
   return (
     <CollapsibleBase.Trigger
+      ref={ref}
       className={cn(
         // Defensive resets to prevent global button styles from polluting the trigger
         "bg-transparent border-none shadow-none p-0 m-0",
@@ -169,7 +170,7 @@ function CollapsibleDefaultTrigger({
       <CaretDownIcon className="h-4 w-4 transition-transform [[data-panel-open]_&]:rotate-180" />
     </CollapsibleBase.Trigger>
   );
-}
+});
 
 CollapsibleDefaultTrigger.displayName = "Collapsible.DefaultTrigger";
 
