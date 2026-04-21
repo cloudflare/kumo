@@ -187,6 +187,10 @@
       "types": "./dist/src/components/flow/index.d.ts",
       "import": "./dist/components/flow.js"
     },
+    "./components/autocomplete": {
+      "types": "./dist/src/components/autocomplete/index.d.ts",
+      "import": "./dist/components/autocomplete.js"
+    },
     "./components/sidebar": {
       "types": "./dist/src/components/sidebar/index.d.ts",
       "import": "./dist/components/sidebar.js"

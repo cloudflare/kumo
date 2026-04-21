@@ -192,6 +192,10 @@ export default defineConfig(({ mode }) => {
             "src/components/date-picker/index.ts",
           ),
           "components/flow": resolve(__dirname, "src/components/flow/index.ts"),
+          "components/autocomplete": resolve(
+            __dirname,
+            "src/components/autocomplete/index.ts",
+          ),
           "components/sidebar": resolve(
             __dirname,
             "src/components/sidebar/index.ts",
