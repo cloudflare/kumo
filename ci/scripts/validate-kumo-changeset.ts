@@ -42,6 +42,21 @@ function main() {
     return;
   }
 
+  // Skip validation on Changesets release PRs. The `changesets/action` bot
+  // opens these PRs from a `changeset-release/<target>` branch and, by
+  // design, their diff modifies `packages/kumo/` (version bump + CHANGELOG)
+  // while removing — not adding — `.changeset/*.md` files. Running the
+  // "must add a new changeset" rule here would always fail. See
+  // https://github.com/changesets/action for the branch-name convention.
+  const headRef =
+    process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || "";
+  if (headRef.startsWith("changeset-release/")) {
+    console.log(
+      `Detected Changesets release PR (branch: ${headRef}); skipping validation.`,
+    );
+    return;
+  }
+
   console.log("Validating changesets...");
 
   // Check if kumo files have been modified
