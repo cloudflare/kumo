@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils";
-import { Checkbox } from "../checkbox";
+import { Checkbox, type CheckboxChangeEventDetails } from "../checkbox";
 
 /** Table layout and row variant definitions mapping names to their Tailwind classes. */
 export const KUMO_TABLE_VARIANTS = {
@@ -269,13 +269,31 @@ const TableCheckCell = forwardRef<
   React.TdHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
     indeterminate?: boolean;
+    /**
+     * Called when the checkbox's checked state changes. The optional second
+     * argument exposes event details from the underlying Checkbox, matching
+     * the Checkbox component's signature.
+     */
+    onCheckedChange?: (
+      checked: boolean,
+      eventDetails?: CheckboxChangeEventDetails,
+    ) => void;
+    /** @deprecated Use `onCheckedChange` instead. Will be removed in a future major version. */
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
 >(
   (
-    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    {
+      checked,
+      indeterminate,
+      onCheckedChange,
+      onValueChange,
+      label,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -287,7 +305,8 @@ const TableCheckCell = forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
+          onCheckedChange={(newChecked, eventDetails) => {
+            onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
           aria-label={label ?? "Select row"}
@@ -304,13 +323,31 @@ const TableCheckHead = forwardRef<
   React.ThHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
     indeterminate?: boolean;
+    /**
+     * Called when the checkbox's checked state changes. The optional second
+     * argument exposes event details from the underlying Checkbox, matching
+     * the Checkbox component's signature.
+     */
+    onCheckedChange?: (
+      checked: boolean,
+      eventDetails?: CheckboxChangeEventDetails,
+    ) => void;
+    /** @deprecated Use `onCheckedChange` instead. Will be removed in a future major version. */
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
 >(
   (
-    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    {
+      checked,
+      indeterminate,
+      onCheckedChange,
+      onValueChange,
+      label,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -322,7 +359,8 @@ const TableCheckHead = forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
+          onCheckedChange={(newChecked, eventDetails) => {
+            onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
           aria-label={label ?? "Select all rows"}
@@ -356,14 +394,14 @@ TableCheckHead.displayName = "Table.CheckHead";
  * <Table>
  *   <Table.Header>
  *     <Table.Row>
- *       <Table.CheckHead checked={allSelected} onValueChange={toggleAll} />
+ *       <Table.CheckHead checked={allSelected} onCheckedChange={toggleAll} />
  *       <Table.Head>Name</Table.Head>
  *     </Table.Row>
  *   </Table.Header>
  *   <Table.Body>
  *     {rows.map((row) => (
  *       <Table.Row key={row.id} variant={selected.has(row.id) ? "selected" : "default"}>
- *         <Table.CheckCell checked={selected.has(row.id)} onValueChange={() => toggle(row.id)} />
+ *         <Table.CheckCell checked={selected.has(row.id)} onCheckedChange={() => toggle(row.id)} />
  *         <Table.Cell>{row.name}</Table.Cell>
  *       </Table.Row>
  *     ))}
