@@ -26,7 +26,8 @@ try {
 // Special case mappings where the export name doesn't match simple PascalCase conversion
 const EXPORT_NAME_OVERRIDES: Record<string, string> = {
   "csp-provider": "CSPProvider", // All caps CSP
-  drawer: "DrawerPreview", // Preview suffix in base-ui 1.2.0
+  drawer: "Drawer", // Stable in base-ui 1.4.0
+  "otp-field": "OTPFieldPreview", // Preview component with all caps OTP
 };
 
 // Exports excluded by generate-primitives.ts

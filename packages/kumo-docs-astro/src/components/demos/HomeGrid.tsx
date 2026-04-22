@@ -320,7 +320,7 @@ export function HomeGrid() {
         <Checkbox
           label="Max bandwidth"
           checked={checked}
-          onValueChange={(checked) => {
+          onCheckedChange={(checked) => {
             setChecked(checked);
           }}
         />

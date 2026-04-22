@@ -47,6 +47,7 @@ export {
   Checkbox,
   type CheckboxProps,
   type CheckboxLegendProps,
+  type CheckboxChangeEventDetails,
 } from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
