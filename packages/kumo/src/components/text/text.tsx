@@ -156,7 +156,6 @@ type BaseTextProps = Omit<
 > & {
   DANGEROUS_className?: string;
   DANGEROUS_style?: CSSProperties;
-  as?: TextElement;
 };
 
 type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
@@ -166,6 +165,8 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
         bold?: boolean;
         size?: TextSize;
         truncate?: boolean;
+        /** Optional element override. Defaults to `<p>`. */
+        as?: TextElement;
       }
     : Variant extends Monospace
       ? {
@@ -173,13 +174,26 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
           bold?: never;
           size?: "lg";
           truncate?: boolean;
+          /** Optional element override. Defaults to `<span>`. */
+          as?: TextElement;
         }
       : Variant extends Heading
         ? {
-            variant?: Variant;
+            variant: Variant;
             bold?: never;
             size?: never;
             truncate?: boolean;
+            /**
+             * Required for heading variants. Pick the element that reflects
+             * this text's place in the document outline (`"h1"` for a page
+             * title, `"h2"` for a section title, etc.) or `"span"` for
+             * decorative heading-styled text that is NOT a section heading.
+             *
+             * Previously optional (defaulted to `<span>`), which silently
+             * excluded real section headings from the document outline.
+             * Making it required surfaces the decision at the type level.
+             */
+            as: TextElement;
           }
         : never);
 
@@ -188,7 +202,7 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
  *
  * @example
  * ```tsx
- * <Text variant="heading1">Page Title</Text>
+ * <Text variant="heading1" as="h1">Page Title</Text>
  * <Text variant="body">Default paragraph text.</Text>
  * <Text variant="secondary" size="sm">Muted helper text</Text>
  * <Text variant="error">Something went wrong</Text>
@@ -223,7 +237,16 @@ export interface TextProps {
   bold?: boolean;
   /** Whether to truncate overflowing text with an ellipsis. Adds `truncate min-w-0` classes. */
   truncate?: boolean;
-  /** The HTML element to render (`"h1"`-`"h6"`, `"p"`, or `"span"`). Defaults to `"p"` for body variants and `"span"` for headings/mono. Use this to set semantic heading levels. */
+  /**
+   * The HTML element to render (`"h1"`–`"h6"`, `"p"`, or `"span"`).
+   *
+   * - **Required** for heading variants (`"heading1"`, `"heading2"`,
+   *   `"heading3"`) — pick the element that reflects this text's place in
+   *   the document outline, or `"span"` for decorative heading-styled text
+   *   that is not a section heading.
+   * - **Optional** for body variants (defaults to `"p"`) and monospace
+   *   variants (defaults to `"span"`).
+   */
   as?: TextElement;
   /** Text content. */
   children?: React.ReactNode;
