@@ -80,6 +80,13 @@ const STATIC_PAGES: Array<{
     category: "Guides",
   },
   {
+    name: "Chart Colors",
+    description:
+      "Semantic, categorical, and sequential color guidance for charts.",
+    url: "/charts/colors",
+    category: "Guides",
+  },
+  {
     name: "CLI",
     description:
       "Use the Kumo CLI to add components and blocks to your project.",

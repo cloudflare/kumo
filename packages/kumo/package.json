@@ -303,6 +303,10 @@
       "types": "./dist/src/primitives/number-field.d.ts",
       "import": "./dist/primitives/number-field.js"
     },
+    "./primitives/otp-field": {
+      "types": "./dist/src/primitives/otp-field.d.ts",
+      "import": "./dist/primitives/otp-field.js"
+    },
     "./primitives/popover": {
       "types": "./dist/src/primitives/popover.d.ts",
       "import": "./dist/primitives/popover.js"
@@ -458,7 +462,7 @@
     }
   },
   "dependencies": {
-    "@base-ui/react": "^1.2.0",
+    "@base-ui/react": "^1.4.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "clsx": "^2.1.1",

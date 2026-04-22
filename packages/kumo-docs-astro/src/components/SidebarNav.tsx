@@ -83,6 +83,7 @@ const componentItems: NavItem[] = [
 
 const chartItems: NavItem[] = [
   { label: "Charts", href: "/charts" },
+  { label: "Colors", href: "/charts/colors" },
   { label: "Timeseries", href: "/charts/timeseries" },
   { label: "Custom Chart", href: "/charts/custom" },
 ];
