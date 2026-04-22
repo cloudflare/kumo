@@ -330,6 +330,16 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-focus": {
+      newName: "",
+      description: "Primary focus ring/border color",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-950, oklch(15% 0 0))",
+          dark: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
+        },
+      },
+    },
     "kumo-shadow-edge": {
       newName: "",
       description: "Tight spread shadow color for control thumbs/knobs",

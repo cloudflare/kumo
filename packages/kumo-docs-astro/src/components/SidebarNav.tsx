@@ -103,7 +103,7 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
-  "block rounded-lg text-kumo-strong hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10";
+  "block rounded-lg text-kumo-strong hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
 const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
 
 interface SidebarNavProps {
@@ -127,6 +127,9 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
   const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
+  const preventPointerFocus = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+  };
 
   // Keyboard shortcut: Cmd+K / Ctrl+K + custom event from headers
   useEffect(() => {
@@ -195,7 +198,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     <>
       <button
         onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-hairline transition-all hover:ring-kumo-hairline"
+        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
       >
         <MagnifyingGlassIcon size={16} className="shrink-0" />
         <span>Search...</span>
@@ -206,6 +209,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <li key={item.href}>
             <a
               href={item.href}
+              onMouseDown={preventPointerFocus}
               className={cn(
                 LI_STYLE,
                 isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
@@ -223,7 +227,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         {/* Components Section */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
           onClick={() => setComponentsOpen(!componentsOpen)}
         >
           <span>Components</span>
@@ -237,7 +241,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </button>
         <ul
           className={cn(
-            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
             componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
           )}
         >
@@ -245,6 +249,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
                   "pl-4",
@@ -262,7 +267,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div className="mb-4">
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
           onClick={() => setChartsOpen(!chartsOpen)}
         >
           <span>Charts</span>
@@ -276,7 +281,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </button>
         <ul
           className={cn(
-            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
             chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
           )}
         >
@@ -284,6 +289,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
                   "pl-4",
@@ -301,7 +307,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         {/* Blocks Section */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
           onClick={() => setBlocksOpen(!blocksOpen)}
         >
           <span>Blocks</span>
@@ -315,7 +321,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </button>
         <ul
           className={cn(
-            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
             blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
           )}
         >
@@ -323,6 +329,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
                   "pl-4",

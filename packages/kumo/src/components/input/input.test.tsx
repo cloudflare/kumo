@@ -70,7 +70,7 @@ describe("Input", () => {
   it("renders with default variant 'default'", () => {
     render(<Input aria-label="Test" />);
     expect(screen.getByRole("textbox").className).toContain(
-      "focus:ring-kumo-hairline",
+      "focus:ring-kumo-focus/50",
     );
   });
 
@@ -172,7 +172,7 @@ describe("Input", () => {
 
   it("applies focusIndicator class when true", () => {
     const classes = inputVariants({ focusIndicator: true });
-    expect(classes).toContain("focus:ring-kumo-hairline");
+    expect(classes).toContain("focus:ring-kumo-focus/50");
   });
 
   // Variants export

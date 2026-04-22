@@ -1045,7 +1045,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg outline-none cursor-pointer",
+      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg cursor-pointer",
       // Sizing
       size === "base" && "min-h-[34px] px-3 py-1.5 text-sm font-medium",
       size === "sm" && "min-h-[28px] px-2 py-1 text-sm",
@@ -1060,7 +1060,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
       // Focus
-      "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
+      "focus-visible:ring-2 focus-visible:ring-kumo-brand",
       // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
       // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
       "group-data-[state=collapsed]/sidebar:px-2",
@@ -1144,6 +1144,7 @@ const SidebarMenuAction = forwardRef<
     className={cn(
       "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
       "text-kumo-strong hover:bg-kumo-overlay",
+      "focus-visible:ring-2 focus-visible:ring-kumo-brand",
       "transition-colors duration-150",
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1288,11 +1289,11 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium outline-none",
+    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium",
     "text-kumo-default transition-colors duration-150",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
-    "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
+    "focus-visible:ring-2 focus-visible:ring-kumo-brand",
     className,
   );
 
@@ -1399,6 +1400,7 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
         "bg-kumo-base text-kumo-subtle ring ring-kumo-hairline",
         "transition-[color,background-color,padding,box-shadow] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
         "hover:bg-kumo-overlay",
+        "focus-visible:ring-2 focus-visible:ring-kumo-brand",
         // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
         "group-data-[state=collapsed]/sidebar:px-2 group-data-[state=collapsed]/sidebar:ring-0",
         className,
@@ -1449,6 +1451,7 @@ const SidebarTrigger = forwardRef<
       className={cn(
         "flex items-center rounded-md p-1.5",
         "text-kumo-subtle hover:text-kumo-strong hover:bg-kumo-overlay",
+        "focus-visible:ring-2 focus-visible:ring-kumo-brand",
         "transition-colors duration-150",
         className,
       )}

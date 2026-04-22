@@ -304,13 +304,15 @@ export function HomeGrid() {
       name: "Collapsible",
       id: "collapsible",
       Component: (
-        <Collapsible
-          label="What is Kumo?"
+        <Collapsible.Root
           open={collapsibleOpen}
           onOpenChange={setCollapsibleOpen}
         >
-          Kumo is Cloudflare's component library.
-        </Collapsible>
+          <Collapsible.DefaultTrigger>What is Kumo?</Collapsible.DefaultTrigger>
+          <Collapsible.DefaultPanel>
+            Kumo is Cloudflare's component library.
+          </Collapsible.DefaultPanel>
+        </Collapsible.Root>
       ),
     },
     {

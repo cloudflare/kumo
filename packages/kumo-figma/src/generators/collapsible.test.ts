@@ -36,9 +36,9 @@ describe("Collapsible Generator - Registry Validation", () => {
 
   it("should have required props in registry", () => {
     expect(collapsibleComponent.props).toBeDefined();
-    expect(collapsibleComponent.props.label).toBeDefined();
-    expect(collapsibleComponent.props.open).toBeDefined();
-    expect(collapsibleComponent.props.children).toBeDefined();
+    // Compound component API - Root props
+    expect(collapsibleComponent.props.className).toBeDefined();
+    expect(collapsibleComponent.props.onOpenChange).toBeDefined();
   });
 
   it("should have color tokens defined", () => {

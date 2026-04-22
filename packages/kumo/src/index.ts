@@ -67,7 +67,15 @@ export {
   type DialogCloseProps,
 } from "./components/dialog";
 export { DropdownMenu } from "./components/dropdown";
-export { Collapsible } from "./components/collapsible";
+export {
+  Collapsible,
+  type CollapsibleProps,
+  type CollapsibleRootProps,
+  type CollapsibleTriggerProps,
+  type CollapsiblePanelProps,
+  type CollapsibleDefaultTriggerProps,
+  type CollapsibleDefaultPanelProps,
+} from "./components/collapsible";
 export {
   Field,
   type FieldProps,

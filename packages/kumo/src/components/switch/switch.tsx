@@ -287,7 +287,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "transition-colors duration-150 ease-out motion-reduce:transition-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
             s.track,
@@ -437,7 +437,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+              "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               "transition-colors duration-150 ease-out motion-reduce:transition-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
               s.track,
