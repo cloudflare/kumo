@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Radio } from "@cloudflare/kumo";
+import { Badge, Radio } from "@cloudflare/kumo";
 
 /** Shows a basic controlled radio group */
 export function RadioBasicDemo() {
@@ -256,9 +256,7 @@ export function RadioRichLabelDemo() {
         label={
           <span className="flex items-center gap-2">
             Free
-            <span className="rounded-sm bg-kumo-tint px-1.5 py-0.5 text-xs text-kumo-subtle">
-              $0
-            </span>
+            <Badge variant="neutral">$0</Badge>
           </span>
         }
         description="For personal or hobby projects."
@@ -268,9 +266,7 @@ export function RadioRichLabelDemo() {
         label={
           <span className="flex items-center gap-2">
             Pro
-            <span className="rounded-sm bg-kumo-brand px-1.5 py-0.5 text-xs text-white">
-              Popular
-            </span>
+            <Badge variant="primary">Popular</Badge>
           </span>
         }
         description="For professional websites."
