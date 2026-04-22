@@ -18,7 +18,9 @@ import {
   RadioDisabledDemo,
   RadioControlPositionDemo,
   RadioCardDemo,
+  RadioCardControlStartDemo,
   RadioCardHorizontalDemo,
+  RadioRichLabelDemo,
   RadioLegendSrOnlyDemo,
   RadioLegendCustomDemo,
 } from "~/components/demos/RadioDemo";
@@ -120,6 +122,26 @@ export default function Example() {
 </p>
 <ComponentExample demo="RadioCardDemo">
   <RadioCardDemo client:visible />
+</ComponentExample>
+
+### Radio Card (Control on the Left)
+
+<p>
+  Use `controlPosition="start"` on a card radio group to place the radio control
+  on the left of the label and description.
+</p>
+<ComponentExample demo="RadioCardControlStartDemo">
+  <RadioCardControlStartDemo client:visible />
+</ComponentExample>
+
+### Rich Label Content
+
+<p>
+  The `label` prop on `Radio.Item` accepts React nodes, so you can embed icons,
+  badges, or other markup alongside the text.
+</p>
+<ComponentExample demo="RadioRichLabelDemo">
+  <RadioRichLabelDemo client:visible />
 </ComponentExample>
 
 ### Radio Card (Horizontal)

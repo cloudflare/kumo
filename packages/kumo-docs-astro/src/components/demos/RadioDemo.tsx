@@ -217,6 +217,69 @@ export function RadioLegendCustomDemo() {
   );
 }
 
+/** Shows radio card appearance with the control positioned on the left via controlPosition="start" */
+export function RadioCardControlStartDemo() {
+  const [value, setValue] = useState("free");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      controlPosition="start"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+    </Radio.Group>
+  );
+}
+
+/** Shows Radio.Item labels with rich ReactNode content (icons, badges, or additional markup) */
+export function RadioRichLabelDemo() {
+  const [value, setValue] = useState("pro");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label={
+          <span className="flex items-center gap-2">
+            Free
+            <span className="rounded-sm bg-kumo-tint px-1.5 py-0.5 text-xs text-kumo-subtle">
+              $0
+            </span>
+          </span>
+        }
+        description="For personal or hobby projects."
+        value="free"
+      />
+      <Radio.Item
+        label={
+          <span className="flex items-center gap-2">
+            Pro
+            <span className="rounded-sm bg-kumo-brand px-1.5 py-0.5 text-xs text-white">
+              Popular
+            </span>
+          </span>
+        }
+        description="For professional websites."
+        value="pro"
+      />
+    </Radio.Group>
+  );
+}
+
 /** Shows radio card appearance in horizontal layout */
 export function RadioCardHorizontalDemo() {
   const [value, setValue] = useState("free");
