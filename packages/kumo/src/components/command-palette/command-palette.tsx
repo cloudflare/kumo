@@ -251,7 +251,7 @@ function InputHeader({
   trailing?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-kumo-base px-4 py-3">
+    <div className="flex items-center gap-3 bg-kumo-base px-4 py-3 focus-within:ring-2 focus-within:ring-kumo-brand">
       {leading ?? (
         <MagnifyingGlassIcon
           className="h-4 w-4 text-kumo-subtle"
@@ -767,7 +767,7 @@ function PanelInput({
         placeholder={placeholder}
         className={cn(
           "flex-1 border-none bg-transparent text-base kumo-input-placeholder",
-          "outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px]",
+          "outline-none",
           className,
         )}
         onKeyDown={handleKeyDown}
