@@ -60,22 +60,30 @@ export default function Example() {
   <Text variant="heading3" as="h3">Semantic HTML</Text>
   <Text>
     The `variant` prop controls visual styling only—it does not determine the HTML element rendered.
-    Use the `as` prop to set the appropriate semantic element for your document outline:
+    Heading variants **require** the `as` prop to avoid silently excluding real section headings from
+    the document outline. Body and monospace variants have sensible defaults (`<p>` and `<span>`
+    respectively) and accept `as` optionally.
   </Text>
 
 ```tsx
-// Heading variants render as <span> by default
-<Text variant="heading1">Styled as h1, but renders a span</Text>
+// Heading variants REQUIRE `as` — TypeScript will flag usages missing it
+<Text variant="heading1">Page Title</Text> // Doesn't compile
 
-// Use `as` to set semantic heading levels
+// Real section headings (contribute to the document outline)
 <Text variant="heading1" as="h1">Page Title</Text>
 <Text variant="heading2" as="h2">Section Title</Text>
+
+// Decorative heading-styled text that is NOT a section heading
+<Text variant="heading1" as="span">Big bold card label</Text>
+
+// Visually one size, semantically another
 <Text variant="heading1" as="h3">Visually large, but semantically h3</Text>
 ```
 
   <Text>
     The `as` prop accepts: `"h1"` through `"h6"`, `"p"`, and `"span"`.
-    Body variants default to `"p"`, while heading and mono variants default to `"span"`.
+    Body variants default to `"p"`, monospace variants default to `"span"`,
+    and heading variants have no default — you must choose explicitly.
   </Text>
 </section>
 

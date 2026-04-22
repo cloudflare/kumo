@@ -10,7 +10,7 @@ export function TextVariantsDemo() {
         <Text variant="mono-secondary">text-3xl (30px)</Text>
       </div>
       <div className="flex flex-col justify-end gap-1 rounded-lg border border-kumo-hairline bg-kumo-base p-4">
-        <Text variant="heading2">
+        <Text variant="heading2" as="h2">
           Heading 2
         </Text>
         <Text variant="mono-secondary">text-2xl (24px)</Text>
