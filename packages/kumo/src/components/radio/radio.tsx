@@ -72,12 +72,14 @@ export type RadioVariant = KumoRadioVariant;
 /** Position of the radio control relative to its label */
 export type RadioControlPosition = "start" | "end";
 
-// Context for passing controlPosition and appearance from Group to Items
+// Context for passing controlPosition and appearance from Group to Items.
+// `controlPosition` may be undefined so each item can fall back to an
+// appearance-appropriate default (start for default, end for card).
 const RadioGroupContext = createContext<{
-  controlPosition: RadioControlPosition;
+  controlPosition: RadioControlPosition | undefined;
   appearance: KumoRadioAppearance;
 }>({
-  controlPosition: "start",
+  controlPosition: undefined,
   appearance: "default",
 });
 
@@ -188,7 +190,7 @@ export interface RadioGroupProps {
   onValueChange?: (value: string) => void;
   /** Whether all radios in the group are disabled */
   disabled?: boolean;
-  /** Position of radio control relative to label: "start" (default) puts radio before label, "end" puts label before radio. Note: In card appearance, the control is always positioned at the end. */
+  /** Position of radio control relative to label: "start" puts radio before label, "end" puts label before radio. Defaults to "start" for default appearance and "end" for card appearance. */
   controlPosition?: RadioControlPosition;
   /** Form submission name for the radio group */
   name?: string;
@@ -222,8 +224,8 @@ export type RadioItemProps = {
    * @default "default"
    */
   appearance?: KumoRadioAppearance;
-  /** Label text displayed next to radio (required) */
-  label: string;
+  /** Label content displayed next to radio (required). Accepts strings or React nodes for rich content. */
+  label: ReactNode;
   /** Description text displayed below the label (only visible in card appearance) */
   description?: ReactNode;
   /** Value of the radio (required) */
@@ -253,14 +255,19 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
     const appearance = appearanceProp ?? groupAppearance;
     const isCard = appearance === "card";
 
-    // In card mode, default to "end" (radio on the right); otherwise follow group setting
-    const effectiveControlPosition = isCard ? "end" : controlPosition;
+    // Fall back to an appearance-appropriate default when controlPosition is
+    // not provided: card defaults to "end" (radio on the right), default
+    // appearance defaults to "start" (radio on the left).
+    const effectiveControlPosition: RadioControlPosition =
+      controlPosition ?? (isCard ? "end" : "start");
 
     if (isCard) {
+      const controlAtStart = effectiveControlPosition === "start";
       return (
         <label
           className={cn(
             "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+            controlAtStart && "flex-row-reverse",
             variant === "error" &&
               "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
             disabled
@@ -375,7 +382,7 @@ function RadioGroup({
   value,
   onValueChange,
   disabled,
-  controlPosition = "start",
+  controlPosition,
   name,
   className,
 }: RadioGroupProps) {
