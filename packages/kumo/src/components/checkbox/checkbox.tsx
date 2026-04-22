@@ -264,7 +264,6 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
           !disabled &&
             "hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand",
-            "hover:ring-kumo-hairline focus-visible:ring-kumo-hairline",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
