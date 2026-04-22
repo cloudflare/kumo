@@ -41,6 +41,9 @@ const DEFAULT_PADDING = {
   x: 16,
 };
 
+// Vertical orientation remains a no-op and is kept for backwards compatibility.
+type Orientation = "horizontal" | "vertical";
+
 function isEventFromNode(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest("[data-node-id]") !== null;
 }
@@ -49,6 +52,7 @@ function isEventFromNode(target: EventTarget | null): boolean {
 const MIN_SCROLLBAR_THUMB_SIZE = 10;
 
 interface FlowDiagramProps {
+  orientation?: Orientation;
   /**
    * Whether to render the pannable canvas wrapper.
    * - `true`: Renders with pannable canvas, scrollbars, and pan gestures (default)
@@ -77,6 +81,7 @@ interface FlowDiagramProps {
 }
 
 export function FlowDiagram({
+  orientation = "horizontal",
   canvas = true,
   align = "start",
   padding: requestedPadding,
@@ -84,6 +89,8 @@ export function FlowDiagram({
   className,
   children,
 }: FlowDiagramProps) {
+  void orientation;
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
