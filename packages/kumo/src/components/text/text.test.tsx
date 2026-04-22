@@ -37,15 +37,9 @@ describe("Text", () => {
     expect(container.querySelector("h2")).toBeNull();
   });
 
-  // Type-level: the below should fail to compile when `as` is missing from a
-  // heading variant. We can't runtime-assert TypeScript errors, but an
-  // @ts-expect-error directive confirms the discriminated union is enforcing
-  // the requirement (deleting the directive would produce a compile error,
-  // which in turn would be caught by `tsc --noEmit`).
-  it("type-enforces `as` on heading variants", () => {
-    // @ts-expect-error — heading variants require `as`
-    const InvalidHeading = <Text variant="heading1">Missing `as`</Text>;
-    // Use the variable so it doesn't get tree-shaken out of the test body.
-    expect(InvalidHeading).toBeTruthy();
-  });
+  // Type-level enforcement of the required `as` prop for heading variants
+  // lives in `text.type-spec.tsx`. That file is included in the regular
+  // tsconfig glob, so `pnpm typecheck` evaluates every `@ts-expect-error`
+  // directive and fails if the type contract is broken. Vitest test files
+  // are excluded from tsc, so `@ts-expect-error` is not effective here.
 });
