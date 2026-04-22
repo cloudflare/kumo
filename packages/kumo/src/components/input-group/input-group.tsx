@@ -134,8 +134,7 @@ const Root = forwardRef<
         ? [
             "overflow-hidden",
             // Focus state must come AFTER inputVariants to override ring-kumo-line
-            "focus-within:ring-kumo-line",
-            // The CSS in kumo-binding.css handles the native outline
+            "focus-within:ring-kumo-focus",
           ]
         : // isolate creates a new stacking context so z-index in children doesn't leak out
           "isolate overflow-visible ring-0 shadow-none",
@@ -200,6 +199,7 @@ const Root = forwardRef<
                 // so the zone matches adjacent individual-mode buttons exactly.
                 "ring-0 shadow-none",
                 "border border-kumo-line",
+                "focus-within:ring-1 focus-within:ring-kumo-focus",
                 // Collapse double borders between zone and adjacent individual-mode button
                 "not-first:border-l-0",
                 // Inherit border-radius from the outer container on outer edges only;

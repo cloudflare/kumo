@@ -162,7 +162,7 @@ export const Button = forwardRef<
             // Focused element renders above hovered siblings for focus indicator
             "focus:z-[2] focus:border-kumo-line focus:outline focus:-outline-offset-1",
             // Suppress the base Button's focus ring so only our outline shows
-            "focus-visible:ring-0 focus-visible:shadow-none",
+            "focus-visible:ring-2 focus-visible:ring-kumo-focus",
             // Match the group's disabled visual treatment
             "disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
           ],

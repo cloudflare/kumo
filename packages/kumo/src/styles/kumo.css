@@ -104,7 +104,7 @@
   --rdp-nav-border: oklch(14.5% 0 0 / 0.1);
   --rdp-hover-bg: oklch(90% 0 0);
   --rdp-fill-hover-bg: oklch(87% 0 0);
-  --rdp-focus-ring: oklch(75% 0 0);
+  --rdp-focus-ring: var(--color-kumo-brand);
 
   position: relative;
   box-sizing: border-box;
@@ -127,7 +127,7 @@
   --rdp-nav-border: oklch(26.9% 0 0);
   --rdp-hover-bg: oklch(20% 0 0);
   --rdp-fill-hover-bg: oklch(25% 0 0);
-  --rdp-focus-ring: oklch(45% 0 0);
+  --rdp-focus-ring: var(--color-kumo-brand);
 }
 
 .rdp-root[dir="rtl"] {
