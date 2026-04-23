@@ -104,6 +104,22 @@ describe("Pagination", () => {
       fireEvent.click(screen.getByLabelText("Last page"));
       expect(setPage).toHaveBeenCalledWith(10);
     });
+
+    // Regression: <label> wrapper made "First page" appear hovered on sibling hover.
+    it("InputGroup wrapper around controls is a <div>, not a <label>", () => {
+      const { container } = renderPagination({
+        page: 5,
+        perPage: 10,
+        totalCount: 100,
+      });
+      const group = container.querySelector(
+        "[data-slot='input-group']",
+      ) as HTMLElement;
+      expect(group).toBeTruthy();
+      expect(group.tagName).toBe("DIV");
+      expect(group.tagName).not.toBe("LABEL");
+      expect(group.getAttribute("data-focus-mode")).toBe("individual");
+    });
   });
 
   describe("Enter key navigation (input mode)", () => {
