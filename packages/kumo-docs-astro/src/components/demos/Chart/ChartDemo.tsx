@@ -36,13 +36,13 @@ echarts.use([
 export function PieChartDemo() {
   const isDarkMode = useIsDarkMode();
 
-  const options = useMemo(
+  const options = useMemo<EChartsOption>(
     () =>
       ({
         animation: true,
         animationDuration: 2000,
-        toolbox: {
-          show: false,
+        tooltip: {
+          show: true,
         },
         series: [
           {
@@ -56,7 +56,7 @@ export function PieChartDemo() {
             ],
           },
         ],
-      }) as EChartsOption,
+      }),
     [],
   );
 
@@ -215,7 +215,7 @@ export function IncompleteDataChartDemo() {
       {
         name: "Bandwidth",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0, isDarkMode),
+        color: ChartPalette.categorical(0, isDarkMode),
       },
     ],
     [isDarkMode],
@@ -246,7 +246,7 @@ export function TimeRangeSelectionChartDemo() {
       {
         name: "CPU Usage",
         data: buildSeriesData(0, 50, 60_000, 1),
-        color: ChartPalette.color(0, isDarkMode),
+        color: ChartPalette.categorical(0, isDarkMode),
       },
     ],
     [isDarkMode],
@@ -271,7 +271,7 @@ export function TimeRangeSelectionChartDemo() {
 export function PieChartPreviewDemo() {
   const isDarkMode = useIsDarkMode();
 
-  const options = useMemo(
+  const options = useMemo<EChartsOption>(
     () =>
       ({
         toolbox: {
@@ -287,7 +287,7 @@ export function PieChartPreviewDemo() {
             ],
           },
         ],
-      }) as EChartsOption,
+      }),
     [],
   );
 
@@ -311,7 +311,7 @@ export function LegendDefaultDemo() {
     <div className="space-y-4">
       <h3 className="text-sm font-medium">Active State</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem
           name="Requests"
           color={ChartPalette.semantic("Neutral", isDarkMode)}
@@ -333,7 +333,7 @@ export function LegendDefaultDemo() {
 
       <h3 className="text-sm font-medium mt-12">Inactive State</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem
           name="Requests"
           color={ChartPalette.semantic("Neutral", isDarkMode)}
@@ -424,7 +424,7 @@ export function BarChartDemo() {
   const data = useMemo(
     () => [
       {
-        name: "Requests",
+        name: "Requests where age > 10",
         data: buildSeriesData(0, 20, 3_600_000, 1),
         color: ChartPalette.semantic("Neutral", isDarkMode),
       },
@@ -445,6 +445,7 @@ export function BarChartDemo() {
       data={data}
       xAxisName="Time (UTC)"
       yAxisName="Count"
+      tooltipValueFormat={(r) => r.toFixed(2)}
     />
   );
 }
@@ -492,7 +493,7 @@ export function ChartExampleDemo() {
       {
         name: "P50",
         data: buildSeriesData(0, 30, 60_000, 0.2),
-        color: ChartPalette.semantic("NeutralLight", isDarkMode),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
       },
     ],
     [isDarkMode],
@@ -502,7 +503,7 @@ export function ChartExampleDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line gap-4 px-2 mb-2">
+        <div className="flex divide-x divide-kumo-hairline gap-4 px-2 mb-2">
           <ChartLegend.LargeItem
             name="P99"
             color={ChartPalette.semantic("Attention", isDarkMode)}
@@ -523,7 +524,7 @@ export function ChartExampleDemo() {
           />
           <ChartLegend.LargeItem
             name="P50"
-            color={ChartPalette.semantic("NeutralLight", isDarkMode)}
+            color={ChartPalette.semantic("Neutral", isDarkMode)}
             value="10"
             unit="ms"
           />
@@ -537,6 +538,70 @@ export function ChartExampleDemo() {
         />
       </LayerCard.Primary>
     </LayerCard>
+  );
+}
+
+/**
+ * Custom chart with HTML tooltip using dangerousHtmlFormatter.
+ * USE WITH CAUTION: Only use dangerousHtmlFormatter for trusted HTML content.
+ * Always sanitize any user-provided data using echarts.format.encodeHTML
+ * or similar utilities to prevent XSS vulnerabilities.
+ */
+export function CustomTooltipChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const options = useMemo<EChartsOption>(
+    () => ({
+      tooltip: {
+        trigger: "item",
+        formatter: (params: any) => {
+          // IMPORTANT: Always escape ALL dynamic values using encodeHTML
+          // from echarts/format before including in HTML. This prevents
+          // XSS attacks from malicious data like:
+          // { name: "<img src=x onerror=alert('xss')>", value: "..." }
+          const safeName = echarts.format.encodeHTML(params.name);
+          const safeValue = echarts.format.encodeHTML(String(params.value));
+          const safePercent = echarts.format.encodeHTML(
+            String(Math.round(params.percent)),
+          );
+
+          return `
+            <div style="padding: 8px;">
+              <div style="font-weight: 600; margin-bottom: 4px;">${safeName}</div>
+              <div>Value: <strong>${safeValue}</strong></div>
+              <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">
+                ${safePercent}% of total
+              </div>
+            </div>
+          `;
+        },
+      },
+      series: [
+        {
+          type: "pie",
+          data: [
+            { value: 101, name: "Series A" },
+            { value: 202, name: "Series B" },
+            // Malicious series name to demonstrate XSS protection via encodeHTML.
+            // Without encoding, this would render an alert popup. With encodeHTML,
+            // it safely displays as plain text.
+            { value: 150, name: "<img src=x onerror=alert('XSS')>" },
+            { value: 303, name: "Series C" },
+            { value: 404, name: "Series D" },
+          ],
+        },
+      ],
+    }),
+    [],
+  );
+
+  return (
+    <Chart
+      echarts={echarts}
+      options={options}
+      height={400}
+      isDarkMode={isDarkMode}
+    />
   );
 }
 
@@ -558,26 +623,22 @@ function buildSeriesData(
   });
 }
 
+function getIsDark() {
+  if (typeof document === "undefined") return false;
+
+  const root = document.documentElement;
+
+  const mode = root.getAttribute("data-mode");
+  if (mode === "dark") return true;
+  if (mode === "light") return false;
+
+  if (root.classList.contains("dark")) return true;
+  if (root.classList.contains("light")) return false;
+
+  return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
+}
+
 function useIsDarkMode() {
-  const getIsDark = () => {
-    if (typeof document === "undefined") return false;
-
-    const root = document.documentElement;
-
-    const mode = root.getAttribute("data-mode");
-    if (mode === "dark") return true;
-    if (mode === "light") return false;
-
-    // 1) Prefer explicit html class contract (Tailwind-style)
-    if (root.classList.contains("dark")) return true;
-    if (root.classList.contains("light")) return false;
-
-    // 2) Otherwise fall back to system preference
-    return (
-      window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false
-    );
-  };
-
   const [isDark, setIsDark] = useState(getIsDark);
 
   useEffect(() => {

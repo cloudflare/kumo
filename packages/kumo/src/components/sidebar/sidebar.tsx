@@ -389,10 +389,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-kumo-base text-kumo-default",
             variant === "sidebar" &&
               (side === "left"
-                ? "border-r border-kumo-line"
-                : "border-l border-kumo-line"),
+                ? "border-r border-kumo-hairline"
+                : "border-l border-kumo-hairline"),
             variant === "floating" &&
-              "m-2 rounded-lg border border-kumo-line shadow-lg",
+              "m-2 rounded-lg border border-kumo-hairline shadow-lg",
             className,
           )}
           {...props}
@@ -469,10 +469,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
           isResizing && "transition-none!",
           variant === "sidebar" &&
             (side === "left"
-              ? "border-r border-kumo-line"
-              : "border-l border-kumo-line"),
+              ? "border-r border-kumo-hairline"
+              : "border-l border-kumo-hairline"),
           variant === "floating" &&
-            "m-2 rounded-lg border border-kumo-line shadow-lg",
+            "m-2 rounded-lg border border-kumo-hairline shadow-lg",
           className,
         )}
         {...props}
@@ -511,7 +511,7 @@ const SidebarHeader = forwardRef<
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex items-center gap-2 border-b border-kumo-line px-2 py-3",
+      "flex items-center gap-2 border-b border-kumo-hairline px-2 py-3",
       "overflow-hidden",
       // Collapsed: just remove border, keep same height
       "group-data-[state=collapsed]/sidebar:border-b-0",
@@ -580,7 +580,7 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex min-w-0 flex-col gap-2 border-t border-kumo-line px-2 py-2",
+      "flex min-w-0 flex-col gap-2 border-t border-kumo-hairline px-2 py-2",
       // Collapsed: remove border, tighten padding
       "group-data-[state=collapsed]/sidebar:border-t-0 group-data-[state=collapsed]/sidebar:py-1",
       className,
@@ -953,11 +953,10 @@ SidebarMenuItem.displayName = "Sidebar.MenuItem";
 
 export type SidebarMenuButtonSize = "base" | "sm";
 
-export interface SidebarMenuButtonProps
-  extends Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    "className" | "children"
-  > {
+export interface SidebarMenuButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "className" | "children"
+> {
   icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   active?: boolean;
   /**
@@ -1046,7 +1045,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg outline-none cursor-pointer",
+      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg cursor-pointer",
       // Sizing
       size === "base" && "min-h-[34px] px-3 py-1.5 text-sm font-medium",
       size === "sm" && "min-h-[28px] px-2 py-1 text-sm",
@@ -1061,7 +1060,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
       // Focus
-      "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
+      "focus-visible:ring-2 focus-visible:ring-kumo-brand",
       // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
       // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
       "group-data-[state=collapsed]/sidebar:px-2",
@@ -1104,14 +1103,10 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     }
 
     // Wrap in Tooltip when collapsed and tooltip text is provided.
-    // Use asChild so TooltipTrigger merges onto the button/link via render prop
+    // Use render prop so Tooltip merges onto the button/link
     // instead of wrapping it in another <button> (which would cause invalid nesting).
     if (state === "collapsed" && tooltip) {
-      button = (
-        <Tooltip content={tooltip} side="right" asChild>
-          {button}
-        </Tooltip>
-      );
+      button = <Tooltip content={tooltip} side="right" render={button} />;
     }
 
     // Auto-wrap in <li> when not already inside a MenuItem
@@ -1149,6 +1144,7 @@ const SidebarMenuAction = forwardRef<
     className={cn(
       "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
       "text-kumo-strong hover:bg-kumo-overlay",
+      "focus-visible:ring-2 focus-visible:ring-kumo-brand",
       "transition-colors duration-150",
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1183,7 +1179,7 @@ const SidebarMenuBadge = forwardRef<
     ref={ref}
     data-sidebar="menu-badge"
     className={cn(
-      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
+      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-hairline",
       "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
@@ -1221,7 +1217,7 @@ const SidebarMenuSub = forwardRef<
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-line p-0 pl-2.5",
+      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-hairline p-0 pl-2.5",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1264,8 +1260,7 @@ SidebarMenuSubItem.displayName = "Sidebar.MenuSubItem";
 // Sidebar MenuSubButton
 // ============================================================================
 
-export interface SidebarMenuSubButtonProps
-  extends ComponentPropsWithoutRef<"button"> {
+export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"button"> {
   /** Marks this sub-item as currently active/selected. @default false */
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
@@ -1294,11 +1289,11 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium outline-none",
+    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium",
     "text-kumo-default transition-colors duration-150",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
-    "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
+    "focus-visible:ring-2 focus-visible:ring-kumo-brand",
     className,
   );
 
@@ -1365,7 +1360,7 @@ const SidebarSeparator = forwardRef<
   <hr
     ref={ref}
     data-sidebar="separator"
-    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-line", className)}
+    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-hairline", className)}
     {...props}
   />
 ));
@@ -1402,9 +1397,10 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
       data-sidebar="input"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-line",
+        "bg-kumo-base text-kumo-subtle ring ring-kumo-hairline",
         "transition-[color,background-color,padding,box-shadow] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
         "hover:bg-kumo-overlay",
+        "focus-visible:ring-2 focus-visible:ring-kumo-brand",
         // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
         "group-data-[state=collapsed]/sidebar:px-2 group-data-[state=collapsed]/sidebar:ring-0",
         className,
@@ -1455,6 +1451,7 @@ const SidebarTrigger = forwardRef<
       className={cn(
         "flex items-center rounded-md p-1.5",
         "text-kumo-subtle hover:text-kumo-strong hover:bg-kumo-overlay",
+        "focus-visible:ring-2 focus-visible:ring-kumo-brand",
         "transition-colors duration-150",
         className,
       )}
@@ -1525,15 +1522,8 @@ const SidebarResizeHandle = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => {
-  const {
-    side,
-    resizable,
-    setIsResizing,
-    setWidth,
-    setOpen,
-    open,
-    minWidth,
-  } = useSidebar();
+  const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth } =
+    useSidebar();
   const startX = useRef(0);
   const startWidth = useRef(0);
   const wasCollapsed = useRef(false);

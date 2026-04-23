@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@cloudflare/kumo";
 
 export function InputBasicDemo() {
@@ -107,6 +108,34 @@ export function InputReactNodeLabelDemo() {
       required
       placeholder="billing@company.com"
       type="email"
+    />
+  );
+}
+
+/** Controlled input using `onChange` (native React event). */
+export function InputControlledOnChangeDemo() {
+  const [value, setValue] = useState("");
+  return (
+    <Input
+      label="With onChange"
+      placeholder="Type something..."
+      description={value ? `Value: ${value}` : "Uses e.target.value"}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
+
+/** Controlled input using `onValueChange` (Base UI convenience — gives you the string directly). */
+export function InputControlledOnValueChangeDemo() {
+  const [value, setValue] = useState("");
+  return (
+    <Input
+      label="With onValueChange"
+      placeholder="Type something..."
+      description={value ? `Value: ${value}` : "Receives the value directly"}
+      value={value}
+      onValueChange={(v) => setValue(v)}
     />
   );
 }

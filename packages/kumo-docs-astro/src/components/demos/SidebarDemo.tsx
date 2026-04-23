@@ -23,7 +23,7 @@ import { useState } from "react";
 
 function DemoContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative h-[540px] w-full overflow-hidden rounded-lg border border-kumo-line bg-kumo-base">
+    <div className="relative h-[540px] w-full overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base">
       {children}
     </div>
   );
@@ -233,7 +233,7 @@ function ToggleButton() {
     <button
       type="button"
       onClick={toggleSidebar}
-      className="rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-sm text-kumo-default transition-colors hover:bg-kumo-tint"
+      className="rounded-lg border border-kumo-hairline bg-kumo-base px-3 py-1.5 text-sm text-kumo-default transition-colors hover:bg-kumo-tint"
     >
       {state === "expanded" ? "Collapse" : "Expand"}
     </button>

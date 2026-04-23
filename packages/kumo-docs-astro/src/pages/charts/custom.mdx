@@ -6,14 +6,30 @@ sourceFile: "components/chart"
 ---
 
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import { PieChartDemo } from "~/components/demos/Chart/ChartDemo";
+import {
+  PieChartDemo,
+  CustomTooltipChartDemo,
+} from "~/components/demos/Chart/ChartDemo";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
-import Heading from "~/components/docs/Heading.astro";
 
 <ComponentSection>
-  <Heading level={2}>Custom Chart</Heading>
+
+## Custom Chart
 
   <ComponentExample demo="PieChartDemo">
     <PieChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Custom Tooltip with HTML
+
+For tooltips that require custom HTML formatting, use the `dangerousHtmlFormatter` property instead of the standard `formatter`. This makes the security implications more explicit.
+
+When using `dangerousHtmlFormatter`, it is **strongly recommended** to sanitize any user-provided content using `echarts.format.encodeHTML` to prevent XSS vulnerabilities.
+
+  <ComponentExample demo="CustomTooltipChartDemo">
+    <CustomTooltipChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>

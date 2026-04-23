@@ -5,7 +5,6 @@ description: "A confirmation dialog for safely deleting resources, requiring use
 sourceFile: "blocks/delete-resource"
 ---
 
-import Heading from "~/components/docs/Heading.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
@@ -27,7 +26,9 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
+
+## Installation
+
   <p>
     DeleteResource is a <strong>block</strong> - a CLI-installed component that
     you own and can customize. Unlike regular components, blocks are copied into
@@ -72,7 +73,8 @@ import { DeleteResource } from "./components/kumo/delete-resource/delete-resourc
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { useState } from "react";
@@ -116,9 +118,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Worker Deletion</Heading>
+## Examples
+
+### Worker Deletion
+
 <p>
   Works with any resource type - just change the resourceType and resourceName
   props.
@@ -127,7 +131,8 @@ export default function Example() {
   <DeleteResourceWorkerDemo client:load />
 </ComponentExample>
 
-  <Heading level={3}>Error State</Heading>
+### Error State
+
   <p>
     Use the errorMessage prop to show an error message.
   </p>
@@ -139,6 +144,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="DeleteResource" />
 </ComponentSection>

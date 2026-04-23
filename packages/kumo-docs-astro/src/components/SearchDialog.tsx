@@ -24,6 +24,7 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
   "DateRangePicker", // Deprecated: use DatePicker with mode="range"
   "Field",
   "Icon",
+  "Surface", // Deprecated compatibility export; no dedicated docs page
 ]);
 
 /**
@@ -76,6 +77,13 @@ const STATIC_PAGES: Array<{
     name: "Colors",
     description: "Explore Kumo's semantic color tokens and theming system.",
     url: "/colors",
+    category: "Guides",
+  },
+  {
+    name: "Chart Colors",
+    description:
+      "Semantic, categorical, and sequential color guidance for charts.",
+    url: "/charts/colors",
     category: "Guides",
   },
   {
@@ -154,7 +162,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "sensitive-input":
     "A masked input for sensitive values like API keys and passwords.",
   "skeleton-line": "A skeleton loading placeholder for text content.",
-  surface: "A container component that provides a styled surface for content.",
   switch: "A two-state toggle button that can be either on or off.",
   table:
     "A table component for displaying tabular data with selection support.",
@@ -514,28 +521,28 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         </span>
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ↑
             </kbd>
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ↓
             </kbd>
             <span>navigate</span>
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ↵
             </kbd>
             <span>open</span>
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               ⌘↵
             </kbd>
             <span>new tab</span>
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-kumo-line bg-kumo-base px-1.5 py-0.5">
+            <kbd className="rounded border border-kumo-hairline bg-kumo-base px-1.5 py-0.5">
               esc
             </kbd>
             <span>close</span>

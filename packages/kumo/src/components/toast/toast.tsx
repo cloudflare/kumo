@@ -124,7 +124,7 @@ export function toastVariants({
 }: KumoToastVariantsProps = {}) {
   return cn(
     // Base styles for toast root
-    "rounded-xl ring ring-kumo-hairline bg-clip-padding p-4 shadow-lg",
+    "rounded-xl ring ring-kumo-line bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
     KUMO_TOAST_VARIANTS.variant[variant].classes,
   );

@@ -1,0 +1,204 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Autocomplete"
+description: "A free-form text input with an optional filtered suggestion list. Unlike Combobox, the value is not constrained to the items list."
+sourceFile: "components/autocomplete"
+baseUIComponent: "autocomplete"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  AutocompleteDemo,
+  AutocompleteWithFieldDemo,
+  AutocompleteErrorDemo,
+  AutocompleteGroupedDemo,
+  AutocompleteSizesDemo,
+  AutocompleteControlledDemo,
+} from "~/components/demos/AutocompleteDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="AutocompleteDemo">
+    <AutocompleteDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock
+  code={`import { Autocomplete } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
+
+### Granular
+
+  <CodeBlock
+    code={`import { Autocomplete } from "@cloudflare/kumo/components/autocomplete";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* When to use */}
+
+<ComponentSection>
+
+## When to use
+
+<p>
+  Use `Autocomplete` when the input value can be free-form text and suggestions
+  are optional hints. Use `Combobox` instead when the selected value must come
+  from the predefined list.
+</p>
+</ComponentSection>
+
+{/* Controlled */}
+
+<ComponentSection>
+
+## Controlled
+
+<p>
+  Pass `value` and `onValueChange` for controlled usage.
+</p>
+<ComponentExample demo="AutocompleteControlledDemo">
+  <AutocompleteControlledDemo client:load />
+</ComponentExample>
+</ComponentSection>
+
+{/* With Field */}
+
+<ComponentSection>
+
+## With Field
+
+<p>
+  Add `label`, `description`, and `required` to enable the built-in Field wrapper.
+</p>
+<ComponentExample demo="AutocompleteWithFieldDemo">
+  <AutocompleteWithFieldDemo client:load />
+</ComponentExample>
+</ComponentSection>
+
+{/* Error State */}
+
+<ComponentSection>
+
+## Error State
+
+<p>
+  Display validation errors with the `error` prop.
+</p>
+<ComponentExample demo="AutocompleteErrorDemo">
+  <AutocompleteErrorDemo client:load />
+</ComponentExample>
+</ComponentSection>
+
+{/* Grouped */}
+
+<ComponentSection>
+
+## Grouped
+
+<p>
+  Group items into categories using `Autocomplete.Group` and `Autocomplete.GroupLabel`.
+</p>
+<ComponentExample demo="AutocompleteGroupedDemo">
+  <AutocompleteGroupedDemo client:load />
+</ComponentExample>
+</ComponentSection>
+
+{/* Sizes */}
+
+<ComponentSection>
+
+## Sizes
+
+<p>
+  The `size` prop on `Autocomplete.InputGroup` supports four variants matching the
+  Input component: `xs`, `sm`, `base` (default), and `lg`.
+</p>
+<ComponentExample demo="AutocompleteSizesDemo">
+  <AutocompleteSizesDemo client:load />
+</ComponentExample>
+</ComponentSection>
+
+{/* Custom Filtering */}
+
+<ComponentSection>
+
+## Custom Filtering
+
+<p>
+  By default, Base UI filters items using a built-in string match. Pass a custom
+  `filter` function for advanced logic such as fuzzy matching or object
+  properties.
+</p>
+
+```tsx
+// Filter on a property of object items
+<Autocomplete
+  items={countries}
+  filter={(item, query) =>
+    item.label.toLowerCase().includes(query.toLowerCase())
+  }
+>
+  ...
+</Autocomplete>
+
+// Disable filtering entirely (e.g. async search)
+<Autocomplete items={results} filter={null}>
+  ...
+</Autocomplete>
+```
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+### Autocomplete
+
+<p>Root component. Wraps all sub-components and manages state.</p>
+<PropsTable component="Autocomplete" />
+
+### Autocomplete.InputGroup
+
+<p>
+  Self-contained input wrapper that renders the text input, clear button, and
+  dropdown trigger together.
+</p>
+<PropsTable component="Autocomplete.InputGroup" />
+
+### Autocomplete.Content
+
+<p>Dropdown popup container. Wraps Portal, Positioner, and Popup.</p>
+<PropsTable component="Autocomplete.Content" />
+
+### Autocomplete.Item
+
+<p>Individual suggestion item in the list.</p>
+<PropsTable component="Autocomplete.Item" />
+
+### Additional Sub-components
+
+  <ul class="list-disc list-inside space-y-1">
+    <li>`Autocomplete.List` — scrollable list container with render prop</li>
+    <li>`Autocomplete.Group` — groups items under a heading</li>
+    <li>`Autocomplete.GroupLabel` — heading label for a group</li>
+    <li>`Autocomplete.Collection` — item container within a group</li>
+    <li>`Autocomplete.Separator` — horizontal divider between items</li>
+  </ul>
+</ComponentSection>

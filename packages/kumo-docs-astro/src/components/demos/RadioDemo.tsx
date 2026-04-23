@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Radio } from "@cloudflare/kumo";
+import { Badge, Radio } from "@cloudflare/kumo";
 
 /** Shows a basic controlled radio group */
 export function RadioBasicDemo() {
@@ -185,6 +185,92 @@ export function RadioCardDemo() {
         label="Contract"
         description="For mission-critical applications that are core to your business."
         value="contract"
+      />
+    </Radio.Group>
+  );
+}
+
+/** Shows Radio.Legend with sr-only to visually hide the legend while keeping it accessible, useful when a parent Field already provides a visible label */
+export function RadioLegendSrOnlyDemo() {
+  const [value, setValue] = useState("all");
+  return (
+    <Radio.Group defaultValue="all" value={value} onValueChange={setValue}>
+      <Radio.Legend className="sr-only">Paths</Radio.Legend>
+      <Radio.Item label="Allow all paths" value="all" />
+      <Radio.Item label="Restrict to specific paths" value="specific" />
+    </Radio.Group>
+  );
+}
+
+/** Shows Radio.Legend with custom styling for full control over legend presentation */
+export function RadioLegendCustomDemo() {
+  const [value, setValue] = useState("email");
+  return (
+    <Radio.Group value={value} onValueChange={setValue}>
+      <Radio.Legend className="text-sm font-normal text-kumo-subtle">
+        Notification preference
+      </Radio.Legend>
+      <Radio.Item label="Email" value="email" />
+      <Radio.Item label="SMS" value="sms" />
+      <Radio.Item label="Push notification" value="push" />
+    </Radio.Group>
+  );
+}
+
+/** Shows radio card appearance with the control positioned on the left via controlPosition="start" */
+export function RadioCardControlStartDemo() {
+  const [value, setValue] = useState("free");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      controlPosition="start"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+    </Radio.Group>
+  );
+}
+
+/** Shows Radio.Item labels with rich ReactNode content (icons, badges, or additional markup) */
+export function RadioRichLabelDemo() {
+  const [value, setValue] = useState("pro");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label={
+          <span className="flex items-center gap-2">
+            Free
+            <Badge variant="neutral">$0</Badge>
+          </span>
+        }
+        description="For personal or hobby projects."
+        value="free"
+      />
+      <Radio.Item
+        label={
+          <span className="flex items-center gap-2">
+            Pro
+            <Badge variant="primary">Popular</Badge>
+          </span>
+        }
+        description="For professional websites."
+        value="pro"
       />
     </Radio.Group>
   );

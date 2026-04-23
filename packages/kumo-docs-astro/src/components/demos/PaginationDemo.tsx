@@ -190,3 +190,36 @@ export function PaginationPageSizeRightDemo() {
     </Pagination>
   );
 }
+
+/** Pagination with French labels for internationalization. */
+export function PaginationI18nDemo() {
+  const [page, setPage] = useState(1);
+
+  return (
+    <Pagination
+      page={page}
+      setPage={setPage}
+      perPage={10}
+      totalCount={100}
+      labels={{
+        firstPage: "Première page",
+        previousPage: "Page précédente",
+        nextPage: "Page suivante",
+        lastPage: "Dernière page",
+        pageNumber: "Numéro de page",
+        pageSize: "Taille de page",
+      }}
+    >
+      <Pagination.Info>
+        {({ pageShowingRange, totalCount }) => (
+          <>
+            Affichage de{" "}
+            <span className="tabular-nums">{pageShowingRange}</span> sur{" "}
+            <span className="tabular-nums">{totalCount}</span>
+          </>
+        )}
+      </Pagination.Info>
+      <Pagination.Controls />
+    </Pagination>
+  );
+}

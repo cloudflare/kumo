@@ -15,7 +15,7 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 
-import { Surface } from "../surface";
+import { LayerCard } from "../layer-card";
 import { Loader } from "../loader";
 import { cn } from "../../utils";
 import {
@@ -163,7 +163,7 @@ function Dialog({
           className="fixed inset-0 bg-kumo-overlay opacity-80 transition-all duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0"
           onClick={handleBackdropClick}
         />
-        <Surface
+        <LayerCard
           render={<DialogBase.Popup />}
           className={cn(
             "fixed top-[10vh] left-1/2 w-full max-w-2xl -translate-x-1/2",
@@ -181,7 +181,7 @@ function Dialog({
           <DialogContext.Provider value={{ onClose: handleClose }}>
             {children}
           </DialogContext.Provider>
-        </Surface>
+        </LayerCard>
       </DialogBase.Portal>
     </DialogBase.Root>
   );
@@ -251,7 +251,7 @@ function InputHeader({
   trailing?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-kumo-base px-4 py-3">
+    <div className="flex items-center gap-3 bg-kumo-base px-4 py-3 focus-within:ring-2 focus-within:ring-kumo-brand">
       {leading ?? (
         <MagnifyingGlassIcon
           className="h-4 w-4 text-kumo-subtle"
@@ -278,7 +278,7 @@ const List = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
+        "min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-hairline",
         className,
       )}
     >
@@ -767,7 +767,7 @@ function PanelInput({
         placeholder={placeholder}
         className={cn(
           "flex-1 border-none bg-transparent text-base kumo-input-placeholder",
-          "outline-none focus-visible:outline-none",
+          "outline-none",
           className,
         )}
         onKeyDown={handleKeyDown}

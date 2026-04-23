@@ -51,4 +51,6 @@ jobs:
           model: "cloudflare-ai-gateway/workers-ai/@cf/moonshotai/kimi-k2.5"
           agent: kumo
           mentions: "/bonk"
+          opencode_version: "1.4.6"
           permissions: write
+          

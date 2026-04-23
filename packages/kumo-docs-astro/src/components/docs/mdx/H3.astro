@@ -1,0 +1,7 @@
+---
+import Heading from "../Heading.astro";
+const { id, class: className } = Astro.props;
+---
+<Heading level={3} id={id} class={className}>
+  <slot />
+</Heading>

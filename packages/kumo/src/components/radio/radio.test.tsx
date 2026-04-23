@@ -62,6 +62,42 @@ describe("Radio", () => {
     expect(screen.getByText("Pick one")).toBeTruthy();
   });
 
+  it("accepts ReactNode content for Radio.Item label", () => {
+    render(
+      <Radio.Group legend="Plans" appearance="card" defaultValue="pro">
+        <Radio.Item
+          label={
+            <span>
+              Pro <span data-testid="badge">Popular</span>
+            </span>
+          }
+          description="For professional websites."
+          value="pro"
+        />
+      </Radio.Group>,
+    );
+
+    expect(screen.getByText("Popular")).toBeTruthy();
+    expect(screen.getByTestId("badge")).toBeTruthy();
+  });
+
+  it("supports controlPosition='start' on card appearance", () => {
+    const { container } = render(
+      <Radio.Group
+        legend="Plan"
+        appearance="card"
+        controlPosition="start"
+        defaultValue="free"
+      >
+        <Radio.Item label="Free" description="Hobby" value="free" />
+      </Radio.Group>,
+    );
+
+    // The card label wrapper uses flex-row-reverse to place the control at start.
+    const label = container.querySelector("label");
+    expect(label?.className).toContain("flex-row-reverse");
+  });
+
   it("exports KUMO_RADIO_VARIANTS with appearance axis", () => {
     expect(KUMO_RADIO_VARIANTS.appearance.default).toBeDefined();
     expect(KUMO_RADIO_VARIANTS.appearance.card).toBeDefined();

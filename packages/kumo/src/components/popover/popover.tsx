@@ -70,7 +70,10 @@ type BasePopoverTriggerProps = ComponentPropsWithoutRef<
 >;
 
 export type PopoverTriggerProps = BasePopoverTriggerProps & {
-  /** When true, the trigger element will be the child element */
+  /**
+   * @deprecated Use the `render` prop instead.
+   * @example `<Popover.Trigger render={<Button />}>Open</Popover.Trigger>` instead of `<Popover.Trigger asChild><Button>Open</Button></Popover.Trigger>`
+   */
   asChild?: boolean;
 };
 
@@ -78,14 +81,19 @@ function PopoverTrigger({
   children,
   className,
   asChild,
+  render,
   ...props
 }: PopoverTriggerProps) {
+  // Support both render prop (preferred) and deprecated asChild pattern
+  // When using asChild, children IS the render element, so don't pass it as children
+  const resolvedRender =
+    render ??
+    (asChild ? (children as BasePopoverTriggerProps["render"]) : undefined);
+
   return (
     <PopoverBase.Trigger
       className={className}
-      render={
-        asChild ? (children as BasePopoverTriggerProps["render"]) : undefined
-      }
+      render={resolvedRender}
       {...props}
     >
       {asChild ? undefined : children}
@@ -102,6 +110,10 @@ PopoverTrigger.displayName = "Popover.Trigger";
 /** Alignment options for popover positioning */
 type PopoverAlign = "start" | "center" | "end";
 
+type BasePopoverPositionerProps = ComponentPropsWithoutRef<
+  typeof PopoverBase.Positioner
+>;
+
 /**
  * Popover content panel props.
  *
@@ -113,6 +125,28 @@ type PopoverAlign = "start" | "center" | "end";
  * ```
  */
 export type PopoverContentProps = KumoPopoverVariantsProps & {
+  /**
+   * An element to position the popup against.
+   * By default, the popup will be positioned against the trigger.
+   *
+   * Accepts a DOM element, a ref to a DOM element, a virtual element
+   * (object with a `getBoundingClientRect` method), or a function
+   * returning any of these.
+   *
+   * This is useful when the popover trigger and the desired anchor point
+   * are in different component trees, or when positioning against a
+   * coordinate (e.g., a `DOMRect` from `getBoundingClientRect()`).
+   *
+   * @example Virtual element (e.g., anchoring to a DOMRect)
+   * ```tsx
+   * <Popover open={open} onOpenChange={setOpen}>
+   *   <Popover.Content anchor={{ getBoundingClientRect: () => anchorRect }}>
+   *     <p>Anchored content</p>
+   *   </Popover.Content>
+   * </Popover>
+   * ```
+   */
+  anchor?: BasePopoverPositionerProps["anchor"];
   /**
    * How to align the popover relative to the trigger.
    * @default "center"
@@ -153,6 +187,7 @@ function PopoverContent({
   sideOffset = 8,
   alignOffset = 0,
   positionMethod = "absolute",
+  anchor,
   className,
   container: containerProp,
 }: PopoverContentProps) {
@@ -162,6 +197,7 @@ function PopoverContent({
   return (
     <PopoverBase.Portal container={container}>
       <PopoverBase.Positioner
+        anchor={anchor}
         align={align}
         alignOffset={alignOffset}
         side={side}
@@ -247,7 +283,10 @@ PopoverDescription.displayName = "Popover.Description";
 type BasePopoverCloseProps = ComponentPropsWithoutRef<typeof PopoverBase.Close>;
 
 export type PopoverCloseProps = BasePopoverCloseProps & {
-  /** When true, the close element will be the child element */
+  /**
+   * @deprecated Use the `render` prop instead.
+   * @example `<Popover.Close render={<Button />}>Close</Popover.Close>` instead of `<Popover.Close asChild><Button>Close</Button></Popover.Close>`
+   */
   asChild?: boolean;
 };
 
@@ -255,16 +294,17 @@ function PopoverClose({
   children,
   className,
   asChild,
+  render,
   ...props
 }: PopoverCloseProps) {
+  // Support both render prop (preferred) and deprecated asChild pattern
+  // When using asChild, children IS the render element, so don't pass it as children
+  const resolvedRender =
+    render ??
+    (asChild ? (children as BasePopoverCloseProps["render"]) : undefined);
+
   return (
-    <PopoverBase.Close
-      className={className}
-      render={
-        asChild ? (children as BasePopoverCloseProps["render"]) : undefined
-      }
-      {...props}
-    >
+    <PopoverBase.Close className={className} render={resolvedRender} {...props}>
       {asChild ? undefined : children}
     </PopoverBase.Close>
   );
@@ -320,9 +360,7 @@ function ArrowSvg(props: React.ComponentProps<"svg">) {
  * @example
  * ```tsx
  * <Popover>
- *   <Popover.Trigger asChild>
- *     <Button>Open</Button>
- *   </Popover.Trigger>
+ *   <Popover.Trigger render={<Button>Open</Button>} />
  *   <Popover.Content>
  *     <Popover.Title>Notifications</Popover.Title>
  *     <Popover.Description>You are all caught up!</Popover.Description>

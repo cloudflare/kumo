@@ -5,7 +5,6 @@ import {
   type ForwardedRef,
   forwardRef,
   useMemo,
-  type ElementType,
 } from "react";
 import { cn } from "../../utils/cn";
 
@@ -140,13 +139,23 @@ type Monospace = "mono" | "mono-secondary";
 type TextSize = KumoTextSize;
 type TextVariant = KumoTextVariant;
 
+/** Valid HTML elements for the Text component's `as` prop. */
+export type TextElement =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "p"
+  | "span";
+
 type BaseTextProps = Omit<
   ComponentPropsWithoutRef<"span">,
   "className" | "style"
 > & {
   DANGEROUS_className?: string;
   DANGEROUS_style?: CSSProperties;
-  as?: ElementType;
 };
 
 type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
@@ -156,6 +165,8 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
         bold?: boolean;
         size?: TextSize;
         truncate?: boolean;
+        /** Optional element override. Defaults to `<p>`. */
+        as?: TextElement;
       }
     : Variant extends Monospace
       ? {
@@ -163,13 +174,26 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
           bold?: never;
           size?: "lg";
           truncate?: boolean;
+          /** Optional element override. Defaults to `<span>`. */
+          as?: TextElement;
         }
       : Variant extends Heading
         ? {
-            variant?: Variant;
+            variant: Variant;
             bold?: never;
             size?: never;
             truncate?: boolean;
+            /**
+             * Required for heading variants. Pick the element that reflects
+             * this text's place in the document outline (`"h1"` for a page
+             * title, `"h2"` for a section title, etc.) or `"span"` for
+             * decorative heading-styled text that is NOT a section heading.
+             *
+             * Previously optional (defaulted to `<span>`), which silently
+             * excluded real section headings from the document outline.
+             * Making it required surfaces the decision at the type level.
+             */
+            as: TextElement;
           }
         : never);
 
@@ -178,7 +202,7 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
  *
  * @example
  * ```tsx
- * <Text variant="heading1">Page Title</Text>
+ * <Text variant="heading1" as="h1">Page Title</Text>
  * <Text variant="body">Default paragraph text.</Text>
  * <Text variant="secondary" size="sm">Muted helper text</Text>
  * <Text variant="error">Something went wrong</Text>
@@ -213,20 +237,30 @@ export interface TextProps {
   bold?: boolean;
   /** Whether to truncate overflowing text with an ellipsis. Adds `truncate min-w-0` classes. */
   truncate?: boolean;
-  /** The HTML element type to render as (e.g. `"span"`, `"p"`, `"h1"`). Auto-selected based on variant if omitted. */
-  as?: ElementType;
+  /**
+   * The HTML element to render (`"h1"`–`"h6"`, `"p"`, or `"span"`).
+   *
+   * - **Required** for heading variants (`"heading1"`, `"heading2"`,
+   *   `"heading3"`) — pick the element that reflects this text's place in
+   *   the document outline, or `"span"` for decorative heading-styled text
+   *   that is not a section heading.
+   * - **Optional** for body variants (defaults to `"p"`) and monospace
+   *   variants (defaults to `"span"`).
+   */
+  as?: TextElement;
   /** Text content. */
   children?: React.ReactNode;
 }
 
 /**
  * Typography component for rendering text with consistent styling.
- * Automatically selects the appropriate HTML element based on variant
- * (`h1`/`h2`/`h3` for headings, `p` for body, `span` for mono).
+ * Renders as `<p>` for body variants and `<span>` for headings/mono.
+ * Use the `as` prop to set semantic HTML elements for proper document outlines.
  *
  * @example
  * ```tsx
- * <Text variant="heading1">Dashboard</Text>
+ * <Text variant="heading1" as="h1">Page Title</Text>
+ * <Text variant="heading2" as="h2">Section Title</Text>
  * <Text>Default body text</Text>
  * ```
  */
@@ -247,12 +281,14 @@ function _Text<Variant extends TextVariant = "body">(
   const isCopy = ["body", "secondary", "success", "error"].includes(variant);
   const isMono = ["mono", "mono-secondary"].includes(variant);
 
+  // Heading variants no longer auto-select h1/h2/h3 to avoid coupling visual
+  // presentation to semantic HTML. Use the `as` prop to set the appropriate
+  // heading level for your document outline (e.g., as="h2").
   const Component = useMemo(() => {
     if (as) return as;
-    if (variant === "heading1") return "h1";
-    if (variant === "heading2") return "h2";
-    if (variant === "heading3") return "h3";
     if (["mono", "mono-secondary"].includes(variant)) return "span";
+    // Headings and body text default to span; use `as` for semantic elements
+    if (["heading1", "heading2", "heading3"].includes(variant)) return "span";
     return "p";
   }, [variant, as]);
 

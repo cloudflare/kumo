@@ -1,5 +1,95 @@
 # @cloudflare/kumo
 
+## 1.19.0
+
+### Minor Changes
+
+- da6eee1: feat(chart): rename `formatter` to `dangerousHtmlFormatter` for XSS awareness
+
+  BREAKING CHANGE: The `formatter` property in `KumoChartOption['tooltip']` has been renamed to `dangerousHtmlFormatter`. This change makes the security implications of using HTML formatters more explicit to developers. The API remains identical—only the name has changed.
+
+  Migration: Replace `formatter` with `dangerousHtmlFormatter` in your chart tooltip configurations.
+
+- 4785c43: feat(tooltip, popover): deprecate `asChild` in favor of `render` prop
+
+  Unifies composition patterns across the library by adopting Base UI's `render` prop pattern. The `asChild` prop is now deprecated on:
+  - `Tooltip`
+  - `Popover.Trigger`
+  - `Popover.Close`
+
+  **Migration:**
+
+  ```diff
+  - <Tooltip content="Save" asChild>
+  -   <Button>Save</Button>
+  - </Tooltip>
+  + <Tooltip content="Save" render={<Button>Save</Button>} />
+
+  - <Popover.Trigger asChild>
+  -   <Button>Open</Button>
+  - </Popover.Trigger>
+  + <Popover.Trigger render={<Button>Open</Button>} />
+
+  - <Popover.Close asChild>
+  -   <Button>Close</Button>
+  - </Popover.Close>
+  + <Popover.Close render={<Button>Close</Button>} />
+  ```
+
+  The `asChild` prop remains functional for backward compatibility but will be removed in a future major version.
+
+- a0f2b18: feat(popover): expose `anchor` prop on `Popover.Content` for virtual positioning
+
+  Forwards Base UI's `anchor` prop through `Popover.Content` to the underlying `Positioner`, enabling popover positioning against custom elements, refs, or virtual points (e.g., a `DOMRect` from `getBoundingClientRect()`). This is useful when the popover trigger and the desired anchor are in different component trees, or when anchoring to a coordinate rather than a DOM element.
+
+- 58b5777: Convert Table of Contents to exported Kumo component
+- 0cae077: feat(Select): add size prop (xs/sm/base/lg) matching Input and Combobox heights
+
+### Patch Changes
+
+- 1e7ba10: feat(layer-card): support simple card usage and deprecate Surface
+  - allow `LayerCard` to be used directly without `LayerCard.Primary` for simple single-layer card layouts
+  - keep `LayerCard.Secondary` and `LayerCard.Primary` supported for the existing layered card pattern
+  - deprecate `Surface` in favor of `LayerCard` while keeping the old API working as a compatibility wrapper
+  - update docs and examples to prefer `LayerCard`, including table examples that no longer need a nested `LayerCard.Primary`
+
+- 2682319: fix(pagination): add ARIA attributes for screen reader accessibility
+  - Wrap pagination controls in `<nav>` for proper landmark navigation
+  - Add `aria-live="polite"` and `aria-atomic="true"` to status text for page change announcements
+  - Add `navigation` to `PaginationLabels` for i18n customization of the nav aria-label
+
+- 9eb1306: fix(chart): escape HTML in tooltip series name and values
+
+  Escapes HTML entities in TimeseriesChart tooltip series names and values before rendering.
+
+- 4565baa: fix(combobox): make TriggerInput caret button clickable for Playwright tests
+- 4dfdc3f: fix(dropdown): pass children through when render prop is provided on DropdownMenu.Trigger
+- 98e3170: fix(Select): TypeScript inference with `strictNullChecks` and `renderValue`/`placeholder` interaction
+
+  **TypeScript fix:** Under `strictNullChecks`, using `value={objectOrNull}` would cause `T` to be inferred as `never`, making callbacks like `onValueChange` and `renderValue` unusable. This is now fixed.
+
+  **Runtime fix:** `renderValue` is now only called with non-null values. When value is null, the `placeholder` is shown instead. Previously, `renderValue` would receive `null` at runtime despite being typed as `(value: T) => ReactNode`.
+
+  ```tsx
+  // Recommended pattern
+  <Select
+    placeholder="Select..."
+    value={value}
+    onValueChange={setValue} // value is T | null (works with strictNullChecks)
+    renderValue={(v) => v.name} // v is T (non-null), no defensive coding needed
+  />
+  ```
+
+- 9c3cdbf: Fix sidebar collapsible content snapping shut instead of animating smoothly when closing.
+- 27bcd59: fix(table): align sticky column colors with compact header variant
+- a8adf02: fix(tokens): correct text-kumo-subtle dark mode value to provide visible contrast
+- 547c7fa: Updated the token value for `kumo-line` and `kumo-hairline` in dark mode so they are more visible.
+  - replace `kumo-line` usages with `kumo-hairline` across Kumo components and docs UI/content styles
+  - use `ring-kumo-line` for shadowed surfaces (for example combobox, dialog, select, dropdown, toast, and related surface wrappers)
+  - adjust theme token configuration and generated styles to support updated neutral/hairline appearance
+
+- 460a603: fix(a11y): add accessible labels to icon-only controls
+
 ## 1.18.0
 
 ### Minor Changes

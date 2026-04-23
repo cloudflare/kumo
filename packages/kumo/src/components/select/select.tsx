@@ -4,6 +4,7 @@ import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
+import { KUMO_INPUT_VARIANTS, type KumoInputSize } from "../input/input";
 import { SkeletonLine } from "../loader";
 import { Field, type FieldErrorMatch } from "../field/field";
 import {
@@ -11,12 +12,14 @@ import {
   type PortalContainer,
 } from "../../utils/portal-provider";
 
-/** Select variant definitions (currently empty, reserved for future additions). */
+/** Select variant definitions. */
 export const KUMO_SELECT_VARIANTS = {
-  // Select currently has no variant options but structure is ready for future additions
+  size: KUMO_INPUT_VARIANTS.size,
 } as const;
 
-export const KUMO_SELECT_DEFAULT_VARIANTS = {} as const;
+export const KUMO_SELECT_DEFAULT_VARIANTS = {
+  size: "base",
+} as const;
 
 /**
  * Select component styling metadata for Figma plugin code generation
@@ -27,7 +30,7 @@ export const KUMO_SELECT_STYLING = {
     height: 36, // h-9
     paddingX: 12, // px-3
     borderRadius: 8, // rounded-lg
-    background: "color-secondary",
+    background: "bg-kumo-elevated",
     text: "text-color-surface",
     ring: "color-border",
     fontSize: 16, // text-base
@@ -42,8 +45,8 @@ export const KUMO_SELECT_STYLING = {
     check: { name: "ph-check", size: 20 },
   },
   popup: {
-    background: "color-secondary",
-    ring: "color-border",
+    background: "bg-kumo-elevated",
+    ring: "border-kumo-line",
     borderRadius: 8, // rounded-lg
     padding: 6, // p-1.5
   },
@@ -57,15 +60,39 @@ export const KUMO_SELECT_STYLING = {
 } as const;
 
 // Derived types from KUMO_SELECT_VARIANTS
-export interface KumoSelectVariantsProps {}
+export type KumoSelectSize = keyof typeof KUMO_SELECT_VARIANTS.size;
 
-export function selectVariants(_props: KumoSelectVariantsProps = {}) {
+export interface KumoSelectVariantsProps {
+  /**
+   * Size of the select trigger. Matches Input component sizes.
+   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
+   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
+   * - `"base"` — Default size (h-9 / 36px)
+   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * @default "base"
+   */
+  size?: KumoSelectSize;
+}
+
+export function selectVariants({
+  size = KUMO_SELECT_DEFAULT_VARIANTS.size,
+}: KumoSelectVariantsProps = {}) {
   return cn(
-    buttonVariants(),
+    buttonVariants({ size }),
     "justify-between font-normal",
-    "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
+    "focus:opacity-100 focus:ring-kumo-focus/50 focus-visible:ring-inset *:in-focus:opacity-100",
   );
 }
+
+const triggerIconStyles: Record<
+  KumoInputSize,
+  { iconSize: number; className: string }
+> = {
+  xs: { iconSize: 12, className: "text-kumo-subtle" },
+  sm: { iconSize: 14, className: "text-kumo-subtle" },
+  base: { iconSize: 16, className: "text-kumo-subtle" },
+  lg: { iconSize: 18, className: "text-kumo-subtle" },
+};
 
 /**
  * Shape for items that carry extra metadata (disabled state, tooltip).
@@ -167,6 +194,17 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 > &
   KumoSelectVariantsProps & {
     multiple?: Multiple;
+    /**
+     * A function that returns a `ReactNode` to format the selected value.
+     * Only called when a value is selected — use `placeholder` for the empty state.
+     * @example
+     * ```tsx
+     * <Select
+     *   placeholder="Select a user..."
+     *   renderValue={(user) => user.name}
+     * />
+     * ```
+     */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
     className?: string;
     /**
@@ -239,6 +277,8 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 export interface SelectProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Size of the select trigger. Matches Input component sizes. */
+  size?: KumoSelectSize;
   /**
    * Label content for the select.
    * When provided, enables the Field wrapper with a visible label above the select.
@@ -311,6 +351,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   hideLabel,
   placeholder,
   loading,
+  size = KUMO_SELECT_DEFAULT_VARIANTS.size,
   labelTooltip,
   description,
   error,
@@ -350,9 +391,30 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // This fixes placeholder not showing with object map items
   const normalizedItems = props.items ? normalizeItems(props.items) : undefined;
 
-  // Auto-render children from items if children not provided
-  const renderedChildren =
-    children ?? (props.items ? renderOptionsFromItems(props.items) : null);
+  // Auto-render children from items if no explicit children provided
+  const renderedChildren = children
+    ? children
+    : props.items
+      ? renderOptionsFromItems(props.items)
+      : null;
+
+  // Wrap renderValue to handle null values properly:
+  // - When value is null, show placeholder (Base UI ignores placeholder when children fn provided)
+  // - When value is non-null, call user's renderValue
+  const valueChildrenFn = renderValue
+    ? (value: unknown) => {
+        if (value == null) {
+          // If no placeholder provided, return null to show nothing (same as no renderValue)
+          if (placeholder == null) {
+            return null;
+          }
+          return <span className="text-kumo-placeholder">{placeholder}</span>;
+        }
+        // Cast through `any` as a deliberate type boundary: Base UI passes `unknown`,
+        // but our renderValue expects the generic T (or T[] for multiple)
+        return renderValue(value as any);
+      }
+    : undefined;
 
   // Exclude Kumo-extended `items` from Base UI spread — we pass `normalizedItems` instead
   const { items: _items, ...baseProps } = props;
@@ -365,9 +427,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     >
       <SelectBase.Trigger
         className={cn(
-          buttonVariants(),
-          "justify-between font-normal",
-          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100",
+          selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -379,13 +439,21 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         ) : (
           <SelectBase.Value
             placeholder={placeholder}
-            className="min-w-0 truncate"
+            className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
           >
-            {renderValue}
+            {valueChildrenFn}
           </SelectBase.Value>
         )}
-        <SelectBase.Icon className="flex shrink-0 items-center">
-          <CaretUpDownIcon />
+        <SelectBase.Icon
+          className={cn(
+            "flex shrink-0 items-center",
+            triggerIconStyles[size].className,
+          )}
+        >
+          <CaretUpDownIcon
+            size={triggerIconStyles[size].iconSize}
+            className="fill-current"
+          />
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal container={container}>
@@ -394,7 +462,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             className={cn(
               "flex flex-col",
               "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
-              "rounded-lg shadow-lg ring ring-kumo-hairline",
+              "rounded-lg shadow-lg ring ring-kumo-line",
               "min-w-[calc(var(--anchor-width)+3px)] py-1.5",
             )}
           >
@@ -478,7 +546,9 @@ function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
       value={value}
       disabled={disabled}
       className={cn(
-        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint",
+        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base outline-none",
+        "focus-visible:z-50 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
+        "data-highlighted:bg-kumo-tint",
         "data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,
       )}
@@ -576,7 +646,7 @@ const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
   ({ className }, ref) => (
     <SelectBase.Separator
       ref={ref}
-      className={cn("-mx-1 my-1 h-px bg-kumo-line", className)}
+      className={cn("-mx-1 my-1 h-px bg-kumo-hairline", className)}
     />
   ),
 );

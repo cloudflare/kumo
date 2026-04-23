@@ -48,7 +48,7 @@ export const KUMO_BUTTON_VARIANTS = {
   variant: {
     primary: {
       classes:
-        "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
+        "bg-kumo-brand !text-white hover:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
       description: "High-emphasis button for primary actions",
     },
     secondary: {
@@ -66,7 +66,7 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
@@ -130,6 +130,7 @@ export function buttonVariants({
     // Base styles
     "group flex w-max shrink-0 items-center font-medium select-none",
     "border-0 shadow-xs",
+    "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
@@ -244,7 +245,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-hairline *:in-focus:opacity-100", // Focus styles
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -260,11 +260,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (title) {
-      return (
-        <Tooltip content={title} asChild>
-          {button}
-        </Tooltip>
-      );
+      return <Tooltip content={title} render={button} />;
     }
 
     return button;
