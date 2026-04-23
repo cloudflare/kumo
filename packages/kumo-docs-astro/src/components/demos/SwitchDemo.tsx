@@ -94,6 +94,43 @@ export function SwitchCustomIdDemo() {
   );
 }
 
+/** Shows a Switch.Group with a legend for grouping related switches */
+export function SwitchGroupDemo() {
+  return (
+    <Switch.Group legend="Notification settings">
+      <Switch.Item label="Email notifications" />
+      <Switch.Item label="SMS notifications" />
+      <Switch.Item label="Push notifications" />
+    </Switch.Group>
+  );
+}
+
+/** Shows Switch.Legend with sr-only to visually hide the legend while keeping it accessible, useful when a parent Field already provides a visible label */
+export function SwitchLegendSrOnlyDemo() {
+  return (
+    <Switch.Group>
+      <Switch.Legend className="sr-only">Notification settings</Switch.Legend>
+      <Switch.Item label="Email notifications" />
+      <Switch.Item label="SMS notifications" />
+      <Switch.Item label="Push notifications" />
+    </Switch.Group>
+  );
+}
+
+/** Shows Switch.Legend with custom styling for full control over legend presentation */
+export function SwitchLegendCustomDemo() {
+  return (
+    <Switch.Group>
+      <Switch.Legend className="text-sm font-normal text-kumo-subtle">
+        Notification settings
+      </Switch.Legend>
+      <Switch.Item label="Email notifications" />
+      <Switch.Item label="SMS notifications" />
+      <Switch.Item label="Push notifications" />
+    </Switch.Group>
+  );
+}
+
 /** All sizes comparison */
 export function SwitchSizesDemo() {
   return (

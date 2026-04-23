@@ -611,6 +611,20 @@ async function processComponent(
       let usageExamples: string[] | undefined;
       let renderElement: string | undefined;
 
+      // Inject additional props for sub-components (e.g., "InputGroup.Input")
+      const subAdditionalProps =
+        ADDITIONAL_COMPONENT_PROPS[`${config.name}.${subComp.name}`];
+      if (subAdditionalProps) {
+        for (const [propName, propSchema] of Object.entries(
+          subAdditionalProps,
+        )) {
+          subProps[propName] = {
+            ...subProps[propName],
+            ...propSchema,
+          };
+        }
+      }
+
       if (subComp.isPassThrough && subComp.baseComponent) {
         const passthroughDoc =
           PASSTHROUGH_COMPONENT_DOCS[subComp.baseComponent];

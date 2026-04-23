@@ -122,8 +122,48 @@ export type SwitchProps = Omit<
   transitioning?: boolean;
 };
 
+/**
+ * Switch group component props (with built-in Fieldset)
+ *
+ * Usage:
+ * ```tsx
+ * <Switch.Group
+ *   legend="Notification settings"
+ *   error="You must enable at least one notification type"
+ * >
+ *   <Switch.Item label="Email notifications" value="email" />
+ *   <Switch.Item label="SMS notifications" value="sms" />
+ * </Switch.Group>
+ * ```
+ */
+/**
+ * Props for Switch.Legend — a composable sub-component for labeling a Switch.Group.
+ *
+ * Place as a direct child of `<Switch.Group>` to provide a styled, accessible legend.
+ * Accepts `className` for full styling control (e.g. `className="sr-only"` to visually hide).
+ *
+ * @example
+ * ```tsx
+ * <Switch.Group>
+ *   <Switch.Legend className="sr-only">Notification settings</Switch.Legend>
+ *   <Switch.Item label="Email" value="email" />
+ * </Switch.Group>
+ * ```
+ */
+export interface SwitchLegendProps {
+  /** Legend content */
+  children: ReactNode;
+  /** Additional CSS classes (e.g. "sr-only" to visually hide the legend) */
+  className?: string;
+}
+
 export interface SwitchGroupProps {
-  legend: string;
+  /**
+   * Legend text for the group.
+   * For more control over legend styling, omit this prop and use `<Switch.Legend>` as a child instead.
+   */
+  legend?: string;
+  /** Child Switch.Item components (and optionally a Switch.Legend) */
   children: ReactNode;
   error?: string;
   description?: ReactNode;
@@ -411,6 +451,20 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
 SwitchItem.displayName = "Switch.Item";
 
+// Switch.Legend — composable legend sub-component for Switch.Group
+function SwitchLegend({ children, className }: SwitchLegendProps) {
+  return (
+    <Fieldset.Legend
+      className={cn("text-base font-medium text-kumo-default", className)}
+    >
+      {children}
+    </Fieldset.Legend>
+  );
+}
+
+SwitchLegend.displayName = "Switch.Legend";
+
+// Switch.Group with built-in Fieldset
 function SwitchGroup({
   legend,
   children,
@@ -423,15 +477,14 @@ function SwitchGroup({
   return (
     <SwitchGroupContext.Provider value={{ controlFirst }}>
       <Fieldset.Root
-        className={cn(
-          "flex flex-col gap-4 rounded-lg border border-kumo-hairline p-4",
-          className,
-        )}
+        className={cn("flex flex-col gap-4", className)}
         disabled={disabled}
       >
-        <Fieldset.Legend className="text-lg font-medium text-kumo-default">
-          {legend}
-        </Fieldset.Legend>
+        {legend && (
+          <Fieldset.Legend className="text-base font-medium text-kumo-default">
+            {legend}
+          </Fieldset.Legend>
+        )}
         <div className="flex flex-col gap-2">{children}</div>
         {error && <p className="text-sm text-kumo-danger">{error}</p>}
         {description && (
@@ -445,6 +498,7 @@ function SwitchGroup({
 export const Switch = Object.assign(SwitchBase, {
   Item: SwitchItem,
   Group: SwitchGroup,
+  Legend: SwitchLegend,
 });
 
 Switch.displayName = "Switch";

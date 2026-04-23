@@ -168,7 +168,7 @@ export function Tabs({
             value={tab.value}
             render={tab.render}
             className={cn(
-              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-kumo-hairline",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               isSegmented &&
                 "my-0.5 rounded-md px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
               isUnderline &&

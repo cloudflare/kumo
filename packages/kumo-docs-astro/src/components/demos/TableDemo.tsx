@@ -108,7 +108,7 @@ export function TableWithCheckboxDemo() {
               indeterminate={
                 selectedIds.size > 0 && selectedIds.size < rows.length
               }
-              onValueChange={toggleAll}
+              onCheckedChange={toggleAll}
               aria-label="Select all rows"
             />
             <Table.Head>Subject</Table.Head>
@@ -121,7 +121,7 @@ export function TableWithCheckboxDemo() {
             <Table.Row key={row.id}>
               <Table.CheckCell
                 checked={selectedIds.has(row.id)}
-                onValueChange={() => toggleRow(row.id)}
+                onCheckedChange={() => toggleRow(row.id)}
                 aria-label={`Select ${row.subject}`}
               />
               <Table.Cell>{row.subject}</Table.Cell>
@@ -194,7 +194,7 @@ export function TableSelectedRowDemo() {
               indeterminate={
                 selectedIds.size > 0 && selectedIds.size < rows.length
               }
-              onValueChange={toggleAll}
+              onCheckedChange={toggleAll}
               aria-label="Select all rows"
             />
             <Table.Head>Subject</Table.Head>
@@ -210,7 +210,7 @@ export function TableSelectedRowDemo() {
             >
               <Table.CheckCell
                 checked={selectedIds.has(row.id)}
-                onValueChange={() => toggleRow(row.id)}
+                onCheckedChange={() => toggleRow(row.id)}
                 aria-label={`Select ${row.subject}`}
               />
               <Table.Cell>{row.subject}</Table.Cell>
@@ -450,7 +450,7 @@ export function TableFullDemo() {
               indeterminate={
                 selectedIds.size > 0 && selectedIds.size < emailData.length
               }
-              onValueChange={toggleAll}
+              onCheckedChange={toggleAll}
               aria-label="Select all rows"
             />
             <Table.Head>Subject</Table.Head>
@@ -467,7 +467,7 @@ export function TableFullDemo() {
             >
               <Table.CheckCell
                 checked={selectedIds.has(row.id)}
-                onValueChange={() => toggleRow(row.id)}
+                onCheckedChange={() => toggleRow(row.id)}
                 aria-label={`Select ${row.subject}`}
               />
               <Table.Cell>

@@ -3,33 +3,24 @@
  * by index (e.g. the first series gets Blue, the second gets Violet, etc.).
  */
 enum ChartCategoricalLightColors {
-  Blue = "#086FFF",
-  Violet = "#CF7EE9",
-  Cyan = "#73CEE6",
-  Indigo = "#5B5FEF",
-  LightBlue = "#82B6FF",
-  Pink = "#F5609F",
-  Indigo3 = "#C2BDF3",
-  Violet2 = "#8D1EB1",
-  Violet3 = "#EBCAF6",
-  Indigo2 = "#7366E4",
+  Blue = "#4290F0",
+  Yellow = "#F5B647",
+  Pink = "#E8649D",
+  Purple = "#8D58EE",
+  Teal = "#50C3B6",
+  Orange = "#D37536",
 }
 
 /**
- * Categorical colors for dark mode — same hues as the light palette but with
- * `E6` alpha (90% opacity) appended to soften contrast on dark backgrounds.
+ * Categorical colors for dark mode
  */
 enum ChartCategoricalDarkColors {
-  Blue = "#086FFFE6",
-  Violet = "#CF7EE9E6",
-  Cyan = "#73CEE6E6",
-  Indigo = "#5B5FEFE6",
-  LightBlue = "#82B6FFE6",
-  Pink = "#F5609FE6",
-  Indigo3 = "#C2BDF3E6",
-  Violet2 = "#8D1EB1E6",
-  Violet3 = "#EBCAF6E6",
-  Indigo2 = "#7366E4E6",
+  Blue = "#4290F0",
+  Yellow = "#EEB720",
+  Pink = "#E8649D",
+  Purple = "#8D58EE",
+  Teal = "#50C3B6",
+  Orange = "#D37536",
 }
 
 /**
@@ -39,24 +30,45 @@ enum ChartCategoricalDarkColors {
 enum ChartSemanticLightColors {
   Attention = "#FC574A",
   Warning = "#F8A054",
-  Neutral = "#82B6FF",
-  NeutralLight = "#B9D6FF",
-  Disabled = "#B6B6B6",
-  DisabledLight = "#D9D9D9",
+  Success = "#00A63E",
+  Neutral = "#B9D6FF",
+  Disabled = "#CBCBCB",
+  Skeleton = "#DDDDDD",
 }
 
 /**
- * Semantic colors for dark mode — same meanings as the light palette but with
- * `E6` alpha (90% opacity) for dark backgrounds.
+ * Semantic colors for dark mode
  */
 enum ChartSemanticDarkColors {
-  Attention = "#FC574AE6",
-  Warning = "#F8A054E6",
-  Neutral = "#82B6FFE6",
-  NeutralLight = "#B9D6FFE6",
-  Disabled = "#B6B6B6E6",
-  DisabledLight = "#D9D9D9E6",
+  Attention = "#FC574A",
+  Warning = "#F8A054",
+  Success = "#00A63E",
+  Neutral = "#8EC5FF",
+  Disabled = "#878787",
+  Skeleton = "#5C5C5C",
 }
+
+export type ChartSemanticColorName =
+  | "Attention"
+  | "Warning"
+  | "Success"
+  | "Neutral"
+  | "Disabled"
+  | "Skeleton";
+
+/**
+ * Sequential color palettes for light mode with the colour in position #2 of the array as the base.
+ */
+const sequentialLight = {
+  blues: ["#E1EAF4", "#8EBCF6", "#4290F0", "#0E58B4", "#03254F"],
+};
+
+/**
+ * Sequential color palettes for dark mode. These are the reverse of the light mode palettes using the same base color (position 2).
+ */
+const sequentialDark = {
+  blues: ["#03254F", "#0E58B4", "#4290F0", "#A6BFDD", "#E1EAF4"],
+};
 
 /**
  * Ordered list of categorical colors for light mode, indexed by series position.
@@ -64,15 +76,11 @@ enum ChartSemanticDarkColors {
  */
 export const CHART_LIGHT_COLORS = [
   ChartCategoricalLightColors.Blue,
-  ChartCategoricalLightColors.Violet,
-  ChartCategoricalLightColors.Cyan,
-  ChartCategoricalLightColors.Indigo,
-  ChartCategoricalLightColors.LightBlue,
+  ChartCategoricalLightColors.Yellow,
   ChartCategoricalLightColors.Pink,
-  ChartCategoricalLightColors.Indigo3,
-  ChartCategoricalLightColors.Violet2,
-  ChartCategoricalLightColors.Violet3,
-  ChartCategoricalLightColors.Indigo2,
+  ChartCategoricalLightColors.Purple,
+  ChartCategoricalLightColors.Teal,
+  ChartCategoricalLightColors.Orange,
 ];
 
 /**
@@ -81,20 +89,16 @@ export const CHART_LIGHT_COLORS = [
  */
 export const CHART_DARK_COLORS = [
   ChartCategoricalDarkColors.Blue,
-  ChartCategoricalDarkColors.Violet,
-  ChartCategoricalDarkColors.Cyan,
-  ChartCategoricalDarkColors.Indigo,
-  ChartCategoricalDarkColors.LightBlue,
+  ChartCategoricalDarkColors.Yellow,
   ChartCategoricalDarkColors.Pink,
-  ChartCategoricalDarkColors.Indigo3,
-  ChartCategoricalDarkColors.Violet2,
-  ChartCategoricalDarkColors.Violet3,
-  ChartCategoricalDarkColors.Indigo2,
+  ChartCategoricalDarkColors.Purple,
+  ChartCategoricalDarkColors.Teal,
+  ChartCategoricalDarkColors.Orange,
 ];
 
 /**
  * Utilities for resolving Kumo chart colors by semantic name or series index.
- * Both functions accept an `isDarkMode` flag and return the appropriate hex color.
+ * All functions accept an `isDarkMode` flag and return the appropriate color string.
  */
 export namespace ChartPalette {
   /**
@@ -103,19 +107,13 @@ export namespace ChartPalette {
    * @example
    * ```ts
    * ChartPalette.semantic("Attention")           // "#FC574A" (light)
-   * ChartPalette.semantic("Warning", true)       // "#F8A054E6" (dark)
+   * ChartPalette.semantic("Warning", true)       // "#F8A054" (dark)
    * ```
    */
   export function semantic(
-    name:
-      | "Attention"
-      | "Warning"
-      | "Neutral"
-      | "NeutralLight"
-      | "Disabled"
-      | "DisabledLight",
+    name: ChartSemanticColorName,
     isDarkMode = false,
-  ) {
+  ): string {
     return isDarkMode
       ? ChartSemanticDarkColors[name]
       : ChartSemanticLightColors[name];
@@ -123,18 +121,36 @@ export namespace ChartPalette {
 
   /**
    * Returns the categorical color for a given series index.
-   * Wraps around via modulo when `index` exceeds the palette length (10 colors).
+   * Wraps around via modulo when `index` exceeds the palette length (6 colors).
    *
    * @example
    * ```ts
-   * ChartPalette.color(0)        // Blue (light)
-   * ChartPalette.color(0, true)  // Blue with E6 alpha (dark)
-   * ChartPalette.color(10)       // wraps back to Blue
+   * ChartPalette.categorical(0)        // Blue (light)
+   * ChartPalette.categorical(0, true)  // Blue (dark)
+   * ChartPalette.categorical(6)        // wraps back to Blue
    * ```
    */
-  export function color(index: number, isDarkMode = false) {
+  export function categorical(index: number, isDarkMode = false): string {
     return isDarkMode
       ? CHART_DARK_COLORS[index % CHART_DARK_COLORS.length]
       : CHART_LIGHT_COLORS[index % CHART_LIGHT_COLORS.length];
+  }
+
+  /**
+   * Returns all steps of a named sequential palette as an array.
+   *
+   * @example
+   * ```ts
+   * ChartPalette.sequential("blues")        // 5-step array (light)
+   * ChartPalette.sequential("blues", true)  // 5-step array (dark)
+   * ```
+   */
+  export function sequential(
+    palette: keyof typeof sequentialLight,
+    isDarkMode = false,
+  ): string[] {
+    return isDarkMode
+      ? [...sequentialDark[palette]]
+      : [...sequentialLight[palette]];
   }
 }

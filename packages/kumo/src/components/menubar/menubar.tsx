@@ -46,10 +46,9 @@ const MenuOption = ({
     <button
       aria-label={tooltip}
       className={cn(
-        "focus:inset-ring-focus relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-elevated first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-1 focus:outline-none focus-visible:z-1 focus-visible:inset-ring-[0.5]",
+        "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-3 focus:outline-none focus:ring-kumo-focus/50 focus-visible:z-3 focus-visible:ring-2 focus-visible:ring-kumo-brand",
         {
-          "z-2 bg-kumo-base shadow-xs transition-colors ring ring-kumo-line/40":
-            isActive === id,
+          "z-2 bg-kumo-base shadow-xs transition-colors": isActive === id,
         },
       )}
       onClick={onClick}
