@@ -62,6 +62,7 @@ import {
   ADDITIONAL_COMPONENT_PROPS,
   PROP_TYPE_OVERRIDES,
   COMPONENT_STYLING_METADATA,
+  SUB_COMPONENT_OVERRIDES,
 } from "./metadata.js";
 
 // External imports - demo examples from kumo-docs-astro
@@ -598,14 +599,21 @@ async function processComponent(
     }
   }
 
-  // Detect and process sub-components
+  // Merge SUB_COMPONENT_OVERRIDES after source detection.
+  // Detected entries win on name conflict so source-level patterns aren't masked.
   const detectedSubComponents = detectSubComponents(sourcePath);
+  const subComponentOverrides = SUB_COMPONENT_OVERRIDES[config.name] ?? [];
+  const detectedNames = new Set(detectedSubComponents.map((sc) => sc.name));
+  const mergedSubComponents = [
+    ...detectedSubComponents,
+    ...subComponentOverrides.filter((o) => !detectedNames.has(o.name)),
+  ];
   let subComponentSchemas: Record<string, SubComponentSchema> | undefined;
 
-  if (detectedSubComponents.length > 0) {
+  if (mergedSubComponents.length > 0) {
     subComponentSchemas = {};
 
-    for (const subComp of detectedSubComponents) {
+    for (const subComp of mergedSubComponents) {
       let subProps = extractSubComponentProps(sourcePath, subComp, CLI_FLAGS);
       let description = subComp.description;
       let usageExamples: string[] | undefined;

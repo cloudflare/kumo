@@ -8,7 +8,12 @@
  * - Styling metadata for Figma plugin
  */
 
-import type { PropSchema, PassthroughDoc, ComponentStyling } from "./types.js";
+import type {
+  PropSchema,
+  PassthroughDoc,
+  ComponentStyling,
+  SubComponentConfig,
+} from "./types.js";
 
 // =============================================================================
 // Pass-through Component Documentation
@@ -158,6 +163,66 @@ export const PASSTHROUGH_COMPONENT_DOCS: Record<string, PassthroughDoc> = {
 </Combobox.Collection>`,
     ],
   },
+
+  // Tooltip sub-components
+  "TooltipBase.Provider": {
+    description:
+      "Groups multiple tooltips so that after the first tooltip is shown, switching to another skips the open delay. Place once at your app root or layout.",
+    props: {
+      delay: {
+        type: "number",
+        description:
+          "How long to wait (ms) before opening a tooltip once the pointer enters the trigger.",
+        default: "600",
+      },
+      closeDelay: {
+        type: "number",
+        description: "How long to wait (ms) before closing a tooltip.",
+        default: "0",
+      },
+      timeout: {
+        type: "number",
+        description:
+          "Grace period (ms) during which a just-closed tooltip's delay is skipped when another tooltip opens.",
+        default: "400",
+      },
+    },
+    usageExamples: ["<TooltipProvider>\n  <App />\n</TooltipProvider>"],
+  },
+};
+
+// =============================================================================
+// Sub-Component Overrides
+// =============================================================================
+
+/**
+ * Manual sub-component entries that are merged into the registry alongside
+ * entries detected by `detectSubComponents()` in `sub-components.ts`.
+ *
+ * Use this when a component exposes a related API (e.g., a sibling named
+ * export like `TooltipProvider`) that we want documented as a sub-component
+ * (e.g., `Tooltip.Provider`) for the registry / docs, *without* changing the
+ * component's runtime shape (no `Object.assign`, no attached property).
+ *
+ * Detected sub-components take precedence over overrides with the same
+ * `name`, so a real source-level compound pattern will always win and
+ * prevent silent masking of detector regressions.
+ *
+ * Keyed by the parent component name (e.g., "Tooltip"). Values have the same
+ * shape as `detectSubComponents()` entries so they feed directly into the
+ * existing processing loop in `index.ts`.
+ */
+export const SUB_COMPONENT_OVERRIDES: Record<string, SubComponentConfig[]> = {
+  Tooltip: [
+    {
+      name: "Provider",
+      valueName: "TooltipProvider",
+      propsType: null,
+      description: "Provider sub-component (wraps TooltipBase)",
+      isPassThrough: true,
+      baseComponent: "TooltipBase.Provider",
+    },
+  ],
 };
 
 // =============================================================================

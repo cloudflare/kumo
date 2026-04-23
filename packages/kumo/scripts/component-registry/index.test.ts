@@ -943,3 +943,45 @@ interface GroupProps extends BaseProps {
     expect(props).toEqual({});
   });
 });
+
+describe("SUB_COMPONENT_OVERRIDES", () => {
+  it("declares a Tooltip.Provider entry that passes through to TooltipBase.Provider", async () => {
+    const { SUB_COMPONENT_OVERRIDES, PASSTHROUGH_COMPONENT_DOCS } =
+      await import("./metadata.js");
+
+    expect(SUB_COMPONENT_OVERRIDES.Tooltip).toBeDefined();
+    const tooltipOverrides = SUB_COMPONENT_OVERRIDES.Tooltip;
+    expect(tooltipOverrides).toHaveLength(1);
+
+    const provider = tooltipOverrides[0];
+    expect(provider.name).toBe("Provider");
+    expect(provider.valueName).toBe("TooltipProvider");
+    expect(provider.isPassThrough).toBe(true);
+    expect(provider.baseComponent).toBe("TooltipBase.Provider");
+    expect(provider.propsType).toBeNull();
+
+    // The baseComponent must resolve to a documented passthrough entry so the
+    // merge + lookup path in index.ts produces real docs, not an empty stub.
+    expect(
+      PASSTHROUGH_COMPONENT_DOCS[provider.baseComponent as string],
+    ).toBeDefined();
+  });
+
+  it("entries have the same shape as detectSubComponents() results", async () => {
+    const { SUB_COMPONENT_OVERRIDES } = await import("./metadata.js");
+
+    for (const overrides of Object.values(SUB_COMPONENT_OVERRIDES)) {
+      for (const entry of overrides) {
+        // Required fields of SubComponentConfig.
+        expect(typeof entry.name).toBe("string");
+        expect(typeof entry.valueName).toBe("string");
+        expect(typeof entry.description).toBe("string");
+        expect(typeof entry.isPassThrough).toBe("boolean");
+        // propsType may be a string or null.
+        expect(
+          entry.propsType === null || typeof entry.propsType === "string",
+        ).toBe(true);
+      }
+    }
+  });
+});
