@@ -449,6 +449,53 @@ describe("InputGroup", () => {
       const nestedLabels = container.querySelectorAll("label label");
       expect(nestedLabels.length).toBe(0);
     });
+
+    // Regression: <label> root propagates :hover to first labelable child.
+    it("container is a <div> element (not <label>) in individual focus mode", () => {
+      const { container } = render(
+        <InputGroup>
+          <InputGroup.Button variant="secondary" aria-label="First">
+            First
+          </InputGroup.Button>
+          <InputGroup.Button variant="secondary" aria-label="Prev">
+            Prev
+          </InputGroup.Button>
+          <InputGroup.Input aria-label="Page" />
+          <InputGroup.Button variant="secondary" aria-label="Next">
+            Next
+          </InputGroup.Button>
+          <InputGroup.Button variant="secondary" aria-label="Last">
+            Last
+          </InputGroup.Button>
+        </InputGroup>,
+      );
+      const group = container.querySelector(
+        "[data-slot='input-group']",
+      ) as HTMLElement;
+      expect(group).toBeTruthy();
+      expect(group.tagName).toBe("DIV");
+      expect(group.tagName).not.toBe("LABEL");
+      expect(group.getAttribute("data-focus-mode")).toBe("individual");
+    });
+
+    // Regression guard: hybrid mode must also not render root as <label>.
+    it("container is a <div> element (not <label>) in hybrid focus mode", () => {
+      const { container } = render(
+        <InputGroup>
+          <InputGroup.Addon>@</InputGroup.Addon>
+          <InputGroup.Input aria-label="Email" />
+          <InputGroup.Button variant="secondary" aria-label="Submit">
+            Go
+          </InputGroup.Button>
+        </InputGroup>,
+      );
+      const group = container.querySelector(
+        "[data-slot='input-group']",
+      ) as HTMLElement;
+      expect(group).toBeTruthy();
+      expect(group.tagName).toBe("DIV");
+      expect(group.getAttribute("data-focus-mode")).toBe("hybrid");
+    });
   });
 
   describe("Button", () => {
