@@ -56,12 +56,11 @@ export const KUMO_INPUT_GROUP_DEFAULT_VARIANTS = {
  * suffixes, and action buttons. Accepts Field props and wraps content in
  * Field when label is provided.
  *
- * The container element is **conditional** to avoid nested `<label>` elements:
- * - When `label` is provided, the container renders as a `<div>` because Field
- *   already provides a `<label>` with `htmlFor` that handles click-to-focus.
- * - When `label` is absent (standalone usage), the container renders as a
- *   native `<label>` so clicking anywhere focuses the wrapped input — no
- *   imperative JS needed.
+ * Renders as `<label>` only in standalone container mode (single input, no
+ * sibling buttons) so clicking empty space focuses the input. Otherwise
+ * renders as `<div>` to avoid nested `<label>` (when Field provides one) or
+ * the browser's `:hover` propagation from `<label>` to its first labelable
+ * descendant (when multiple labelable controls are siblings).
  *
  * @note Do not wrap InputGroup inside an external Field without using the `label` prop —
  * this creates invalid nested `<label>` elements. Use InputGroup's own `label` prop instead.
@@ -267,6 +266,8 @@ const Root = forwardRef<
     }
 
     // Container / Individual mode (non-hybrid)
+    // Use <label> only when there's exactly one labelable descendant; otherwise <label> would propagate :hover to its first labelable descendant.
+    const useLabelContainer = !label && focusMode === "container";
     const container = (
       <InputGroupContext.Provider value={contextValue}>
         {/* When label is set, use <div> to avoid nested <label> (Field provides one).
@@ -287,8 +288,8 @@ const Root = forwardRef<
             />
             {children}
           </div>
-        ) : (
-          // Standalone (no label): native <label> wraps everything for click-to-focus
+        ) : useLabelContainer ? (
+          // Standalone container mode: <label> enables click-to-focus on empty space.
           <label
             ref={forwardedRef as React.Ref<HTMLLabelElement>}
             {...dataProps}
@@ -297,6 +298,16 @@ const Root = forwardRef<
           >
             {children}
           </label>
+        ) : (
+          // Individual mode: <div> avoids :hover propagating to the first labelable sibling.
+          <div
+            ref={forwardedRef as React.Ref<HTMLDivElement>}
+            {...dataProps}
+            className={containerClassName}
+            {...rest}
+          >
+            {children}
+          </div>
         )}
       </InputGroupContext.Provider>
     );
