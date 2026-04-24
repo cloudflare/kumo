@@ -140,6 +140,9 @@ export function TimeseriesChart({
   ariaDescription,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
+  // Tracks which series the user is hovering over so the tooltip formatter
+  // can dim the rows of non-hovered series (mirrors the bar emphasis dimming).
+  const hoveredSeriesRef = useRef<string | null>(null);
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
 
@@ -262,6 +265,8 @@ export function TimeseriesChart({
               ? `<div style="font-weight:600;margin-bottom:4px;">${echarts.format.encodeHTML(formatTimestamp(ts))}</div>`
               : "";
 
+          const hovered = hoveredSeriesRef.current;
+
           const rows = filteredParams
             .map((param: any) => {
               const value = param?.value?.[1];
@@ -270,9 +275,13 @@ export function TimeseriesChart({
                 ? echarts.format.encodeHTML(String(formatFn(value)))
                 : echarts.format.encodeHTML(String(value));
 
-              return `${param.marker} ${echarts.format.encodeHTML(param.seriesName)}: <strong>${formattedValue}</strong>`;
+              const isDimmed =
+                hovered != null && param.seriesName !== hovered;
+              const style = isDimmed ? ' style="opacity:0.5"' : "";
+
+              return `<div${style}>${param.marker} ${echarts.format.encodeHTML(param.seriesName)}: <strong>${formattedValue}</strong></div>`;
             })
-            .join("<br/>");
+            .join("");
 
           return `${header}${rows}`;
         },
@@ -340,15 +349,26 @@ export function TimeseriesChart({
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
-    if (!onTimeRangeChange) return {};
+    const handlers: Partial<ChartEvents> = {};
 
-    return {
-      brushend: (params) => {
+    if (onTimeRangeChange) {
+      handlers.brushend = (params) => {
         const range = params.areas[0].coordRange;
         onTimeRangeChange(range[0], range[1]);
         chartRef.current?.dispatchAction({ type: "brush", areas: [] });
-      },
+      };
+    }
+
+    // Track which series is hovered so the tooltip formatter can dim
+    // non-hovered rows, matching the emphasis dimming on the chart.
+    handlers.mouseover = (params) => {
+      hoveredSeriesRef.current = params.seriesName ?? null;
     };
+    handlers.mouseout = () => {
+      hoveredSeriesRef.current = null;
+    };
+
+    return handlers;
   }, [onTimeRangeChange]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
