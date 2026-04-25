@@ -426,10 +426,14 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
               }
             >
               <div
+                data-state="expanded"
+                data-side={side}
+                data-variant={variant}
+                data-collapsible={collapsible}
                 data-sidebar="sidebar"
                 data-mobile="true"
                 className={cn(
-                  "flex h-full w-full flex-col bg-kumo-base text-kumo-default",
+                  "group/sidebar flex h-full w-full flex-col bg-kumo-base text-kumo-default",
                   className,
                 )}
               >
