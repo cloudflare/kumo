@@ -172,10 +172,6 @@ export interface CommandPaletteInputProps
     InputHTMLAttributes<HTMLInputElement>,
     "children" | "defaultValue" | "defaultChecked" | "color"
   > {
-  autoFocus?: boolean;
-  placeholder?: string;
-  className?: string;
-  onKeyDown?: (e: React.KeyboardEvent) => void;
   /** Optional leading content (e.g., back button) */
   leading?: ReactNode;
   /** Optional trailing content (e.g., Esc button) */

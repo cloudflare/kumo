@@ -737,7 +737,7 @@ function PanelInput({
   const { onClose } = useContext(DialogContext);
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       // Let consumer handle first (e.g., for custom Escape/Backspace behavior)
       onKeyDownProp?.(e);
       if (e.defaultPrevented) return;
