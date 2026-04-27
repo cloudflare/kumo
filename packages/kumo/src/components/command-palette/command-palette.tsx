@@ -25,6 +25,7 @@ import {
 import type {
   HighlightRange,
   CommandPaletteRootProps,
+  CommandPaletteInputProps,
   CommandPaletteListProps,
   CommandPaletteGroupProps,
   CommandPaletteGroupLabelProps,
@@ -731,21 +732,12 @@ function PanelInput({
   leading,
   trailing,
   ...props
-}: {
-  autoFocus?: boolean;
-  placeholder?: string;
-  className?: string;
-  onKeyDown?: (e: React.KeyboardEvent) => void;
-  /** Optional leading content (e.g., back button) */
-  leading?: React.ReactNode;
-  /** Optional trailing content (e.g., Esc button) */
-  trailing?: React.ReactNode;
-}) {
+}: CommandPaletteInputProps) {
   const { onInputKeyDown } = useContext(PanelContext);
   const { onClose } = useContext(DialogContext);
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       // Let consumer handle first (e.g., for custom Escape/Backspace behavior)
       onKeyDownProp?.(e);
       if (e.defaultPrevented) return;

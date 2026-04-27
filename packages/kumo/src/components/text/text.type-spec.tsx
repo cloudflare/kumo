@@ -42,6 +42,21 @@ const _error = <Text variant="error">Broken</Text>;
 const _mono = <Text variant="mono">console.log()</Text>;
 const _monoSecondary = <Text variant="mono-secondary">comment</Text>;
 
+// Non-standard text elements — `as` accepts definition list, label, pre, code, etc.
+const _dt = <Text as="dt">Term</Text>;
+const _dd = <Text as="dd">Definition</Text>;
+const _label = <Text as="label">Field label</Text>;
+const _code = <Text variant="mono" as="code">const x = 1</Text>;
+const _pre = <Text variant="mono" as="pre">preformatted</Text>;
+const _li = <Text as="li">List item</Text>;
+const _figcaption = <Text variant="secondary" as="figcaption">Caption</Text>;
+const _legend = <Text as="legend">Fieldset legend</Text>;
+const _em = <Text as="em">Emphasized</Text>;
+const _strong = <Text as="strong">Important</Text>;
+const _small = <Text variant="secondary" as="small">Fine print</Text>;
+const _time = <Text as="time">2026-04-27</Text>;
+const _headingAsLabel = <Text variant="heading2" as="label">Form heading</Text>;
+
 // ---------------------------------------------------------------------------
 // Negative cases — these MUST NOT compile. The `@ts-expect-error` directive
 // asserts that tsc produces an error on the following line; if it doesn't,
@@ -75,6 +90,19 @@ export const __typeSpec = {
   _error,
   _mono,
   _monoSecondary,
+  _dt,
+  _dd,
+  _label,
+  _code,
+  _pre,
+  _li,
+  _figcaption,
+  _legend,
+  _em,
+  _strong,
+  _small,
+  _time,
+  _headingAsLabel,
   _missingAsH1,
   _missingAsH2,
   _missingAsH3,
