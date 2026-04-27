@@ -148,7 +148,20 @@ export type TextElement =
   | "h5"
   | "h6"
   | "p"
-  | "span";
+  | "span"
+  | "label"
+  | "dt"
+  | "dd"
+  | "li"
+  | "figcaption"
+  | "legend"
+  | "pre"
+  | "code"
+  | "em"
+  | "strong"
+  | "small"
+  | "abbr"
+  | "time";
 
 type BaseTextProps = Omit<
   ComponentPropsWithoutRef<"span">,
@@ -238,7 +251,10 @@ export interface TextProps {
   /** Whether to truncate overflowing text with an ellipsis. Adds `truncate min-w-0` classes. */
   truncate?: boolean;
   /**
-   * The HTML element to render (`"h1"`–`"h6"`, `"p"`, or `"span"`).
+   * The HTML element to render. Accepts headings (`"h1"`–`"h6"`), block text
+   * (`"p"`, `"pre"`), inline text (`"span"`, `"code"`, `"em"`, `"strong"`,
+   * `"small"`, `"abbr"`, `"time"`), form-related (`"label"`, `"legend"`),
+   * list/definition (`"dt"`, `"dd"`, `"li"`), and `"figcaption"`.
    *
    * - **Required** for heading variants (`"heading1"`, `"heading2"`,
    *   `"heading3"`) — pick the element that reflects this text's place in
@@ -276,7 +292,7 @@ function _Text<Variant extends TextVariant = "body">(
     as,
     ...props
   }: TextPropsInternal<Variant>,
-  ref: ForwardedRef<HTMLHeadingElement>,
+  ref: ForwardedRef<HTMLElement>,
 ) {
   const isCopy = ["body", "secondary", "success", "error"].includes(variant);
   const isMono = ["mono", "mono-secondary"].includes(variant);
@@ -294,7 +310,10 @@ function _Text<Variant extends TextVariant = "body">(
 
   return (
     <Component
-      ref={ref}
+      // The dynamic `Component` tag creates an impossible intersection of ref
+      // types across all TextElement members. We widen to the common base
+      // (HTMLElement) which is safe — all text elements extend HTMLElement.
+      ref={ref as React.RefCallback<HTMLElement>}
       className={cn(
         "text-kumo-default",
         KUMO_TEXT_VARIANTS.variant[variant].classes,
