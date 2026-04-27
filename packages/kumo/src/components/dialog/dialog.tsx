@@ -265,6 +265,9 @@ export type DialogRootProps = BaseDialogRootProps & {
    * - Confirmation dialogs requiring explicit user acknowledgment
    * - Actions that cannot be undone
    *
+   * Note: Do not include a header close button (`Dialog.Close`) in `alertdialog` — users must
+   * respond via explicit action buttons (e.g. confirm/cancel) in the footer.
+   *
    * @default "dialog"
    */
   role?: KumoDialogRole;
