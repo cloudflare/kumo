@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, InputHTMLAttributes } from "react";
 import type { PortalContainer } from "../../utils/portal-provider";
 
 /** A single highlight range within a string [startIndex, endIndex] (inclusive) */
@@ -159,4 +159,21 @@ export interface CommandPaletteResultItemProps<T = unknown> {
   external?: boolean;
   /** Whether this item is non-interactive (no hover/highlight) */
   nonInteractive?: boolean;
+}
+
+/**
+ * Props for the CommandPalette.Input component - search input inside the palette.
+ *
+ * Extends standard HTML input attributes so you can pass props like
+ * `autoComplete`, `autoCorrect`, `autoCapitalize`, `spellCheck`, `data-*`, etc.
+ */
+export interface CommandPaletteInputProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "children" | "defaultValue" | "defaultChecked" | "color"
+  > {
+  /** Optional leading content (e.g., back button) */
+  leading?: ReactNode;
+  /** Optional trailing content (e.g., Esc button) */
+  trailing?: ReactNode;
 }

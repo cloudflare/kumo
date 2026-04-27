@@ -37,6 +37,40 @@ describe("Text", () => {
     expect(container.querySelector("h2")).toBeNull();
   });
 
+  it("renders as <dt> when as='dt'", () => {
+    const { container } = render(<Text as="dt">Term</Text>);
+    expect(container.querySelector("dt")).toBeTruthy();
+    expect(container.querySelector("p")).toBeNull();
+  });
+
+  it("renders as <dd> when as='dd'", () => {
+    const { container } = render(<Text as="dd">Definition</Text>);
+    expect(container.querySelector("dd")).toBeTruthy();
+  });
+
+  it("renders as <label> when as='label'", () => {
+    const { container } = render(<Text as="label">Label</Text>);
+    expect(container.querySelector("label")).toBeTruthy();
+  });
+
+  it("renders as <code> when as='code'", () => {
+    const { container } = render(
+      <Text variant="mono" as="code">
+        const x = 1
+      </Text>,
+    );
+    expect(container.querySelector("code")).toBeTruthy();
+  });
+
+  it("renders as <pre> when as='pre'", () => {
+    const { container } = render(
+      <Text variant="mono" as="pre">
+        preformatted
+      </Text>,
+    );
+    expect(container.querySelector("pre")).toBeTruthy();
+  });
+
   // Type-level enforcement of the required `as` prop for heading variants
   // lives in `text.type-spec.tsx`. That file is included in the regular
   // tsconfig glob, so `pnpm typecheck` evaluates every `@ts-expect-error`

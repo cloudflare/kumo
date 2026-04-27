@@ -172,6 +172,7 @@ export {
   KUMO_COMMAND_PALETTE_VARIANTS,
   KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS,
   type CommandPaletteRootProps,
+  type CommandPaletteInputProps,
   type CommandPaletteItemProps,
   type CommandPaletteResultItemProps,
   type CommandPaletteFooterProps,
