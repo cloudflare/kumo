@@ -141,8 +141,15 @@ export function TimeseriesChart({
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   // Tracks which series the user is hovering over so the tooltip formatter
-  // can dim the rows of non-hovered series (mirrors the bar emphasis dimming).
+  // can dim the rows of non-hovered series (mirrors the emphasis dimming).
+  // Updated via the updateAxisPointer event, which fires reliably for
+  // axis-triggered tooltips regardless of chart type.
   const hoveredSeriesRef = useRef<string | null>(null);
+  // Stable ref to the tooltip value formatter so the dangerousHtmlFormatter
+  // closure (captured by useMemo) always calls the latest function without
+  // needing to be a useMemo dependency.
+  const tooltipValueFormatRef = useRef(tooltipValueFormat ?? yAxisTickLabelFormat);
+  tooltipValueFormatRef.current = tooltipValueFormat ?? yAxisTickLabelFormat;
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
 
@@ -266,11 +273,11 @@ export function TimeseriesChart({
               : "";
 
           const hovered = hoveredSeriesRef.current;
+          const formatFn = tooltipValueFormatRef.current;
 
           const rows = filteredParams
             .map((param: any) => {
               const value = param?.value?.[1];
-              const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
               const formattedValue = formatFn
                 ? echarts.format.encodeHTML(String(formatFn(value)))
                 : echarts.format.encodeHTML(String(value));
@@ -336,10 +343,8 @@ export function TimeseriesChart({
     xAxisTickCount,
     xAxisTickFormat,
     yAxisTickFormat,
-    yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
-    tooltipValueFormat,
     incompleteBefore,
     incompleteAfter,
     type,
@@ -359,13 +364,33 @@ export function TimeseriesChart({
       };
     }
 
-    // Track which series is hovered so the tooltip formatter can dim
-    // non-hovered rows, matching the emphasis dimming on the chart.
-    handlers.mouseover = (params) => {
-      hoveredSeriesRef.current = params.seriesName ?? null;
+    // Use updateAxisPointer to track which series is closest to the
+    // pointer. This fires reliably for axis-triggered tooltips (unlike
+    // mouseover which requires hovering directly on a graphical element).
+    // We dispatch highlight/downplay actions so the chart emphasis and
+    // the tooltip dimming stay in sync.
+    handlers.updateAxisPointer = (params) => {
+      const chart = chartRef.current;
+      if (!chart) return;
+
+      const seriesIndex = params.seriesIndex;
+      if (seriesIndex != null) {
+        const option = chart.getOption() as EChartsOption;
+        const series = (option.series as SeriesOption[])?.[seriesIndex];
+        const name =
+          series && "name" in series ? (series.name as string) : null;
+
+        if (name && name !== hoveredSeriesRef.current) {
+          hoveredSeriesRef.current = name;
+          chart.dispatchAction({ type: "highlight", seriesName: name });
+        }
+      }
     };
-    handlers.mouseout = () => {
+
+    // Clear hover state when the pointer leaves the chart entirely.
+    handlers.globalout = () => {
       hoveredSeriesRef.current = null;
+      chartRef.current?.dispatchAction({ type: "downplay" });
     };
 
     return handlers;
