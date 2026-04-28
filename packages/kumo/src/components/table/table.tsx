@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils";
-import { Checkbox, type CheckboxChangeEventDetails } from "../checkbox";
+import { Checkbox, CheckboxChangeEventDetails } from "../checkbox";
+import { ArrowDownIcon, CaretUpDownIcon } from "@phosphor-icons/react";
 
 /** Table layout and row variant definitions mapping names to their Tailwind classes. */
 export const KUMO_TABLE_VARIANTS = {
@@ -49,7 +50,7 @@ export type KumoTableStickyColumn = keyof typeof KUMO_TABLE_VARIANTS.sticky;
  *   - `z-1` — sticky body cells (`<td>`)
  *   - `z-2` — sticky header cells (`<th>`) so they sit above sticky body cells
  *
- * Header cells use `:has()` to detect if they're in a compact header (which has
+ * Header cells use `:has()` to detect if they're in a layer header (which has
  * `bg-kumo-elevated`) and adjust both the background and gradient fade colors.
  */
 const stickyColumnClasses = (
@@ -73,8 +74,8 @@ const stickyColumnClasses = (
     return cn(base, z, "bg-kumo-base", fadeBase, fadePosition, fade);
   }
 
-  // Header cells: use kumo-base by default, kumo-elevated when in compact header
-  // The compact header applies a data attribute we can target with :has()
+  // Header cells: use kumo-base by default, kumo-elevated when in layer header
+  // The layer header applies a data attribute we can target with :has()
   const bg = "bg-kumo-base group-data-[compact]/header:bg-kumo-elevated";
   const fade =
     side === "right"
@@ -123,8 +124,17 @@ const TableRoot = forwardRef<
      * @default "auto"
      */
     layout?: KumoTableLayout;
+    variant?: "default" | "layer";
   }
->(({ layout = "auto", ...props }, ref) => {
+>(({ layout = "auto", variant, ...props }, ref) => {
+  const layerVariantClassName = cn(
+    "bg-kumo-elevated [&_tbody]:bg-kumo-base",
+    "[&_tbody]:rounded-lg [&_tbody]:ring-1 [&_tbody]:ring-kumo-line [&_tbody]:overflow-clip",
+    "[&_td]:overflow-clip",
+    "[&_tr:first-child_td:first-child]:rounded-tl-lg [&_tr:first-child_td:last-child]:rounded-tr-lg",
+    "[&_th]:py-2.5 [&_th]:font-medium [&_th]:bg-transparent [&_th]:border-b-0 [&_th]:text-sm",
+  );
+
   const className = cn(
     "isolate w-full", // isolate creates a stacking context so z-0/z-1/z-2 never leak out
     KUMO_TABLE_VARIANTS.layout[layout].classes,
@@ -133,15 +143,26 @@ const TableRoot = forwardRef<
     "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold [&_th]:text-base", // Header styles
     "[&_th]:bg-kumo-base", // Header background color
     "text-base text-left text-kumo-default",
+    variant === "layer" && layerVariantClassName,
     props.className,
   );
 
-  return <table ref={ref} {...props} className={className} />;
+  return (
+    <table
+      ref={ref}
+      {...props}
+      className={className}
+      data-table-variant={variant}
+    />
+  );
 });
 
 const TableHeader = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement> & {
+    /**
+     * @deprecated Use `variant="layer"` on `Table` instead.
+     */
     variant?: "default" | "compact";
     /**
      * Make the header row stick to the top of the scroll container.
@@ -253,6 +274,7 @@ const TableResizeHandle = forwardRef<
         "absolute top-0 right-0", // Position the handle
         "m-0 bg-kumo-base p-0", // Override the stratus button styles
         "focus-visible:ring-2 focus-visible:ring-kumo-brand", // Consistent keyboard focus styling
+        props.className,
       )}
     >
       <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
@@ -372,6 +394,26 @@ const TableCheckHead = forwardRef<
   },
 );
 
+type TableSortDirection = false | "asc" | "desc";
+
+const TableSortIcon = ({ direction }: { direction: TableSortDirection }) => {
+  if (!direction)
+    return (
+      <CaretUpDownIcon size={12} className="text-kumo-inactive" weight="bold" />
+    );
+
+  return (
+    <ArrowDownIcon
+      size={12}
+      weight="bold"
+      className={cn(
+        "text-kumo-inactive transition duration-200 ease-in-out transform",
+        direction === "asc" ? "" : "rotate-180",
+      )}
+    />
+  );
+};
+
 TableRoot.displayName = "Table";
 TableBody.displayName = "Table.Body";
 TableHead.displayName = "Table.Head";
@@ -382,6 +424,7 @@ TableHeader.displayName = "Table.Header";
 TableResizeHandle.displayName = "Table.ResizeHandle";
 TableCheckCell.displayName = "Table.CheckCell";
 TableCheckHead.displayName = "Table.CheckHead";
+TableSortIcon.displayName = "Table.SortIcon";
 
 /**
  * Table — semantic HTML table with styled rows, cells, and selection support.
@@ -419,4 +462,5 @@ export const Table = Object.assign(TableRoot, {
   CheckHead: TableCheckHead,
   Footer: TableFooter,
   ResizeHandle: TableResizeHandle,
+  SortIcon: TableSortIcon,
 });

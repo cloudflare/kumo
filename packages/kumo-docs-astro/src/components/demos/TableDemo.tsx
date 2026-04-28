@@ -14,6 +14,8 @@ import {
   Trash,
 } from "@phosphor-icons/react";
 
+// Additional imports for resize and sort demo
+
 // Sample data for demos
 const emailData = [
   {
@@ -138,8 +140,8 @@ export function TableWithCheckboxDemo() {
 export function TableWithCompactHeaderDemo() {
   return (
     <LayerCard className="p-0">
-      <Table>
-        <Table.Header variant="compact">
+      <Table variant="layer" className="text-sm">
+        <Table.Header>
           <Table.Row>
             <Table.Head>Subject</Table.Head>
             <Table.Head>From</Table.Head>
@@ -255,15 +257,13 @@ export function TableFixedLayoutDemo() {
 }
 
 /**
- * Demonstrates a compact header combined with sticky columns. This combination
- * may exhibit visual inconsistencies between the compact header background
- * (`bg-kumo-elevated`) and the sticky cell background (`bg-kumo-base`).
+ * Demonstrates a layer header combined with sticky columns.
  */
 export function TableCompactStickyDemo() {
   return (
     <LayerCard className="w-full max-w-md overflow-x-auto p-0">
-      <Table>
-        <Table.Header variant="compact">
+      <Table variant="layer">
+        <Table.Header>
           <Table.Row>
             <Table.Head>Subject</Table.Head>
             <Table.Head>From</Table.Head>
@@ -280,12 +280,8 @@ export function TableCompactStickyDemo() {
               <Table.Cell className="whitespace-nowrap">
                 {row.subject}
               </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.from}
-              </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.date}
-              </Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.from}</Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.date}</Table.Cell>
               <Table.Cell className="whitespace-nowrap">
                 {row.tags ? (
                   <div className="inline-flex gap-1">
@@ -358,12 +354,8 @@ export function TableStickyColumnDemo() {
               <Table.Cell className="whitespace-nowrap">
                 {row.subject}
               </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.from}
-              </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.date}
-              </Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.from}</Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.date}</Table.Cell>
               <Table.Cell className="whitespace-nowrap">
                 {row.tags ? (
                   <div className="inline-flex gap-1">
@@ -515,6 +507,64 @@ export function TableFullDemo() {
                   </DropdownMenu.Content>
                 </DropdownMenu>
               </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+    </LayerCard>
+  );
+}
+
+/**
+ * Demonstrates resize handles and sort icons in table headers.
+ * Visual only — no actual resize or sort logic.
+ */
+export function TableResizeAndSortDemo() {
+  return (
+    <LayerCard className="w-full overflow-x-auto p-0">
+      <Table layout="fixed">
+        <colgroup>
+          <col style={{ width: "40%" }} />
+          <col style={{ width: "30%" }} />
+          <col style={{ width: "30%" }} />
+        </colgroup>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head>
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  Subject
+                  <Table.SortIcon direction="asc" />
+                </span>
+                <Table.ResizeHandle />
+              </div>
+            </Table.Head>
+            <Table.Head>
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  From
+                  <Table.SortIcon direction={false} />
+                </span>
+                <Table.ResizeHandle />
+              </div>
+            </Table.Head>
+            <Table.Head>
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  Date
+                  <Table.SortIcon direction="desc" />
+                </span>
+                <Table.ResizeHandle />
+              </div>
+            </Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {emailData.slice(0, 3).map((row) => (
+            <Table.Row key={row.id}>
+              <Table.Cell>{row.subject}</Table.Cell>
+              <Table.Cell>{row.from}</Table.Cell>
+              <Table.Cell>{row.date}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

@@ -1,0 +1,111 @@
+
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "TanStack Table"
+description: "A powerful data table component built on TanStack Table with support for sorting, filtering, pagination, resizable columns, and expandable rows."
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TanstackBasicDemo,
+  TanstackLoadingDemo,
+  TanstackResizableDemo,
+  TanstackResizableFillerDemo,
+  TanstackColumnFilterDemo,
+  TanstackClientPaginationDemo,
+  TanstackSortingDemo,
+  TanstackActionsDemo,
+  TanstackSubRowDemo,
+  TanstackExpandCustomDemo,
+  TanstackSelectionDemo
+} from "~/components/demos/TanstackTableDemo";
+
+## Basic Usage
+
+Get started with a minimal data table using the TanStack Table boilerplate. This example shows the essential configuration including column definitions and row data rendering.
+
+<ComponentExample demo="TanstackBasicDemo">
+  <TanstackBasicDemo client:visible />
+</ComponentExample>
+
+## Loading State
+
+Display a loading skeleton while data is being fetched. Use the `LoadingTable` component to show placeholder rows during async data loading.
+
+<ComponentExample demo="TanstackLoadingDemo">
+  <TanstackLoadingDemo client:visible />
+</ComponentExample>
+
+## Resizable Columns
+
+Enable column resizing by setting `enableColumnResizing: true` in the table options. Users can drag column borders to adjust widths. Refer to the [TanStack column sizing guide](https://tanstack.com/table/v8/docs/guide/column-sizing) for advanced configuration options.
+
+<ComponentExample demo="TanstackResizableDemo">
+  <TanstackResizableDemo client:visible />
+</ComponentExample>
+
+For a smoother resizing experience, add a filler column that absorbs excess space. Configure `minSize` and `size` on columns to control their resizing behavior.
+
+<ComponentExample demo="TanstackResizableFillerDemo">
+  <TanstackResizableFillerDemo client:visible />
+</ComponentExample>
+
+## Column Filtering
+
+Add filter inputs to individual columns to let users narrow down data. See the [TanStack filtering guide](https://tanstack.com/table/v8/docs/guide/column-filtering) for filter function customization.
+
+<ComponentExample demo="TanstackColumnFilterDemo">
+  <TanstackColumnFilterDemo client:visible />
+</ComponentExample>
+
+## Client-side Pagination
+
+Split large datasets into pages with built-in pagination controls. Configure page size and navigation options. Learn more in the [TanStack pagination guide](https://tanstack.com/table/v8/docs/guide/pagination).
+
+<ComponentExample demo="TanstackClientPaginationDemo">
+  <TanstackClientPaginationDemo client:visible />
+</ComponentExample>
+
+## Sorting
+
+Enable click-to-sort on column headers. Supports multi-column sorting and custom sort functions. Check the [TanStack sorting guide](https://tanstack.com/table/v8/docs/guide/sorting) for implementation details.
+
+<ComponentExample demo="TanstackSortingDemo">
+  <TanstackSortingDemo client:visible />
+</ComponentExample>
+
+## Actions Column
+
+Add an actions column with buttons or dropdowns for row-level operations like edit, delete, or view details.
+
+<ComponentExample demo="TanstackActionsDemo">
+  <TanstackActionsDemo client:visible />
+</ComponentExample>
+
+
+## Expandable Subrows
+
+Display hierarchical data with expandable rows. Click the chevron to reveal nested subrow information.
+
+<ComponentExample demo="TanstackSubRowDemo">
+  <TanstackSubRowDemo client:visible />
+</ComponentExample>
+
+## Custom Expand Component
+
+Replace the default subrow with a fully custom component when expanding a row. Useful for displaying detailed views, forms, or related data.
+
+<ComponentExample demo="TanstackExpandCustomDemo">
+  <TanstackExpandCustomDemo client:visible />
+</ComponentExample>
+
+## Selection
+
+Enable row selection with checkboxes for bulk operations. Access selected rows via the table state to perform actions like delete, export, or bulk edit on multiple items at once. See the [TanStack row selection guide](https://tanstack.com/table/v8/docs/guide/row-selection) for implementation details.
+
+<ComponentExample demo="TanstackSelectionDemo">
+  <TanstackSelectionDemo client:visible />
+</ComponentExample>

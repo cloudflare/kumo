@@ -17,6 +17,7 @@ import {
   TableStickyColumnDemo,
   TableCompactStickyDemo,
   TableFullDemo,
+  TableResizeAndSortDemo,
 } from "~/components/demos/TableDemo";
 
 {/* Hero Demo */}
@@ -121,10 +122,11 @@ export default function Example() {
   <TableWithCheckboxDemo client:visible />
 </ComponentExample>
 
-### Compact Header
+### Layer Header
 
 <p>
-  Use `variant="compact"` on `Table.Header` for a more condensed header style.
+  Use `variant="layer"` on `Table` for a more condensed header style.{" "}
+  <code>variant="compact"</code> on <code>Table.Header</code> is deprecated.
 </p>
 <ComponentExample demo="TableWithCompactHeaderDemo">
   <TableWithCompactHeaderDemo client:visible />
@@ -159,11 +161,22 @@ export default function Example() {
   <TableStickyColumnDemo client:visible />
 </ComponentExample>
 
-### Compact Header with Sticky Column
+### Layer Header with Sticky Column
 
-<p>Combining `variant="compact"` on `Table.Header` with `sticky` columns.</p>
+<p>Combining `variant="layer"` on `Table` with `sticky` columns.</p>
 <ComponentExample demo="TableCompactStickyDemo">
   <TableCompactStickyDemo client:visible />
+</ComponentExample>
+
+### Resize Handles and Sort Icons
+
+<p>
+  Visual example showing <code>Table.ResizeHandle</code> and{" "}
+  <code>Table.SortIcon</code> in header cells. Resize handles appear on hover,
+  and sort icons indicate column sort state (ascending, descending, or none).
+</p>
+<ComponentExample demo="TableResizeAndSortDemo">
+  <TableResizeAndSortDemo client:visible />
 </ComponentExample>
 
 ### Full Example
@@ -191,7 +204,15 @@ export default function Example() {
 
 ### Table.Header
 
-<p>Table header section. Renders `<thead>`. Set `sticky` to pin the header row to the top of the scroll container.</p>
+<p>
+  Table header section. Renders `<thead>`. Set `sticky` to pin the header row to
+  the top of the scroll container.
+</p>
+
+<p>
+  <strong>Note:</strong> <code>variant</code> is deprecated. Use{" "}
+  <code>variant="layer"</code> on <code>Table</code> instead.
+</p>
 
 ### Table.Body
 
@@ -225,6 +246,15 @@ export default function Example() {
 <p>
   Draggable handle for column resizing. Use with TanStack Table or custom resize
   logic.
+</p>
+
+### Table.SortIcon
+
+<p>
+  Visual indicator for column sort state. Pass{" "}
+  <code>direction="asc"</code>, <code>direction="desc"</code>, or{" "}
+  <code>direction={false}</code> to show ascending, descending, or unsorted
+  states.
 </p>
 
 </ComponentSection>
