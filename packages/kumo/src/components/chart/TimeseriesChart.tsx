@@ -140,10 +140,10 @@ export function TimeseriesChart({
   ariaDescription,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
-  // Tracks which series the user is hovering over so the tooltip formatter
-  // can dim the rows of non-hovered series (mirrors the emphasis dimming).
-  // Updated via the updateAxisPointer event, which fires reliably for
-  // axis-triggered tooltips regardless of chart type.
+  // Tracks which bar series the user is hovering over so the tooltip
+  // formatter can dim the rows of non-hovered series, matching the
+  // emphasis dimming on the bars. Only used for bar charts — line charts
+  // with showSymbol: false lack hover targets for mouseover events.
   const hoveredSeriesRef = useRef<string | null>(null);
   // Stable ref to the tooltip value formatter so the dangerousHtmlFormatter
   // closure (captured by useMemo) always calls the latest function without
@@ -364,18 +364,12 @@ export function TimeseriesChart({
       };
     }
 
-    // --- Hover tracking for tooltip row dimming ---
-    // Bar and line charts need different strategies because their hover
-    // targets differ:
-    //
-    // Bar charts: each stacked segment is a distinct graphical element,
-    //   so mouseover/mouseout fire reliably on individual segments.
-    //   updateAxisPointer does NOT provide a useful seriesIndex for bars
-    //   because the axis pointer covers the entire stacked column.
-    //
-    // Line charts: with showSymbol: false there are no hoverable elements,
-    //   so mouseover rarely fires. updateAxisPointer provides seriesIndex
-    //   indicating the nearest line, which is exactly what we need.
+    // Track which series is hovered so the tooltip formatter can dim
+    // non-hovered rows, matching the emphasis dimming on the bars.
+    // Only enabled for bar charts — each stacked segment is a distinct
+    // graphical element so mouseover/mouseout fire reliably. Line charts
+    // with showSymbol: false lack hover targets, so tooltip dimming is
+    // not supported for them.
     if (type === "bar") {
       handlers.mouseover = (params) => {
         hoveredSeriesRef.current = params.seriesName ?? null;
@@ -383,31 +377,10 @@ export function TimeseriesChart({
       handlers.mouseout = () => {
         hoveredSeriesRef.current = null;
       };
-    } else {
-      handlers.updateAxisPointer = (params) => {
-        const chart = chartRef.current;
-        if (!chart) return;
-
-        const seriesIndex = params.seriesIndex;
-        if (seriesIndex != null) {
-          const option = chart.getOption() as EChartsOption;
-          const series = (option.series as SeriesOption[])?.[seriesIndex];
-          const name =
-            series && "name" in series ? (series.name as string) : null;
-
-          if (name && name !== hoveredSeriesRef.current) {
-            hoveredSeriesRef.current = name;
-            chart.dispatchAction({ type: "highlight", seriesName: name });
-          }
-        }
+      handlers.globalout = () => {
+        hoveredSeriesRef.current = null;
       };
     }
-
-    // Clear hover state when the pointer leaves the chart entirely.
-    handlers.globalout = () => {
-      hoveredSeriesRef.current = null;
-      chartRef.current?.dispatchAction({ type: "downplay" });
-    };
 
     return handlers;
   }, [onTimeRangeChange, type]);
