@@ -113,7 +113,7 @@ export function Empty({
           )}
         >
           <span className="text-xs text-kumo-inactive select-none">$</span>
-          <span className="no-scrollbar overflow-scroll text-[14px] whitespace-nowrap text-kumo-brand">
+          <span className="no-scrollbar overflow-scroll text-base whitespace-nowrap text-kumo-brand">
             {commandLine}
           </span>
           <Button

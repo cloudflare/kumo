@@ -1,5 +1,5 @@
-import { Button } from "@cloudflare/kumo";
-import { PlusIcon } from "@phosphor-icons/react";
+import { Button, LinkButton } from "@cloudflare/kumo";
+import { ArrowSquareOutIcon, PlusIcon } from "@phosphor-icons/react";
 
 export function ButtonBasicDemo() {
   return (
@@ -119,6 +119,25 @@ export function ButtonTitleDemo() {
         aria-label="Add item"
         title="Add item"
       />
+    </div>
+  );
+}
+
+/** Demonstrates using LinkButton for navigation actions that should look like buttons. */
+export function ButtonLinkAsButtonDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <LinkButton href="/components/link" variant="secondary">
+        Read Link docs
+      </LinkButton>
+      <LinkButton
+        href="https://developers.cloudflare.com"
+        variant="ghost"
+        icon={ArrowSquareOutIcon}
+        external
+      >
+        Cloudflare Docs
+      </LinkButton>
     </div>
   );
 }

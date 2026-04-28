@@ -132,7 +132,7 @@ const TableRoot = forwardRef<
     "[&_td]:p-3", // Cell padding
     "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold [&_th]:text-base", // Header styles
     "[&_th]:bg-kumo-base", // Header background color
-    "text-left text-kumo-default",
+    "text-base text-left text-kumo-default",
     props.className,
   );
 
