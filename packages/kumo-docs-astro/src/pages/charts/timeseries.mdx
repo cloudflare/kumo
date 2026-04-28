@@ -15,6 +15,7 @@ import {
   IncompleteDataChartDemo,
   LoadingChartDemo,
   TimeRangeSelectionChartDemo,
+  TooltipCssDemo,
 } from "~/components/demos/Chart/ChartDemo";
 
 <p>
@@ -103,6 +104,22 @@ import {
 
   <ComponentExample demo="BarChartDemo">
     <BarChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Tooltip CSS
+
+<p>
+  Use the <code>tooltipCss</code> prop to append custom CSS to the tooltip
+  container. This is useful for constraining tooltip height when there are many
+  series, or adding scroll behavior. The string is passed directly to ECharts'
+  <code>extraCssText</code> option.
+</p>
+
+  <ComponentExample demo="TooltipCssDemo">
+    <TooltipCssDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

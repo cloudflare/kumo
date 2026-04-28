@@ -450,6 +450,46 @@ export function BarChartDemo() {
   );
 }
 
+/** Bar chart with many series and a scrollable tooltip via `tooltipCss`. */
+export function TooltipCssDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const colors = [
+    ChartPalette.categorical(0, isDarkMode),
+    ChartPalette.categorical(1, isDarkMode),
+    ChartPalette.categorical(2, isDarkMode),
+    ChartPalette.categorical(3, isDarkMode),
+    ChartPalette.categorical(4, isDarkMode),
+    ChartPalette.categorical(5, isDarkMode),
+    ChartPalette.categorical(6, isDarkMode),
+    ChartPalette.categorical(7, isDarkMode),
+  ];
+
+  const data = useMemo(
+    () =>
+      Array.from({ length: 8 }, (_, i) => ({
+        name: `Series ${String.fromCharCode(65 + i)}`,
+        data: buildSeriesData(i, 20, 3_600_000, 0.3 + i * 0.1),
+        color: colors[i],
+      })),
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      type="bar"
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Count"
+      tooltipValueFormat={(r) => r.toFixed(2)}
+      tooltipCss="max-height:180px;overflow-y:auto;"
+      tooltipEnterable
+    />
+  );
+}
+
 /**
  * Timeseries chart in loading state, showing the animated sine-wave skeleton.
  * Loads for 5 seconds then reveals the real chart. A button restarts the cycle.

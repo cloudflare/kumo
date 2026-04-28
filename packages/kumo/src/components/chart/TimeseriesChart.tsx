@@ -87,6 +87,26 @@ export interface TimeseriesChartProps {
    * @see https://echarts.apache.org/handbook/en/best-practices/aria/
    */
   ariaDescription?: string;
+  /**
+   * Extra CSS text appended to the tooltip's inline `style` attribute.
+   * Useful for constraining tooltip size or adding scroll behavior when
+   * there are many series.
+   *
+   * @example
+   * ```tsx
+   * tooltipCss="max-height:200px;overflow-y:auto;"
+   * ```
+   */
+  tooltipCss?: string;
+  /**
+   * When `true`, the tooltip stays visible when the user moves their cursor
+   * into it, allowing interaction with scrollable or selectable content.
+   * Pair with `tooltipCss` to create scrollable tooltips for charts with
+   * many series.
+   *
+   * @default false
+   */
+  tooltipEnterable?: boolean;
 }
 
 /**
@@ -138,6 +158,8 @@ export function TimeseriesChart({
   gradient,
   loading,
   ariaDescription,
+  tooltipCss,
+  tooltipEnterable,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   // Tracks which bar series the user is hovering over so the tooltip
@@ -247,6 +269,13 @@ export function TimeseriesChart({
         trigger: "axis" as const,
         appendTo: "body",
         axisPointer: { type: "shadow" as const },
+        ...(tooltipCss && { extraCssText: tooltipCss }),
+        ...(tooltipEnterable && {
+          enterable: true,
+          // Position the tooltip close to the cursor so the user can
+          // easily move into it (e.g. to scroll overflow content).
+          position: (point: number[]) => [point[0] + 10, point[1] - 10],
+        }),
         dangerousHtmlFormatter: (params) => {
           const items = Array.isArray(params) ? params : [params];
 
@@ -351,6 +380,8 @@ export function TimeseriesChart({
     gradient,
     echarts,
     ariaDescription,
+    tooltipCss,
+    tooltipEnterable,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
