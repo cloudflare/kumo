@@ -220,7 +220,7 @@ const Root = forwardRef<
                 <label
                   htmlFor={inputId}
                   // Positioned behind children (z-0) so it catches clicks on empty space
-                  className="absolute inset-0 z-0 cursor-text"
+                  className="absolute inset-0 z-0 cursor-text !mb-0"
                   aria-hidden="true"
                 />
               )}
@@ -283,7 +283,7 @@ const Root = forwardRef<
             <label
               htmlFor={inputId}
               // Positioned behind children (z-0) so it catches clicks on empty space
-              className="absolute inset-0 z-0"
+              className="absolute inset-0 z-0 !mb-0"
               aria-hidden="true"
             />
             {children}
@@ -293,7 +293,7 @@ const Root = forwardRef<
           <label
             ref={forwardedRef as React.Ref<HTMLLabelElement>}
             {...dataProps}
-            className={containerClassName}
+            className={cn(containerClassName, "!mb-0")}
             {...rest}
           >
             {children}
