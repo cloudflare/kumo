@@ -364,28 +364,44 @@ export function TimeseriesChart({
       };
     }
 
-    // Use updateAxisPointer to track which series is closest to the
-    // pointer. This fires reliably for axis-triggered tooltips (unlike
-    // mouseover which requires hovering directly on a graphical element).
-    // We dispatch highlight/downplay actions so the chart emphasis and
-    // the tooltip dimming stay in sync.
-    handlers.updateAxisPointer = (params) => {
-      const chart = chartRef.current;
-      if (!chart) return;
+    // --- Hover tracking for tooltip row dimming ---
+    // Bar and line charts need different strategies because their hover
+    // targets differ:
+    //
+    // Bar charts: each stacked segment is a distinct graphical element,
+    //   so mouseover/mouseout fire reliably on individual segments.
+    //   updateAxisPointer does NOT provide a useful seriesIndex for bars
+    //   because the axis pointer covers the entire stacked column.
+    //
+    // Line charts: with showSymbol: false there are no hoverable elements,
+    //   so mouseover rarely fires. updateAxisPointer provides seriesIndex
+    //   indicating the nearest line, which is exactly what we need.
+    if (type === "bar") {
+      handlers.mouseover = (params) => {
+        hoveredSeriesRef.current = params.seriesName ?? null;
+      };
+      handlers.mouseout = () => {
+        hoveredSeriesRef.current = null;
+      };
+    } else {
+      handlers.updateAxisPointer = (params) => {
+        const chart = chartRef.current;
+        if (!chart) return;
 
-      const seriesIndex = params.seriesIndex;
-      if (seriesIndex != null) {
-        const option = chart.getOption() as EChartsOption;
-        const series = (option.series as SeriesOption[])?.[seriesIndex];
-        const name =
-          series && "name" in series ? (series.name as string) : null;
+        const seriesIndex = params.seriesIndex;
+        if (seriesIndex != null) {
+          const option = chart.getOption() as EChartsOption;
+          const series = (option.series as SeriesOption[])?.[seriesIndex];
+          const name =
+            series && "name" in series ? (series.name as string) : null;
 
-        if (name && name !== hoveredSeriesRef.current) {
-          hoveredSeriesRef.current = name;
-          chart.dispatchAction({ type: "highlight", seriesName: name });
+          if (name && name !== hoveredSeriesRef.current) {
+            hoveredSeriesRef.current = name;
+            chart.dispatchAction({ type: "highlight", seriesName: name });
+          }
         }
-      }
-    };
+      };
+    }
 
     // Clear hover state when the pointer leaves the chart entirely.
     handlers.globalout = () => {
@@ -394,7 +410,7 @@ export function TimeseriesChart({
     };
 
     return handlers;
-  }, [onTimeRangeChange]);
+  }, [onTimeRangeChange, type]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
