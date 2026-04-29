@@ -17,6 +17,7 @@ import {
   ComboboxMultipleDemo,
   ComboboxWithFieldDemo,
   ComboboxDisabledDemo,
+  ComboboxDisabledItemsDemo,
   ComboboxErrorDemo,
   ComboboxSizesDemo,
   ComboboxSizesSearchableInsideDemo,
@@ -157,6 +158,16 @@ export default function Example() {
   <p>Pass the `disabled` prop to prevent interaction. Works with both `TriggerInput` and `TriggerValue`.</p>
   <ComponentExample demo="ComboboxDisabledDemo">
     <ComboboxDisabledDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Disabled Items
+
+  <p>Pass the `disabled` prop to an individual `Combobox.Item` to make it non-selectable. Disabled rows are rendered with a muted style and skipped during keyboard navigation selection.</p>
+  <ComponentExample demo="ComboboxDisabledItemsDemo">
+    <ComboboxDisabledItemsDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
