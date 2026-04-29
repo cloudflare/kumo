@@ -370,11 +370,23 @@ function TriggerInput({
   );
 }
 
-function Item({ children, ...props }: ComboboxBase.Item.Props) {
+function Item({
+  children,
+  className,
+  ...props
+}: ComboboxBase.Item.Props & { className?: string }) {
   return (
     <ComboboxBase.Item
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
+      className={cn(
+        "group mx-1.5 grid grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base",
+        "cursor-pointer data-highlighted:bg-kumo-tint",
+        // Disabled rows: muted text, no pointer, suppress highlight bg even
+        // when keyboard nav lands on them. Base UI sets `data-disabled` on
+        // the element when the `disabled` prop is true.
+        "data-[disabled]:cursor-not-allowed data-[disabled]:text-kumo-subtle data-[disabled]:opacity-60 data-[disabled]:data-highlighted:bg-transparent",
+        className,
+      )}
     >
       <div className="col-start-1">{children}</div>
       <ComboboxBase.ItemIndicator className="col-start-2 flex items-center">
