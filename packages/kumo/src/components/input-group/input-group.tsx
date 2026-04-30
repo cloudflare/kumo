@@ -151,6 +151,8 @@ const Root = forwardRef<
       "has-[[data-slot=input-group-suffix]]:[&_input]:pr-0",
       // Size-specific padding adjustments when addons or suffixes are present
       INPUT_GROUP_HAS_CLASSES[size],
+      // Reset bottom margin to avoid inherited spacing from parent <label> styles
+      "!mb-0",
       className,
     );
 
