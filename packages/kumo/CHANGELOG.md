@@ -1,5 +1,244 @@
 # @cloudflare/kumo
 
+## 2.0.0
+
+### Major Changes
+
+- bf68ac0: **BREAKING:** Checkbox `onCheckedChange` now receives event details as second argument
+
+  The `onCheckedChange` callback signature now matches Base UI, providing access to the underlying event:
+
+  ```tsx
+  // Before
+  onCheckedChange={(checked) => console.log(checked)}
+
+  // After (event details available as optional second arg)
+  onCheckedChange={(checked, eventDetails) => {
+    console.log(checked);
+    console.log(eventDetails.event); // native event
+  }}
+  ```
+
+  **Removed deprecated props:**
+  - `onChange` - use `onCheckedChange` instead
+  - `onValueChange` on individual checkboxes - use `onCheckedChange` instead
+  - `onClick` - was redundant, use standard React event handling via spread props
+
+  **Migration:**
+
+  ```tsx
+  // Before (deprecated)
+  <Checkbox onChange={(e) => console.log(e.target.checked)} />
+  <Checkbox onValueChange={(checked) => setChecked(checked)} />
+
+  // After
+  <Checkbox onCheckedChange={(checked) => setChecked(checked)} />
+  ```
+
+  Note: `Checkbox.Group`'s `onValueChange` prop is unchanged - it still accepts `(values: string[]) => void`.
+
+- f9ba3f9: feat(Collapsible)!: refactor to compound component API
+
+  **Breaking change:** Collapsible now uses a compound component pattern matching other Kumo components like Popover and Dialog.
+
+  ### Before
+
+  ```tsx
+  <Collapsible label="Show details" open={open} onOpenChange={setOpen}>
+    Content here
+  </Collapsible>
+  ```
+
+  ### After
+
+  ```tsx
+  <Collapsible.Root open={open} onOpenChange={setOpen}>
+    <Collapsible.Trigger>Show details</Collapsible.Trigger>
+    <Collapsible.Panel>Content here</Collapsible.Panel>
+  </Collapsible.Root>
+  ```
+
+  ### Migration
+
+  For the quickest migration, use the new `DefaultTrigger` and `DefaultPanel` components which preserve the previous styling:
+
+  ```tsx
+  <Collapsible.Root open={open} onOpenChange={setOpen}>
+    <Collapsible.DefaultTrigger>Show details</Collapsible.DefaultTrigger>
+    <Collapsible.DefaultPanel>Content here</Collapsible.DefaultPanel>
+  </Collapsible.Root>
+  ```
+
+  ### New Sub-components
+
+  | Component                    | Description                                                 |
+  | ---------------------------- | ----------------------------------------------------------- |
+  | `Collapsible.Root`           | Manages open state                                          |
+  | `Collapsible.Trigger`        | Composable trigger with `render` prop support               |
+  | `Collapsible.Panel`          | Content container                                           |
+  | `Collapsible.DefaultTrigger` | Pre-styled trigger with caret icon (migration helper)       |
+  | `Collapsible.DefaultPanel`   | Pre-styled panel with border-left accent (migration helper) |
+
+- 3256a7b: feat(Text): decouple visual heading variants from semantic HTML elements
+
+  **Breaking change:** `heading1`, `heading2`, `heading3` variants no longer auto-render `<h1>`, `<h2>`, `<h3>` tags. They now render as `<span>` by default. Use the `as` prop to set the appropriate semantic heading level for your document outline.
+
+  Before:
+
+  ```tsx
+  <Text variant="heading1">Title</Text> // rendered <h1>
+  ```
+
+  After:
+
+  ```tsx
+  <Text variant="heading1" as="h1">
+    Title
+  </Text> // explicit semantic element
+  ```
+
+  The `as` prop is now restricted to valid text elements: `"h1"` through `"h6"`, `"p"`, and `"span"`.
+
+- 267ba7a: **BREAKING (v2):** `Text` requires an explicit `as` prop when `variant` is a heading (`"heading1"`, `"heading2"`, `"heading3"`).
+
+  The previous major bump ([#393](https://github.com/cloudflare/kumo/pull/393)) decoupled heading variants from semantic HTML — heading variants render as `<span>` unless an `as` prop is provided. That made the library more flexible but introduced a silent accessibility footgun: forgetting `as` on a real section heading produced a `<span>`, excluding it from the document outline without any type-level feedback.
+
+  This change makes `as` **required** for heading variants via a discriminated union. Body and monospace variants are unchanged (`as` remains optional; defaults to `<p>` and `<span>` respectively).
+
+  ### Migration
+
+  Every `<Text variant="heading1">`, `<Text variant="heading2">`, `<Text variant="heading3">` must now pass `as`. TypeScript will flag each call site:
+
+  ```tsx
+  // Before (compiled, silently produced a <span>)
+  <Text variant="heading1">Page Title</Text>
+
+  // After (required)
+  <Text variant="heading1" as="h1">Page Title</Text>
+
+  // Still allowed — decorative heading-styled text that is NOT a section heading:
+  <Text variant="heading1" as="span">Big bold card label</Text>
+  ```
+
+  For each heading call site, decide whether it's a real section heading (use `as="h1"`/`"h2"`/etc.) or decorative (use `as="span"`). Codemod cannot make this choice mechanically — it is a semantic judgment per usage.
+
+  Body and monospace variants: no changes required.
+
+### Minor Changes
+
+- 1954aa8: feat(radio, checkbox, switch): add composable Legend sub-component for group components
+  - Add `Radio.Legend`, `Checkbox.Legend`, and `Switch.Legend` sub-components
+  - Accepts `className` for full styling control (e.g. `className="sr-only"` to visually hide)
+  - Make `legend` string prop optional when using the sub-component instead
+  - Useful when a parent Field already provides a visible label and the legend would be redundant
+  - **Breaking:** `Switch.Group` no longer renders a visible border/padding/rounded container — now consistent with `Radio.Group` and `Checkbox.Group`. Use `className` to add a border if needed.
+
+- 1eee41a: Add `InputGroup` compound component for composing decorated inputs
+
+  Compound structure: `InputGroup`, `InputGroup.Input`, `InputGroup.Addon`, `InputGroup.Suffix`, `InputGroup.Button`.
+  - Field integration — pass `label`, `description`, `error`, `required`, and `labelTooltip` directly to `InputGroup`
+  - Size variants (`xs`, `sm`, `base`, `lg`) propagate to all sub-components via context, including icon sizing in addons
+  - `InputGroup.Addon` — positions icons, text, or buttons at `align="start"` (default) or `align="end"` of the input
+  - `InputGroup.Suffix` — inline text suffix (e.g. `.workers.dev`)
+  - `InputGroup.Button` — ghost button for secondary actions with tooltip support
+  - Deprecated `InputGroup.Label` — use `InputGroup.Addon` instead
+  - Deprecated `InputGroup.Description` — use `InputGroup.Suffix` instead
+
+  ```tsx
+  {
+    /* Reveal / hide password */
+  }
+  <InputGroup>
+    <InputGroup.Input
+      type={show ? "text" : "password"}
+      defaultValue="password"
+      aria-label="Password"
+    />
+    <InputGroup.Addon align="end" className="pr-1">
+      <InputGroup.Button
+        size="sm"
+        aria-label={show ? "Hide password" : "Show password"}
+        onClick={() => setShow(!show)}
+      >
+        {show ? <EyeSlashIcon size={16} /> : <EyeIcon size={16} />}
+      </InputGroup.Button>
+    </InputGroup.Addon>
+  </InputGroup>;
+  ```
+
+  ```tsx
+  {
+    /* Search input */
+  }
+  <InputGroup>
+    <InputGroup.Addon>
+      <MagnifyingGlassIcon className="text-kumo-subtle" />
+    </InputGroup.Addon>
+    <InputGroup.Input placeholder="Search..." />
+  </InputGroup>;
+  ```
+
+- 353faea: Adds Autocomplete component. A free-form text input with an optional filtered suggestion list. Unlike Combobox, the value is not constrained to the items list.
+- 431de04: feat(radio): accept ReactNode for `Radio.Item` label and honor `controlPosition` on card appearance
+  - `Radio.Item`'s `label` prop now accepts `ReactNode`, allowing icons, badges, or other markup alongside text.
+  - `Radio.Group`'s `controlPosition` prop now takes effect on `appearance="card"`. Card appearance continues to default to `"end"` (radio on the right); pass `controlPosition="start"` to render the radio on the left of the label and description.
+
+- f9d8b76: Polish TableOfContents indicator and semantic HTML
+  - Replace pill/background-tint hover with left-border indicator pattern
+  - Switch to semantic `ul`/`li` HTML structure
+  - Add `href` and `active` props to `TableOfContents.Group` for clickable labels
+
+- 07426f6: feat(table): add `onCheckedChange` prop to `Table.CheckCell` and `Table.CheckHead`, aligning with the `Checkbox` component's signature.
+
+  The new prop exposes an optional second argument with event details, matching Base UI's idiom:
+
+  ```tsx
+  <Table.CheckCell
+    checked={selected.has(row.id)}
+    onCheckedChange={(checked, eventDetails) => {
+      toggle(row.id);
+      eventDetails?.event.stopPropagation();
+    }}
+  />
+  ```
+
+  The existing `onValueChange` prop still works but is now deprecated and flagged by the `no-deprecated-props` lint rule. It will be removed in a future major version. Migrate by renaming the prop — the single-argument callback shape is preserved.
+
+  This change is additive and does not require consumer code changes at this time.
+
+- c1c60c8: Expand `Text` component's `as` prop to accept additional HTML text elements: `label`, `dt`, `dd`, `li`, `figcaption`, `legend`, `pre`, `code`, `em`, `strong`, `small`, `abbr`, and `time`. This unblocks downstream usage in Stratus where `Text` needs to render as definition list terms, labels, and code elements.
+
+### Patch Changes
+
+- ac6df5f: Remove invalid hover border utility from secondary button variants to keep hover styling consistent and avoid unintended class output.
+- ec73bc5: Update chart color docs and demos, including sequential heatmap/CVD coverage and improved chart demo behavior.
+- 7d12918: `Combobox.Item` now renders a visible disabled state when the `disabled` prop is set. Previously the prop was forwarded to Base UI (so click/keyboard selection were correctly blocked) but the row looked identical to an enabled one. Adds `data-[disabled]:*` Tailwind classes for muted text, `cursor-not-allowed`, reduced opacity, and suppresses the highlight background on disabled rows during keyboard navigation. Also fixes `className` passthrough — user-supplied classes are now merged via `cn()` instead of being overridden.
+- 69bfc53: Improve focus ring consistency and clipping behavior across inputs and related controls.
+  - Move the command palette focus ring to the input header container with `focus-within` and remove duplicate input-level ring styles.
+  - Update `Select` trigger and option focus styles to use inset focus rings to prevent clipping in rounded/overflow contexts.
+  - Fix clipboard copy button focus ring clipping by using inset focus-visible ring, matching border-radius inheritance, and isolated stacking.
+  - Align `InputGroup` and `InputGroup.Button` focus ring color to `ring-kumo-focus`, including hybrid container-zone focus ring classes.
+  - Update InputGroup tests to match inline focus ring class changes.
+  - Set DatePicker (`react-day-picker`) focus ring token to `var(--color-kumo-brand)`.
+  - Update InputGroup container and hybrid keyboard outlines in `kumo-binding.css` to use `var(--color-kumo-focus)` at 1px weight.
+
+- 30bfd82: Allow `CommandPalette.Input` to accept standard HTML input attributes (`autoComplete`, `autoCorrect`, `autoCapitalize`, `spellCheck`, `data-*`, etc.) by extending its props type with `InputHTMLAttributes<HTMLInputElement>`. Export new `CommandPaletteInputProps` type.
+- b923281: Fix `InputGroup` hover state incorrectly propagating to the first child button (e.g. in `Pagination.Controls`). Root now renders as `<div>` instead of `<label>` when it contains multiple labelable controls.
+- 06b8852: Fix Table body cells rendering at 16px. The Table root now sets text-base (14px) so <td> cells match Kumo's default body font-size instead of inheriting the browser default. Also replaces an arbitrary text-[14px] in Empty with text-base.
+- c019b41: Improved focus and keyboard accessibility styles across Kumo components and docs navigation.
+  - Added the `kumo-focus` semantic token to the theme generator config and generated `theme-kumo.css` output.
+  - Updated focus ring behavior across interactive components (including `Button`, `Input`, `InputGroup`, `Select`, `Checkbox`, `Radio`, `Switch`, `Sidebar`, `Tabs`, `Menubar`, and related controls) for more consistent and visible keyboard focus visibility.
+  - Text-entry controls use a lighter opacity `kumo-focus` ring to keep pointer and keyboard focus visually consistent where browsers apply `:focus-visible` heuristics to typed-input controls.
+  - Refined `Select` and `Input` styling/state combinations to align focus visuals with current semantic token usage.
+  - Updated docs `SidebarNav` keyboard-focus affordances (links, section toggles, search trigger) and adjusted collapsible list overflow so focus rings remain visible.
+  - Replace raw colors in `Select` with kumo semantic tokens.
+
+- 21ed1a1: Fix `InputGroup` container className to enforce `mb-0`, ensuring all container variants (not just the standalone `<label>` mode) reset inherited bottom margin.
+- fa991d9: Fix `InputGroup` label wrappers to enforce `mb-0`, preventing inherited label margins from shifting layout and click-target overlays.
+- 6765526: chore: update @base-ui/react to v1.4.0
+
+  Bugfix release with improvements to Popover hover state, Checkbox/Switch readOnly mode, Select touch handling, Tabs activation direction, Toast timers, and various other fixes. No breaking changes.
+
 ## 1.19.0
 
 ### Minor Changes

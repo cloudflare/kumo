@@ -1,5 +1,99 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.4.0
+
+### Minor Changes
+
+- 353faea: Adds Autocomplete component. A free-form text input with an optional filtered suggestion list. Unlike Combobox, the value is not constrained to the items list.
+
+### Patch Changes
+
+- ec73bc5: Update chart color docs and demos, including sequential heatmap/CVD coverage and improved chart demo behavior.
+- 8cc65bf: Clean up the Contributing page: remove the "Questions?" section that referenced an internal channel, and fix the "Related Docs" links to point to absolute GitHub URLs instead of relative paths that 404'd.
+- 1eee41a: Add `InputGroup` compound component for composing decorated inputs
+
+  Compound structure: `InputGroup`, `InputGroup.Input`, `InputGroup.Addon`, `InputGroup.Suffix`, `InputGroup.Button`.
+  - Field integration — pass `label`, `description`, `error`, `required`, and `labelTooltip` directly to `InputGroup`
+  - Size variants (`xs`, `sm`, `base`, `lg`) propagate to all sub-components via context, including icon sizing in addons
+  - `InputGroup.Addon` — positions icons, text, or buttons at `align="start"` (default) or `align="end"` of the input
+  - `InputGroup.Suffix` — inline text suffix (e.g. `.workers.dev`)
+  - `InputGroup.Button` — ghost button for secondary actions with tooltip support
+  - Deprecated `InputGroup.Label` — use `InputGroup.Addon` instead
+  - Deprecated `InputGroup.Description` — use `InputGroup.Suffix` instead
+
+  ```tsx
+  {
+    /* Reveal / hide password */
+  }
+  <InputGroup>
+    <InputGroup.Input
+      type={show ? "text" : "password"}
+      defaultValue="password"
+      aria-label="Password"
+    />
+    <InputGroup.Addon align="end" className="pr-1">
+      <InputGroup.Button
+        size="sm"
+        aria-label={show ? "Hide password" : "Show password"}
+        onClick={() => setShow(!show)}
+      >
+        {show ? <EyeSlashIcon size={16} /> : <EyeIcon size={16} />}
+      </InputGroup.Button>
+    </InputGroup.Addon>
+  </InputGroup>;
+  ```
+
+  ```tsx
+  {
+    /* Search input */
+  }
+  <InputGroup>
+    <InputGroup.Addon>
+      <MagnifyingGlassIcon className="text-kumo-subtle" />
+    </InputGroup.Addon>
+    <InputGroup.Input placeholder="Search..." />
+  </InputGroup>;
+  ```
+
+- f774e84: Fix copy code button z-index so it no longer appears above the sticky header when scrolling
+- c019b41: Improved focus and keyboard accessibility styles across Kumo components and docs navigation.
+  - Added the `kumo-focus` semantic token to the theme generator config and generated `theme-kumo.css` output.
+  - Updated focus ring behavior across interactive components (including `Button`, `Input`, `InputGroup`, `Select`, `Checkbox`, `Radio`, `Switch`, `Sidebar`, `Tabs`, `Menubar`, and related controls) for more consistent and visible keyboard focus visibility.
+  - Text-entry controls use a lighter opacity `kumo-focus` ring to keep pointer and keyboard focus visually consistent where browsers apply `:focus-visible` heuristics to typed-input controls.
+  - Refined `Select` and `Input` styling/state combinations to align focus visuals with current semantic token usage.
+  - Updated docs `SidebarNav` keyboard-focus affordances (links, section toggles, search trigger) and adjusted collapsible list overflow so focus rings remain visible.
+  - Replace raw colors in `Select` with kumo semantic tokens.
+
+- 87432f8: Add global letter-spacing and typography defaults
+  - Set global `letter-spacing: -0.01em`, `line-height: 1.5`, and OpenType font features (`cv02`, `cv03`, `cv04`, `calt`) on `html`
+  - Reset `letter-spacing: normal` on `pre`, `code`, `kbd`, and `.font-mono` elements
+  - Replace hardcoded `tracking-[-0.02em]` with `tracking-tight` utility across headings
+  - Switch prose paragraphs and lists from `leading-relaxed` to `leading-normal`
+
+- Updated dependencies [ac6df5f]
+- Updated dependencies [ec73bc5]
+- Updated dependencies [bf68ac0]
+- Updated dependencies [f9ba3f9]
+- Updated dependencies [7d12918]
+- Updated dependencies [69bfc53]
+- Updated dependencies [30bfd82]
+- Updated dependencies [1954aa8]
+- Updated dependencies [3256a7b]
+- Updated dependencies [1eee41a]
+- Updated dependencies [b923281]
+- Updated dependencies [06b8852]
+- Updated dependencies [c019b41]
+- Updated dependencies [21ed1a1]
+- Updated dependencies [fa991d9]
+- Updated dependencies [353faea]
+- Updated dependencies [431de04]
+- Updated dependencies [f9d8b76]
+- Updated dependencies [07426f6]
+- Updated dependencies [c1c60c8]
+- Updated dependencies [267ba7a]
+- Updated dependencies [6765526]
+  - @cloudflare/kumo@2.0.0
+
 ## 1.3.18
 
 ### Patch Changes
