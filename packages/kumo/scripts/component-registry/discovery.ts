@@ -24,12 +24,16 @@ import {
 // =============================================================================
 
 /**
- * Category mappings based on component type.
- * Key is the directory name (kebab-case).
+ * Category mappings keyed by either component name (PascalCase) or directory
+ * name (kebab-case). Component-name keys win when both are present, allowing
+ * sibling components in a shared directory to map to different categories.
  */
 export const CATEGORY_MAP: Record<string, string> = {
   // Action
   button: "Action",
+  Button: "Action",
+  LinkButton: "Action",
+  RefreshButton: "Action",
   "clipboard-text": "Action",
   // Display
   badge: "Display",
@@ -93,7 +97,11 @@ export const COMPONENT_OVERRIDES: Record<string, ComponentOverride> = {};
  */
 export function detectExportsFromIndex(dirPath: string): DetectedExports {
   const indexPath = join(dirPath, "index.ts");
-  const result: DetectedExports = { componentName: null, propsType: null };
+  const result: DetectedExports = {
+    componentName: null,
+    propsType: null,
+    registryComponents: null,
+  };
 
   if (!existsSync(indexPath)) {
     return result;
@@ -101,6 +109,23 @@ export function detectExportsFromIndex(dirPath: string): DetectedExports {
 
   try {
     const content = readFileSync(indexPath, "utf-8");
+
+    // Detect explicit registration: KUMO_REGISTRY_COMPONENTS = [...]
+    // Each listed name becomes its own ComponentConfig sharing the same
+    // source directory. Names must be PascalCase and exported by the
+    // component file.
+    const registryMarkerMatch = content.match(
+      /export\s+const\s+KUMO_REGISTRY_COMPONENTS\s*=\s*\[([^\]]*)\]/,
+    );
+    if (registryMarkerMatch) {
+      const names = registryMarkerMatch[1]
+        .split(",")
+        .map((entry) => entry.trim().replace(/^["']|["']$/g, ""))
+        .filter((entry) => /^[A-Z][A-Za-z0-9]*$/.test(entry));
+      if (names.length > 0) {
+        result.registryComponents = names;
+      }
+    }
 
     // Match named exports: export { Foo, Bar, type BazProps } from "./file"
     // Also handles: export { Foo } from "./file"
@@ -361,8 +386,88 @@ export function discoverDirs(sourceDir: string): string[] {
 // =============================================================================
 
 /**
+ * Look up a category by component name first, then directory name. Allows
+ * directories that register multiple components to map each to its own
+ * category.
+ */
+function resolveCategory(componentName: string, dirName: string): string {
+  return CATEGORY_MAP[componentName] || CATEGORY_MAP[dirName] || "Other";
+}
+
+/**
+ * Convert a PascalCase component name to its `KUMO_<NAME>_VARIANTS` constant.
+ *   "Button"     -> "KUMO_BUTTON_VARIANTS"
+ *   "LinkButton" -> "KUMO_LINK_BUTTON_VARIANTS"
+ */
+function variantConstNameFor(componentName: string): string {
+  const screaming = componentName
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
+    .toUpperCase();
+  return `KUMO_${screaming}_VARIANTS`;
+}
+
+/**
+ * Build a single ComponentConfig for a named component sharing a directory.
+ */
+function buildConfig(
+  params: {
+    componentName: string;
+    propsType: string;
+    sourceDir: string;
+    dirName: string;
+    type: ComponentType;
+    /** When true, scope variant lookup to the component's named constant. */
+    scopedVariants: boolean;
+  },
+  override: ComponentOverride,
+): ComponentConfig {
+  const {
+    componentName,
+    propsType,
+    sourceDir,
+    dirName,
+    type,
+    scopedVariants,
+  } = params;
+  const mainFile = join(sourceDir, dirName, `${dirName}.tsx`);
+
+  const variantsData = scopedVariants
+    ? extractVariantsFromFile(mainFile, variantConstNameFor(componentName))
+    : extractVariantsFromFile(mainFile);
+
+  const category =
+    override.category || resolveCategory(componentName, dirName);
+
+  const description =
+    override.description || extractDescription(mainFile, componentName);
+
+  const styling = extractStylingFromFile(mainFile);
+
+  return {
+    name: componentName,
+    propsType,
+    sourceFile: `${dirName}/${dirName}.tsx`,
+    dirName,
+    sourceDir,
+    type,
+    description,
+    category,
+    variants: variantsData?.variants ?? {},
+    defaults: variantsData?.defaults ?? {},
+    ...(variantsData?.baseStyles && { baseStyles: variantsData.baseStyles }),
+    ...(styling && { styling }),
+    // Note: subComponents are added later by processComponent in index.ts
+  };
+}
+
+/**
  * Auto-discover and build configurations from a source directory.
  * Component/block names and props types are detected from index.ts exports.
+ *
+ * Directories may opt into multi-component registration by exporting
+ * `KUMO_REGISTRY_COMPONENTS` from `index.ts`. When present, one
+ * `ComponentConfig` is emitted per listed name.
  */
 export async function discoverFromDir(
   sourceDir: string,
@@ -381,53 +486,63 @@ export async function discoverFromDir(
     // Auto-detect component name and props type from index.ts
     const detected = detectExportsFromIndex(dirPath);
 
-    // Determine component name: detected from index.ts, or fallback to PascalCase of dir name
+    // Multi-component path: emit one config per registered component name.
+    if (detected.registryComponents && detected.registryComponents.length > 0) {
+      for (const componentName of detected.registryComponents) {
+        const propsType =
+          detectPropsTypeFromFile(mainFile, componentName) ||
+          `${componentName}Props`;
+
+        console.log(
+          `  ${dirName} → ${componentName} (props: ${propsType}, type: ${type})`,
+        );
+
+        configs.push(
+          buildConfig(
+            {
+              componentName,
+              propsType,
+              sourceDir,
+              dirName,
+              type,
+              scopedVariants: true,
+            },
+            override,
+          ),
+        );
+      }
+      continue;
+    }
+
+    // Legacy single-component path.
     const baseName = toPascalCase(dirName);
     const componentName = detected.componentName || baseName;
 
-    // Determine props type: detected from index.ts, then from main file, then convention
     let propsType = detected.propsType;
     if (!propsType) {
       propsType = detectPropsTypeFromFile(mainFile, componentName);
     }
-    // Final fallback: standard convention
     if (!propsType) {
       propsType = `${componentName}Props`;
     }
-
-    // Extract variants from file (may be empty for components without variant props)
-    // Some components (like DatePicker) don't have KUMO_*_VARIANTS exports
-    const variantsData = extractVariantsFromFile(mainFile);
-
-    // Determine category
-    const category = override.category || CATEGORY_MAP[dirName] || "Other";
-
-    // Extract or generate description
-    const description =
-      override.description || extractDescription(mainFile, componentName);
-
-    // Extract styling metadata from KUMO_*_STYLING if present
-    const styling = extractStylingFromFile(mainFile);
 
     console.log(
       `  ${dirName} → ${componentName} (props: ${propsType}, type: ${type})`,
     );
 
-    configs.push({
-      name: componentName,
-      propsType,
-      sourceFile: `${dirName}/${dirName}.tsx`,
-      dirName,
-      sourceDir,
-      type,
-      description,
-      category,
-      variants: variantsData?.variants ?? {},
-      defaults: variantsData?.defaults ?? {},
-      ...(variantsData?.baseStyles && { baseStyles: variantsData.baseStyles }),
-      ...(styling && { styling }),
-      // Note: subComponents are added later by processComponent in index.ts
-    });
+    configs.push(
+      buildConfig(
+        {
+          componentName,
+          propsType,
+          sourceDir,
+          dirName,
+          type,
+          scopedVariants: false,
+        },
+        override,
+      ),
+    );
   }
 
   return configs;

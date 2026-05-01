@@ -1,0 +1,119 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "RefreshButton"
+description: "Square icon button preconfigured for refreshing data. Spins the icon while loading."
+sourceFile: "components/button"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  RefreshButtonBasicDemo,
+  RefreshButtonInteractiveDemo,
+  RefreshButtonSizesDemo,
+  RefreshButtonAriaLabelDemo,
+} from "~/components/demos/RefreshButtonDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="RefreshButtonBasicDemo" vrSection="basic" vrTitle="Basic">
+    <RefreshButtonBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+  <CodeBlock code={`import { RefreshButton } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+  <CodeBlock
+    code={`import { RefreshButton } from "@cloudflare/kumo/components/button";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+`RefreshButton` is a thin wrapper around `Button` that pins `shape="square"`,
+ships the rotating arrows icon, and supplies a sensible default `aria-label`
+of `"Refresh"`. It also animates the icon while `loading` is `true`.
+
+```tsx
+import { RefreshButton } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <RefreshButton onClick={refetch} loading={isFetching} />;
+}
+```
+
+The `loading` prop only spins the refresh icon — it intentionally does not
+swap in the standard Button loader, which would replace the refresh affordance.
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+
+## Examples
+
+### Loading State
+
+<ComponentExample
+  demo="RefreshButtonInteractiveDemo"
+  vrSection="interactive"
+  vrTitle="Interactive"
+>
+  <RefreshButtonInteractiveDemo client:visible />
+</ComponentExample>
+
+### Sizes
+
+Sizes follow `Button`'s `size` prop — `xs`, `sm`, `base`, `lg` — and the
+refresh icon scales accordingly.
+
+<ComponentExample
+  demo="RefreshButtonSizesDemo"
+  vrSection="sizes"
+  vrTitle="Sizes"
+>
+  <RefreshButtonSizesDemo client:visible />
+</ComponentExample>
+
+### Accessible Label
+
+Override `aria-label` whenever the refresh action targets a specific dataset.
+Defaults to `"Refresh"`.
+
+<ComponentExample
+  demo="RefreshButtonAriaLabelDemo"
+  vrSection="aria-label"
+  vrTitle="Custom aria-label"
+>
+  <RefreshButtonAriaLabelDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="RefreshButton" />
+</ComponentSection>

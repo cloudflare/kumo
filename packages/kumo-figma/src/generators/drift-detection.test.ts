@@ -42,6 +42,8 @@ const COMPONENT_NAME_MAPPING: Record<string, string> = {
   DropdownMenu: "dropdown", // Registry name differs from file name
   InputArea: "input-area", // Synthetic component - uses Input's props but has own styling
   LayerCard: "layer-card",
+  LinkButton: "link-button", // Co-located with Button in button/ directory
+  RefreshButton: "refresh-button", // Co-located with Button in button/ directory
   SensitiveInput: "sensitive-input",
   Toasty: "toast", // Registry name differs from file name
 };

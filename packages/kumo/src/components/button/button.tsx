@@ -193,6 +193,25 @@ type IconOnlyButtonProps = ButtonBaseProps & {
 export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
 
 /**
+ * Variant table for `LinkButton`. Reuses `KUMO_BUTTON_VARIANTS` so the anchor
+ * styling tracks `Button`. Exists as a named export so the component registry
+ * can attribute variant data to `LinkButton` as a sibling component.
+ */
+export const KUMO_LINK_BUTTON_VARIANTS = KUMO_BUTTON_VARIANTS;
+/**
+ * LinkButton's runtime defaults. Most values track Button; `variant` is
+ * `"ghost"` to suit inline navigation links that should read as text.
+ *
+ * Inlined rather than spread so the registry codegen can extract the
+ * literal values via regex.
+ */
+export const KUMO_LINK_BUTTON_DEFAULT_VARIANTS = {
+  shape: "base",
+  size: "base",
+  variant: "ghost",
+} as const;
+
+/**
  * LinkButton component props — renders an anchor styled as a button.
  *
  * @example
@@ -270,6 +289,41 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 /**
+ * RefreshButton component props — an icon-only `Button` preconfigured for
+ * triggering data refresh actions. `shape` is always `"square"` and the
+ * spinning refresh icon is supplied automatically.
+ *
+ * @example
+ * ```tsx
+ * <RefreshButton loading={isRefreshing} onClick={refresh} />
+ * ```
+ */
+export type RefreshButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "aria-label"
+> &
+  KumoButtonVariantsProps & {
+    /** Defaults to `"Refresh"`. Override for localised contexts. */
+    "aria-label"?: string;
+    /** Shows the refresh icon spinning and disables interaction. */
+    loading?: boolean;
+    /** Additional CSS classes merged via `cn()`. */
+    className?: string;
+    /** Optional tooltip wrapping. Forwarded to the underlying `Button`. */
+    title?: React.ReactNode;
+  };
+
+/**
+ * Variant table for `RefreshButton`. Reuses `KUMO_BUTTON_VARIANTS` so that
+ * RefreshButton tracks Button's classes automatically. Exists as a named
+ * export so the component registry can attribute variant data to
+ * `RefreshButton` as a sibling component.
+ */
+export const KUMO_REFRESH_BUTTON_VARIANTS = KUMO_BUTTON_VARIANTS;
+export const KUMO_REFRESH_BUTTON_DEFAULT_VARIANTS =
+  KUMO_BUTTON_DEFAULT_VARIANTS;
+
+/**
  * Square button with a rotating arrows icon, used to trigger data refresh actions.
  *
  * @example
@@ -281,7 +335,7 @@ export const RefreshButton = ({
   "aria-label": ariaLabel = "Refresh",
   loading,
   ...props
-}: ButtonProps) => (
+}: RefreshButtonProps) => (
   <Button shape="square" aria-label={ariaLabel} {...props}>
     <ArrowsClockwise
       className={cn({

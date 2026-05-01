@@ -145,41 +145,109 @@ export function parseDefaultsObject(objStr: string): Record<string, string> {
 }
 
 // =============================================================================
+// Alias-aware brace extraction
+// =============================================================================
+
+const MAX_ALIAS_DEPTH = 4;
+
+/**
+ * Extract a balanced brace block starting at `position`, following identifier
+ * aliases up to a small depth. Supports patterns like:
+ *
+ *   export const KUMO_FOO_VARIANTS = KUMO_BAR_VARIANTS;
+ *
+ * which rewires the brace search to the target constant's literal value.
+ * Returns null if no object literal is reachable within the depth limit.
+ */
+function extractBraceBlockWithAliasing(
+  content: string,
+  position: number,
+): string | null {
+  // Strip leading whitespace before deciding between identifier vs. object.
+  let cursor = position;
+  while (cursor < content.length && /\s/.test(content[cursor])) {
+    cursor += 1;
+  }
+
+  if (content[cursor] === "{") {
+    return extractBalancedBraces(content, cursor);
+  }
+
+  // Identifier alias path. Walk the chain.
+  for (let depth = 0; depth < MAX_ALIAS_DEPTH; depth += 1) {
+    const aliasMatch = /^([A-Za-z_$][\w$]*)/.exec(content.slice(cursor));
+    if (!aliasMatch) return null;
+
+    const aliasName = aliasMatch[1];
+    const aliasTarget = new RegExp(
+      `(?:export\\s+)?const\\s+${aliasName}\\s*=\\s*`,
+    ).exec(content);
+    if (!aliasTarget) return null;
+
+    cursor = aliasTarget.index + aliasTarget[0].length;
+    while (cursor < content.length && /\s/.test(content[cursor])) {
+      cursor += 1;
+    }
+
+    if (content[cursor] === "{") {
+      return extractBalancedBraces(content, cursor);
+    }
+  }
+
+  return null;
+}
+
+// =============================================================================
 // Main Extraction
 // =============================================================================
 
 /**
  * Extract KUMO_*_VARIANTS and KUMO_*_DEFAULT_VARIANTS from a component file.
  * Uses regex parsing to avoid import issues with JSX/React dependencies.
+ *
+ * When `variantConstName` is provided (e.g. `KUMO_LINK_BUTTON_VARIANTS`), the
+ * extractor scopes its search to that exact constant. This allows several
+ * components in the same file to declare distinct variant tables. When
+ * omitted, the first `KUMO_*_VARIANTS` export wins (legacy behavior).
  */
 export function extractVariantsFromFile(
   filePath: string,
+  variantConstName?: string,
 ): ExtractedVariants | null {
   try {
     const content = readFileSync(filePath, "utf-8");
 
+    const variantsRegex = variantConstName
+      ? new RegExp(`export\\s+const\\s+${variantConstName}\\s*=\\s*`)
+      : /export\s+const\s+KUMO_\w+_VARIANTS\s*=\s*/;
+    const defaultsConstName = variantConstName
+      ? variantConstName.replace(/_VARIANTS$/, "_DEFAULT_VARIANTS")
+      : null;
+    const defaultsRegex = defaultsConstName
+      ? new RegExp(`export\\s+const\\s+${defaultsConstName}\\s*=\\s*`)
+      : /export\s+const\s+KUMO_\w+_DEFAULT_VARIANTS\s*=\s*/;
+
     // Find KUMO_*_VARIANTS export start position
-    const variantsStartMatch = content.match(
-      /export\s+const\s+KUMO_\w+_VARIANTS\s*=\s*/,
-    );
+    const variantsStartMatch = content.match(variantsRegex);
     // Find KUMO_*_DEFAULT_VARIANTS export start position
-    const defaultsStartMatch = content.match(
-      /export\s+const\s+KUMO_\w+_DEFAULT_VARIANTS\s*=\s*/,
-    );
+    const defaultsStartMatch = content.match(defaultsRegex);
 
     if (!variantsStartMatch || !defaultsStartMatch) {
       return null;
     }
 
-    // Extract balanced brace content for variants
-    const variantsStartIndex =
-      (variantsStartMatch.index ?? 0) + variantsStartMatch[0].length;
-    const variantsBlock = extractBalancedBraces(content, variantsStartIndex);
+    // Extract balanced brace content for variants. Handle alias chains like
+    // `export const KUMO_LINK_BUTTON_VARIANTS = KUMO_BUTTON_VARIANTS` by
+    // resolving the identifier and re-extracting from the target.
+    const variantsBlock = extractBraceBlockWithAliasing(
+      content,
+      (variantsStartMatch.index ?? 0) + variantsStartMatch[0].length,
+    );
 
-    // Extract balanced brace content for defaults
-    const defaultsStartIndex =
-      (defaultsStartMatch.index ?? 0) + defaultsStartMatch[0].length;
-    const defaultsBlock = extractBalancedBraces(content, defaultsStartIndex);
+    const defaultsBlock = extractBraceBlockWithAliasing(
+      content,
+      (defaultsStartMatch.index ?? 0) + defaultsStartMatch[0].length,
+    );
 
     if (!variantsBlock || !defaultsBlock) {
       return null;

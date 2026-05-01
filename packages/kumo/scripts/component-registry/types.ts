@@ -115,6 +115,17 @@ export interface DetectedExports {
   componentName: string | null;
   /** Props type name if exported */
   propsType: string | null;
+  /**
+   * Components explicitly registered for codegen via
+   * `export const KUMO_REGISTRY_COMPONENTS = [...]` in index.ts.
+   *
+   * When present, the registry generator emits one `ComponentConfig` per
+   * entry. Each entry must correspond to an exported component plus a
+   * matching `${name}Props` type in the same source file.
+   *
+   * When absent, falls back to single-component-per-directory behavior.
+   */
+  registryComponents: string[] | null;
 }
 
 // =============================================================================
