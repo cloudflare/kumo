@@ -162,10 +162,9 @@ export function TimeseriesChart({
   tooltipEnterable,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
-  // Tracks which bar series the user is hovering over so the tooltip
+  // Tracks which series the user is hovering over so the tooltip
   // formatter can dim the rows of non-hovered series, matching the
-  // emphasis dimming on the bars. Only used for bar charts — line charts
-  // with showSymbol: false lack hover targets for mouseover events.
+  // emphasis dimming on the chart.
   const hoveredSeriesRef = useRef<string | null>(null);
   // Stable ref to the tooltip value formatter so the dangerousHtmlFormatter
   // closure (captured by useMemo) always calls the latest function without
@@ -396,25 +395,19 @@ export function TimeseriesChart({
     }
 
     // Track which series is hovered so the tooltip formatter can dim
-    // non-hovered rows, matching the emphasis dimming on the bars.
-    // Only enabled for bar charts — each stacked segment is a distinct
-    // graphical element so mouseover/mouseout fire reliably. Line charts
-    // with showSymbol: false lack hover targets, so tooltip dimming is
-    // not supported for them.
-    if (type === "bar") {
-      handlers.mouseover = (params) => {
-        hoveredSeriesRef.current = params.seriesName ?? null;
-      };
-      handlers.mouseout = () => {
-        hoveredSeriesRef.current = null;
-      };
-      handlers.globalout = () => {
-        hoveredSeriesRef.current = null;
-      };
-    }
+    // non-hovered rows, matching the emphasis dimming on the chart.
+    handlers.mouseover = (params) => {
+      hoveredSeriesRef.current = params.seriesName ?? null;
+    };
+    handlers.mouseout = () => {
+      hoveredSeriesRef.current = null;
+    };
+    handlers.globalout = () => {
+      hoveredSeriesRef.current = null;
+    };
 
     return handlers;
-  }, [onTimeRangeChange, type]);
+  }, [onTimeRangeChange]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
