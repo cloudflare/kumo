@@ -107,26 +107,6 @@ export interface ChartEvents {
 
   axisareaselected: (params: any) => void;
 
-  /**
-   * Fired whenever the axis pointer moves to a new position.
-   * Includes the series index closest to the pointer, which is useful
-   * for determining which series the user is interacting with when
-   * the tooltip uses `trigger: "axis"`.
-   */
-  updateAxisPointer: (params: {
-    seriesDataByAxis: Array<{
-      axisDim: string;
-      axisIndex: number;
-      value: number;
-      seriesDataIndices: Array<{
-        seriesIndex: number;
-        dataIndex: number;
-      }>;
-    }>;
-    dataIndex?: number;
-    seriesIndex?: number;
-  }) => void;
-
   // Brush / selection events
   brush: (params: any) => void;
   brushselected: (params: any) => void;
