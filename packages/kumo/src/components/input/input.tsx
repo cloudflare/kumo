@@ -108,7 +108,7 @@ export function inputVariants({
     // Base styles
     "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line outline-none focus:outline-none",
     // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
-    "kumo-input-placeholder disabled:text-kumo-subtle",
+    "kumo-input-placeholder disabled:text-kumo-disabled",
     // Apply size styles from KUMO_INPUT_VARIANTS
     KUMO_INPUT_VARIANTS.size[size].classes,
     // Apply variant styles from KUMO_INPUT_VARIANTS

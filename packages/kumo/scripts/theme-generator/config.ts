@@ -43,8 +43,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-600, oklch(43.9% 0 0))",
-          dark: "var(--color-neutral-400, oklch(70.8% 0 0))",
+          light: "var(--color-neutral-950, oklch(14.5% 0 0))", // darker than default
+          dark: "var(--color-neutral-50, oklch(98.5% 0 0))", // lighter than default
         },
       },
     },
@@ -52,8 +52,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-500, oklch(55.6% 0 0))",
-          dark: "var(--color-neutral-400, oklch(70.8% 0 0))",
+          light: "var(--color-neutral-500, oklch(55.6% 0 0))", // lighter than default
+          dark: "var(--color-neutral-400, oklch(70.8% 0 0))", // darker than default
         },
       },
     },
@@ -61,17 +61,17 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-600, oklch(70.8% 0 0))",
+          light: "var(--color-neutral-300, oklch(87% 0 0))", // lighter than subtle
+          dark: "var(--color-neutral-600, oklch(43.9% 0 0))", // darker than subtle
         },
       },
     },
-    "kumo-placeholder": {
+    "kumo-placeholder": { // in between subtle and inactive
       newName: "",
       theme: {
         kumo: {
           light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-500, oklch(55.6% 0 0))",
+          dark: "var(--color-neutral-500, oklch(55.6% 0 0))", 
         },
       },
     },
@@ -323,7 +323,7 @@ export const THEME_CONFIG: ThemeConfig = {
         kumo: {
           light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
           dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
-        },
+      },
         fedramp: {
           light: "#c8d4e5",
           dark: "#c8d4e5",

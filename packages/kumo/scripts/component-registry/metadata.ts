@@ -485,7 +485,7 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     ],
   },
   Code: {
-    baseTokens: ["text-kumo-strong"],
+    baseTokens: ["text-kumo-subtle"],
     dimensions: "m-0 w-auto p-0",
     borderRadius: "rounded-none",
     states: {

@@ -322,7 +322,7 @@ function GroupLabel({
   return (
     <Autocomplete.GroupLabel
       className={cn(
-        "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-strong",
+        "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-subtle",
         className,
       )}
     >
@@ -373,7 +373,7 @@ function Empty({ children }: CommandPaletteEmptyProps) {
   return (
     <Autocomplete.Empty>
       <div className="p-8 text-center">
-        <p className="text-kumo-strong">{children ?? "No results found"}</p>
+        <p className="text-kumo-subtle">{children ?? "No results found"}</p>
       </div>
     </Autocomplete.Empty>
   );
@@ -400,7 +400,7 @@ function Loading({ children }: CommandPaletteLoadingProps) {
  */
 function Footer({ children }: CommandPaletteFooterProps) {
   return (
-    <div className="flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong">
+    <div className="flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-subtle">
       {children}
     </div>
   );
@@ -529,8 +529,8 @@ function ResultItem<T>({
           )}
           {description && (
             <>
-              <span className="text-kumo-strong">—</span>
-              <span className="truncate text-sm text-kumo-strong">
+              <span className="text-kumo-subtle">—</span>
+              <span className="truncate text-sm text-kumo-subtle">
                 {description}
               </span>
             </>

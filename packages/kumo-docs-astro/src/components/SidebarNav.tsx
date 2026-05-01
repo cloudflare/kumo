@@ -103,7 +103,7 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
-  "block rounded-lg text-kumo-strong hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
+  "block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
 const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
 
 interface SidebarNavProps {
@@ -388,7 +388,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         <div
           ref={mobileScrollRef}
           data-sidebar-scroll="mobile"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
           style={{ scrollBehavior: "auto" }}
         >
           {navContent}
@@ -438,7 +438,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         <div
           ref={desktopScrollRef}
           data-sidebar-scroll="desktop"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
         >
           {navContent}
         </div>

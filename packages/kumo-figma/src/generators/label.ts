@@ -104,7 +104,7 @@ export function getLabelTextConfig() {
       fontWeight: FALLBACK_VALUES.fontWeight.medium, // 500
       textVariable: VAR_NAMES.text.default,
     },
-    // Optional indicator: font-normal text-kumo-strong
+    // Optional indicator: font-normal text-kumo-subtle
     optional: {
       fontSize: FONT_SIZE.base, // 14px
       fontWeight: FALLBACK_VALUES.fontWeight.normal, // 400

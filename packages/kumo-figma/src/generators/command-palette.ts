@@ -57,8 +57,8 @@ const COMPONENT_CLASSES = {
   list: "rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-line",
   // Group: "space-y-0.5"
   group: "space-y-0.5",
-  // Group label: "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-strong"
-  groupLabel: "px-2 pt-1 text-xs font-semibold text-kumo-strong",
+  // Group label: "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-subtle"
+  groupLabel: "px-2 pt-1 text-xs font-semibold text-kumo-subtle",
   // Item: "flex w-full items-center gap-3 px-2 py-1.5 text-left cursor-pointer data-[highlighted]:bg-kumo-overlay rounded-lg"
   item: "gap-3 px-2 py-1.5 rounded-lg",
   itemHighlighted: "bg-kumo-overlay",
@@ -72,12 +72,12 @@ const COMPONENT_CLASSES = {
   resultArrow: "h-4 w-4 text-kumo-subtle",
   // External icon: "h-3.5 w-3.5 flex-shrink-0 text-kumo-subtle"
   externalIcon: "h-3.5 w-3.5 text-kumo-subtle",
-  // Empty state: "p-8 text-center text-kumo-strong"
-  empty: "p-8 text-kumo-strong",
+  // Empty state: "p-8 text-center text-kumo-subtle"
+  empty: "p-8 text-kumo-subtle",
   // Loading: "flex items-center justify-center p-8"
   loading: "p-8",
-  // Footer: "flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong"
-  footer: "rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong",
+  // Footer: "flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-subtle"
+  footer: "rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-subtle",
   // Highlight mark: "rounded-sm bg-kumo-warning/50 text-kumo-default"
   highlightMark: "rounded-sm bg-kumo-warning/50 text-kumo-default",
 };
@@ -296,7 +296,7 @@ async function createResultItem(
 
 /**
  * Create a group label
- * Styles from: "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-strong"
+ * Styles from: "mb-2 px-2 pt-1 text-xs font-semibold text-kumo-subtle"
  */
 async function createGroupLabel(text: string): Promise<FrameNode> {
   const styles = parseTailwindClasses(COMPONENT_CLASSES.groupLabel);
@@ -321,7 +321,7 @@ async function createGroupLabel(text: string): Promise<FrameNode> {
   );
   label.name = "Label Text";
 
-  // text-kumo-strong
+  // text-kumo-subtle
   if (styles.textVariable) {
     const labelVar = getVariableByName(styles.textVariable);
     if (labelVar) {
@@ -522,7 +522,7 @@ async function createKeyboardHint(
 
 /**
  * Create the footer with keyboard hints
- * Styles from: "flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-strong"
+ * Styles from: "flex items-center justify-between rounded-b-lg bg-kumo-elevated px-4 py-3 text-xs text-kumo-subtle"
  */
 async function createFooter(): Promise<FrameNode> {
   const styles = parseTailwindClasses(COMPONENT_CLASSES.footer);

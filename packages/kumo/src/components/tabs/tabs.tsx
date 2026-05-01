@@ -170,9 +170,9 @@ export function Tabs({
             className={cn(
               "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               isSegmented &&
-                "my-0.5 rounded-md px-2.5 text-kumo-strong hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
+                "my-0.5 rounded-md px-2.5 text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
               isUnderline &&
-                "px-2 py-2.5 text-kumo-strong hover:bg-kumo-tint hover:text-kumo-subtle aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
+                "px-2 py-2.5 text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
               tab.className,
             )}
           >
