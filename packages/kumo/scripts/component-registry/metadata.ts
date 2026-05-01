@@ -319,6 +319,161 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       description: "Callback when collapsed state changes",
     },
   },
+  "DropdownMenu.Item": {
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    variant: {
+      type: '"default" | "danger"',
+      description: "Visual style of the item.",
+      default: '"default"',
+    },
+    selected: {
+      type: "boolean",
+      description: "Shows a check mark indicator when true.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    onClick: {
+      type: "(event: React.MouseEvent) => void",
+      description: "Callback when the item is clicked.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "true",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.LinkItem": {
+    href: {
+      type: "string",
+      description: "URL to navigate to when clicked.",
+    },
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    variant: {
+      type: '"default" | "danger"',
+      description: "Visual style of the item.",
+      default: '"default"',
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    target: {
+      type: "string",
+      description: 'Link target attribute (e.g. "_blank" for new tab).',
+    },
+    render: {
+      type: "ReactElement | ((props, state) => ReactElement)",
+      description:
+        "Custom element to render as the link. Use to integrate with framework routers (e.g. Next.js Link).",
+    },
+  },
+  "DropdownMenu.Content": {
+    sideOffset: {
+      type: "number",
+      description: "Distance in pixels from the trigger.",
+      default: "8",
+    },
+    container: {
+      type: "PortalContainer",
+      description:
+        "Container element for the portal. Use this to render inside a Shadow DOM or custom container.",
+    },
+  },
+  "DropdownMenu.SubTrigger": {
+    icon: {
+      type: "Icon",
+      description: "Icon displayed before the label.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+  },
+  "DropdownMenu.CheckboxItem": {
+    checked: {
+      type: "boolean",
+      description: "Whether the item is checked.",
+    },
+    defaultChecked: {
+      type: "boolean",
+      description: "Whether the item is initially checked (uncontrolled).",
+      default: "false",
+    },
+    onCheckedChange: {
+      type: "(checked: boolean, event: ChangeEventDetails) => void",
+      description: "Callback when the checked state changes.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "false",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.RadioGroup": {
+    value: {
+      type: "any",
+      description:
+        "The controlled value of the currently selected radio item.",
+    },
+    defaultValue: {
+      type: "any",
+      description: "The initially selected value (uncontrolled).",
+    },
+    onValueChange: {
+      type: "(value: any, event: ChangeEventDetails) => void",
+      description: "Callback when the selected value changes.",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, all radio items in the group are disabled.",
+    },
+  },
+  "DropdownMenu.RadioItem": {
+    value: {
+      type: "any",
+      required: true,
+      description: "The value of this radio item.",
+    },
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "false",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.Label": {
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+  },
   "InputGroup.Addon": {
     align: {
       type: '"start" | "end"',
