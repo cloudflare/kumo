@@ -44,6 +44,7 @@ import {
   createCacheEntry,
 } from "./cache.js";
 import {
+  toPascalCase,
   toScreamingSnakeCase,
   extractSemanticColors,
   extractBlockDependencies,
@@ -586,11 +587,16 @@ async function processComponent(
   const colors = extractSemanticColors(sourcePath);
 
   // Determine examples
+  // Demo metadata keys are derived from file names (e.g. DropdownDemo.tsx → "Dropdown")
+  // which may differ from the component's export name (e.g. "DropdownMenu").
+  // Try the component name first, then fall back to the PascalCase directory name.
   let examples: readonly string[];
   if (config.examples !== undefined) {
     examples = config.examples;
   } else {
-    const extracted = input.storyExamples.get(config.name);
+    const extracted =
+      input.storyExamples.get(config.name) ??
+      input.storyExamples.get(toPascalCase(config.dirName));
     examples = extracted?.aiExamples ?? [];
     if (examples.length > 0 && CLI_FLAGS.verbose) {
       console.log(

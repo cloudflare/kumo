@@ -82,7 +82,7 @@ export function CloudflareLogoCopyDemo() {
         <DropdownMenu.Content>
           <DropdownMenu.Item
             icon={CloudIcon}
-            onSelect={() =>
+            onClick={() =>
               copyToClipboard(
                 generateCloudflareLogoSvg({ variant: "glyph" }),
                 "glyph",
@@ -93,7 +93,7 @@ export function CloudflareLogoCopyDemo() {
           </DropdownMenu.Item>
           <DropdownMenu.Item
             icon={CodeIcon}
-            onSelect={() =>
+            onClick={() =>
               copyToClipboard(
                 generateCloudflareLogoSvg({ variant: "full" }),
                 "full",
@@ -104,7 +104,7 @@ export function CloudflareLogoCopyDemo() {
           </DropdownMenu.Item>
           <DropdownMenu.Item
             icon={DownloadSimpleIcon}
-            onSelect={() =>
+            onClick={() =>
               window.open(
                 "https://www.cloudflare.com/press-kit/",
                 "_blank",
@@ -117,7 +117,7 @@ export function CloudflareLogoCopyDemo() {
           <DropdownMenu.Separator />
           <DropdownMenu.Item
             icon={ArrowSquareOutIcon}
-            onSelect={() =>
+            onClick={() =>
               window.open(
                 "https://www.cloudflare.com/brand-assets/",
                 "_blank",
