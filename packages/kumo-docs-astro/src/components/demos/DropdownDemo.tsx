@@ -147,6 +147,28 @@ export function DropdownNestedDemo() {
 }
 
 /**
+ * Use `inset` on items without an icon to align their text with items that have one.
+ */
+export function DropdownInsetDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Edit</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.Item icon={PencilSimpleIcon}>Rename</DropdownMenu.Item>
+        <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item inset>Move to folder</DropdownMenu.Item>
+        <DropdownMenu.Item inset>Add to favorites</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item icon={TrashIcon} variant="danger">
+          Delete
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/**
  * Use `onClick` on `DropdownMenu.Item` to handle item actions.
  * Each item receives a standard React mouse event handler.
  */

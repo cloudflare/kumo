@@ -11,6 +11,7 @@ import ComponentSection from "~/components/docs/ComponentSection.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   DropdownBasicDemo,
+  DropdownInsetDemo,
   DropdownOnClickDemo,
   DropdownCheckboxDemo,
   DropdownNestedDemo,
@@ -91,6 +92,15 @@ export default function Example() {
 
 <ComponentExample demo="DropdownBasicDemo">
   <DropdownBasicDemo client:load />
+</ComponentExample>
+
+### Inset Items
+
+<p>
+  Use `inset` on items without an icon to align their text with items that have one.
+</p>
+<ComponentExample demo="DropdownInsetDemo">
+  <DropdownInsetDemo client:load />
 </ComponentExample>
 
 ### Handling Item Clicks
