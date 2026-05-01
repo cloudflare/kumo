@@ -1,5 +1,13 @@
 # @cloudflare/kumo
 
+## 2.0.2
+
+### Patch Changes
+
+- fbf3eef: Forward all Base UI Panel props (including `keepMounted` and `hiddenUntilFound`) through `Collapsible.DefaultPanel`. Previously these were silently dropped because `DefaultPanel` used a standalone props interface instead of extending `BasePanelProps`.
+- 40491c2: Fix registry codegen to match demo examples when component export name differs from directory name (e.g. DropdownMenu vs dropdown). This restores missing examples for DropdownMenu and other affected components.
+- 3427221: TooltipProvider props (`delay`, `closeDelay`, `timeout`) are now shown in the Tooltip component's API Reference on the docs site.
+
 ## 2.0.1
 
 ### Patch Changes
