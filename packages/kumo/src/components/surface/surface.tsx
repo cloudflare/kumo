@@ -1,5 +1,6 @@
 import { createElement, type ElementType } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { LayerCard, type LayerCardProps } from "../layer-card/layer-card";
 
 /** Surface color variant definitions. */
@@ -36,7 +37,7 @@ export interface KumoSurfaceVariantsProps {
 export function surfaceVariants({
   color = KUMO_SURFACE_DEFAULT_VARIANTS.color,
 }: KumoSurfaceVariantsProps = {}) {
-  return KUMO_SURFACE_VARIANTS.color[color].classes;
+  return resolveVariant(KUMO_SURFACE_VARIANTS.color, color, KUMO_SURFACE_DEFAULT_VARIANTS.color).classes;
 }
 
 /**

@@ -13,6 +13,7 @@ import { Button } from "../../components/button";
 import { SkeletonLine } from "../../components/loader/skeleton-line";
 import { useLinkComponent } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Breadcrumbs size variant definitions. */
 export const KUMO_BREADCRUMBS_VARIANTS = {
@@ -49,7 +50,7 @@ export function breadcrumbsVariants({
 }: KumoBreadcrumbsVariantsProps = {}) {
   return cn(
     "group mr-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
-    KUMO_BREADCRUMBS_VARIANTS.size[size].classes,
+    resolveVariant(KUMO_BREADCRUMBS_VARIANTS.size, size, KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size).classes,
   );
 }
 

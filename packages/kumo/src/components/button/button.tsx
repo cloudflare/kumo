@@ -3,6 +3,7 @@ import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
 import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
@@ -135,10 +136,10 @@ export function buttonVariants({
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
     // Apply variant, size, shape styles from KUMO_BUTTON_VARIANTS
-    KUMO_BUTTON_VARIANTS.variant[variant].classes,
-    KUMO_BUTTON_VARIANTS.size[size].classes,
-    KUMO_BUTTON_VARIANTS.shape[shape].classes,
-    isCompactShape && KUMO_BUTTON_VARIANTS.compactSize[size].classes,
+    resolveVariant(KUMO_BUTTON_VARIANTS.variant, variant, KUMO_BUTTON_DEFAULT_VARIANTS.variant).classes,
+    resolveVariant(KUMO_BUTTON_VARIANTS.size, size, KUMO_BUTTON_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(KUMO_BUTTON_VARIANTS.shape, shape, KUMO_BUTTON_DEFAULT_VARIANTS.shape).classes,
+    isCompactShape && resolveVariant(KUMO_BUTTON_VARIANTS.compactSize, size, KUMO_BUTTON_DEFAULT_VARIANTS.size).classes,
   );
 }
 

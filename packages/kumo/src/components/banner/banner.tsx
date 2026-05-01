@@ -1,5 +1,6 @@
 import { type ReactNode, isValidElement, forwardRef } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Base styles applied to all banner variants. */
 export const KUMO_BANNER_BASE_STYLES =
@@ -54,7 +55,7 @@ export function bannerVariants({
     // Base styles (exported as KUMO_BANNER_BASE_STYLES for Figma plugin)
     KUMO_BANNER_BASE_STYLES,
     // Apply variant styles from KUMO_BANNER_VARIANTS
-    KUMO_BANNER_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_BANNER_VARIANTS.variant, variant, KUMO_BANNER_DEFAULT_VARIANTS.variant).classes,
   );
 }
 
@@ -133,7 +134,7 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
   },
   ref,
 ) {
-  const variantConfig = KUMO_BANNER_VARIANTS.variant[variant];
+  const variantConfig = resolveVariant(KUMO_BANNER_VARIANTS.variant, variant, KUMO_BANNER_DEFAULT_VARIANTS.variant);
 
   // Structured mode: title and/or description provided
   if (title || description) {

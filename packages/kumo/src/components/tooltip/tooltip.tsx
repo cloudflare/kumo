@@ -1,6 +1,7 @@
 import { Tooltip as TooltipBase } from "@base-ui/react/tooltip";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -59,7 +60,7 @@ export function tooltipVariants({
     "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
     "data-[instant]:duration-0",
     // Apply side-specific styles (currently none, but extensible)
-    KUMO_TOOLTIP_VARIANTS.side[side].classes,
+    resolveVariant(KUMO_TOOLTIP_VARIANTS.side, side, KUMO_TOOLTIP_DEFAULT_VARIANTS.side).classes,
   );
 }
 
