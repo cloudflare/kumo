@@ -128,13 +128,13 @@ export function CodeHighlighted({
         {lineNumbers && (
           <div className="flex">
             {lineNumbers}
-            <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+            <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-subtle">
               <code className="!m-0 !p-0">{code}</code>
             </pre>
           </div>
         )}
         {!lineNumbers && (
-          <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-strong">
+          <pre className="!m-0 min-w-0 flex-1 overflow-x-auto !p-4 font-mono text-sm leading-relaxed text-kumo-subtle">
             <code className="!m-0 !p-0">{code}</code>
           </pre>
         )}

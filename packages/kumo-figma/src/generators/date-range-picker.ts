@@ -541,7 +541,7 @@ async function createFooter(
   timezoneSection.fills = [];
 
   const globeIcon = getButtonIcon("ph-globe-hemisphere-west", "sm");
-  bindIconColor(globeIcon, "text-kumo-strong");
+  bindIconColor(globeIcon, "text-kumo-subtle");
   timezoneSection.appendChild(globeIcon);
 
   const timezoneText = await createTextNode(

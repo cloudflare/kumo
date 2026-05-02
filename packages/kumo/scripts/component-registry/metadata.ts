@@ -8,7 +8,12 @@
  * - Styling metadata for Figma plugin
  */
 
-import type { PropSchema, PassthroughDoc, ComponentStyling } from "./types.js";
+import type {
+  PropSchema,
+  PassthroughDoc,
+  ComponentStyling,
+  SubComponentConfig,
+} from "./types.js";
 
 // =============================================================================
 // Pass-through Component Documentation
@@ -158,6 +163,66 @@ export const PASSTHROUGH_COMPONENT_DOCS: Record<string, PassthroughDoc> = {
 </Combobox.Collection>`,
     ],
   },
+
+  // Tooltip sub-components
+  "TooltipBase.Provider": {
+    description:
+      "Groups multiple tooltips so that after the first tooltip is shown, switching to another skips the open delay. Place once at your app root or layout.",
+    props: {
+      delay: {
+        type: "number",
+        description:
+          "How long to wait (ms) before opening a tooltip once the pointer enters the trigger.",
+        default: "600",
+      },
+      closeDelay: {
+        type: "number",
+        description: "How long to wait (ms) before closing a tooltip.",
+        default: "0",
+      },
+      timeout: {
+        type: "number",
+        description:
+          "Grace period (ms) during which a just-closed tooltip's delay is skipped when another tooltip opens.",
+        default: "400",
+      },
+    },
+    usageExamples: ["<TooltipProvider>\n  <App />\n</TooltipProvider>"],
+  },
+};
+
+// =============================================================================
+// Sub-Component Overrides
+// =============================================================================
+
+/**
+ * Manual sub-component entries that are merged into the registry alongside
+ * entries detected by `detectSubComponents()` in `sub-components.ts`.
+ *
+ * Use this when a component exposes a related API (e.g., a sibling named
+ * export like `TooltipProvider`) that we want documented as a sub-component
+ * (e.g., `Tooltip.Provider`) for the registry / docs, *without* changing the
+ * component's runtime shape (no `Object.assign`, no attached property).
+ *
+ * Detected sub-components take precedence over overrides with the same
+ * `name`, so a real source-level compound pattern will always win and
+ * prevent silent masking of detector regressions.
+ *
+ * Keyed by the parent component name (e.g., "Tooltip"). Values have the same
+ * shape as `detectSubComponents()` entries so they feed directly into the
+ * existing processing loop in `index.ts`.
+ */
+export const SUB_COMPONENT_OVERRIDES: Record<string, SubComponentConfig[]> = {
+  Tooltip: [
+    {
+      name: "Provider",
+      valueName: "TooltipProvider",
+      propsType: null,
+      description: "Provider sub-component (wraps TooltipBase)",
+      isPassThrough: true,
+      baseComponent: "TooltipBase.Provider",
+    },
+  ],
 };
 
 // =============================================================================
@@ -252,6 +317,161 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
     onOpenChange: {
       type: "(open: boolean) => void",
       description: "Callback when collapsed state changes",
+    },
+  },
+  "DropdownMenu.Item": {
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    variant: {
+      type: '"default" | "danger"',
+      description: "Visual style of the item.",
+      default: '"default"',
+    },
+    selected: {
+      type: "boolean",
+      description: "Shows a check mark indicator when true.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    onClick: {
+      type: "(event: React.MouseEvent) => void",
+      description: "Callback when the item is clicked.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "true",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.LinkItem": {
+    href: {
+      type: "string",
+      description: "URL to navigate to when clicked.",
+    },
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    variant: {
+      type: '"default" | "danger"',
+      description: "Visual style of the item.",
+      default: '"default"',
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    target: {
+      type: "string",
+      description: 'Link target attribute (e.g. "_blank" for new tab).',
+    },
+    render: {
+      type: "ReactElement | ((props, state) => ReactElement)",
+      description:
+        "Custom element to render as the link. Use to integrate with framework routers (e.g. Next.js Link).",
+    },
+  },
+  "DropdownMenu.Content": {
+    sideOffset: {
+      type: "number",
+      description: "Distance in pixels from the trigger.",
+      default: "8",
+    },
+    container: {
+      type: "PortalContainer",
+      description:
+        "Container element for the portal. Use this to render inside a Shadow DOM or custom container.",
+    },
+  },
+  "DropdownMenu.SubTrigger": {
+    icon: {
+      type: "Icon",
+      description: "Icon displayed before the label.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+  },
+  "DropdownMenu.CheckboxItem": {
+    checked: {
+      type: "boolean",
+      description: "Whether the item is checked.",
+    },
+    defaultChecked: {
+      type: "boolean",
+      description: "Whether the item is initially checked (uncontrolled).",
+      default: "false",
+    },
+    onCheckedChange: {
+      type: "(checked: boolean, event: ChangeEventDetails) => void",
+      description: "Callback when the checked state changes.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "false",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.RadioGroup": {
+    value: {
+      type: "any",
+      description:
+        "The controlled value of the currently selected radio item.",
+    },
+    defaultValue: {
+      type: "any",
+      description: "The initially selected value (uncontrolled).",
+    },
+    onValueChange: {
+      type: "(value: any, event: ChangeEventDetails) => void",
+      description: "Callback when the selected value changes.",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, all radio items in the group are disabled.",
+    },
+  },
+  "DropdownMenu.RadioItem": {
+    value: {
+      type: "any",
+      required: true,
+      description: "The value of this radio item.",
+    },
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "false",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.Label": {
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
     },
   },
   "InputGroup.Addon": {
@@ -420,7 +640,7 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     ],
   },
   Code: {
-    baseTokens: ["text-kumo-strong"],
+    baseTokens: ["text-kumo-subtle"],
     dimensions: "m-0 w-auto p-0",
     borderRadius: "rounded-none",
     states: {

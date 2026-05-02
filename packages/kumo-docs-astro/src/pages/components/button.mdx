@@ -23,6 +23,7 @@ import {
   ButtonLoadingDemo,
   ButtonDisabledDemo,
   ButtonTitleDemo,
+  ButtonLinkAsButtonDemo,
 } from "~/components/demos/ButtonDemo";
 
 {/* Demo */}
@@ -216,6 +217,21 @@ export default function Example() {
   >
     <ButtonTitleDemo client:visible />
   </ComponentExample>
+
+### Link as Button
+
+<p>
+  Use `LinkButton` when the interaction should navigate somewhere but still look
+  like a button. Use `Button` for in-place actions like submitting, opening, or
+  toggling UI.
+</p>
+<ComponentExample
+  demo="ButtonLinkAsButtonDemo"
+  vrSection="link-as-button"
+  vrTitle="Link as Button"
+>
+  <ButtonLinkAsButtonDemo client:visible />
+</ComponentExample>
 </ComponentSection>
 
 {/* API Reference */}

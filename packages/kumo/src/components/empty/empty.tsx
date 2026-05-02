@@ -100,7 +100,7 @@ export function Empty({
       <h2 className="text-2xl font-semibold">{title}</h2>
 
       {description && (
-        <p className="max-w-140 text-center text-kumo-strong">{description}</p>
+        <p className="max-w-140 text-center text-kumo-subtle">{description}</p>
       )}
 
       {commandLine && (
@@ -113,7 +113,7 @@ export function Empty({
           )}
         >
           <span className="text-xs text-kumo-inactive select-none">$</span>
-          <span className="no-scrollbar overflow-scroll text-[14px] whitespace-nowrap text-kumo-brand">
+          <span className="no-scrollbar overflow-scroll text-base whitespace-nowrap text-kumo-brand">
             {commandLine}
           </span>
           <Button

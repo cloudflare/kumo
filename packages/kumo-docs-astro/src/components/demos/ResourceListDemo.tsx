@@ -36,7 +36,7 @@ function ResourceListPage({
               {title}
             </h1>
           </div>
-          <p className="hidden p-0 text-lg leading-normal text-pretty text-kumo-strong md:block">
+          <p className="hidden p-0 text-lg leading-normal text-pretty text-kumo-subtle md:block">
             {description}
           </p>
         </div>
@@ -63,7 +63,7 @@ export function ResourceListBasicDemo() {
     <ResourceListPage
       title="Databases"
       description="Manage your database instances and configurations"
-      icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
+      icon={<DatabaseIcon size={32} className="text-kumo-subtle" />}
     >
       <Surface className="p-6">
         <p>Main content area - your resource list would go here</p>
@@ -80,7 +80,7 @@ export function ResourceListWithUsageDemo() {
       usage={
         <Surface className="p-4">
           <h3 className="mb-2 font-semibold">Quick Start</h3>
-          <p className="mb-3 text-sm text-kumo-strong">
+          <p className="mb-3 text-sm text-kumo-subtle">
             Generate an API key to authenticate your requests
           </p>
           <Code
@@ -102,7 +102,7 @@ export function ResourceListCompleteDemo() {
     <ResourceListPage
       title="KV Namespaces"
       description="Store key-value data globally with low-latency access"
-      icon={<DatabaseIcon size={32} className="text-kumo-strong" />}
+      icon={<DatabaseIcon size={32} className="text-kumo-subtle" />}
       usage={
         <Surface className="p-4">
           <h3 className="mb-2 font-semibold">Usage Example</h3>
@@ -119,7 +119,7 @@ await KV.put('key', 'value');`}
       additionalContent={
         <Surface className="p-4">
           <h3 className="mb-2 font-semibold">Learn More</h3>
-          <p className="text-sm text-kumo-strong">
+          <p className="text-sm text-kumo-subtle">
             Check out our documentation to learn more about KV storage.
           </p>
         </Surface>
@@ -128,11 +128,11 @@ await KV.put('key', 'value');`}
       <div className="space-y-4">
         <Surface className="p-6">
           <h4 className="mb-2 font-semibold">production-kv</h4>
-          <p className="text-sm text-kumo-strong">Created 2 days ago</p>
+          <p className="text-sm text-kumo-subtle">Created 2 days ago</p>
         </Surface>
         <Surface className="p-6">
           <h4 className="mb-2 font-semibold">staging-kv</h4>
-          <p className="text-sm text-kumo-strong">Created 1 week ago</p>
+          <p className="text-sm text-kumo-subtle">Created 1 week ago</p>
         </Surface>
       </div>
     </ResourceListPage>

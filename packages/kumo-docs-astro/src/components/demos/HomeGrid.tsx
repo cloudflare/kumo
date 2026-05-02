@@ -154,6 +154,7 @@ export function HomeGrid() {
         <Select
           aria-label="Select version"
           className="w-[200px]"
+          placeholder="Select version"
           renderValue={(v) => {
             const labels: Record<string, string> = {
               all: "All deployed versions",

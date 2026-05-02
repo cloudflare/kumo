@@ -528,7 +528,7 @@ function DateRangeDayCell({
     switch (mode) {
       case DateRangeCellMode.OUT_OF_RANGE:
       case DateRangeCellMode.SELECTED_OUT_OF_RANGE:
-        return "!text-kumo-strong";
+        return "!text-kumo-subtle";
       case DateRangeCellMode.SELECTED_START_NODE:
       case DateRangeCellMode.SELECTED_END_NODE:
         return "!text-kumo-inverse";
@@ -645,7 +645,7 @@ function DateRangeFooter({
 
   return (
     <div
-      className={cn("flex items-center gap-2 text-kumo-strong", sizeConfig.textSize)}
+      className={cn("flex items-center gap-2 text-kumo-subtle", sizeConfig.textSize)}
     >
       <GlobeHemisphereWestIcon size={sizeConfig.iconSize} />
       <span className="flex-1">Timezone: {timezone}</span>

@@ -157,7 +157,7 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
   return (
     <div
       data-slot="pagination-info"
-      className={cn("text-sm text-kumo-strong", className)}
+      className={cn("text-sm text-kumo-subtle", className)}
     >
       {content}
     </div>
@@ -200,7 +200,7 @@ function PaginationPageSize({
       data-slot="pagination-page-size"
       className={cn("flex items-center gap-2", className)}
     >
-      {label && <span className="text-sm text-kumo-strong">{label}</span>}
+      {label && <span className="text-sm text-kumo-subtle">{label}</span>}
       <Select
         aria-label={labels.pageSize}
         value={value}
@@ -602,7 +602,7 @@ function PaginationRoot(props: PaginationProps) {
           aria-live="polite"
           aria-atomic="true"
           data-slot="pagination-info"
-          className="grow text-sm text-kumo-strong"
+          className="grow text-sm text-kumo-subtle"
         >
           {getPaginationText()}
         </div>

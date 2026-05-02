@@ -178,7 +178,7 @@ CollapsibleDefaultTrigger.displayName = "Collapsible.DefaultTrigger";
 // Default Panel (Migration Affordance)
 // =============================================================================
 
-export interface CollapsibleDefaultPanelProps {
+export interface CollapsibleDefaultPanelProps extends BasePanelProps {
   /** Panel content */
   children: ReactNode;
   /** Additional CSS classes */
@@ -202,11 +202,12 @@ export interface CollapsibleDefaultPanelProps {
 const CollapsibleDefaultPanel = forwardRef<
   HTMLDivElement,
   CollapsibleDefaultPanelProps
->(({ children, className }, ref) => {
+>(({ children, className, ...props }, ref) => {
   return (
     <CollapsibleBase.Panel
       ref={ref}
       className={cn("my-2 space-y-4 border-l-2 border-kumo-fill pl-4", className)}
+      {...props}
     >
       {children}
     </CollapsibleBase.Panel>
