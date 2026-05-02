@@ -36,7 +36,7 @@ export const KUMO_CODE_DEFAULT_VARIANTS = {
  */
 export const KUMO_CODE_STYLING = {
   /** Base semantic tokens used */
-  baseTokens: ["text-kumo-strong"],
+  baseTokens: ["text-kumo-subtle"],
   /** Typography and layout */
   typography: {
     fontFamily: "font-mono",
@@ -100,7 +100,7 @@ export function codeVariants({
 }: KumoCodeVariantsProps = {}) {
   return cn(
     // Base styles
-    "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-strong",
+    "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-subtle",
     // Apply lang-specific styles (fallback to default if lang not in map)
     KUMO_CODE_VARIANTS.lang[lang]?.classes ??
       KUMO_CODE_VARIANTS.lang[KUMO_CODE_DEFAULT_VARIANTS.lang].classes,
@@ -149,7 +149,7 @@ export interface CodeProps extends KumoCodeVariantsProps {
  *
  * **Styling:**
  * - Typography: `font-mono text-sm leading-[20px]`
- * - Colors: `text-kumo-strong` with `bg-transparent`
+ * - Colors: `text-kumo-subtle` with `bg-transparent`
  * - No borders or padding (use CodeBlock for styled container)
  * - Supports all semantic tokens via className prop
  *

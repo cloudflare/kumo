@@ -83,7 +83,7 @@ export function StickyDocHeader({
                 href={githubSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View source on GitHub"
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle ? 0 : -1}
@@ -96,7 +96,7 @@ export function StickyDocHeader({
                 href={baseUIUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View Base UI documentation"
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle ? 0 : -1}
@@ -130,7 +130,7 @@ export function StickyDocHeader({
                 href={githubSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View source on GitHub"
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
@@ -143,7 +143,7 @@ export function StickyDocHeader({
                 href={baseUIUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View Base UI documentation"
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}

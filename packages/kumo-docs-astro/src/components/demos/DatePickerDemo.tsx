@@ -241,7 +241,7 @@ export function DatePickerRangeWithPresetsDemo() {
                   className={`rounded-md px-3 py-1.5 text-left whitespace-nowrap ${
                     isActive
                       ? "bg-kumo-bg-inverse text-kumo-text-inverse"
-                      : "text-kumo-strong hover:bg-kumo-control"
+                      : "text-kumo-subtle hover:bg-kumo-control"
                   }`}
                 >
                   {preset.label}

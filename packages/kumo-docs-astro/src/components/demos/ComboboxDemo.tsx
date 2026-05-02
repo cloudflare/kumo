@@ -396,6 +396,65 @@ export function ComboboxDisabledDemo() {
   );
 }
 
+/** Demonstrates disabled individual items. The `disabled` prop on
+ * `Combobox.Item` blocks click and keyboard selection, and renders the row
+ * with muted text + a not-allowed cursor. Useful for surfacing options that
+ * exist but the user can't pick (e.g. permission-gated, read-only, or
+ * already in use elsewhere). */
+export function ComboboxDisabledItemsDemo() {
+  type DatabaseItemWithDisabled = DatabaseItem & {
+    disabled?: boolean;
+    reason?: string;
+  };
+
+  const items: DatabaseItemWithDisabled[] = [
+    { value: "postgres", label: "PostgreSQL" },
+    { value: "mysql", label: "MySQL" },
+    { value: "mariadb", label: "MariaDB", disabled: true, reason: "Beta" },
+    { value: "mongodb", label: "MongoDB" },
+    {
+      value: "cassandra",
+      label: "Apache Cassandra",
+      disabled: true,
+      reason: "Coming soon",
+    },
+    { value: "redis", label: "Redis" },
+    { value: "d1", label: "Cloudflare D1" },
+  ];
+
+  const [value, setValue] = useState<DatabaseItemWithDisabled | null>(null);
+
+  return (
+    <div className="w-80">
+      <Combobox value={value} onValueChange={setValue} items={items}>
+        <Combobox.TriggerInput placeholder="Select database" />
+        <Combobox.Content>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: DatabaseItemWithDisabled) => (
+              <Combobox.Item
+                key={item.value}
+                value={item}
+                disabled={item.disabled}
+              >
+                <span>
+                  {item.label}
+                  {item.reason && (
+                    <Text variant="secondary" size="xs" as="span">
+                      {" — "}
+                      {item.reason}
+                    </Text>
+                  )}
+                </span>
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>
+    </div>
+  );
+}
+
 export function ComboboxErrorDemo() {
   const [value, setValue] = useState<DatabaseItem | null>(null);
 

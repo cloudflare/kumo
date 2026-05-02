@@ -26,7 +26,7 @@ export function ChangelogEntry({ hash, text }: ChangelogEntryProps) {
         href={`${GITHUB_COMMIT_URL}${hash}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 text-xs text-kumo-subtle hover:text-kumo-strong transition-colors"
+        className="shrink-0 text-xs text-kumo-subtle hover:text-kumo-default transition-colors"
       >
         <Text as="span" variant="mono-secondary">
           {hash}

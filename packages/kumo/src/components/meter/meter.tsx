@@ -71,7 +71,7 @@ export function Meter({
       className={cn("flex w-full flex-col gap-2", className)}
     >
       <div className="flex items-center justify-between gap-4">
-        <BaseMeter.Label className="text-xs text-kumo-strong">
+        <BaseMeter.Label className="text-xs text-kumo-subtle">
           {label}
         </BaseMeter.Label>
         {customValue ? (

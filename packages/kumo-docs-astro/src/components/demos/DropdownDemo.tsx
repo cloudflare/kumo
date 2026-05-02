@@ -9,6 +9,9 @@ import {
   GearIcon,
   BookOpenIcon,
   ArrowSquareOutIcon,
+  CopyIcon,
+  PencilSimpleIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 
 export function DropdownBasicDemo() {
@@ -140,6 +143,71 @@ export function DropdownNestedDemo() {
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu>
+  );
+}
+
+/**
+ * Use `inset` on items without an icon to align their text with items that have one.
+ */
+export function DropdownInsetDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Edit</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.Item icon={PencilSimpleIcon}>Rename</DropdownMenu.Item>
+        <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item inset>Move to folder</DropdownMenu.Item>
+        <DropdownMenu.Item inset>Add to favorites</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item icon={TrashIcon} variant="danger">
+          Delete
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Use `onClick` on `DropdownMenu.Item` to handle item actions.
+ * Each item receives a standard React mouse event handler.
+ */
+export function DropdownOnClickDemo() {
+  const [lastAction, setLastAction] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <DropdownMenu>
+        <DropdownMenu.Trigger render={<Button>Actions</Button>} />
+        <DropdownMenu.Content>
+          <DropdownMenu.Item
+            icon={CopyIcon}
+            onClick={() => setLastAction("Duplicated")}
+          >
+            Duplicate
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            icon={PencilSimpleIcon}
+            onClick={() => setLastAction("Renamed")}
+          >
+            Rename
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            icon={TrashIcon}
+            variant="danger"
+            onClick={() => setLastAction("Deleted")}
+          >
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
+      {lastAction && (
+        <p className="text-sm text-kumo-subtle">
+          Last action: <span className="text-kumo-default">{lastAction}</span>
+        </p>
+      )}
+    </div>
   );
 }
 

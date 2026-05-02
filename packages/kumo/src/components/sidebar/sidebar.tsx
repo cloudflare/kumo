@@ -1143,7 +1143,7 @@ const SidebarMenuAction = forwardRef<
     data-sidebar="menu-action"
     className={cn(
       "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
-      "text-kumo-strong hover:bg-kumo-overlay",
+      "text-kumo-subtle hover:bg-kumo-overlay",
       "focus-visible:ring-2 focus-visible:ring-kumo-brand",
       "transition-colors duration-150",
       "group-data-[state=collapsed]/sidebar:hidden",
@@ -1180,7 +1180,7 @@ const SidebarMenuBadge = forwardRef<
     data-sidebar="menu-badge"
     className={cn(
       "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-hairline",
-      "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong",
+      "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-subtle",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1450,7 +1450,7 @@ const SidebarTrigger = forwardRef<
       aria-label="Toggle sidebar"
       className={cn(
         "flex items-center rounded-md p-1.5",
-        "text-kumo-subtle hover:text-kumo-strong hover:bg-kumo-overlay",
+        "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-overlay",
         "focus-visible:ring-2 focus-visible:ring-kumo-brand",
         "transition-colors duration-150",
         className,

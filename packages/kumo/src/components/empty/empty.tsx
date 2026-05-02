@@ -100,7 +100,7 @@ export function Empty({
       <h2 className="text-2xl font-semibold">{title}</h2>
 
       {description && (
-        <p className="max-w-140 text-center text-kumo-strong">{description}</p>
+        <p className="max-w-140 text-center text-kumo-subtle">{description}</p>
       )}
 
       {commandLine && (
