@@ -5,6 +5,7 @@ import {
 } from "@base-ui/react/toast";
 import type React from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Button, ButtonProps } from "../../components/button";
 import {
   usePortalContainer,
@@ -126,7 +127,7 @@ export function toastVariants({
     // Base styles for toast root
     "rounded-xl ring ring-kumo-line bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
-    KUMO_TOAST_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_TOAST_VARIANTS.variant, variant, KUMO_TOAST_DEFAULT_VARIANTS.variant).classes,
   );
 }
 
@@ -379,7 +380,7 @@ function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
 
 function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   if (!variant || variant === "default") return null;
-  const variantConfig = KUMO_TOAST_VARIANTS.variant[variant];
+  const variantConfig = resolveVariant(KUMO_TOAST_VARIANTS.variant, variant, KUMO_TOAST_DEFAULT_VARIANTS.variant);
   if (!("icon" in variantConfig)) return null;
   const Icon = variantConfig.icon;
   return (

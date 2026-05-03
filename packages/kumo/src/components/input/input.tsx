@@ -1,4 +1,5 @@
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   forwardRef,
   type ComponentPropsWithoutRef,
@@ -110,9 +111,9 @@ export function inputVariants({
     // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
     "kumo-input-placeholder disabled:text-kumo-disabled",
     // Apply size styles from KUMO_INPUT_VARIANTS
-    KUMO_INPUT_VARIANTS.size[size].classes,
+    resolveVariant(KUMO_INPUT_VARIANTS.size, size, KUMO_INPUT_DEFAULT_VARIANTS.size).classes,
     // Apply variant styles from KUMO_INPUT_VARIANTS
-    KUMO_INPUT_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_INPUT_VARIANTS.variant, variant, KUMO_INPUT_DEFAULT_VARIANTS.variant).classes,
     // Focus state handling
     parentFocusIndicator &&
       (variant === "error"

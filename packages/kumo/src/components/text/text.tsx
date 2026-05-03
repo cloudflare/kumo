@@ -7,6 +7,7 @@ import {
   useMemo,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Text variant and size definitions mapping names to their Tailwind classes. */
 export const KUMO_TEXT_VARIANTS = {
@@ -127,8 +128,8 @@ export function textVariants({
   size = KUMO_TEXT_DEFAULT_VARIANTS.size,
 }: KumoTextVariantsProps = {}) {
   return cn(
-    KUMO_TEXT_VARIANTS.variant[variant].classes,
-    KUMO_TEXT_VARIANTS.size[size].classes,
+    resolveVariant(KUMO_TEXT_VARIANTS.variant, variant, KUMO_TEXT_DEFAULT_VARIANTS.variant).classes,
+    resolveVariant(KUMO_TEXT_VARIANTS.size, size, KUMO_TEXT_DEFAULT_VARIANTS.size).classes,
   );
 }
 
@@ -316,8 +317,8 @@ function _Text<Variant extends TextVariant = "body">(
       ref={ref as React.RefCallback<HTMLElement>}
       className={cn(
         "text-kumo-default",
-        KUMO_TEXT_VARIANTS.variant[variant].classes,
-        isCopy ? KUMO_TEXT_VARIANTS.size[size].classes : "",
+        resolveVariant(KUMO_TEXT_VARIANTS.variant, variant, KUMO_TEXT_DEFAULT_VARIANTS.variant).classes,
+        isCopy ? resolveVariant(KUMO_TEXT_VARIANTS.size, size, KUMO_TEXT_DEFAULT_VARIANTS.size).classes : "",
         isCopy && bold ? "font-medium" : "",
         // Monospace fonts need to be 1pt smaller than body text to optically match
         isMono &&
