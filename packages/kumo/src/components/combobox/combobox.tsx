@@ -261,11 +261,12 @@ function TriggerValue({
         inputVariants({ size }),
         "relative flex items-center",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+        "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
         className,
       )}
     >
-      <ComboboxBase.Value>{props.children}</ComboboxBase.Value>
+      <ComboboxBase.Value {...props} />
       <ComboboxBase.Icon
         className={cn(
           "absolute top-1/2 -translate-y-1/2 flex items-center text-kumo-subtle",

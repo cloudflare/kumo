@@ -13,6 +13,7 @@ import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   ComboboxDemo,
   ComboboxSearchableInsideDemo,
+  ComboboxSearchableSelectDemo,
   ComboboxGroupedDemo,
   ComboboxMultipleDemo,
   ComboboxWithFieldDemo,
@@ -118,6 +119,19 @@ export default function Example() {
   </p>
   <ComponentExample demo="ComboboxSearchableInsideDemo">
     <ComboboxSearchableInsideDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Searchable Select with Placeholder
+
+  <p>
+    Use `TriggerValue` with a `placeholder` prop to create a searchable Select-style field.
+    The placeholder is displayed until a value is selected.
+  </p>
+  <ComponentExample demo="ComboboxSearchableSelectDemo">
+    <ComboboxSearchableSelectDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
