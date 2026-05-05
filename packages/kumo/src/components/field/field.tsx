@@ -81,7 +81,7 @@ export interface FieldProps extends KumoFieldVariantsProps {
   /** The label content — can be a string or any React node. */
   label: ReactNode;
   /** Whether to render the label as a native `<label>` element. */
-  labelNative?: boolean;
+  nativeLabel?: boolean;
   /**
    * When explicitly `false`, shows gray "(optional)" text after the label.
    * When `true` or `undefined`, no indicator is shown.
@@ -119,7 +119,7 @@ export function Field({
   error,
   description,
   controlFirst = false,
-  labelNative = true,
+  nativeLabel = true,
 }: FieldProps) {
   // Show "(optional)" when required is explicitly false
   const showOptional = required === false;
@@ -127,7 +127,7 @@ export function Field({
   return (
     <FieldBase.Root className={fieldVariants({ controlFirst })}>
       <FieldBase.Label
-        nativeLabel={labelNative}
+        nativeLabel={nativeLabel}
         className="m-0 text-base font-medium text-kumo-default"
       >
         <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
