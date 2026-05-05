@@ -1,7 +1,8 @@
+import React from "react";
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Plus } from "@phosphor-icons/react";
-import { Button } from "./button";
+import { Button, RefreshButton, LinkButton } from "./button";
 
 describe("Button", () => {
   describe("children wrapper", () => {
@@ -40,6 +41,30 @@ describe("Button", () => {
     });
   });
 
+  it("type defaults to 'button'", () => {
+    render(<Button>Click</Button>);
+    const button = screen.getByRole("button");
+    expect(button.getAttribute("type")).toBe("button");
+  });
+
+  it("loading={true} sets disabled on the <button>", () => {
+    render(<Button loading>Save</Button>);
+    const button = screen.getByRole("button");
+    expect(button.hasAttribute("disabled")).toBe(true);
+  });
+
+  it("disabled prop sets disabled attribute", () => {
+    render(<Button disabled>Save</Button>);
+    const button = screen.getByRole("button");
+    expect(button.hasAttribute("disabled")).toBe(true);
+  });
+
+  it("forwards ref to the <button> DOM node", () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    render(<Button ref={ref}>Click</Button>);
+    expect(ref.current).toBe(screen.getByRole("button"));
+  });
+
   describe("icon rendering", () => {
     it("renders icon in non-loading state", () => {
       render(
@@ -72,5 +97,61 @@ describe("Button", () => {
       expect(svgs).toHaveLength(1);
       expect(svgs[0].getAttribute("role")).toBe("status");
     });
+
+    it("accepts a React element via icon prop", () => {
+      render(<Button icon={<Plus data-testid="plus-icon" />}>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      const svg = button.querySelector("svg");
+      expect(svg).toBeTruthy();
+    });
+  });
+
+  it("title prop wraps in Tooltip and removes native title attribute", () => {
+    render(<Button title="Save changes">Save</Button>);
+    const button = screen.getByRole("button", { name: "Save" });
+    // title is intercepted by Tooltip wrapper, not set as native attribute
+    expect(button.getAttribute("title")).toBeNull();
+  });
+});
+
+describe("RefreshButton", () => {
+  it("renders with default aria-label='Refresh'", () => {
+    render(<RefreshButton />);
+    expect(screen.getByRole("button", { name: "Refresh" })).toBeTruthy();
+  });
+
+  it("allows overriding aria-label", () => {
+    render(<RefreshButton aria-label="Reload workers" />);
+    expect(screen.getByRole("button", { name: "Reload workers" })).toBeTruthy();
+  });
+});
+
+describe("LinkButton", () => {
+  it("renders as an <a> element", () => {
+    render(<LinkButton href="/home">Home</LinkButton>);
+    const link = screen.getByRole("link");
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("/home");
+  });
+
+  it("external sets target='_blank' and rel='noopener noreferrer'", () => {
+    render(
+      <LinkButton href="https://example.com" external>
+        Docs
+      </LinkButton>,
+    );
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("forwards ref to the <a> DOM node", () => {
+    const ref = React.createRef<HTMLAnchorElement>();
+    render(
+      <LinkButton ref={ref} href="/home">
+        Home
+      </LinkButton>,
+    );
+    expect(ref.current).toBe(screen.getByRole("link"));
   });
 });
