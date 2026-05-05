@@ -83,7 +83,7 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 - **Vitest** with `happy-dom`, globals enabled
 - **Path aliases**: `@/` → `src/`, `@cloudflare/kumo` → `src/index.ts`
 - **Structural tests** in `tests/imports/`: validate all export paths resolve, package.json matches vite entries
-- **Sparse component tests**: Only ~6 components have unit tests; emphasis on infrastructure testing
+- **Component tests**: ~14 components have unit tests (`*.test.tsx`), plus 2 browser tests (`*.browser.test.tsx`). Coverage is growing but not comprehensive across all 39 components
 - **`describe.skipIf(!isBuilt)`**: Export validation tests skip gracefully when `dist/` missing
 
 ## ANTI-PATTERNS
