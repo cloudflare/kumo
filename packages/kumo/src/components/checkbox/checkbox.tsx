@@ -1,6 +1,7 @@
 import { forwardRef, createContext, useContext, type ReactNode } from "react";
 import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Label } from "../label";
 import { Fieldset } from "@base-ui/react/fieldset";
 import { Field as FieldBase } from "@base-ui/react/field";
@@ -47,7 +48,7 @@ export interface KumoCheckboxVariantsProps {
 export function checkboxVariants({
   variant = KUMO_CHECKBOX_DEFAULT_VARIANTS.variant,
 }: KumoCheckboxVariantsProps = {}) {
-  return cn(KUMO_CHECKBOX_VARIANTS.variant[variant].classes);
+  return cn(resolveVariant(KUMO_CHECKBOX_VARIANTS.variant, variant, KUMO_CHECKBOX_DEFAULT_VARIANTS.variant).classes);
 }
 
 // Legacy type alias for backwards compatibility

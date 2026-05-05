@@ -13,6 +13,7 @@ import {
   type KumoInputSize,
 } from "../input/input";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Field, type FieldErrorMatch } from "../field/field";
 import {
   usePortalContainer,
@@ -69,7 +70,7 @@ export interface KumoComboboxVariantsProps {
 export function comboboxVariants({
   inputSide = KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide,
 }: KumoComboboxVariantsProps = {}) {
-  return cn(KUMO_COMBOBOX_VARIANTS.inputSide[inputSide].classes);
+  return cn(resolveVariant(KUMO_COMBOBOX_VARIANTS.inputSide, inputSide, KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide).classes);
 }
 
 // Legacy type alias for backwards compatibility
@@ -260,11 +261,12 @@ function TriggerValue({
         inputVariants({ size }),
         "relative flex items-center",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+        "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
         className,
       )}
     >
-      <ComboboxBase.Value>{props.children}</ComboboxBase.Value>
+      <ComboboxBase.Value {...props} />
       <ComboboxBase.Icon
         className={cn(
           "absolute top-1/2 -translate-y-1/2 flex items-center text-kumo-subtle",

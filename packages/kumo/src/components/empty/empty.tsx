@@ -2,6 +2,7 @@ import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Button } from "../../components/button";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Empty state size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_EMPTY_VARIANTS = {
@@ -43,7 +44,7 @@ export function emptyVariants({
 }: KumoEmptyVariantsProps = {}) {
   return cn(
     "flex w-full flex-col items-center rounded-xl border border-kumo-fill bg-kumo-control text-kumo-default",
-    KUMO_EMPTY_VARIANTS.size[size].classes,
+    resolveVariant(KUMO_EMPTY_VARIANTS.size, size, KUMO_EMPTY_DEFAULT_VARIANTS.size).classes,
   );
 }
 

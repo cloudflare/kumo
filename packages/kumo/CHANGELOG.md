@@ -1,5 +1,24 @@
 # @cloudflare/kumo
 
+## 2.0.3
+
+### Patch Changes
+
+- 3b36e21: fix(combobox): forward all props from TriggerValue to ComboboxBase.Value, enabling placeholder support and styled placeholder text via data-[placeholder]:text-kumo-placeholder
+- 5d5d810: fix(registry): correct Select component metadata for AI-generated code
+
+  The component registry metadata was incorrectly typing Select's `value`, `defaultValue`, and `onValueChange` props as `string`, causing AI agents to produce broken code when implementing Select with object values (e.g., rendering `object.value` in the trigger instead of the label).
+
+  Changes:
+  - `value` type: `string` → `T` (generic, matches actual component interface)
+  - `defaultValue` type: `string` → `T`
+  - `onValueChange` type: `(value: string) => void` → `(value: T) => void`
+  - Added missing `renderValue` prop: `(value: T) => ReactNode` — required for object values
+  - Added missing `items` prop: supports both `Record<string, string>` and `Array<{ label, value }>` forms
+  - Added missing `isItemEqualToValue` prop: required for object equality comparison
+
+- 62e093c: Gracefully fall back to default variant instead of crashing when an invalid variant prop is passed at runtime. Previously 22 of 25 components would throw `TypeError` on unknown variant values; all 25 now use a shared `resolveVariant()` utility that returns the default config and logs a dev warning.
+
 ## 2.0.2
 
 ### Patch Changes

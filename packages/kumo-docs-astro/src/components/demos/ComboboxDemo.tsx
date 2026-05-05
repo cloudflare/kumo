@@ -225,6 +225,36 @@ export function ComboboxSearchableInsideDemo() {
   );
 }
 
+/** Demonstrates using TriggerValue with a placeholder, behaving like a
+ * searchable Select field. The placeholder is shown until a value is selected. */
+export function ComboboxSearchableSelectDemo() {
+  const [value, setValue] = useState<Language | null>(null);
+
+  return (
+    <Combobox
+      value={value}
+      onValueChange={(v) => setValue(v as Language | null)}
+      items={languages}
+    >
+      <Combobox.TriggerValue
+        className="w-[200px]"
+        placeholder="Select a language"
+      />
+      <Combobox.Content>
+        <Combobox.Input placeholder="Search languages" />
+        <Combobox.Empty />
+        <Combobox.List>
+          {(item: Language) => (
+            <Combobox.Item key={item.value} value={item}>
+              {item.emoji} {item.label}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
+  );
+}
+
 // Grouped items demo
 export function ComboboxGroupedDemo() {
   const [value, setValue] = useState<ServerLocation | null>(null);

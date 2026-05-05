@@ -1,6 +1,7 @@
 import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
 import {
   usePortalContainer,
@@ -48,7 +49,7 @@ export interface KumoDropdownVariantsProps {
 export function dropdownVariants({
   variant = KUMO_DROPDOWN_DEFAULT_VARIANTS.variant,
 }: KumoDropdownVariantsProps = {}) {
-  return cn(KUMO_DROPDOWN_VARIANTS.variant[variant].classes);
+  return cn(resolveVariant(KUMO_DROPDOWN_VARIANTS.variant, variant, KUMO_DROPDOWN_DEFAULT_VARIANTS.variant).classes);
 }
 
 const DropdownMenuSubTrigger = React.forwardRef<
