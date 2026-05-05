@@ -13,6 +13,7 @@ import {
   LayerCardBasicDemo,
   LayerCardSurfaceDemo,
   LayerCardMultipleDemo,
+  LayerCardTestIdDemo,
 } from "~/components/demos/LayerCardDemo";
 
 {/* Hero Demo */}
@@ -109,6 +110,17 @@ export default function Example() {
 
 <ComponentExample demo="LayerCardMultipleDemo">
   <LayerCardMultipleDemo client:visible />
+</ComponentExample>
+
+### Test IDs
+
+<p>
+  <code>LayerCard.Primary</code> and <code>LayerCard.Secondary</code> accept all
+  standard HTML attributes, including <code>data-testid</code> for testing.
+</p>
+
+<ComponentExample demo="LayerCardTestIdDemo">
+  <LayerCardTestIdDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>

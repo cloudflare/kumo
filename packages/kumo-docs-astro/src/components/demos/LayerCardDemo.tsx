@@ -42,6 +42,22 @@ export function LayerCardSurfaceDemo() {
   );
 }
 
+/** Pass HTML attributes like `data-testid` to `Primary` and `Secondary` for testing. */
+export function LayerCardTestIdDemo() {
+  return (
+    <LayerCard className="w-[250px]">
+      <LayerCard.Secondary data-testid="card-header">
+        Getting Started
+      </LayerCard.Secondary>
+      <LayerCard.Primary data-testid="card-body">
+        <p className="text-sm text-kumo-subtle">
+          Quick start guide for new users
+        </p>
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}
+
 export function LayerCardMultipleDemo() {
   return (
     <div className="flex gap-4">

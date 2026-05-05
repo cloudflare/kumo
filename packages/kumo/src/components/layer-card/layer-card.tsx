@@ -3,7 +3,7 @@ import {
   Fragment,
   forwardRef,
   isValidElement,
-  type PropsWithChildren,
+  type ComponentPropsWithoutRef,
   type ReactElement,
   type ReactNode,
 } from "react";
@@ -71,10 +71,7 @@ function hasLayerCardSections(children: ReactNode): boolean {
 export type LayerCardProps = useRender.ComponentProps<"div"> &
   KumoLayerCardVariantsProps;
 
-export type LayerCardSectionProps = PropsWithChildren<{
-  /** Additional CSS classes merged via `cn()`. */
-  className?: string;
-}>;
+export type LayerCardSectionProps = ComponentPropsWithoutRef<"div">;
 
 /**
  * Card container for both simple surfaces and layered layouts.
@@ -119,12 +116,13 @@ const LayerCardRoot = forwardRef<HTMLDivElement, LayerCardProps>(function LayerC
 function LayerCardSecondary({
   children,
   className,
+  ...props
 }: LayerCardSectionProps) {
-  return <div className={cn(LAYER_CARD_SECONDARY_CLASSES, className)}>{children}</div>;
+  return <div className={cn(LAYER_CARD_SECONDARY_CLASSES, className)} {...props}>{children}</div>;
 }
 
-function LayerCardPrimary({ children, className }: LayerCardSectionProps) {
-  return <div className={cn(LAYER_CARD_PRIMARY_CLASSES, className)}>{children}</div>;
+function LayerCardPrimary({ children, className, ...props }: LayerCardSectionProps) {
+  return <div className={cn(LAYER_CARD_PRIMARY_CLASSES, className)} {...props}>{children}</div>;
 }
 
 LayerCardRoot.displayName = "LayerCard";
