@@ -485,6 +485,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       <Field
         label={label}
         required={required}
+        labelNative={false}
         labelTooltip={labelTooltip}
         description={description}
         error={
