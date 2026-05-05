@@ -617,4 +617,8 @@ export const Combobox = Object.assign(Root, {
 
   // BaseUI
   Collection: ComboboxBase.Collection,
+
+  Trigger: ComboboxBase.Trigger,
+  Value: ComboboxBase.Value,
+  Icon: ComboboxBase.Icon,
 });

@@ -22,6 +22,7 @@ import {
   ComboboxErrorDemo,
   ComboboxSizesDemo,
   ComboboxSizesSearchableInsideDemo,
+  ComboboxCustomTriggerDemo,
 } from "~/components/demos/ComboboxDemo";
 
 {/* Hero Demo */}
@@ -133,6 +134,17 @@ export default function Example() {
   <ComponentExample demo="ComboboxSearchableSelectDemo">
     <ComboboxSearchableSelectDemo client:load />
   </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Custom Trigger
+
+<p>Use <code>Combobox.Trigger</code> with a <code>render</code> prop to replace the default input-like trigger with your own element. Pair with <code>Combobox.Value</code> to display the selected value. Useful for account switchers, sidebar navigation, or anywhere the default chrome doesn't fit.</p>
+<ComponentExample demo="ComboboxCustomTriggerDemo">
+  <ComboboxCustomTriggerDemo client:load />
+</ComponentExample>
+
 </ComponentSection>
 
 <ComponentSection>

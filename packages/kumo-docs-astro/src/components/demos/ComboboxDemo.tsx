@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CaretUpDownIcon } from "@phosphor-icons/react";
 import { Combobox, Text, Button } from "@cloudflare/kumo";
 
 // Basic fruits list for simple demos (expanded to test scrolling)
@@ -606,5 +607,41 @@ export function ComboboxSizesSearchableInsideDemo() {
         </Combobox.Content>
       </Combobox>
     </div>
+  );
+}
+
+export function ComboboxCustomTriggerDemo() {
+  const [value, setValue] = useState<Language>(languages[0]);
+
+  return (
+    <Combobox
+      value={value}
+      onValueChange={(v) => setValue(v as Language)}
+      items={languages}
+    >
+      <Combobox.Trigger
+        render={
+          <Button variant="ghost" size="sm" />
+        }
+      >
+        <Combobox.Value>
+          <span className="truncate">
+            {value.emoji} {value.label}
+          </span>
+        </Combobox.Value>
+        <CaretUpDownIcon size={14} className="text-kumo-subtle shrink-0" />
+      </Combobox.Trigger>
+      <Combobox.Content>
+        <Combobox.Input placeholder="Search languages" />
+        <Combobox.Empty />
+        <Combobox.List>
+          {(item: Language) => (
+            <Combobox.Item key={item.value} value={item}>
+              {item.emoji} {item.label}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
   );
 }
