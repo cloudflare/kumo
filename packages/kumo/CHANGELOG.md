@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 2.0.5
+
+### Patch Changes
+
+- 8f8a55d: Export `Combobox.Trigger`, `Combobox.Value`, and `Combobox.Icon` — the raw Base UI primitives for building custom combobox triggers. Use these when you need full control over the trigger's visual treatment (e.g. a sidebar account switcher that renders as a plain button instead of an input-like control).
+
 ## 2.0.4
 
 ### Patch Changes
