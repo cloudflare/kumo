@@ -883,6 +883,8 @@ async function handleBatch(
     browser = await puppeteer.launch(env.BROWSER);
 
     for (const pageConfig of pages) {
+      const pageStart = Date.now();
+      const resultStart = results.length;
       // Resolve and validate the full URL for this page.
       const rawUrl = pageConfig.url.startsWith("http")
         ? pageConfig.url
@@ -1068,6 +1070,11 @@ async function handleBatch(
         });
       } finally {
         await page.close();
+        const elapsed = Date.now() - pageStart;
+        const imageCount = results.length - resultStart;
+        console.log(
+          `[screenshot-worker] ${fullUrl} captured ${imageCount} image(s) in ${elapsed}ms`,
+        );
       }
     }
 
