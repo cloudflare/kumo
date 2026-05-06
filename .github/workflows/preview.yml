@@ -254,7 +254,7 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
         with:
-          cache-node-modules: "false"
+          filter: "@cloudflare/kumo..."
 
       - name: Run Visual Regression
         env:
@@ -266,3 +266,11 @@ jobs:
           AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
         run: pnpm tsx ci/visual-regression/run-visual-regression.ts
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-regression-screenshots
+          path: ci/visual-regression/screenshots/
+          retention-days: 7

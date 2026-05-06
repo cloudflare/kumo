@@ -1,5 +1,7 @@
 #!/usr/bin/env tsx
 import { execSync } from "node:child_process";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import {
@@ -17,25 +19,30 @@ import {
 // env override can be hijacked. The real protection is SCREENSHOT_API_KEY.
 const WORKER_URL =
   "https://kumo-screenshot-worker.design-engineering.workers.dev";
+const SCREENSHOTS_DIR = "ci/visual-regression/screenshots";
 const API_KEY = process.env.SCREENSHOT_API_KEY ?? "";
 
-interface ComparisonResult {
-  id: string;
-  name: string;
-  beforeUrl: string;
-  afterUrl: string;
-  diffUrl: string | null;
-  changed: boolean;
-  diffPixels: number;
-  diffPercent: number;
-}
-
+/**
+ * Screenshot result returned by the worker.
+ *
+ * For section-based screenshots (when `captureSections` was true and
+ * `[data-vr-demo]` elements were found), each element produces one result with:
+ * - `sectionId`: from `data-vr-section` attribute (e.g., "primary-variant")
+ * - `sectionTitle`: from `data-vr-title` attribute (e.g., "Primary Variant")
+ *
+ * These identifiers are used to create stable screenshot filenames that
+ * persist across runs, enabling accurate before/after comparisons.
+ */
 interface ScreenshotResult {
   url: string;
+  /** Base64-encoded PNG image */
   image?: string;
+  /** Worker-served URL for the stored PNG */
   imageUrl?: string;
   error?: string;
+  /** Unique identifier for this demo section, from data-vr-section attribute */
   sectionId?: string;
+  /** Human-readable title for reports, from data-vr-title attribute */
   sectionTitle?: string;
 }
 
@@ -46,15 +53,19 @@ interface WorkerResponse {
 interface CapturedScreenshot {
   id: string;
   name: string;
-  image: Buffer;
+  path: string;
   url: string | null;
 }
 
-interface DiffResult {
+interface ComparisonResult {
+  id: string;
+  name: string;
+  beforeUrl: string;
+  afterUrl: string;
+  diffUrl: string | null;
   changed: boolean;
   diffPixels: number;
   diffPercent: number;
-  diffImage: Buffer | null;
 }
 
 function getChangedFiles(): string[] | null {
@@ -77,6 +88,12 @@ function getChangedFiles(): string[] | null {
   }
 }
 
+function ensureDir(dir: string): void {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+}
+
 function sanitizeKeyPart(value: string): string {
   const sanitized = value
     .toLowerCase()
@@ -84,6 +101,10 @@ function sanitizeKeyPart(value: string): string {
     .replace(/^-+|-+$/g, "");
 
   return sanitized || "visual-regression";
+}
+
+function encodeScreenshotKey(key: string): string {
+  return key.split("/").map(encodeURIComponent).join("/");
 }
 
 function getRunStoragePrefix(): string {
@@ -100,38 +121,33 @@ function getRunStoragePrefix(): string {
   ].join("/");
 }
 
-function encodeScreenshotKey(key: string): string {
-  return key.split("/").map(encodeURIComponent).join("/");
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function parseWorkerResponse(value: unknown): WorkerResponse {
-  if (!isRecord(value) || !Array.isArray(value.results)) {
-    throw new Error("Invalid worker response");
+async function uploadScreenshotToWorker(
+  imageBuffer: Buffer,
+  key: string,
+): Promise<string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "image/png",
+  };
+  if (API_KEY) {
+    headers["X-API-Key"] = API_KEY;
   }
 
-  const results: ScreenshotResult[] = [];
+  const response = await fetch(
+    `${WORKER_URL}/screenshots/${encodeScreenshotKey(key)}`,
+    {
+      method: "PUT",
+      headers,
+      body: imageBuffer,
+    },
+  );
 
-  for (const item of value.results) {
-    if (!isRecord(item) || typeof item.url !== "string") {
-      throw new Error("Invalid screenshot result");
-    }
-
-    const result: ScreenshotResult = { url: item.url };
-    if (typeof item.image === "string") result.image = item.image;
-    if (typeof item.imageUrl === "string") result.imageUrl = item.imageUrl;
-    if (typeof item.error === "string") result.error = item.error;
-    if (typeof item.sectionId === "string") result.sectionId = item.sectionId;
-    if (typeof item.sectionTitle === "string") {
-      result.sectionTitle = item.sectionTitle;
-    }
-    results.push(result);
+  if (!response.ok) {
+    throw new Error(
+      `Worker upload failed: ${response.status} - ${await response.text()}`,
+    );
   }
 
-  return { results };
+  return `${WORKER_URL}/screenshots/${encodeScreenshotKey(key)}`;
 }
 
 /**
@@ -157,7 +173,16 @@ interface PageRequest {
   actions?: Array<{ type: string; selector: string; waitAfter?: number }>;
 }
 
-function getPageRequests(components: DiscoveredComponent[]): PageRequest[] {
+async function captureScreenshots(
+  baseUrl: string,
+  components: DiscoveredComponent[],
+  outputDir: string,
+  prefix: string,
+  storagePrefix: string,
+): Promise<CapturedScreenshot[]> {
+  ensureDir(outputDir);
+  const screenshots: CapturedScreenshot[] = [];
+
   const requests: PageRequest[] = [];
 
   for (const component of components) {
@@ -177,75 +202,6 @@ function getPageRequests(components: DiscoveredComponent[]): PageRequest[] {
       });
     }
   }
-
-  return requests;
-}
-
-function formatName(slug: string): string {
-  return slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function getCapturedScreenshots(
-  results: ScreenshotResult[],
-  requests: PageRequest[],
-): CapturedScreenshot[] {
-  const screenshots: CapturedScreenshot[] = [];
-
-  for (const result of results) {
-    if (result.error) {
-      console.warn(`  Error: ${result.url}: ${result.error}`);
-      continue;
-    }
-
-    if (!result.image) {
-      console.warn(`  Empty: ${result.url}`);
-      continue;
-    }
-
-    const urlPath = new URL(result.url).pathname.replace(/\/$/, "");
-    const componentSlug = urlPath.split("/").pop() || "unknown";
-    const isOpenState = requests.some(
-      (request) =>
-        request.url === urlPath.replace(/\/$/, "") &&
-        request.actions &&
-        request.actions.length > 0,
-    );
-
-    let screenshotId: string;
-    let screenshotName: string;
-
-    if (result.sectionId) {
-      screenshotId = `${componentSlug}-${result.sectionId}`;
-      screenshotName = `${formatName(componentSlug)} / ${result.sectionTitle || result.sectionId}`;
-    } else if (isOpenState) {
-      screenshotId = `${componentSlug}-open`;
-      screenshotName = `${formatName(componentSlug)} (Open)`;
-    } else {
-      screenshotId = componentSlug;
-      screenshotName = formatName(componentSlug);
-    }
-
-    screenshots.push({
-      id: screenshotId,
-      name: screenshotName,
-      image: Buffer.from(result.image, "base64"),
-      url: result.imageUrl ?? null,
-    });
-  }
-
-  return screenshots;
-}
-
-async function captureScreenshots(
-  baseUrl: string,
-  components: DiscoveredComponent[],
-  storagePrefix: string,
-): Promise<CapturedScreenshot[]> {
-  const requests = getPageRequests(components);
-  const start = Date.now();
 
   console.log(`Capturing screenshots from ${baseUrl}...`);
   console.log(`  ${components.length} components, ${requests.length} requests`);
@@ -277,25 +233,102 @@ async function captureScreenshots(
     throw new Error(`Worker request failed: ${response.status} - ${text}`);
   }
 
-  const screenshots = getCapturedScreenshots(
-    parseWorkerResponse(await response.json()).results,
-    requests,
-  );
-  const elapsedSeconds = Math.round((Date.now() - start) / 100) / 10;
-  console.log(`Captured ${screenshots.length} screenshot(s) in ${elapsedSeconds}s`);
+  const data = (await response.json()) as WorkerResponse;
+
+  for (const result of data.results) {
+    if (result.error) {
+      console.warn(`  Error: ${result.url}: ${result.error}`);
+      continue;
+    }
+
+    if (!result.image) {
+      console.warn(`  Empty: ${result.url}`);
+      continue;
+    }
+
+    const urlPath = new URL(result.url).pathname.replace(/\/$/, "");
+    const componentSlug = urlPath.split("/").pop() || "unknown";
+
+    const isOpenState = requests.some(
+      (r) =>
+        r.url === urlPath.replace(/\/$/, "") &&
+        r.actions &&
+        r.actions.length > 0,
+    );
+
+    let screenshotId: string;
+    let screenshotName: string;
+
+    if (result.sectionId) {
+      screenshotId = `${componentSlug}-${result.sectionId}`;
+      screenshotName = `${formatName(componentSlug)} / ${result.sectionTitle || result.sectionId}`;
+    } else if (isOpenState) {
+      screenshotId = `${componentSlug}-open`;
+      screenshotName = `${formatName(componentSlug)} (Open)`;
+    } else {
+      screenshotId = componentSlug;
+      screenshotName = formatName(componentSlug);
+    }
+
+    const filename = `${prefix}-${screenshotId}.png`;
+    const filepath = join(outputDir, filename);
+
+    const imageBuffer = Buffer.from(result.image, "base64");
+    writeFileSync(filepath, imageBuffer);
+
+    const imageUrl = result.imageUrl ?? null;
+    console.log(
+      imageUrl
+        ? `  OK: ${screenshotName} -> ${imageUrl}`
+        : `  OK: ${screenshotName} (local only, no worker URL)`,
+    );
+
+    screenshots.push({
+      id: screenshotId,
+      name: screenshotName,
+      path: filepath,
+      url: imageUrl,
+    });
+  }
 
   return screenshots;
 }
 
-function compareImages(beforeBuf: Buffer, afterBuf: Buffer): DiffResult {
+function formatName(slug: string): string {
+  return slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+interface DiffResult {
+  changed: boolean;
+  diffPixels: number;
+  diffPercent: number;
+  /** Raw PNG buffer of the diff image, null if images are identical or missing */
+  diffImage: Buffer | null;
+}
+
+function compareImages(beforePath: string, afterPath: string): DiffResult {
+  if (!existsSync(beforePath) || !existsSync(afterPath)) {
+    return { changed: true, diffPixels: 0, diffPercent: 100, diffImage: null };
+  }
+
+  const beforeBuf = readFileSync(beforePath);
+  const afterBuf = readFileSync(afterPath);
+
+  // Fast path: byte-identical images need no pixel comparison
   if (beforeBuf.equals(afterBuf)) {
     return { changed: false, diffPixels: 0, diffPercent: 0, diffImage: null };
   }
 
   const beforePng = PNG.sync.read(beforeBuf);
   const afterPng = PNG.sync.read(afterBuf);
+
+  // Handle size mismatches by padding the smaller image
   const width = Math.max(beforePng.width, afterPng.width);
   const height = Math.max(beforePng.height, afterPng.height);
+
   const padToSize = (png: PNG, w: number, h: number): Uint8Array => {
     if (png.width === w && png.height === h) {
       return new Uint8Array(
@@ -304,7 +337,6 @@ function compareImages(beforeBuf: Buffer, afterBuf: Buffer): DiffResult {
         png.data.byteLength,
       );
     }
-
     const padded = new Uint8Array(w * h * 4);
     for (let y = 0; y < png.height; y++) {
       const srcOffset = y * png.width * 4;
@@ -320,52 +352,33 @@ function compareImages(beforeBuf: Buffer, afterBuf: Buffer): DiffResult {
   const beforeData = padToSize(beforePng, width, height);
   const afterData = padToSize(afterPng, width, height);
   const diffData = new Uint8Array(width * height * 4);
+
   const diffPixels = pixelmatch(
     beforeData,
     afterData,
     diffData,
     width,
     height,
-    { threshold: 0.1, diffColor: [255, 0, 0], alpha: 0.3 },
+    {
+      threshold: 0.1,
+      diffColor: [255, 0, 0],
+      alpha: 0.3,
+    },
   );
+
   const totalPixels = width * height;
   const diffPercent = totalPixels > 0 ? (diffPixels / totalPixels) * 100 : 0;
+
   const diffPng = new PNG({ width, height });
   diffPng.data = Buffer.from(diffData);
+  const diffImage = PNG.sync.write(diffPng);
 
   return {
     changed: true,
     diffPixels,
     diffPercent: Math.round(diffPercent * 100) / 100,
-    diffImage: PNG.sync.write(diffPng),
+    diffImage,
   };
-}
-
-async function uploadScreenshotToWorker(
-  imageBuffer: Buffer,
-  key: string,
-): Promise<string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "image/png",
-  };
-  if (API_KEY) {
-    headers["X-API-Key"] = API_KEY;
-  }
-
-  const encodedKey = encodeScreenshotKey(key);
-  const response = await fetch(`${WORKER_URL}/screenshots/${encodedKey}`, {
-    method: "PUT",
-    headers,
-    body: imageBuffer,
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Worker upload failed: ${response.status} - ${await response.text()}`,
-    );
-  }
-
-  return `${WORKER_URL}/screenshots/${encodedKey}`;
 }
 
 function generateMarkdownReport(comparisons: ComparisonResult[]): string {
@@ -539,23 +552,37 @@ async function main(): Promise<void> {
     }
   }
 
+  const beforeDir = join(SCREENSHOTS_DIR, "before");
+  const afterDir = join(SCREENSHOTS_DIR, "after");
   const storagePrefix = getRunStoragePrefix();
+
+  console.log("=== Capturing BEFORE screenshots ===");
   const beforeScreenshots = await captureScreenshots(
     beforeUrl,
     components,
+    beforeDir,
+    "before",
     `${storagePrefix}/before`,
   );
+
+  console.log("\n=== Capturing AFTER screenshots ===");
   const afterScreenshots = await captureScreenshots(
     afterUrl,
     components,
+    afterDir,
+    "after",
     `${storagePrefix}/after`,
   );
-  const beforeMap = new Map(beforeScreenshots.map((s) => [s.id, s]));
-  const afterMap = new Map(afterScreenshots.map((s) => [s.id, s]));
-  const allIds = [...new Set([...beforeMap.keys(), ...afterMap.keys()])];
+
+  console.log("\n=== Comparing screenshots ===");
   const comparisons: ComparisonResult[] = [];
 
-  console.log("Comparing screenshots in CI...");
+  const beforeMap = new Map(beforeScreenshots.map((s) => [s.id, s]));
+  const afterMap = new Map(afterScreenshots.map((s) => [s.id, s]));
+
+  const allIds = Array.from(
+    new Set([...Array.from(beforeMap.keys()), ...Array.from(afterMap.keys())]),
+  );
 
   for (const id of allIds) {
     const before = beforeMap.get(id);
@@ -563,21 +590,29 @@ async function main(): Promise<void> {
 
     if (!before || !after) continue;
     if (!before.url || !after.url) {
-      console.log(`${before.name}: skipped (upload failed)`);
+      console.log(
+        `  ${before?.name || after?.name || id}: skipped (upload failed)`,
+      );
       continue;
     }
 
-    const diff = compareImages(before.image, after.image);
+    const diff = compareImages(before.path, after.path);
+
     let diffUrl: string | null = null;
     if (diff.changed && diff.diffImage) {
+      const diffFilename = `diff-${id}.png`;
+      const diffPath = join(SCREENSHOTS_DIR, "diff", diffFilename);
+      ensureDir(join(SCREENSHOTS_DIR, "diff"));
+      writeFileSync(diffPath, diff.diffImage);
+
       try {
         diffUrl = await uploadScreenshotToWorker(
           diff.diffImage,
-          `${storagePrefix}/diff/diff-${sanitizeKeyPart(id)}.png`,
+          `${storagePrefix}/diff/${diffFilename}`,
         );
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error(`Diff upload failed for ${before.name}: ${message}`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`  Diff upload failed for ${before.name}: ${msg}`);
       }
     }
 
@@ -591,15 +626,13 @@ async function main(): Promise<void> {
       diffPixels: diff.diffPixels,
       diffPercent: diff.diffPercent,
     });
-  }
 
-  for (const comparison of comparisons) {
-    if (comparison.changed) {
+    if (diff.changed) {
       console.log(
-        `  ${comparison.name}: CHANGED (${comparison.diffPixels} px, ${comparison.diffPercent}%)`,
+        `  ${before.name}: CHANGED (${diff.diffPixels} px, ${diff.diffPercent}%)`,
       );
     } else {
-      console.log(`  ${comparison.name}: unchanged`);
+      console.log(`  ${before.name}: unchanged`);
     }
   }
 
