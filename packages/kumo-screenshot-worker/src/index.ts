@@ -6,6 +6,7 @@ import { cors } from "hono/cors";
 
 const MAX_PAGES = 50;
 const MAX_ACTION_PAYLOAD_BYTES = 64_000; // 64 KB per css action payload
+const MAX_SCREENSHOT_UPLOAD_BYTES = 10_000_000; // 10 MB per uploaded PNG
 
 const HIDE_SIDEBAR_CSS = `
   aside[data-sidebar-open] { display: none !important; }
@@ -187,6 +188,26 @@ function getScreenshotUrl(requestUrl: string, key: string): string {
   return url.toString();
 }
 
+function validateScreenshotKey(
+  key: string,
+): { ok: true; key: string } | { ok: false; error: string } {
+  const normalized = key.replace(/^\/+/, "");
+
+  if (!normalized) {
+    return { ok: false, error: "Screenshot key must not be empty" };
+  }
+
+  if (normalized.split("/").some((part) => part === ".." || part === "")) {
+    return { ok: false, error: "Screenshot key contains invalid path parts" };
+  }
+
+  if (!normalized.endsWith(".png")) {
+    return { ok: false, error: "Screenshot key must end with .png" };
+  }
+
+  return { ok: true, key: normalized };
+}
+
 async function appendScreenshotResult(options: {
   env: Env;
   requestUrl: string;
@@ -236,19 +257,18 @@ app.use(
   "*",
   cors({
     origin: getCorsOrigin,
-    allowMethods: ["POST", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PUT", "OPTIONS"],
     allowHeaders: ["Content-Type", "X-API-Key"],
   }),
 );
 
 app.get("/screenshots/*", async (c) => {
-  const key = c.req.path.slice("/screenshots/".length);
-
-  if (!key || key.split("/").some((part) => part === ".." || part === "")) {
-    return c.json({ error: "Invalid screenshot key" }, 400);
+  const keyCheck = validateScreenshotKey(c.req.path.slice("/screenshots/".length));
+  if (!keyCheck.ok) {
+    return c.json({ error: keyCheck.error }, 400);
   }
 
-  const object = await c.env.SCREENSHOTS.get(key);
+  const object = await c.env.SCREENSHOTS.get(keyCheck.key);
   if (!object) {
     return c.json({ error: "Screenshot not found" }, 404);
   }
@@ -268,6 +288,35 @@ app.use("*", async (c, next) => {
   }
 
   await next();
+});
+
+app.put("/screenshots/*", async (c) => {
+  const keyCheck = validateScreenshotKey(c.req.path.slice("/screenshots/".length));
+  if (!keyCheck.ok) {
+    return c.json({ error: keyCheck.error }, 400);
+  }
+
+  const contentType = c.req.header("Content-Type") ?? "";
+  if (!contentType.startsWith("image/png")) {
+    return c.json({ error: "Content-Type must be image/png" }, 415);
+  }
+
+  const contentLength = c.req.header("Content-Length");
+  const parsedLength = contentLength ? Number(contentLength) : null;
+  if (parsedLength !== null && parsedLength > MAX_SCREENSHOT_UPLOAD_BYTES) {
+    return c.json({ error: "Screenshot upload exceeds 10 MB limit" }, 413);
+  }
+
+  const image = await c.req.arrayBuffer();
+  if (image.byteLength > MAX_SCREENSHOT_UPLOAD_BYTES) {
+    return c.json({ error: "Screenshot upload exceeds 10 MB limit" }, 413);
+  }
+
+  await c.env.SCREENSHOTS.put(keyCheck.key, image, {
+    httpMetadata: { contentType: "image/png" },
+  });
+
+  return c.json({ key: keyCheck.key, url: getScreenshotUrl(c.req.url, keyCheck.key) });
 });
 
 app.post("/batch", (c) => handleBatch(c.req.raw, c.env, {}));
