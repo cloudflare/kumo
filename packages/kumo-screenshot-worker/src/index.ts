@@ -1,6 +1,8 @@
 import puppeteer from "@cloudflare/puppeteer";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -69,6 +71,15 @@ interface BatchRequest {
   storage?: StorageConfig;
 }
 
+interface VisualRegressionRequest {
+  beforeUrl: string;
+  afterUrl: string;
+  pages: PageConfig[];
+  storagePrefix: string;
+  viewport?: { width: number; height: number };
+  hideSidebar?: boolean;
+}
+
 interface ScreenshotResult {
   url: string;
   sectionId?: string;
@@ -81,6 +92,41 @@ interface ScreenshotResult {
     dimensions?: { width: number; height: number };
     viewport?: { width: number; height: number };
   };
+}
+
+interface CapturedScreenshot {
+  id: string;
+  name: string;
+  image: Buffer;
+  imageUrl: string | null;
+}
+
+interface ComparisonResult {
+  id: string;
+  name: string;
+  beforeUrl: string;
+  afterUrl: string;
+  diffUrl: string | null;
+  changed: boolean;
+  diffPixels: number;
+  diffPercent: number;
+}
+
+interface WorkerResponse {
+  results: ScreenshotResult[];
+}
+
+interface DiffResult {
+  changed: boolean;
+  diffPixels: number;
+  diffPercent: number;
+  diffImage: Buffer | null;
+}
+
+interface VisualRegressionError {
+  id?: string;
+  url?: string;
+  message: string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -188,6 +234,13 @@ function getScreenshotUrl(requestUrl: string, key: string): string {
   return url.toString();
 }
 
+function formatName(slug: string): string {
+  return slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function validateScreenshotKey(
   key: string,
 ): { ok: true; key: string } | { ok: false; error: string } {
@@ -247,6 +300,250 @@ async function appendScreenshotResult(options: {
   }
 
   options.results.push(result);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isViewport(value: unknown): value is { width: number; height: number } {
+  return (
+    isRecord(value) &&
+    typeof value.width === "number" &&
+    typeof value.height === "number"
+  );
+}
+
+function isPageAction(value: unknown): value is PageAction {
+  if (!isRecord(value) || typeof value.type !== "string") {
+    return false;
+  }
+
+  if (!["click", "wait", "hover", "css"].includes(value.type)) {
+    return false;
+  }
+
+  if (value.selector !== undefined && typeof value.selector !== "string") {
+    return false;
+  }
+
+  if (value.waitAfter !== undefined && typeof value.waitAfter !== "number") {
+    return false;
+  }
+
+  if (value.css !== undefined && typeof value.css !== "string") {
+    return false;
+  }
+
+  return !(value.timeout !== undefined && typeof value.timeout !== "number");
+}
+
+function isPageConfig(value: unknown): value is PageConfig {
+  if (!isRecord(value) || typeof value.url !== "string") {
+    return false;
+  }
+
+  if (value.actions !== undefined) {
+    if (!Array.isArray(value.actions) || !value.actions.every(isPageAction)) {
+      return false;
+    }
+  }
+
+  if (value.viewport !== undefined && !isViewport(value.viewport)) {
+    return false;
+  }
+
+  return (
+    (value.fullPage === undefined || typeof value.fullPage === "boolean") &&
+    (value.selector === undefined || typeof value.selector === "string") &&
+    (value.hideSidebar === undefined || typeof value.hideSidebar === "boolean") &&
+    (value.captureSections === undefined ||
+      typeof value.captureSections === "boolean") &&
+    (value.sectionSelector === undefined ||
+      typeof value.sectionSelector === "string")
+  );
+}
+
+function parseVisualRegressionRequest(
+  value: unknown,
+):
+  | { ok: true; request: VisualRegressionRequest }
+  | { ok: false; error: string } {
+  if (!isRecord(value)) {
+    return { ok: false, error: "Request body must be an object" };
+  }
+
+  if (typeof value.beforeUrl !== "string") {
+    return { ok: false, error: "beforeUrl must be a string" };
+  }
+
+  if (typeof value.afterUrl !== "string") {
+    return { ok: false, error: "afterUrl must be a string" };
+  }
+
+  if (typeof value.storagePrefix !== "string") {
+    return { ok: false, error: "storagePrefix must be a string" };
+  }
+
+  if (!Array.isArray(value.pages) || !value.pages.every(isPageConfig)) {
+    return { ok: false, error: "pages must be an array of page configs" };
+  }
+
+  if (value.viewport !== undefined && !isViewport(value.viewport)) {
+    return { ok: false, error: "viewport must include numeric width and height" };
+  }
+
+  if (value.hideSidebar !== undefined && typeof value.hideSidebar !== "boolean") {
+    return { ok: false, error: "hideSidebar must be a boolean" };
+  }
+
+  return {
+    ok: true,
+    request: {
+      beforeUrl: value.beforeUrl,
+      afterUrl: value.afterUrl,
+      pages: value.pages,
+      storagePrefix: value.storagePrefix,
+      viewport: value.viewport,
+      hideSidebar: value.hideSidebar,
+    },
+  };
+}
+
+function parseWorkerResponse(value: unknown): WorkerResponse {
+  if (!isRecord(value) || !Array.isArray(value.results)) {
+    throw new Error("Invalid screenshot response");
+  }
+
+  const results: ScreenshotResult[] = [];
+
+  for (const item of value.results) {
+    if (!isRecord(item) || typeof item.url !== "string") {
+      throw new Error("Invalid screenshot result");
+    }
+
+    const result: ScreenshotResult = { url: item.url };
+
+    if (typeof item.sectionId === "string") {
+      result.sectionId = item.sectionId;
+    }
+    if (typeof item.sectionTitle === "string") {
+      result.sectionTitle = item.sectionTitle;
+    }
+    if (typeof item.image === "string") {
+      result.image = item.image;
+    }
+    if (typeof item.imageUrl === "string") {
+      result.imageUrl = item.imageUrl;
+    }
+    if (typeof item.error === "string") {
+      result.error = item.error;
+    }
+
+    results.push(result);
+  }
+
+  return { results };
+}
+
+function getCapturedScreenshots(
+  results: ScreenshotResult[],
+  pages: PageConfig[],
+): CapturedScreenshot[] {
+  const screenshots: CapturedScreenshot[] = [];
+
+  for (const result of results) {
+    if (result.error || !result.image) {
+      continue;
+    }
+
+    const urlPath = new URL(result.url).pathname.replace(/\/$/, "");
+    const componentSlug = urlPath.split("/").pop() || "unknown";
+    const isOpenState = pages.some(
+      (page) =>
+        page.url === urlPath.replace(/\/$/, "") &&
+        page.actions &&
+        page.actions.length > 0,
+    );
+
+    let screenshotId: string;
+    let screenshotName: string;
+
+    if (result.sectionId) {
+      screenshotId = `${componentSlug}-${result.sectionId}`;
+      screenshotName = `${formatName(componentSlug)} / ${result.sectionTitle || result.sectionId}`;
+    } else if (isOpenState) {
+      screenshotId = `${componentSlug}-open`;
+      screenshotName = `${formatName(componentSlug)} (Open)`;
+    } else {
+      screenshotId = componentSlug;
+      screenshotName = formatName(componentSlug);
+    }
+
+    screenshots.push({
+      id: screenshotId,
+      name: screenshotName,
+      image: Buffer.from(result.image, "base64"),
+      imageUrl: result.imageUrl ?? null,
+    });
+  }
+
+  return screenshots;
+}
+
+function compareImages(beforeBuf: Buffer, afterBuf: Buffer): DiffResult {
+  if (beforeBuf.equals(afterBuf)) {
+    return { changed: false, diffPixels: 0, diffPercent: 0, diffImage: null };
+  }
+
+  const beforePng = PNG.sync.read(beforeBuf);
+  const afterPng = PNG.sync.read(afterBuf);
+  const width = Math.max(beforePng.width, afterPng.width);
+  const height = Math.max(beforePng.height, afterPng.height);
+
+  const padToSize = (png: PNG, w: number, h: number): Uint8Array => {
+    if (png.width === w && png.height === h) {
+      return new Uint8Array(
+        png.data.buffer,
+        png.data.byteOffset,
+        png.data.byteLength,
+      );
+    }
+
+    const padded = new Uint8Array(w * h * 4);
+    for (let y = 0; y < png.height; y++) {
+      const srcOffset = y * png.width * 4;
+      const dstOffset = y * w * 4;
+      padded.set(
+        png.data.subarray(srcOffset, srcOffset + png.width * 4),
+        dstOffset,
+      );
+    }
+    return padded;
+  };
+
+  const beforeData = padToSize(beforePng, width, height);
+  const afterData = padToSize(afterPng, width, height);
+  const diffData = new Uint8Array(width * height * 4);
+  const diffPixels = pixelmatch(
+    beforeData,
+    afterData,
+    diffData,
+    width,
+    height,
+    { threshold: 0.1, diffColor: [255, 0, 0], alpha: 0.3 },
+  );
+  const totalPixels = width * height;
+  const diffPercent = totalPixels > 0 ? (diffPixels / totalPixels) * 100 : 0;
+  const diffPng = new PNG({ width, height });
+  diffPng.data = Buffer.from(diffData);
+
+  return {
+    changed: true,
+    diffPixels,
+    diffPercent: Math.round(diffPercent * 100) / 100,
+    diffImage: PNG.sync.write(diffPng),
+  };
 }
 
 // ─── Handler ─────────────────────────────────────────────────────────────────
@@ -320,10 +617,168 @@ app.put("/screenshots/*", async (c) => {
 });
 
 app.post("/batch", (c) => handleBatch(c.req.raw, c.env, {}));
+app.post("/visual-regression/compare", (c) =>
+  handleVisualRegressionCompare(c.req.raw, c.env, {}),
+);
 
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 
 export default app;
+
+// ─── Visual regression handler ───────────────────────────────────────────────
+
+async function handleVisualRegressionCompare(
+  request: Request,
+  env: Env,
+  cors: Record<string, string>,
+): Promise<Response> {
+  const parsed = parseVisualRegressionRequest(await request.json());
+  if (!parsed.ok) {
+    return Response.json(
+      { error: parsed.error },
+      { status: 400, headers: cors },
+    );
+  }
+
+  const prefixCheck = validateStoragePrefix(parsed.request.storagePrefix);
+  if (!prefixCheck.ok) {
+    return Response.json(
+      { error: prefixCheck.error },
+      { status: 400, headers: cors },
+    );
+  }
+
+  const beforeResponse = await handleBatch(
+    new Request(request.url, {
+      method: "POST",
+      body: JSON.stringify({
+        baseUrl: parsed.request.beforeUrl,
+        pages: parsed.request.pages,
+        viewport: parsed.request.viewport,
+        hideSidebar: parsed.request.hideSidebar,
+        storage: {
+          prefix: `${prefixCheck.prefix}/before`,
+          includeImage: true,
+        },
+      }),
+    }),
+    env,
+    cors,
+  );
+
+  if (!beforeResponse.ok) {
+    return beforeResponse;
+  }
+
+  const afterResponse = await handleBatch(
+    new Request(request.url, {
+      method: "POST",
+      body: JSON.stringify({
+        baseUrl: parsed.request.afterUrl,
+        pages: parsed.request.pages,
+        viewport: parsed.request.viewport,
+        hideSidebar: parsed.request.hideSidebar,
+        storage: {
+          prefix: `${prefixCheck.prefix}/after`,
+          includeImage: true,
+        },
+      }),
+    }),
+    env,
+    cors,
+  );
+
+  if (!afterResponse.ok) {
+    return afterResponse;
+  }
+
+  const beforeData = parseWorkerResponse(await beforeResponse.json());
+  const afterData = parseWorkerResponse(await afterResponse.json());
+  const errors: VisualRegressionError[] = [];
+
+  for (const result of beforeData.results) {
+    if (result.error) {
+      errors.push({ url: result.url, message: `Before capture: ${result.error}` });
+    }
+  }
+
+  for (const result of afterData.results) {
+    if (result.error) {
+      errors.push({ url: result.url, message: `After capture: ${result.error}` });
+    }
+  }
+
+  const beforeScreenshots = getCapturedScreenshots(
+    beforeData.results,
+    parsed.request.pages,
+  );
+  const afterScreenshots = getCapturedScreenshots(
+    afterData.results,
+    parsed.request.pages,
+  );
+  const beforeMap = new Map(beforeScreenshots.map((s) => [s.id, s]));
+  const afterMap = new Map(afterScreenshots.map((s) => [s.id, s]));
+  const allIds = Array.from(
+    new Set([...Array.from(beforeMap.keys()), ...Array.from(afterMap.keys())]),
+  );
+  const comparisons: ComparisonResult[] = [];
+
+  for (const id of allIds) {
+    const before = beforeMap.get(id);
+    const after = afterMap.get(id);
+
+    if (!before) {
+      errors.push({ id, message: "Missing before screenshot" });
+      continue;
+    }
+
+    if (!after) {
+      errors.push({ id, message: "Missing after screenshot" });
+      continue;
+    }
+
+    if (!before.imageUrl) {
+      errors.push({ id, message: "Missing before screenshot URL" });
+      continue;
+    }
+
+    if (!after.imageUrl) {
+      errors.push({ id, message: "Missing after screenshot URL" });
+      continue;
+    }
+
+    const diff = compareImages(before.image, after.image);
+    let diffUrl: string | null = null;
+
+    if (diff.changed && diff.diffImage) {
+      const key = `${prefixCheck.prefix}/diff/diff-${sanitizeKeyPart(id)}.png`;
+      await env.SCREENSHOTS.put(key, diff.diffImage, {
+        httpMetadata: { contentType: "image/png" },
+      });
+      diffUrl = getScreenshotUrl(request.url, key);
+    }
+
+    comparisons.push({
+      id,
+      name: before.name,
+      beforeUrl: before.imageUrl,
+      afterUrl: after.imageUrl,
+      diffUrl,
+      changed: diff.changed,
+      diffPixels: diff.diffPixels,
+      diffPercent: diff.diffPercent,
+    });
+  }
+
+  if (errors.length > 0) {
+    return Response.json(
+      { error: "Visual regression capture failed", errors, comparisons },
+      { status: 500, headers: cors },
+    );
+  }
+
+  return Response.json({ comparisons }, { headers: cors });
+}
 
 // ─── Batch handler ───────────────────────────────────────────────────────────
 

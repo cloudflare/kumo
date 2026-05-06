@@ -226,11 +226,3 @@ jobs:
           AFTER_URL: ${{ needs.deploy.outputs.preview_url }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
         run: pnpm tsx ci/visual-regression/run-visual-regression.ts
-
-      - name: Upload Screenshots
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: visual-regression-screenshots-fork
-          path: ci/visual-regression/screenshots/
-          retention-days: 7
