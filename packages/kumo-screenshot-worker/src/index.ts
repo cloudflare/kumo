@@ -32,6 +32,7 @@ function getCorsOrigin(origin: string): string {
 interface Env {
   BROWSER: Fetcher;
   API_KEY: string;
+  SCREENSHOTS: R2Bucket;
 }
 
 interface PageAction {
@@ -54,11 +55,17 @@ interface PageConfig {
   sectionSelector?: string;
 }
 
+interface StorageConfig {
+  prefix: string;
+  includeImage?: boolean;
+}
+
 interface BatchRequest {
   baseUrl: string;
   pages: PageConfig[];
   viewport?: { width: number; height: number };
   hideSidebar?: boolean;
+  storage?: StorageConfig;
 }
 
 interface ScreenshotResult {
@@ -66,6 +73,8 @@ interface ScreenshotResult {
   sectionId?: string;
   sectionTitle?: string;
   image?: string;
+  imageKey?: string;
+  imageUrl?: string;
   error?: string;
   debug?: {
     dimensions?: { width: number; height: number };
@@ -129,6 +138,96 @@ function validateUrl(
   return { ok: true, url: parsed.toString() };
 }
 
+function sanitizeKeyPart(value: string): string {
+  const sanitized = value
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return sanitized || "screenshot";
+}
+
+function validateStoragePrefix(
+  prefix: string,
+): { ok: true; prefix: string } | { ok: false; error: string } {
+  const normalized = prefix.replace(/^\/+|\/+$/g, "");
+
+  if (!normalized) {
+    return { ok: false, error: "storage.prefix must not be empty" };
+  }
+
+  if (normalized.split("/").some((part) => part === ".." || part === "")) {
+    return { ok: false, error: "storage.prefix contains invalid path parts" };
+  }
+
+  return { ok: true, prefix: normalized };
+}
+
+function getScreenshotKey(
+  prefix: string,
+  fullUrl: string,
+  sectionId: string | undefined,
+  index: number,
+): string {
+  const pathname = new URL(fullUrl).pathname.replace(/^\/+|\/+$/g, "");
+  const pathPart = sanitizeKeyPart(pathname || "root");
+  const namePart = sectionId
+    ? sanitizeKeyPart(sectionId)
+    : `screenshot-${index + 1}`;
+
+  return `${prefix}/${pathPart}/${namePart}.png`;
+}
+
+function getScreenshotUrl(requestUrl: string, key: string): string {
+  const url = new URL(requestUrl);
+  const encodedKey = key.split("/").map(encodeURIComponent).join("/");
+  url.pathname = `/screenshots/${encodedKey}`;
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
+async function appendScreenshotResult(options: {
+  env: Env;
+  requestUrl: string;
+  results: ScreenshotResult[];
+  storage?: StorageConfig;
+  url: string;
+  image: Buffer;
+  sectionId?: string;
+  sectionTitle?: string;
+  debug?: ScreenshotResult["debug"];
+}): Promise<void> {
+  const result: ScreenshotResult = {
+    url: options.url,
+    sectionId: options.sectionId,
+    sectionTitle: options.sectionTitle,
+    debug: options.debug,
+  };
+
+  if (options.storage) {
+    const key = getScreenshotKey(
+      options.storage.prefix,
+      options.url,
+      options.sectionId,
+      options.results.length,
+    );
+
+    await options.env.SCREENSHOTS.put(key, options.image, {
+      httpMetadata: { contentType: "image/png" },
+    });
+
+    result.imageKey = key;
+    result.imageUrl = getScreenshotUrl(options.requestUrl, key);
+  }
+
+  if (options.storage?.includeImage !== false) {
+    result.image = options.image.toString("base64");
+  }
+
+  options.results.push(result);
+}
+
 // ─── Handler ─────────────────────────────────────────────────────────────────
 
 const app = new Hono<{ Bindings: Env }>();
@@ -141,6 +240,26 @@ app.use(
     allowHeaders: ["Content-Type", "X-API-Key"],
   }),
 );
+
+app.get("/screenshots/*", async (c) => {
+  const key = c.req.path.slice("/screenshots/".length);
+
+  if (!key || key.split("/").some((part) => part === ".." || part === "")) {
+    return c.json({ error: "Invalid screenshot key" }, 400);
+  }
+
+  const object = await c.env.SCREENSHOTS.get(key);
+  if (!object) {
+    return c.json({ error: "Screenshot not found" }, 404);
+  }
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("etag", object.httpEtag);
+  headers.set("cache-control", "public, max-age=31536000, immutable");
+
+  return new Response(object.body, { headers });
+});
 
 app.use("*", async (c, next) => {
   const apiKey = c.req.header("X-API-Key");
@@ -170,6 +289,7 @@ async function handleBatch(
     pages,
     viewport: globalViewport,
     hideSidebar: globalHideSidebar,
+    storage,
   } = body;
 
   // ── Input validation ──────────────────────────────────────────────────────
@@ -200,6 +320,27 @@ async function handleBatch(
       );
     }
   }
+
+  if (storage && typeof storage.prefix !== "string") {
+    return Response.json(
+      { error: "storage.prefix must be a string" },
+      { status: 400, headers: cors },
+    );
+  }
+
+  const storageConfig = storage
+    ? validateStoragePrefix(storage.prefix)
+    : undefined;
+  if (storageConfig && !storageConfig.ok) {
+    return Response.json(
+      { error: storageConfig.error },
+      { status: 400, headers: cors },
+    );
+  }
+
+  const normalizedStorage = storageConfig
+    ? { ...storage, prefix: storageConfig.prefix }
+    : undefined;
 
   // Validate per-page action payloads to avoid oversized CSS strings.
   for (const pageConfig of pages) {
@@ -275,29 +416,41 @@ async function handleBatch(
                 await element.scrollIntoView();
                 await new Promise((r) => setTimeout(r, 200));
                 const shot = await element.screenshot({ type: "png" });
-                results.push({
+                await appendScreenshotResult({
+                  env,
+                  requestUrl: request.url,
+                  results,
+                  storage: normalizedStorage,
                   url: fullUrl,
                   sectionId: attrs.sectionId,
                   sectionTitle: attrs.sectionTitle || attrs.sectionId,
-                  image: Buffer.from(shot).toString("base64"),
+                  image: Buffer.from(shot),
                 });
               }
             }
           } else {
             // Fallback: full page screenshot if no VR demo elements found
             const shot = await page.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
             });
           }
         } else if (pageConfig.selector) {
           const element = await page.$(pageConfig.selector);
           if (element) {
             const shot = await element.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
             });
           } else {
             throw new Error(`Selector not found: ${pageConfig.selector}`);
@@ -368,16 +521,24 @@ async function handleBatch(
             await new Promise((r) => setTimeout(r, 300));
 
             const shot = await page.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
               debug: { dimensions, viewport: newViewport },
             });
           } else {
             const shot = await page.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
             });
           }
         }
