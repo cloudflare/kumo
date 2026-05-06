@@ -14,12 +14,9 @@
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^1.0.0",
-    "hono": "^4.12.16",
-    "pixelmatch": "^7.1.0",
-    "pngjs": "^7.0.0"
+    "hono": "^4.12.16"
   },
   "devDependencies": {
-    "@types/pngjs": "^6.0.5",
     "oxlint": "catalog:",
     "typescript": "catalog:",
     "wrangler": "catalog:"
