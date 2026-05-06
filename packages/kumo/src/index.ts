@@ -222,7 +222,6 @@ export {
   type CloudflareLogoSvgVariant,
   type CloudflareLogoSvgColor,
 } from "./components/cloudflare-logo";
-
 // DatePicker
 export {
   DatePicker,
@@ -235,9 +234,14 @@ export { Flow } from "./components/flow";
 export {
   Chart,
   ChartPalette,
+  SankeyChart,
   TimeseriesChart,
   ChartLegend,
   type KumoChartOption,
+  type SankeyChartProps,
+  type SankeyNodeData,
+  type SankeyLinkData,
+  type SankeyTooltipParams,
 } from "./components/chart";
 export {
   Autocomplete,
