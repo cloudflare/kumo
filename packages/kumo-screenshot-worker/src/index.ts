@@ -76,6 +76,7 @@ interface VisualRegressionRequest {
   afterUrl: string;
   pages: PageConfig[];
   storagePrefix: string;
+  diffThreshold?: number;
   viewport?: { width: number; height: number };
   hideSidebar?: boolean;
 }
@@ -393,6 +394,16 @@ function parseVisualRegressionRequest(
     return { ok: false, error: "viewport must include numeric width and height" };
   }
 
+  if (value.diffThreshold !== undefined) {
+    if (typeof value.diffThreshold !== "number") {
+      return { ok: false, error: "diffThreshold must be a number" };
+    }
+
+    if (value.diffThreshold < 0 || value.diffThreshold > 1) {
+      return { ok: false, error: "diffThreshold must be between 0 and 1" };
+    }
+  }
+
   if (value.hideSidebar !== undefined && typeof value.hideSidebar !== "boolean") {
     return { ok: false, error: "hideSidebar must be a boolean" };
   }
@@ -404,6 +415,7 @@ function parseVisualRegressionRequest(
       afterUrl: value.afterUrl,
       pages: value.pages,
       storagePrefix: value.storagePrefix,
+      diffThreshold: value.diffThreshold,
       viewport: value.viewport,
       hideSidebar: value.hideSidebar,
     },
@@ -491,7 +503,11 @@ function getCapturedScreenshots(
   return screenshots;
 }
 
-function compareImages(beforeBuf: Buffer, afterBuf: Buffer): DiffResult {
+function compareImages(
+  beforeBuf: Buffer,
+  afterBuf: Buffer,
+  threshold: number,
+): DiffResult {
   if (beforeBuf.equals(afterBuf)) {
     return { changed: false, diffPixels: 0, diffPercent: 0, diffImage: null };
   }
@@ -531,7 +547,7 @@ function compareImages(beforeBuf: Buffer, afterBuf: Buffer): DiffResult {
     diffData,
     width,
     height,
-    { threshold: 0.1, diffColor: [255, 0, 0], alpha: 0.3 },
+    { threshold, diffColor: [255, 0, 0], alpha: 0.3 },
   );
   const totalPixels = width * height;
   const diffPercent = totalPixels > 0 ? (diffPixels / totalPixels) * 100 : 0;
@@ -718,10 +734,9 @@ async function handleVisualRegressionCompare(
   );
   const beforeMap = new Map(beforeScreenshots.map((s) => [s.id, s]));
   const afterMap = new Map(afterScreenshots.map((s) => [s.id, s]));
-  const allIds = Array.from(
-    new Set([...Array.from(beforeMap.keys()), ...Array.from(afterMap.keys())]),
-  );
+  const allIds = [...new Set([...beforeMap.keys(), ...afterMap.keys()])];
   const comparisons: ComparisonResult[] = [];
+  const diffThreshold = parsed.request.diffThreshold ?? 0.1;
 
   for (const id of allIds) {
     const before = beforeMap.get(id);
@@ -747,7 +762,7 @@ async function handleVisualRegressionCompare(
       continue;
     }
 
-    const diff = compareImages(before.image, after.image);
+    const diff = compareImages(before.image, after.image, diffThreshold);
     let diffUrl: string | null = null;
 
     if (diff.changed && diff.diffImage) {
