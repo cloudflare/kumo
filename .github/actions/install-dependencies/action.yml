@@ -5,6 +5,10 @@ inputs:
   filter:
     description: "pnpm --filter value to scope install (e.g. '@cloudflare/kumo'). Omit for all packages."
     required: false
+  cache-node-modules:
+    description: "Whether to restore/save node_modules cache. Disable for sparse checkouts."
+    required: false
+    default: "true"
 
 runs:
   using: "composite"
@@ -22,6 +26,7 @@ runs:
         registry-url: "https://registry.npmjs.org"
 
     - name: Cache node_modules
+      if: ${{ inputs.cache-node-modules == 'true' }}
       uses: actions/cache@v4
       with:
         path: "**/node_modules"

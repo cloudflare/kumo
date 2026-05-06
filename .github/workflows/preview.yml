@@ -254,7 +254,7 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
         with:
-          filter: "@cloudflare/kumo..."
+          cache-node-modules: "false"
 
       - name: Run Visual Regression
         env:

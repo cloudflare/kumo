@@ -170,6 +170,7 @@ async function compareScreenshots(
   storagePrefix: string,
 ): Promise<ComparisonResult[]> {
   const requests = getPageRequests(components);
+  const start = Date.now();
 
   console.log("Capturing and comparing screenshots in worker...");
   console.log(`  ${components.length} components, ${requests.length} requests`);
@@ -199,7 +200,13 @@ async function compareScreenshots(
     throw new Error(`Worker request failed: ${response.status} - ${text}`);
   }
 
-  return parseVisualRegressionResponse(await response.json()).comparisons;
+  const comparisons = parseVisualRegressionResponse(
+    await response.json(),
+  ).comparisons;
+  const elapsedSeconds = Math.round((Date.now() - start) / 100) / 10;
+  console.log(`Worker visual regression completed in ${elapsedSeconds}s`);
+
+  return comparisons;
 }
 
 function generateMarkdownReport(comparisons: ComparisonResult[]): string {
