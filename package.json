@@ -45,7 +45,7 @@
     "@types/pngjs": "^6.0.5",
     "lefthook": "2.0.12",
     "oxlint": "catalog:",
-    "pixelmatch": "^7.1.0",
+    "pixelmatch": "^7.2.0",
     "pngjs": "^7.0.0",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "0.7.1",
