@@ -2,7 +2,7 @@ import puppeteer from "@cloudflare/puppeteer";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import pixelmatch from "pixelmatch";
-import { PNG } from "pngjs";
+import { PNG } from "pngjs/browser";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
