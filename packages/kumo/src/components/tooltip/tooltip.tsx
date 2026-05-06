@@ -168,6 +168,10 @@ export function Tooltip({
           // Consumer styles passed via className will override these (tailwind-merge)
           !shouldUseRender &&
             "inline-flex items-center bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0]",
+          // Tooltip triggers are disclosure elements, not actions — override
+          // cursor: pointer (e.g. from Button used via render prop) so the
+          // trigger doesn't appear clickable
+          "cursor-default",
           className,
         )}
         render={resolvedRender}
