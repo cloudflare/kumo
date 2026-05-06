@@ -1,3 +1,5 @@
+import { resolveVariant } from "../../utils/resolve-variant";
+
 /** Loader size variant definitions mapping sizes to their pixel values. */
 export const KUMO_LOADER_VARIANTS = {
   size: {
@@ -38,7 +40,7 @@ export function loaderVariants({
   size = KUMO_LOADER_DEFAULT_VARIANTS.size,
 }: KumoLoaderVariantsProps = {}): number {
   if (typeof size === "number") return size;
-  return KUMO_LOADER_VARIANTS.size[size].value;
+  return resolveVariant(KUMO_LOADER_VARIANTS.size, size, KUMO_LOADER_DEFAULT_VARIANTS.size).value;
 }
 
 /**

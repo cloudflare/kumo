@@ -289,12 +289,27 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
   },
   Select: {
     onValueChange: {
-      type: "(value: string) => void",
+      type: "(value: T) => void",
       description: "Callback when selection changes",
     },
     defaultValue: {
-      type: "string",
+      type: "T",
       description: "Initial value for uncontrolled mode",
+    },
+    renderValue: {
+      type: "(value: T) => ReactNode",
+      description:
+        "A function that returns a ReactNode to format the selected value in the trigger. Required when using object values. Use `placeholder` for the empty state.",
+    },
+    items: {
+      type: 'Record<string, string> | Array<{ label: ReactNode; value: T }>',
+      description:
+        "Data structure of items rendered in the popup. Accepts a plain object map (`{ key: \"Label\" }`) or an array of `{ label, value }` for object/complex values.",
+    },
+    isItemEqualToValue: {
+      type: "(item: T, value: T) => boolean",
+      description:
+        "Custom equality function for comparing items. Required when value is an object, since object identity (`===`) won't match across renders.",
     },
   },
   DateRangePicker: {
@@ -532,7 +547,7 @@ export const PROP_TYPE_OVERRIDES: Record<string, Record<string, string>> = {
     value: "T | T[]",
   },
   Select: {
-    value: "string",
+    value: "T",
   },
 };
 

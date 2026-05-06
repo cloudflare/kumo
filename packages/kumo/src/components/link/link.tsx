@@ -2,6 +2,7 @@ import { forwardRef, type SVGProps } from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   useLinkComponent,
   type LinkComponentProps,
@@ -80,7 +81,7 @@ export interface KumoLinkVariantsProps {
 export function linkVariants({
   variant = KUMO_LINK_DEFAULT_VARIANTS.variant,
 }: KumoLinkVariantsProps = {}) {
-  return cn(KUMO_LINK_VARIANTS.variant[variant].classes);
+  return cn(resolveVariant(KUMO_LINK_VARIANTS.variant, variant, KUMO_LINK_DEFAULT_VARIANTS.variant).classes);
 }
 
 /**

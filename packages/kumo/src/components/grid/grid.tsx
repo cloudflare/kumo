@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Grid variant and gap definitions mapping layout names to their responsive Tailwind classes. */
 export const KUMO_GRID_VARIANTS = {
@@ -144,8 +145,8 @@ export function gridVariants({
 } = {}) {
   return cn(
     "grid",
-    variant && KUMO_GRID_VARIANTS.variant[variant].classes,
-    KUMO_GRID_VARIANTS.gap[gap].classes,
+    variant && resolveVariant(KUMO_GRID_VARIANTS.variant, variant, "2up").classes,
+    resolveVariant(KUMO_GRID_VARIANTS.gap, gap, KUMO_GRID_DEFAULT_VARIANTS.gap).classes,
   );
 }
 

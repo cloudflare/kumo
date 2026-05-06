@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Checkbox, type CheckboxChangeEventDetails } from "../checkbox";
 
 /** Table layout and row variant definitions mapping names to their Tailwind classes. */
@@ -57,7 +58,7 @@ const stickyColumnClasses = (
   /** "head" renders at z-2, "cell" at z-1 */
   element: "head" | "cell",
 ) => {
-  const base = KUMO_TABLE_VARIANTS.sticky[side].classes;
+  const base = resolveVariant(KUMO_TABLE_VARIANTS.sticky, side, "left").classes;
   const z = element === "head" ? "z-2" : "z-1";
 
   const fadePosition = side === "right" ? "before:-left-6" : "before:-right-6";
@@ -127,7 +128,7 @@ const TableRoot = forwardRef<
 >(({ layout = "auto", ...props }, ref) => {
   const className = cn(
     "isolate w-full", // isolate creates a stacking context so z-0/z-1/z-2 never leak out
-    KUMO_TABLE_VARIANTS.layout[layout].classes,
+    resolveVariant(KUMO_TABLE_VARIANTS.layout, layout, KUMO_TABLE_DEFAULT_VARIANTS.layout).classes,
     "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
     "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold [&_th]:text-base", // Header styles
@@ -196,7 +197,7 @@ const TableRow = forwardRef<
   }
 >(({ variant = KUMO_TABLE_DEFAULT_VARIANTS.variant, ...props }, ref) => {
   const className = cn(
-    KUMO_TABLE_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_TABLE_VARIANTS.variant, variant, KUMO_TABLE_DEFAULT_VARIANTS.variant).classes,
     props.className,
   );
 

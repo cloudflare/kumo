@@ -1,5 +1,6 @@
 import { forwardRef, createContext, useContext, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Fieldset } from "@base-ui/react/fieldset";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
 import { Radio as BaseRadio } from "@base-ui/react/radio";
@@ -61,8 +62,8 @@ export function radioVariants({
   appearance = KUMO_RADIO_DEFAULT_VARIANTS.appearance,
 }: KumoRadioVariantsProps = {}) {
   return cn(
-    KUMO_RADIO_VARIANTS.variant[variant].classes,
-    KUMO_RADIO_VARIANTS.appearance[appearance].classes,
+    resolveVariant(KUMO_RADIO_VARIANTS.variant, variant, KUMO_RADIO_DEFAULT_VARIANTS.variant).classes,
+    resolveVariant(KUMO_RADIO_VARIANTS.appearance, appearance, KUMO_RADIO_DEFAULT_VARIANTS.appearance).classes,
   );
 }
 
