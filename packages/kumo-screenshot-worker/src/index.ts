@@ -664,46 +664,45 @@ async function handleVisualRegressionCompare(
     );
   }
 
-  const [beforeResponse, afterResponse] = await Promise.all([
-    handleBatch(
-      new Request(request.url, {
-        method: "POST",
-        body: JSON.stringify({
-          baseUrl: parsed.request.beforeUrl,
-          pages: parsed.request.pages,
-          viewport: parsed.request.viewport,
-          hideSidebar: parsed.request.hideSidebar,
-          storage: {
-            prefix: `${prefixCheck.prefix}/before`,
-            includeImage: true,
-          },
-        }),
+  const beforeResponse = await handleBatch(
+    new Request(request.url, {
+      method: "POST",
+      body: JSON.stringify({
+        baseUrl: parsed.request.beforeUrl,
+        pages: parsed.request.pages,
+        viewport: parsed.request.viewport,
+        hideSidebar: parsed.request.hideSidebar,
+        storage: {
+          prefix: `${prefixCheck.prefix}/before`,
+          includeImage: true,
+        },
       }),
-      env,
-      cors,
-    ),
-    handleBatch(
-      new Request(request.url, {
-        method: "POST",
-        body: JSON.stringify({
-          baseUrl: parsed.request.afterUrl,
-          pages: parsed.request.pages,
-          viewport: parsed.request.viewport,
-          hideSidebar: parsed.request.hideSidebar,
-          storage: {
-            prefix: `${prefixCheck.prefix}/after`,
-            includeImage: true,
-          },
-        }),
-      }),
-      env,
-      cors,
-    ),
-  ]);
+    }),
+    env,
+    cors,
+  );
 
   if (!beforeResponse.ok) {
     return beforeResponse;
   }
+
+  const afterResponse = await handleBatch(
+    new Request(request.url, {
+      method: "POST",
+      body: JSON.stringify({
+        baseUrl: parsed.request.afterUrl,
+        pages: parsed.request.pages,
+        viewport: parsed.request.viewport,
+        hideSidebar: parsed.request.hideSidebar,
+        storage: {
+          prefix: `${prefixCheck.prefix}/after`,
+          includeImage: true,
+        },
+      }),
+    }),
+    env,
+    cors,
+  );
 
   if (!afterResponse.ok) {
     return afterResponse;
