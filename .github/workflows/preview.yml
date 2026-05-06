@@ -65,7 +65,7 @@ jobs:
           filter: "@cloudflare/kumo..."
 
       - name: Build @cloudflare/kumo
-        run: pnpm --filter @cloudflare/kumo build
+        run: pnpm --filter @cloudflare/kumo build:docs
 
       - name: Publish preview package
         run: pnpm dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
