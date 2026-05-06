@@ -1,4 +1,6 @@
 import puppeteer from "@cloudflare/puppeteer";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -18,17 +20,11 @@ const ALLOWED_ORIGINS = [
   /^https:\/\/[a-z0-9-]+\.kumo-docs\.pages\.dev$/,
 ];
 
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowed =
-    origin !== null &&
-    ALLOWED_ORIGINS.some((o) =>
-      typeof o === "string" ? o === origin : o.test(origin),
-    );
-  return {
-    "Access-Control-Allow-Origin": allowed ? origin! : "null",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
-  };
+function getCorsOrigin(origin: string): string {
+  const allowed = ALLOWED_ORIGINS.some((o) =>
+    typeof o === "string" ? o === origin : o.test(origin),
+  );
+  return allowed ? origin : "null";
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -135,35 +131,31 @@ function validateUrl(
 
 // ─── Handler ─────────────────────────────────────────────────────────────────
 
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const origin = request.headers.get("Origin");
-    const cors = getCorsHeaders(origin);
+const app = new Hono<{ Bindings: Env }>();
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: cors });
-    }
+app.use(
+  "*",
+  cors({
+    origin: getCorsOrigin,
+    allowMethods: ["POST", "OPTIONS"],
+    allowHeaders: ["Content-Type", "X-API-Key"],
+  }),
+);
 
-    const apiKey = request.headers.get("X-API-Key");
-    if (!apiKey || apiKey !== env.API_KEY) {
-      return Response.json(
-        { error: "Unauthorized" },
-        { status: 401, headers: cors },
-      );
-    }
+app.use("*", async (c, next) => {
+  const apiKey = c.req.header("X-API-Key");
+  if (!apiKey || apiKey !== c.env.API_KEY) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
 
-    const url = new URL(request.url);
+  await next();
+});
 
-    if (url.pathname === "/batch" && request.method === "POST") {
-      return handleBatch(request, env, cors);
-    }
+app.post("/batch", (c) => handleBatch(c.req.raw, c.env, {}));
 
-    return Response.json(
-      { error: "Not found" },
-      { status: 404, headers: cors },
-    );
-  },
-};
+app.notFound((c) => c.json({ error: "Not found" }, 404));
+
+export default app;
 
 // ─── Batch handler ───────────────────────────────────────────────────────────
 
