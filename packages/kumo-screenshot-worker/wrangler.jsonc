@@ -13,6 +13,14 @@
       "bucket_name": "kumo-visual-regression",
     },
   ],
+  "observability": {
+    "logs": {
+      "enabled": true
+    },
+    "traces": {
+      "enabled": true
+    }
+  }
   // Secrets (never commit values here — use `wrangler secret put` or .dev.vars for local dev):
   //   API_KEY  — shared secret sent as X-API-Key header by callers
 }
