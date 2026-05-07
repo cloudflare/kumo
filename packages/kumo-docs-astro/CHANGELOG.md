@@ -1,5 +1,20 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.0
+
+### Minor Changes
+
+- 8a33813: Create Sankey Chart component
+
+### Patch Changes
+
+- Updated dependencies [a21cc3a]
+- Updated dependencies [0414c54]
+- Updated dependencies [8b12a4c]
+- Updated dependencies [7d8ec27]
+- Updated dependencies [8a33813]
+  - @cloudflare/kumo@2.1.0
+
 ## 1.4.5
 
 ### Patch Changes

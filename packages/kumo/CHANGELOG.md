@@ -1,5 +1,18 @@
 # @cloudflare/kumo
 
+## 2.1.0
+
+### Minor Changes
+
+- 8a33813: Create Sankey Chart component
+
+### Patch Changes
+
+- a21cc3a: Fix CommandPalette List bottom ring being clipped by Footer background. Add scroll padding to prevent items from clipping behind rounded corners.
+- 0414c54: Deprecate `to` prop on Link in favor of `href`. The `to` prop is a routing-framework concept that doesn't belong on a presentational component. Use `href` for all link destinations and configure a `LinkProvider` wrapper to bridge to your router. `to` continues to work but emits a dev-mode deprecation warning.
+- 8b12a4c: Allow `LayerCard.Primary` and `LayerCard.Secondary` to accept all standard HTML div attributes, including `data-testid` for testing.
+- 7d8ec27: Set `cursor-default` on Tooltip triggers so disclosure buttons don't appear clickable. Overridable via `className`.
+
 ## 2.0.5
 
 ### Patch Changes
