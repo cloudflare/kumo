@@ -143,6 +143,7 @@ describe("Link with href (standard usage)", () => {
       HTMLAnchorElement,
       React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
     >(({ href, ...rest }, ref) => (
+      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
       <a ref={ref} href={href} data-testid="custom-link" {...rest} />
     ));
     CustomLink.displayName = "CustomLink";
@@ -206,9 +207,11 @@ describe("LinkProvider", () => {
       // and renders a plain <a> for them.
       const isExternal = href?.startsWith("http");
       if (isExternal) {
+        // oxlint-disable-next-line anchor-has-content, control-has-associated-label
         return <a ref={ref} href={href} {...rest} />;
       }
       // Internal URLs get routed via the framework
+      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
       return <a ref={ref} href={href} data-routed="true" {...rest} />;
     });
     AppLink.displayName = "AppLink";
@@ -239,13 +242,16 @@ describe("Link with render prop", () => {
       HTMLAnchorElement,
       React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
     >((props, ref) => (
+      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
       <a ref={ref} data-spy="true" {...props} />
     ));
     SpyLink.displayName = "SpyLink";
 
     render(
       <LinkProvider component={SpyLink}>
+        {/* oxlint-disable anchor-has-content, control-has-associated-label */}
         <Link render={<a href="/direct" />}>Direct</Link>
+        {/* oxlint-enable anchor-has-content, control-has-associated-label */}
       </LinkProvider>,
     );
 
