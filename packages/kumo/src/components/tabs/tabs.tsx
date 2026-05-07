@@ -6,10 +6,12 @@ import { cn } from "../../utils/cn";
 /** Tabs variant definitions. */
 export const KUMO_TABS_VARIANTS = {
   variant: ["segmented", "underline"],
+  size: ["base", "sm"],
 } as const;
 
 export const KUMO_TABS_DEFAULT_VARIANTS = {
   variant: "segmented",
+  size: "base",
 } as const;
 
 export const KUMO_TABS_STYLING = {
@@ -45,6 +47,13 @@ export interface KumoTabsVariantsProps {
    * @default "segmented"
    */
   variant?: (typeof KUMO_TABS_VARIANTS.variant)[number];
+  /**
+   * Tab size.
+   * - `"base"` — Default size (h-9, text-base)
+   * - `"sm"` — Compact size (h-6.5, text-xs) — matches Input size="sm"
+   * @default "base"
+   */
+  size?: (typeof KUMO_TABS_VARIANTS.size)[number];
 }
 
 /** Configuration for a single tab within the Tabs component. */
@@ -123,6 +132,7 @@ export function Tabs({
   listClassName,
   indicatorClassName,
   variant = KUMO_TABS_DEFAULT_VARIANTS.variant,
+  size = KUMO_TABS_DEFAULT_VARIANTS.size,
 }: TabsProps) {
   const items: TabsItem[] = tabs ?? [];
 
@@ -139,6 +149,7 @@ export function Tabs({
 
   const isSegmented = variant === "segmented";
   const isUnderline = variant === "underline";
+  const isSm = size === "sm";
 
   return (
     <TabsPrimitive.Root
@@ -151,14 +162,16 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className="absolute inset-x-0 top-1/2 z-0 h-9 -translate-y-1/2 rounded-lg bg-kumo-recessed" />
+        <div className={cn("absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 rounded-lg bg-kumo-recessed", isSm ? "h-6.5" : "h-9")} />
       )}
       <TabsPrimitive.List
         activateOnFocus={activateOnFocus}
         className={cn(
           "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "h-9 rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70",
-          isUnderline && "h-7 gap-4 border-b border-kumo-hairline pb-2",
+          isSegmented && "rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70",
+          isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
+          isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
+          isUnderline && (isSm ? "h-6.5" : "h-7"),
           listClassName,
         )}
       >
@@ -168,11 +181,14 @@ export function Tabs({
             value={tab.value}
             render={tab.render}
             className={cn(
-              "relative z-2 flex cursor-pointer items-center rounded bg-transparent text-base whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative z-2 flex cursor-pointer items-center rounded bg-transparent whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              isSm ? "text-xs" : "text-base",
               isSegmented &&
-                "my-0.5 rounded-md px-2.5 text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
+                "my-0.5 rounded-md text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
+              isSegmented && (isSm ? "px-2" : "px-2.5"),
               isUnderline &&
-                "px-2 py-2.5 text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
+                "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
+              isUnderline && (isSm ? "px-1.5 py-2" : "px-2 py-2.5"),
               tab.className,
             )}
           >
@@ -188,7 +204,7 @@ export function Tabs({
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
                 "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&
-                  "top-(--active-tab-top) h-(--active-tab-height) rounded-md bg-kumo-base shadow-sm ring ring-kumo-line",
+                  cn("top-(--active-tab-top) h-(--active-tab-height) bg-kumo-base shadow-sm ring ring-kumo-line", isSm ? "rounded" : "rounded-md"),
                 isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
                 indicatorClassName,
               )}

@@ -97,6 +97,39 @@ export function TabsManyDemo() {
   );
 }
 
+export function TabsSmDemo() {
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <p className="mb-2 text-sm text-kumo-subtle">Segmented sm</p>
+        <Tabs
+          variant="segmented"
+          size="sm"
+          tabs={[
+            { value: "tab1", label: "Tab 1" },
+            { value: "tab2", label: "Tab 2" },
+            { value: "tab3", label: "Tab 3" },
+          ]}
+          selectedValue="tab1"
+        />
+      </div>
+      <div>
+        <p className="mb-2 text-sm text-kumo-subtle">Underline sm</p>
+        <Tabs
+          variant="underline"
+          size="sm"
+          tabs={[
+            { value: "tab1", label: "Tab 1" },
+            { value: "tab2", label: "Tab 2" },
+            { value: "tab3", label: "Tab 3" },
+          ]}
+          selectedValue="tab1"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function TabsRenderPropDemo() {
   return (
     <Tabs
