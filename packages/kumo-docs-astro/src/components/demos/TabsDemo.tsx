@@ -83,17 +83,21 @@ export function TabsControlledDemo() {
 
 export function TabsManyDemo() {
   return (
-    <Tabs
-      tabs={[
-        { value: "overview", label: "Overview" },
-        { value: "analytics", label: "Analytics" },
-        { value: "reports", label: "Reports" },
-        { value: "notifications", label: "Notifications" },
-        { value: "settings", label: "Settings" },
-        { value: "billing", label: "Billing" },
-      ]}
-      selectedValue="overview"
-    />
+    <div className="max-w-md">
+      <Tabs
+        tabs={[
+          { value: "overview", label: "Overview" },
+          { value: "analytics", label: "Analytics" },
+          { value: "reports", label: "Reports" },
+          { value: "notifications", label: "Notifications" },
+          { value: "settings", label: "Settings" },
+          { value: "billing", label: "Billing" },
+          { value: "security", label: "Security" },
+          { value: "integrations", label: "Integrations" },
+        ]}
+        selectedValue="overview"
+      />
+    </div>
   );
 }
 
