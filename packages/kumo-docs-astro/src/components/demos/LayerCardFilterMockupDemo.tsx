@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Badge, Input, LayerCard, Tabs } from "@cloudflare/kumo";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 // ─── Data ────────────────────────────────────────────────────────────
 
@@ -39,7 +38,6 @@ export function LayerCardFilterSubrequestsDemo() {
 						aria-label="Filter origins"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						prefix={<MagnifyingGlassIcon size={12} />}
 						className="min-w-0 flex-1"
 					/>
 					<Tabs
