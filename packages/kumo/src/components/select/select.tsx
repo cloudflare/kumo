@@ -424,7 +424,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // hover/focus coupling that a native <label> (from Field) would cause.
   const showOptional = required === false;
   const selectLabelNode = label ? (
-    <SelectBase.Label className="contents">
+    <SelectBase.Label className="m-0 text-base font-medium text-kumo-default">
       <Label
         showOptional={showOptional}
         tooltip={hideLabel ? undefined : labelTooltip}
