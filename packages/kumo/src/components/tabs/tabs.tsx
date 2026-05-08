@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
@@ -150,6 +150,7 @@ export function Tabs({
   const isSegmented = variant === "segmented";
   const isUnderline = variant === "underline";
   const isSm = size === "sm";
+  const listRef = useOverflowDetect(isSegmented);
 
   return (
     <TabsPrimitive.Root
@@ -165,10 +166,11 @@ export function Tabs({
         <div className={cn("absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 rounded-lg bg-kumo-recessed", isSm ? "h-6.5" : "h-9")} />
       )}
       <TabsPrimitive.List
+        ref={listRef}
         activateOnFocus={activateOnFocus}
         className={cn(
-          "scrollbar-hide relative flex min-w-0 shrink items-stretch",
-          isSegmented && "rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70",
+          "relative flex min-w-0 shrink items-stretch",
+          isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
           isUnderline && (isSm ? "h-6.5" : "h-7.5"),
@@ -214,4 +216,38 @@ export function Tabs({
       </TabsPrimitive.List>
     </TabsPrimitive.Root>
   );
+}
+
+// ─── Overflow detection ───────────────────────────────────────────────
+
+/**
+ * Sets `data-overflowing` on the element when its scrollWidth exceeds
+ * clientWidth. This drives the scroll-fade CSS in kumo-binding.css.
+ */
+function useOverflowDetect(enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const check = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (el.scrollWidth > el.clientWidth) {
+      el.setAttribute("data-overflowing", "");
+    } else {
+      el.removeAttribute("data-overflowing");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    check();
+
+    return () => ro.disconnect();
+  }, [enabled, check]);
+
+  return ref;
 }
