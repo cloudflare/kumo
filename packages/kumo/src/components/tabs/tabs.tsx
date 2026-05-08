@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
@@ -150,7 +150,7 @@ export function Tabs({
   const isSegmented = variant === "segmented";
   const isUnderline = variant === "underline";
   const isSm = size === "sm";
-  const listRef = useOverflowDetect(isSegmented);
+  const { ref: listRef, isOverflowing } = useOverflowDetect(isSegmented);
 
   return (
     <TabsPrimitive.Root
@@ -168,6 +168,7 @@ export function Tabs({
       <TabsPrimitive.List
         ref={listRef}
         activateOnFocus={activateOnFocus}
+        data-overflowing={isOverflowing ? "" : undefined}
         className={cn(
           "relative flex min-w-0 shrink items-stretch",
           isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
@@ -221,33 +222,27 @@ export function Tabs({
 // ─── Overflow detection ───────────────────────────────────────────────
 
 /**
- * Sets `data-overflowing` on the element when its scrollWidth exceeds
- * clientWidth. This drives the scroll-fade CSS in kumo-binding.css.
+ * Detects whether the element's content overflows horizontally.
+ * Returns a ref to attach and a boolean for conditional rendering.
+ * The `data-overflowing` attribute drives the scroll-fade CSS.
  */
 function useOverflowDetect(enabled: boolean) {
   const ref = useRef<HTMLDivElement>(null);
-
-  const check = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (el.scrollWidth > el.clientWidth) {
-      el.setAttribute("data-overflowing", "");
-    } else {
-      el.removeAttribute("data-overflowing");
-    }
-  }, []);
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
   useEffect(() => {
     if (!enabled) return;
     const el = ref.current;
     if (!el) return;
 
+    const check = () => setIsOverflowing(el.scrollWidth > el.clientWidth);
+
     const ro = new ResizeObserver(check);
     ro.observe(el);
     check();
 
     return () => ro.disconnect();
-  }, [enabled, check]);
+  }, [enabled]);
 
-  return ref;
+  return { ref, isOverflowing };
 }
