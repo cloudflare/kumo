@@ -171,7 +171,7 @@ export function Tabs({
           isSegmented && "rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
-          isUnderline && (isSm ? "h-6.5" : "h-7"),
+          isUnderline && (isSm ? "h-6.5" : "h-7.5"),
           listClassName,
         )}
       >
@@ -188,7 +188,7 @@ export function Tabs({
               isSegmented && (isSm ? "px-2" : "px-2.5"),
               isUnderline &&
                 "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
-              isUnderline && (isSm ? "px-1.5 py-2" : "px-2 py-2.5"),
+              isUnderline && (isSm ? "px-1.5 py-2.5" : "px-2 py-3"),
               tab.className,
             )}
           >
