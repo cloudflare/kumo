@@ -451,10 +451,10 @@
   },
   "peerDependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "echarts": "^6.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "zod": "^4.0.0",
-    "echarts": "^6.0.0"
+    "zod": "^4.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
@@ -465,6 +465,7 @@
     "@base-ui/react": "^1.4.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
+    "@use-gesture/react": "^10.3.1",
     "clsx": "^2.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",

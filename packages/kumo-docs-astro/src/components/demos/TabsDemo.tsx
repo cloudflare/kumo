@@ -83,7 +83,7 @@ export function TabsControlledDemo() {
 
 export function TabsManyDemo() {
   return (
-    <div className="max-w-md">
+    <div className="w-full max-w-md">
       <Tabs
         tabs={[
           { value: "overview", label: "Overview" },

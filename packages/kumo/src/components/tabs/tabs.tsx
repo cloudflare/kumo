@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
+import { useDrag } from "@use-gesture/react";
 import { cn } from "../../utils/cn";
 
 /** Tabs variant definitions. */
@@ -151,6 +152,7 @@ export function Tabs({
   const isUnderline = variant === "underline";
   const isSm = size === "sm";
   const { ref: listRef, isOverflowing } = useOverflowDetect(isSegmented);
+  const bindDrag = useHorizontalDragScroll(listRef, isOverflowing);
 
   return (
     <TabsPrimitive.Root
@@ -169,9 +171,10 @@ export function Tabs({
         ref={listRef}
         activateOnFocus={activateOnFocus}
         data-overflowing={isOverflowing ? "" : undefined}
+        {...bindDrag()}
         className={cn(
           "relative flex min-w-0 shrink items-stretch",
-          isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
+          isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 touch-pan-y ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
           isUnderline && (isSm ? "h-6.5" : "h-7.5"),
@@ -216,6 +219,35 @@ export function Tabs({
         />
       </TabsPrimitive.List>
     </TabsPrimitive.Root>
+  );
+}
+
+// ─── Horizontal drag-to-scroll ────────────────────────────────────────
+
+/**
+ * Enables pointer/touch drag to horizontally scroll the tab list.
+ * Only active when the list is overflowing. Prevents vertical scroll
+ * interference and uses `touch-action: pan-y` so native vertical
+ * scrolling is preserved.
+ */
+function useHorizontalDragScroll(
+  ref: React.RefObject<HTMLElement | null>,
+  enabled: boolean,
+) {
+  return useDrag(
+    ({ delta: [dx], event }) => {
+      const el = ref.current;
+      if (!el || !enabled) return;
+      // Prevent text selection while dragging
+      event?.preventDefault();
+      el.scrollLeft -= dx;
+    },
+    {
+      axis: "x",
+      pointer: { touch: true },
+      filterTaps: true,
+      from: [0, 0],
+    },
   );
 }
 
