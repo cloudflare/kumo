@@ -133,6 +133,7 @@ export {
   ToastProvider,
   Toast,
   useKumoToastManager,
+  createKumoToastManager,
 } from "./components/toast";
 export { Tooltip, TooltipProvider } from "./components/tooltip";
 export {
