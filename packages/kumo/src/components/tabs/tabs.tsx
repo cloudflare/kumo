@@ -173,7 +173,7 @@ export function Tabs({
         {...bindDrag()}
         className={cn(
           "relative flex min-w-0 shrink items-stretch",
-          isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 touch-pan-y ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
+          isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
@@ -226,10 +226,8 @@ export function Tabs({
 // ─── Horizontal drag-to-scroll ────────────────────────────────────────
 
 /**
- * Enables pointer/touch drag to horizontally scroll the tab list.
- * Only active when the list is overflowing. Prevents vertical scroll
- * interference and uses `touch-action: pan-y` so native vertical
- * scrolling is preserved.
+ * Enables mouse drag to horizontally scroll the tab list.
+ * Touch devices keep native horizontal overflow scrolling and inertia.
  */
 function useHorizontalDragScroll(
   ref: React.RefObject<HTMLElement | null>,
@@ -238,7 +236,6 @@ function useHorizontalDragScroll(
   const dragState = useRef<{
     pointerId: number;
     startX: number;
-    startY: number;
     scrollLeft: number;
     dragging: boolean;
   } | null>(null);
@@ -248,12 +245,11 @@ function useHorizontalDragScroll(
     onPointerDownCapture: (event: PointerEvent<HTMLElement>) => {
       const el = ref.current;
       if (!el || !enabled) return;
-      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
 
       dragState.current = {
         pointerId: event.pointerId,
         startX: event.clientX,
-        startY: event.clientY,
         scrollLeft: el.scrollLeft,
         dragging: false,
       };
@@ -265,16 +261,8 @@ function useHorizontalDragScroll(
       if (!el || !enabled || !state || state.pointerId !== event.pointerId) return;
 
       const movementX = event.clientX - state.startX;
-      const movementY = event.clientY - state.startY;
       if (!state.dragging) {
         if (Math.abs(movementX) <= 3) return;
-        if (event.pointerType !== "mouse" && Math.abs(movementY) > Math.abs(movementX)) {
-          dragState.current = null;
-          if (el.hasPointerCapture(event.pointerId)) {
-            el.releasePointerCapture(event.pointerId);
-          }
-          return;
-        }
         state.dragging = true;
         shouldSuppressClick.current = true;
         el.setPointerCapture(event.pointerId);
