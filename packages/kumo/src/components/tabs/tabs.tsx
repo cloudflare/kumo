@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
-import { useDrag } from "@use-gesture/react";
 import { cn } from "../../utils/cn";
 
 /** Tabs variant definitions. */
@@ -176,6 +175,7 @@ export function Tabs({
           "relative flex min-w-0 shrink items-stretch",
           isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 touch-pan-y ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
+          isOverflowing && "cursor-grab active:cursor-grabbing",
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
           isUnderline && (isSm ? "h-6.5" : "h-7.5"),
           listClassName,
@@ -187,7 +187,8 @@ export function Tabs({
             value={tab.value}
             render={tab.render}
             className={cn(
-              "relative z-2 flex cursor-pointer items-center rounded bg-transparent whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              isOverflowing ? "cursor-grab active:cursor-grabbing" : "cursor-pointer",
               isSm ? "text-xs" : "text-base",
               isSegmented &&
                 "my-0.5 rounded-md text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
@@ -234,21 +235,88 @@ function useHorizontalDragScroll(
   ref: React.RefObject<HTMLElement | null>,
   enabled: boolean,
 ) {
-  return useDrag(
-    ({ delta: [dx], event }) => {
+  const dragState = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    scrollLeft: number;
+    dragging: boolean;
+  } | null>(null);
+  const shouldSuppressClick = useRef(false);
+
+  return () => ({
+    onPointerDownCapture: (event: PointerEvent<HTMLElement>) => {
       const el = ref.current;
       if (!el || !enabled) return;
-      // Prevent text selection while dragging
-      event?.preventDefault();
-      el.scrollLeft -= dx;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      dragState.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        scrollLeft: el.scrollLeft,
+        dragging: false,
+      };
+      shouldSuppressClick.current = false;
     },
-    {
-      axis: "x",
-      pointer: { touch: true },
-      filterTaps: true,
-      from: [0, 0],
+    onPointerMoveCapture: (event: PointerEvent<HTMLElement>) => {
+      const el = ref.current;
+      const state = dragState.current;
+      if (!el || !enabled || !state || state.pointerId !== event.pointerId) return;
+
+      const movementX = event.clientX - state.startX;
+      const movementY = event.clientY - state.startY;
+      if (!state.dragging) {
+        if (Math.abs(movementX) <= 3) return;
+        if (event.pointerType !== "mouse" && Math.abs(movementY) > Math.abs(movementX)) {
+          dragState.current = null;
+          if (el.hasPointerCapture(event.pointerId)) {
+            el.releasePointerCapture(event.pointerId);
+          }
+          return;
+        }
+        state.dragging = true;
+        shouldSuppressClick.current = true;
+        el.setPointerCapture(event.pointerId);
+      }
+
+      event.preventDefault();
+      el.scrollLeft = state.scrollLeft - movementX;
     },
-  );
+    onPointerUpCapture: (event: PointerEvent<HTMLElement>) => {
+      const el = ref.current;
+      const state = dragState.current;
+      if (!el || !state || state.pointerId !== event.pointerId) return;
+
+      dragState.current = null;
+      if (el.hasPointerCapture(event.pointerId)) {
+        el.releasePointerCapture(event.pointerId);
+      }
+      if (shouldSuppressClick.current) {
+        window.setTimeout(() => {
+          shouldSuppressClick.current = false;
+        }, 0);
+      }
+    },
+    onPointerCancelCapture: (event: PointerEvent<HTMLElement>) => {
+      const el = ref.current;
+      const state = dragState.current;
+      if (!el || !state || state.pointerId !== event.pointerId) return;
+
+      dragState.current = null;
+      if (el.hasPointerCapture(event.pointerId)) {
+        el.releasePointerCapture(event.pointerId);
+      }
+    },
+    onClickCapture: (event: MouseEvent<HTMLElement>) => {
+      if (!shouldSuppressClick.current) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      shouldSuppressClick.current = false;
+    },
+  });
 }
 
 // ─── Overflow detection ───────────────────────────────────────────────
