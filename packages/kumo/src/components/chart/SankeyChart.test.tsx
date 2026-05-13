@@ -72,8 +72,9 @@ describe("SankeyChart", () => {
           className="custom-class"
         />,
       );
-      const div = container.firstChild as HTMLElement;
-      expect(div.classList.contains("custom-class")).toBe(true);
+      // className is passed to the inner Chart component, not the wrapper div
+      const chartDiv = container.querySelector(".custom-class");
+      expect(chartDiv).toBeTruthy();
     });
 
     it("handles empty nodes array", () => {

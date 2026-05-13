@@ -201,6 +201,7 @@ export function SankeyChart({
     }));
 
     return {
+      backgroundColor: "transparent",
       animation: true,
       animationDuration: 500,
       animationDurationUpdate: 300,
