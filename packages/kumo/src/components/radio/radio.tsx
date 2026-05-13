@@ -332,7 +332,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
           value={value}
           disabled={disabled}
           className={cn(
-            "relative flex h-4 w-4 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
+            "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
