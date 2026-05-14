@@ -1,6 +1,6 @@
 import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
-import type { EChartsOption, SeriesOption } from "echarts";
+import type { EChartsOption, SeriesOption, SetOptionOpts } from "echarts";
 import { useEffect, useMemo, useRef } from "react";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
 
@@ -87,6 +87,11 @@ export interface TimeseriesChartProps {
    * @see https://echarts.apache.org/handbook/en/best-practices/aria/
    */
   ariaDescription?: string;
+  /**
+   * Additional options passed as the second argument to `chart.setOption()`.
+   * Defaults to `{ notMerge: false, lazyUpdate: true }`.
+   */
+  optionUpdateBehavior?: SetOptionOpts;
 }
 
 /**
@@ -138,6 +143,7 @@ export function TimeseriesChart({
   gradient,
   loading,
   ariaDescription,
+  optionUpdateBehavior,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const incompleteBefore = incomplete?.before;
@@ -392,6 +398,7 @@ export function TimeseriesChart({
           height={height}
           isDarkMode={isDarkMode}
           onEvents={events}
+          optionUpdateBehavior={optionUpdateBehavior}
         />
       )}
     </div>
