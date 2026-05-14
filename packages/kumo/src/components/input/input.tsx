@@ -192,7 +192,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
             "data-1p-ignore": "true",
             "data-bwignore": "true",
             "data-form-type": "other",
-            "data-keeper-lock": "true",
             "data-lpignore": "true",
           }
         : {})}

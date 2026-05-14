@@ -52,7 +52,6 @@ describe("Input", () => {
     expect(input.getAttribute("data-1p-ignore")).toBe("true");
     expect(input.getAttribute("data-bwignore")).toBe("true");
     expect(input.getAttribute("data-form-type")).toBe("other");
-    expect(input.getAttribute("data-keeper-lock")).toBe("true");
     expect(input.getAttribute("data-lpignore")).toBe("true");
   });
 
