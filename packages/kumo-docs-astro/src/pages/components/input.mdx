@@ -18,6 +18,7 @@ import {
   InputSizesDemo,
   InputDisabledDemo,
   InputBareDemo,
+  InputErrorWithoutLabelDemo,
   InputTypesDemo,
   InputOptionalFieldDemo,
   InputLabelTooltipDemo,
@@ -194,6 +195,16 @@ export default function Example() {
 </p>
 <ComponentExample demo="InputBareDemo">
   <InputBareDemo client:visible />
+</ComponentExample>
+
+### Error Without Label
+
+<p>
+  Error messages and descriptions render even without a visible `label` — use
+  `aria-label` to keep the input accessible.
+</p>
+<ComponentExample demo="InputErrorWithoutLabelDemo">
+  <InputErrorWithoutLabelDemo client:visible />
 </ComponentExample>
 
 ### Input Types
