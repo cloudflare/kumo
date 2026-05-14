@@ -19,6 +19,7 @@ import {
   InputDisabledDemo,
   InputBareDemo,
   InputErrorWithoutLabelDemo,
+  InputPasswordManagerIgnoreDemo,
   InputTypesDemo,
   InputOptionalFieldDemo,
   InputLabelTooltipDemo,
@@ -224,14 +225,9 @@ export default function Example() {
   Set `passwordManagerIgnore` on non-credential inputs that password managers
   might incorrectly classify as login fields.
 </p>
-
-```tsx
-import { Input } from "@cloudflare/kumo";
-
-export default function Example() {
-  return <Input label="Search users" passwordManagerIgnore />;
-}
-```
+<ComponentExample demo="InputPasswordManagerIgnoreDemo">
+  <InputPasswordManagerIgnoreDemo client:visible />
+</ComponentExample>
 
 </ComponentSection>
 

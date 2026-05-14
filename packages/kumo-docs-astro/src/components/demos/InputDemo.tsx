@@ -86,6 +86,25 @@ export function InputErrorWithoutLabelDemo() {
   );
 }
 
+/** Side-by-side comparison: Keeper shows its icon on the default input but not the ignored one. */
+export function InputPasswordManagerIgnoreDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        label="API Key (default)"
+        type="password"
+        placeholder="sk_live_..."
+      />
+      <Input
+        label="API Key (passwordManagerIgnore)"
+        type="password"
+        placeholder="sk_live_..."
+        passwordManagerIgnore
+      />
+    </div>
+  );
+}
+
 export function InputTypesDemo() {
   return (
     <div className="flex flex-col gap-4">
