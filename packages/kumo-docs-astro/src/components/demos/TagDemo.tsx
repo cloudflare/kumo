@@ -53,6 +53,7 @@ export function TagDismissibleDemo() {
         <Tag
           key={tag.label}
           icon={tag.icon ? <StackIcon size={14} /> : undefined}
+          dismissLabel={`Dismiss ${tag.label}`}
           onDismiss={() => remove(tag.label)}
         >
           {tag.label}

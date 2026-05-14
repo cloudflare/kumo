@@ -32,7 +32,7 @@ const MAIN_BUTTON =
   "inline-flex min-w-0 items-center gap-1 rounded-sm bg-transparent p-0 [font:inherit] leading-4 text-kumo-default outline-none cursor-pointer disabled:cursor-not-allowed";
 
 const DISMISS_BUTTON =
-  "flex cursor-pointer items-center rounded-md bg-transparent p-1 text-kumo-subtle hover:bg-kumo-control hover:text-kumo-default focus-visible:bg-kumo-interact focus-visible:text-kumo-default focus-visible:outline focus-visible:outline-1 focus-visible:outline-kumo-brand disabled:cursor-not-allowed";
+  "flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-sm bg-transparent text-kumo-subtle hover:bg-kumo-control hover:text-kumo-default focus-visible:bg-kumo-interact focus-visible:text-kumo-default focus-visible:outline focus-visible:outline-1 focus-visible:outline-kumo-brand disabled:cursor-not-allowed";
 
 const FOCUS_RING_PRIMARY =
   "[&:has(>button:first-child:focus-visible)]:outline [&:has(>button:first-child:focus-visible)]:outline-2 [&:has(>button:first-child:focus-visible)]:outline-offset-1 [&:has(>button:first-child:focus-visible)]:outline-kumo-brand";
@@ -56,7 +56,11 @@ const TagVisual = ({
   children,
 }: TagVisualProps & { children?: ReactNode }) => (
   <>
-    {icon && <span className="shrink-0">{icon}</span>}
+    {icon && (
+      <span aria-hidden="true" className="shrink-0">
+        {icon}
+      </span>
+    )}
     {tagKey && (
       <span className="shrink-0 font-medium text-kumo-subtle">{tagKey}:</span>
     )}
@@ -93,21 +97,18 @@ const TagLabel = forwardRef<HTMLSpanElement, TagLabelProps>(
 export interface TagRootProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Adds space for the dismiss button and main-focus outer ring behavior. */
   dismissible?: boolean;
-  disabled?: boolean;
 }
 
 const TagRoot = forwardRef<HTMLSpanElement, TagRootProps>(
-  ({ dismissible = false, disabled = false, className, ...props }, ref) => (
+  ({ dismissible = false, className, ...props }, ref) => (
     <span
       ref={ref}
       role={dismissible ? "group" : undefined}
-      aria-disabled={disabled || undefined}
       className={cn(
         TAG_BASE,
         dismissible ? "pl-2 pr-[3px]" : "pl-2 pr-2",
         HOVER_PRIMARY,
         FOCUS_RING_PRIMARY,
-        disabled && "opacity-50",
         className,
       )}
       {...props}
@@ -173,22 +174,31 @@ const TagDismiss = forwardRef<HTMLButtonElement, TagDismissProps>(
       }}
       {...props}
     >
-      {children ?? <XIcon size={11} />}
+      {children ?? <XIcon aria-hidden="true" size={11} />}
     </button>
   ),
 );
 
-export interface TagProps {
+export interface TagProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, "children" | "onClick"> {
   children: ReactNode;
   icon?: ReactNode;
   tagKey?: string;
   aside?: ReactNode;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   onDismiss?: () => void;
   dismissLabel?: string;
   disabled?: boolean;
-  className?: string;
-  "aria-label"?: string;
+}
+
+function getDefaultDismissLabel(children: ReactNode, tagKey?: string) {
+  const label =
+    typeof children === "string" || typeof children === "number"
+      ? String(children).trim()
+      : "";
+
+  if (!label) return "Dismiss";
+  return `Dismiss ${tagKey ? `${tagKey}: ` : ""}${label}`;
 }
 
 const TagBase = forwardRef<HTMLElement, TagProps>(
@@ -200,7 +210,7 @@ const TagBase = forwardRef<HTMLElement, TagProps>(
       aside,
       onClick,
       onDismiss,
-      dismissLabel = "Dismiss",
+      dismissLabel,
       disabled = false,
       className,
       "aria-label": ariaLabel,
@@ -210,6 +220,8 @@ const TagBase = forwardRef<HTMLElement, TagProps>(
   ) => {
     const isDismissible = !!onDismiss;
     const hasMainAction = !!onClick;
+    const resolvedDismissLabel =
+      dismissLabel ?? getDefaultDismissLabel(children, tagKey);
 
     const onMainKeyDown = (event: KeyboardEvent<HTMLElement>) => {
       if (disabled || !onDismiss) return;
@@ -223,8 +235,8 @@ const TagBase = forwardRef<HTMLElement, TagProps>(
       return (
         <TagRoot
           ref={ref as React.Ref<HTMLSpanElement>}
-          disabled={disabled}
-          className={className}
+          aria-disabled={disabled || undefined}
+          className={cn(disabled && "opacity-50", className)}
           aria-label={ariaLabel}
           {...rest}
         >
@@ -263,8 +275,8 @@ const TagBase = forwardRef<HTMLElement, TagProps>(
       <TagRoot
         ref={ref as React.Ref<HTMLSpanElement>}
         dismissible
-        disabled={disabled}
-        className={className}
+        aria-disabled={disabled || undefined}
+        className={cn(disabled && "opacity-50", className)}
         aria-label={ariaLabel}
         {...rest}
       >
@@ -286,7 +298,7 @@ const TagBase = forwardRef<HTMLElement, TagProps>(
         )}
         <TagDismiss
           disabled={disabled}
-          dismissLabel={dismissLabel}
+          dismissLabel={resolvedDismissLabel}
           onClick={() => onDismiss?.()}
         />
       </TagRoot>

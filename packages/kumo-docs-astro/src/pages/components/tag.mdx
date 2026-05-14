@@ -58,7 +58,11 @@ export default function Example() {
   return (
     <div className="flex gap-2">
       <Tag>production</Tag>
-      <Tag icon={<GlobeSimpleIcon size={14} />} onDismiss={() => remove()}>
+      <Tag
+        icon={<GlobeSimpleIcon size={14} />}
+        dismissLabel="Dismiss us-east-1"
+        onDismiss={() => remove()}
+      >
         us-east-1
       </Tag>
       <Tag tagKey="ENV" aside="3">
