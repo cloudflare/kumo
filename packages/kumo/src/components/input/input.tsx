@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
-import { Field, type FieldErrorMatch } from "../field/field";
+import { Field, normalizeFieldError, type FieldErrorMatch } from "../field/field";
 
 /** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {
@@ -181,21 +181,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     />
   );
 
-  // Render with Field wrapper if label is provided
-  if (label) {
+  // Render with Field wrapper if label, error, or description is provided
+  if (label || error || description) {
     return (
       <Field
         label={label}
         required={required}
         labelTooltip={labelTooltip}
         description={description}
-        error={
-          error
-            ? typeof error === "string"
-              ? { message: error, match: true }
-              : error
-            : undefined
-        }
+        error={normalizeFieldError(error)}
       >
         {input}
       </Field>

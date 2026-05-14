@@ -116,6 +116,34 @@ describe("Input", () => {
     expect(screen.getByText("Required field")).toBeTruthy();
   });
 
+  // Error without label
+  it("renders error message without label when error is a string", () => {
+    render(<Input aria-label="Email" error="Invalid email" />);
+    expect(screen.getByText("Invalid email")).toBeTruthy();
+  });
+
+  it("renders error message without label when error is an object", () => {
+    render(
+      <Input
+        aria-label="Email"
+        error={{ message: "Required field", match: true }}
+      />,
+    );
+    expect(screen.getByText("Required field")).toBeTruthy();
+  });
+
+  it("applies error variant styling without label", () => {
+    render(<Input aria-label="Email" error="Bad value" />);
+    expect(screen.getByRole("textbox").className).toContain("ring-kumo-danger");
+  });
+
+  it("renders description without label", () => {
+    render(
+      <Input aria-label="Email" description="Enter your work email" />,
+    );
+    expect(screen.getByText("Enter your work email")).toBeTruthy();
+  });
+
   // Accessibility
   it("warns in dev when no accessible name is provided", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});

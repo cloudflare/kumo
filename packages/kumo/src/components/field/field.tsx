@@ -3,6 +3,20 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { Label } from "../label";
 
+/**
+ * Normalizes an error prop that may be a string or structured object
+ * into the `{ message, match }` shape expected by `<Field>`.
+ *
+ * Returns `undefined` when the input is falsy.
+ */
+export function normalizeFieldError(
+  error: string | { message: ReactNode; match: FieldErrorMatch } | undefined,
+): { message: ReactNode; match: FieldErrorMatch } | undefined {
+  if (!error) return undefined;
+  if (typeof error === "string") return { message: error, match: true };
+  return error;
+}
+
 /** Field variant definitions (currently empty, reserved for future additions). */
 export const KUMO_FIELD_VARIANTS = {
   // Field currently has no variant options but structure is ready for future additions
