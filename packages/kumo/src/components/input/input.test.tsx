@@ -45,6 +45,17 @@ describe("Input", () => {
     expect(input).toHaveProperty("disabled", true);
   });
 
+  it("applies password manager ignore hints when requested", () => {
+    render(<Input aria-label="Test" passwordManagerIgnore />);
+    const input = screen.getByRole("textbox");
+    expect(input.className).toContain("keeper-ignore");
+    expect(input.getAttribute("data-1p-ignore")).toBe("true");
+    expect(input.getAttribute("data-bwignore")).toBe("true");
+    expect(input.getAttribute("data-form-type")).toBe("other");
+    expect(input.getAttribute("data-keeper-lock")).toBe("true");
+    expect(input.getAttribute("data-lpignore")).toBe("true");
+  });
+
   // Size variants
   it("renders with default size 'base'", () => {
     render(<Input aria-label="Test" />);
