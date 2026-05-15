@@ -8,7 +8,8 @@ import {
 import * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useIsDarkMode } from "~/lib/use-is-dark-mode";
 import {
   AriaComponent,
   AxisPointerComponent,
@@ -37,26 +38,25 @@ export function PieChartDemo() {
   const isDarkMode = useIsDarkMode();
 
   const options = useMemo<EChartsOption>(
-    () =>
-      ({
-        animation: true,
-        animationDuration: 2000,
-        tooltip: {
-          show: true,
+    () => ({
+      animation: true,
+      animationDuration: 2000,
+      tooltip: {
+        show: true,
+      },
+      series: [
+        {
+          type: "pie",
+          data: [
+            { value: 101, name: "Series A" },
+            { value: 202, name: "Series B" },
+            { value: 303, name: "Series C" },
+            { value: 404, name: "Series D" },
+            { value: 505, name: "Series E" },
+          ],
         },
-        series: [
-          {
-            type: "pie",
-            data: [
-              { value: 101, name: "Series A" },
-              { value: 202, name: "Series B" },
-              { value: 303, name: "Series C" },
-              { value: 404, name: "Series D" },
-              { value: 505, name: "Series E" },
-            ],
-          },
-        ],
-      }),
+      ],
+    }),
     [],
   );
 
@@ -272,22 +272,21 @@ export function PieChartPreviewDemo() {
   const isDarkMode = useIsDarkMode();
 
   const options = useMemo<EChartsOption>(
-    () =>
-      ({
-        toolbox: {
-          show: false,
+    () => ({
+      toolbox: {
+        show: false,
+      },
+      series: [
+        {
+          type: "pie",
+          data: [
+            { value: 101, name: "Series A" },
+            { value: 202, name: "Series B" },
+            { value: 303, name: "Series C" },
+          ],
         },
-        series: [
-          {
-            type: "pie",
-            data: [
-              { value: 101, name: "Series A" },
-              { value: 202, name: "Series B" },
-              { value: 303, name: "Series C" },
-            ],
-          },
-        ],
-      }),
+      ],
+    }),
     [],
   );
 
@@ -621,50 +620,4 @@ function buildSeriesData(
     const value = Math.round((30 + seed * 15 + trend + noise) * 100) / 100;
     return [ts, value * timeScale];
   });
-}
-
-function getIsDark() {
-  if (typeof document === "undefined") return false;
-
-  const root = document.documentElement;
-
-  const mode = root.getAttribute("data-mode");
-  if (mode === "dark") return true;
-  if (mode === "light") return false;
-
-  if (root.classList.contains("dark")) return true;
-  if (root.classList.contains("light")) return false;
-
-  return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
-}
-
-function useIsDarkMode() {
-  const [isDark, setIsDark] = useState(getIsDark);
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    const update = () => setIsDark(getIsDark());
-
-    // Watch html class changes
-    const mo = new MutationObserver(update);
-    mo.observe(root, {
-      attributes: true,
-      attributeFilter: ["data-mode", "class"],
-    });
-
-    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
-    if (mql) {
-      mql.addEventListener("change", update);
-    }
-
-    return () => {
-      if (mql) {
-        mql.removeEventListener("change", update);
-      }
-      mo.disconnect();
-    };
-  }, []);
-
-  return isDark;
 }

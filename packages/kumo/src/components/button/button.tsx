@@ -136,10 +136,27 @@ export function buttonVariants({
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
     // Apply variant, size, shape styles from KUMO_BUTTON_VARIANTS
-    resolveVariant(KUMO_BUTTON_VARIANTS.variant, variant, KUMO_BUTTON_DEFAULT_VARIANTS.variant).classes,
-    resolveVariant(KUMO_BUTTON_VARIANTS.size, size, KUMO_BUTTON_DEFAULT_VARIANTS.size).classes,
-    resolveVariant(KUMO_BUTTON_VARIANTS.shape, shape, KUMO_BUTTON_DEFAULT_VARIANTS.shape).classes,
-    isCompactShape && resolveVariant(KUMO_BUTTON_VARIANTS.compactSize, size, KUMO_BUTTON_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.variant,
+      variant,
+      KUMO_BUTTON_DEFAULT_VARIANTS.variant,
+    ).classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.size,
+      size,
+      KUMO_BUTTON_DEFAULT_VARIANTS.size,
+    ).classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.shape,
+      shape,
+      KUMO_BUTTON_DEFAULT_VARIANTS.shape,
+    ).classes,
+    isCompactShape &&
+      resolveVariant(
+        KUMO_BUTTON_VARIANTS.compactSize,
+        size,
+        KUMO_BUTTON_DEFAULT_VARIANTS.size,
+      ).classes,
   );
 }
 
@@ -253,10 +270,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type={type ?? "button"}
         {...restProps}
       >
-        {loading && <Loader size={size === "lg" ? 16 : 14} />}
-        {!loading && renderIconNode(IconComponent)}
-
-        {children}
+        {loading ? (
+          <Loader size={size === "lg" ? 16 : 14} />
+        ) : (
+          renderIconNode(IconComponent)
+        )}
+        {children != null && <span className="contents">{children}</span>}
       </button>
     );
 

@@ -3,6 +3,20 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { Label } from "../label";
 
+/**
+ * Normalizes an error prop that may be a string or structured object
+ * into the `{ message, match }` shape expected by `<Field>`.
+ *
+ * Returns `undefined` when the input is falsy.
+ */
+export function normalizeFieldError(
+  error: string | { message: ReactNode; match: FieldErrorMatch } | undefined,
+): { message: ReactNode; match: FieldErrorMatch } | undefined {
+  if (!error) return undefined;
+  if (typeof error === "string") return { message: error, match: true };
+  return error;
+}
+
 /** Field variant definitions (currently empty, reserved for future additions). */
 export const KUMO_FIELD_VARIANTS = {
   // Field currently has no variant options but structure is ready for future additions
@@ -96,6 +110,14 @@ export interface FieldProps extends KumoFieldVariantsProps {
   description?: ReactNode;
   /** When `true`, places the control before the label (for checkbox/switch layouts). */
   controlFirst?: boolean;
+  /**
+   * When `true`, Field renders layout, description, and error but skips
+   * the `<label>` element. Use when the child component provides its own
+   * accessible label (e.g. Select uses Base UI's `Select.Label` to avoid
+   * hover/focus coupling from native `<label>`).
+   * @default false
+   */
+  hideLabel?: boolean;
 }
 
 /**
@@ -117,17 +139,20 @@ export function Field({
   error,
   description,
   controlFirst = false,
+  hideLabel = false,
 }: FieldProps) {
   // Show "(optional)" when required is explicitly false
   const showOptional = required === false;
 
   return (
     <FieldBase.Root className={fieldVariants({ controlFirst })}>
-      <FieldBase.Label className="m-0 text-base font-medium text-kumo-default">
-        <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
-          {label}
-        </Label>
-      </FieldBase.Label>
+      {!hideLabel && (
+        <FieldBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
+          <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
+            {label}
+          </Label>
+        </FieldBase.Label>
+      )}
       {children}
       {error ? (
         <FieldBase.Error

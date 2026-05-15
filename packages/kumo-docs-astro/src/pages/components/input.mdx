@@ -18,6 +18,8 @@ import {
   InputSizesDemo,
   InputDisabledDemo,
   InputBareDemo,
+  InputErrorWithoutLabelDemo,
+  InputPasswordManagerIgnoreDemo,
   InputTypesDemo,
   InputOptionalFieldDemo,
   InputLabelTooltipDemo,
@@ -42,7 +44,7 @@ import {
 
 ### Barrel
 
-  <CodeBlock code={`import { Input } from "@cloudflare/kumo";`} lang="tsx" />
+<CodeBlock code={`import { Input } from "@cloudflare/kumo";`} lang="tsx" />
 
 ### Granular
 
@@ -60,9 +62,10 @@ import {
 
 ### With Built-in Field (Recommended)
 
-  <p>
-    Use the `label` prop to enable the built-in Field wrapper with label, description, and error support.
-  </p>
+<p>
+  Use the `label` prop to enable the built-in Field wrapper with label,
+  description, and error support.
+</p>
 
 ```tsx
 import { Input } from "@cloudflare/kumo";
@@ -196,14 +199,36 @@ export default function Example() {
   <InputBareDemo client:visible />
 </ComponentExample>
 
+### Error Without Label
+
+<p>
+  Error messages and descriptions render even without a visible `label` — use
+  `aria-label` to keep the input accessible.
+</p>
+<ComponentExample demo="InputErrorWithoutLabelDemo">
+  <InputErrorWithoutLabelDemo client:visible />
+</ComponentExample>
+
 ### Input Types
 
-  <p>
-    Supports all HTML input types: `text`, `email`, `password`, `number`, `tel`, `url`, etc.
-  </p>
-  <ComponentExample demo="InputTypesDemo">
-    <InputTypesDemo client:visible />
-  </ComponentExample>
+<p>
+  Supports all HTML input types: `text`, `email`, `password`, `number`, `tel`,
+  `url`, etc.
+</p>
+<ComponentExample demo="InputTypesDemo">
+  <InputTypesDemo client:visible />
+</ComponentExample>
+
+### Password Manager Overlays
+
+<p>
+  Set `passwordManagerIgnore` on non-credential inputs that password managers
+  might incorrectly classify as login fields.
+</p>
+<ComponentExample demo="InputPasswordManagerIgnoreDemo">
+  <InputPasswordManagerIgnoreDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -212,10 +237,8 @@ export default function Example() {
 
 ## API Reference
 
-  <p>
-    Input accepts all standard HTML input attributes plus the following:
-  </p>
-  <PropsTable component="Input" />
+<p>Input accepts all standard HTML input attributes plus the following:</p>
+<PropsTable component="Input" />
 
 ### Validation Error Types
 
@@ -300,5 +323,6 @@ export default function Example() {
         attributes for screen reader announcement.
       </p>
     </div>
+
   </div>
 </ComponentSection>

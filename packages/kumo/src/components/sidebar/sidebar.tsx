@@ -406,10 +406,11 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       return (
         <DialogBase.Root open={openMobile} onOpenChange={setOpenMobile}>
           <DialogBase.Portal>
-            <DialogBase.Backdrop className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+            <DialogBase.Backdrop data-sidebar-backdrop="" className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
             <DialogBase.Popup
+              data-sidebar-popup=""
               className={cn(
-                "fixed inset-y-0 z-50 flex w-[--sidebar-width] flex-col bg-kumo-base p-0",
+                "fixed inset-y-0 flex w-[--sidebar-width] flex-col bg-kumo-base p-0",
                 "duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
                 side === "left" &&
                   "left-0 data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full",
