@@ -1,5 +1,21 @@
 # @cloudflare/kumo
 
+## 2.2.1
+
+### Patch Changes
+
+- 57bbe62: fix(banner): remove variant selection background for legibility
+
+  Selected text inside `Banner` now uses the browser default selection color
+  instead of a same-hue variant-tinted background. The previous
+  `selection:bg-kumo-{info,warning,danger}` utilities produced low contrast
+  between the selection background and the variant text color (most notably
+  in light mode for the `error` and `alert` variants), making selected text
+  hard to read.
+
+- 3d80fe7: Add `left` and `right` props to SankeyChart for controlling series layout padding
+- 194aea8: Fix tooltip popup exit transitions by animating the Tailwind `scale` property alongside opacity.
+
 ## 2.2.0
 
 ### Minor Changes

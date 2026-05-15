@@ -1,5 +1,14 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [57bbe62]
+- Updated dependencies [3d80fe7]
+- Updated dependencies [194aea8]
+  - @cloudflare/kumo@2.2.1
+
 ## 1.5.1
 
 ### Patch Changes
