@@ -77,6 +77,10 @@ export interface SankeyChartProps {
   nodePadding?: number;
   showTooltip?: boolean;
   defaultNodeColor?: string;
+  /** Left padding of the Sankey layout within the chart container. Accepts a number (px) or percentage string. ECharts default: '5%'. */
+  left?: number | string;
+  /** Right padding of the Sankey layout within the chart container. Accepts a number (px) or percentage string. ECharts default: '5%'. */
+  right?: number | string;
   /** Link fill style: 'gradient' blends source to target colors, 'gray' uses flat gray */
   linkColor?: "gradient" | "gray";
   linkOpacity?: number;
@@ -168,6 +172,8 @@ export function SankeyChart({
   formatValue = defaultFormatValue,
   tooltipFormatter,
   defaultNodeColor,
+  left,
+  right,
   linkColor = "gradient",
   linkOpacity = 0.5,
   className,
@@ -276,6 +282,8 @@ export function SankeyChart({
       series: [
         {
           type: "sankey",
+          ...(left !== undefined && { left }),
+          ...(right !== undefined && { right }),
           data: echartsNodes,
           links: echartsLinks,
           draggable: false,
@@ -329,6 +337,8 @@ export function SankeyChart({
     nodeWidth,
     nodePadding,
     defaultNodeColor,
+    left,
+    right,
     isDarkMode,
     linkColor,
     linkOpacity,

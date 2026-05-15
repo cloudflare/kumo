@@ -8,6 +8,7 @@ import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   SankeyChartBasicDemo,
   SankeyChartMultiLevelDemo,
+  SankeyChartFullWidthDemo,
   SankeyChartTooltipDemo,
   SankeyChartRichTooltipDemo,
   SankeyChartInteractiveDemo,
@@ -100,6 +101,22 @@ export default function Example() {
         </p>
         <ComponentExample code={`<SankeyChart nodes={nodes} links={links} height={350} nodeWidth={20} nodePadding={15} />`}>
           <SankeyChartMultiLevelDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Full-Width Layout</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use <code class="text-kumo-default">left</code> and <code class="text-kumo-default">right</code> to control horizontal padding of the Sankey layout within its container. Set both to <code class="text-kumo-default">0</code> to eliminate the default 5% padding and fill the full width.
+        </p>
+        <ComponentExample code={`<SankeyChart
+  nodes={nodes}
+  links={links}
+  height={350}
+  left={0}
+  right={0}
+/>`}>
+          <SankeyChartFullWidthDemo client:visible />
         </ComponentExample>
       </div>
 

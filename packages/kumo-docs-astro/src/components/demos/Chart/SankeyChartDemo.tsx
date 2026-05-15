@@ -286,6 +286,22 @@ export function SankeyChartRichTooltipDemo() {
   );
 }
 
+/** Demo showing full-width layout using left={0} and right={0} to eliminate default padding */
+export function SankeyChartFullWidthDemo() {
+  const isDarkMode = useIsDarkMode();
+  return (
+    <SankeyChart
+      echarts={echarts}
+      nodes={basicNodes}
+      links={basicLinks}
+      height={350}
+      left={0}
+      right={0}
+      isDarkMode={isDarkMode}
+    />
+  );
+}
+
 export function SankeyChartInteractiveDemo() {
   const isDarkMode = useIsDarkMode();
   const handleNodeClick = (node: { name: string }) => {

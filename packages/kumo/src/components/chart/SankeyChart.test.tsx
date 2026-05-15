@@ -496,6 +496,82 @@ describe("SankeyChart", () => {
     });
   });
 
+  describe("left and right layout props", () => {
+    it("does not include left/right in series config when omitted", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      expect(options.series[0]).not.toHaveProperty("left");
+      expect(options.series[0]).not.toHaveProperty("right");
+    });
+
+    it("includes left: 0 and right: 0 when passed as numbers", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          left={0}
+          right={0}
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      expect(options.series[0].left).toBe(0);
+      expect(options.series[0].right).toBe(0);
+    });
+
+    it("forwards string percentage values correctly", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          left="10%"
+          right="15%"
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      expect(options.series[0].left).toBe("10%");
+      expect(options.series[0].right).toBe("15%");
+    });
+
+    it("forwards pixel number values correctly", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          left={20}
+          right={30}
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      expect(options.series[0].left).toBe(20);
+      expect(options.series[0].right).toBe(30);
+    });
+  });
+
   describe("dark mode", () => {
     it("initializes ECharts with dark theme when isDarkMode is true", () => {
       const mockChart = createMockChart();
