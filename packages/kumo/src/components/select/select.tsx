@@ -6,6 +6,7 @@ import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
 import { KUMO_INPUT_VARIANTS, type KumoInputSize } from "../input/input";
 import { SkeletonLine } from "../loader";
+import { Label } from "../label";
 import { Field, type FieldErrorMatch } from "../field/field";
 import {
   usePortalContainer,
@@ -419,12 +420,28 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // Exclude Kumo-extended `items` from Base UI spread — we pass `normalizedItems` instead
   const { items: _items, ...baseProps } = props;
 
+  // Use Base UI's Select.Label for accessible naming — avoids the
+  // hover/focus coupling that a native <label> (from Field) would cause.
+  const showOptional = required === false;
+  const selectLabelNode = label ? (
+    <SelectBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
+      <Label
+        showOptional={showOptional}
+        tooltip={hideLabel ? undefined : labelTooltip}
+        asContent
+      >
+        {label}
+      </Label>
+    </SelectBase.Label>
+  ) : null;
+
   const selectControl = (
     <SelectBase.Root
       {...baseProps}
       items={normalizedItems}
       disabled={loading || props.disabled}
     >
+      {selectLabelNode}
       <SelectBase.Trigger
         className={cn(
           selectVariants({ size }),
@@ -494,6 +511,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
               : error
             : undefined
         }
+        hideLabel
       >
         {selectControl}
       </Field>

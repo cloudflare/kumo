@@ -235,6 +235,6 @@ const className = cn("base-class", condition && "conditional-class");
 // Generate safe random IDs
 const id = safeRandomId();
 
-// Configure link component for your framework
-<LinkProvider component={YourLinkComponent}>{/* Your app */}</LinkProvider>;
+// Configure link component for your framework (maps href to your router)
+<LinkProvider component={YourAppLink}>{/* Your app */}</LinkProvider>;
 ```

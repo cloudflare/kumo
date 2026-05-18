@@ -214,6 +214,71 @@
   }
 }
 
+/* Scroll-fade: gradient masks that appear on the edges of a horizontally
+   scrollable container based on scroll position. Uses scroll-driven
+   animations (Chrome 115+, Edge 115+). Degrades gracefully to no fade.
+   Activated by the `data-overflowing` attribute (set via JS ResizeObserver). */
+@keyframes scroll-fade-x-left {
+  to {
+    mask-size:
+      var(--scroll-fade-width, 3rem) 100%,
+      100% 100%,
+      var(--scroll-fade-width, 3rem) 100%;
+  }
+}
+
+@keyframes scroll-fade-x-right {
+  to {
+    mask-size:
+      var(--scroll-fade-width, 3rem) 100%,
+      100% 100%,
+      0 100%;
+  }
+}
+
+[data-overflowing] {
+  @supports (animation-timeline: scroll()) {
+    mask-image:
+      linear-gradient(to right, white, transparent),
+      linear-gradient(white, white),
+      linear-gradient(to right, transparent, white);
+    mask-size:
+      0 100%,
+      100% 100%,
+      var(--scroll-fade-width, 3rem) 100%;
+    mask-repeat: no-repeat;
+    mask-composite: exclude;
+    mask-position: left, center, right;
+
+    animation-name: scroll-fade-x-left, scroll-fade-x-right;
+    animation-timing-function: linear, linear;
+    animation-timeline: scroll(self x);
+    animation-range:
+      0 var(--scroll-fade-range, 3rem),
+      calc(100% - var(--scroll-fade-range, 3rem)) 100%;
+    animation-fill-mode: both;
+    animation-composition: replace;
+  }
+}
+
+/* Tab list scroll behavior. Scrollbar is only hidden when scroll-driven
+   animations are supported (the fade replaces it as the affordance).
+   Unsupported browsers keep the native scrollbar. */
+.kumo-tabs-list {
+  overscroll-behavior-x: contain;
+}
+
+@supports (animation-timeline: scroll()) {
+  .kumo-tabs-list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .kumo-tabs-list::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Popup outline offset - in dark mode, offset inward to align with inner stroke.
    This compensates for the different geometry of inner vs outer stroke paths.
    Used by: Tooltip, Popover

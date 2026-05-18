@@ -15,6 +15,7 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Select } from "../select";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
@@ -93,7 +94,7 @@ export function paginationVariants({
 }: KumoPaginationVariantsProps = {}) {
   return cn(
     "flex items-center justify-between gap-2",
-    KUMO_PAGINATION_VARIANTS.controls[controls].classes,
+    resolveVariant(KUMO_PAGINATION_VARIANTS.controls, controls, KUMO_PAGINATION_DEFAULT_VARIANTS.controls).classes,
   );
 }
 

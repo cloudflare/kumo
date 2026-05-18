@@ -5,6 +5,7 @@ import {
 } from "@base-ui/react/toast";
 import type React from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Button, ButtonProps } from "../../components/button";
 import {
   usePortalContainer,
@@ -126,7 +127,7 @@ export function toastVariants({
     // Base styles for toast root
     "rounded-xl ring ring-kumo-line bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
-    KUMO_TOAST_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_TOAST_VARIANTS.variant, variant, KUMO_TOAST_DEFAULT_VARIANTS.variant).classes,
   );
 }
 
@@ -147,6 +148,21 @@ export function toastVariants({
  * const toasts = Toast.useToastManager();
  * toasts.notify({ title: "Saved", description: "Changes saved successfully." });
  * ```
+ *
+ * @example Dispatching toasts from non-React-component code
+ * ```tsx
+ * // 1. Create a manager at module scope
+ * import { createKumoToastManager } from "@cloudflare/kumo";
+ * export const appToastManager = createKumoToastManager();
+ *
+ * // 2. Pass it to <Toasty>
+ * <Toasty toastManager={appToastManager}>
+ *   <App />
+ * </Toasty>
+ *
+ * // 3. Dispatch from anywhere — timers, callbacks, query-cache listeners
+ * appToastManager.add({ title: "Saved" });
+ * ```
  */
 export interface ToastyProps extends KumoToastVariantsProps {
   /** Application content. Toasts render via a portal above this. */
@@ -157,6 +173,18 @@ export interface ToastyProps extends KumoToastVariantsProps {
    * @default document.body (or KumoPortalProvider container if set)
    */
   container?: PortalContainer;
+  /**
+   * Optional toast manager created by `createKumoToastManager()`. When
+   * provided, allows code outside the React tree (timers, module-load
+   * callbacks, query-cache listeners) to dispatch toasts via the same
+   * dedupe-aware manager that `useKumoToastManager()` returns inside the
+   * tree.
+   *
+   * Forwarded to the underlying `@base-ui/react/toast` `Toast.Provider`
+   * `toastManager` prop — see
+   * https://base-ui.com/react/components/toast for the upstream primitive.
+   */
+  toastManager?: ReturnType<typeof createKumoToastManager>;
 }
 
 type KumoToastOptionsBase = {
@@ -286,12 +314,16 @@ export const createKumoToastManager = () => {
  * </Toasty>
  * ```
  */
-export function Toasty({ children, container: containerProp }: ToastyProps) {
+export function Toasty({
+  children,
+  container: containerProp,
+  toastManager,
+}: ToastyProps) {
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
 
   return (
-    <Toast.Provider>
+    <Toast.Provider toastManager={toastManager}>
       {children}
       <Toast.Portal container={container}>
         <Toast.Viewport className="fixed top-auto right-4 bottom-4 z-1 mx-auto flex w-[calc(100%-2rem)] sm:right-8 sm:bottom-8 sm:w-[340px]">
@@ -379,7 +411,7 @@ function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
 
 function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   if (!variant || variant === "default") return null;
-  const variantConfig = KUMO_TOAST_VARIANTS.variant[variant];
+  const variantConfig = resolveVariant(KUMO_TOAST_VARIANTS.variant, variant, KUMO_TOAST_DEFAULT_VARIANTS.variant);
   if (!("icon" in variantConfig)) return null;
   const Icon = variantConfig.icon;
   return (

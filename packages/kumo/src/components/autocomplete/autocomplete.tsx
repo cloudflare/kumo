@@ -3,6 +3,7 @@ import { CheckIcon } from "@phosphor-icons/react";
 import { type ReactNode } from "react";
 import { inputVariants, KUMO_INPUT_VARIANTS } from "../input/input";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Field, type FieldErrorMatch } from "../field/field";
 
 /** Autocomplete variant definitions. */
@@ -32,7 +33,7 @@ export interface KumoAutocompleteVariantsProps {
 export function autocompleteVariants({
   size = KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS.size,
 }: KumoAutocompleteVariantsProps = {}) {
-  return cn(KUMO_INPUT_VARIANTS.size[size].classes);
+  return cn(resolveVariant(KUMO_INPUT_VARIANTS.size, size, KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS.size).classes);
 }
 
 /**

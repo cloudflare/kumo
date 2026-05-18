@@ -14,6 +14,7 @@ import {
   CollapsibleBasicDemo,
   CollapsibleMultipleDemo,
   CollapsibleCustomTriggerDemo,
+  CollapsibleKeepMountedDemo,
   CollapsibleAccordionDemo,
 } from "~/components/demos/CollapsibleDemo";
 
@@ -117,6 +118,14 @@ Use `Collapsible.Trigger` with the `render` prop for full control:
   <CollapsibleCustomTriggerDemo client:load />
 </ComponentExample>
 
+### Keep Mounted
+
+Use `keepMounted` on `DefaultPanel` (or `Panel`) to preserve internal state — such as form inputs — when the panel is collapsed:
+
+<ComponentExample demo="CollapsibleKeepMountedDemo">
+  <CollapsibleKeepMountedDemo client:load />
+</ComponentExample>
+
 ### Accordion Pattern
 
 Control which item is open to create an accordion where only one item can be expanded at a time:
@@ -181,9 +190,12 @@ Control which item is open to create an accordion where only one item can be exp
 
 ### Collapsible.DefaultPanel
 
+Accepts all `Collapsible.Panel` props in addition to the ones listed below.
+
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `children` | `ReactNode` | — | Panel content. |
 | `className` | `string` | — | Additional CSS classes. |
+| `keepMounted` | `boolean` | `false` | Whether to keep the panel in the DOM when closed. |
 
 </ComponentSection>

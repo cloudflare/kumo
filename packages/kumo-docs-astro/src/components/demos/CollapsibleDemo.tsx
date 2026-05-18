@@ -1,4 +1,4 @@
-import { Button, Collapsible, Text } from "@cloudflare/kumo";
+import { Button, Collapsible, Input, Text } from "@cloudflare/kumo";
 import { useState } from "react";
 
 /**
@@ -85,6 +85,27 @@ export function CollapsibleCustomTriggerDemo() {
             This panel uses custom styling instead of the default border-left accent.
           </Text>
         </Collapsible.Panel>
+      </Collapsible.Root>
+    </div>
+  );
+}
+
+/**
+ * Keep the panel mounted in the DOM when closed to preserve internal state like form inputs.
+ */
+export function CollapsibleKeepMountedDemo() {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="w-full space-y-4">
+      <Collapsible.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Collapsible.DefaultTrigger>Edit details</Collapsible.DefaultTrigger>
+        <Collapsible.DefaultPanel keepMounted>
+          <Text>
+            Type something below, then collapse and re-open — your input is
+            preserved because the panel stays mounted.
+          </Text>
+          <Input label="Name" placeholder="Type here…" />
+        </Collapsible.DefaultPanel>
       </Collapsible.Root>
     </div>
   );

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Base styles applied to all badge variants. */
 export const KUMO_BADGE_BASE_STYLES =
@@ -98,13 +99,11 @@ export interface KumoBadgeVariantsProps {
 export function badgeVariants({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
 }: KumoBadgeVariantsProps = {}) {
-  const variantConfig = KUMO_BADGE_VARIANTS.variant[variant];
   return cn(
     // Base styles (exported as KUMO_BADGE_BASE_STYLES for Figma plugin)
     KUMO_BADGE_BASE_STYLES,
     // Apply variant styles from KUMO_BADGE_VARIANTS (fallback to primary if variant not found)
-    variantConfig?.classes ??
-      KUMO_BADGE_VARIANTS.variant[KUMO_BADGE_DEFAULT_VARIANTS.variant].classes,
+    resolveVariant(KUMO_BADGE_VARIANTS.variant, variant, KUMO_BADGE_DEFAULT_VARIANTS.variant).classes,
   );
 }
 

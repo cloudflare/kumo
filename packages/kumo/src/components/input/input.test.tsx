@@ -45,6 +45,16 @@ describe("Input", () => {
     expect(input).toHaveProperty("disabled", true);
   });
 
+  it("applies password manager ignore hints when requested", () => {
+    render(<Input aria-label="Test" passwordManagerIgnore />);
+    const input = screen.getByRole("textbox");
+    expect(input.className).toContain("keeper-ignore");
+    expect(input.getAttribute("data-1p-ignore")).toBe("true");
+    expect(input.getAttribute("data-bwignore")).toBe("true");
+    expect(input.getAttribute("data-form-type")).toBe("other");
+    expect(input.getAttribute("data-lpignore")).toBe("true");
+  });
+
   // Size variants
   it("renders with default size 'base'", () => {
     render(<Input aria-label="Test" />);
@@ -114,6 +124,34 @@ describe("Input", () => {
       />,
     );
     expect(screen.getByText("Required field")).toBeTruthy();
+  });
+
+  // Error without label
+  it("renders error message without label when error is a string", () => {
+    render(<Input aria-label="Email" error="Invalid email" />);
+    expect(screen.getByText("Invalid email")).toBeTruthy();
+  });
+
+  it("renders error message without label when error is an object", () => {
+    render(
+      <Input
+        aria-label="Email"
+        error={{ message: "Required field", match: true }}
+      />,
+    );
+    expect(screen.getByText("Required field")).toBeTruthy();
+  });
+
+  it("applies error variant styling without label", () => {
+    render(<Input aria-label="Email" error="Bad value" />);
+    expect(screen.getByRole("textbox").className).toContain("ring-kumo-danger");
+  });
+
+  it("renders description without label", () => {
+    render(
+      <Input aria-label="Email" description="Enter your work email" />,
+    );
+    expect(screen.getByText("Enter your work email")).toBeTruthy();
   });
 
   // Accessibility

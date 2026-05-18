@@ -3,7 +3,7 @@ import { cn } from "../../utils/cn";
 import { useCallback, type ReactNode } from "react";
 import * as React from "react";
 import { Field as FieldBase } from "@base-ui/react/field";
-import { Field as KumoField, type FieldErrorMatch } from "../field/field";
+import { Field as KumoField, normalizeFieldError, type FieldErrorMatch } from "../field/field";
 
 export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
   (props, ref) => {
@@ -49,23 +49,17 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       className,
     );
 
-    // Render with Field wrapper if label is provided
+    // Render with Field wrapper if label, error, or description is provided
     // Use FieldBase.Control with render callback to ensure proper label-textarea association.
     // The render callback receives props with the correct id/aria-labelledby from Field context.
-    if (label) {
+    if (label || error || description) {
       return (
         <KumoField
           label={label}
           required={required}
           labelTooltip={labelTooltip}
           description={description}
-          error={
-            error
-              ? typeof error === "string"
-                ? { message: error, match: true }
-                : error
-              : undefined
-          }
+          error={normalizeFieldError(error)}
         >
           <FieldBase.Control
             render={(controlProps) => (

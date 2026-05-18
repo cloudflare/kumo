@@ -66,6 +66,45 @@ export function InputBareDemo() {
   return <Input placeholder="Search..." aria-label="Search products" />;
 }
 
+/** Input without a visible label, showing error and description via `aria-label`. */
+export function InputErrorWithoutLabelDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        aria-label="Hostname"
+        placeholder="example.com"
+        value="not a host"
+        error="Please enter a valid hostname"
+      />
+      <Input
+        aria-label="Path"
+        placeholder="/api/v1/users"
+        value="missing-slash"
+        error={{ message: "Path must start with /", match: true }}
+      />
+    </div>
+  );
+}
+
+/** Side-by-side comparison: Keeper shows its icon on the default input but not the ignored one. */
+export function InputPasswordManagerIgnoreDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        label="API Key (default)"
+        type="password"
+        placeholder="sk_live_..."
+      />
+      <Input
+        label="API Key (passwordManagerIgnore)"
+        type="password"
+        placeholder="sk_live_..."
+        passwordManagerIgnore
+      />
+    </div>
+  );
+}
+
 export function InputTypesDemo() {
   return (
     <div className="flex flex-col gap-4">

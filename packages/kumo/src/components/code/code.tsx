@@ -1,5 +1,6 @@
 import { type CSSProperties } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Code language variant definitions. */
 export const KUMO_CODE_VARIANTS = {
@@ -102,8 +103,7 @@ export function codeVariants({
     // Base styles
     "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-subtle",
     // Apply lang-specific styles (fallback to default if lang not in map)
-    KUMO_CODE_VARIANTS.lang[lang]?.classes ??
-      KUMO_CODE_VARIANTS.lang[KUMO_CODE_DEFAULT_VARIANTS.lang].classes,
+    resolveVariant(KUMO_CODE_VARIANTS.lang, lang, KUMO_CODE_DEFAULT_VARIANTS.lang).classes,
   );
 }
 

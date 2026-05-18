@@ -289,12 +289,27 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
   },
   Select: {
     onValueChange: {
-      type: "(value: string) => void",
+      type: "(value: T) => void",
       description: "Callback when selection changes",
     },
     defaultValue: {
-      type: "string",
+      type: "T",
       description: "Initial value for uncontrolled mode",
+    },
+    renderValue: {
+      type: "(value: T) => ReactNode",
+      description:
+        "A function that returns a ReactNode to format the selected value in the trigger. Required when using object values. Use `placeholder` for the empty state.",
+    },
+    items: {
+      type: 'Record<string, string> | Array<{ label: ReactNode; value: T }>',
+      description:
+        "Data structure of items rendered in the popup. Accepts a plain object map (`{ key: \"Label\" }`) or an array of `{ label, value }` for object/complex values.",
+    },
+    isItemEqualToValue: {
+      type: "(item: T, value: T) => boolean",
+      description:
+        "Custom equality function for comparing items. Required when value is an object, since object identity (`===`) won't match across renders.",
     },
   },
   DateRangePicker: {
@@ -317,6 +332,161 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
     onOpenChange: {
       type: "(open: boolean) => void",
       description: "Callback when collapsed state changes",
+    },
+  },
+  "DropdownMenu.Item": {
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    variant: {
+      type: '"default" | "danger"',
+      description: "Visual style of the item.",
+      default: '"default"',
+    },
+    selected: {
+      type: "boolean",
+      description: "Shows a check mark indicator when true.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    onClick: {
+      type: "(event: React.MouseEvent) => void",
+      description: "Callback when the item is clicked.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "true",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.LinkItem": {
+    href: {
+      type: "string",
+      description: "URL to navigate to when clicked.",
+    },
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    variant: {
+      type: '"default" | "danger"',
+      description: "Visual style of the item.",
+      default: '"default"',
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    target: {
+      type: "string",
+      description: 'Link target attribute (e.g. "_blank" for new tab).',
+    },
+    render: {
+      type: "ReactElement | ((props, state) => ReactElement)",
+      description:
+        "Custom element to render as the link. Use to integrate with framework routers (e.g. Next.js Link).",
+    },
+  },
+  "DropdownMenu.Content": {
+    sideOffset: {
+      type: "number",
+      description: "Distance in pixels from the trigger.",
+      default: "8",
+    },
+    container: {
+      type: "PortalContainer",
+      description:
+        "Container element for the portal. Use this to render inside a Shadow DOM or custom container.",
+    },
+  },
+  "DropdownMenu.SubTrigger": {
+    icon: {
+      type: "Icon",
+      description: "Icon displayed before the label.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+  },
+  "DropdownMenu.CheckboxItem": {
+    checked: {
+      type: "boolean",
+      description: "Whether the item is checked.",
+    },
+    defaultChecked: {
+      type: "boolean",
+      description: "Whether the item is initially checked (uncontrolled).",
+      default: "false",
+    },
+    onCheckedChange: {
+      type: "(checked: boolean, event: ChangeEventDetails) => void",
+      description: "Callback when the checked state changes.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "false",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.RadioGroup": {
+    value: {
+      type: "any",
+      description:
+        "The controlled value of the currently selected radio item.",
+    },
+    defaultValue: {
+      type: "any",
+      description: "The initially selected value (uncontrolled).",
+    },
+    onValueChange: {
+      type: "(value: any, event: ChangeEventDetails) => void",
+      description: "Callback when the selected value changes.",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, all radio items in the group are disabled.",
+    },
+  },
+  "DropdownMenu.RadioItem": {
+    value: {
+      type: "any",
+      required: true,
+      description: "The value of this radio item.",
+    },
+    icon: {
+      type: "Icon | ReactNode",
+      description: "Icon displayed before the label.",
+    },
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
+    },
+    closeOnClick: {
+      type: "boolean",
+      description: "Whether the menu closes after clicking this item.",
+      default: "false",
+    },
+    disabled: {
+      type: "boolean",
+      description: "When true, the item cannot be interacted with.",
+    },
+  },
+  "DropdownMenu.Label": {
+    inset: {
+      type: "boolean",
+      description: "Adds left padding to align with items that have icons.",
     },
   },
   "InputGroup.Addon": {
@@ -377,7 +547,7 @@ export const PROP_TYPE_OVERRIDES: Record<string, Record<string, string>> = {
     value: "T | T[]",
   },
   Select: {
-    value: "string",
+    value: "T",
   },
 };
 

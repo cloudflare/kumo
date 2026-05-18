@@ -1,9 +1,12 @@
 import puppeteer from "@cloudflare/puppeteer";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const MAX_PAGES = 50;
 const MAX_ACTION_PAYLOAD_BYTES = 64_000; // 64 KB per css action payload
+const MAX_SCREENSHOT_UPLOAD_BYTES = 10_000_000; // 10 MB per uploaded PNG
 
 const HIDE_SIDEBAR_CSS = `
   aside[data-sidebar-open] { display: none !important; }
@@ -18,17 +21,11 @@ const ALLOWED_ORIGINS = [
   /^https:\/\/[a-z0-9-]+\.kumo-docs\.pages\.dev$/,
 ];
 
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowed =
-    origin !== null &&
-    ALLOWED_ORIGINS.some((o) =>
-      typeof o === "string" ? o === origin : o.test(origin),
-    );
-  return {
-    "Access-Control-Allow-Origin": allowed ? origin! : "null",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
-  };
+function getCorsOrigin(origin: string): string {
+  const allowed = ALLOWED_ORIGINS.some((o) =>
+    typeof o === "string" ? o === origin : o.test(origin),
+  );
+  return allowed ? origin : "null";
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -36,6 +33,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
 interface Env {
   BROWSER: Fetcher;
   API_KEY: string;
+  SCREENSHOTS: R2Bucket;
 }
 
 interface PageAction {
@@ -58,11 +56,17 @@ interface PageConfig {
   sectionSelector?: string;
 }
 
+interface StorageConfig {
+  prefix: string;
+  includeImage?: boolean;
+}
+
 interface BatchRequest {
   baseUrl: string;
   pages: PageConfig[];
   viewport?: { width: number; height: number };
   hideSidebar?: boolean;
+  storage?: StorageConfig;
 }
 
 interface ScreenshotResult {
@@ -70,6 +74,8 @@ interface ScreenshotResult {
   sectionId?: string;
   sectionTitle?: string;
   image?: string;
+  imageKey?: string;
+  imageUrl?: string;
   error?: string;
   debug?: {
     dimensions?: { width: number; height: number };
@@ -133,37 +139,191 @@ function validateUrl(
   return { ok: true, url: parsed.toString() };
 }
 
+function sanitizeKeyPart(value: string): string {
+  const sanitized = value
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return sanitized || "screenshot";
+}
+
+function validateStoragePrefix(
+  prefix: string,
+): { ok: true; prefix: string } | { ok: false; error: string } {
+  const normalized = prefix.replace(/^\/+|\/+$/g, "");
+
+  if (!normalized) {
+    return { ok: false, error: "storage.prefix must not be empty" };
+  }
+
+  if (normalized.split("/").some((part) => part === ".." || part === "")) {
+    return { ok: false, error: "storage.prefix contains invalid path parts" };
+  }
+
+  return { ok: true, prefix: normalized };
+}
+
+function getScreenshotKey(
+  prefix: string,
+  fullUrl: string,
+  sectionId: string | undefined,
+  index: number,
+): string {
+  const pathname = new URL(fullUrl).pathname.replace(/^\/+|\/+$/g, "");
+  const pathPart = sanitizeKeyPart(pathname || "root");
+  const namePart = sectionId
+    ? sanitizeKeyPart(sectionId)
+    : `screenshot-${index + 1}`;
+
+  return `${prefix}/${pathPart}/${namePart}.png`;
+}
+
+function getScreenshotUrl(requestUrl: string, key: string): string {
+  const url = new URL(requestUrl);
+  const encodedKey = key.split("/").map(encodeURIComponent).join("/");
+  url.pathname = `/screenshots/${encodedKey}`;
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
+function validateScreenshotKey(
+  key: string,
+): { ok: true; key: string } | { ok: false; error: string } {
+  const normalized = key.replace(/^\/+/, "");
+
+  if (!normalized) {
+    return { ok: false, error: "Screenshot key must not be empty" };
+  }
+
+  if (normalized.split("/").some((part) => part === ".." || part === "")) {
+    return { ok: false, error: "Screenshot key contains invalid path parts" };
+  }
+
+  if (!normalized.endsWith(".png")) {
+    return { ok: false, error: "Screenshot key must end with .png" };
+  }
+
+  return { ok: true, key: normalized };
+}
+
+async function appendScreenshotResult(options: {
+  env: Env;
+  requestUrl: string;
+  results: ScreenshotResult[];
+  storage?: StorageConfig;
+  url: string;
+  image: Buffer;
+  sectionId?: string;
+  sectionTitle?: string;
+  debug?: ScreenshotResult["debug"];
+}): Promise<void> {
+  const result: ScreenshotResult = {
+    url: options.url,
+    sectionId: options.sectionId,
+    sectionTitle: options.sectionTitle,
+    debug: options.debug,
+  };
+
+  if (options.storage) {
+    const key = getScreenshotKey(
+      options.storage.prefix,
+      options.url,
+      options.sectionId,
+      options.results.length,
+    );
+
+    await options.env.SCREENSHOTS.put(key, options.image, {
+      httpMetadata: { contentType: "image/png" },
+    });
+
+    result.imageKey = key;
+    result.imageUrl = getScreenshotUrl(options.requestUrl, key);
+  }
+
+  if (options.storage?.includeImage !== false) {
+    result.image = options.image.toString("base64");
+  }
+
+  options.results.push(result);
+}
+
 // ─── Handler ─────────────────────────────────────────────────────────────────
 
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const origin = request.headers.get("Origin");
-    const cors = getCorsHeaders(origin);
+const app = new Hono<{ Bindings: Env }>();
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: cors });
-    }
+app.use(
+  "*",
+  cors({
+    origin: getCorsOrigin,
+    allowMethods: ["GET", "POST", "PUT", "OPTIONS"],
+    allowHeaders: ["Content-Type", "X-API-Key"],
+  }),
+);
 
-    const apiKey = request.headers.get("X-API-Key");
-    if (!apiKey || apiKey !== env.API_KEY) {
-      return Response.json(
-        { error: "Unauthorized" },
-        { status: 401, headers: cors },
-      );
-    }
+app.get("/screenshots/*", async (c) => {
+  const keyCheck = validateScreenshotKey(c.req.path.slice("/screenshots/".length));
+  if (!keyCheck.ok) {
+    return c.json({ error: keyCheck.error }, 400);
+  }
 
-    const url = new URL(request.url);
+  const object = await c.env.SCREENSHOTS.get(keyCheck.key);
+  if (!object) {
+    return c.json({ error: "Screenshot not found" }, 404);
+  }
 
-    if (url.pathname === "/batch" && request.method === "POST") {
-      return handleBatch(request, env, cors);
-    }
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("etag", object.httpEtag);
+  headers.set("cache-control", "public, max-age=31536000, immutable");
 
-    return Response.json(
-      { error: "Not found" },
-      { status: 404, headers: cors },
-    );
-  },
-};
+  return new Response(object.body, { headers });
+});
+
+app.use("*", async (c, next) => {
+  const apiKey = c.req.header("X-API-Key");
+  if (!apiKey || apiKey !== c.env.API_KEY) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  await next();
+});
+
+app.put("/screenshots/*", async (c) => {
+  const keyCheck = validateScreenshotKey(c.req.path.slice("/screenshots/".length));
+  if (!keyCheck.ok) {
+    return c.json({ error: keyCheck.error }, 400);
+  }
+
+  const contentType = c.req.header("Content-Type") ?? "";
+  if (!contentType.startsWith("image/png")) {
+    return c.json({ error: "Content-Type must be image/png" }, 415);
+  }
+
+  const contentLength = c.req.header("Content-Length");
+  const parsedLength = contentLength ? Number(contentLength) : null;
+  if (parsedLength !== null && parsedLength > MAX_SCREENSHOT_UPLOAD_BYTES) {
+    return c.json({ error: "Screenshot upload exceeds 10 MB limit" }, 413);
+  }
+
+  const image = await c.req.arrayBuffer();
+  if (image.byteLength > MAX_SCREENSHOT_UPLOAD_BYTES) {
+    return c.json({ error: "Screenshot upload exceeds 10 MB limit" }, 413);
+  }
+
+  await c.env.SCREENSHOTS.put(keyCheck.key, image, {
+    httpMetadata: { contentType: "image/png" },
+  });
+
+  return c.json({ key: keyCheck.key, url: getScreenshotUrl(c.req.url, keyCheck.key) });
+});
+
+app.post("/batch", (c) => handleBatch(c.req.raw, c.env, {}));
+
+app.notFound((c) => c.json({ error: "Not found" }, 404));
+
+export default app;
 
 // ─── Batch handler ───────────────────────────────────────────────────────────
 
@@ -178,6 +338,7 @@ async function handleBatch(
     pages,
     viewport: globalViewport,
     hideSidebar: globalHideSidebar,
+    storage,
   } = body;
 
   // ── Input validation ──────────────────────────────────────────────────────
@@ -208,6 +369,27 @@ async function handleBatch(
       );
     }
   }
+
+  if (storage && typeof storage.prefix !== "string") {
+    return Response.json(
+      { error: "storage.prefix must be a string" },
+      { status: 400, headers: cors },
+    );
+  }
+
+  const storageConfig = storage
+    ? validateStoragePrefix(storage.prefix)
+    : undefined;
+  if (storageConfig && !storageConfig.ok) {
+    return Response.json(
+      { error: storageConfig.error },
+      { status: 400, headers: cors },
+    );
+  }
+
+  const normalizedStorage = storageConfig
+    ? { ...storage, prefix: storageConfig.prefix }
+    : undefined;
 
   // Validate per-page action payloads to avoid oversized CSS strings.
   for (const pageConfig of pages) {
@@ -283,29 +465,41 @@ async function handleBatch(
                 await element.scrollIntoView();
                 await new Promise((r) => setTimeout(r, 200));
                 const shot = await element.screenshot({ type: "png" });
-                results.push({
+                await appendScreenshotResult({
+                  env,
+                  requestUrl: request.url,
+                  results,
+                  storage: normalizedStorage,
                   url: fullUrl,
                   sectionId: attrs.sectionId,
                   sectionTitle: attrs.sectionTitle || attrs.sectionId,
-                  image: Buffer.from(shot).toString("base64"),
+                  image: Buffer.from(shot),
                 });
               }
             }
           } else {
             // Fallback: full page screenshot if no VR demo elements found
             const shot = await page.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
             });
           }
         } else if (pageConfig.selector) {
           const element = await page.$(pageConfig.selector);
           if (element) {
             const shot = await element.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
             });
           } else {
             throw new Error(`Selector not found: ${pageConfig.selector}`);
@@ -376,16 +570,24 @@ async function handleBatch(
             await new Promise((r) => setTimeout(r, 300));
 
             const shot = await page.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
               debug: { dimensions, viewport: newViewport },
             });
           } else {
             const shot = await page.screenshot({ type: "png" });
-            results.push({
+            await appendScreenshotResult({
+              env,
+              requestUrl: request.url,
+              results,
+              storage: normalizedStorage,
               url: fullUrl,
-              image: Buffer.from(shot).toString("base64"),
+              image: Buffer.from(shot),
             });
           }
         }

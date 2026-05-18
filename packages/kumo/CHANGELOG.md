@@ -1,5 +1,93 @@
 # @cloudflare/kumo
 
+## 2.2.1
+
+### Patch Changes
+
+- 57bbe62: fix(banner): remove variant selection background for legibility
+
+  Selected text inside `Banner` now uses the browser default selection color
+  instead of a same-hue variant-tinted background. The previous
+  `selection:bg-kumo-{info,warning,danger}` utilities produced low contrast
+  between the selection background and the variant text color (most notably
+  in light mode for the `error` and `alert` variants), making selected text
+  hard to read.
+
+- 3d80fe7: Add `left` and `right` props to SankeyChart for controlling series layout padding
+- 194aea8: Fix tooltip popup exit transitions by animating the Tailwind `scale` property alongside opacity.
+
+## 2.2.0
+
+### Minor Changes
+
+- 228a9c4: Add `passwordManagerIgnore` to Input for suppressing password manager overlays on non-credential fields.
+- da502ce: Add scroll fade to segmented tabs. When tabs overflow, gradient masks appear on the edges based on scroll position via scroll-driven animations (Chrome 115+, degrades gracefully). Scrollbar is hidden; the fade is the scroll affordance.
+- 59b6590: Add `size="sm"` variant to Tabs component (h-6.5 / 26px, matching Input sm)
+- 798c2da: Forward `toastManager` prop on `<Toasty>` so code outside the React tree (timers, query-cache listeners, module-load callbacks) can dispatch toasts via a manager created by `createKumoToastManager()`. Also surface `createKumoToastManager` on the top-level package export (previously only available via the deep `@cloudflare/kumo/components/toast` path).
+
+### Patch Changes
+
+- bccc684: Add transparent background to SankeyChart component
+- 974277f: Expose `optionUpdateBehavior` prop on `TimeseriesChart` to control how ECharts applies option updates
+- 8d43b8b: Add `hideLabel` prop to Field so components can skip the native `<label>` while keeping description/error wiring. Use it in Select with Base UI's `Select.Label` to fix hover/focus coupling between the label text and trigger.
+- 93d04bd: fix(input): render error and description props without requiring a label
+- 862389a: fix(radio): prevent radio button distortion with long labels by adding `shrink-0` to the default appearance radio indicator
+- 1bfbc0e: Fix overflowing segmented Tabs drag-to-scroll interactions so mouse and touch drags reliably scroll while normal tab clicks still activate tabs.
+
+## 2.1.0
+
+### Minor Changes
+
+- 8a33813: Create Sankey Chart component
+
+### Patch Changes
+
+- a21cc3a: Fix CommandPalette List bottom ring being clipped by Footer background. Add scroll padding to prevent items from clipping behind rounded corners.
+- 0414c54: Deprecate `to` prop on Link in favor of `href`. The `to` prop is a routing-framework concept that doesn't belong on a presentational component. Use `href` for all link destinations and configure a `LinkProvider` wrapper to bridge to your router. `to` continues to work but emits a dev-mode deprecation warning.
+- 8b12a4c: Allow `LayerCard.Primary` and `LayerCard.Secondary` to accept all standard HTML div attributes, including `data-testid` for testing.
+- 7d8ec27: Set `cursor-default` on Tooltip triggers so disclosure buttons don't appear clickable. Overridable via `className`.
+
+## 2.0.5
+
+### Patch Changes
+
+- 8f8a55d: Export `Combobox.Trigger`, `Combobox.Value`, and `Combobox.Icon` — the raw Base UI primitives for building custom combobox triggers. Use these when you need full control over the trigger's visual treatment (e.g. a sidebar account switcher that renders as a plain button instead of an input-like control).
+
+## 2.0.4
+
+### Patch Changes
+
+- 8926ee7: fix(CloudflareLogo): remove registered trademark symbol from full logo variant
+- 75d4f4d: Fix Google Translate DOM mutation crash in Button
+- f2d356d: Remove z-50 from mobile Sidebar Dialog backdrop and panel. The z-50 caused portaled floating elements (Popover, DropdownMenu, Select, Combobox) opened from inside the Sidebar to render behind the Dialog backdrop. Matches the pattern used by Kumo's own Dialog component, which relies on DOM order for stacking with no explicit z-index. Also adds `data-sidebar-backdrop` and `data-sidebar-popup` attributes as stable CSS hooks.
+
+## 2.0.3
+
+### Patch Changes
+
+- 3b36e21: fix(combobox): forward all props from TriggerValue to ComboboxBase.Value, enabling placeholder support and styled placeholder text via data-[placeholder]:text-kumo-placeholder
+- 5d5d810: fix(registry): correct Select component metadata for AI-generated code
+
+  The component registry metadata was incorrectly typing Select's `value`, `defaultValue`, and `onValueChange` props as `string`, causing AI agents to produce broken code when implementing Select with object values (e.g., rendering `object.value` in the trigger instead of the label).
+
+  Changes:
+  - `value` type: `string` → `T` (generic, matches actual component interface)
+  - `defaultValue` type: `string` → `T`
+  - `onValueChange` type: `(value: string) => void` → `(value: T) => void`
+  - Added missing `renderValue` prop: `(value: T) => ReactNode` — required for object values
+  - Added missing `items` prop: supports both `Record<string, string>` and `Array<{ label, value }>` forms
+  - Added missing `isItemEqualToValue` prop: required for object equality comparison
+
+- 62e093c: Gracefully fall back to default variant instead of crashing when an invalid variant prop is passed at runtime. Previously 22 of 25 components would throw `TypeError` on unknown variant values; all 25 now use a shared `resolveVariant()` utility that returns the default config and logs a dev warning.
+
+## 2.0.2
+
+### Patch Changes
+
+- fbf3eef: Forward all Base UI Panel props (including `keepMounted` and `hiddenUntilFound`) through `Collapsible.DefaultPanel`. Previously these were silently dropped because `DefaultPanel` used a standalone props interface instead of extending `BasePanelProps`.
+- 40491c2: Fix registry codegen to match demo examples when component export name differs from directory name (e.g. DropdownMenu vs dropdown). This restores missing examples for DropdownMenu and other affected components.
+- 3427221: TooltipProvider props (`delay`, `closeDelay`, `timeout`) are now shown in the Tooltip component's API Reference on the docs site.
+
 ## 2.0.1
 
 ### Patch Changes
