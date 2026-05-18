@@ -10,20 +10,18 @@ export const KUMO_BANNER_BASE_STYLES =
 export const KUMO_BANNER_VARIANTS = {
   variant: {
     default: {
-      classes:
-        "bg-kumo-info-tint/30 border-kumo-info/50 text-kumo-info selection:bg-kumo-info",
+      classes: "bg-kumo-info-tint/30 border-kumo-info/50 text-kumo-info",
       iconClasses: "text-kumo-info",
       description: "Informational banner for general messages",
     },
     alert: {
       classes:
-        "bg-kumo-warning-tint/15 border-kumo-warning/50 text-kumo-warning selection:bg-kumo-warning",
+        "bg-kumo-warning-tint/15 border-kumo-warning/50 text-kumo-warning",
       iconClasses: "text-kumo-warning",
       description: "Warning banner for cautionary messages",
     },
     error: {
-      classes:
-        "bg-kumo-danger-tint/15 border-kumo-danger/50 text-kumo-danger selection:bg-kumo-danger",
+      classes: "bg-kumo-danger-tint/15 border-kumo-danger/50 text-kumo-danger",
       iconClasses: "text-kumo-danger",
       description: "Error banner for critical issues",
     },
@@ -55,7 +53,11 @@ export function bannerVariants({
     // Base styles (exported as KUMO_BANNER_BASE_STYLES for Figma plugin)
     KUMO_BANNER_BASE_STYLES,
     // Apply variant styles from KUMO_BANNER_VARIANTS
-    resolveVariant(KUMO_BANNER_VARIANTS.variant, variant, KUMO_BANNER_DEFAULT_VARIANTS.variant).classes,
+    resolveVariant(
+      KUMO_BANNER_VARIANTS.variant,
+      variant,
+      KUMO_BANNER_DEFAULT_VARIANTS.variant,
+    ).classes,
   );
 }
 
@@ -134,7 +136,11 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
   },
   ref,
 ) {
-  const variantConfig = resolveVariant(KUMO_BANNER_VARIANTS.variant, variant, KUMO_BANNER_DEFAULT_VARIANTS.variant);
+  const variantConfig = resolveVariant(
+    KUMO_BANNER_VARIANTS.variant,
+    variant,
+    KUMO_BANNER_DEFAULT_VARIANTS.variant,
+  );
 
   // Structured mode: title and/or description provided
   if (title || description) {

@@ -12,6 +12,7 @@ import {
   TabsDefaultDemo,
   TabsSegmentedDemo,
   TabsUnderlineDemo,
+  TabsSmDemo,
   TabsControlledDemo,
   TabsManyDemo,
 } from "~/components/demos/TabsDemo";
@@ -91,6 +92,16 @@ export default function Example() {
 </p>
 <ComponentExample demo="TabsUnderlineDemo">
   <TabsUnderlineDemo client:visible />
+</ComponentExample>
+
+### Small Size
+
+<p>
+  Use `size="sm"` for a compact tab bar that matches `Input size="sm"` height (h-6.5 / 26px).
+  Useful inside toolbars and filter rows.
+</p>
+<ComponentExample demo="TabsSmDemo">
+  <TabsSmDemo client:visible />
 </ComponentExample>
 
 ### Controlled

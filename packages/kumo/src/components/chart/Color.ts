@@ -153,4 +153,22 @@ export namespace ChartPalette {
       ? [...sequentialDark[palette]]
       : [...sequentialLight[palette]];
   }
+
+  /**
+   * Returns the hex color for chart text/labels.
+   *
+   * @example
+   * ```ts
+   * ChartPalette.text("primary")        // "#6B7280" (light)
+   * ChartPalette.text("primary", true)  // "#9CA3AF" (dark)
+   * ChartPalette.text("secondary")      // "#9CA3AF" (light)
+   * ```
+   */
+  export function text(variant: "primary" | "secondary", isDarkMode = false) {
+    const colors = {
+      light: { primary: "#6B7280", secondary: "#9CA3AF" },
+      dark: { primary: "#9CA3AF", secondary: "#6B7280" },
+    };
+    return isDarkMode ? colors.dark[variant] : colors.light[variant];
+  }
 }
