@@ -25,6 +25,8 @@
     a[href],
     button,
     input[type="button"],
+    input[type="checkbox"],
+    input[type="radio"],
     input[type="submit"],
     input[type="reset"],
     label[for],
@@ -40,9 +42,9 @@
     [role="checkbox"],
     [role="radio"],
     [role="switch"]
-  ):where(:not(:disabled)):where(:not([disabled])):where(
-    :not([aria-disabled="true"])
-  ):where(:not([data-disabled])) {
+  ):where([class*="kumo-"], .link-current):where(:not(:disabled)):where(
+    :not([disabled])
+  ):where(:not([aria-disabled="true"])):where(:not([data-disabled])) {
   cursor: pointer;
 }
 
