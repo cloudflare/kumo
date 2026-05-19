@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { ShikiContext, type ShikiContextValue } from "./context";
-import type { ShikiProviderProps, SupportedLanguage } from "./types";
+import { LANGUAGE_ALIASES } from "./types";
+import type { ShikiProviderProps, SupportedLanguage, LanguageAlias } from "./types";
 
 /**
  * Pre-bundled languages - only these languages are included in the Kumo bundle.
@@ -33,40 +34,13 @@ const BUNDLED_LANGS: Record<
 };
 
 /**
- * Common language aliases mapped to their canonical SupportedLanguage names.
- *
- * Markdown code fences often use short aliases (e.g., `js`, `ts`, `sh`) that
- * Shiki recognizes but don't match the canonical grammar names in BUNDLED_LANGS.
- * This map ensures aliases resolve to the correct preloaded grammar, avoiding
- * "language not found" warnings and falling back to plain text.
- *
- * Note: Only aliases for languages in BUNDLED_LANGS are included. Languages
- * like `mdx` are intentionally omitted because they have distinct grammars
- * (MDX includes JSX syntax) that would lose highlighting if mapped to `markdown`.
- */
-const LANGUAGE_ALIASES: Record<string, SupportedLanguage> = {
-  js: "javascript",
-  cjs: "javascript",
-  mjs: "javascript",
-  ts: "typescript",
-  cts: "typescript",
-  mts: "typescript",
-  sh: "bash",
-  zsh: "bash",
-  yml: "yaml",
-  py: "python",
-  md: "markdown",
-  gql: "graphql",
-};
-
-/**
  * Normalize a language identifier to its canonical SupportedLanguage name.
  * Returns the canonical name if the input is a known alias or already canonical,
  * otherwise returns null.
  */
 export function normalizeLanguage(lang: string): SupportedLanguage | null {
   if (lang in BUNDLED_LANGS) return lang as SupportedLanguage;
-  if (lang in LANGUAGE_ALIASES) return LANGUAGE_ALIASES[lang];
+  if (lang in LANGUAGE_ALIASES) return LANGUAGE_ALIASES[lang as LanguageAlias];
   return null;
 }
 
@@ -110,10 +84,12 @@ export function ShikiProvider({
     highlighter: ShikiContextValue["highlighter"];
     isLoading: boolean;
     error: Error | null;
+    languages: SupportedLanguage[];
   }>({
     highlighter: null,
     isLoading: true,
     error: null,
+    languages: [],
   });
 
   useEffect(() => {
@@ -166,6 +142,7 @@ export function ShikiProvider({
             highlighter,
             isLoading: false,
             error: null,
+            languages: validLanguages,
           });
         }
       } catch (err) {
@@ -175,6 +152,7 @@ export function ShikiProvider({
             isLoading: false,
             error:
               err instanceof Error ? err : new Error("Failed to load Shiki"),
+            languages: [],
           });
         }
       }
@@ -197,10 +175,10 @@ export function ShikiProvider({
       highlighter: state.highlighter,
       isLoading: state.isLoading,
       error: state.error,
-      languages: languages as SupportedLanguage[],
+      languages: state.languages,
       labels: mergedLabels,
     }),
-    [state.highlighter, state.isLoading, state.error, languages, mergedLabels],
+    [state.highlighter, state.isLoading, state.error, state.languages, mergedLabels],
   );
 
   return (

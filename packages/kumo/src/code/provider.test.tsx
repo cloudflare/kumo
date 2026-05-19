@@ -1,9 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import { createHighlighterCore } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { ShikiProvider } from "./provider";
+import { useShikiHighlighter } from "./use-shiki-highlighter";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -228,5 +229,30 @@ describe("ShikiProvider", () => {
     });
 
     expect(createOnigurumaEngine).toHaveBeenCalledTimes(1);
+  });
+
+  it("exposes normalized languages in context so hook alias resolution works end-to-end", async () => {
+    // This is the integration test for the bug where the context stores raw
+    // aliases (e.g., ["js", "ts"]) but the hook normalizes to canonical names
+    // (e.g., "javascript") and checks languages.includes("javascript") → false.
+
+    function HighlightConsumer() {
+      const { highlight, isReady } = useShikiHighlighter();
+      if (!isReady) return <div data-testid="status">loading</div>;
+      const result = highlight("const x = 1;", "js");
+      return (
+        <div data-testid="status">{result === null ? "failed" : "ok"}</div>
+      );
+    }
+
+    render(
+      <ShikiProvider engine="javascript" languages={["js", "ts"]}>
+        <HighlightConsumer />
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("status").textContent).toBe("ok");
+    });
   });
 });
