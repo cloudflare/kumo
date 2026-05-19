@@ -7,31 +7,31 @@
  * If you need additional languages, use Shiki directly with fine-grained imports.
  */
 export type SupportedLanguage =
-  | "javascript"
-  | "typescript"
-  | "jsx"
-  | "tsx"
-  | "json"
-  | "jsonc"
-  | "html"
-  | "css"
-  | "python"
-  | "yaml"
-  | "markdown"
-  | "graphql"
-  | "sql"
-  | "bash"
-  | "shell"
-  | "diff"
-  | "hcl"
-  | "toml";
+  | 'javascript'
+  | 'typescript'
+  | 'jsx'
+  | 'tsx'
+  | 'json'
+  | 'jsonc'
+  | 'html'
+  | 'css'
+  | 'python'
+  | 'yaml'
+  | 'markdown'
+  | 'graphql'
+  | 'sql'
+  | 'bash'
+  | 'shell'
+  | 'diff'
+  | 'hcl'
+  | 'toml';
 
 /**
  * Shiki engine choice for syntax highlighting.
  * - `"javascript"` — Smaller bundle (~50KB), slightly less accurate
  * - `"wasm"` — Larger bundle (~180KB), VS Code-accurate highlighting
  */
-export type ShikiEngine = "javascript" | "wasm";
+export type ShikiEngine = 'javascript' | 'wasm';
 
 /**
  * Localized labels for the copy button.
@@ -80,8 +80,11 @@ export interface UseShikiHighlighterResult {
    * Highlight code and return HTML string.
    * Returns `null` if highlighter is not ready or highlighting fails.
    * When `null` is returned, render the code as plain text.
+   *
+   * Accepts language aliases (e.g., 'js', 'ts', 'sh') which are automatically
+   * normalized to their canonical SupportedLanguage names.
    */
-  highlight: (code: string, lang: SupportedLanguage) => string | null;
+  highlight: (code: string, lang: string) => string | null;
 
   /** True while Shiki is loading */
   isLoading: boolean;

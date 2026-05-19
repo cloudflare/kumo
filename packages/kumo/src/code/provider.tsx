@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
-import { ShikiContext, type ShikiContextValue } from "./context";
-import type { ShikiProviderProps, SupportedLanguage } from "./types";
+import React, { useState, useEffect, useMemo } from 'react';
+import { ShikiContext, type ShikiContextValue } from './context';
+import type { ShikiProviderProps, SupportedLanguage } from './types';
 
 /**
  * Pre-bundled languages - only these languages are included in the Kumo bundle.
@@ -12,25 +12,63 @@ const BUNDLED_LANGS: Record<
   SupportedLanguage,
   () => Promise<{ default: unknown }>
 > = {
-  javascript: () => import("@shikijs/langs/javascript"),
-  typescript: () => import("@shikijs/langs/typescript"),
-  jsx: () => import("@shikijs/langs/jsx"),
-  tsx: () => import("@shikijs/langs/tsx"),
-  json: () => import("@shikijs/langs/json"),
-  jsonc: () => import("@shikijs/langs/jsonc"),
-  html: () => import("@shikijs/langs/html"),
-  css: () => import("@shikijs/langs/css"),
-  python: () => import("@shikijs/langs/python"),
-  yaml: () => import("@shikijs/langs/yaml"),
-  markdown: () => import("@shikijs/langs/markdown"),
-  graphql: () => import("@shikijs/langs/graphql"),
-  sql: () => import("@shikijs/langs/sql"),
-  bash: () => import("@shikijs/langs/bash"),
-  shell: () => import("@shikijs/langs/shellscript"),
-  diff: () => import("@shikijs/langs/diff"),
-  hcl: () => import("@shikijs/langs/hcl"),
-  toml: () => import("@shikijs/langs/toml"),
+  javascript: () => import('@shikijs/langs/javascript'),
+  typescript: () => import('@shikijs/langs/typescript'),
+  jsx: () => import('@shikijs/langs/jsx'),
+  tsx: () => import('@shikijs/langs/tsx'),
+  json: () => import('@shikijs/langs/json'),
+  jsonc: () => import('@shikijs/langs/jsonc'),
+  html: () => import('@shikijs/langs/html'),
+  css: () => import('@shikijs/langs/css'),
+  python: () => import('@shikijs/langs/python'),
+  yaml: () => import('@shikijs/langs/yaml'),
+  markdown: () => import('@shikijs/langs/markdown'),
+  graphql: () => import('@shikijs/langs/graphql'),
+  sql: () => import('@shikijs/langs/sql'),
+  bash: () => import('@shikijs/langs/bash'),
+  shell: () => import('@shikijs/langs/shellscript'),
+  diff: () => import('@shikijs/langs/diff'),
+  hcl: () => import('@shikijs/langs/hcl'),
+  toml: () => import('@shikijs/langs/toml')
 };
+
+/**
+ * Common language aliases mapped to their canonical SupportedLanguage names.
+ *
+ * Markdown code fences often use short aliases (e.g., `js`, `ts`, `sh`) that
+ * Shiki recognizes but don't match the canonical grammar names in BUNDLED_LANGS.
+ * This map ensures aliases resolve to the correct preloaded grammar, avoiding
+ * "language not found" warnings and falling back to plain text.
+ *
+ * Note: Only aliases for languages in BUNDLED_LANGS are included. Languages
+ * like `mdx` are intentionally omitted because they have distinct grammars
+ * (MDX includes JSX syntax) that would lose highlighting if mapped to `markdown`.
+ */
+const LANGUAGE_ALIASES: Record<string, SupportedLanguage> = {
+  js: 'javascript',
+  cjs: 'javascript',
+  mjs: 'javascript',
+  ts: 'typescript',
+  cts: 'typescript',
+  mts: 'typescript',
+  sh: 'bash',
+  zsh: 'bash',
+  yml: 'yaml',
+  py: 'python',
+  md: 'markdown',
+  gql: 'graphql'
+};
+
+/**
+ * Normalize a language identifier to its canonical SupportedLanguage name.
+ * Returns the canonical name if the input is a known alias or already canonical,
+ * otherwise returns null.
+ */
+export function normalizeLanguage(lang: string): SupportedLanguage | null {
+  if (lang in BUNDLED_LANGS) return lang as SupportedLanguage;
+  if (lang in LANGUAGE_ALIASES) return LANGUAGE_ALIASES[lang];
+  return null;
+}
 
 /**
  * Provider component that initializes and manages Shiki highlighting.
@@ -58,24 +96,24 @@ const BUNDLED_LANGS: Record<
  * ```
  */
 const DEFAULT_LABELS = {
-  copy: "Copy",
-  copied: "Copied!",
+  copy: 'Copy',
+  copied: 'Copied!'
 };
 
 export function ShikiProvider({
   engine,
   languages,
   labels,
-  children,
+  children
 }: ShikiProviderProps): React.JSX.Element {
   const [state, setState] = useState<{
-    highlighter: ShikiContextValue["highlighter"];
+    highlighter: ShikiContextValue['highlighter'];
     isLoading: boolean;
     error: Error | null;
   }>({
     highlighter: null,
     isLoading: true,
-    error: null,
+    error: null
   });
 
   useEffect(() => {
@@ -84,45 +122,50 @@ export function ShikiProvider({
     async function initializeShiki() {
       try {
         // Dynamic import of shiki/core — only loads the core, not all languages
-        const { createHighlighterCore } = await import("shiki/core");
+        const { createHighlighterCore } = await import('shiki/core');
 
         // Load the appropriate engine
         const engineInstance =
-          engine === "wasm"
-            ? await import("shiki/engine/oniguruma").then((m) =>
-                m.createOnigurumaEngine(import("shiki/wasm")),
+          engine === 'wasm'
+            ? await import('shiki/engine/oniguruma').then(m =>
+                m.createOnigurumaEngine(import('shiki/wasm'))
               )
-            : await import("shiki/engine/javascript").then((m) =>
-                m.createJavaScriptRegexEngine(),
+            : await import('shiki/engine/javascript').then(m =>
+                m.createJavaScriptRegexEngine()
               );
 
         // Load themes
         const [githubLight, vesper] = await Promise.all([
-          import("@shikijs/themes/github-light"),
-          import("@shikijs/themes/vesper"),
+          import('@shikijs/themes/github-light'),
+          import('@shikijs/themes/vesper')
         ]);
 
-        // Load only the requested languages from our bundled set
-        const validLanguages = languages.filter(
-          (lang): lang is SupportedLanguage => lang in BUNDLED_LANGS,
-        );
+        // Load only the requested languages from our bundled set,
+        // normalizing aliases (e.g., 'js' -> 'javascript') first
+        const validLanguages = [
+          ...new Set(
+            languages
+              .map(lang => normalizeLanguage(lang))
+              .filter((lang): lang is SupportedLanguage => lang !== null)
+          )
+        ];
 
         const langModules = await Promise.all(
-          validLanguages.map((lang) => BUNDLED_LANGS[lang]()),
+          validLanguages.map(lang => BUNDLED_LANGS[lang]())
         );
 
         const highlighter = await createHighlighterCore({
           themes: [githubLight.default, vesper.default],
 
-          langs: langModules.map((m) => m.default) as any,
-          engine: engineInstance,
+          langs: langModules.map(m => m.default) as any,
+          engine: engineInstance
         });
 
         if (!cancelled) {
           setState({
             highlighter,
             isLoading: false,
-            error: null,
+            error: null
           });
         }
       } catch (err) {
@@ -131,7 +174,7 @@ export function ShikiProvider({
             highlighter: null,
             isLoading: false,
             error:
-              err instanceof Error ? err : new Error("Failed to load Shiki"),
+              err instanceof Error ? err : new Error('Failed to load Shiki')
           });
         }
       }
@@ -146,7 +189,7 @@ export function ShikiProvider({
 
   const mergedLabels = useMemo(
     () => ({ ...DEFAULT_LABELS, ...labels }),
-    [labels],
+    [labels]
   );
 
   const contextValue = useMemo<ShikiContextValue>(
@@ -155,9 +198,9 @@ export function ShikiProvider({
       isLoading: state.isLoading,
       error: state.error,
       languages: languages as SupportedLanguage[],
-      labels: mergedLabels,
+      labels: mergedLabels
     }),
-    [state.highlighter, state.isLoading, state.error, languages, mergedLabels],
+    [state.highlighter, state.isLoading, state.error, languages, mergedLabels]
   );
 
   return (
@@ -167,4 +210,4 @@ export function ShikiProvider({
   );
 }
 
-ShikiProvider.displayName = "ShikiProvider";
+ShikiProvider.displayName = 'ShikiProvider';

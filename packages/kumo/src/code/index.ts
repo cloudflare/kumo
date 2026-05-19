@@ -26,11 +26,11 @@
  */
 
 // Components
-export { ShikiProvider } from "./provider";
-export { CodeHighlighted } from "./code-highlighted";
+export { ShikiProvider, normalizeLanguage } from './provider';
+export { CodeHighlighted } from './code-highlighted';
 
 // Hook
-export { useShikiHighlighter } from "./use-shiki-highlighter";
+export { useShikiHighlighter } from './use-shiki-highlighter';
 
 // Types
 export type {
@@ -38,5 +38,5 @@ export type {
   CodeHighlightedProps,
   UseShikiHighlighterResult,
   ShikiEngine,
-  BundledLanguage,
-} from "./types";
+  BundledLanguage
+} from './types';
