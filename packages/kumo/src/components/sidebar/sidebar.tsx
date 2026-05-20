@@ -77,8 +77,8 @@ export const KUMO_SIDEBAR_DEFAULT_VARIANTS = {
 
 export const KUMO_SIDEBAR_STYLING = {
   width: {
-    expanded: "16rem",
-    icon: "3rem",
+    expanded: "16.25rem",
+    icon: "57px",
   },
   mobile: {
     breakpoint: 768,
@@ -93,8 +93,10 @@ export type SidebarCollapsible = "icon" | "offcanvas" | "none";
 // Constants
 // ============================================================================
 
-const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_ICON = "3rem";
+const SIDEBAR_WIDTH = "16.25rem";
+const SIDEBAR_WIDTH_ICON = "57px";
+const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
+const SIDEBAR_ANIMATION_DURATION_MS = 250;
 const MOBILE_BREAKPOINT = 768;
 
 // ============================================================================
@@ -313,6 +315,9 @@ function SidebarProvider({
           {
             "--sidebar-width": sidebarWidthValue,
             "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+            "--sidebar-animation-duration": `${SIDEBAR_ANIMATION_DURATION_MS}ms`,
+            "--sidebar-easing": SIDEBAR_EASING,
+            "--sidebar-bg": "var(--color-kumo-base)",
             ...style,
           } as CSSProperties
         }
@@ -386,13 +391,13 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             maxWidth: "var(--sidebar-width)",
           }}
           className={cn(
-            "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-kumo-base text-kumo-default",
+            "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-(--sidebar-bg) text-kumo-default",
             variant === "sidebar" &&
               (side === "left"
-                ? "border-r border-kumo-hairline"
-                : "border-l border-kumo-hairline"),
+                ? "border-r border-kumo-line"
+                : "border-l border-kumo-line"),
             variant === "floating" &&
-              "m-2 rounded-lg border border-kumo-hairline shadow-lg",
+              "m-2 rounded-lg border border-kumo-line shadow-lg",
             className,
           )}
           {...props}
@@ -458,22 +463,22 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         data-sidebar="sidebar"
         style={{ width: targetWidth }}
         className={cn(
-          "group/sidebar relative flex h-full shrink-0 grow-0 flex-col",
+          "group/sidebar isolate relative flex h-full shrink-0 grow-0 flex-col",
           // overflow-hidden makes flex min-width resolve to 0 (per spec),
           // preventing children from pushing the sidebar wider than its width
           "min-w-0 overflow-hidden whitespace-nowrap",
-          "bg-kumo-base text-kumo-default",
+          "bg-(--sidebar-bg) text-kumo-default",
           // Transition width — matches production SidebarNav curve exactly
-          "transition-[width] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)] will-change-[width]",
+          "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
           "motion-reduce:transition-none",
           // Disable transition during resize drag
           isResizing && "transition-none!",
           variant === "sidebar" &&
             (side === "left"
-              ? "border-r border-kumo-hairline"
-              : "border-l border-kumo-hairline"),
+              ? "border-r border-kumo-line"
+              : "border-l border-kumo-line"),
           variant === "floating" &&
-            "m-2 rounded-lg border border-kumo-hairline shadow-lg",
+            "m-2 rounded-lg border border-kumo-line shadow-lg",
           className,
         )}
         {...props}
@@ -512,10 +517,8 @@ const SidebarHeader = forwardRef<
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex items-center gap-2 border-b border-kumo-hairline px-2 py-3",
+      "flex h-[58px] items-center gap-1 border-b border-kumo-line px-3.5",
       "overflow-hidden",
-      // Collapsed: just remove border, keep same height
-      "group-data-[state=collapsed]/sidebar:border-b-0",
       className,
     )}
     {...props}
@@ -546,10 +549,9 @@ const SidebarContent = forwardRef<
     ref={ref}
     data-sidebar="content"
     className={cn(
-      "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 py-2",
-      // Collapsed: flatten spacing so icons are evenly spaced
-      "group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:py-0",
-      "group-data-[state=collapsed]/sidebar:overflow-x-hidden",
+      "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden",
+      "px-[11px] py-[13px] group-not-data-[state=collapsed]/sidebar:px-3.5",
+      "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       className,
     )}
     {...props}
@@ -581,9 +583,9 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex min-w-0 flex-col gap-2 border-t border-kumo-hairline px-2 py-2",
-      // Collapsed: remove border, tighten padding
-      "group-data-[state=collapsed]/sidebar:border-t-0 group-data-[state=collapsed]/sidebar:py-1",
+      "flex h-12 min-w-0 items-center border-t border-kumo-line px-[11px]",
+      "bg-(--sidebar-bg)",
+      "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       className,
     )}
     {...props}
@@ -676,9 +678,7 @@ const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(
         ref={ref}
         data-sidebar="group"
         className={cn(
-          "flex min-w-0 flex-col gap-0.5",
-          // Collapsed: remove internal gap so icons stack uniformly
-          "group-data-[state=collapsed]/sidebar:gap-0",
+          "flex min-w-0 flex-col gap-y-px",
           className,
         )}
         {...props}
@@ -818,7 +818,7 @@ const SidebarGroupContent = forwardRef<
         className={cn(
           "grid",
           // Animate height via grid-rows — matches production NavGroup pattern
-          "transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
+          "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
           "motion-reduce:transition-none",
           // Default: collapsed
           "grid-rows-[0fr]",
@@ -900,8 +900,7 @@ const SidebarMenu = forwardRef<
     ref={ref}
     data-sidebar="menu"
     className={cn(
-      "m-0 flex min-w-0 list-none flex-col gap-0.5 p-0",
-      "group-data-[state=collapsed]/sidebar:gap-0",
+      "m-0 flex min-w-0 list-none flex-col items-stretch gap-y-px p-0",
       className,
     )}
     {...props}
@@ -1025,7 +1024,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       const Comp = IconProp as React.ComponentType<{ className?: string }>;
       return (
         <Comp
-          className={cn("shrink-0", size === "base" ? "size-4" : "size-3.5")}
+          className={cn("shrink-0 opacity-50", size === "base" ? "size-4" : "size-3.5")}
         />
       );
     })();
@@ -1048,20 +1047,18 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // Layout
       "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg cursor-pointer",
       // Sizing
-      size === "base" && "min-h-[34px] px-3 py-1.5 text-sm font-medium",
-      size === "sm" && "min-h-[28px] px-2 py-1 text-sm",
+      size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
+      size === "sm" && "min-h-7 px-2 py-0 text-sm",
       // Default state — transition includes padding so collapsed centering animates smoothly
       "text-kumo-default",
-      "transition-[color,background-color,padding] duration-0 ease-[cubic-bezier(0.77,0,0.175,1)]",
-      // Icon color
-      "[&>svg]:text-kumo-subtle",
+      "transition-[color,background-color] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       !active && "hover:bg-kumo-tint",
       // Active state
       active && "bg-kumo-tint",
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
       // Focus
-      "focus-visible:ring-2 focus-visible:ring-kumo-brand",
+      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
       // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
       // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
       "group-data-[state=collapsed]/sidebar:px-2",
@@ -1180,7 +1177,7 @@ const SidebarMenuBadge = forwardRef<
     ref={ref}
     data-sidebar="menu-badge"
     className={cn(
-      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-hairline",
+      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
       "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-subtle",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
@@ -1213,18 +1210,22 @@ SidebarMenuBadge.displayName = "Sidebar.MenuBadge";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   ComponentPropsWithoutRef<"ul">
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <ul
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-hairline p-0 pl-2.5",
+      "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
     )}
     {...props}
-  />
+  >
+    {/* Vertical line indicator */}
+    <div className="absolute left-[19px] inset-y-px w-px bg-kumo-line" />
+    {children}
+  </ul>
 ));
 
 SidebarMenuSub.displayName = "Sidebar.MenuSub";
@@ -1290,11 +1291,11 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium",
+    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium",
     "text-kumo-default transition-colors duration-150",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
-    "focus-visible:ring-2 focus-visible:ring-kumo-brand",
+    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
     className,
   );
 
@@ -1355,15 +1356,21 @@ SidebarMenuSubButton.displayName = "Sidebar.MenuSubButton";
  * Horizontal divider line between sidebar sections.
  */
 const SidebarSeparator = forwardRef<
-  HTMLHRElement,
-  ComponentPropsWithoutRef<"hr">
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => (
-  <hr
+  <div
     ref={ref}
     data-sidebar="separator"
-    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-hairline", className)}
+    className={cn(
+      "my-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      "group-not-data-[state=collapsed]/sidebar:px-3",
+      className,
+    )}
     {...props}
-  />
+  >
+    <div className="border-b border-kumo-line" />
+  </div>
 ));
 
 SidebarSeparator.displayName = "Sidebar.Separator";
@@ -1398,8 +1405,8 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
       data-sidebar="input"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-hairline",
-        "transition-[color,background-color,padding,box-shadow] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
+        "bg-kumo-base text-kumo-subtle ring ring-kumo-ring",
+        "transition-[color,background-color,padding,box-shadow] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
         "hover:bg-kumo-overlay",
         "focus-visible:ring-2 focus-visible:ring-kumo-brand",
         // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
@@ -1451,8 +1458,8 @@ const SidebarTrigger = forwardRef<
       aria-label="Toggle sidebar"
       className={cn(
         "flex items-center rounded-md p-1.5",
-        "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-overlay",
-        "focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint",
+        "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
         "transition-colors duration-150",
         className,
       )}
@@ -1491,7 +1498,7 @@ const SidebarRail = forwardRef<
       aria-label="Toggle sidebar"
       tabIndex={-1}
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 cursor-pointer transition-all",
+        "absolute inset-y-0 z-1 hidden w-4 -translate-x-1/2 cursor-pointer transition-all",
         "after:absolute after:inset-y-0 after:left-1/2 after:w-0.5",
         "hover:after:bg-kumo-brand/20",
         "group-data-[side=left]/sidebar-wrapper:right-0",
@@ -1589,7 +1596,7 @@ const SidebarResizeHandle = forwardRef<
       ref={ref}
       data-sidebar="resize-handle"
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-1 cursor-col-resize transition-colors sm:block",
+        "absolute inset-y-0 z-2 hidden w-0.5 cursor-col-resize transition-colors sm:block",
         "hover:bg-kumo-brand/30 active:bg-kumo-brand/50",
         side === "left" && "right-0",
         side === "right" && "left-0",
@@ -1687,7 +1694,7 @@ const SidebarCollapsibleContent = forwardRef<
       // a real starting height before data-ending-style flips it to 0.
       "h-[var(--collapsible-panel-height)]",
       // Transition height — matches production NavGroup easing
-      "transition-[height] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
+      "transition-[height] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       "motion-reduce:transition-none",
       // Only force height 0 during the active enter/exit transition phases.
       // Applying h-0 for data-closed snaps the panel shut before Base UI adds
