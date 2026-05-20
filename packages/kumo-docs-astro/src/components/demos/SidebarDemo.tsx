@@ -1,4 +1,4 @@
-import { Sidebar, useSidebar, DropdownMenu } from "@cloudflare/kumo";
+import { cn, Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
 import {
   HouseIcon,
   GlobeIcon,
@@ -8,12 +8,16 @@ import {
   DatabaseIcon,
   CodeIcon,
   LockIcon,
-  CloudIcon,
+  CubeIcon,
   BellIcon,
   CaretUpDownIcon,
   CheckIcon,
-  RocketIcon,
-  FlaskIcon,
+  StackIcon,
+  StackSimpleIcon,
+  UserIcon,
+  ArrowsLeftRightIcon,
+  ArrowLeftIcon,
+  MagnifyingGlassIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -23,7 +27,7 @@ import { useState } from "react";
 
 function DemoContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative h-[540px] w-full overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base">
+    <div className="relative h-[540px] w-full overflow-hidden rounded-lg border border-kumo-line bg-kumo-base">
       {children}
     </div>
   );
@@ -31,7 +35,7 @@ function DemoContainer({ children }: { children: React.ReactNode }) {
 
 function DemoMain({ children }: { children?: React.ReactNode }) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-kumo-subtle">
+    <main className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-kumo-subtle text-base">
       {children ?? "Main content area"}
     </main>
   );
@@ -39,19 +43,19 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
 
 function BrandLogo() {
   return (
-    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]">
-      <div className="size-4 shrink-0 rounded bg-kumo-brand" />
+    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)">
+      <CubeIcon className="size-4 shrink-0 text-kumo-brand" weight="duotone" />
       <span className="text-sm font-semibold text-kumo-strong truncate group-data-[state=collapsed]/sidebar:hidden">
-        Acme Inc
+        Company
       </span>
     </div>
   );
 }
 
 const accounts = [
-  { id: "1", name: "Acme Inc", icon: CloudIcon },
-  { id: "2", name: "Personal", icon: RocketIcon },
-  { id: "3", name: "Staging", icon: FlaskIcon },
+  { id: "1", name: "Company", icon: CubeIcon },
+  { id: "2", name: "Personal", icon: StackIcon },
+  { id: "3", name: "Staging", icon: StackSimpleIcon },
 ];
 
 function AccountSwitcher() {
@@ -63,27 +67,27 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-hairline outline-none transition-[color,background-color,padding] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)] group-data-[state=collapsed]/sidebar:px-2"
+            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[color,background-color,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
-              weight="fill"
+              weight="duotone"
             />
-            <span className="flex-1 truncate text-left font-semibold text-kumo-strong group-data-[state=collapsed]/sidebar:hidden">
+            <span className="flex-1 truncate text-left font-medium group-data-[state=collapsed]/sidebar:hidden">
               {active.name}
             </span>
             <CaretUpDownIcon className="size-4 shrink-0 text-kumo-subtle group-data-[state=collapsed]/sidebar:hidden" />
           </button>
         }
       />
-      <DropdownMenu.Content className="w-[var(--anchor-width)]">
+      <DropdownMenu.Content className="w-(--anchor-width)">
         {accounts.map((account) => (
           <DropdownMenu.Item
             key={account.id}
-            className="gap-2"
+            className="gap-2 cursor-pointer"
             onClick={() => setActive(account)}
           >
-            <account.icon className="size-4 text-kumo-brand" weight="fill" />
+            <account.icon className="size-4 text-kumo-brand" weight="duotone" />
             {account.name}
             {account.id === active.id && (
               <CheckIcon className="ml-auto size-4" />
@@ -103,7 +107,7 @@ function AccountSwitcher() {
 export function SidebarBasicDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
         <Sidebar>
           <Sidebar.Content>
             <Sidebar.Group>
@@ -136,9 +140,31 @@ export function SidebarBasicDemo() {
                     />
                     <Sidebar.CollapsibleContent>
                       <Sidebar.MenuSub>
-                        <Sidebar.MenuSubButton>
-                          Workers & Pages
-                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubItem>
+                          <Sidebar.Collapsible>
+                            <Sidebar.CollapsibleTrigger
+                              render={
+                                <Sidebar.MenuSubButton>
+                                  Workers & Pages
+                                  <Sidebar.MenuChevron />
+                                </Sidebar.MenuSubButton>
+                              }
+                            />
+                            <Sidebar.CollapsibleContent>
+                              <Sidebar.MenuSub>
+                                <Sidebar.MenuSubButton>
+                                  Overview
+                                </Sidebar.MenuSubButton>
+                                <Sidebar.MenuSubButton>
+                                  Workers
+                                </Sidebar.MenuSubButton>
+                                <Sidebar.MenuSubButton>
+                                  Pages
+                                </Sidebar.MenuSubButton>
+                              </Sidebar.MenuSub>
+                            </Sidebar.CollapsibleContent>
+                          </Sidebar.Collapsible>
+                        </Sidebar.MenuSubItem>
                         <Sidebar.MenuSubButton>
                           Durable Objects
                         </Sidebar.MenuSubButton>
@@ -160,71 +186,7 @@ export function SidebarBasicDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 2. Collapsible Groups — group-level collapse via label click
-// ---------------------------------------------------------------------------
-
-/** Sidebar with collapsible groups that animate open/closed via the group label. */
-export function SidebarCollapsibleGroupDemo() {
-  return (
-    <DemoContainer>
-      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
-        <Sidebar>
-          <Sidebar.Content>
-            {/* GroupContent is required for collapsible groups (provides grid-rows animation) */}
-            <Sidebar.Group collapsible defaultOpen>
-              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuButton icon={HouseIcon} active>
-                    Home
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={ChartBarIcon}>
-                    Analytics
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={GlobeIcon}>
-                    Domains
-                  </Sidebar.MenuButton>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-
-            <Sidebar.Group collapsible defaultOpen>
-              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuButton icon={CodeIcon}>
-                    Compute
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={DatabaseIcon}>
-                    Storage
-                  </Sidebar.MenuButton>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-
-            <Sidebar.Group collapsible defaultOpen={false}>
-              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
-              <Sidebar.GroupContent>
-                <Sidebar.Menu>
-                  <Sidebar.MenuButton icon={ShieldCheckIcon}>
-                    Security
-                  </Sidebar.MenuButton>
-                  <Sidebar.MenuButton icon={LockIcon}>
-                    Zero Trust
-                  </Sidebar.MenuButton>
-                </Sidebar.Menu>
-              </Sidebar.GroupContent>
-            </Sidebar.Group>
-          </Sidebar.Content>
-        </Sidebar>
-        <DemoMain />
-      </Sidebar.Provider>
-    </DemoContainer>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// 3. Toggle — expand/collapse with trigger + tooltips
+// 2. Toggle — expand/collapse with trigger + tooltips
 // ---------------------------------------------------------------------------
 
 function ToggleButton() {
@@ -233,7 +195,7 @@ function ToggleButton() {
     <button
       type="button"
       onClick={toggleSidebar}
-      className="rounded-lg border border-kumo-hairline bg-kumo-base px-3 py-1.5 text-sm text-kumo-default transition-colors hover:bg-kumo-tint"
+      className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
     >
       {state === "expanded" ? "Collapse" : "Expand"}
     </button>
@@ -244,7 +206,7 @@ function ToggleButton() {
 export function SidebarToggleDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -273,7 +235,7 @@ export function SidebarToggleDemo() {
         </Sidebar>
         <DemoMain>
           <ToggleButton />
-          <p className="text-sm">
+          <p>
             Click the button or the sidebar trigger to toggle
           </p>
         </DemoMain>
@@ -283,111 +245,14 @@ export function SidebarToggleDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Full — kitchen sink: header, account switcher, search, badges, footer
-// ---------------------------------------------------------------------------
-
-/** Sidebar with account switcher, search input, badges, and full navigation. */
-export function SidebarFullDemo() {
-  return (
-    <DemoContainer>
-      <Sidebar.Provider defaultOpen className="min-h-0! h-full">
-        <Sidebar>
-          <Sidebar.Header>
-            <AccountSwitcher />
-          </Sidebar.Header>
-
-          <Sidebar.Content>
-            <div className="px-1 pb-2">
-              <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" />
-            </div>
-
-            <Sidebar.Group>
-              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-              <Sidebar.Menu>
-                <Sidebar.MenuButton icon={HouseIcon} active>
-                  Home
-                </Sidebar.MenuButton>
-                <Sidebar.MenuButton icon={ChartBarIcon}>
-                  Analytics & Logs
-                </Sidebar.MenuButton>
-                <Sidebar.MenuButton icon={GlobeIcon}>
-                  Domains
-                </Sidebar.MenuButton>
-              </Sidebar.Menu>
-            </Sidebar.Group>
-
-            <Sidebar.Separator />
-
-            <Sidebar.Group>
-              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-              <Sidebar.Menu>
-                <Sidebar.MenuItem>
-                  <Sidebar.Collapsible defaultOpen>
-                    <Sidebar.CollapsibleTrigger
-                      render={
-                        <Sidebar.MenuButton icon={CodeIcon}>
-                          Compute
-                          <Sidebar.MenuChevron />
-                        </Sidebar.MenuButton>
-                      }
-                    />
-                    <Sidebar.CollapsibleContent>
-                      <Sidebar.MenuSub>
-                        <Sidebar.MenuSubButton>
-                          Workers & Pages
-                        </Sidebar.MenuSubButton>
-                        <Sidebar.MenuSubButton>
-                          Durable Objects
-                        </Sidebar.MenuSubButton>
-                        <Sidebar.MenuSubButton>
-                          Containers
-                          <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
-                        </Sidebar.MenuSubButton>
-                      </Sidebar.MenuSub>
-                    </Sidebar.CollapsibleContent>
-                  </Sidebar.Collapsible>
-                </Sidebar.MenuItem>
-                <Sidebar.MenuButton icon={DatabaseIcon}>
-                  Storage
-                </Sidebar.MenuButton>
-              </Sidebar.Menu>
-            </Sidebar.Group>
-
-            <Sidebar.Group>
-              <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
-              <Sidebar.Menu>
-                <Sidebar.MenuButton icon={ShieldCheckIcon}>
-                  Security
-                </Sidebar.MenuButton>
-                <Sidebar.MenuButton icon={LockIcon}>
-                  Zero Trust
-                  <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
-                </Sidebar.MenuButton>
-              </Sidebar.Menu>
-            </Sidebar.Group>
-          </Sidebar.Content>
-
-          <Sidebar.Footer>
-            <Sidebar.MenuButton icon={GearIcon}>
-              Manage account
-            </Sidebar.MenuButton>
-          </Sidebar.Footer>
-        </Sidebar>
-        <DemoMain />
-      </Sidebar.Provider>
-    </DemoContainer>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// 5. Resizable — drag handle with auto-collapse
+// 3. Resizable — drag handle with auto-collapse
 // ---------------------------------------------------------------------------
 
 /** Resizable sidebar with drag handle. Drag the right edge to resize. */
 export function SidebarResizableDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider
+      <Sidebar.Provider contained
         defaultOpen
         resizable
         defaultWidth={240}
@@ -401,7 +266,6 @@ export function SidebarResizableDemo() {
           </Sidebar.Header>
           <Sidebar.Content>
             <Sidebar.Group>
-              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
               <Sidebar.Menu>
                 <Sidebar.MenuButton icon={HouseIcon} active>
                   Home
@@ -421,7 +285,7 @@ export function SidebarResizableDemo() {
           <Sidebar.ResizeHandle />
         </Sidebar>
         <DemoMain>
-          <p className="text-sm">Drag the sidebar edge to resize</p>
+          <p>Drag the sidebar edge to resize</p>
         </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>
@@ -429,14 +293,14 @@ export function SidebarResizableDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Right Side — right-aligned, content only
+// 4. Right Side — right-aligned, content only
 // ---------------------------------------------------------------------------
 
 /** Right-side sidebar variant. */
 export function SidebarRightDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider defaultOpen side="right" className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen side="right" className="min-h-0! h-full">
         <DemoMain />
         <Sidebar>
           <Sidebar.Content>
@@ -454,6 +318,346 @@ export function SidebarRightDemo() {
             </Sidebar.Group>
           </Sidebar.Content>
         </Sidebar>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 5. Peeking — hover to temporarily expand collapsed sidebar
+// ---------------------------------------------------------------------------
+
+function PeekStateIndicator() {
+  const { state } = useSidebar();
+  const labels: Record<SidebarState, string> = {
+    expanded: "Expanded",
+    collapsed: "Collapsed",
+    peeking: "Peeking",
+  };
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <span className="text font-medium text-kumo-default">
+        State: {labels[state]}
+      </span>
+      <p>Collapse, then hover the sidebar to peek</p>
+    </div>
+  );
+}
+
+/** Peekable sidebar that temporarily expands on hover when collapsed. */
+export function SidebarPeekingDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen peekable className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon} tooltip="Analytics">
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                  Compute
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon} tooltip="Storage">
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <PeekStateIndicator />
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 6. Sliding Views — animated horizontal transitions between surfaces
+// ---------------------------------------------------------------------------
+
+/** Sidebar with animated sliding views between Account and Zone navigation. */
+export function SidebarSlidingViewsDemo() {
+  const [surface, setSurface] = useState<"account" | "zone">("account");
+
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <button
+              type="button"
+              onClick={() =>
+                setSurface((s) => (s === "account" ? "zone" : "account"))
+              }
+              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-kumo-default hover:bg-kumo-tint transition-colors"
+            >
+              <ArrowsLeftRightIcon className="size-4 shrink-0 text-kumo-brand" />
+              <span className="flex-1 text-left font-semibold text-kumo-strong">
+                {surface === "account" ? "Account Nav" : "Zone Nav"}
+              </span>
+            </button>
+          </Sidebar.Header>
+
+          <Sidebar.SlidingViews
+            activeKey={surface}
+            direction={surface === "zone" ? "left" : "right"}
+          >
+            <Sidebar.SlidingView value="account">
+              <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>Account</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={HouseIcon} active>
+                      Home
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={UserIcon}>
+                      Members
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ChartBarIcon}>
+                      Analytics
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={GearIcon}>
+                      Settings
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              </Sidebar.Content>
+            </Sidebar.SlidingView>
+
+            <Sidebar.SlidingView value="zone">
+              <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>Zone</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={GlobeIcon} active>
+                      Overview
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                      Security
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={LockIcon}>
+                      SSL/TLS
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={DatabaseIcon}>
+                      Caching
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              </Sidebar.Content>
+            </Sidebar.SlidingView>
+          </Sidebar.SlidingViews>
+        </Sidebar>
+        <DemoMain>
+          <div className="flex flex-col items-center gap-2">
+            <p className="font-medium text-kumo-default">
+              Active: {surface === "account" ? "Account" : "Zone"} surface
+            </p>
+            <p>
+              Click the header button to slide between views
+            </p>
+          </div>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 7. Full — kitchen sink showcasing every subcomponent
+// ---------------------------------------------------------------------------
+
+/** Kitchen sink sidebar showcasing every subcomponent: header with account switcher, groups with labels, collapsible sections with nested expandable, badges, sliding views via Domains, and a footer trigger. */
+export function SidebarFullDemo() {
+  const [surface, setSurface] = useState<"account" | "domain">("account");
+
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen peekable className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <AccountSwitcher />
+          </Sidebar.Header>
+          <div className={cn(
+            "w-full px-3.5 pt-[13px] -mb-3",
+            "group-not-data-[state=collapsed]/sidebar:px-3.5 group-not-data-[state=collapsed]/sidebar:pt-[13px] group-not-data-[state=collapsed]/sidebar:pb-[13px]",
+            "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+          )}>
+            <button
+              type="button"
+              data-sidebar="input"
+              className={cn(
+                "block h-8 w-full shrink-0 rounded-lg px-3 text-sm font-normal cursor-pointer",
+                "bg-kumo-base shadow-xs ring ring-kumo-ring",
+                "overflow-x-clip select-none",
+                "hover:bg-kumo-tint",
+                "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
+                "transition-[color,background,border,box-shadow] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+                "group-data-[state=collapsed]/sidebar:ring-transparent group-data-[state=collapsed]/sidebar:shadow-none"
+              )}
+            >
+              <div
+                className={cn(
+                  "flex items-center min-w-0 gap-3",
+                  "group-data-[state=collapsed]/sidebar:translate-x-[-6px]",
+                  "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+                )}
+              >
+                <MagnifyingGlassIcon className="size-4 shrink-0 opacity-50" />
+                <span className="text-kumo-subtle leading-none whitespace-nowrap">
+                  Quick search&hellip;
+                </span>
+              </div>
+            </button>
+          </div>
+
+          <Sidebar.SlidingViews
+            activeKey={surface}
+            direction={surface === "domain" ? "left" : "right"}
+          >
+            <Sidebar.SlidingView value="account">
+              <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={HouseIcon} active>
+                      Home
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ChartBarIcon}>
+                      Analytics & Logs
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton
+                      icon={GlobeIcon}
+                      onClick={() => setSurface("domain")}
+                    >
+                      Domains
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuItem>
+                      <Sidebar.Collapsible defaultOpen>
+                        <Sidebar.CollapsibleTrigger
+                          render={
+                            <Sidebar.MenuButton icon={CodeIcon}>
+                              Compute
+                              <Sidebar.MenuChevron />
+                            </Sidebar.MenuButton>
+                          }
+                        />
+                        <Sidebar.CollapsibleContent>
+                          <Sidebar.MenuSub>
+                            <Sidebar.MenuSubItem>
+                              <Sidebar.Collapsible>
+                                <Sidebar.CollapsibleTrigger
+                                  render={
+                                    <Sidebar.MenuSubButton>
+                                      Workers & Pages
+                                      <Sidebar.MenuChevron />
+                                    </Sidebar.MenuSubButton>
+                                  }
+                                />
+                                <Sidebar.CollapsibleContent>
+                                  <Sidebar.MenuSub>
+                                    <Sidebar.MenuSubButton>
+                                      Overview
+                                    </Sidebar.MenuSubButton>
+                                    <Sidebar.MenuSubButton>
+                                      Workers
+                                    </Sidebar.MenuSubButton>
+                                    <Sidebar.MenuSubButton>
+                                      Pages
+                                    </Sidebar.MenuSubButton>
+                                  </Sidebar.MenuSub>
+                                </Sidebar.CollapsibleContent>
+                              </Sidebar.Collapsible>
+                            </Sidebar.MenuSubItem>
+                            <Sidebar.MenuSubButton>
+                              Durable Objects
+                            </Sidebar.MenuSubButton>
+                            <Sidebar.MenuSubButton>
+                              Containers
+                              <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                            </Sidebar.MenuSubButton>
+                          </Sidebar.MenuSub>
+                        </Sidebar.CollapsibleContent>
+                      </Sidebar.Collapsible>
+                    </Sidebar.MenuItem>
+                    <Sidebar.MenuButton icon={DatabaseIcon}>
+                      Storage
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>Protect & Connect</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                      Security
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={LockIcon}>
+                      Zero Trust
+                      <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              </Sidebar.Content>
+            </Sidebar.SlidingView>
+
+            <Sidebar.SlidingView value="domain">
+              <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton
+                      icon={ArrowLeftIcon}
+                      onClick={() => setSurface("account")}
+                    >
+                      Back
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+                <Sidebar.Group>
+                  <Sidebar.GroupLabel>example.com</Sidebar.GroupLabel>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton icon={GlobeIcon} active>
+                      Overview
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                      Security
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={LockIcon}>
+                      SSL/TLS
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={ChartBarIcon}>
+                      Analytics
+                    </Sidebar.MenuButton>
+                    <Sidebar.MenuButton icon={DatabaseIcon}>
+                      Caching
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
+              </Sidebar.Content>
+            </Sidebar.SlidingView>
+          </Sidebar.SlidingViews>
+
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain />
       </Sidebar.Provider>
     </DemoContainer>
   );
