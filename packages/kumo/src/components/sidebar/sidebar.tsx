@@ -14,7 +14,7 @@ import React, {
 } from "react";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
 
-import { CaretRightIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -117,8 +117,10 @@ function useIsMobile() {
 // Context
 // ============================================================================
 
+export type SidebarState = "expanded" | "collapsed" | "peeking";
+
 export interface SidebarContextValue {
-  state: "expanded" | "collapsed";
+  state: SidebarState;
   open: boolean;
   setOpen: (open: boolean) => void;
   openMobile: boolean;
@@ -135,6 +137,11 @@ export interface SidebarContextValue {
   isResizing: boolean;
   setIsResizing: (resizing: boolean) => void;
   setWidth: (width: number) => void;
+  isPeeking: boolean;
+  startPeek: () => void;
+  stopPeek: () => void;
+  contained: boolean;
+  animationDuration: number;
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
@@ -183,6 +190,23 @@ export interface SidebarProviderProps {
   maxWidth?: number;
   /** Callback when width changes during resize. */
   onWidthChange?: (width: number) => void;
+  /**
+   * When true, the collapsed sidebar uses absolute positioning instead of fixed,
+   * keeping it scoped inside a bounded parent. Useful for demos and embedded sidebars.
+   * @default false
+   */
+  contained?: boolean;
+  /**
+   * When true, hovering or focusing the collapsed sidebar temporarily expands it.
+   * The `state` will be `"peeking"` during the peek. Moving away collapses it back.
+   * @default false
+   */
+  peekable?: boolean;
+  /**
+   * Duration of sidebar expand/collapse animation in milliseconds.
+   * @default 250
+   */
+  animationDuration?: number;
   /** Content — typically `<Sidebar>` + main content. */
   children: ReactNode;
   /** Additional CSS classes for the wrapper div. */
@@ -219,6 +243,9 @@ function SidebarProvider({
   minWidth = MIN_WIDTH_PX,
   maxWidth = MAX_WIDTH_PX,
   onWidthChange,
+  contained = false,
+  peekable = false,
+  animationDuration = SIDEBAR_ANIMATION_DURATION_MS,
   children,
   className,
   style,
@@ -227,6 +254,7 @@ function SidebarProvider({
   const [openMobile, setOpenMobile] = useState(false);
   const [width, setWidthState] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
+  const [isPeeking, setIsPeeking] = useState(false);
 
   const setWidth = useCallback(
     (newWidth: number) => {
@@ -252,11 +280,26 @@ function SidebarProvider({
     if (isMobile) {
       setOpenMobile((prev) => !prev);
     } else {
+      setIsPeeking(false);
       setOpen((prev: boolean) => !prev);
     }
   }, [isMobile, setOpen]);
 
-  const state = open ? "expanded" : "collapsed";
+  const startPeek = useCallback(() => {
+    if (peekable && !open && !isMobile) {
+      setIsPeeking(true);
+    }
+  }, [peekable, open, isMobile]);
+
+  const stopPeek = useCallback(() => {
+    setIsPeeking(false);
+  }, []);
+
+  const state: SidebarState = isPeeking
+    ? "peeking"
+    : open
+      ? "expanded"
+      : "collapsed";
 
   const sidebarWidthValue = resizable ? `${width}px` : SIDEBAR_WIDTH;
 
@@ -279,6 +322,11 @@ function SidebarProvider({
       isResizing,
       setIsResizing,
       setWidth,
+      isPeeking,
+      startPeek,
+      stopPeek,
+      contained,
+      animationDuration,
     }),
     [
       state,
@@ -298,6 +346,11 @@ function SidebarProvider({
       isResizing,
       setIsResizing,
       setWidth,
+      isPeeking,
+      startPeek,
+      stopPeek,
+      contained,
+      animationDuration,
     ],
   );
 
@@ -311,14 +364,15 @@ function SidebarProvider({
           {
             "--sidebar-width": sidebarWidthValue,
             "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-            "--sidebar-animation-duration": `${SIDEBAR_ANIMATION_DURATION_MS}ms`,
+            "--sidebar-animation-duration": `${animationDuration}ms`,
             "--sidebar-easing": SIDEBAR_EASING,
             "--sidebar-bg": "var(--color-kumo-base)",
             ...style,
           } as CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full",
+          "group/sidebar-wrapper flex w-full",
+          !contained && "min-h-svh",
           "has-data-[variant=inset]:bg-kumo-recessed",
           isResizing && "select-none",
           className,
@@ -362,6 +416,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
   ({ className, children, ...props }, ref) => {
     const {
       state,
+      open,
       isMobile,
       openMobile,
       setOpenMobile,
@@ -371,6 +426,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       isResizing,
       resizable,
       width,
+      isPeeking,
+      startPeek,
+      stopPeek,
+      contained,
     } = useSidebar();
 
     if (collapsible === "none") {
@@ -447,11 +506,43 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       );
     }
 
-    // Resolve the target width from CSS variables or literal values
+    // --- Desktop two-layer architecture ---
+    // Rail: the <aside> whose width drives layout (stays collapsed during peek).
+    // Content container: holds actual sidebar content, can overlay when peeking.
+
+    // Separate footer from other children so it renders outside the peek zone
+    const childArray = React.Children.toArray(children);
+    const footerChildren: React.ReactNode[] = [];
+    const contentChildren: React.ReactNode[] = [];
+    for (const child of childArray) {
+      if (
+        React.isValidElement(child) &&
+        (child.type as { displayName?: string })?.displayName === "Sidebar.Footer"
+      ) {
+        footerChildren.push(child);
+      } else {
+        contentChildren.push(child);
+      }
+    }
+
+    // Rail width: based on open state only (not peeking)
     const collapsedWidth =
       collapsible === "icon" ? "var(--sidebar-width-icon)" : "0px";
     const expandedWidth = resizable ? `${width}px` : "var(--sidebar-width)";
-    const targetWidth = state === "expanded" ? expandedWidth : collapsedWidth;
+    const railWidth = open ? expandedWidth : collapsedWidth;
+
+    // Content container width: expanded during peek
+    const contentExpanded = open || isPeeking;
+    const contentWidth = contentExpanded ? expandedWidth : collapsedWidth;
+
+    const borderClasses =
+      variant === "sidebar"
+        ? side === "left"
+          ? "border-r border-kumo-line"
+          : "border-l border-kumo-line"
+        : variant === "floating"
+          ? "border border-kumo-line"
+          : "";
 
     return (
       <aside
@@ -461,31 +552,53 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         data-variant={variant}
         data-collapsible={collapsible}
         data-sidebar="sidebar"
-        style={{ width: targetWidth }}
+        style={{ width: railWidth }}
         className={cn(
           "group/sidebar isolate relative flex h-full shrink-0 grow-0 flex-col",
-          // overflow-hidden makes flex min-width resolve to 0 (per spec),
-          // preventing children from pushing the sidebar wider than its width
-          "min-w-0 overflow-hidden whitespace-nowrap",
-          "bg-(--sidebar-bg) text-kumo-default",
-          // Transition width — matches production SidebarNav curve exactly
+          "overflow-visible", // allow content container to overlay when peeking
           "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
           "motion-reduce:transition-none",
-          // Disable transition during resize drag
           isResizing && "transition-none!",
-          variant === "sidebar" &&
-            (side === "left"
-              ? "border-r border-kumo-line"
-              : "border-l border-kumo-line"),
-          variant === "floating" &&
-            "m-2 rounded-lg border border-kumo-line shadow-lg",
+          variant === "floating" && "m-2 rounded-lg shadow-lg",
           className,
         )}
         {...props}
       >
-        {/* TooltipProvider groups all collapsed-state tooltips so hovering
-            between icons shows tooltips instantly (no repeated delay). */}
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          {/* Content container — holds everything except footer */}
+          <div
+            data-sidebar="content-container"
+            style={{ width: contentWidth }}
+            onMouseEnter={startPeek}
+            onMouseLeave={stopPeek}
+            onFocus={startPeek}
+            onBlur={(e) => {
+              // Only stop peeking if focus leaves the entire container
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                stopPeek();
+              }
+            }}
+            className={cn(
+              "flex h-full flex-col",
+              "min-w-0 overflow-hidden whitespace-nowrap",
+              "bg-(--sidebar-bg) text-kumo-default",
+              borderClasses,
+              "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
+              "motion-reduce:transition-none",
+              isResizing && "transition-none!",
+              // When collapsed (or peeking), position out of flow so main content fills the space
+              !open && (contained ? "absolute inset-y-0" : "fixed inset-y-0"),
+              !open && side === "left" && "left-0",
+              !open && side === "right" && "right-0",
+              // When expanded, stay in flow
+              open && "relative",
+            )}
+          >
+            {contentChildren}
+          </div>
+          {/* Footer rendered outside peek zone */}
+          {footerChildren}
+        </TooltipProvider>
       </aside>
     );
   },
@@ -565,13 +678,14 @@ SidebarContent.displayName = "Sidebar.Content";
 // ============================================================================
 
 /**
- * Bottom-pinned section of the sidebar. Typically contains toggle button and help actions.
+ * Bottom-pinned section of the sidebar. Rendered outside the peek zone
+ * so hovering the footer doesn't trigger a peek. Tracks sidebar width
+ * to stay aligned with the content container.
  *
  * @example
  * ```tsx
  * <Sidebar.Footer>
  *   <Sidebar.Trigger />
- *   <Button shape="square" icon={InfoIcon} aria-label="Help" />
  * </Sidebar.Footer>
  * ```
  */
@@ -583,8 +697,11 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex h-12 min-w-0 items-center border-t border-kumo-line px-[11px]",
+      "sticky bottom-0 flex h-12 min-w-0 items-center border-t border-kumo-line px-[11px]",
       "bg-(--sidebar-bg)",
+      "w-(--sidebar-width)",
+      "group-data-[state=collapsed]/sidebar:w-(--sidebar-width-icon)",
+      "group-data-[state=collapsed]/sidebar:border-r group-data-[state=collapsed]/sidebar:border-kumo-line",
       "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       className,
     )}
@@ -1169,30 +1286,77 @@ SidebarSeparator.displayName = "Sidebar.Separator";
 // Sidebar Trigger
 // ============================================================================
 
+// ============================================================================
+// Sidebar PanelIcon
+// ============================================================================
+
+/**
+ * Animated sidebar panel icon. The vertical divider line slides based
+ * on the sidebar's open/closed state.
+ */
+function SidebarPanelIcon({ className }: { className?: string }) {
+  const { open } = useSidebar();
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={cn("shrink-0", className)}
+    >
+      <rect
+        x="1.5"
+        y="1.5"
+        width="13"
+        height="13"
+        rx="1.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+      />
+      <line
+        x1="5.5"
+        y1="1.5"
+        x2="5.5"
+        y2="14.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        className={cn(
+          "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+          !open && "translate-x-[-2px]",
+        )}
+      />
+    </svg>
+  );
+}
+
+SidebarPanelIcon.displayName = "Sidebar.PanelIcon";
+
 /**
  * Button that toggles the sidebar open/collapsed. Uses `toggleSidebar()` from context.
- * Defaults to a `SidebarSimpleIcon`, left-aligned.
+ * Defaults to an animated `SidebarPanelIcon`.
  *
  * @example
  * ```tsx
  * <Sidebar.Trigger />
- * <Sidebar.Trigger><PanelLeftIcon className="size-5" /></Sidebar.Trigger>
  * ```
  */
 const SidebarTrigger = forwardRef<
   HTMLButtonElement,
   ComponentPropsWithoutRef<"button">
 >(({ className, children, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
 
   return (
     <button
       ref={ref}
       type="button"
       data-sidebar="trigger"
-      aria-label="Toggle sidebar"
+      aria-expanded={open}
+      aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
-        "flex items-center rounded-md p-1.5",
+        "grid size-8.5 place-items-center rounded-lg cursor-pointer",
         "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint",
         "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
         "transition-colors duration-150",
@@ -1204,7 +1368,7 @@ const SidebarTrigger = forwardRef<
       }}
       {...props}
     >
-      {children ?? <SidebarSimpleIcon className="size-5" />}
+      {children ?? <SidebarPanelIcon />}
     </button>
   );
 });
