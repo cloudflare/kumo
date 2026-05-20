@@ -11,6 +11,7 @@ import {
   BadgeSemanticVariantsDemo,
   BadgeColorVariantsDemo,
   BadgeInSentenceDemo,
+  BadgeDotDemo,
 } from "~/components/demos/BadgeDemo";
 
 
@@ -50,12 +51,20 @@ export default function Example() {
   <BadgeSemanticVariantsDemo client:visible />
 </ComponentExample>
 
-### Other variants
+### Other color variants
 
-Other variants for specific products/use cases where the semantic badges aren't enough to convey intended meaning or status.
+Other color variants for specific products/use cases where the semantic badges aren't enough to convey intended meaning or status.
 
 <ComponentExample demo="BadgeColorVariantsDemo">
   <BadgeColorVariantsDemo client:visible />
+</ComponentExample>
+
+### Dot badges
+
+Use `appearance="dot"` for a subtle status indicator with a colored dot. Supported with `success`, `warning`, `error`, and `neutral` variants.
+
+<ComponentExample demo="BadgeDotDemo">
+  <BadgeDotDemo client:visible />
 </ComponentExample>
 
 ### In a sentence

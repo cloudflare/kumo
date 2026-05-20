@@ -508,8 +508,8 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Green badge background",
       theme: {
         kumo: {
-          light: "var(--color-emerald-700, oklch(50.8% 0.118 165.612))",
-          dark: "var(--color-emerald-700, oklch(50.8% 0.118 165.612))",
+          light: "var(--color-emerald-500, oklch(69.6% 0.17 162.48))",
+          dark: "var(--color-emerald-400, oklch(76.5% 0.177 163.223))",
         },
       },
     },
@@ -554,7 +554,7 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Neutral badge background",
       theme: {
         kumo: {
-          light: "var(--color-neutral-600, oklch(43.9% 0 0))",
+          light: "var(--color-neutral-500, oklch(55.6% 0 0))",
           dark: "var(--color-neutral-600, oklch(43.9% 0 0))",
         },
       },

@@ -153,8 +153,11 @@ describe("variant functions survive invalid variant values", () => {
   });
 
   it("badgeVariants", () => {
-    expect(() => badgeVariants({ variant: BOGUS })).not.toThrow();
+    expect(() =>
+      badgeVariants({ variant: BOGUS, appearance: BOGUS }),
+    ).not.toThrow();
     expect(typeof badgeVariants({ variant: BOGUS })).toBe("string");
+    expect(typeof badgeVariants({ appearance: BOGUS })).toBe("string");
   });
 
   it("codeVariants", () => {
