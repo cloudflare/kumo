@@ -14,11 +14,7 @@ import React, {
 import { Collapsible as CollapsibleBase } from "@base-ui/react/collapsible";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
 
-import {
-  CaretRightIcon,
-  MagnifyingGlassIcon,
-  SidebarSimpleIcon,
-} from "@phosphor-icons/react";
+import { CaretRightIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -602,116 +598,28 @@ SidebarFooter.displayName = "Sidebar.Footer";
 // Sidebar Group
 // ============================================================================
 
-/** Context to signal children they're inside a collapsible group and provide open state. */
-interface SidebarGroupCollapsibleContextValue {
-  isCollapsible: boolean;
-  isOpen: boolean;
-}
-const SidebarGroupCollapsibleContext =
-  createContext<SidebarGroupCollapsibleContextValue>({
-    isCollapsible: false,
-    isOpen: true,
-  });
-
-export interface SidebarGroupProps extends ComponentPropsWithoutRef<"div"> {
-  /** When true, the group can be expanded/collapsed via its label. @default false */
-  collapsible?: boolean;
-  /** Initial open state when collapsible and uncontrolled. @default true */
-  defaultOpen?: boolean;
-  /** Controlled open state (collapsible mode only). */
-  open?: boolean;
-  /** Callback when open state changes (collapsible mode only). */
-  onOpenChange?: (open: boolean) => void;
-}
-
 /**
  * Groups related menu items with an optional label.
- * When `collapsible` is set, wraps content with Base UI Collapsible for
- * animated expand/collapse via the group label.
  *
- * @example Non-collapsible group
+ * @example
  * ```tsx
  * <Sidebar.Group>
  *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
  *   <Sidebar.Menu>...</Sidebar.Menu>
  * </Sidebar.Group>
  * ```
- *
- * @example Collapsible group (requires GroupContent for animation)
- * ```tsx
- * <Sidebar.Group collapsible defaultOpen>
- *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
- *   <Sidebar.GroupContent>
- *     <Sidebar.Menu>...</Sidebar.Menu>
- *   </Sidebar.GroupContent>
- * </Sidebar.Group>
- * ```
  */
-const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(
-  (
-    {
-      className,
-      collapsible = false,
-      defaultOpen = true,
-      open: openProp,
-      onOpenChange,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
-    // Track internal open state for uncontrolled mode
-    const [internalOpen, setInternalOpen] = useState(defaultOpen);
-    const isOpen = openProp ?? internalOpen;
-
-    const handleOpenChange = useCallback(
-      (newOpen: boolean) => {
-        setInternalOpen(newOpen);
-        onOpenChange?.(newOpen);
-      },
-      [onOpenChange],
-    );
-
-    const contextValue = useMemo(
-      () => ({ isCollapsible: collapsible, isOpen }),
-      [collapsible, isOpen],
-    );
-
-    const content = (
-      <div
-        ref={ref}
-        data-sidebar="group"
-        className={cn(
-          "flex min-w-0 flex-col gap-y-px",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-
-    if (!collapsible) {
-      return (
-        <SidebarGroupCollapsibleContext.Provider value={contextValue}>
-          {content}
-        </SidebarGroupCollapsibleContext.Provider>
-      );
-    }
-
-    return (
-      <SidebarGroupCollapsibleContext.Provider value={contextValue}>
-        <CollapsibleBase.Root
-          defaultOpen={defaultOpen}
-          open={openProp}
-          onOpenChange={handleOpenChange}
-          className="min-w-0"
-        >
-          {content}
-        </CollapsibleBase.Root>
-      </SidebarGroupCollapsibleContext.Provider>
-    );
-  },
+const SidebarGroup = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<"div">>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-sidebar="group"
+      className={cn("flex min-w-0 flex-col gap-y-px", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  ),
 );
 
 SidebarGroup.displayName = "Sidebar.Group";
@@ -722,10 +630,8 @@ SidebarGroup.displayName = "Sidebar.Group";
 
 /**
  * Section label for a sidebar group (e.g., "Build", "Protect & Connect").
- * Hidden when the sidebar is collapsed to icon-only mode.
- *
- * When used inside a collapsible `Sidebar.Group`, renders as a
- * `Collapsible.Trigger` with an auto-rotating chevron.
+ * When the sidebar is collapsed, renders as a thin horizontal divider.
+ * When it's the first group, the divider is hidden (nothing above to separate from).
  *
  * @example
  * ```tsx
@@ -735,123 +641,39 @@ SidebarGroup.displayName = "Sidebar.Group";
 const SidebarGroupLabel = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { isCollapsible } = useContext(SidebarGroupCollapsibleContext);
-
-  if (isCollapsible) {
-    return (
-      <CollapsibleBase.Trigger
-        ref={ref as React.Ref<HTMLButtonElement>}
-        data-sidebar="group-label"
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-sidebar="group-label"
+    className={cn(
+      // Grid-rows for smooth collapse animation
+      "grid overflow-hidden",
+      "transition-[grid-template-rows,margin,border-color] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      // Collapsed: spacer with divider line between icon groups
+      "grid-rows-[0fr] my-3 border-b border-kumo-line",
+      // First group: no spacer or divider needed
+      "[[data-sidebar=group]:first-child_&]:my-0 [[data-sidebar=group]:first-child_&]:border-transparent",
+      // Expanded: reveal the label text
+      "group-not-data-[state=collapsed]/sidebar:grid-rows-[1fr] group-not-data-[state=collapsed]/sidebar:my-0 group-not-data-[state=collapsed]/sidebar:border-transparent",
+      className,
+    )}
+    {...props}
+  >
+    <div className="min-h-0">
+      <div
         className={cn(
-          "group/group-label flex w-full cursor-pointer items-center px-3 py-1 text-xs font-medium text-kumo-subtle",
-          "group-data-[state=collapsed]/sidebar:hidden",
-          className,
+          "truncate px-3 mt-4 mb-2 text-sm font-medium text-kumo-subtle",
+          // First group: less top margin
+          "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
-        {...(props as ComponentPropsWithoutRef<"button">)}
       >
-        <span className="flex-1 truncate text-left">{children}</span>
-        <CaretRightIcon
-          className={cn(
-            "ml-auto size-3 shrink-0 text-kumo-subtle transition-transform duration-200",
-            "group-data-[panel-open]/group-label:rotate-90",
-          )}
-        />
-      </CollapsibleBase.Trigger>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="group-label"
-      className={cn(
-        "truncate px-3 py-1 text-xs font-medium text-kumo-subtle",
-        "group-data-[state=collapsed]/sidebar:hidden",
-        className,
-      )}
-      {...props}
-    >
-      {children}
+        {children}
+      </div>
     </div>
-  );
-});
+  </div>
+));
 
 SidebarGroupLabel.displayName = "Sidebar.GroupLabel";
-
-// ============================================================================
-// Sidebar GroupContent
-// ============================================================================
-
-/**
- * Animation wrapper for collapsible group content. Uses CSS grid-rows
- * for smooth height transitions when the group is expanded/collapsed.
- *
- * **Only needed for collapsible groups.** For non-collapsible groups,
- * place `Menu` directly inside `Group` — no wrapper required.
- *
- * @example Collapsible group (GroupContent required)
- * ```tsx
- * <Sidebar.Group collapsible defaultOpen>
- *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
- *   <Sidebar.GroupContent>
- *     <Sidebar.Menu>...</Sidebar.Menu>
- *   </Sidebar.GroupContent>
- * </Sidebar.Group>
- * ```
- *
- * @example Non-collapsible group (no GroupContent needed)
- * ```tsx
- * <Sidebar.Group>
- *   <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
- *   <Sidebar.Menu>...</Sidebar.Menu>
- * </Sidebar.Group>
- * ```
- */
-const SidebarGroupContent = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { isCollapsible, isOpen } = useContext(SidebarGroupCollapsibleContext);
-
-  if (isCollapsible) {
-    return (
-      <div
-        ref={ref}
-        data-sidebar="group-content"
-        className={cn(
-          "grid",
-          // Animate height via grid-rows — matches production NavGroup pattern
-          "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-          "motion-reduce:transition-none",
-          // Default: collapsed
-          "grid-rows-[0fr]",
-          // When sidebar is expanded, respect group open/close state
-          isOpen
-            ? "group-data-[state=expanded]/sidebar:grid-rows-[1fr]"
-            : "group-data-[state=expanded]/sidebar:grid-rows-[0fr]",
-          className,
-        )}
-        {...props}
-      >
-        <div className="overflow-hidden">{children}</div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="group-content"
-      className={cn("flex flex-col", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-});
-
-SidebarGroupContent.displayName = "Sidebar.GroupContent";
 
 // ============================================================================
 // MenuItem / MenuSubItem auto-wrap contexts
@@ -886,12 +708,11 @@ const MenuSubItemContext = createContext(false);
  * </Sidebar.Menu>
  * ```
  *
- * @example With explicit MenuItem (needed for MenuAction sibling)
+ * @example With explicit MenuItem (needed for Collapsible wrapper)
  * ```tsx
  * <Sidebar.Menu>
  *   <Sidebar.MenuItem>
- *     <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
- *     <Sidebar.MenuAction><PencilIcon /></Sidebar.MenuAction>
+ *     <Sidebar.Collapsible>...</Sidebar.Collapsible>
  *   </Sidebar.MenuItem>
  * </Sidebar.Menu>
  * ```
@@ -922,14 +743,12 @@ SidebarMenu.displayName = "Sidebar.Menu";
  *
  * **Optional when using `MenuButton` directly** — `MenuButton` auto-wraps
  * itself in a `<li>` when not already inside a `MenuItem`. Use `MenuItem`
- * explicitly when you need to place siblings (e.g., `MenuAction`) alongside
- * a `MenuButton`.
+ * explicitly when wrapping a `Collapsible`.
  *
- * @example Explicit usage (needed for MenuAction sibling)
+ * @example Explicit usage (wrapping a Collapsible)
  * ```tsx
  * <Sidebar.MenuItem>
- *   <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
- *   <Sidebar.MenuAction><PencilIcon /></Sidebar.MenuAction>
+ *   <Sidebar.Collapsible>...</Sidebar.Collapsible>
  * </Sidebar.MenuItem>
  * ```
  */
@@ -981,11 +800,7 @@ export interface SidebarMenuButtonProps extends Omit<
  * Supports icons, active state, and auto-tooltip when the sidebar is collapsed.
  *
  * **Auto-wraps in `<li>`** when not already inside a `Sidebar.MenuItem`.
- * Use `MenuItem` explicitly only when you need siblings (e.g., `MenuAction`).
- *
- * When used as a `Collapsible.Trigger` via `render` prop, the expand/collapse chevron
- * auto-rotates thanks to Base UI's `data-panel-open` attribute combined with
- * `group/menu-button` CSS grouping.
+ * Use `MenuItem` explicitly only when wrapping a `Collapsible`.
  *
  * @example Simple usage (auto-wrapped in `<li>`)
  * ```tsx
@@ -995,11 +810,13 @@ export interface SidebarMenuButtonProps extends Omit<
  * </Sidebar.Menu>
  * ```
  *
- * @example With MenuAction sibling (explicit MenuItem needed)
+ * @example With Collapsible (explicit MenuItem needed)
  * ```tsx
  * <Sidebar.MenuItem>
- *   <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
- *   <Sidebar.MenuAction><PencilIcon /></Sidebar.MenuAction>
+ *   <Sidebar.Collapsible>
+ *     <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton icon={CodeIcon}>Compute<Sidebar.MenuChevron /></Sidebar.MenuButton>} />
+ *     <Sidebar.CollapsibleContent>...</Sidebar.CollapsibleContent>
+ *   </Sidebar.Collapsible>
  * </Sidebar.MenuItem>
  * ```
  */
@@ -1125,37 +942,6 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 );
 
 SidebarMenuButton.displayName = "Sidebar.MenuButton";
-
-// ============================================================================
-// Sidebar MenuAction
-// ============================================================================
-
-/**
- * Right-aligned action button inside a menu item (e.g., settings gear, plus icon).
- * Positioned absolutely so it overlays the menu button.
- * Hidden when the sidebar is collapsed.
- */
-const SidebarMenuAction = forwardRef<
-  HTMLButtonElement,
-  ComponentPropsWithoutRef<"button">
->(({ className, ...props }, ref) => (
-  <button
-    ref={ref}
-    type="button"
-    data-sidebar="menu-action"
-    className={cn(
-      "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
-      "text-kumo-subtle hover:bg-kumo-overlay",
-      "focus-visible:ring-2 focus-visible:ring-kumo-brand",
-      "transition-colors duration-150",
-      "group-data-[state=collapsed]/sidebar:hidden",
-      className,
-    )}
-    {...props}
-  />
-));
-
-SidebarMenuAction.displayName = "Sidebar.MenuAction";
 
 // ============================================================================
 // Sidebar MenuBadge
@@ -1378,61 +1164,6 @@ const SidebarSeparator = forwardRef<
 ));
 
 SidebarSeparator.displayName = "Sidebar.Separator";
-
-// ============================================================================
-// Sidebar Input
-// ============================================================================
-
-export interface SidebarInputProps extends ComponentPropsWithoutRef<"button"> {
-  /** Placeholder text displayed inside the search trigger. @default "Search..." */
-  placeholder?: string;
-  /** Keyboard shortcut hint (e.g., "⌘K"). */
-  shortcut?: string;
-}
-
-/**
- * Search trigger button styled as an input. Typically opens a command palette.
- *
- * @example
- * ```tsx
- * <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" onClick={openSearch} />
- * ```
- */
-const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
-  (
-    { className, placeholder = "Search...", shortcut, children, ...props },
-    ref,
-  ) => (
-    <button
-      ref={ref}
-      type="button"
-      data-sidebar="input"
-      className={cn(
-        "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-ring",
-        "transition-[color,background-color,padding,box-shadow] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-        "hover:bg-kumo-overlay",
-        "focus-visible:ring-2 focus-visible:ring-kumo-brand",
-        // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
-        "group-data-[state=collapsed]/sidebar:px-2 group-data-[state=collapsed]/sidebar:ring-0",
-        className,
-      )}
-      {...props}
-    >
-      <MagnifyingGlassIcon className="size-4 shrink-0 text-kumo-subtle" />
-      <span className="flex-1 truncate text-left group-data-[state=collapsed]/sidebar:hidden">
-        {children ?? placeholder}
-      </span>
-      {shortcut && (
-        <kbd className="ml-auto font-sans text-xs text-kumo-subtle group-data-[state=collapsed]/sidebar:hidden">
-          {shortcut}
-        </kbd>
-      )}
-    </button>
-  ),
-);
-
-SidebarInput.displayName = "Sidebar.Input";
 
 // ============================================================================
 // Sidebar Trigger
@@ -1765,13 +1496,11 @@ SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
  * Sidebar — responsive navigation panel with expand/collapse support.
  *
  * Compound component: `Sidebar` (root `<aside>`), `.Provider`, `.Header`,
- * `.Content`, `.Footer`, `.Group`, `.GroupLabel`, `.GroupContent`,
- * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuAction`, `.MenuBadge`,
+ * `.Content`, `.Footer`, `.Group`, `.GroupLabel`,
+ * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuBadge`,
  * `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`,
- * `.Input`, `.Trigger`, `.Rail`, `.MenuChevron`,
+ * `.Trigger`, `.Rail`, `.MenuChevron`,
  * `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`.
- *
- * Built on `@base-ui/react/collapsible` + `@base-ui/react/dialog`.
  *
  * @example
  * ```tsx
@@ -1800,17 +1529,14 @@ export const Sidebar = Object.assign(SidebarRoot, {
   Footer: SidebarFooter,
   Group: SidebarGroup,
   GroupLabel: SidebarGroupLabel,
-  GroupContent: SidebarGroupContent,
   Menu: SidebarMenu,
   MenuItem: SidebarMenuItem,
   MenuButton: SidebarMenuButton,
-  MenuAction: SidebarMenuAction,
   MenuBadge: SidebarMenuBadge,
   MenuSub: SidebarMenuSub,
   MenuSubItem: SidebarMenuSubItem,
   MenuSubButton: SidebarMenuSubButton,
   Separator: SidebarSeparator,
-  Input: SidebarInput,
   Trigger: SidebarTrigger,
   Rail: SidebarRail,
   ResizeHandle: SidebarResizeHandle,
@@ -1828,17 +1554,14 @@ export {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarSeparator,
-  SidebarInput,
   SidebarTrigger,
   SidebarRail,
   SidebarResizeHandle,
