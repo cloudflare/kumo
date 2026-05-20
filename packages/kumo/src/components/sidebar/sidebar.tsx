@@ -8,10 +8,10 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useId,
   useRef,
   useState,
 } from "react";
-import { Collapsible as CollapsibleBase } from "@base-ui/react/collapsible";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
 
 import { CaretRightIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
@@ -1391,30 +1391,222 @@ const SidebarResizeHandle = forwardRef<
 SidebarResizeHandle.displayName = "Sidebar.ResizeHandle";
 
 // ============================================================================
+// Collapsible context + components (custom implementation, no Base UI dep)
+// ============================================================================
+
+interface SidebarCollapseContextValue {
+  contentId: string;
+  isOpen: boolean;
+  isCollapsible: boolean;
+  toggle: () => void;
+}
+
+const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
+  contentId: "",
+  isOpen: true,
+  isCollapsible: false,
+  toggle: () => {},
+});
+
+export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
+  /** Initial open state (uncontrolled). @default false */
+  defaultOpen?: boolean;
+  /** Controlled open state. */
+  open?: boolean;
+  /** Callback when open state changes. */
+  onOpenChange?: (open: boolean) => void;
+}
+
+/**
+ * Collapsible wrapper for sidebar sub-menu expand/collapse.
+ * Manages open/close state and provides context to Trigger and Content children.
+ *
+ * Keyboard behaviour: when a child receives keyboard focus (`focus-visible`)
+ * while collapsed, the section auto-expands. It collapses again on blur
+ * unless it was explicitly opened via click or a child has `data-active`.
+ *
+ * @example
+ * ```tsx
+ * <Sidebar.MenuItem>
+ *   <Sidebar.Collapsible defaultOpen>
+ *     <Sidebar.CollapsibleTrigger
+ *       render={<Sidebar.MenuButton icon={CodeIcon}>Compute<Sidebar.MenuChevron /></Sidebar.MenuButton>}
+ *     />
+ *     <Sidebar.CollapsibleContent>
+ *       <Sidebar.MenuSub>...</Sidebar.MenuSub>
+ *     </Sidebar.CollapsibleContent>
+ *   </Sidebar.Collapsible>
+ * </Sidebar.MenuItem>
+ * ```
+ */
+const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
+  ({ defaultOpen = false, open: openProp, onOpenChange, className, children, ...props }, ref) => {
+    const [internalOpen, setInternalOpen] = useState(defaultOpen);
+    const isOpen = openProp ?? internalOpen;
+    const contentId = useId();
+    const keyboardExpandedRef = useRef(false);
+
+    const toggle = useCallback(() => {
+      const next = !isOpen;
+      setInternalOpen(next);
+      onOpenChange?.(next);
+      // If user explicitly clicks, clear the keyboard-expanded flag
+      keyboardExpandedRef.current = false;
+    }, [isOpen, onOpenChange]);
+
+    const contextValue = useMemo<SidebarCollapseContextValue>(
+      () => ({ contentId, isOpen, isCollapsible: true, toggle }),
+      [contentId, isOpen, toggle],
+    );
+
+    const handleFocusIn = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        // Auto-expand on keyboard focus (focus-visible) when collapsed
+        if (!isOpen && (e.target as HTMLElement).matches(":focus-visible")) {
+          keyboardExpandedRef.current = true;
+          setInternalOpen(true);
+          onOpenChange?.(true);
+        }
+      },
+      [isOpen, onOpenChange],
+    );
+
+    const handleFocusOut = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        // Auto-collapse on blur if it was keyboard-expanded (not click-expanded)
+        // and no child has data-active
+        if (
+          keyboardExpandedRef.current &&
+          !e.currentTarget.contains(e.relatedTarget as Node) &&
+          !e.currentTarget.querySelector("[data-active]")
+        ) {
+          keyboardExpandedRef.current = false;
+          setInternalOpen(false);
+          onOpenChange?.(false);
+        }
+      },
+      [onOpenChange],
+    );
+
+    return (
+      <SidebarCollapseContext.Provider value={contextValue}>
+        <div
+          ref={ref}
+          data-open={isOpen || undefined}
+          className={cn("min-w-0", className)}
+          onFocus={handleFocusIn}
+          onBlur={handleFocusOut}
+          {...props}
+        >
+          {children}
+        </div>
+      </SidebarCollapseContext.Provider>
+    );
+  },
+);
+
+SidebarCollapsible.displayName = "Sidebar.Collapsible";
+
+export interface SidebarCollapsibleTriggerProps {
+  /** Element to render as the trigger. Gets aria-expanded, aria-controls, and onClick merged. */
+  render: React.ReactElement;
+}
+
+/**
+ * Trigger for a sidebar collapsible section. Uses `render` prop to compose
+ * with `Sidebar.MenuButton` or `Sidebar.MenuSubButton`.
+ *
+ * @example
+ * ```tsx
+ * <Sidebar.CollapsibleTrigger
+ *   render={
+ *     <Sidebar.MenuButton icon={CodeIcon}>
+ *       Compute
+ *       <Sidebar.MenuChevron />
+ *     </Sidebar.MenuButton>
+ *   }
+ * />
+ * ```
+ */
+function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
+  const { contentId, isOpen, toggle } = useContext(SidebarCollapseContext);
+
+  return React.cloneElement(render, {
+    "aria-expanded": isOpen,
+    "aria-controls": contentId,
+    "data-open": isOpen || undefined,
+    onClick: (e: React.MouseEvent) => {
+      // Call any existing onClick on the render element
+      (render.props as Record<string, unknown>).onClick?.(e);
+      toggle();
+    },
+  } as Record<string, unknown>);
+}
+
+SidebarCollapsibleTrigger.displayName = "Sidebar.CollapsibleTrigger";
+
+/**
+ * Animated collapsible content panel. Uses CSS grid-rows for smooth
+ * height transitions without measuring DOM height.
+ *
+ * Always mounted (no unmount on close) so exit animations play.
+ */
+const SidebarCollapsibleContent = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
+>(({ className, children, ...props }, ref) => {
+  const { contentId, isOpen } = useContext(SidebarCollapseContext);
+
+  return (
+    <div
+      ref={ref}
+      id={contentId}
+      role="region"
+      aria-hidden={!isOpen}
+      inert={!isOpen ? true : undefined}
+      data-open={isOpen || undefined}
+      className={cn(
+        "grid",
+        "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+        "motion-reduce:transition-none",
+        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        className,
+      )}
+      {...props}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
+  );
+});
+
+SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
+
+// ============================================================================
 // Sidebar MenuChevron
 // ============================================================================
 
 /**
- * Auto-rotating chevron for collapsible menu items. When the parent
- * `MenuButton` is used as a `Collapsible.Trigger`, Base UI sets
- * `data-panel-open` on the trigger — the chevron rotates automatically via CSS.
+ * Auto-rotating chevron for collapsible menu items. Reads open state from
+ * the nearest `SidebarCollapseContext` and rotates accordingly.
  *
  * @example
  * ```tsx
- * <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton icon={ComputeIcon} />}>
- *   Compute
- *   <Sidebar.MenuChevron />
- * </Sidebar.CollapsibleTrigger>
+ * <Sidebar.CollapsibleTrigger
+ *   render={<Sidebar.MenuButton icon={CodeIcon}>Compute<Sidebar.MenuChevron /></Sidebar.MenuButton>}
+ * />
  * ```
  */
 function SidebarMenuChevron({ className }: { className?: string }) {
+  const { isOpen, isCollapsible } = useContext(SidebarCollapseContext);
+
   return (
     <CaretRightIcon
+      size={12}
+      weight="bold"
       className={cn(
-        "ml-auto size-4 shrink-0 text-kumo-subtle transition-transform duration-200",
-        // Auto-rotate when inside an open Collapsible trigger
-        "group-data-[panel-open]/menu-button:rotate-90",
-        // Hidden when collapsed
+        "ml-auto shrink-0 text-kumo-subtle transition-transform duration-200",
+        isCollapsible && isOpen && "rotate-90",
+        // Hidden when sidebar is collapsed
         "group-data-[state=collapsed]/sidebar:hidden",
         className,
       )}
@@ -1423,70 +1615,6 @@ function SidebarMenuChevron({ className }: { className?: string }) {
 }
 
 SidebarMenuChevron.displayName = "Sidebar.MenuChevron";
-
-// ============================================================================
-// Collapsible re-exports
-// ============================================================================
-
-/**
- * Base UI Collapsible.Root for sidebar sub-menu expand/collapse.
- * @see https://base-ui.com/react/components/collapsible
- */
-const SidebarCollapsible = CollapsibleBase.Root;
-
-/**
- * Base UI Collapsible.Trigger for sidebar sub-menu toggle.
- * Use `render` prop to compose with `Sidebar.MenuButton`.
- *
- * @example
- * ```tsx
- * <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton icon={DiamondIcon} />}>
- *   Compute
- *   <Sidebar.MenuChevron />
- * </Sidebar.CollapsibleTrigger>
- * ```
- */
-const SidebarCollapsibleTrigger = CollapsibleBase.Trigger;
-
-/**
- * Animated collapsible panel for sidebar sub-menu content.
- * Wraps Base UI `Collapsible.Panel` with a height transition driven by the
- * `--collapsible-panel-height` CSS variable that Base UI measures automatically.
- *
- * Uses `keepMounted` by default so the exit animation plays before removal.
- *
- * Animation flow:
- * - **Opening**: `data-starting-style` (h=0) → `data-open` (h=measured) — transition up
- * - **Closing**: `data-open` removed, measured height retained until `data-ending-style` (h=0) — transition down
- * - **Closed**: `data-closed` while hidden/mounted; no extra height override needed
- */
-const SidebarCollapsibleContent = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<typeof CollapsibleBase.Panel>
->(({ className, keepMounted = true, ...props }, ref) => (
-  <CollapsibleBase.Panel
-    ref={ref}
-    keepMounted={keepMounted}
-    className={cn(
-      "overflow-hidden",
-      // Default: keep the measured height that Base UI writes to --collapsible-panel-height.
-      // This must also remain true during the initial close frame so the exit transition has
-      // a real starting height before data-ending-style flips it to 0.
-      "h-[var(--collapsible-panel-height)]",
-      // Transition height — matches production NavGroup easing
-      "transition-[height] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-      "motion-reduce:transition-none",
-      // Only force height 0 during the active enter/exit transition phases.
-      // Applying h-0 for data-closed snaps the panel shut before Base UI adds
-      // data-ending-style, skipping the collapse animation.
-      "data-[starting-style]:h-0 data-[ending-style]:h-0",
-      className,
-    )}
-    {...props}
-  />
-));
-
-SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
 
 // ============================================================================
 // Compound Component Export

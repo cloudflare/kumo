@@ -35,4 +35,6 @@ export {
   type SidebarMenuButtonSize,
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
+  type SidebarCollapsibleProps,
+  type SidebarCollapsibleTriggerProps,
 } from "./sidebar";
