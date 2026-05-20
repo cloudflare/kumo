@@ -510,20 +510,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     // Rail: the <aside> whose width drives layout (stays collapsed during peek).
     // Content container: holds actual sidebar content, can overlay when peeking.
 
-    // Separate footer from other children so it renders outside the peek zone
-    const childArray = React.Children.toArray(children);
-    const footerChildren: React.ReactNode[] = [];
-    const contentChildren: React.ReactNode[] = [];
-    for (const child of childArray) {
-      if (
-        React.isValidElement(child) &&
-        (child.type as { displayName?: string })?.displayName === "Sidebar.Footer"
-      ) {
-        footerChildren.push(child);
-      } else {
-        contentChildren.push(child);
-      }
-    }
+    // No child separation needed — footer stays inside the content container
 
     // Rail width: based on open state only (not peeking)
     const collapsedWidth =
@@ -594,10 +581,8 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
               open && "relative",
             )}
           >
-            {contentChildren}
+            {children}
           </div>
-          {/* Footer rendered outside peek zone */}
-          {footerChildren}
         </TooltipProvider>
       </aside>
     );
@@ -657,19 +642,53 @@ SidebarHeader.displayName = "Sidebar.Header";
 const SidebarContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    data-sidebar="content"
-    className={cn(
-      "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden",
-      "px-[11px] py-[13px] group-not-data-[state=collapsed]/sidebar:px-3.5",
-      "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-      className,
-    )}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const internalRef = useRef<HTMLDivElement>(null);
+
+  // Merge forwarded ref with internal ref
+  const mergedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      internalRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    },
+    [ref],
+  );
+
+  // Detect vertical overflow and set data-overflowing-y for CSS scroll-fade
+  useEffect(() => {
+    const el = internalRef.current;
+    if (!el) return;
+
+    const check = () => {
+      const overflows = el.scrollHeight > el.clientHeight;
+      if (overflows) el.setAttribute("data-overflowing-y", "");
+      else el.removeAttribute("data-overflowing-y");
+    };
+
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    // Also re-check when children change (collapsible open/close)
+    const mo = new MutationObserver(check);
+    mo.observe(el, { childList: true, subtree: true });
+
+    return () => { ro.disconnect(); mo.disconnect(); };
+  }, []);
+
+  return (
+    <div
+      ref={mergedRef}
+      data-sidebar="content"
+      className={cn(
+        "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden",
+        "px-2 py-2",
+        className,
+      )}
+      {...props}
+    />
+  );
+});
 
 SidebarContent.displayName = "Sidebar.Content";
 
@@ -697,12 +716,8 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "sticky bottom-0 flex h-12 min-w-0 items-center border-t border-kumo-line px-[11px]",
-      "bg-(--sidebar-bg)",
-      "w-(--sidebar-width)",
-      "group-data-[state=collapsed]/sidebar:w-(--sidebar-width-icon)",
-      "group-data-[state=collapsed]/sidebar:border-r group-data-[state=collapsed]/sidebar:border-kumo-line",
-      "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      "flex h-12 min-w-0 items-center border-t border-kumo-line px-2",
+      "bg-(--sidebar-bg) mt-auto",
       className,
     )}
     {...props}
@@ -987,19 +1002,17 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // Sizing
       size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
       size === "sm" && "min-h-7 px-2 py-0 text-sm",
-      // Default state — transition includes padding so collapsed centering animates smoothly
+      // Default state — no base transition to avoid flash on theme switch
       "text-kumo-default",
-      "transition-[color,background-color] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       !active && "hover:bg-kumo-tint",
       // Active state
       active && "bg-kumo-tint",
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
-      // Focus
-      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
-      // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
-      // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
-      "group-data-[state=collapsed]/sidebar:px-2",
+      // Focus — inset ring so it's not clipped by overflow-hidden ancestors
+      "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
+      // No special collapsed styles — the content container's overflow-hidden
+      // clips the text naturally as the width transitions down
       className,
     );
 
@@ -1117,22 +1130,18 @@ SidebarMenuBadge.displayName = "Sidebar.MenuBadge";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   ComponentPropsWithoutRef<"ul">
->(({ className, children, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <ul
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0",
+      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-y-px border-l border-kumo-line p-0 pl-2.5",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
     )}
     {...props}
-  >
-    {/* Vertical line indicator */}
-    <div className="absolute left-[19px] inset-y-px w-px bg-kumo-line" />
-    {children}
-  </ul>
+  />
 ));
 
 SidebarMenuSub.displayName = "Sidebar.MenuSub";
@@ -1198,15 +1207,19 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium",
-    "text-kumo-default transition-colors duration-150",
+    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium",
+    "text-kumo-default",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
-    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
+    "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
     className,
   );
 
-  const content = <span className="flex-1 truncate text-left">{children}</span>;
+  const content = (
+    <span className="flex flex-1 items-center min-w-0 text-left overflow-hidden">
+      {children}
+    </span>
+  );
 
   let button: React.ReactNode;
 
@@ -1270,8 +1283,7 @@ const SidebarSeparator = forwardRef<
     ref={ref}
     data-sidebar="separator"
     className={cn(
-      "my-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-      "group-not-data-[state=collapsed]/sidebar:px-3",
+      "my-3 px-2",
       className,
     )}
     {...props}
@@ -1358,8 +1370,7 @@ const SidebarTrigger = forwardRef<
       className={cn(
         "grid size-8.5 place-items-center rounded-lg cursor-pointer",
         "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint",
-        "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
-        "transition-colors duration-150",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
         className,
       )}
       onClick={(e) => {

@@ -67,7 +67,7 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[color,background-color,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
+            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
@@ -489,45 +489,23 @@ export function SidebarFullDemo() {
           <Sidebar.Header>
             <AccountSwitcher />
           </Sidebar.Header>
-          <div className={cn(
-            "w-full px-3.5 pt-[13px] -mb-3",
-            "group-not-data-[state=collapsed]/sidebar:px-3.5 group-not-data-[state=collapsed]/sidebar:pt-[13px] group-not-data-[state=collapsed]/sidebar:pb-[13px]",
-            "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-          )}>
-            <button
-              type="button"
-              data-sidebar="input"
-              className={cn(
-                "block h-8 w-full shrink-0 rounded-lg px-3 text-sm font-normal cursor-pointer",
-                "bg-kumo-base shadow-xs ring ring-kumo-ring",
-                "overflow-x-clip select-none",
-                "hover:bg-kumo-tint",
-                "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
-                "transition-[color,background,border,box-shadow] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-                "group-data-[state=collapsed]/sidebar:ring-transparent group-data-[state=collapsed]/sidebar:shadow-none"
-              )}
-            >
-              <div
-                className={cn(
-                  "flex items-center min-w-0 gap-3",
-                  "group-data-[state=collapsed]/sidebar:translate-x-[-6px]",
-                  "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-                )}
-              >
-                <MagnifyingGlassIcon className="size-4 shrink-0 opacity-50" />
-                <span className="text-kumo-subtle leading-none whitespace-nowrap">
-                  Quick search&hellip;
-                </span>
-              </div>
-            </button>
-          </div>
-
           <Sidebar.SlidingViews
             activeKey={surface}
             direction={surface === "domain" ? "left" : "right"}
           >
             <Sidebar.SlidingView value="account">
               <Sidebar.Content>
+                <Sidebar.Group>
+                  <Sidebar.Menu>
+                    <Sidebar.MenuButton
+                      icon={MagnifyingGlassIcon}
+                      tooltip="Search"
+                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-0"
+                    >
+                      Quick search&hellip;
+                    </Sidebar.MenuButton>
+                  </Sidebar.Menu>
+                </Sidebar.Group>
                 <Sidebar.Group>
                   <Sidebar.Menu>
                     <Sidebar.MenuButton icon={HouseIcon} active>
