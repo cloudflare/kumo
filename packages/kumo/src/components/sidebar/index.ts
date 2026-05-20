@@ -22,6 +22,8 @@ export {
   SidebarCollapsible,
   SidebarCollapsibleTrigger,
   SidebarCollapsibleContent,
+  SidebarSlidingViews,
+  SidebarSlidingView,
   useSidebar,
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
@@ -38,4 +40,6 @@ export {
   type SidebarState,
   type SidebarCollapsibleProps,
   type SidebarCollapsibleTriggerProps,
+  type SidebarSlidingViewsProps,
+  type SidebarSlidingViewProps,
 } from "./sidebar";

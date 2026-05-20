@@ -278,6 +278,8 @@ export {
   SidebarCollapsible,
   SidebarCollapsibleTrigger,
   SidebarCollapsibleContent,
+  SidebarSlidingViews,
+  SidebarSlidingView,
   useSidebar,
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
