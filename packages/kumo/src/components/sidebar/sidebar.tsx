@@ -1534,13 +1534,15 @@ const SidebarResizeHandle = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => {
-  const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth } =
+  const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth, width: currentWidth, maxWidth } =
     useSidebar();
   const startX = useRef(0);
   const startWidth = useRef(0);
   const wasCollapsed = useRef(false);
 
   if (!resizable) return null;
+
+  const KEYBOARD_STEP = 10;
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -1595,18 +1597,61 @@ const SidebarResizeHandle = forwardRef<
     document.addEventListener("pointerup", handlePointerUp);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const grow = side === "left" ? "ArrowRight" : "ArrowLeft";
+    const shrink = side === "left" ? "ArrowLeft" : "ArrowRight";
+
+    if (e.key === grow) {
+      e.preventDefault();
+      if (!open) {
+        setOpen(true);
+        setWidth(minWidth);
+      } else {
+        setWidth(Math.min(currentWidth + KEYBOARD_STEP, maxWidth));
+      }
+    } else if (e.key === shrink) {
+      e.preventDefault();
+      const next = currentWidth - KEYBOARD_STEP;
+      if (next < minWidth) {
+        setOpen(false);
+      } else {
+        setWidth(next);
+      }
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setOpen(false);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setOpen(true);
+      setWidth(maxWidth);
+    }
+  };
+
   return (
     <div
       ref={ref}
+      role="separator"
+      aria-orientation="vertical"
+      aria-valuenow={open ? currentWidth : 0}
+      aria-valuemin={minWidth}
+      aria-valuemax={maxWidth}
+      aria-label="Resize sidebar"
+      tabIndex={0}
       data-sidebar="resize-handle"
       className={cn(
-        "absolute inset-y-0 z-2 hidden w-0.5 cursor-col-resize transition-colors sm:block",
-        "hover:bg-kumo-brand/30 active:bg-kumo-brand/50",
-        side === "left" && "right-0",
-        side === "right" && "left-0",
+        // Hit area inside the sidebar edge; thin visual line pinned to the edge via ::after
+        "absolute inset-y-0 z-2 hidden w-3 cursor-col-resize sm:block",
+        "after:absolute after:inset-y-0 after:w-px",
+        "after:bg-transparent after:transition-colors",
+        "hover:after:bg-kumo-brand/30 active:after:bg-kumo-brand/50",
+        "focus-visible:after:bg-kumo-brand/50",
+        "focus:outline-none",
+        side === "left" && "right-0 after:right-0",
+        side === "right" && "left-0 after:left-0",
         className,
       )}
       onPointerDown={handlePointerDown}
+      onKeyDown={handleKeyDown}
       {...props}
     />
   );
