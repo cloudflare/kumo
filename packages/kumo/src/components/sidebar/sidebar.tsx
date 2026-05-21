@@ -1325,7 +1325,7 @@ const SidebarTrigger = forwardRef<
       aria-expanded={open}
       aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
-        "grid size-8.5 place-items-center rounded-lg cursor-pointer",
+        "flex min-h-8.5 items-center px-3 rounded-lg cursor-pointer",
         "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
         className,
