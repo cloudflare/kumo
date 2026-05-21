@@ -1217,7 +1217,7 @@ describe("InputGroup", () => {
       expect(group.className).toContain("overflow-visible");
       expect(group.className).toContain("ring-0");
       expect(group.className).not.toContain("overflow-hidden");
-      expect(group.className).not.toContain("focus-within:ring-kumo-focus");
+      expect(group.className).not.toContain("focus-within:ring-kumo-focus/50");
     });
 
     it("container mode gets shared focus ring classes", () => {
@@ -1231,7 +1231,8 @@ describe("InputGroup", () => {
         "[data-slot='input-group']",
       ) as HTMLElement;
       expect(group.className).toContain("overflow-hidden");
-      expect(group.className).toContain("focus-within:ring-kumo-focus");
+      expect(group.className).toContain("focus-within:ring-kumo-focus/50");
+      expect(group.className).toContain("focus-within:ring-[1.5px]");
       expect(group.className).not.toContain("overflow-visible");
     });
 
@@ -1253,7 +1254,7 @@ describe("InputGroup", () => {
       expect(group.className).toContain("overflow-visible");
       expect(group.className).toContain("ring-0");
       expect(group.className).not.toContain("overflow-hidden");
-      expect(group.className).not.toContain("focus-within:ring-kumo-focus");
+      expect(group.className).not.toContain("focus-within:ring-kumo-focus/50");
     });
   });
 
@@ -1352,14 +1353,65 @@ describe("InputGroup", () => {
       expect(containerZone.className).toContain("border-kumo-line");
       expect(containerZone.className).toContain("ring-0");
       expect(containerZone.className).toContain("shadow-none");
-      expect(containerZone.className).toContain("focus-within:ring-1");
-      expect(containerZone.className).toContain("focus-within:ring-kumo-focus");
-      // Double-border prevention with adjacent individual-mode buttons
-      expect(containerZone.className).toContain("not-first:border-l-0");
-      // No focus-within ring — CSS outline in kumo-binding.css handles focus
-      expect(containerZone.className).not.toContain(
-        "focus-within:ring-kumo-line",
+      // Focus swaps border color instead of adding a ring (no double-line effect)
+      expect(containerZone.className).toContain(
+        "focus-within:border-kumo-focus/50",
       );
+      expect(containerZone.className).not.toContain("focus-within:ring-1");
+      // Double-border prevention with adjacent individual-mode buttons (negative margin preserves border for focus)
+      expect(containerZone.className).toContain("not-first:-ml-px");
+    });
+
+    it("clear button inside addon works in hybrid mode", async () => {
+      const user = userEvent.setup();
+
+      function SearchDemo() {
+        const [searchValue, setSearchValue] = React.useState("search");
+        return (
+          <InputGroup>
+            <InputGroup.Addon>icon</InputGroup.Addon>
+            <InputGroup.Input
+              value={searchValue}
+              placeholder="Search"
+              aria-label="Search"
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            {searchValue && (
+              <InputGroup.Addon align="end">
+                <InputGroup.Button
+                  shape="square"
+                  aria-label="Clear search"
+                  onMouseDown={(e: React.MouseEvent) => e.preventDefault()}
+                  onClick={() => setSearchValue("")}
+                >
+                  X
+                </InputGroup.Button>
+              </InputGroup.Addon>
+            )}
+            <InputGroup.Button variant="secondary" onClick={() => {}}>
+              Search
+            </InputGroup.Button>
+          </InputGroup>
+        );
+      }
+
+      render(<SearchDemo />);
+
+      // Verify initial state
+      const input = screen.getByRole("textbox", {
+        name: "Search",
+      }) as HTMLInputElement;
+      expect(input.value).toBe("search");
+      expect(screen.getByRole("button", { name: "Clear search" })).toBeTruthy();
+
+      // Click the clear button
+      await user.click(screen.getByRole("button", { name: "Clear search" }));
+
+      // Value should be cleared
+      expect(input.value).toBe("");
+
+      // Clear button should be gone (conditional rendering)
+      expect(screen.queryByRole("button", { name: "Clear search" })).toBeNull();
     });
   });
 });
