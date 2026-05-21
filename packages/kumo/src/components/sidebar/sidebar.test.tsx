@@ -1,3 +1,8 @@
+// Stub Web Animations API for happy-dom (Base UI ScrollArea calls getAnimations)
+if (!HTMLElement.prototype.getAnimations) {
+  HTMLElement.prototype.getAnimations = () => [];
+}
+
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";

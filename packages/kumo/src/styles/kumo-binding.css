@@ -261,52 +261,6 @@
   }
 }
 
-/* Scroll-fade-y: vertical variant of the scroll-fade for vertically
-   scrollable containers (e.g., sidebar content). Same mechanism as
-   scroll-fade-x but rotated 90°. */
-@keyframes scroll-fade-y-top {
-  to {
-    mask-size:
-      100% var(--scroll-fade-width, 1.5rem),
-      100% 100%,
-      100% var(--scroll-fade-width, 1.5rem);
-  }
-}
-
-@keyframes scroll-fade-y-bottom {
-  to {
-    mask-size:
-      100% var(--scroll-fade-width, 1.5rem),
-      100% 100%,
-      100% 0;
-  }
-}
-
-[data-overflowing-y] {
-  @supports (animation-timeline: scroll()) {
-    mask-image:
-      linear-gradient(to bottom, white, transparent),
-      linear-gradient(white, white),
-      linear-gradient(to bottom, transparent, white);
-    mask-size:
-      100% 0,
-      100% 100%,
-      100% var(--scroll-fade-width, 1.5rem);
-    mask-repeat: no-repeat;
-    mask-composite: exclude;
-    mask-position: top, center, bottom;
-
-    animation-name: scroll-fade-y-top, scroll-fade-y-bottom;
-    animation-timing-function: linear, linear;
-    animation-timeline: scroll(self y);
-    animation-range:
-      0 var(--scroll-fade-range, 1.5rem),
-      calc(100% - var(--scroll-fade-range, 1.5rem)) 100%;
-    animation-fill-mode: both;
-    animation-composition: replace;
-  }
-}
-
 /* Tab list scroll behavior. Scrollbar is only hidden when scroll-driven
    animations are supported (the fade replaces it as the affordance).
    Unsupported browsers keep the native scrollbar. */

@@ -13,6 +13,7 @@ import React, {
   useState,
 } from "react";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
+import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
@@ -602,50 +603,38 @@ SidebarHeader.displayName = "Sidebar.Header";
 const SidebarContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, ...props }, ref) => {
-  const internalRef = useRef<HTMLDivElement>(null);
-
-  // Merge forwarded ref with internal ref
-  const mergedRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      internalRef.current = node;
-      if (typeof ref === "function") ref(node);
-      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    },
-    [ref],
-  );
-
-  // Detect vertical overflow and set data-overflowing-y for CSS scroll-fade.
-  // ResizeObserver fires when content rect changes (e.g., collapsible open/close).
-  useEffect(() => {
-    const el = internalRef.current;
-    if (!el) return;
-
-    const check = () => {
-      const overflows = el.scrollHeight > el.clientHeight;
-      if (overflows) el.setAttribute("data-overflowing-y", "");
-      else el.removeAttribute("data-overflowing-y");
-    };
-
-    check();
-    const ro = new ResizeObserver(check);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={mergedRef}
-      data-sidebar="content"
+>(({ className, children, ...props }, ref) => (
+  <ScrollAreaBase.Root
+    ref={ref}
+    data-sidebar="content"
+    className={cn("relative min-w-0 flex-1 overflow-hidden", className)}
+    {...props}
+  >
+    <ScrollAreaBase.Viewport
       className={cn(
-        "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden",
-        "px-2 py-2",
-        className,
+        "h-full px-2 py-2",
+        // Scroll fade via CSS mask driven by Base UI overflow CSS variables
+        "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
-      {...props}
-    />
-  );
-});
+    >
+      <ScrollAreaBase.Content className="flex min-w-0 flex-col gap-2">
+        {children}
+      </ScrollAreaBase.Content>
+    </ScrollAreaBase.Viewport>
+    <ScrollAreaBase.Scrollbar
+      orientation="vertical"
+      className={cn(
+        "flex w-1.5 touch-none select-none p-px",
+        "opacity-0 transition-opacity duration-150",
+        "data-[scrolling]:opacity-100 data-[hovering]:opacity-100",
+      )}
+    >
+      <ScrollAreaBase.Thumb
+        className="flex-1 rounded-full bg-kumo-line"
+      />
+    </ScrollAreaBase.Scrollbar>
+  </ScrollAreaBase.Root>
+));
 
 SidebarContent.displayName = "Sidebar.Content";
 
