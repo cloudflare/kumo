@@ -446,6 +446,8 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         className={cn(
           selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
+          error &&
+            "!ring-kumo-danger focus:ring-kumo-danger/50 focus:ring-[1.5px]",
           className,
         )}
         aria-label={triggerAriaLabel}

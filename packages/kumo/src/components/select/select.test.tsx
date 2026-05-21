@@ -520,6 +520,19 @@ describe("Select", () => {
     });
   });
 
+  describe("error styling", () => {
+    it("applies error border when error prop is truthy", () => {
+      render(
+        <Select aria-label="Pick one" error="Please select a value">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.className).toContain("ring-kumo-danger");
+    });
+  });
+
   describe("popup structure", () => {
     it("opens a listbox popup from the trigger", async () => {
       render(

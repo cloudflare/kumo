@@ -40,8 +40,11 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
   inputSide: "right",
 } as const;
 
-// Context to pass size down to sub-components
-const ComboboxSizeContext = createContext<KumoInputSize>("base");
+// Context to pass size and error state down to sub-components
+const ComboboxContext = createContext<{
+  size: KumoInputSize;
+  hasError: boolean;
+}>({ size: "base", hasError: false });
 
 // Derived types from KUMO_COMBOBOX_VARIANTS
 export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
@@ -70,7 +73,13 @@ export interface KumoComboboxVariantsProps {
 export function comboboxVariants({
   inputSide = KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide,
 }: KumoComboboxVariantsProps = {}) {
-  return cn(resolveVariant(KUMO_COMBOBOX_VARIANTS.inputSide, inputSide, KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide).classes);
+  return cn(
+    resolveVariant(
+      KUMO_COMBOBOX_VARIANTS.inputSide,
+      inputSide,
+      KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide,
+    ).classes,
+  );
 }
 
 // Legacy type alias for backwards compatibility
@@ -158,9 +167,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   size?: KumoComboboxSize;
 }) {
   const comboboxControl = (
-    <ComboboxSizeContext.Provider value={size}>
+    <ComboboxContext value={{ size, hasError: Boolean(error) }}>
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
-    </ComboboxSizeContext.Provider>
+    </ComboboxContext>
   );
 
   // Render with Field wrapper if label, description, or error are provided
@@ -252,13 +261,13 @@ function TriggerValue({
   className,
   ...props
 }: ComboboxBase.Value.Props & { className?: string }) {
-  const size = useContext(ComboboxSizeContext);
+  const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
   return (
     <ComboboxBase.Trigger
       className={cn(
-        inputVariants({ size }),
+        inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         "data-[placeholder]:text-kumo-placeholder",
@@ -324,7 +333,7 @@ function TriggerInput({
    */
   showOptionsLabel?: string;
 }) {
-  const size = useContext(ComboboxSizeContext);
+  const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerInputIconStyles[size];
 
   return (
@@ -338,7 +347,7 @@ function TriggerInput({
       <ComboboxBase.Input
         {...props}
         className={cn(
-          inputVariants({ size }),
+          inputVariants({ size, variant: hasError ? "error" : "default" }),
           "w-full",
           iconStyles.padding,
           "disabled:cursor-not-allowed",
@@ -515,14 +524,14 @@ function TriggerMultipleWithInput<ValueType>({
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
 }) {
-  const size = useContext(ComboboxSizeContext);
+  const { size, hasError } = useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
 
   return (
     <ComboboxBase.Chips
       className={cn(
-        inputVariants({ size }),
+        inputVariants({ size, variant: hasError ? "error" : "default" }),
         "flex flex-col",
         "gap-1 py-1 px-1.5",
         sizeToMinHeight[size],
