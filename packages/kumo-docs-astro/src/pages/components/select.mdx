@@ -14,7 +14,8 @@ import {
   SelectBasicDemo,
   SelectSizesDemo,
   SelectWithoutLabelDemo,
-  SelectWithFieldDemo,
+  SelectWithDescriptionDemo,
+  SelectWithErrorDemo,
   SelectPlaceholderDemo,
   SelectWithTooltipDemo,
   SelectCustomRenderingDemo,
@@ -45,7 +46,7 @@ import {
 
 ### Barrel
 
-  <CodeBlock code={`import { Select } from "@cloudflare/kumo";`} lang="tsx" />
+<CodeBlock code={`import { Select } from "@cloudflare/kumo";`} lang="tsx" />
 
 ### Granular
 
@@ -106,10 +107,10 @@ export default function Example() {
 
 ### Sizes
 
-  <p>
-    Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">size</code> prop
-    to match Input sizing (xs, sm, base, lg).
-  </p>
+<p>
+  Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">size</code>{" "}
+  prop to match Input sizing (xs, sm, base, lg).
+</p>
 
   <ComponentExample demo="SelectSizesDemo">
     <SelectSizesDemo client:load />
@@ -122,28 +123,47 @@ export default function Example() {
 
 ### Without Visible Label
 
-  <p>
-    When a visible label isn't needed (e.g., in compact UIs or when context is clear),
-    use `aria-label` for accessibility.
-  </p>
+<p>
+  When a visible label isn't needed (e.g., in compact UIs or when context is
+  clear), use `aria-label` for accessibility.
+</p>
 
   <ComponentExample demo="SelectWithoutLabelDemo">
     <SelectWithoutLabelDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
-{/* With Description and Error */}
+{/* With Description */}
 
 <ComponentSection>
 
-### With Description and Error
+### With Description
 
-  <p>
-    Select integrates with the Field wrapper to show description text and validation errors.
-  </p>
+<p>
+  Select integrates with the Field wrapper to show description text below the
+  input.
+</p>
 
-  <ComponentExample demo="SelectWithFieldDemo">
-    <SelectWithFieldDemo client:load />
+  <ComponentExample demo="SelectWithDescriptionDemo">
+    <SelectWithDescriptionDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* With Error */}
+
+<ComponentSection>
+
+### With Error
+
+<p>
+  Pass the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">error</code> prop to
+  display a validation error. When an error is present, it replaces the
+  description in the UI.
+</p>
+
+  <ComponentExample demo="SelectWithErrorDemo">
+    <SelectWithErrorDemo client:load />
   </ComponentExample>
 </ComponentSection>
 
@@ -153,12 +173,17 @@ export default function Example() {
 
 ### Placeholder
 
-  <p>
-    Use the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> prop
-    to show text when no value is selected. When using <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to
-    customize the display of selected values, the placeholder is shown instead of
-    calling <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> when the value is <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">null</code>.
-  </p>
+<p>
+  Use the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code>{" "}
+  prop to show text when no value is selected. When using{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code>{" "}
+  to customize the display of selected values, the placeholder is shown instead
+  of calling{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code>{" "}
+  when the value is{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">null</code>.
+</p>
 
 ```tsx
 <Select
@@ -179,10 +204,10 @@ export default function Example() {
 
 ### Label with Tooltip
 
-  <p>
-    Add a tooltip icon next to the label for additional context using <code
-      class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
-  </p>
+<p>
+  Add a tooltip icon next to the label for additional context using{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">labelTooltip</code>.
+</p>
 
   <ComponentExample demo="SelectWithTooltipDemo">
     <SelectWithTooltipDemo client:load />
@@ -195,11 +220,13 @@ export default function Example() {
 
 ### Custom Rendering
 
-  <p>
-    Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to customize how the selected value
-    appears in the trigger button. This is useful when working with complex object
-    data structures instead of simple string values.
-  </p>
+<p>
+  Use{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code>{" "}
+  to customize how the selected value appears in the trigger button. This is
+  useful when working with complex object data structures instead of simple
+  string values.
+</p>
 
 <ComponentExample demo="SelectCustomRenderingDemo">
   <SelectCustomRenderingDemo client:load />
@@ -253,11 +280,11 @@ export default function Example() {
 
 ### Loading
 
-  <p>
-    A select component with loading state. The loading state is passed to
-    the component via the <code
-      class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code> prop.
-  </p>
+<p>
+  A select component with loading state. The loading state is passed to the
+  component via the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">loading</code> prop.
+</p>
 
   <ComponentExample demo="SelectLoadingDemo">
     <div class="flex flex-col gap-4">
@@ -275,11 +302,15 @@ export default function Example() {
 
 ### Multiple Selection
 
-  <p>
-    Enable multiple selection with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">multiple</code> prop.
-    The value becomes an array of selected items. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code> for the empty state
-    and <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code> to customize how selections are displayed.
-  </p>
+<p>
+  Enable multiple selection with the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">multiple</code>{" "}
+  prop. The value becomes an array of selected items. Use{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">placeholder</code>{" "}
+  for the empty state and{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">renderValue</code>{" "}
+  to customize how selections are displayed.
+</p>
 
 ```tsx
 <Select
@@ -316,10 +347,11 @@ export default function Example() {
 
 ### Disabled Options
 
-  <p>
-    Options can be disabled with the <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> prop.
-    Disabled options are greyed out and cannot be selected.
-  </p>
+<p>
+  Options can be disabled with the{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code>{" "}
+  prop. Disabled options are greyed out and cannot be selected.
+</p>
 
   <ComponentExample demo="SelectDisabledOptionsDemo">
     <SelectDisabledOptionsDemo client:load />
@@ -332,11 +364,12 @@ export default function Example() {
 
 ### Disabled Items (via items prop)
 
-  <p>
-    The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code> object-map prop
-    accepts descriptor objects with <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code> alongside
-    plain string values.
-  </p>
+<p>
+  The <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">items</code>{" "}
+  object-map prop accepts descriptor objects with{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">disabled</code>{" "}
+  alongside plain string values.
+</p>
 
   <ComponentExample demo="SelectDisabledItemsDemo">
     <SelectDisabledItemsDemo client:load />
@@ -349,12 +382,18 @@ export default function Example() {
 
 ### Grouped Options
 
-  <p>
-    Use <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>,{" "}
-    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.GroupLabel</code>, and{" "}
-    <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Separator</code> to
-    organize options under labeled headers with visual dividers.
-  </p>
+<p>
+  Use{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">Select.Group</code>,{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+    Select.GroupLabel
+  </code>
+  , and{" "}
+  <code class="rounded bg-kumo-control px-1 py-0.5 text-sm">
+    Select.Separator
+  </code>{" "}
+  to organize options under labeled headers with visual dividers.
+</p>
 
   <ComponentExample demo="SelectGroupedDemo">
     <SelectGroupedDemo client:load />
@@ -367,10 +406,10 @@ export default function Example() {
 
 ### Groups with Disabled Options
 
-  <p>
-    Combine groups, separators, and disabled options with info tooltips to
-    clearly separate available and unavailable choices.
-  </p>
+<p>
+  Combine groups, separators, and disabled options with info tooltips to clearly
+  separate available and unavailable choices.
+</p>
 
   <ComponentExample demo="SelectGroupedWithDisabledDemo">
     <SelectGroupedWithDisabledDemo client:load />
@@ -383,10 +422,10 @@ export default function Example() {
 
 ### Long List (Scrolling Test)
 
-  <p>
-    A select component with many options to test popup scrolling behavior.
-    The popup should scroll smoothly without bounce/overscroll issues.
-  </p>
+<p>
+  A select component with many options to test popup scrolling behavior. The
+  popup should scroll smoothly without bounce/overscroll issues.
+</p>
 
   <ComponentExample demo="SelectLongListDemo">
     <SelectLongListDemo client:load />
@@ -401,7 +440,7 @@ export default function Example() {
 
 ### Select
 
-  <PropsTable component="Select" />
+<PropsTable component="Select" />
 
 ### Select.Option
 
