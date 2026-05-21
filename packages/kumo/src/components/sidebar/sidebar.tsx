@@ -303,56 +303,14 @@ function SidebarProvider({
 
   const sidebarWidthValue = resizable ? `${width}px` : SIDEBAR_WIDTH;
 
-  const contextValue = useMemo<SidebarContextValue>(
-    () => ({
-      state,
-      open,
-      setOpen,
-      openMobile,
-      setOpenMobile,
-      isMobile,
-      toggleSidebar,
-      variant,
-      side,
-      collapsible,
-      width,
-      resizable,
-      minWidth,
-      maxWidth,
-      isResizing,
-      setIsResizing,
-      setWidth,
-      isPeeking,
-      startPeek,
-      stopPeek,
-      contained,
-      animationDuration,
-    }),
-    [
-      state,
-      open,
-      setOpen,
-      openMobile,
-      setOpenMobile,
-      isMobile,
-      toggleSidebar,
-      variant,
-      side,
-      collapsible,
-      width,
-      resizable,
-      minWidth,
-      maxWidth,
-      isResizing,
-      setIsResizing,
-      setWidth,
-      isPeeking,
-      startPeek,
-      stopPeek,
-      contained,
-      animationDuration,
-    ],
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
+  // either stable (props, setters) or derived from state that triggers re-render
+  const contextValue = useMemo<SidebarContextValue>(() => ({
+    state, open, setOpen, openMobile, setOpenMobile, isMobile,
+    toggleSidebar, variant, side, collapsible, width, resizable,
+    minWidth, maxWidth, isResizing, setIsResizing, setWidth,
+    isPeeking, startPeek, stopPeek, contained, animationDuration,
+  }), [state, open, openMobile, isMobile, width, isResizing, isPeeking]);
 
   return (
     <SidebarContext.Provider value={contextValue}>
@@ -510,7 +468,14 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     // Rail: the <aside> whose width drives layout (stays collapsed during peek).
     // Content container: holds actual sidebar content, can overlay when peeking.
 
-    // No child separation needed — footer stays inside the content container
+    const handlePeekBlur = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          stopPeek();
+        }
+      },
+      [stopPeek],
+    );
 
     // Rail width: based on open state only (not peeking)
     const collapsedWidth =
@@ -543,7 +508,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         className={cn(
           "group/sidebar isolate relative flex h-full shrink-0 grow-0 flex-col",
           "overflow-visible", // allow content container to overlay when peeking
-          "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
+          "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
           "motion-reduce:transition-none",
           isResizing && "transition-none!",
           variant === "floating" && "m-2 rounded-lg shadow-lg",
@@ -559,18 +524,13 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             onMouseEnter={startPeek}
             onMouseLeave={stopPeek}
             onFocus={startPeek}
-            onBlur={(e) => {
-              // Only stop peeking if focus leaves the entire container
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                stopPeek();
-              }
-            }}
+            onBlur={handlePeekBlur}
             className={cn(
               "flex h-full flex-col",
               "min-w-0 overflow-hidden whitespace-nowrap",
               "bg-(--sidebar-bg) text-kumo-default",
               borderClasses,
-              "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) will-change-[width]",
+              "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
               isResizing && "transition-none!",
               // When collapsed (or peeking), position out of flow so main content fills the space
@@ -655,7 +615,8 @@ const SidebarContent = forwardRef<
     [ref],
   );
 
-  // Detect vertical overflow and set data-overflowing-y for CSS scroll-fade
+  // Detect vertical overflow and set data-overflowing-y for CSS scroll-fade.
+  // ResizeObserver fires when content rect changes (e.g., collapsible open/close).
   useEffect(() => {
     const el = internalRef.current;
     if (!el) return;
@@ -669,11 +630,7 @@ const SidebarContent = forwardRef<
     check();
     const ro = new ResizeObserver(check);
     ro.observe(el);
-    // Also re-check when children change (collapsible open/close)
-    const mo = new MutationObserver(check);
-    mo.observe(el, { childList: true, subtree: true });
-
-    return () => { ro.disconnect(); mo.disconnect(); };
+    return () => ro.disconnect();
   }, []);
 
   return (
@@ -1712,7 +1669,8 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
     "data-open": isOpen || undefined,
     onClick: (e: React.MouseEvent) => {
       // Call any existing onClick on the render element
-      (render.props as Record<string, unknown>).onClick?.(e);
+      const existingOnClick = (render.props as { onClick?: (e: React.MouseEvent) => void }).onClick;
+      existingOnClick?.(e);
       toggle();
     },
   } as Record<string, unknown>);
