@@ -133,7 +133,7 @@ const Root = forwardRef<
         ? [
             "overflow-hidden",
             // Focus state must come AFTER inputVariants to override ring-kumo-line
-            "focus-within:ring-kumo-focus",
+            "focus-within:ring-kumo-focus/50 focus-within:ring-[1.5px]",
           ]
         : // isolate creates a new stacking context so z-index in children doesn't leak out
           "isolate overflow-visible ring-0 shadow-none",
@@ -200,29 +200,30 @@ const Root = forwardRef<
                 // so the zone matches adjacent individual-mode buttons exactly.
                 "ring-0 shadow-none",
                 "border border-kumo-line",
-                "focus-within:ring-1 focus-within:ring-kumo-focus",
-                // Collapse double borders between zone and adjacent individual-mode button
-                "not-first:border-l-0",
-                // Inherit border-radius from the outer container on outer edges only;
-                // inner edges are flat so they butt cleanly against sibling buttons
+                "focus-within:border-kumo-focus/50",
+                // z-[2] lifts above adjacent button's -ml-px overlap so focus border shows
+                "focus-within:z-2",
+                // Negative margin (not border-l-0) so the border is still paintable on focus
+                "not-first:-ml-px",
+                // Outer edges inherit radius; inner edges are flat against sibling buttons
                 "first:rounded-l-[inherit] last:rounded-r-[inherit] rounded-none",
                 // Size-specific padding adjustments when addons or suffixes are present
                 INPUT_GROUP_HAS_CLASSES[size],
                 // When a suffix is present, let the input shrink to its content width
-                "has-[[data-slot=input-group-suffix]]:[&_input]:[field-sizing:content]",
-                "has-[[data-slot=input-group-suffix]]:[&_input]:max-w-full",
-                "has-[[data-slot=input-group-suffix]]:[&_input]:grow-0",
-                "has-[[data-slot=input-group-suffix]]:[&_input]:pr-0",
+                "has-data-[slot=input-group-suffix]:[&_input]:field-sizing-content",
+                "has-data-[slot=input-group-suffix]:[&_input]:max-w-full",
+                "has-data-[slot=input-group-suffix]:[&_input]:grow-0",
+                "has-data-[slot=input-group-suffix]:[&_input]:pr-0",
               )}
             >
-              {/* When label exists, an invisible <label> overlay enables click-to-focus
-                  inside the container zone without nesting visible <label> elements */}
+              {/* When label exists, an invisible <label> overlay enables click-to-focus inside the container zone without nesting visible <label> elements */}
               {label && (
-                // eslint-disable-next-line jsx-a11y/label-has-associated-control -- invisible overlay for click-to-focus; the visible Field label handles a11y
+                // Invisible overlay for click-to-focus; the visible Field label handles a11y
+                // eslint-disable-next-line jsx-a11y/label-has-associated-control
                 <label
                   htmlFor={inputId}
                   // Positioned behind children (z-0) so it catches clicks on empty space
-                  className="absolute inset-0 z-0 cursor-text !mb-0"
+                  className="absolute inset-0 z-0 cursor-text mb-0!"
                   aria-hidden="true"
                 />
               )}
@@ -234,9 +235,7 @@ const Root = forwardRef<
         </>
       );
 
-      // Hybrid always uses a <div> container (never <label>) because
-      // individual-zone buttons are siblings — wrapping them in a <label>
-      // would be semantically incorrect.
+      // Hybrid always uses a <div> container (never <label>) because individual-zone buttons are siblings — wrapping them in a <label> would be semantically incorrect.
       const hybridContainer = (
         <InputGroupContext.Provider value={contextValue}>
           <div
@@ -272,8 +271,7 @@ const Root = forwardRef<
     const useLabelContainer = !label && focusMode === "container";
     const container = (
       <InputGroupContext.Provider value={contextValue}>
-        {/* When label is set, use <div> to avoid nested <label> (Field provides one).
-            An invisible <label> overlay handles click-to-focus on empty space. */}
+        {/* When label is set, use <div> to avoid nested <label> (Field provides one). An invisible <label> overlay handles click-to-focus on empty space. */}
         {label ? (
           <div
             ref={forwardedRef as React.Ref<HTMLDivElement>}
@@ -285,7 +283,7 @@ const Root = forwardRef<
             <label
               htmlFor={inputId}
               // Positioned behind children (z-0) so it catches clicks on empty space
-              className="absolute inset-0 z-0 !mb-0"
+              className="absolute inset-0 z-0 mb-0!"
               aria-hidden="true"
             />
             {children}
@@ -295,7 +293,7 @@ const Root = forwardRef<
           <label
             ref={forwardedRef as React.Ref<HTMLLabelElement>}
             {...dataProps}
-            className={cn(containerClassName, "!mb-0")}
+            className={cn(containerClassName, "mb-0!")}
             {...rest}
           >
             {children}

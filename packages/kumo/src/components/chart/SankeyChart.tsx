@@ -69,6 +69,11 @@ export interface SankeyChartProps {
   height?: number;
   /** Show node values above labels (default: true if any node has a value) */
   showNodeValues?: boolean;
+  /** Layout for node labels when showNodeValues is true.
+   * - 'stacked': value on top, name below (default)
+   * - 'inline': "value name" on a single line (better for small nodes)
+   */
+  nodeLabelLayout?: "stacked" | "inline";
   /** Format function for node values (default: toLocaleString) */
   formatValue?: (value: number) => string;
   /** Custom tooltip formatter. Return HTML string or empty string to hide tooltip. */
@@ -169,6 +174,7 @@ export function SankeyChart({
   nodePadding = 10,
   showTooltip: enableTooltip = true,
   showNodeValues,
+  nodeLabelLayout = "stacked",
   formatValue = defaultFormatValue,
   tooltipFormatter,
   defaultNodeColor,
@@ -183,20 +189,29 @@ export function SankeyChart({
 }: SankeyChartProps) {
   const hasNodeValues = nodes.some((n) => n.value !== undefined);
   const shouldShowValues = showNodeValues ?? hasNodeValues;
+  const isInlineLayout = nodeLabelLayout === "inline";
   const options = useMemo<EChartsOption>(() => {
     const labelColor = ChartPalette.text("primary", isDarkMode);
     const secondaryColor = ChartPalette.text("secondary", isDarkMode);
-    // Build a map of node name to original node data for tooltip access
-    const nodeDataMap = new Map(nodes.map((n) => [n.name, n]));
+
+    // Compute colors for each node (explicit color > default > categorical)
+    const nodeColors = nodes.map(
+      (node, index) =>
+        node.color ??
+        defaultNodeColor ??
+        ChartPalette.categorical(index, isDarkMode),
+    );
+
+    // Build a map of node name to original node data + computed color for tooltip access
+    const nodeDataMap = new Map(
+      nodes.map((n, i) => [n.name, { ...n, computedColor: nodeColors[i] }]),
+    );
 
     const echartsNodes = nodes.map((node, index) => ({
       name: node.name,
       value: node.value,
       itemStyle: {
-        color:
-          node.color ??
-          defaultNodeColor ??
-          ChartPalette.categorical(index, isDarkMode),
+        color: nodeColors[index],
       },
     }));
 
@@ -222,7 +237,7 @@ export function SankeyChart({
               if (params.dataType === "node" && params.name) {
                 const nodeData = nodeDataMap.get(params.name);
                 const color = sanitizeColor(
-                  nodeData?.color ?? params.color ?? "#666",
+                  nodeData?.computedColor ?? params.color ?? "#666",
                 );
 
                 // Use custom formatter if provided
@@ -259,8 +274,12 @@ export function SankeyChart({
                 // Get colors for source and target nodes
                 const sourceNode = nodeDataMap.get(source ?? "");
                 const targetNode = nodeDataMap.get(target ?? "");
-                const sourceColor = sanitizeColor(sourceNode?.color ?? "#666");
-                const targetColor = sanitizeColor(targetNode?.color ?? "#666");
+                const sourceColor = sanitizeColor(
+                  sourceNode?.computedColor ?? "#666",
+                );
+                const targetColor = sanitizeColor(
+                  targetNode?.computedColor ?? "#666",
+                );
 
                 // Default link tooltip with colored dots
                 const safeSource = escapeHtml(source ?? "");
@@ -307,7 +326,13 @@ export function SankeyChart({
                   const nodeData = nodeDataMap.get(name);
                   const safeName = escapeRichText(name);
                   if (nodeData?.value !== undefined) {
-                    return `{value|${escapeRichText(formatValue(nodeData.value))}}\n{name|${safeName}}`;
+                    const formattedValue = escapeRichText(
+                      formatValue(nodeData.value),
+                    );
+                    // Inline: "name value" on single line; Stacked: value above name
+                    return isInlineLayout
+                      ? `{name|${safeName}} {value|${formattedValue}}`
+                      : `{value|${formattedValue}}\n{name|${safeName}}`;
                   }
                   return safeName;
                 }
@@ -317,7 +342,7 @@ export function SankeyChart({
                   value: {
                     fontSize: 11,
                     color: labelColor,
-                    lineHeight: 16,
+                    lineHeight: isInlineLayout ? undefined : 16,
                   },
                   name: {
                     fontSize: 12,
@@ -343,6 +368,7 @@ export function SankeyChart({
     linkColor,
     linkOpacity,
     shouldShowValues,
+    isInlineLayout,
     formatValue,
     tooltipFormatter,
   ]);

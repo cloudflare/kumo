@@ -473,3 +473,39 @@ export function SankeyChartDrillDownDemo() {
     </div>
   );
 }
+
+/** Demo showing inline label layout for small nodes */
+export function SankeyChartInlineLabelDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  // Data with many small nodes where stacked labels would overlap
+  const nodes = [
+    { name: "Workloads", value: 109870 },
+    { name: "Users", value: 45 },
+    { name: "API Management", value: 42 },
+    { name: "Device Enrollment", value: 38 },
+    { name: "Service Token", value: 109870 },
+    { name: "Self-hosted", value: 109826 },
+    { name: "Tunnels", value: 87 },
+    { name: "Mesh", value: 87 },
+  ];
+
+  const links = [
+    { source: 0, target: 4, value: 80000 },
+    { source: 0, target: 5, value: 29870 },
+    { source: 1, target: 5, value: 45 },
+    { source: 2, target: 6, value: 42 },
+    { source: 3, target: 7, value: 38 },
+  ];
+
+  return (
+    <SankeyChart
+      echarts={echarts}
+      nodes={nodes}
+      links={links}
+      height={300}
+      nodeLabelLayout="inline"
+      isDarkMode={isDarkMode}
+    />
+  );
+}
