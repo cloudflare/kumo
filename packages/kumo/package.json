@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -462,7 +462,7 @@
     }
   },
   "dependencies": {
-    "@base-ui/react": "^1.4.0",
+    "@base-ui/react": "^1.5.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "clsx": "^2.1.1",

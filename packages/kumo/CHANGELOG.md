@@ -1,5 +1,20 @@
 # @cloudflare/kumo
 
+## 2.3.0
+
+### Minor Changes
+
+- b68caba: Added `Badge` dot styling as a new variant for indicators that need a subtle visual cue.
+  Updated badge docs and demo examples to reflect the new badge variant and dot-style behavior.
+
+### Patch Changes
+
+- a210c9c: Update Base UI to 1.5.0.
+- 64a4bda: Fix InputGroup focus ring thickness and color: container mode uses 1.5px ring (wraps entire group including buttons), hybrid container zone and individual mode use 1px ring (thin to avoid colliding with adjacent buttons), and all modes use `ring-kumo-focus/50` (50% opacity) to match the standalone Input component.
+- 0003bf5: Fix error state red border on Combobox, Select, Autocomplete, and SensitiveInput to match Input behavior
+- 4f2b47c: Add inline label layout and fix auto-assigned node colors in tooltips
+- 0e79214: Fix Tooltip popup overflowing viewport when content is wider than available space. The popup now constrains its width to `var(--available-width)`, a CSS variable provided by Base UI's Positioner that reflects the space between the trigger and the viewport edge.
+
 ## 2.2.2
 
 ### Patch Changes

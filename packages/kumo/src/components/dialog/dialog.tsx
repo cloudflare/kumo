@@ -254,8 +254,11 @@ function DialogContent({
 // ============================================================================
 
 type BaseDialogRootProps = ComponentPropsWithoutRef<typeof DialogBase.Root>;
+type BaseAlertDialogRootProps = ComponentPropsWithoutRef<
+  typeof AlertDialogBase.Root
+>;
 
-export type DialogRootProps = BaseDialogRootProps & {
+type StandardDialogRootProps = BaseDialogRootProps & {
   /**
    * The ARIA role for the dialog.
    * - `"dialog"` — Standard dialog for general-purpose modals. Dismissible via outside click by default.
@@ -268,19 +271,35 @@ export type DialogRootProps = BaseDialogRootProps & {
    *
    * @default "dialog"
    */
-  role?: KumoDialogRole;
+  role?: "dialog";
 };
 
-function DialogRoot({
-  children,
-  role = KUMO_DIALOG_DEFAULT_VARIANTS.role,
-  ...props
-}: DialogRootProps) {
-  const BaseRoot =
-    role === "alertdialog" ? AlertDialogBase.Root : DialogBase.Root;
+type AlertDialogRootProps = BaseAlertDialogRootProps & {
+  role: "alertdialog";
+};
+
+export type DialogRootProps = StandardDialogRootProps | AlertDialogRootProps;
+
+function DialogRoot(props: DialogRootProps) {
+  if (props.role === "alertdialog") {
+    const { children, role, ...rootProps } = props;
+
+    return (
+      <DialogRoleContext.Provider value={role}>
+        <AlertDialogBase.Root {...rootProps}>{children}</AlertDialogBase.Root>
+      </DialogRoleContext.Provider>
+    );
+  }
+
+  const {
+    children,
+    role = KUMO_DIALOG_DEFAULT_VARIANTS.role,
+    ...rootProps
+  } = props;
+
   return (
     <DialogRoleContext.Provider value={role}>
-      <BaseRoot {...props}>{children}</BaseRoot>
+      <DialogBase.Root {...rootProps}>{children}</DialogBase.Root>
     </DialogRoleContext.Provider>
   );
 }
@@ -294,14 +313,26 @@ DialogRoot.displayName = "Dialog.Root";
 type BaseDialogTriggerProps = ComponentPropsWithoutRef<
   typeof DialogBase.Trigger
 >;
+type BaseAlertDialogTriggerProps = ComponentPropsWithoutRef<
+  typeof AlertDialogBase.Trigger
+>;
 
-export type DialogTriggerProps = BaseDialogTriggerProps;
+export type DialogTriggerProps =
+  | BaseDialogTriggerProps
+  | BaseAlertDialogTriggerProps;
 
 function DialogTrigger({ children, ...props }: DialogTriggerProps) {
   const role = useDialogRole();
-  const BaseTrigger =
-    role === "alertdialog" ? AlertDialogBase.Trigger : DialogBase.Trigger;
-  return <BaseTrigger {...props}>{children}</BaseTrigger>;
+
+  if (role === "alertdialog") {
+    return (
+      <AlertDialogBase.Trigger {...(props as BaseAlertDialogTriggerProps)}>
+        {children}
+      </AlertDialogBase.Trigger>
+    );
+  }
+
+  return <DialogBase.Trigger {...props}>{children}</DialogBase.Trigger>;
 }
 
 DialogTrigger.displayName = "Dialog.Trigger";

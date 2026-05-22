@@ -41,6 +41,14 @@ const EXCLUDED_EXPORTS = new Set([
   "./use-render",
 ]);
 
+function isIncludedBaseUiExport(key: string) {
+  return (
+    key.startsWith("./") &&
+    !key.startsWith("./internals/") &&
+    !EXCLUDED_EXPORTS.has(key)
+  );
+}
+
 describe("Primitives Export", () => {
   describe("Package.json configuration", () => {
     it("should have primitives export in package.json", () => {
@@ -78,7 +86,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       // Import kumo primitives
@@ -120,7 +128,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const primitivesSource = readFileSync(primitivesSourcePath, "utf-8");
@@ -206,7 +214,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const missingFiles: string[] = [];
@@ -236,7 +244,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const missingExports: string[] = [];
@@ -263,7 +271,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const invalidExports: string[] = [];
@@ -319,7 +327,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const invalidFiles: string[] = [];
