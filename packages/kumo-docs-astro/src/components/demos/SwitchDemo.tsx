@@ -136,6 +136,12 @@ export function SwitchSizesDemo() {
   return (
     <div className="flex flex-col gap-4">
       <Switch
+        label="Extra small"
+        size="xs"
+        checked={true}
+        onCheckedChange={() => {}}
+      />
+      <Switch
         label="Small"
         size="sm"
         checked={true}

@@ -15,6 +15,11 @@ import { Fieldset } from "@base-ui/react/fieldset";
 /** Switch size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_SWITCH_VARIANTS = {
   size: {
+    xs: {
+      classes: "h-4.5 w-7 min-h-6 min-w-6",
+      description:
+        "Extra-small switch for inline badges, pills, and compact toolbars. Track is visually compact but touch target meets WCAG 2.5.8 minimum (24x24px).",
+    },
     sm: {
       classes: "h-5.5 w-8.5",
       description: "Small switch for compact UIs",
@@ -52,6 +57,7 @@ export type KumoSwitchVariant = keyof typeof KUMO_SWITCH_VARIANTS.variant;
 export interface KumoSwitchVariantsProps {
   /**
    * Switch size.
+   * - `"xs"` — Extra-small for inline badges, pills, and compact toolbars
    * - `"sm"` — Small for compact UIs
    * - `"base"` — Default size
    * - `"lg"` — Large for prominent toggles
@@ -258,6 +264,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           // Size styles matching Kyle's stratus implementation
           const sizeStyles = {
+            xs: { track: "h-3.5 w-7", thumb: "w-3.5", slide: "left-3.5" },
             sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
             base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
             lg: { track: "h-5 w-10", thumb: "w-5", slide: "left-5" },
@@ -408,6 +415,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             // Size styles matching Kyle's stratus implementation
             const sizeStyles = {
+              xs: { track: "h-3.5 w-7", thumb: "w-3.5", slide: "left-3.5" },
               sm: { track: "h-4 w-8", thumb: "w-4", slide: "left-4" },
               base: { track: "h-4.5 w-9", thumb: "w-4.5", slide: "left-4.5" },
               lg: { track: "h-5 w-10", thumb: "w-5", slide: "left-5" },
