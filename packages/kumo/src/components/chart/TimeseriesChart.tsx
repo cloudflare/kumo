@@ -683,14 +683,17 @@ function colorWithOpacity(color: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-/** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
-function pad(n: number) {
-  return n.toString().padStart(2, "0");
-}
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
+/**
+ * Formats a timestamp for use in chart tooltips using the browser's locale.
+ * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
+ */
 function formatTimestamp(ts: number | string | Date): string {
-  const d = new Date(ts);
-  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(new Date(ts));
 }
