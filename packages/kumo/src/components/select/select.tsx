@@ -404,19 +404,23 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // - When value is non-null, call user's renderValue
   const valueChildrenFn = renderValue
     ? (value: unknown) => {
-        // Treat null, undefined, and empty string as "no selection"
+        const placeholderNode =
+          placeholder != null ? (
+            <span className="text-kumo-placeholder">{placeholder}</span>
+          ) : null;
+
         if (value == null || value === "") {
-          if (placeholder == null) return null;
-          return <span className="text-kumo-placeholder">{placeholder}</span>;
+          return placeholderNode;
         }
+
         // Cast through `any` as a deliberate type boundary: Base UI passes `unknown`,
-        // but our renderValue expects the generic T (or T[] for multiple).
-        // If renderValue returns nullish, fall back to placeholder.
+        // but our renderValue expects the generic T (or T[] for multiple)
         const rendered = renderValue(value as any);
+
         if (rendered == null) {
-          if (placeholder == null) return null;
-          return <span className="text-kumo-placeholder">{placeholder}</span>;
+          return placeholderNode;
         }
+
         return rendered;
       }
     : undefined;
