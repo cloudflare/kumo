@@ -14,6 +14,7 @@ import {
   GradientLineChartDemo,
   IncompleteDataChartDemo,
   LoadingChartDemo,
+  ManySeriesChartDemo,
   TimeRangeSelectionChartDemo,
 } from "~/components/demos/Chart/ChartDemo";
 
@@ -103,6 +104,20 @@ import {
 
   <ComponentExample demo="BarChartDemo">
     <BarChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Many Series
+
+<p>
+  A stress test with many long-named series and large values — exercises tooltip
+  truncation, number formatting, and positioning.
+</p>
+
+  <ComponentExample demo="ManySeriesChartDemo">
+    <ManySeriesChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

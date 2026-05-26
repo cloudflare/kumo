@@ -604,6 +604,65 @@ export function CustomTooltipChartDemo() {
   );
 }
 
+export function ManySeriesChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const series = [
+    { name: "cloudflare-tail-receptor-prod-us-east-1", seed: 0, scale: 212_000_000 },
+    { name: "bridge-websocket-handler-prod-us-east-1", seed: 1, scale: 87_500_000 },
+    { name: "command-execution-worker-prod-eu-west-2", seed: 2, scale: 54_300_000 },
+    { name: "portal-api-gateway-prod-us-west-2", seed: 3, scale: 41_900_000 },
+    { name: "http-receptor-ingestion-prod-us-east-1", seed: 4, scale: 28_750_000 },
+    { name: "vercel-receptor-integration-prod", seed: 5, scale: 19_200_000 },
+    { name: "resource-enumerator-scheduler-prod", seed: 6, scale: 11_400_000 },
+    { name: "clickhouse-sql-executor-prod-eu-west-1", seed: 7, scale: 7_800_000 },
+    { name: "lambda-extension-receptor-prod-us-east-1", seed: 8, scale: 5_200_000 },
+    { name: "db-workspace-migration-worker-prod", seed: 9, scale: 3_900_000 },
+    { name: "otel-collector-gateway-prod-eu-central-1", seed: 10, scale: 2_100_000 },
+    { name: "baselime-ingest-pipeline-prod-us-east-1", seed: 11, scale: 1_450_000 },
+    { name: "alerting-evaluation-worker-prod", seed: 12, scale: 890_000 },
+    { name: "trace-aggregation-service-prod-eu-west-2", seed: 13, scale: 540_000 },
+    { name: "metric-rollup-scheduler-prod-us-east-1", seed: 14, scale: 210_000 },
+    { name: "dashboard-ssr-renderer-prod-us-west-2", seed: 15, scale: 87_000 },
+    { name: "log-archive-exporter-prod-eu-central-1", seed: 16, scale: 34_000 },
+    { name: "billing-usage-aggregator-prod", seed: 17, scale: 12_000 },
+    { name: "slack-webhook-dispatcher-prod", seed: 18, scale: 4_500 },
+    { name: "github-app-event-handler-prod-us-east-1", seed: 19, scale: 1_200 },
+    { name: "pagerduty-alert-relay-prod", seed: 20, scale: 430 },
+    { name: "cron-trigger-scheduler-prod-eu-west-1", seed: 21, scale: 120 },
+    { name: "feature-flag-evaluator-prod", seed: 22, scale: 45 },
+    { name: "audit-log-archiver-prod-us-east-1", seed: 23, scale: 8 },
+  ];
+
+  const data = useMemo(
+    () =>
+      series.map((s) => ({
+        name: s.name,
+        data: buildSeriesData(s.seed, 40, 3_600_000, s.scale),
+        color: ChartPalette.categorical(s.seed, isDarkMode),
+      })),
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Requests"
+      tooltipMaxItems={8}
+      tooltipValueFormat={(v) =>
+        v >= 1_000_000
+          ? `${(v / 1_000_000).toFixed(1)}M`
+          : v >= 1_000
+            ? `${(v / 1_000).toFixed(1)}k`
+            : String(v)
+      }
+    />
+  );
+}
+
 function buildSeriesData(
   seed = 0,
   points = 50,

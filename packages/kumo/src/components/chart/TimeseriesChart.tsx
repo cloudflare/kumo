@@ -1,7 +1,8 @@
 import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption, SeriesOption, SetOptionOpts } from "echarts";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
 
 /** A single data series rendered on a `TimeseriesChart` */
@@ -58,6 +59,17 @@ export interface TimeseriesChartProps {
    * deprecated `yAxisTickLabelFormat` prop.
    */
   tooltipValueFormat?: (value: number) => string;
+  /**
+   * Controls which series are shown in the tooltip.
+   * - `"all"` — show all series at the hovered timestamp (default)
+   * - `"single"` — show only the series whose value is closest to the cursor
+   */
+  tooltipMode?: "all" | "single";
+  /**
+   * Maximum number of series rows shown in the tooltip when `tooltipMode` is `"all"`.
+   * Additional series are hidden with a `+N more` footer. Defaults to `10`.
+   */
+  tooltipMaxItems?: number;
   /** Indicates incomplete data periods with optional before/after timestamps in ms */
   incomplete?: { before?: number; after?: number };
   /** Height of the chart in pixels. Defaults to `350`. */
@@ -92,6 +104,18 @@ export interface TimeseriesChartProps {
    * Defaults to `{ notMerge: false, lazyUpdate: true }`.
    */
   optionUpdateBehavior?: SetOptionOpts;
+}
+
+interface TooltipRow {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface TooltipState {
+  ts: number;
+  rows: TooltipRow[];
+  hiddenCount: number;
 }
 
 /**
@@ -144,8 +168,22 @@ export function TimeseriesChart({
   loading,
   ariaDescription,
   optionUpdateBehavior,
+  tooltipMode = "all",
+  tooltipMaxItems = 10,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  // Keep latest props accessible inside event handlers without stale closures
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  const tooltipModeRef = useRef(tooltipMode);
+  tooltipModeRef.current = tooltipMode;
+  const tooltipMaxItemsRef = useRef(tooltipMaxItems);
+  tooltipMaxItemsRef.current = tooltipMaxItems;
+
+  const [tooltipState, setTooltipState] = useState<TooltipState | null>(null);
+
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
 
@@ -230,9 +268,7 @@ export function TimeseriesChart({
         xAxisIndex: "all" as const,
         brushType: "lineX" as const,
         brushMode: "single" as const,
-        outOfBrush: {
-          colorAlpha: 0.3,
-        },
+        outOfBrush: { colorAlpha: 0.3 },
         brushStyle: {
           borderWidth: 1,
           color: "rgba(120,140,180,0.3)",
@@ -241,47 +277,8 @@ export function TimeseriesChart({
       },
       tooltip: {
         trigger: "axis" as const,
-        appendTo: "body",
+        showContent: false,
         axisPointer: { type: "shadow" as const },
-        dangerousHtmlFormatter: (params) => {
-          const items = Array.isArray(params) ? params : [params];
-
-          // Track seen series names to avoid duplicates in tooltip
-          // This is needed because incomplete data series (dashed lines) and complete data series
-          // can overlap at the same timestamp, causing duplicate entries in the tooltip
-          const seenNames = new Set<string>();
-          const filteredParams = items.filter((param: any) => {
-            if (seenNames.has(param.seriesName)) return false;
-            seenNames.add(param.seriesName);
-            return true;
-          });
-
-          const first = filteredParams[0] as {
-            value?: [number, number];
-            axisValue?: number;
-          };
-
-          const ts = first?.value?.[0] ?? first?.axisValue;
-
-          const header =
-            ts != null
-              ? `<div style="font-weight:600;margin-bottom:4px;">${echarts.format.encodeHTML(formatTimestamp(ts))}</div>`
-              : "";
-
-          const rows = filteredParams
-            .map((param: any) => {
-              const value = param?.value?.[1];
-              const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
-              const formattedValue = formatFn
-                ? echarts.format.encodeHTML(String(formatFn(value)))
-                : echarts.format.encodeHTML(String(value));
-
-              return `${param.marker} ${echarts.format.encodeHTML(param.seriesName)}: <strong>${formattedValue}</strong>`;
-            })
-            .join("<br/>");
-
-          return `${header}${rows}`;
-        },
       },
       backgroundColor: "transparent",
       toolbox: { show: false },
@@ -290,9 +287,7 @@ export function TimeseriesChart({
         nameLocation: "middle" as const,
         nameGap: 30,
         type: "time" as const,
-        splitLine: {
-          show: false,
-        },
+        splitLine: { show: false },
         axisLine: { show: false },
         splitNumber: xAxisTickCount ?? 5,
         ...(xAxisTickFormat && {
@@ -333,10 +328,8 @@ export function TimeseriesChart({
     xAxisTickCount,
     xAxisTickFormat,
     yAxisTickFormat,
-    yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
-    tooltipValueFormat,
     incompleteBefore,
     incompleteAfter,
     type,
@@ -346,16 +339,116 @@ export function TimeseriesChart({
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
-    if (!onTimeRangeChange) return {};
-
     return {
-      brushend: (params) => {
-        const range = params.areas[0].coordRange;
-        onTimeRangeChange(range[0], range[1]);
-        chartRef.current?.dispatchAction({ type: "brush", areas: [] });
+      updateaxispointer: (params: any) => {
+        const ts: number | undefined = params?.axesInfo?.[0]?.value;
+        if (ts == null) return;
+
+        const seenNames = new Set<string>();
+        const allRows: TooltipRow[] = [];
+
+        for (const s of dataRef.current) {
+          if (seenNames.has(s.name)) continue;
+          seenNames.add(s.name);
+          const value = findNearest(s.data, ts);
+          if (value != null) allRows.push({ name: s.name, value, color: s.color });
+        }
+
+        // Sort by value descending so highest series appears first
+        allRows.sort((a, b) => b.value - a.value);
+
+        let rows: TooltipRow[];
+        let hiddenCount = 0;
+
+        if (tooltipModeRef.current === "single") {
+          // Find the series whose value is closest to the cursor's y position
+          // by using the chart instance to convert pixel y to data value
+          const chart = chartRef.current;
+          const cursorValue = chart
+            ? (chart.convertFromPixel("grid", [0, mousePosRef.current.y]) as [number, number])?.[1]
+            : null;
+          if (cursorValue != null && allRows.length > 0) {
+            const nearest = allRows.reduce((best, row) =>
+              Math.abs(row.value - cursorValue) < Math.abs(best.value - cursorValue) ? row : best,
+            );
+            rows = [nearest];
+          } else {
+            rows = allRows.slice(0, 1);
+          }
+        } else {
+          const max = tooltipMaxItemsRef.current;
+          rows = allRows.slice(0, max);
+          hiddenCount = Math.max(0, allRows.length - max);
+        }
+
+        setTooltipState({ ts, rows, hiddenCount });
       },
+      globalout: () => setTooltipState(null),
+      ...(onTimeRangeChange && {
+        brushend: (params: any) => {
+          const range = params.areas[0].coordRange;
+          onTimeRangeChange(range[0], range[1]);
+          chartRef.current?.dispatchAction({ type: "brush", areas: [] });
+        },
+      }),
     };
   }, [onTimeRangeChange]);
+
+  // ── Tooltip architecture ────────────────────────────────────────────────────
+  //
+  // Content and position are intentionally decoupled:
+  //
+  //  CONTENT  (which series, values, timestamp)
+  //    Flows through React state via the ECharts `updateAxisPointer` event.
+  //    One render cycle behind the cursor — imperceptible for text.
+  //
+  //  POSITION  (left/top pixel coords)
+  //    Driven by direct DOM mutation in a native `mousemove` listener.
+  //    Uses `transform: translate3d` (GPU-composited, no layout cost) so it
+  //    never triggers a browser layout recalculation and matches ECharts'
+  //    own tooltip movement speed.
+  //    Quadrant-based anchoring (same as ECharts): cursor in right half →
+  //    render left, cursor in bottom half → render above, etc.
+  //    Quadrant switches use a longer ease; normal tracking uses a short one.
+  //
+  // This split means position updates are compositor-thread fast while content
+  // updates go through React's normal reconciliation — best of both worlds.
+  // ────────────────────────────────────────────────────────────────────────────
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const quadrantRef = useRef<string>("");
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const onMove = (e: MouseEvent) => {
+      const tooltipEl = tooltipRef.current;
+      if (!tooltipEl) return;
+      const rect = container.getBoundingClientRect();
+      // Relative coords for quadrant detection
+      const relX = e.clientX - rect.left;
+      const relY = e.clientY - rect.top;
+      mousePosRef.current = { x: relX, y: relY };
+      const offset = 12;
+      const w = tooltipEl.offsetWidth;
+      const h = tooltipEl.offsetHeight;
+      const flipX = relX > rect.width / 2;
+      const flipY = relY > rect.height / 2;
+      const quadrant = `${flipX}-${flipY}`;
+      // Use transform3d (GPU-composited) instead of left/top so the transition
+      // never triggers layout — same approach as ECharts.
+      // Apply a spring transition on quadrant switches, clean ease otherwise.
+      tooltipEl.style.transition =
+        quadrant !== quadrantRef.current
+          ? "transform 0.4s cubic-bezier(0.23,1,0.32,1)"
+          : "transform 0.1s cubic-bezier(0.23,1,0.32,1)";
+      quadrantRef.current = quadrant;
+      // Viewport coords for fixed positioning (portalled to body)
+      const left = flipX ? e.clientX - w - offset : e.clientX + offset;
+      const top = flipY ? e.clientY - h - offset : e.clientY + offset;
+      tooltipEl.style.transform = `translate3d(${Math.round(left)}px,${Math.round(top)}px,0)`;
+    };
+    container.addEventListener("mousemove", onMove);
+    return () => container.removeEventListener("mousemove", onMove);
+  }, []);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
@@ -376,9 +469,7 @@ export function TimeseriesChart({
         chart.dispatchAction({
           type: "takeGlobalCursor",
           key: "brush",
-          brushOption: {
-            brushType: false,
-          },
+          brushOption: { brushType: false },
         });
       };
     }
@@ -387,8 +478,10 @@ export function TimeseriesChart({
     // Without this dep, the effect won't re-run after Chart mounts.
   }, [chartRef, hasTimeRangeCallback, loading]);
 
+  const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
+
   return (
-    <div className="relative w-full" style={{ height }}>
+    <div ref={containerRef} className="relative w-full" style={{ height }}>
       {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
       {!loading && (
         <Chart
@@ -401,14 +494,94 @@ export function TimeseriesChart({
           optionUpdateBehavior={optionUpdateBehavior}
         />
       )}
+      {tooltipState && typeof document !== "undefined" &&
+        createPortal(
+          <TooltipOverlay
+            state={tooltipState}
+            formatValue={formatFn}
+            tooltipRef={tooltipRef}
+            isDarkMode={isDarkMode}
+          />,
+          document.body,
+        )}
     </div>
   );
 }
 
+// ─── Tooltip overlay ──────────────────────────────────────────────────────────
+
+interface TooltipOverlayProps {
+  state: TooltipState;
+  formatValue?: (v: number) => string;
+  tooltipRef: React.RefObject<HTMLDivElement | null>;
+  isDarkMode?: boolean;
+}
+
+function TooltipOverlay({ state, formatValue, tooltipRef, isDarkMode }: TooltipOverlayProps) {
+  const { ts, rows, hiddenCount } = state;
+
+  return (
+    // data-mode wrapper ensures kumo CSS variables resolve correctly
+    // even though this is portalled into document.body
+    <div data-mode={isDarkMode ? "dark" : "light"}>
+      <div
+        ref={tooltipRef}
+        style={{ position: "fixed", top: 0, left: 0, pointerEvents: "none", zIndex: 9999, willChange: "transform" }}
+        className="bg-kumo-elevated border border-kumo-line rounded-lg shadow-lg p-2 min-w-[150px] max-w-xs"
+      >
+        <div className="text-xs font-semibold text-kumo-default mb-1">
+          {formatTimestamp(ts)}
+        </div>
+        {rows.map((row) => (
+          <div key={row.name} className="flex items-center justify-between gap-4 py-0.5">
+            <div className="flex items-center gap-2 min-w-0">
+              <span
+                className="w-3 h-3 rounded-full shrink-0"
+                style={{ backgroundColor: row.color }}
+              />
+              <span className="text-xs font-medium text-kumo-default truncate" title={row.name}>
+                {row.name}
+              </span>
+            </div>
+            <span className="text-xs font-semibold text-kumo-default shrink-0">
+              {formatValue ? formatValue(row.value) : formatDefaultValue(row.value)}
+            </span>
+          </div>
+        ))}
+        {hiddenCount > 0 && (
+          <div className="text-xs text-kumo-subtle mt-1">
+            +{hiddenCount} more
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Binary search for the value in `data` whose timestamp is closest to `ts`. */
+function findNearest(data: [number, number][], ts: number): number | null {
+  if (data.length === 0) return null;
+  let lo = 0, hi = data.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (data[mid][0] < ts) lo = mid + 1;
+    else hi = mid;
+  }
+  // Check both neighbours and return the closer one
+  if (lo > 0 && Math.abs(data[lo - 1][0] - ts) < Math.abs(data[lo][0] - ts)) lo--;
+  return data[lo][1];
+}
+
+/** Fallback value formatter — avoids floating point noise without scientific notation. */
+function formatDefaultValue(value: number): string {
+  if (Number.isInteger(value)) return String(value);
+  return value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+}
+
 /**
  * Animated sine-wave skeleton shown while `TimeseriesChart` is in `loading` state.
- * Renders multiple staggered wave paths that sweep continuously left-to-right,
- * mimicking the motion of live time-series data being drawn.
  */
 function ChartWaveLoader({
   height,
@@ -429,15 +602,10 @@ function ChartWaveLoader({
     points.push(`${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`);
   }
   const d = points.join(" ");
-
   const strokeColor = isDarkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.2)";
 
   return (
-    <div
-      aria-hidden="true"
-      className="absolute inset-0 overflow-hidden"
-      style={{ height }}
-    >
+    <div aria-hidden="true" className="absolute inset-0 overflow-hidden" style={{ height }}>
       <svg
         width="100%"
         height={height}
@@ -450,10 +618,7 @@ function ChartWaveLoader({
           fill="none"
           stroke={strokeColor}
           strokeWidth="2"
-          style={{
-            animation: `kumo-chart-wave 2.4s linear infinite`,
-            transformOrigin: "0 0",
-          }}
+          style={{ animation: `kumo-chart-wave 2.4s linear infinite`, transformOrigin: "0 0" }}
         />
       </svg>
     </div>
@@ -461,57 +626,30 @@ function ChartWaveLoader({
 }
 
 /**
- * Returns an `rgba(r, g, b, alpha)` string for any hex or rgb(a) color input,
- * replacing whatever opacity was already present with the given `alpha` (0–1).
- *
- * Handles:
- * - 6-digit hex:  `#RRGGBB`
- * - 8-digit hex:  `#RRGGBBAA`  ← strips existing alpha
- * - 3-digit hex:  `#RGB`
- * - `rgb(r, g, b)`
- * - `rgba(r, g, b, a)`  ← replaces existing alpha
+ * Returns an `rgba(r, g, b, alpha)` string for any hex or rgb(a) color input.
  */
 function colorWithOpacity(color: string, alpha: number): string {
   const a = Math.max(0, Math.min(1, alpha));
+  const rgbMatch = color.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i);
+  if (rgbMatch) return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${a})`;
 
-  // rgb / rgba
-  const rgbMatch = color.match(
-    /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i,
-  );
-  if (rgbMatch) {
-    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${a})`;
-  }
-
-  // hex — strip leading #
   let hex = color.replace(/^#/, "");
-
-  // expand 3-digit → 6-digit
-  if (hex.length === 3) {
-    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-  }
-
-  // strip 8-digit alpha → keep only 6
-  if (hex.length === 8) {
-    hex = hex.slice(0, 6);
-  }
+  if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  if (hex.length === 8) hex = hex.slice(0, 6);
 
   const r = parseInt(hex.slice(0, 2), 16);
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
-
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-/** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
 function pad(n: number) {
   return n.toString().padStart(2, "0");
 }
 
-/**
- * Formats a timestamp as `"YYYY-MM-DD HH:mm:ss"` for use in chart tooltips.
- * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
- */
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 function formatTimestamp(ts: number | string | Date): string {
   const d = new Date(ts);
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
