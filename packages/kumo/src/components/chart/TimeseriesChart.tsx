@@ -268,7 +268,9 @@ export function TimeseriesChart({
         xAxisIndex: "all" as const,
         brushType: "lineX" as const,
         brushMode: "single" as const,
-        outOfBrush: { colorAlpha: 0.3 },
+        outOfBrush: {
+          colorAlpha: 0.3,
+        },
         brushStyle: {
           borderWidth: 1,
           color: "rgba(120,140,180,0.3)",
@@ -287,7 +289,9 @@ export function TimeseriesChart({
         nameLocation: "middle" as const,
         nameGap: 30,
         type: "time" as const,
-        splitLine: { show: false },
+        splitLine: {
+          show: false,
+        },
         axisLine: { show: false },
         splitNumber: xAxisTickCount ?? 5,
         ...(xAxisTickFormat && {
@@ -469,7 +473,9 @@ export function TimeseriesChart({
         chart.dispatchAction({
           type: "takeGlobalCursor",
           key: "brush",
-          brushOption: { brushType: false },
+          brushOption: {
+            brushType: false,
+          },
         });
       };
     }
@@ -582,6 +588,8 @@ function formatDefaultValue(value: number): string {
 
 /**
  * Animated sine-wave skeleton shown while `TimeseriesChart` is in `loading` state.
+ * Renders multiple staggered wave paths that sweep continuously left-to-right,
+ * mimicking the motion of live time-series data being drawn.
  */
 function ChartWaveLoader({
   height,
@@ -602,10 +610,15 @@ function ChartWaveLoader({
     points.push(`${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`);
   }
   const d = points.join(" ");
+
   const strokeColor = isDarkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.2)";
 
   return (
-    <div aria-hidden="true" className="absolute inset-0 overflow-hidden" style={{ height }}>
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 overflow-hidden"
+      style={{ height }}
+    >
       <svg
         width="100%"
         height={height}
@@ -618,7 +631,10 @@ function ChartWaveLoader({
           fill="none"
           stroke={strokeColor}
           strokeWidth="2"
-          style={{ animation: `kumo-chart-wave 2.4s linear infinite`, transformOrigin: "0 0" }}
+          style={{
+            animation: `kumo-chart-wave 2.4s linear infinite`,
+            transformOrigin: "0 0",
+          }}
         />
       </svg>
     </div>
@@ -626,23 +642,48 @@ function ChartWaveLoader({
 }
 
 /**
- * Returns an `rgba(r, g, b, alpha)` string for any hex or rgb(a) color input.
+ * Returns an `rgba(r, g, b, alpha)` string for any hex or rgb(a) color input,
+ * replacing whatever opacity was already present with the given `alpha` (0–1).
+ *
+ * Handles:
+ * - 6-digit hex:  `#RRGGBB`
+ * - 8-digit hex:  `#RRGGBBAA`  ← strips existing alpha
+ * - 3-digit hex:  `#RGB`
+ * - `rgb(r, g, b)`
+ * - `rgba(r, g, b, a)`  ← replaces existing alpha
  */
 function colorWithOpacity(color: string, alpha: number): string {
   const a = Math.max(0, Math.min(1, alpha));
-  const rgbMatch = color.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i);
-  if (rgbMatch) return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${a})`;
 
+  // rgb / rgba
+  const rgbMatch = color.match(
+    /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i,
+  );
+  if (rgbMatch) {
+    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${a})`;
+  }
+
+  // hex — strip leading #
   let hex = color.replace(/^#/, "");
-  if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-  if (hex.length === 8) hex = hex.slice(0, 6);
+
+  // expand 3-digit → 6-digit
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+
+  // strip 8-digit alpha → keep only 6
+  if (hex.length === 8) {
+    hex = hex.slice(0, 6);
+  }
 
   const r = parseInt(hex.slice(0, 2), 16);
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
+
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
+/** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
 function pad(n: number) {
   return n.toString().padStart(2, "0");
 }
