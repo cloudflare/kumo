@@ -646,7 +646,7 @@ export function TooltipFollowCursorDemo() {
       <Select
         label="Tooltip follow cursor"
         value={selected}
-        onValueChange={setSelected}
+        onValueChange={(v) => { if (v) setSelected(v); }}
         renderValue={(v) => v.label}
       >
         {FOLLOW_CURSOR_OPTIONS.map((opt) => (
