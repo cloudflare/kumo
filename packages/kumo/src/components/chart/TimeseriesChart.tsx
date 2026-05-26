@@ -683,17 +683,19 @@ function colorWithOpacity(color: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
+const tooltipDateFormat = new Intl.DateTimeFormat(undefined, {
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
+
 /**
  * Formats a timestamp for use in chart tooltips using the browser's locale.
  * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
  */
 function formatTimestamp(ts: number | string | Date): string {
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  }).format(new Date(ts));
+  return tooltipDateFormat.format(new Date(ts));
 }
