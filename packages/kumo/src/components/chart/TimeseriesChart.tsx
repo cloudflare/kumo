@@ -71,6 +71,17 @@ export interface TimeseriesChartProps {
    */
   tooltipMaxItems?: number;
   /**
+   * Constrains the tooltip to stay within a specific element or region.
+   * By default the tooltip avoids overflowing any clipping ancestor
+   * (scroll containers, viewports, etc.).
+   *
+   * Pass an `Element` or array of elements to restrict the tooltip to a
+   * specific container.
+   *
+   * @default "clipping-ancestors"
+   */
+  tooltipBoundary?: "clipping-ancestors" | Element | Element[];
+  /**
    * Which axis the tooltip follows the cursor on.
    *
    * - `"both"` — tooltip tracks the cursor on both axes, staying near the
@@ -191,6 +202,7 @@ export function TimeseriesChart({
   tooltipMode = "all",
   tooltipMaxItems = 10,
   tooltipFollowCursor = "both",
+  tooltipBoundary,
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -464,6 +476,7 @@ export function TimeseriesChart({
   const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
   const tooltipOpen = tooltipState !== null;
 
+
   return (
     <TooltipPrimitive.Root open={tooltipOpen} trackCursorAxis={tooltipFollowCursor}>
       <TooltipPrimitive.Trigger
@@ -489,6 +502,7 @@ export function TimeseriesChart({
             align="start"
             sideOffset={12}
             collisionAvoidance={{ side: "flip", align: "shift" }}
+            collisionBoundary={tooltipBoundary}
             collisionPadding={8}
           >
             <TooltipPrimitive.Popup

@@ -9,7 +9,7 @@ import {
 import * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useIsDarkMode } from "~/lib/use-is-dark-mode";
 import {
   AriaComponent,
@@ -662,6 +662,51 @@ export function TooltipFollowCursorDemo() {
         xAxisName="Time (UTC)"
         yAxisName="Latency (ms)"
         tooltipFollowCursor={selected.value}
+      />
+    </div>
+  );
+}
+
+/**
+ * Demo showing the `tooltipBoundary` prop. The chart is inside a small
+ * scrollable container — the tooltip is constrained to stay within it
+ * instead of overflowing into the surrounding page.
+ */
+export function TooltipBoundaryDemo() {
+  const isDarkMode = useIsDarkMode();
+  const [boundary, setBoundary] = useState<HTMLDivElement | null>(null);
+  const boundaryRef = useCallback((el: HTMLDivElement | null) => setBoundary(el), []);
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <div
+      ref={boundaryRef}
+      className="w-full overflow-auto rounded-lg border border-kumo-line"
+      style={{ height: 300 }}
+    >
+      <TimeseriesChart
+        echarts={echarts}
+        isDarkMode={isDarkMode}
+        data={data}
+        xAxisName="Time (UTC)"
+        yAxisName="Count"
+        height={280}
+        tooltipBoundary={boundary ?? undefined}
       />
     </div>
   );
