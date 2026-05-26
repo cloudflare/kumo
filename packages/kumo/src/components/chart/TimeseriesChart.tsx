@@ -1,8 +1,8 @@
 import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption, SeriesOption, SetOptionOpts } from "echarts";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
 
 /** A single data series rendered on a `TimeseriesChart` */
@@ -70,6 +70,26 @@ export interface TimeseriesChartProps {
    * Additional series are hidden with a `+N more` footer. Defaults to `10`.
    */
   tooltipMaxItems?: number;
+  /**
+   * Which axis the tooltip follows the cursor on.
+   *
+   * - `"both"` — tooltip tracks the cursor on both axes, staying near the
+   *   pointer at all times. This is the default and matches the behaviour of
+   *   ECharts' built-in tooltip.
+   * - `"x"` — tooltip follows the cursor horizontally but is locked to a
+   *   fixed vertical position relative to the chart. This keeps the tooltip
+   *   out of the way of the data and avoids vertical jitter as series values
+   *   change — the same approach used by Recharts and many dashboard UIs.
+   *
+   * Only these two modes are offered because the x-axis is always time in a
+   * `TimeseriesChart`: y-only tracking and fully-fixed positioning don't
+   * produce useful tooltip behaviour for time-series data.
+   *
+   * Powered by Base UI Tooltip's `trackCursorAxis` under the hood.
+   *
+   * @default "both"
+   */
+  tooltipFollowCursor?: "both" | "x";
   /** Indicates incomplete data periods with optional before/after timestamps in ms */
   incomplete?: { before?: number; after?: number };
   /** Height of the chart in pixels. Defaults to `350`. */
@@ -170,10 +190,11 @@ export function TimeseriesChart({
   optionUpdateBehavior,
   tooltipMode = "all",
   tooltipMaxItems = 10,
+  tooltipFollowCursor = "both",
 }: TimeseriesChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
   // Keep latest props accessible inside event handlers without stale closures
   const dataRef = useRef(data);
   dataRef.current = data;
@@ -183,6 +204,19 @@ export function TimeseriesChart({
   tooltipMaxItemsRef.current = tooltipMaxItems;
 
   const [tooltipState, setTooltipState] = useState<TooltipState | null>(null);
+
+  // Track cursor position for single-mode y lookup (convertFromPixel needs relative coords)
+  const mousePosRef = useRef({ x: 0, y: 0 });
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const onMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
+    container.addEventListener("mousemove", onMove);
+    return () => container.removeEventListener("mousemove", onMove);
+  }, []);
 
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
@@ -366,7 +400,6 @@ export function TimeseriesChart({
 
         if (tooltipModeRef.current === "single") {
           // Find the series whose value is closest to the cursor's y position
-          // by using the chart instance to convert pixel y to data value
           const chart = chartRef.current;
           const cursorValue = chart
             ? (chart.convertFromPixel("grid", [0, mousePosRef.current.y]) as [number, number])?.[1]
@@ -397,62 +430,6 @@ export function TimeseriesChart({
       }),
     };
   }, [onTimeRangeChange]);
-
-  // ── Tooltip architecture ────────────────────────────────────────────────────
-  //
-  // Content and position are intentionally decoupled:
-  //
-  //  CONTENT  (which series, values, timestamp)
-  //    Flows through React state via the ECharts `updateAxisPointer` event.
-  //    One render cycle behind the cursor — imperceptible for text.
-  //
-  //  POSITION  (left/top pixel coords)
-  //    Driven by direct DOM mutation in a native `mousemove` listener.
-  //    Uses `transform: translate3d` (GPU-composited, no layout cost) so it
-  //    never triggers a browser layout recalculation and matches ECharts'
-  //    own tooltip movement speed.
-  //    Quadrant-based anchoring (same as ECharts): cursor in right half →
-  //    render left, cursor in bottom half → render above, etc.
-  //    Quadrant switches use a longer ease; normal tracking uses a short one.
-  //
-  // This split means position updates are compositor-thread fast while content
-  // updates go through React's normal reconciliation — best of both worlds.
-  // ────────────────────────────────────────────────────────────────────────────
-  const tooltipRef = useRef<HTMLDivElement | null>(null);
-  const quadrantRef = useRef<string>("");
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const onMove = (e: MouseEvent) => {
-      const tooltipEl = tooltipRef.current;
-      if (!tooltipEl) return;
-      const rect = container.getBoundingClientRect();
-      // Relative coords for quadrant detection
-      const relX = e.clientX - rect.left;
-      const relY = e.clientY - rect.top;
-      mousePosRef.current = { x: relX, y: relY };
-      const offset = 12;
-      const w = tooltipEl.offsetWidth;
-      const h = tooltipEl.offsetHeight;
-      const flipX = relX > rect.width / 2;
-      const flipY = relY > rect.height / 2;
-      const quadrant = `${flipX}-${flipY}`;
-      // Use transform3d (GPU-composited) instead of left/top so the transition
-      // never triggers layout — same approach as ECharts.
-      // Apply a spring transition on quadrant switches, clean ease otherwise.
-      tooltipEl.style.transition =
-        quadrant !== quadrantRef.current
-          ? "transform 0.4s cubic-bezier(0.23,1,0.32,1)"
-          : "transform 0.1s cubic-bezier(0.23,1,0.32,1)";
-      quadrantRef.current = quadrant;
-      // Viewport coords for fixed positioning (portalled to body)
-      const left = flipX ? e.clientX - w - offset : e.clientX + offset;
-      const top = flipY ? e.clientY - h - offset : e.clientY + offset;
-      tooltipEl.style.transform = `translate3d(${Math.round(left)}px,${Math.round(top)}px,0)`;
-    };
-    container.addEventListener("mousemove", onMove);
-    return () => container.removeEventListener("mousemove", onMove);
-  }, []);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
@@ -485,84 +462,92 @@ export function TimeseriesChart({
   }, [chartRef, hasTimeRangeCallback, loading]);
 
   const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
+  const tooltipOpen = tooltipState !== null;
 
   return (
-    <div ref={containerRef} className="relative w-full" style={{ height }}>
-      {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
-      {!loading && (
-        <Chart
-          echarts={echarts}
-          ref={chartRef}
-          options={options as EChartsOption}
-          height={height}
-          isDarkMode={isDarkMode}
-          onEvents={events}
-          optionUpdateBehavior={optionUpdateBehavior}
-        />
-      )}
-      {tooltipState && typeof document !== "undefined" &&
-        createPortal(
-          <TooltipOverlay
-            state={tooltipState}
-            formatValue={formatFn}
-            tooltipRef={tooltipRef}
+    <TooltipPrimitive.Root open={tooltipOpen} trackCursorAxis={tooltipFollowCursor}>
+      <TooltipPrimitive.Trigger
+        render={<div ref={containerRef} className="relative w-full" style={{ height }} />}
+      >
+        {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
+        {!loading && (
+          <Chart
+            echarts={echarts}
+            ref={chartRef}
+            options={options as EChartsOption}
+            height={height}
             isDarkMode={isDarkMode}
-          />,
-          document.body,
+            onEvents={events}
+            optionUpdateBehavior={optionUpdateBehavior}
+          />
         )}
-    </div>
+      </TooltipPrimitive.Trigger>
+      {tooltipOpen && (
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Positioner
+            side="right"
+            align="start"
+            sideOffset={12}
+            collisionAvoidance={{ side: "flip", align: "shift" }}
+            collisionPadding={8}
+          >
+            <TooltipPrimitive.Popup
+              data-mode={isDarkMode ? "dark" : "light"}
+              className="bg-kumo-base rounded-lg shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill p-2 min-w-[150px] max-w-xs"
+            >
+              <TooltipContent state={tooltipState} formatValue={formatFn} />
+            </TooltipPrimitive.Popup>
+          </TooltipPrimitive.Positioner>
+        </TooltipPrimitive.Portal>
+      )}
+    </TooltipPrimitive.Root>
   );
 }
 
-// ─── Tooltip overlay ──────────────────────────────────────────────────────────
+// ─── Tooltip content ──────────────────────────────────────────────────────────
+//
+// Memoized so React skips reconciliation when the cursor moves within the same
+// data point. The timestamp dedup in updateAxisPointer already prevents most
+// unnecessary state updates; this is a safety net for when the parent re-renders
+// for unrelated reasons (e.g. a prop change on TimeseriesChart).
 
-interface TooltipOverlayProps {
+interface TooltipContentProps {
   state: TooltipState;
   formatValue?: (v: number) => string;
-  tooltipRef: React.RefObject<HTMLDivElement | null>;
-  isDarkMode?: boolean;
 }
 
-function TooltipOverlay({ state, formatValue, tooltipRef, isDarkMode }: TooltipOverlayProps) {
+const TooltipContent = memo(function TooltipContent({ state, formatValue }: TooltipContentProps) {
   const { ts, rows, hiddenCount } = state;
 
   return (
-    // data-mode wrapper ensures kumo CSS variables resolve correctly
-    // even though this is portalled into document.body
-    <div data-mode={isDarkMode ? "dark" : "light"}>
-      <div
-        ref={tooltipRef}
-        style={{ position: "fixed", top: 0, left: 0, pointerEvents: "none", zIndex: 9999, willChange: "transform" }}
-        className="bg-kumo-elevated border border-kumo-line rounded-lg shadow-lg p-2 min-w-[150px] max-w-xs"
-      >
-        <div className="text-xs font-semibold text-kumo-default mb-1">
-          {formatTimestamp(ts)}
-        </div>
-        {rows.map((row) => (
-          <div key={row.name} className="flex items-center justify-between gap-4 py-0.5">
-            <div className="flex items-center gap-2 min-w-0">
-              <span
-                className="w-3 h-3 rounded-full shrink-0"
-                style={{ backgroundColor: row.color }}
-              />
-              <span className="text-xs font-medium text-kumo-default truncate" title={row.name}>
-                {row.name}
-              </span>
-            </div>
-            <span className="text-xs font-semibold text-kumo-default shrink-0">
-              {formatValue ? formatValue(row.value) : formatDefaultValue(row.value)}
+    <>
+      <div className="text-xs font-semibold text-kumo-default mb-1">
+        {formatTimestamp(ts)}
+      </div>
+      {rows.map((row) => (
+        <div key={row.name} className="flex items-center justify-between gap-4 py-0.5">
+          <div className="flex items-center gap-2 min-w-0">
+            <span
+              className="w-3 h-3 rounded-full shrink-0"
+              style={{ backgroundColor: row.color }}
+            />
+            <span className="text-xs font-medium text-kumo-default truncate" title={row.name}>
+              {row.name}
             </span>
           </div>
-        ))}
-        {hiddenCount > 0 && (
-          <div className="text-xs text-kumo-subtle mt-1">
-            +{hiddenCount} more
-          </div>
-        )}
-      </div>
-    </div>
+          <span className="text-xs font-semibold text-kumo-default shrink-0">
+            {formatValue ? formatValue(row.value) : formatDefaultValue(row.value)}
+          </span>
+        </div>
+      ))}
+      {hiddenCount > 0 && (
+        <div className="text-xs text-kumo-subtle mt-1">
+          +{hiddenCount} more
+        </div>
+      )}
+    </>
   );
-}
+});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -580,10 +565,14 @@ function findNearest(data: [number, number][], ts: number): number | null {
   return data[lo][1];
 }
 
+const defaultNumberFormat = new Intl.NumberFormat(undefined, {
+  maximumFractionDigits: 3,
+});
+
 /** Fallback value formatter — avoids floating point noise without scientific notation. */
 function formatDefaultValue(value: number): string {
   if (Number.isInteger(value)) return String(value);
-  return value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+  return defaultNumberFormat.format(value);
 }
 
 /**

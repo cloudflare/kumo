@@ -15,6 +15,7 @@ import {
   IncompleteDataChartDemo,
   LoadingChartDemo,
   TimeRangeSelectionChartDemo,
+  TooltipFollowCursorDemo,
 } from "~/components/demos/Chart/ChartDemo";
 
 <p>
@@ -89,6 +90,22 @@ import {
 
   <ComponentExample demo="TimeRangeSelectionChartDemo">
     <TimeRangeSelectionChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Tooltip Cursor Tracking
+
+<p>
+  Use the <code>tooltipFollowCursor</code> prop to control which axis the tooltip
+  tracks the cursor on. The default is <code>"both"</code>, which follows the
+  cursor freely. Set it to <code>"x"</code> for a Recharts-style axis-locked
+  tooltip that only moves horizontally.
+</p>
+
+  <ComponentExample demo="TooltipFollowCursorDemo">
+    <TooltipFollowCursorDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

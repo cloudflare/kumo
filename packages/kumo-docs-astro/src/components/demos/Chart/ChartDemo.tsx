@@ -4,17 +4,19 @@ import {
   Chart,
   ChartLegend,
   LayerCard,
+  Select,
 } from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useIsDarkMode } from "~/lib/use-is-dark-mode";
 import {
   AriaComponent,
   AxisPointerComponent,
   BrushComponent,
   GridComponent,
+  ToolboxComponent,
   TooltipComponent,
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
@@ -27,6 +29,7 @@ echarts.use([
   AxisPointerComponent,
   BrushComponent,
   GridComponent,
+  ToolboxComponent,
   TooltipComponent,
   AriaComponent,
   LabelLayout,
@@ -601,6 +604,66 @@ export function CustomTooltipChartDemo() {
       height={400}
       isDarkMode={isDarkMode}
     />
+  );
+}
+
+interface FollowCursorOption {
+  label: string;
+  value: "both" | "x";
+}
+
+const FOLLOW_CURSOR_OPTIONS: FollowCursorOption[] = [
+  { label: "Both axes", value: "both" },
+  { label: "X-axis only", value: "x" },
+];
+
+/**
+ * Interactive demo showing the `tooltipFollowCursor` prop. Use the dropdown to
+ * switch between cursor-tracking modes and see how the tooltip behaves.
+ */
+export function TooltipFollowCursorDemo() {
+  const isDarkMode = useIsDarkMode();
+  const [selected, setSelected] = useState<FollowCursorOption>(FOLLOW_CURSOR_OPTIONS[0]);
+
+  const data = useMemo(
+    () => [
+      {
+        name: "P99",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+      {
+        name: "P50",
+        data: buildSeriesData(1, 50, 60_000, 0.4),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <Select
+        label="Tooltip follow cursor"
+        value={selected}
+        onValueChange={setSelected}
+        renderValue={(v) => v.label}
+      >
+        {FOLLOW_CURSOR_OPTIONS.map((opt) => (
+          <Select.Option key={opt.value} value={opt}>
+            {opt.label}
+          </Select.Option>
+        ))}
+      </Select>
+      <TimeseriesChart
+        echarts={echarts}
+        isDarkMode={isDarkMode}
+        data={data}
+        xAxisName="Time (UTC)"
+        yAxisName="Latency (ms)"
+        tooltipFollowCursor={selected.value}
+      />
+    </div>
   );
 }
 
