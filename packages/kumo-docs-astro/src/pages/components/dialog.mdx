@@ -36,7 +36,7 @@ import {
 
 ### Barrel
 
-  <CodeBlock code={`import { Dialog } from "@cloudflare/kumo";`} lang="tsx" />
+<CodeBlock code={`import { Dialog } from "@cloudflare/kumo";`} lang="tsx" />
 
 ### Granular
 
@@ -85,10 +85,10 @@ export default function Example() {
 
 ## Dialog vs Alert Dialog
 
-  <p>
-    The Dialog component supports two ARIA roles to properly convey semantic
-    meaning to assistive technologies:
-  </p>
+<p>
+  The Dialog component supports two ARIA roles to properly convey semantic
+  meaning to assistive technologies:
+</p>
 
   <div class="overflow-hidden rounded-lg border border-kumo-hairline">
     <table class="w-full text-sm">
@@ -142,10 +142,7 @@ export default function Example() {
   dialog with `role="alertdialog"` instead of `role="dialog"`.
 </p>
 <div class="mb-4 rounded-lg border border-kumo-info/30 bg-kumo-info/10 p-4 text-sm text-kumo-info">
-  <p class="font-medium mb-2 text-sm">
-    When to use{" "}
-    <code class="bg-kumo-info/20 px-1 rounded">role="alertdialog"</code>:
-  </p>
+  <p class="font-medium mb-2 text-sm">When to use `role="alertdialog"`:</p>
   <ul class="list-disc list-inside space-y-1 ml-2 mb-0">
     <li>Destructive actions (delete, discard, remove)</li>
     <li>Confirmation flows requiring explicit user acknowledgment</li>
