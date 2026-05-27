@@ -339,7 +339,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
 
     expect(screen.getByTestId("state-reader").dataset.state).toBe("collapsed");
@@ -355,7 +355,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
 
     expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
@@ -371,7 +371,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
     expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
 
@@ -388,7 +388,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
 
     expect(screen.getByTestId("state-reader").dataset.state).toBe("expanded");

@@ -139,6 +139,7 @@ export interface SidebarContextValue {
   setIsResizing: (resizing: boolean) => void;
   setWidth: (width: number) => void;
   isPeeking: boolean;
+  peekable: boolean;
   startPeek: () => void;
   stopPeek: () => void;
   contained: boolean;
@@ -310,7 +311,7 @@ function SidebarProvider({
     state, open, setOpen, openMobile, setOpenMobile, isMobile,
     toggleSidebar, variant, side, collapsible, width, resizable,
     minWidth, maxWidth, isResizing, setIsResizing, setWidth,
-    isPeeking, startPeek, stopPeek, contained, animationDuration,
+    isPeeking, peekable, startPeek, stopPeek, contained, animationDuration,
   }), [state, open, openMobile, isMobile, width, isResizing, isPeeking]);
 
   return (
@@ -330,7 +331,7 @@ function SidebarProvider({
           } as CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper flex w-full",
+          "group/sidebar-wrapper isolate flex w-full",
           !contained && "min-h-svh",
           "has-data-[variant=inset]:bg-kumo-recessed",
           isResizing && "select-none",
@@ -507,7 +508,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         data-sidebar="sidebar"
         style={{ width: railWidth }}
         className={cn(
-          "group/sidebar isolate relative flex h-full shrink-0 grow-0 flex-col",
+          "group/sidebar relative h-full shrink-0 grow-0",
           "overflow-visible", // allow content container to overlay when peeking
           "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
           "motion-reduce:transition-none",
@@ -518,32 +519,58 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         {...props}
       >
         <TooltipProvider>
-          {/* Content container — holds everything except footer */}
-          <div
-            data-sidebar="content-container"
-            style={{ width: contentWidth }}
-            onMouseEnter={startPeek}
-            onMouseLeave={stopPeek}
-            onFocus={startPeek}
-            onBlur={handlePeekBlur}
-            className={cn(
-              "flex h-full flex-col",
-              "min-w-0 overflow-hidden whitespace-nowrap",
-              "bg-(--sidebar-bg) text-kumo-default",
-              borderClasses,
-              "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-              "motion-reduce:transition-none",
-              isResizing && "transition-none!",
-              // When collapsed (or peeking), position out of flow so main content fills the space
-              !open && (contained ? "absolute inset-y-0" : "fixed inset-y-0"),
-              !open && side === "left" && "left-0",
-              !open && side === "right" && "right-0",
-              // When expanded, stay in flow
-              open && "relative",
-            )}
-          >
-            {children}
-          </div>
+          {(() => {
+            // Separate footer children from the rest so hovering the footer
+            // doesn't trigger peeking. Footer is rendered outside the peek zone.
+            const childArray = React.Children.toArray(children);
+            const footerChildren = childArray.filter(
+              (child) =>
+                React.isValidElement(child) &&
+                (child.type as { displayName?: string })?.displayName === "Sidebar.Footer",
+            );
+            const nonFooterChildren = childArray.filter(
+              (child) =>
+                !React.isValidElement(child) ||
+                (child.type as { displayName?: string })?.displayName !== "Sidebar.Footer",
+            );
+
+            return (
+              <div
+                data-sidebar="content-container"
+                style={{ width: contentWidth }}
+                className={cn(
+                  "flex h-full flex-col",
+                  "min-w-0 overflow-hidden whitespace-nowrap",
+                  "bg-(--sidebar-bg) text-kumo-default",
+                  borderClasses,
+                  "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+                  "motion-reduce:transition-none",
+                  isResizing && "transition-none!",
+                  !open && cn(
+                    contained ? "absolute" : "fixed",
+                    "inset-y-0 z-40",
+                    side === "left" && "left-0",
+                    side === "right" && "right-0",
+                  ),
+                  open && "relative",
+                )}
+              >
+                {/* Peek zone — header + content (not footer) */}
+                <div
+                  data-sidebar="peek-zone"
+                  className="flex flex-1 flex-col min-h-0"
+                  onMouseEnter={startPeek}
+                  onMouseLeave={stopPeek}
+                  onFocus={startPeek}
+                  onBlur={handlePeekBlur}
+                >
+                  {nonFooterChildren}
+                </div>
+                {/* Footer — outside peek zone */}
+                {footerChildren}
+              </div>
+            );
+          })()}
         </TooltipProvider>
       </aside>
     );
@@ -612,12 +639,14 @@ const SidebarContent = forwardRef<
   >
     <ScrollAreaBase.Viewport
       className={cn(
-        "h-full px-2 py-2",
+        "h-full px-[11px] py-[13px] group-not-data-[state=collapsed]/sidebar:px-3.5",
+        "transition-[padding] duration-(--sidebar-animation-duration)",
+        "group-data-[state=collapsed]/sidebar:overflow-x-hidden!",
         // Scroll fade via CSS mask driven by Base UI overflow CSS variables
         "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
     >
-      <ScrollAreaBase.Content className="flex min-w-0 flex-col gap-2">
+      <ScrollAreaBase.Content className="flex min-w-0 flex-col gap-2 group-data-[state=collapsed]/sidebar:min-w-0!">
         {children}
       </ScrollAreaBase.Content>
     </ScrollAreaBase.Viewport>
@@ -662,8 +691,15 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex h-12 min-w-0 items-center border-t border-kumo-line px-2",
-      "bg-(--sidebar-bg) mt-auto",
+      "flex h-12 shrink-0 items-center gap-4 overflow-hidden whitespace-nowrap border-t border-kumo-line",
+      "px-[11px] group-not-data-[state=collapsed]/sidebar:px-4",
+      "bg-(--sidebar-bg)",
+      "w-(--sidebar-width)",
+      "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      "motion-reduce:transition-none",
+      "sticky bottom-0",
+      "group-data-[state=collapsed]/sidebar:w-(--sidebar-width-icon) bg-clip-padding",
+      "group-data-[state=collapsed]/sidebar:border-r group-data-[state=collapsed]/sidebar:border-kumo-line",
       className,
     )}
     {...props}
@@ -838,7 +874,7 @@ const SidebarMenuItem = forwardRef<
     <li
       ref={ref}
       data-sidebar="menu-item"
-      className={cn("relative", className)}
+      className={cn("relative group-data-[state=collapsed]/sidebar:overflow-hidden", className)}
       {...props}
     >
       {children}
@@ -912,7 +948,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     },
     ref,
   ) => {
-    const { state } = useSidebar();
+    const { state, peekable } = useSidebar();
     const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
 
@@ -929,36 +965,40 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     })();
 
     const content = (
-      <>
+      <div
+        className={cn(
+          "flex flex-1 items-center min-w-0 gap-3",
+          "translate-x-[-3px] group-not-data-[state=collapsed]/sidebar:translate-x-0",
+          "transition-transform duration-(--sidebar-animation-duration)",
+        )}
+      >
         {iconNode}
         <span
           className={cn(
-            "flex flex-1 items-center min-w-0 text-left overflow-hidden",
-            "group-data-[state=collapsed]/sidebar:hidden",
+            "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
           )}
         >
           {children}
         </span>
-      </>
+      </div>
     );
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg cursor-pointer",
+      "group/menu-button relative flex w-full min-w-0 items-center gap-2.5 rounded-lg outline-none cursor-pointer",
+      "before:absolute before:inset-x-0 before:-inset-y-px",
       // Sizing
       size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
       size === "sm" && "min-h-7 px-2 py-0 text-sm",
-      // Default state — no base transition to avoid flash on theme switch
       "text-kumo-default",
+      "transition-[color,background-color,box-shadow,outline] duration-(--sidebar-animation-duration)",
       !active && "hover:bg-kumo-tint",
       // Active state
       active && "bg-kumo-tint",
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
-      // Focus — inset ring so it's not clipped by overflow-hidden ancestors
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
-      // No special collapsed styles — the content container's overflow-hidden
-      // clips the text naturally as the width transitions down
+      // Focus
+      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
       className,
     );
 
@@ -997,17 +1037,26 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       );
     }
 
-    // Wrap in Tooltip when collapsed and tooltip text is provided.
-    // Use render prop so Tooltip merges onto the button/link
-    // instead of wrapping it in another <button> (which would cause invalid nesting).
-    if (state === "collapsed" && tooltip) {
-      button = <Tooltip content={tooltip} side="right" render={button} />;
+    // Always wrap in Tooltip when tooltip text is provided so the DOM
+    // structure stays stable across expand/collapse — preventing React from
+    // remounting the button (which would kill CSS transitions).
+    // The tooltip popup only shows when collapsed and peeking is disabled —
+    // when peekable, hovering reveals the full sidebar so tooltips are redundant.
+    const showTooltip = state === "collapsed" && !peekable;
+    if (tooltip) {
+      button = (
+        <Tooltip
+          content={showTooltip ? tooltip : null}
+          side="right"
+          render={button}
+        />
+      );
     }
 
     // Auto-wrap in <li> when not already inside a MenuItem
     if (!isInsideMenuItem) {
       return (
-        <li data-sidebar="menu-item" className="relative">
+        <li data-sidebar="menu-item" className="relative group-data-[state=collapsed]/sidebar:overflow-hidden">
           {button}
         </li>
       );
@@ -1044,7 +1093,7 @@ const SidebarMenuBadge = forwardRef<
     data-sidebar="menu-badge"
     className={cn(
       "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
-      "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-subtle",
+      "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1076,18 +1125,21 @@ SidebarMenuBadge.displayName = "Sidebar.MenuBadge";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   ComponentPropsWithoutRef<"ul">
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <ul
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-y-px border-l border-kumo-line p-0 pl-2.5",
+      "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0 overflow-hidden",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
     )}
     {...props}
-  />
+  >
+    <div className="absolute left-[19px] inset-y-px w-px bg-kumo-line z-10" />
+    {children}
+  </ul>
 ));
 
 SidebarMenuSub.displayName = "Sidebar.MenuSub";
@@ -1153,16 +1205,17 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium",
-    "text-kumo-default",
+    "relative flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium outline-none cursor-pointer",
+    "before:absolute before:inset-x-0 before:-inset-y-px",
+    "text-kumo-default transition-colors duration-150",
     !active && "hover:bg-kumo-tint",
     active && "bg-kumo-tint",
-    "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
+    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
     className,
   );
 
   const content = (
-    <span className="flex flex-1 items-center min-w-0 text-left overflow-hidden">
+    <span className="flex flex-1 items-center gap-2 truncate text-left">
       {children}
     </span>
   );
@@ -1257,32 +1310,23 @@ function SidebarPanelIcon({ className }: { className?: string }) {
 
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
       fill="none"
+      aria-hidden="true"
+      focusable="false"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
       className={cn("shrink-0", className)}
     >
-      <rect
-        x="1.5"
-        y="1.5"
-        width="13"
-        height="13"
-        rx="1.5"
-        stroke="currentColor"
-        strokeWidth="1.3"
-      />
-      <line
-        x1="5.5"
-        y1="1.5"
-        x2="5.5"
-        y2="14.5"
-        stroke="currentColor"
-        strokeWidth="1.3"
+      <path d="M21.25 6.72v10.56a2.97 2.97 0 0 1-2.97 2.97H5.72a2.97 2.97 0 0 1-2.97-2.97V6.72a2.97 2.97 0 0 1 2.97-2.97h12.56a2.97 2.97 0 0 1 2.97 2.97" />
+      <path
+        d="M6.25 7.25v9.5"
         className={cn(
           "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-          !open && "translate-x-[-2px]",
+          open ? "translate-x-px" : "translate-x-[10.5px]",
         )}
       />
     </svg>
@@ -1314,7 +1358,7 @@ const SidebarTrigger = forwardRef<
       aria-expanded={open}
       aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
-        "flex min-h-8.5 items-center px-3 rounded-lg cursor-pointer",
+        "flex size-8.5 justify-center items-center rounded-lg cursor-pointer",
         "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
         className,
@@ -1493,10 +1537,9 @@ const SidebarResizeHandle = forwardRef<
       className={cn(
         // Hit area inside the sidebar edge; thin visual line pinned to the edge via ::after
         "absolute inset-y-0 z-2 hidden w-3 cursor-col-resize sm:block",
-        "after:absolute after:inset-y-0 after:w-px",
+        "after:absolute after:inset-y-0 after:w-0.5",
         "after:bg-transparent after:transition-colors",
-        "hover:after:bg-kumo-brand/30 active:after:bg-kumo-brand/50",
-        "focus-visible:after:bg-kumo-brand/50",
+        "hover:after:bg-kumo-hairline active:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline",
         "focus:outline-none",
         side === "left" && "right-0 after:right-0",
         side === "right" && "left-0 after:left-0",
@@ -1838,7 +1881,7 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
         inert={!isActive ? true : undefined}
         className={cn(
           "flex w-full shrink-0 flex-col min-h-0",
-          !isActive && "invisible pointer-events-none",
+          !isActive && "pointer-events-none",
           className,
         )}
         {...props}
