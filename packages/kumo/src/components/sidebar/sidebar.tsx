@@ -756,6 +756,7 @@ const SidebarGroupLabel = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
 >(({ className, children, ...props }, ref) => (
+  // oxlint-ignore no-primitive-colors -- border-color here is a CSS property in transition-[], not a color token
   <div
     ref={ref}
     data-sidebar="group-label"
@@ -1524,6 +1525,7 @@ const SidebarResizeHandle = forwardRef<
   };
 
   return (
+    // oxlint-ignore no-noninteractive-element-interactions -- role="separator" with tabIndex is an interactive WAI-ARIA splitter
     <div
       ref={ref}
       role="separator"
