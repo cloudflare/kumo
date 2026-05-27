@@ -75,6 +75,8 @@ const NON_COLOR_UTILITIES = new Set([
   "inherit",
   "none",
   "auto",
+  // CSS property names that appear in transition-[] lists (e.g. border-color)
+  "color",
   // Border utilities (not colors)
   "0",
   "2",

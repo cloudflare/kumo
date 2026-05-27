@@ -1,4 +1,4 @@
-import { cn, Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
+import { Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
 import {
   HouseIcon,
   GlobeIcon,
@@ -67,7 +67,7 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
+            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"

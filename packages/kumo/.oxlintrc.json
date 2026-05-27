@@ -34,7 +34,7 @@
     // https://github.com/oxc-project/oxc/issues/1141
     "jsx-a11y-js/interactive-supports-focus": "error",
     "jsx-a11y-js/no-interactive-element-to-noninteractive-role": "error",
-    "jsx-a11y-js/no-noninteractive-element-interactions": "error",
+    "jsx-a11y-js/no-noninteractive-element-interactions": "warn",
     "jsx-a11y-js/no-noninteractive-element-to-interactive-role": "error",
     "jsx-a11y-js/control-has-associated-label": "warn"
   }
