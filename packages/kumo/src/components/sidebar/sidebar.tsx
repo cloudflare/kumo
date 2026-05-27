@@ -1818,7 +1818,7 @@ export interface SidebarSlidingViewsProps extends ComponentPropsWithoutRef<"div"
  * ```
  */
 const SidebarSlidingViews = forwardRef<HTMLDivElement, SidebarSlidingViewsProps>(
-  ({ activeKey, direction = "left", className, children, ...props }, ref) => {
+  ({ activeKey, direction: _direction = "left", className, children, ...props }, ref) => {
     const childArray = React.Children.toArray(children);
     const activeIndex = childArray.findIndex(
       (child) =>
