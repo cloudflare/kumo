@@ -1427,8 +1427,8 @@ SidebarRail.displayName = "Sidebar.Rail";
  *   tracking width from `minWidth`.
  */
 const SidebarResizeHandle = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<"button">
 >(({ className, ...props }, ref) => {
   const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth, width: currentWidth, maxWidth } =
     useSidebar();
@@ -1440,7 +1440,7 @@ const SidebarResizeHandle = forwardRef<
 
   const KEYBOARD_STEP = 10;
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsResizing(true);
     startX.current = e.clientX;
@@ -1493,7 +1493,7 @@ const SidebarResizeHandle = forwardRef<
     document.addEventListener("pointerup", handlePointerUp);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     const grow = side === "left" ? "ArrowRight" : "ArrowLeft";
     const shrink = side === "left" ? "ArrowLeft" : "ArrowRight";
 
@@ -1524,13 +1524,9 @@ const SidebarResizeHandle = forwardRef<
   };
 
   return (
-    <div
+    <button
       ref={ref}
-      role="separator"
-      aria-orientation="vertical"
-      aria-valuenow={open ? currentWidth : 0}
-      aria-valuemin={minWidth}
-      aria-valuemax={maxWidth}
+      type="button"
       aria-label="Resize sidebar"
       tabIndex={0}
       data-sidebar="resize-handle"

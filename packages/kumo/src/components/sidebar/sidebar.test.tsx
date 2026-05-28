@@ -457,11 +457,8 @@ describe("Sidebar.ResizeHandle", () => {
     );
 
     const handle = screen.getByTestId("handle");
-    expect(handle.getAttribute("role")).toBe("separator");
-    expect(handle.getAttribute("aria-orientation")).toBe("vertical");
+    expect(handle.tagName).toBe("BUTTON");
     expect(handle.getAttribute("aria-label")).toBe("Resize sidebar");
-    expect(handle.getAttribute("aria-valuemin")).toBe("180");
-    expect(handle.getAttribute("aria-valuemax")).toBe("400");
     expect(handle.getAttribute("tabindex")).toBe("0");
   });
 });
