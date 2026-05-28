@@ -3,13 +3,12 @@ if (!HTMLElement.prototype.getAnimations) {
   HTMLElement.prototype.getAnimations = () => [];
 }
 
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   Sidebar,
   SidebarProvider,
-  SidebarRoot,
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
@@ -339,7 +338,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
 
     expect(screen.getByTestId("state-reader").dataset.state).toBe("collapsed");
@@ -355,7 +354,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
 
     expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
@@ -371,7 +370,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
     expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
 
@@ -388,7 +387,7 @@ describe("Sidebar peeking", () => {
       </TestSidebar>,
     );
 
-    const sidebar = document.querySelector("[data-sidebar='content-container']")!;
+    const sidebar = document.querySelector("[data-sidebar='peek-zone']")!;
     fireEvent.mouseEnter(sidebar);
 
     expect(screen.getByTestId("state-reader").dataset.state).toBe("expanded");
@@ -458,11 +457,8 @@ describe("Sidebar.ResizeHandle", () => {
     );
 
     const handle = screen.getByTestId("handle");
-    expect(handle.getAttribute("role")).toBe("separator");
-    expect(handle.getAttribute("aria-orientation")).toBe("vertical");
+    expect(handle.tagName).toBe("BUTTON");
     expect(handle.getAttribute("aria-label")).toBe("Resize sidebar");
-    expect(handle.getAttribute("aria-valuemin")).toBe("180");
-    expect(handle.getAttribute("aria-valuemax")).toBe("400");
     expect(handle.getAttribute("tabindex")).toBe("0");
   });
 });

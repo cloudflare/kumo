@@ -1,4 +1,4 @@
-import { cn, Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
+import { Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
 import {
   HouseIcon,
   GlobeIcon,
@@ -45,7 +45,7 @@ function BrandLogo() {
   return (
     <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)">
       <CubeIcon className="size-4 shrink-0 text-kumo-brand" weight="duotone" />
-      <span className="text-sm font-semibold text-kumo-strong truncate group-data-[state=collapsed]/sidebar:hidden">
+      <span className="flex-1 text-sm font-semibold text-kumo-strong truncate">
         Company
       </span>
     </div>
@@ -67,16 +67,18 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-ring outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
+            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
               weight="duotone"
             />
-            <span className="flex-1 truncate text-left font-medium group-data-[state=collapsed]/sidebar:hidden">
+            <span className="flex flex-1 items-center min-w-0 text-left overflow-hidden">
               {active.name}
             </span>
-            <CaretUpDownIcon className="size-4 shrink-0 text-kumo-subtle group-data-[state=collapsed]/sidebar:hidden" />
+            <span className="shrink-0 overflow-hidden transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) w-4 group-data-[state=collapsed]/sidebar:w-0">
+              <CaretUpDownIcon className="size-4 text-kumo-subtle" />
+            </span>
           </button>
         }
       />
@@ -500,7 +502,7 @@ export function SidebarFullDemo() {
                     <Sidebar.MenuButton
                       icon={MagnifyingGlassIcon}
                       tooltip="Search"
-                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-0"
+                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-transparent"
                     >
                       Quick search&hellip;
                     </Sidebar.MenuButton>
