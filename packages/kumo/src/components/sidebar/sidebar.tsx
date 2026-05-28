@@ -1079,6 +1079,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           to={href}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-button-link"
           data-size={size}
           onClick={
             props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
@@ -1095,6 +1097,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           className={buttonClasses}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-button"
           data-size={size}
           {...props}
         >
@@ -1142,6 +1146,8 @@ const SidebarMenuAction = forwardRef<
     ref={ref}
     type="button"
     data-sidebar="menu-action"
+    data-kumo-component="Sidebar"
+    data-kumo-part="menu-action"
     className={cn(
       "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
       "text-kumo-subtle hover:bg-kumo-overlay",
@@ -1311,6 +1317,8 @@ const SidebarMenuSubButton = forwardRef<
         to={href}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
+        data-kumo-component="Sidebar"
+        data-kumo-part="menu-sub-button-link"
         onClick={
           props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
         }
@@ -1326,6 +1334,8 @@ const SidebarMenuSubButton = forwardRef<
         className={buttonClasses}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
+        data-kumo-component="Sidebar"
+        data-kumo-part="menu-sub-button"
         {...props}
       >
         {content}
@@ -1396,6 +1406,8 @@ const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
       ref={ref}
       type="button"
       data-sidebar="input"
+      data-kumo-component="Sidebar"
+      data-kumo-part="input"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
         "bg-kumo-base text-kumo-subtle ring ring-kumo-hairline",
@@ -1448,6 +1460,8 @@ const SidebarTrigger = forwardRef<
       ref={ref}
       type="button"
       data-sidebar="trigger"
+      data-kumo-component="Sidebar"
+      data-kumo-part="trigger"
       aria-label="Toggle sidebar"
       className={cn(
         "flex items-center rounded-md p-1.5",
@@ -1488,6 +1502,8 @@ const SidebarRail = forwardRef<
       ref={ref}
       type="button"
       data-sidebar="rail"
+      data-kumo-component="Sidebar"
+      data-kumo-part="rail"
       aria-label="Toggle sidebar"
       tabIndex={-1}
       className={cn(

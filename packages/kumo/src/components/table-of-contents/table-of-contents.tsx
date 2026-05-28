@@ -104,6 +104,8 @@ const TableOfContentsItem = forwardRef<
   const sharedProps = {
     ref,
     "aria-current": active ? ("true" as const) : undefined,
+    "data-kumo-component": "TableOfContents",
+    "data-kumo-part": "item",
     className: combinedClassName,
     children: innerContent,
     ...props,
@@ -156,6 +158,8 @@ const TableOfContentsGroup = forwardRef<
         <a
           href={href}
           aria-current={active ? ("true" as const) : undefined}
+          data-kumo-component="TableOfContents"
+          data-kumo-part="group-link"
           className={cn(ITEM_BASE, stateClasses)}
         >
           <span className="block min-w-0 leading-5">{label}</span>

@@ -301,7 +301,15 @@ function DialogTrigger({ children, ...props }: DialogTriggerProps) {
   const role = useDialogRole();
   const BaseTrigger =
     role === "alertdialog" ? AlertDialogBase.Trigger : DialogBase.Trigger;
-  return <BaseTrigger {...props}>{children}</BaseTrigger>;
+  return (
+    <BaseTrigger
+      data-kumo-component="Dialog"
+      data-kumo-part="trigger"
+      {...props}
+    >
+      {children}
+    </BaseTrigger>
+  );
 }
 
 DialogTrigger.displayName = "Dialog.Trigger";
@@ -356,7 +364,11 @@ function DialogClose({ children, ...props }: DialogCloseProps) {
   const role = useDialogRole();
   const BaseClose =
     role === "alertdialog" ? AlertDialogBase.Close : DialogBase.Close;
-  return <BaseClose {...props}>{children}</BaseClose>;
+  return (
+    <BaseClose data-kumo-component="Dialog" data-kumo-part="close" {...props}>
+      {children}
+    </BaseClose>
+  );
 }
 
 DialogClose.displayName = "Dialog.Close";

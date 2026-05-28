@@ -20,7 +20,14 @@
   }
 }
 
-/* Base clickable affordances */
+/*
+ * Base clickable affordances.
+ *
+ * Scoped to Kumo-rendered elements via the [data-kumo-component] and
+ * [data-kumo-part] data attributes. Components opt in by setting these
+ * attributes on their interactive roots/parts, which gives us a stable,
+ * library-owned scoping primitive that doesn't couple to class names.
+ */
 :where(
     a[href],
     button,
@@ -42,9 +49,11 @@
     [role="checkbox"],
     [role="radio"],
     [role="switch"]
-  ):where([class*="kumo-"], .link-current):where(:not(:disabled)):where(
-    :not([disabled])
-  ):where(:not([aria-disabled="true"])):where(:not([data-disabled])) {
+  ):where([data-kumo-component], [data-kumo-part]):where(
+    :not(:disabled)
+  ):where(:not([disabled])):where(:not([aria-disabled="true"])):where(
+    :not([data-disabled])
+  ) {
   cursor: pointer;
 }
 

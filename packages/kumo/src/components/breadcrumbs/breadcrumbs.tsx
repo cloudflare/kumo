@@ -68,6 +68,8 @@ const Link = ({
 
   return (
     <LinkComponent
+      data-kumo-component="Breadcrumbs"
+      data-kumo-part="link"
       to={href}
       className="flex min-w-0 max-w-full items-center gap-1 text-kumo-subtle no-underline"
     >

@@ -395,6 +395,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
         {/* Eye button - absolutely positioned to the right */}
         <button
           type="button"
+          data-kumo-component="SensitiveInput"
+          data-kumo-part="toggle-visibility"
           onClick={handleToggleVisibility}
           onKeyDown={(e) => e.stopPropagation()}
           aria-label={mode === "revealed" ? "Hide value" : "Reveal value"}
@@ -423,6 +425,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
         {hasValue && !disabled && (
           <button
             type="button"
+            data-kumo-component="SensitiveInput"
+            data-kumo-part="copy"
             onClick={copyToClipboard}
             onKeyDown={(e) => e.stopPropagation()}
             aria-label={copied ? "Copied" : "Copy to clipboard"}
@@ -447,6 +451,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             // Using role="button" with proper keyboard handling instead.
             // oxlint-disable-next-line prefer-tag-over-role
             role="button"
+            data-kumo-component="SensitiveInput"
+            data-kumo-part="masked-container"
             tabIndex={disabled ? -1 : 0}
             className={containerClassName}
             onClick={handleContainerClick}

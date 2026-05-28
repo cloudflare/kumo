@@ -255,6 +255,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
     const checkboxControl = (
       <BaseCheckbox.Root
         ref={ref}
+        data-kumo-component="Checkbox"
         name={name}
         checked={checked}
         indeterminate={indeterminate}
@@ -339,6 +340,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
 
     return (
       <label
+        data-kumo-component="Checkbox"
+        data-kumo-part="item-label"
         className={cn(
           "m-0 relative inline-flex items-center gap-2",
           // Control first (default): checkbox before label
@@ -350,6 +353,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
       >
         <BaseCheckbox.Root
           ref={ref}
+          data-kumo-component="Checkbox"
+          data-kumo-part="item"
           value={value}
           name={name}
           checked={checked}
