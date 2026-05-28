@@ -430,9 +430,15 @@ export function TimeseriesChart({
           hiddenCount = Math.max(0, allRows.length - max);
         }
 
-        setTooltipState({ ts, rows, hiddenCount });
+        const nextState: TooltipState = { ts, rows, hiddenCount };
+        setTooltipState((prev) => {
+          if (isSameTooltipState(prev, nextState)) return prev;
+          return nextState;
+        });
       },
-      globalout: () => setTooltipState(null),
+      globalout: () => {
+        setTooltipState(null);
+      },
       ...(onTimeRangeChange && {
         brushend: (params: any) => {
           const range = params.areas[0].coordRange;
@@ -577,6 +583,17 @@ function findNearest(data: [number, number][], ts: number): number | null {
   // Check both neighbours and return the closer one
   if (lo > 0 && Math.abs(data[lo - 1][0] - ts) < Math.abs(data[lo][0] - ts)) lo--;
   return data[lo][1];
+}
+
+/** Shallow-compare two tooltip states so React can skip renders when nothing changed. */
+function isSameTooltipState(a: TooltipState | null, b: TooltipState): boolean {
+  if (!a || a.ts !== b.ts || a.hiddenCount !== b.hiddenCount || a.rows.length !== b.rows.length) {
+    return false;
+  }
+  return a.rows.every((row, i) => {
+    const next = b.rows[i];
+    return row.name === next.name && row.value === next.value && row.color === next.color;
+  });
 }
 
 const defaultNumberFormat = new Intl.NumberFormat(undefined, {
