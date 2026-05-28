@@ -149,21 +149,24 @@ export const Button = forwardRef<
         className={cn(
           // Ensure clicks register even when parent has pointer-events-none (e.g. disabled overlay)
           "pointer-events-auto",
+          // Suppress the base Button's non-visible focus ring in all modes
+          "focus:ring-0",
+          // Container-zone buttons: use a subtle ring as focus indicator
+          // (outline doesn't work because the base Button's `focus:outline-none`
+          // sets `outline-style: none` which our outline-width/color can't override)
+          !isIndividual &&
+            "focus-visible:ring-[1.5px] focus-visible:ring-kumo-focus/50",
           // Individual mode: each button owns its own border and focus indicator
           isIndividual && [
             // Own border replaces the container's shared ring; force full height
-            "relative h-full! rounded-none ring-0 border border-kumo-line",
-            // Inherit border-radius only on outer edges; inner edges are flat
+            "relative h-full! rounded-none ring-0 focus-visible:ring-0 border border-kumo-line",
             "first:rounded-l-[inherit] last:rounded-r-[inherit]",
-            // Collapse double borders between adjacent elements
-            "not-first:border-l-0",
-            // Hovered element renders above idle siblings to show full border
-            "hover:z-[1]",
-            // Focused element renders above hovered siblings for focus indicator
-            "focus:z-[2] focus:border-kumo-line focus:outline focus:-outline-offset-1",
-            // Suppress the base Button's focus ring so only our outline shows
-            "focus-visible:ring-2 focus-visible:ring-kumo-focus",
-            // Match the group's disabled visual treatment
+            // Negative margin (not border-l-0) so the border is still paintable on focus
+            "not-first:-ml-px",
+            "hover:z-1",
+            // z-2 lifts above hovered siblings so focus border isn't clipped
+            "focus:z-2",
+            "focus-visible:border-kumo-focus/50",
             "disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
           ],
           className,

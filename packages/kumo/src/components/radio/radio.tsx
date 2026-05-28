@@ -319,7 +319,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
     return (
       <label
         className={cn(
-          "m-0 group relative inline-flex items-center gap-2",
+          "m-0 group relative inline-flex items-start gap-2",
           // "start" (default): radio before label
           // "end": label before radio using flex-row-reverse
           effectiveControlPosition === "end" && "flex-row-reverse justify-end",
@@ -332,7 +332,7 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
           value={value}
           disabled={disabled}
           className={cn(
-            "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
+            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&

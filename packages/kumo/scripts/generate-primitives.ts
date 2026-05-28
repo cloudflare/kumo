@@ -45,7 +45,12 @@ function main() {
 
   // Extract and sort component subpaths alphabetically
   const subpaths = Object.keys(exports)
-    .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+    .filter(
+      (key) =>
+        key.startsWith("./") &&
+        !key.startsWith("./internals/") &&
+        !EXCLUDED_EXPORTS.has(key),
+    )
     .sort();
 
   // Ensure directory exists

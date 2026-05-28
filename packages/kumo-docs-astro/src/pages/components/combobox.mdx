@@ -41,7 +41,7 @@ import {
 
 ### Barrel
 
-  <CodeBlock code={`import { Combobox } from "@cloudflare/kumo";`} lang="tsx" />
+<CodeBlock code={`import { Combobox } from "@cloudflare/kumo";`} lang="tsx" />
 
 ### Granular
 
@@ -140,7 +140,12 @@ export default function Example() {
 
 ### Custom Trigger
 
-<p>Use <code>Combobox.Trigger</code> with a <code>render</code> prop to replace the default input-like trigger with your own element. Pair with <code>Combobox.Value</code> to display the selected value. Useful for account switchers, sidebar navigation, or anywhere the default chrome doesn't fit.</p>
+<p>
+  Use <code>Combobox.Trigger</code> with a <code>render</code> prop to replace
+  the default input-like trigger with your own element. Pair with
+  <code>Combobox.Value</code> to display the selected value. Useful for account
+  switchers, sidebar navigation, or anywhere the default chrome doesn't fit.
+</p>
 <ComponentExample demo="ComboboxCustomTriggerDemo">
   <ComboboxCustomTriggerDemo client:load />
 </ComponentExample>
@@ -211,12 +216,12 @@ export default function Example() {
 
 ## Customizing Dropdown Height
 
-  <p>
-    By default, <code class="text-surface">Combobox.Content</code> has a max height of <code class="text-surface">24rem</code> (384px) or the available viewport space, whichever is smaller. The dropdown scrolls automatically when content exceeds this height.
-  </p>
-  <p>
-    To customize the max height, pass a className to <code class="text-surface">Combobox.Content</code>:
-  </p>
+<p>
+  By default, `Combobox.Content` has a max height of `24rem` (384px) or the
+  available viewport space, whichever is smaller. The dropdown scrolls
+  automatically when content exceeds this height.
+</p>
+<p>To customize the max height, pass a className to `Combobox.Content`:</p>
 
 ```tsx
 // Shorter dropdown (200px)

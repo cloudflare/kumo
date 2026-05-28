@@ -1,5 +1,20 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.4
+
+### Patch Changes
+
+- b68caba: Added `Badge` dot styling as a new variant for indicators that need a subtle visual cue.
+  Updated badge docs and demo examples to reflect the new badge variant and dot-style behavior.
+- 4f2b47c: Add inline label layout and fix auto-assigned node colors in tooltips
+- Updated dependencies [b68caba]
+- Updated dependencies [a210c9c]
+- Updated dependencies [64a4bda]
+- Updated dependencies [0003bf5]
+- Updated dependencies [4f2b47c]
+- Updated dependencies [0e79214]
+  - @cloudflare/kumo@2.3.0
+
 ## 1.5.3
 
 ### Patch Changes

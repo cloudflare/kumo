@@ -520,6 +520,19 @@ describe("Select", () => {
     });
   });
 
+  describe("error styling", () => {
+    it("applies error border when error prop is truthy", () => {
+      render(
+        <Select aria-label="Pick one" error="Please select a value">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.className).toContain("ring-kumo-danger");
+    });
+  });
+
   describe("popup structure", () => {
     it("opens a listbox popup from the trigger", async () => {
       render(
@@ -577,6 +590,114 @@ describe("Select", () => {
       const listbox = screen.getByRole("listbox");
       expect(listbox.className).toContain("overflow-y-auto");
       expect(listbox.className).toContain("overscroll-none");
+    });
+  });
+
+  describe("renderValue with placeholder", () => {
+    it("shows placeholder when value is empty string", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value=""
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+      expect(screen.queryByText("Selected:")).toBeNull();
+    });
+
+    it("shows placeholder when value is null", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value={null}
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+    });
+
+    it("shows placeholder when value is undefined", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value={undefined}
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+    });
+
+    it("falls back to placeholder when renderValue returns undefined", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value="a"
+          renderValue={() => undefined}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+    });
+
+    it("renders the ReactNode returned by renderValue", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value="a"
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Selected: a")).toBeTruthy();
+      expect(screen.queryByText("Choose...")).toBeNull();
+    });
+
+    it("renders nothing without crashing when value is empty string and no placeholder", () => {
+      const { container } = render(
+        <Select
+          aria-label="Pick one"
+          value=""
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      const trigger = container.querySelector('[role="combobox"]');
+      expect(trigger).toBeTruthy();
+      // Should not render the renderValue output for empty string
+      expect(screen.queryByText("Selected:")).toBeNull();
     });
   });
 });
