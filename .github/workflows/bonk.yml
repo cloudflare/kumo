@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -42,7 +42,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Lil Bonk
-        uses: ask-bonk/ask-bonk/github@main
+        uses: ask-bonk/ask-bonk/github@8c7a8314f4f4865e2e41e5718dfabc4ab7a2274b # main
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
           CLOUDFLARE_GATEWAY_ID: ${{ secrets.CF_AI_GATEWAY_NAME }}

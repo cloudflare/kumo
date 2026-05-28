@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createElement } from "react";
+import { render } from "@testing-library/react";
 import { SensitiveInput } from "./sensitive-input";
 
 describe("SensitiveInput", () => {
@@ -34,5 +35,14 @@ describe("SensitiveInput", () => {
       className: "custom-class",
     };
     expect(() => createElement(SensitiveInput, props)).not.toThrow();
+  });
+
+  it("applies error border when error prop is truthy", () => {
+    const { container } = render(
+      <SensitiveInput aria-label="API Key" error="Invalid key" />,
+    );
+    // Error styling (ring-kumo-danger) is on the container div wrapping the password input
+    const inputEl = container.querySelector("input");
+    expect(inputEl?.parentElement?.className).toContain("ring-kumo-danger");
   });
 });

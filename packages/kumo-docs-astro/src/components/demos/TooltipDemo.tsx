@@ -1,5 +1,5 @@
-import { Tooltip, TooltipProvider, Button } from "@cloudflare/kumo";
-import { Info, PlusIcon, TranslateIcon } from "@phosphor-icons/react";
+import { Tooltip, TooltipProvider, Button } from '@cloudflare/kumo';
+import { Info, PlusIcon, TranslateIcon } from '@phosphor-icons/react';
 
 export function TooltipHeroDemo() {
   return (
@@ -71,6 +71,43 @@ export function TooltipCustomTriggerDemo() {
  * Control the delay before opening and closing the tooltip.
  * `delay` controls open delay (default: 600ms), `closeDelay` controls close delay (default: 0ms).
  */
+/**
+ * Demonstrates that long tooltip content respects available viewport space.
+ * Tooltips near the edge of the viewport constrain their width to
+ * `--available-width` so they don't overflow.
+ */
+export function TooltipOverflowDemo() {
+  const longContent =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.';
+  return (
+    <TooltipProvider>
+      <div className="flex w-full justify-between">
+        <Tooltip
+          content={longContent}
+          side="bottom"
+          render={<Button variant="secondary" />}
+        >
+          Near left edge
+        </Tooltip>
+        <Tooltip
+          content={longContent}
+          side="bottom"
+          render={<Button variant="secondary" />}
+        >
+          Centered
+        </Tooltip>
+        <Tooltip
+          content={longContent}
+          side="bottom"
+          render={<Button variant="secondary" />}
+        >
+          Near right edge
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+}
+
 export function TooltipDelayDemo() {
   return (
     <TooltipProvider>

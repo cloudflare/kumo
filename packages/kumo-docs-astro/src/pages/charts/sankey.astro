@@ -13,6 +13,7 @@ import {
   SankeyChartRichTooltipDemo,
   SankeyChartInteractiveDemo,
   SankeyChartDrillDownDemo,
+  SankeyChartInlineLabelDemo,
 } from "~/components/demos/Chart/SankeyChartDemo";
 ---
 
@@ -180,6 +181,22 @@ const handleNodeClick = (node: { name: string }) => {
   onNodeClick={handleNodeClick}
 />`}>
           <SankeyChartDrillDownDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Inline Label Layout</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Use <code class="text-kumo-default">nodeLabelLayout="inline"</code> to display node values and names on a single line. This prevents label overlap on small nodes where the default stacked layout would cause text to collide.
+        </p>
+        <ComponentExample code={`<SankeyChart
+  echarts={echarts}
+  nodes={nodes}
+  links={links}
+  height={300}
+  nodeLabelLayout="inline"
+/>`}>
+          <SankeyChartInlineLabelDemo client:visible />
         </ComponentExample>
       </div>
     </div>

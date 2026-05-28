@@ -674,4 +674,142 @@ describe("security utilities", () => {
       expect(result).not.toContain("javascript:");
     });
   });
+
+  describe("nodeLabelLayout", () => {
+    it("uses stacked layout by default (value above name)", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={[{ name: "Node A", value: 100 }]}
+          links={[]}
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      const formatter = options.series[0].label.formatter;
+
+      const result = formatter({ name: "Node A" });
+      // Stacked layout: value\nname (newline between)
+      expect(result).toContain("\n");
+      expect(result).toMatch(/\{value\|.*\}\n\{name\|.*\}/);
+    });
+
+    it("uses inline layout when nodeLabelLayout is 'inline'", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={[{ name: "Node A", value: 100 }]}
+          links={[]}
+          nodeLabelLayout="inline"
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      const formatter = options.series[0].label.formatter;
+
+      const result = formatter({ name: "Node A" });
+      // Inline layout: name value (space between, no newline)
+      expect(result).not.toContain("\n");
+      expect(result).toMatch(/\{name\|.*\} \{value\|.*\}/);
+    });
+
+    it("sets lineHeight for stacked layout", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={[{ name: "Node A", value: 100 }]}
+          links={[]}
+          nodeLabelLayout="stacked"
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      expect(options.series[0].label.rich.value.lineHeight).toBe(16);
+    });
+
+    it("does not set lineHeight for inline layout", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={[{ name: "Node A", value: 100 }]}
+          links={[]}
+          nodeLabelLayout="inline"
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      expect(options.series[0].label.rich.value.lineHeight).toBeUndefined();
+    });
+  });
+
+  describe("auto-assigned node colors", () => {
+    it("uses auto-assigned colors in link tooltips when nodes have no explicit color", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={[
+            { name: "Source" }, // No explicit color
+            { name: "Target" }, // No explicit color
+          ]}
+          links={[{ source: 0, target: 1, value: 50 }]}
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      const formatter = options.tooltip.formatter;
+
+      // Simulate link tooltip
+      const result = formatter({
+        dataType: "edge",
+        data: { source: "Source", target: "Target", value: 50 },
+      });
+
+      // Should NOT contain the fallback gray color #666
+      // Should contain auto-assigned categorical colors
+      expect(result).not.toContain("#666");
+    });
+
+    it("assigns consistent colors to nodes without explicit colors", () => {
+      const mockChart = createMockChart();
+      const mockEcharts = createMockEcharts(mockChart);
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={[
+            { name: "Node A" }, // No color - gets categorical(0)
+            { name: "Node B" }, // No color - gets categorical(1)
+            { name: "Node C", color: "#custom" }, // Explicit color
+          ]}
+          links={[]}
+        />,
+      );
+
+      const options = mockChart.setOption.mock.calls[0][0];
+      const nodeData = options.series[0].data;
+
+      // First two nodes should have auto-assigned colors (not undefined)
+      expect(nodeData[0].itemStyle.color).toBeDefined();
+      expect(nodeData[1].itemStyle.color).toBeDefined();
+      // Third node should have explicit color
+      expect(nodeData[2].itemStyle.color).toBe("#custom");
+      // Auto-assigned colors should be different
+      expect(nodeData[0].itemStyle.color).not.toBe(nodeData[1].itemStyle.color);
+    });
+  });
 });

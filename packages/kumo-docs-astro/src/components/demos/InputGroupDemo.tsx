@@ -104,6 +104,7 @@ export function InputGroupButtonsDemo() {
         />
         <InputGroup.Addon align="end">
           <InputGroup.Button
+            shape="square"
             className="text-kumo-subtle"
             icon={show ? EyeSlashIcon : EyeIcon}
             aria-label={show ? "Hide password" : "Show password"}
@@ -125,11 +126,11 @@ export function InputGroupButtonsDemo() {
         {searchValue && (
           <InputGroup.Addon align="end" className="pr-1">
             <InputGroup.Button
+              shape="square"
+              icon={XIcon}
               aria-label="Clear search"
               onClick={() => setSearchValue("")}
-            >
-              <XIcon />
-            </InputGroup.Button>
+            />
           </InputGroup.Addon>
         )}
         <InputGroup.Button variant="secondary" onClick={() => {}}>
@@ -152,8 +153,10 @@ export function InputGroupTooltipButtonDemo() {
       />
       <InputGroup.Addon align="end">
         <InputGroup.Button
+          shape="square"
           className="text-kumo-subtle"
           icon={QuestionIcon}
+          aria-label="Query language help"
           tooltip="Query language help"
           onClick={() => {}}
         />
@@ -322,6 +325,7 @@ export function InputGroupStatesDemo() {
         />
         <InputGroup.Addon align="end">
           <InputGroup.Button
+            shape="square"
             className="text-kumo-subtle"
             icon={show ? EyeSlashIcon : EyeIcon}
             aria-label={show ? "Hide password" : "Show password"}

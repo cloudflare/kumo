@@ -83,27 +83,78 @@ export const KUMO_BADGE_VARIANTS = {
       description: "Blue badge",
     },
   },
+  appearance: {
+    filled: {
+      classes: "",
+      description: "Filled badge with background color (default)",
+    },
+    dot: {
+      classes:
+        "gap-1.5 bg-transparent text-kumo-default ring ring-kumo-hairline",
+      description: "Outlined badge with a colored circle dot indicating status",
+    },
+  },
+  dotColor: {
+    none: {
+      classes: "",
+      description: "No dot indicator (used when appearance is not dot, or variant has no dot color)",
+    },
+    success: {
+      classes: "bg-kumo-badge-green",
+      description: "Green dot for success status",
+    },
+    warning: {
+      classes: "bg-kumo-badge-orange",
+      description: "Orange dot for warning status",
+    },
+    error: {
+      classes: "bg-kumo-badge-red",
+      description: "Red dot for error status",
+    },
+    neutral: {
+      classes: "bg-kumo-badge-neutral",
+      description: "Neutral dot for informational status",
+    },
+  },
 } as const;
 
 export const KUMO_BADGE_DEFAULT_VARIANTS = {
   variant: "primary",
+  appearance: "filled",
+  dotColor: "none",
 } as const;
 
 // Derived types from KUMO_BADGE_VARIANTS
 export type KumoBadgeVariant = keyof typeof KUMO_BADGE_VARIANTS.variant;
+export type KumoBadgeAppearance = keyof typeof KUMO_BADGE_VARIANTS.appearance;
+export type KumoBadgeDotColor = keyof typeof KUMO_BADGE_VARIANTS.dotColor;
 
 export interface KumoBadgeVariantsProps {
   variant?: KumoBadgeVariant;
+  appearance?: KumoBadgeAppearance;
 }
 
 export function badgeVariants({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
+  appearance = KUMO_BADGE_DEFAULT_VARIANTS.appearance,
 }: KumoBadgeVariantsProps = {}) {
+  const variantClasses = resolveVariant(
+    KUMO_BADGE_VARIANTS.variant,
+    variant,
+    KUMO_BADGE_DEFAULT_VARIANTS.variant,
+  ).classes;
+  const appearanceClasses = resolveVariant(
+    KUMO_BADGE_VARIANTS.appearance,
+    appearance,
+    KUMO_BADGE_DEFAULT_VARIANTS.appearance,
+  ).classes;
   return cn(
     // Base styles (exported as KUMO_BADGE_BASE_STYLES for Figma plugin)
     KUMO_BADGE_BASE_STYLES,
-    // Apply variant styles from KUMO_BADGE_VARIANTS (fallback to primary if variant not found)
-    resolveVariant(KUMO_BADGE_VARIANTS.variant, variant, KUMO_BADGE_DEFAULT_VARIANTS.variant).classes,
+    // The dot appearance overrides background/text colors from the variant,
+    // so only apply variant classes when we're not in dot mode.
+    appearance === "dot" ? "" : variantClasses,
+    appearanceClasses,
   );
 }
 
@@ -118,6 +169,7 @@ export type BadgeVariant = KumoBadgeVariant;
  * <Badge variant="green">Active</Badge>
  * <Badge variant="red">Error</Badge>
  * <Badge variant="neutral">Inactive</Badge>
+ * <Badge variant="success" appearance="dot">Healthy</Badge>
  * ```
  */
 export interface BadgeProps {
@@ -137,9 +189,18 @@ export interface BadgeProps {
    * - `"inverted"`
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
-   * @default "secondary"
+   * @default "primary"
    */
   variant?: KumoBadgeVariant;
+  /**
+   * Visual appearance of the badge.
+   * - `"filled"` — Filled background using the variant color (default)
+   * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
+   *   `warning`, `error`, and `neutral` variants show a dot; other variants
+   *   render the badge without a dot.
+   * @default "filled"
+   */
+  appearance?: KumoBadgeAppearance;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Content rendered inside the badge. */
@@ -152,15 +213,34 @@ export interface BadgeProps {
  * @example
  * ```tsx
  * <Badge variant="green">Active</Badge>
+ * <Badge variant="success" appearance="dot">Healthy</Badge>
  * ```
  */
 export function Badge({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
+  appearance = KUMO_BADGE_DEFAULT_VARIANTS.appearance,
   className,
   children,
 }: BadgeProps) {
+  // Crash-safe dot-color lookup via resolveVariant — unknown variants fall
+  // back to "none" (no dot) instead of throwing.
+  const dotColor =
+    appearance === "dot"
+      ? resolveVariant(
+          KUMO_BADGE_VARIANTS.dotColor,
+          variant,
+          KUMO_BADGE_DEFAULT_VARIANTS.dotColor,
+        ).classes
+      : "";
+
   return (
-    <span className={cn(badgeVariants({ variant }), className)}>
+    <span className={cn(badgeVariants({ variant, appearance }), className)}>
+      {dotColor ? (
+        <span
+          aria-hidden="true"
+          className={cn("size-1.75 rounded-full shrink-0", dotColor)}
+        />
+      ) : null}
       {children}
     </span>
   );
