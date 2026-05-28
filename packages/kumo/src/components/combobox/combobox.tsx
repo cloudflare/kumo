@@ -373,7 +373,7 @@ function TriggerInput({
           iconStyles.caretRight,
         )}
       >
-        <ComboboxBase.Icon>
+        <ComboboxBase.Icon className="flex items-center">
           <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>

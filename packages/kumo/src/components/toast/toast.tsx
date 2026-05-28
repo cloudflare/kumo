@@ -369,7 +369,7 @@ function ToastList() {
                   data-toast-title
                   className="text-[0.975rem] leading-5 font-medium text-kumo-default"
                 />
-                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-subtle" />
+                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
 
                 {!!toast.actions && (
                   <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
@@ -383,7 +383,7 @@ function ToastList() {
           </>
         )}
         <Toast.Close
-          className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded border-none bg-transparent text-current/50 hover:bg-kumo-contrast/10 hover:text-current"
+          className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded border-none bg-transparent text-current hover:bg-kumo-contrast/10 hover:text-current"
           aria-label="Close"
         >
           <XIcon className="h-3 w-3" />
@@ -394,10 +394,10 @@ function ToastList() {
 }
 
 const TOAST_BACKGROUND_CLASSES: Record<string, string> = {
-  success: "bg-kumo-success/5",
+  success: "bg-kumo-success/12",
   error: "bg-kumo-danger/5",
-  warning: "bg-kumo-warning/5",
-  info: "bg-kumo-info/5",
+  warning: "bg-kumo-warning/12",
+  info: "bg-kumo-info/12",
 };
 
 function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
