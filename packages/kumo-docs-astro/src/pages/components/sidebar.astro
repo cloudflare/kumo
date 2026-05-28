@@ -7,17 +7,18 @@ import CodeBlock from "../../components/docs/CodeBlock.astro";
 import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   SidebarBasicDemo,
-  SidebarCollapsibleGroupDemo,
   SidebarToggleDemo,
   SidebarFullDemo,
   SidebarResizableDemo,
   SidebarRightDemo,
+  SidebarPeekingDemo,
+  SidebarSlidingViewsDemo,
 } from "../../components/demos/SidebarDemo";
 ---
 
 <DocLayout
   title="Sidebar"
-  description="A composable sidebar navigation component with collapsible groups, icon-only mode, and responsive mobile support."
+  description="A composable sidebar navigation component with collapsible groups, icon-only mode, peeking, sliding views, and responsive mobile support."
   sourceFile="components/sidebar"
 >
   <ComponentSection>
@@ -48,7 +49,7 @@ import {
 
   <ComponentSection>
     <Heading level={2}>Usage</Heading>
-    <p class="mb-4 text-sm text-kumo-strong">
+    <p>
       At minimum you need <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Provider</code>,
       <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar</code>,
       <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Content</code> (scrollable area),
@@ -71,7 +72,7 @@ function AppLayout({ children }) {
             <Sidebar.GroupLabel>Navigation</Sidebar.GroupLabel>
             <Sidebar.Menu>
               <Sidebar.MenuButton icon={HouseIcon} active>Home</Sidebar.MenuButton>
-              {/* MenuItem only needed to wrap Collapsible or MenuAction */}
+              {/* MenuItem only needed to wrap Collapsible */}
               <Sidebar.MenuItem>
                 <Sidebar.Collapsible>
                   <Sidebar.CollapsibleTrigger
@@ -92,10 +93,10 @@ function AppLayout({ children }) {
           </Sidebar.Group>
         </Sidebar.Content>
         <Sidebar.Footer>
-          <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
+          <Sidebar.Trigger />
         </Sidebar.Footer>
       </Sidebar>
-      <main className="flex-1">{children}</main>
+      <div className="flex-1">{children}</div>
     </Sidebar.Provider>
   );
 }`} lang="tsx" />
@@ -107,7 +108,7 @@ function AppLayout({ children }) {
     <div class="space-y-8">
       <div>
         <Heading level={3}>Basic</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           The minimum viable sidebar: just groups, menu buttons, and collapsible sub-menus. No header or footer.
           <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuButton</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuSubButton</code> auto-wrap in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code> &mdash; no <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuItem</code> / <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuSubItem</code> needed.
         </p>
@@ -129,25 +130,8 @@ function AppLayout({ children }) {
       </div>
 
       <div>
-        <Heading level={3}>Collapsible Groups</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
-          Add <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">collapsible</code> to a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Group</code> and wrap the <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Menu</code> in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">GroupContent</code> to enable animated expand/collapse via the group label.
-        </p>
-        <ComponentExample code={`<Sidebar.Group collapsible defaultOpen>
-  <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
-  <Sidebar.GroupContent>
-    <Sidebar.Menu>
-      <Sidebar.MenuButton icon={HouseIcon} active>Home</Sidebar.MenuButton>
-    </Sidebar.Menu>
-  </Sidebar.GroupContent>
-</Sidebar.Group>`}>
-          <SidebarCollapsibleGroupDemo client:load />
-        </ComponentExample>
-      </div>
-
-      <div>
         <Heading level={3}>Toggle & Collapsed State</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Trigger</code> in the footer or <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">useSidebar().toggleSidebar</code> programmatically. Pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code> to show labels on hover when collapsed.
         </p>
         <ComponentExample code={`<Sidebar.MenuButton icon={HouseIcon} tooltip="Home" active>
@@ -165,37 +149,10 @@ const { toggleSidebar } = useSidebar();`}>
       </div>
 
       <div>
-        <Heading level={3}>Full Example</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
-          Kitchen sink: header with account switcher, search input, badges, collapsible sub-menus, and a footer action.
-        </p>
-        <ComponentExample code={`<Sidebar>
-  <Sidebar.Header>
-    <AccountSwitcher />
-  </Sidebar.Header>
-  <Sidebar.Content>
-    <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" />
-    <Sidebar.Group>
-      <Sidebar.Menu>
-        <Sidebar.MenuButton icon={LockIcon}>
-          Zero Trust
-          <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
-        </Sidebar.MenuButton>
-      </Sidebar.Menu>
-    </Sidebar.Group>
-  </Sidebar.Content>
-  <Sidebar.Footer>
-    <Sidebar.MenuButton icon={GearIcon}>Manage account</Sidebar.MenuButton>
-  </Sidebar.Footer>
-</Sidebar>`}>
-          <SidebarFullDemo client:load />
-        </ComponentExample>
-      </div>
-
-      <div>
         <Heading level={3}>Resizable</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Drag the edge to resize. Dragging below <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">minWidth</code> collapses; dragging outward from collapsed expands.
+          The resize handle is keyboard accessible: use arrow keys, Home, and End.
         </p>
         <ComponentExample code={`<Sidebar.Provider defaultOpen resizable defaultWidth={240} minWidth={180} maxWidth={400}>
   <Sidebar>
@@ -209,7 +166,7 @@ const { toggleSidebar } = useSidebar();`}>
 
       <div>
         <Heading level={3}>Right Side</Heading>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">side="right"</code> for a sidebar on the right edge. Place <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;main&gt;</code> before <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;Sidebar&gt;</code> in the DOM.
         </p>
         <ComponentExample code={`<Sidebar.Provider defaultOpen side="right">
@@ -229,6 +186,99 @@ const { toggleSidebar } = useSidebar();`}>
           <SidebarRightDemo client:load />
         </ComponentExample>
       </div>
+
+      <div>
+        <Heading level={3}>Peeking</Heading>
+        <p>
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">peekable</code> on the Provider. When the sidebar is collapsed,
+          hovering or focusing it temporarily expands it. Moving away collapses it back.
+          The <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">data-state</code> attribute will be <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"peeking"</code> during the peek.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen peekable>
+  <Sidebar>
+    <Sidebar.Content>...</Sidebar.Content>
+    <Sidebar.Footer>
+      <Sidebar.Trigger />
+    </Sidebar.Footer>
+  </Sidebar>
+</Sidebar.Provider>
+
+// Read peeking state:
+const { state, isPeeking } = useSidebar();
+// state: "expanded" | "collapsed" | "peeking"`}>
+          <SidebarPeekingDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Sliding Views</Heading>
+        <p>
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingViews</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingView</code>
+          for animated horizontal transitions between navigation surfaces (e.g., account &harr; zone).
+          Inactive views are automatically marked with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">aria-hidden</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">inert</code>.
+          Animation respects <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">prefers-reduced-motion</code>.
+        </p>
+        <ComponentExample code={`const [surface, setSurface] = useState("account");
+
+<Sidebar.SlidingViews activeKey={surface} direction="left">
+  <Sidebar.SlidingView value="account">
+    <Sidebar.Content>...account nav...</Sidebar.Content>
+  </Sidebar.SlidingView>
+  <Sidebar.SlidingView value="zone">
+    <Sidebar.Content>...zone nav...</Sidebar.Content>
+  </Sidebar.SlidingView>
+</Sidebar.SlidingViews>`}>
+          <SidebarSlidingViewsDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Full Example</Heading>
+        <p>
+          Kitchen sink showcasing every subcomponent: header with account switcher, groups with labels, collapsible sections with nested expandable, badges, sliding views, and a footer trigger.
+        </p>
+        <ComponentExample code={`<Sidebar>
+  <Sidebar.Header>
+    <AccountSwitcher />
+  </Sidebar.Header>
+  <Sidebar.Content>
+    <Sidebar.Group>
+      <Sidebar.Menu>
+        <Sidebar.MenuButton icon={HouseIcon} active>Home</Sidebar.MenuButton>
+      </Sidebar.Menu>
+    </Sidebar.Group>
+    <Sidebar.Group>
+      <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          <Sidebar.Collapsible defaultOpen>
+            <Sidebar.CollapsibleTrigger
+              render={
+                <Sidebar.MenuButton icon={CodeIcon}>
+                  Compute <Sidebar.MenuChevron />
+                </Sidebar.MenuButton>
+              }
+            />
+            <Sidebar.CollapsibleContent>
+              <Sidebar.MenuSub>
+                <Sidebar.MenuSubButton>
+                  Containers <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                </Sidebar.MenuSubButton>
+              </Sidebar.MenuSub>
+            </Sidebar.CollapsibleContent>
+          </Sidebar.Collapsible>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Group>
+  </Sidebar.Content>
+  <Sidebar.Footer>
+    <Sidebar.Trigger />
+  </Sidebar.Footer>
+</Sidebar>`}>
+          <SidebarFullDemo client:load />
+        </ComponentExample>
+      </div>
+
     </div>
   </ComponentSection>
 
@@ -238,7 +288,7 @@ const { toggleSidebar } = useSidebar();`}>
     <div class="space-y-8">
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           The main sidebar container. Renders as <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;aside&gt;</code> on desktop, Dialog sheet on mobile.
         </p>
         <PropsTable component="Sidebar" />
@@ -246,7 +296,7 @@ const { toggleSidebar } = useSidebar();`}>
 
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Provider</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Context provider managing expand/collapse state and mobile detection.
         </p>
         <PropsTable component="Sidebar.Provider" />
@@ -254,43 +304,29 @@ const { toggleSidebar } = useSidebar();`}>
 
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Content</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Scrollable middle section (<code class="rounded bg-kumo-control px-1 py-0.5 text-xs">flex-1 overflow-y-auto</code>). Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Header</code> / <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Footer</code> to pin content above or below this scroll area.
         </p>
       </div>
 
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.MenuButton</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Primary interactive element. Supports icons, active state, links, and auto-tooltip when collapsed.
-          Auto-wraps in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code> &mdash; no <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuItem</code> wrapper needed unless you have siblings like <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuAction</code>.
+          Auto-wraps in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code> &mdash; no <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuItem</code> wrapper needed unless wrapping a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Collapsible</code>.
         </p>
         <PropsTable component="Sidebar.MenuButton" />
       </div>
 
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.MenuSubButton</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
+        <p>
           Button inside a sub-menu for nested navigation.
           Auto-wraps in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code> &mdash; no <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuSubItem</code> wrapper needed.
         </p>
         <PropsTable component="Sidebar.MenuSubButton" />
       </div>
 
-      <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.GroupContent</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
-          Animation wrapper &mdash; only needed for <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">collapsible</code> groups (provides the grid-rows height animation). For non-collapsible groups, place <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Menu</code> directly inside <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Group</code>.
-        </p>
-      </div>
-
-      <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Input</h3>
-        <p class="mb-3 text-sm text-kumo-strong">
-          Search trigger button styled as an input. Typically opens a command palette.
-        </p>
-        <PropsTable component="Sidebar.Input" />
-      </div>
     </div>
   </ComponentSection>
 </DocLayout>

@@ -16,6 +16,6 @@ DropdownMenu (item, link-item, checkbox-item, radio-item, submenu-trigger),
 Combobox (trigger, item, clear, chip-remove), Autocomplete (item),
 Dialog (trigger, close), Popover (trigger), Tabs (tab),
 Collapsible (trigger, default-trigger), Breadcrumbs (link),
-TableOfContents (item, group-link), Sidebar (menu-button, menu-action,
-menu-sub-button, input, trigger, rail), MenuBar (option), Toast (close),
-SensitiveInput (toggle-visibility, copy, masked-container).
+TableOfContents (item, group-link), Sidebar (menu-button, menu-sub-button,
+trigger, rail), MenuBar (option), Toast (close), SensitiveInput
+(toggle-visibility, copy, masked-container).

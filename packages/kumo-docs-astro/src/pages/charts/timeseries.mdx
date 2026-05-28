@@ -15,6 +15,8 @@ import {
   IncompleteDataChartDemo,
   LoadingChartDemo,
   TimeRangeSelectionChartDemo,
+  TooltipFollowCursorDemo,
+  TooltipBoundaryDemo,
 } from "~/components/demos/Chart/ChartDemo";
 
 <p>
@@ -24,7 +26,7 @@ import {
 
 <ComponentSection>
 
-### Basic Line Chart
+## Basic Line Chart
 
 <p>A simple line chart displaying multiple data series over time.</p>
 
@@ -35,7 +37,7 @@ import {
 
 <ComponentSection>
 
-### Custom X-Axis Label Format
+## Custom X-Axis Label Format
 
 <p>
   Use the <code>xAxisTickLabelFormat</code> prop to control how x-axis tick
@@ -50,7 +52,7 @@ import {
 
 <ComponentSection>
 
-### Gradient Fill
+## Gradient Fill
 
 <p>
   Set <code>gradient</code> to <code>true</code> to render a vertical gradient
@@ -66,7 +68,7 @@ import {
 
 <ComponentSection>
 
-### Incomplete Data
+## Incomplete Data
 
 <p>
   Use the <code>incomplete</code> prop to indicate regions where data may be
@@ -80,7 +82,7 @@ import {
 
 <ComponentSection>
 
-### Time Range Selection
+## Time Range Selection
 
 <p>
   Enable time range selection by providing the <code>onTimeRangeChange</code>
@@ -94,7 +96,40 @@ import {
 
 <ComponentSection>
 
-### Bar Chart
+## Tooltip Cursor Tracking
+
+<p>
+  Use the <code>tooltipFollowCursor</code> prop to control which axis the tooltip
+  tracks the cursor on. The default is <code>"both"</code>, which follows the
+  cursor freely. Set it to <code>"x"</code> for a Recharts-style axis-locked
+  tooltip that only moves horizontally.
+</p>
+
+  <ComponentExample demo="TooltipFollowCursorDemo">
+    <TooltipFollowCursorDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Tooltip Boundary
+
+<p>
+  Use the <code>tooltipBoundary</code> prop to constrain the tooltip to a
+  specific container element. By default the tooltip avoids overflowing any
+  clipping ancestor (scroll containers, viewports). Pass a DOM element to
+  restrict it further — useful when the chart lives inside a card or panel
+  and the tooltip shouldn't escape it.
+</p>
+
+  <ComponentExample demo="TooltipBoundaryDemo">
+    <TooltipBoundaryDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Bar Chart
 
 <p>
   Set <code>type="bar"</code> to render series as stacked bars instead of lines.
@@ -108,7 +143,7 @@ import {
 
 <ComponentSection>
 
-### Loading State
+## Loading State
 
 <p>
   Set <code>loading</code> to <code>true</code> to display an animated sine-wave
@@ -117,6 +152,6 @@ import {
 </p>
 
   <ComponentExample demo="LoadingChartDemo">
-    <LoadingChartDemo client:visible />
+    <LoadingChartDemo client:only="react" />
   </ComponentExample>
 </ComponentSection>
