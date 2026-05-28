@@ -459,6 +459,9 @@
   "peerDependenciesMeta": {
     "zod": {
       "optional": true
+    },
+    "echarts": {
+      "optional": true
     }
   },
   "dependencies": {
