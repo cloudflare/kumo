@@ -452,6 +452,32 @@ export const THEME_CONFIG: ThemeConfig = {
     },
 
     /*
+     * Banner background tokens
+     * Pre-baked opacity per mode so banners don't need dark: overrides.
+     * Mirrors the *-tint hues but tuned for the Banner component's surface contrast.
+     */
+    "kumo-banner-info": {
+      newName: "",
+      description: "Info banner background (informational/default variant)",
+      theme: {
+        kumo: {
+          light: "oklch(93.2% 0.032 255.585 / 0.7)",
+          dark: "oklch(37.9% 0.146 265.522 / 0.5)",
+        },
+      },
+    },
+    "kumo-banner-warning": {
+      newName: "",
+      description: "Warning banner background (alert variant)",
+      theme: {
+        kumo: {
+          light: "var(--color-yellow-100, oklch(97.3% 0.071 103.193))",
+          dark: "oklch(55.4% 0.135 66.442 / 0.5)",
+        },
+      },
+    },
+
+    /*
      * Badge color tokens
      * Solid variants: vivid background, white text
      * Subtle variants: tinted background, darker text (flips in dark mode)

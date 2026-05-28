@@ -15,13 +15,12 @@ export const KUMO_BANNER_BASE_STYLES =
 export const KUMO_BANNER_VARIANTS = {
   variant: {
     default: {
-      classes: "bg-kumo-info-tint/70 dark:bg-kumo-info-tint/50 text-kumo-info",
+      classes: "bg-kumo-banner-info text-kumo-info",
       iconClasses: "text-kumo-info",
       description: "Informational banner for general messages",
     },
     alert: {
-      classes:
-        "bg-kumo-warning-tint dark:bg-kumo-warning-tint/50 text-kumo-warning",
+      classes: "bg-kumo-banner-warning text-kumo-warning",
       iconClasses: "text-kumo-warning",
       description: "Warning banner for cautionary messages",
     },

@@ -6,7 +6,7 @@ describe("Banner", () => {
   it("supports secondary variant", () => {
     const className = bannerVariants({ variant: "secondary" });
 
-    expect(className).toContain("bg-kumo-recessed");
+    expect(className).toContain("bg-kumo-contrast/5");
     expect(className).toContain("text-kumo-subtle");
   });
 
