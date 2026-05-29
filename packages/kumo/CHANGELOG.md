@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 2.4.1
+
+### Patch Changes
+
+- 2daa237: Fix Combobox and Autocomplete rendering in React 18 by using the explicit context provider API.
+
 ## 2.4.0
 
 ### Minor Changes
