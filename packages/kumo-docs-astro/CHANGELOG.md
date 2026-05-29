@@ -1,5 +1,25 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.5
+
+### Patch Changes
+
+- 59f6e37: Fix stray `<p>` elements rendering around inline `<code>` in MDX docs (notably on the Select page's Grouped Options section). Replace inline `<code class="...">` tags with markdown backticks so Prettier line-wrapping no longer breaks the surrounding paragraph.
+- Updated dependencies [ab273fe]
+- Updated dependencies [b93d881]
+- Updated dependencies [351fac9]
+- Updated dependencies [3db8294]
+- Updated dependencies [a9a1526]
+- Updated dependencies [6d5d9f0]
+- Updated dependencies [5081d35]
+- Updated dependencies [9d4a2ff]
+- Updated dependencies [3db8294]
+- Updated dependencies [18f5e42]
+- Updated dependencies [1585bfe]
+- Updated dependencies [6e9b524]
+- Updated dependencies [729caa3]
+  - @cloudflare/kumo@2.4.0
+
 ## 1.5.4
 
 ### Patch Changes
