@@ -214,6 +214,41 @@ export default function Example() {
 
 <ComponentSection>
 
+## Filtering
+
+<p>
+  Filtering is **case- and accent-insensitive by default**, powered by
+  `Intl.Collator` under the hood. For string items, no custom `filter` is
+  needed.
+</p>
+<p>
+  When filtering on a property of object items, use `Combobox.useFilter()` to
+  preserve the built-in accent-insensitive matching:
+</p>
+
+```tsx
+function LanguagePicker() {
+  const { contains } = Combobox.useFilter();
+  return (
+    <Combobox
+      items={languages}
+      filter={(item, query) => contains(item.label, query)}
+    >
+      {/* ... */}
+    </Combobox>
+  );
+}
+```
+
+<p>
+  To disable filtering entirely (e.g. when results come from a server), pass
+  `filter={null}`.
+</p>
+
+</ComponentSection>
+
+<ComponentSection>
+
 ## Customizing Dropdown Height
 
 <p>
