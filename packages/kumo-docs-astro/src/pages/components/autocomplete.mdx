@@ -152,11 +152,14 @@ import {
 ```tsx
 function LanguagePicker() {
   const { contains } = Autocomplete.useFilter();
+
+  const filter = useCallback(
+    (item: Language, query: string) => contains(item.label, query),
+    [contains],
+  );
+
   return (
-    <Autocomplete
-      items={languages}
-      filter={(item, query) => contains(item.label, query)}
-    >
+    <Autocomplete items={languages} filter={filter}>
       {/* ... */}
     </Autocomplete>
   );

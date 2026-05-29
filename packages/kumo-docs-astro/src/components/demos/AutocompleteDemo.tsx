@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Autocomplete } from "@cloudflare/kumo";
 import { languages, type Language } from "./data/languages";
 
@@ -125,15 +125,18 @@ export function AutocompleteDemo() {
 export function AutocompleteWithFieldDemo() {
   const { contains } = Autocomplete.useFilter();
 
+  const filter = useCallback(
+    (item: Language, query: string) => contains(item.label, query),
+    [contains],
+  );
+
   return (
     <div className="w-80">
       <Autocomplete
         items={languages}
         label="Language"
         description="Start typing to filter languages"
-        filter={(item: Language, query: string) =>
-          contains(item.label, query)
-        }
+        filter={filter}
       >
         <Autocomplete.InputGroup placeholder="Search a language…" />
         <Autocomplete.Content>
@@ -154,15 +157,18 @@ export function AutocompleteWithFieldDemo() {
 export function AutocompleteErrorDemo() {
   const { contains } = Autocomplete.useFilter();
 
+  const filter = useCallback(
+    (item: Country, query: string) => contains(item.label, query),
+    [contains],
+  );
+
   return (
     <div className="w-80">
       <Autocomplete
         items={countries}
         label="Country"
         error={{ message: "Please enter a valid country", match: true }}
-        filter={(item: Country, query: string) =>
-          contains(item.label, query)
-        }
+        filter={filter}
       >
         <Autocomplete.InputGroup placeholder="Search countries…" />
         <Autocomplete.Content>

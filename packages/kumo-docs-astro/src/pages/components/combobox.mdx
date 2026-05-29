@@ -229,11 +229,14 @@ export default function Example() {
 ```tsx
 function LanguagePicker() {
   const { contains } = Combobox.useFilter();
+
+  const filter = useCallback(
+    (item: Language, query: string) => contains(item.label, query),
+    [contains],
+  );
+
   return (
-    <Combobox
-      items={languages}
-      filter={(item, query) => contains(item.label, query)}
-    >
+    <Combobox items={languages} filter={filter}>
       {/* ... */}
     </Combobox>
   );
