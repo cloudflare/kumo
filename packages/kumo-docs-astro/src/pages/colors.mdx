@@ -5,7 +5,6 @@ description: "Kumo uses semantic color tokens that automatically adapt to light 
 ---
 
 import { TailwindColorTokens } from "~/components/demos/ColorsDemo";
-import { Badge } from "@cloudflare/kumo";
 
 ## Usage
 
@@ -323,17 +322,12 @@ Use the solid token on icons, status dots, borders and rings. Banners and badges
     </thead>
     <tbody>
       <tr>
-        <td>
-          <span className="inline-flex items-center gap-2">
-            <code>kumo-hairline</code>
-            <Badge variant="info">New</Badge>
-          </span>
-        </td>
-        <td>A border/ring color to distinguish between flat surfaces where no shadow is present (i.e. <code>LayerCard</code>).</td>
+        <td><code>kumo-hairline</code></td>
+        <td>A border/ring color to distinguish between flat surfaces where no shadow is present.</td>
       </tr>
       <tr>
-        <td><code>kumo-hairline</code></td>
-        <td>A thicker border/ring color that defines the edge of an elevated surface alongside a shadow.</td>
+        <td><code>kumo-line</code></td>
+        <td>A stronger border/ring color that defines the edge of an elevated surface alongside a shadow.</td>
       </tr>
     </tbody>
   </table>
