@@ -1013,6 +1013,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           to={href}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-button-link"
           data-size={size}
           onClick={
             props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
@@ -1029,6 +1031,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           className={buttonClasses}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-button"
           data-size={size}
           {...props}
         >
@@ -1231,6 +1235,8 @@ const SidebarMenuSubButton = forwardRef<
         to={href}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
+        data-kumo-component="Sidebar"
+        data-kumo-part="menu-sub-button-link"
         onClick={
           props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
         }
@@ -1246,6 +1252,8 @@ const SidebarMenuSubButton = forwardRef<
         className={buttonClasses}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
+        data-kumo-component="Sidebar"
+        data-kumo-part="menu-sub-button"
         {...props}
       >
         {content}
@@ -1355,6 +1363,8 @@ const SidebarTrigger = forwardRef<
       ref={ref}
       type="button"
       data-sidebar="trigger"
+      data-kumo-component="Sidebar"
+      data-kumo-part="trigger"
       aria-expanded={open}
       aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
@@ -1395,6 +1405,8 @@ const SidebarRail = forwardRef<
       ref={ref}
       type="button"
       data-sidebar="rail"
+      data-kumo-component="Sidebar"
+      data-kumo-part="rail"
       aria-label="Toggle sidebar"
       tabIndex={-1}
       className={cn(

@@ -315,6 +315,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
               {...restRootProps}
               {...props}
               ref={rootRef}
+              data-kumo-component="Switch"
               type="button"
               role={role}
               {...checkedA11yProps}
@@ -369,6 +370,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
     return (
       <label
+        data-kumo-component="Switch"
+        data-kumo-part="item-label"
         className={cn(
           "m-0 relative inline-flex items-center gap-2",
           // Control first (default): switch before label
@@ -462,6 +465,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               <button
                 {...restRootProps}
                 ref={rootRef}
+                data-kumo-component="Switch"
+                data-kumo-part="item"
                 type="button"
                 role={role}
                 {...checkedA11yProps}

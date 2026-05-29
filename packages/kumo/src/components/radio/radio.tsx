@@ -266,6 +266,8 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
       const controlAtStart = effectiveControlPosition === "start";
       return (
         <label
+          data-kumo-component="Radio"
+          data-kumo-part="item-label"
           className={cn(
             "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
             controlAtStart && "flex-row-reverse",
@@ -291,6 +293,8 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
           </div>
           <BaseRadio.Root
             ref={ref}
+            data-kumo-component="Radio"
+            data-kumo-part="item"
             value={value}
             disabled={disabled}
             className={cn(
@@ -318,6 +322,8 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
 
     return (
       <label
+        data-kumo-component="Radio"
+        data-kumo-part="item-label"
         className={cn(
           "m-0 group relative inline-flex items-start gap-2",
           // "start" (default): radio before label
@@ -329,6 +335,8 @@ const RadioItem = forwardRef<HTMLButtonElement, RadioItemProps>(
       >
         <BaseRadio.Root
           ref={ref}
+          data-kumo-component="Radio"
+          data-kumo-part="item"
           value={value}
           disabled={disabled}
           className={cn(

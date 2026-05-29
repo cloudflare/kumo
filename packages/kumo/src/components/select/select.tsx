@@ -451,6 +451,8 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     >
       {selectLabelNode}
       <SelectBase.Trigger
+        data-kumo-component="Select"
+        data-kumo-part="trigger"
         className={cn(
           selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
@@ -571,6 +573,8 @@ type OptionProps<T> = {
 function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
   return (
     <SelectBase.Item
+      data-kumo-component="Select"
+      data-kumo-part="option"
       value={value}
       disabled={disabled}
       className={cn(

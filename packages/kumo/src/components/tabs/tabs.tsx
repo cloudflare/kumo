@@ -184,6 +184,8 @@ export function Tabs({
         {items.map((tab) => (
           <TabsPrimitive.Tab
             key={tab.value}
+            data-kumo-component="Tabs"
+            data-kumo-part="tab"
             value={tab.value}
             render={tab.render}
             className={cn(

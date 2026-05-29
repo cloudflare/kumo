@@ -261,6 +261,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const button = (
       <button
         ref={ref}
+        data-kumo-component="Button"
         className={cn(
           buttonVariants({ variant, size, shape }),
           disabled && "cursor-not-allowed opacity-50",
@@ -346,6 +347,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     return (
       <LinkComponent
         ref={ref}
+        data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({ variant, size, shape }),
           "flex items-center no-underline!",
