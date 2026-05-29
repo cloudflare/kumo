@@ -71,7 +71,7 @@ jobs:
       - name: Publish
         env:
           NPM_CONFIG_PROVENANCE: true
-        run: pnpm run release
+        run: pnpm exec changeset publish --tag backport
 
       - name: Verify published version
         run: |
