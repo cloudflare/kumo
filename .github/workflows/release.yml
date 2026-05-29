@@ -4,14 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      backport_ref:
-        description: "Backport branch/ref to release"
-        required: true
-      expected_version:
-        description: "Expected @cloudflare/kumo version after changeset version"
-        required: true
 
 concurrency:
   group: ${{ github.workflow }}
@@ -24,7 +16,7 @@ jobs:
       contents: write
       pull-requests: write
 
-    if: ${{ github.repository_owner == 'cloudflare' && github.event_name == 'push' }}
+    if: ${{ github.repository_owner == 'cloudflare' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -60,72 +52,3 @@ jobs:
       - name: Publish package preview
         if: ${{ steps.changesets.outputs.pullRequestNumber }}
         run: pnpm dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
-
-  backport-release:
-    permissions:
-      id-token: write
-      contents: write
-
-    if: ${{ github.repository_owner == 'cloudflare' && github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout backport ref
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.backport_ref }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
-
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Verify backport ref
-        run: |
-          case "${{ inputs.backport_ref }}" in
-            release/kumo-*) ;;
-            *)
-              echo "Backport releases must use a release/kumo-* ref, got ${{ inputs.backport_ref }}"
-              exit 1
-              ;;
-          esac
-
-      - name: Version package
-        run: pnpm run version
-
-      - name: Verify expected version
-        run: |
-          VERSION=$(node -p "require('./packages/kumo/package.json').version")
-          if [ "$VERSION" != "${{ inputs.expected_version }}" ]; then
-            echo "Expected version ${{ inputs.expected_version }}, got $VERSION"
-            exit 1
-          fi
-
-      - name: Build package
-        run: pnpm --filter @cloudflare/kumo build
-
-      - name: Commit version changes
-        run: |
-          git add .
-          git commit -m "chore: release @cloudflare/kumo@${{ inputs.expected_version }} [skip ci]"
-
-      - name: Publish
-        env:
-          NPM_CONFIG_PROVENANCE: true
-        run: pnpm exec changeset publish --tag backport
-
-      - name: Verify published version
-        run: |
-          sleep 30
-          pnpm view @cloudflare/kumo@${{ inputs.expected_version }} version
-
-      - name: Push release branch
-        run: git push origin HEAD:${{ inputs.backport_ref }}
-
-      - name: Push tags
-        run: git push origin --tags
