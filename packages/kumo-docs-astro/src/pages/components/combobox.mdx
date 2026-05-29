@@ -242,8 +242,14 @@ function LanguagePicker() {
 
 <p>
   To disable filtering entirely (e.g. when results come from a server), pass
-  `filter={null}`.
+  `filter={null}`:
 </p>
+
+```tsx
+<Combobox items={results} filter={null}>
+  ...
+</Combobox>
+```
 
 </ComponentSection>
 

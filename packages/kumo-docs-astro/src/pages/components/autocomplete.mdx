@@ -140,21 +140,21 @@ import {
 
 <p>
   Filtering is case- and accent-insensitive by default, powered by
-  `Intl.Collator` under the hood. For most cases you don't need a custom
-  `filter` at all — Base UI handles string items automatically.
+  `Intl.Collator` under the hood. For string items, no custom `filter` is
+  needed.
 </p>
 <p>
-  When you need to filter on a property of object items, use
+  When filtering on a property of object items, use
   `Autocomplete.useFilter()` to preserve the built-in accent-insensitive
   matching:
 </p>
 
 ```tsx
-function CountryPicker() {
+function LanguagePicker() {
   const { contains } = Autocomplete.useFilter();
   return (
     <Autocomplete
-      items={countries}
+      items={languages}
       filter={(item, query) => contains(item.label, query)}
     >
       {/* ... */}
