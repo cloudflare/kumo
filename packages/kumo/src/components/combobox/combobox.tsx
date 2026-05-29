@@ -167,9 +167,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   size?: KumoComboboxSize;
 }) {
   const comboboxControl = (
-    <ComboboxContext value={{ size, hasError: Boolean(error) }}>
+    <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
-    </ComboboxContext>
+    </ComboboxContext.Provider>
   );
 
   // Render with Field wrapper if label, description, or error are provided

@@ -116,9 +116,9 @@ function Root<ItemValue>({
     items?: readonly ItemValue[];
   };
   const control = (
-    <AutocompleteContext value={{ hasError: Boolean(error) }}>
+    <AutocompleteContext.Provider value={{ hasError: Boolean(error) }}>
       <AutocompleteBase.Root {...rootProps}>{children}</AutocompleteBase.Root>
-    </AutocompleteContext>
+    </AutocompleteContext.Provider>
   );
 
   if (label) {
