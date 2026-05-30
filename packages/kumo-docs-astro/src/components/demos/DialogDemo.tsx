@@ -297,6 +297,177 @@ export function DialogWithComboboxDemo() {
   );
 }
 
+/**
+ * Demonstrates the `busy` prop. When `busy={true}`, Escape, outside clicks,
+ * and Dialog.Close buttons are all swallowed, preventing the user from
+ * abandoning an in-flight Save. Programmatic close still works (the demo
+ * resolves and closes after 2s).
+ */
+export function DialogBusyDemo() {
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen} busy={saving}>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
+      <Dialog className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            {saving ? "Saving…" : "Save changes"}
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="text-kumo-subtle">
+          {saving
+            ? "Don't go anywhere — Escape, outside clicks, and the close button are temporarily disabled while we save your changes."
+            : "Click Save to start a fake 2-second save. While it runs, Escape, outside clicks, and Close are blocked."}
+        </Dialog.Description>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props} disabled={saving}>
+                Cancel
+              </Button>
+            )}
+          />
+          <Button
+            variant="primary"
+            disabled={saving}
+            onClick={() => {
+              setSaving(true);
+              setTimeout(() => {
+                setSaving(false);
+                setOpen(false);
+              }, 2000);
+            }}
+          >
+            {saving ? "Saving…" : "Save"}
+          </Button>
+        </div>
+      </Dialog>
+    </Dialog.Root>
+  );
+}
+
+/**
+ * Demonstrates the `2xl` size variant (min 1024px). Useful for dialogs
+ * containing data-dense layouts: tables, side-by-side forms, summary panels.
+ */
+export function DialogSize2xlDemo() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open 2xl dialog</Button>} />
+      <Dialog size="2xl" className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Wide layout (size=&quot;2xl&quot;)
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="mb-6 text-kumo-subtle">
+          The <code>2xl</code> size gives you at least 1024px of horizontal
+          space — enough for two columns of form fields, a small table, or a
+          side-by-side preview.
+        </Dialog.Description>
+        <div className="grid grid-cols-2 gap-6">
+          <div className="rounded-lg border border-kumo-hairline p-4">
+            <h4 className="mb-2 font-medium">Column A</h4>
+            <p className="text-sm text-kumo-subtle">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+          </div>
+          <div className="rounded-lg border border-kumo-hairline p-4">
+            <h4 className="mb-2 font-medium">Column B</h4>
+            <p className="text-sm text-kumo-subtle">
+              Sed do eiusmod tempor incididunt ut labore et dolore magna.
+            </p>
+          </div>
+        </div>
+        <div className="mt-8 flex justify-end gap-2">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Close
+              </Button>
+            )}
+          />
+        </div>
+      </Dialog>
+    </Dialog.Root>
+  );
+}
+
+/**
+ * Demonstrates `verticalAlign="top"` with a `topOffset` so the dialog clears
+ * a fixed-position header. Useful for apps with a persistent navbar where
+ * a centered dialog would visually overlap or compete with the chrome.
+ */
+export function DialogVerticalAlignTopDemo() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger
+        render={(p) => <Button {...p}>Open top-anchored dialog</Button>}
+      />
+      <Dialog verticalAlign="top" topOffset={64} className="p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Top-anchored
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="text-kumo-subtle">
+          With <code>verticalAlign=&quot;top&quot;</code> and{" "}
+          <code>topOffset=&#123;64&#125;</code>, this dialog opens flush to the
+          top of the viewport with a 64px gap — enough to clear a typical app
+          navbar.
+        </Dialog.Description>
+        <div className="mt-8 flex justify-end">
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="secondary" {...props}>
+                Close
+              </Button>
+            )}
+          />
+        </div>
+      </Dialog>
+    </Dialog.Root>
+  );
+}
+
 export function DialogWithDropdownDemo() {
   return (
     <Dialog.Root>

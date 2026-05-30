@@ -18,6 +18,9 @@ import {
   DialogWithSelectDemo,
   DialogWithComboboxDemo,
   DialogWithDropdownDemo,
+  DialogBusyDemo,
+  DialogSize2xlDemo,
+  DialogVerticalAlignTopDemo,
 } from "~/components/demos/DialogDemo";
 
 {/* Hero Demo */}
@@ -187,10 +190,51 @@ export default function Example() {
 
 ### With Dropdown
 
-  <p>Dialog containing a Dropdown menu.</p>
-  <ComponentExample demo="DialogWithDropdownDemo">
-    <DialogWithDropdownDemo client:load />
-  </ComponentExample>
+<p>Dialog containing a Dropdown menu.</p>
+<ComponentExample demo="DialogWithDropdownDemo">
+  <DialogWithDropdownDemo client:load />
+</ComponentExample>
+
+### Busy state (`busy`)
+
+<p>
+  When <code>busy=&#123;true&#125;</code> is set on <code>Dialog.Root</code>,
+  user-initiated dismissal is temporarily blocked: Escape, outside clicks,
+  focus-out, and <code>Dialog.Close</code> button presses are all swallowed. Use
+  this to prevent a stray keystroke or backdrop click from abandoning an
+  in-flight async action.
+</p>
+<p>
+  Programmatic close (controlled <code>open=&#123;false&#125;</code> or
+  <code>actionsRef.close()</code>) still works, so the dialog can be dismissed
+  once the async work resolves.
+</p>
+<ComponentExample demo="DialogBusyDemo">
+  <DialogBusyDemo client:load />
+</ComponentExample>
+
+### Wide layout (`size="2xl"`)
+
+<p>
+  The <code>2xl</code> size (min 1024px) is intended for dialogs that need more
+  horizontal real estate than <code>xl</code> (768px) provides: side-by-side
+  forms, summary tables, multi-pane previews.
+</p>
+<ComponentExample demo="DialogSize2xlDemo">
+  <DialogSize2xlDemo client:load />
+</ComponentExample>
+
+### Top-anchored (`verticalAlign="top"`)
+
+<p>
+  By default, dialogs are vertically centered in the viewport. Set
+  <code>verticalAlign=&quot;top&quot;</code> with a <code>topOffset</code> to
+  anchor the dialog to the top instead — useful for apps with a persistent
+  navbar where a centered dialog would visually compete with the chrome.
+</p>
+<ComponentExample demo="DialogVerticalAlignTopDemo">
+  <DialogVerticalAlignTopDemo client:load />
+</ComponentExample>
 </ComponentSection>
 
 {/* API Reference */}
@@ -235,7 +279,18 @@ export default function Example() {
         <td class="px-4 py-2 font-mono text-xs">false</td>
         <td class="px-4 py-2 text-kumo-subtle">
           When true, prevents the dialog from being dismissed by clicking
-          outside.
+          outside. Static — applies for the entire lifetime of the dialog.
+        </td>
+      </tr>
+      <tr>
+        <td class="px-4 py-2 font-mono text-xs">busy</td>
+        <td class="px-4 py-2 font-mono text-xs">boolean</td>
+        <td class="px-4 py-2 font-mono text-xs">false</td>
+        <td class="px-4 py-2 text-kumo-subtle">
+          When true, blocks user-initiated dismissal (Escape, outside click,
+          focus-out, and `Dialog.Close` button presses). Programmatic close
+          still works. Designed to flip dynamically while an async action is in
+          flight, so a stray keystroke can't abandon a Save mid-flight.
         </td>
       </tr>
     </tbody>
