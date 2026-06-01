@@ -317,10 +317,11 @@ describe("Sidebar.Collapsible", () => {
     expect(content.getAttribute("role")).toBe("region");
   });
 
-  it("should set inert on closed content", () => {
+  it("should not set inert on closed content (uses aria-hidden + grid-rows instead)", () => {
     render(<CollapsibleTest />);
     const content = screen.getByTestId("collapsible-content");
-    expect(content.hasAttribute("inert")).toBe(true);
+    expect(content.hasAttribute("inert")).toBe(false);
+    expect(content.getAttribute("aria-hidden")).toBe("true");
   });
 });
 
@@ -421,13 +422,17 @@ describe("Sidebar.SlidingViews", () => {
 
   it("should show the active view", () => {
     render(<SlidingTest activeKey="a" />);
-    const viewA = screen.getByTestId("view-a").closest("[data-sidebar='sliding-view']")!;
+    const viewA = screen
+      .getByTestId("view-a")
+      .closest("[data-sidebar='sliding-view']")!;
     expect(viewA.getAttribute("aria-hidden")).toBe("false");
   });
 
   it("should hide inactive views with aria-hidden and inert", () => {
     render(<SlidingTest activeKey="a" />);
-    const viewB = screen.getByTestId("view-b").closest("[data-sidebar='sliding-view']")!;
+    const viewB = screen
+      .getByTestId("view-b")
+      .closest("[data-sidebar='sliding-view']")!;
     expect(viewB.getAttribute("aria-hidden")).toBe("true");
     expect(viewB.hasAttribute("inert")).toBe(true);
   });
@@ -437,8 +442,12 @@ describe("Sidebar.SlidingViews", () => {
 
     rerender(<SlidingTest activeKey="b" />);
 
-    const viewA = screen.getByTestId("view-a").closest("[data-sidebar='sliding-view']")!;
-    const viewB = screen.getByTestId("view-b").closest("[data-sidebar='sliding-view']")!;
+    const viewA = screen
+      .getByTestId("view-a")
+      .closest("[data-sidebar='sliding-view']")!;
+    const viewB = screen
+      .getByTestId("view-b")
+      .closest("[data-sidebar='sliding-view']")!;
     expect(viewA.getAttribute("aria-hidden")).toBe("true");
     expect(viewB.getAttribute("aria-hidden")).toBe("false");
   });
@@ -451,7 +460,13 @@ describe("Sidebar.SlidingViews", () => {
 describe("Sidebar.ResizeHandle", () => {
   it("should have correct ARIA attributes", () => {
     render(
-      <TestSidebar defaultOpen resizable defaultWidth={240} minWidth={180} maxWidth={400}>
+      <TestSidebar
+        defaultOpen
+        resizable
+        defaultWidth={240}
+        minWidth={180}
+        maxWidth={400}
+      >
         <Sidebar.ResizeHandle data-testid="handle" />
       </TestSidebar>,
     );

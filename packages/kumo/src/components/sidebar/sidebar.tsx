@@ -12,7 +12,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Dialog as DialogBase } from "@base-ui/react/dialog";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon } from "@phosphor-icons/react";
@@ -100,16 +99,16 @@ const MOBILE_BREAKPOINT = 768;
 // Mobile detection hook
 // ============================================================================
 
-function useIsMobile() {
+function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
     const onChange = () => setIsMobile(mql.matches);
     mql.addEventListener("change", onChange);
     setIsMobile(mql.matches);
     return () => mql.removeEventListener("change", onChange);
-  }, []);
+  }, [breakpoint]);
 
   return isMobile;
 }
@@ -147,17 +146,6 @@ export interface SidebarContextValue {
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
-
-const reactMajorVersion = parseInt(React.version, 10);
-
-function inertValue(value: boolean): boolean | undefined {
-  if (reactMajorVersion >= 19) {
-    return value;
-  }
-
-  // React <19 does not emit unknown boolean attributes like `inert={true}`.
-  return (value ? "true" : undefined) as boolean | undefined;
-}
 
 /**
  * Hook to access sidebar state and actions from any descendant component.
@@ -220,6 +208,12 @@ export interface SidebarProviderProps {
    * @default 250
    */
   animationDuration?: number;
+  /**
+   * Viewport width (in px) below which the sidebar renders as a mobile dialog
+   * sheet instead of the desktop aside rail.
+   * @default 768
+   */
+  mobileBreakpoint?: number;
   /** Content — typically `<Sidebar>` + main content. */
   children: ReactNode;
   /** Additional CSS classes for the wrapper div. */
@@ -259,15 +253,32 @@ function SidebarProvider({
   contained = false,
   peekable = false,
   animationDuration = SIDEBAR_ANIMATION_DURATION_MS,
+  mobileBreakpoint,
   children,
   className,
   style,
 }: SidebarProviderProps) {
-  const isMobile = useIsMobile();
-  const [openMobile, setOpenMobile] = useState(false);
+  const isMobile = useIsMobile(mobileBreakpoint);
+  const [_openMobile, _setOpenMobile] = useState(false);
   const [width, setWidthState] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
   const [isPeeking, setIsPeeking] = useState(false);
+
+  // When controlled (`openProp` provided), use it directly for mobile too.
+  // When uncontrolled, use internal `_openMobile` state.
+  const openMobile =
+    isMobile && openProp !== undefined ? openProp : _openMobile;
+
+  const setOpenMobile = useCallback(
+    (next: boolean) => {
+      _setOpenMobile(next);
+      // In controlled mode on mobile, notify the consumer
+      if (isMobile && openProp !== undefined) {
+        setOpenProp?.(next);
+      }
+    },
+    [isMobile, openProp, setOpenProp],
+  );
 
   const setWidth = useCallback(
     (newWidth: number) => {
@@ -291,12 +302,12 @@ function SidebarProvider({
 
   const toggleSidebar = useCallback(() => {
     if (isMobile) {
-      setOpenMobile((prev) => !prev);
+      setOpenMobile(!openMobile);
     } else {
       setIsPeeking(false);
       setOpen((prev: boolean) => !prev);
     }
-  }, [isMobile, setOpen]);
+  }, [isMobile, openMobile, setOpenMobile, setOpen]);
 
   const startPeek = useCallback(() => {
     if (peekable && !open && !isMobile) {
@@ -318,12 +329,34 @@ function SidebarProvider({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
   // either stable (props, setters) or derived from state that triggers re-render
-  const contextValue = useMemo<SidebarContextValue>(() => ({
-    state, open, setOpen, openMobile, setOpenMobile, isMobile,
-    toggleSidebar, variant, side, collapsible, width, resizable,
-    minWidth, maxWidth, isResizing, setIsResizing, setWidth,
-    isPeeking, peekable, startPeek, stopPeek, contained, animationDuration,
-  }), [state, open, openMobile, isMobile, width, isResizing, isPeeking]);
+  const contextValue = useMemo<SidebarContextValue>(
+    () => ({
+      state,
+      open,
+      setOpen,
+      openMobile,
+      setOpenMobile,
+      isMobile,
+      toggleSidebar,
+      variant,
+      side,
+      collapsible,
+      width,
+      resizable,
+      minWidth,
+      maxWidth,
+      isResizing,
+      setIsResizing,
+      setWidth,
+      isPeeking,
+      peekable,
+      startPeek,
+      stopPeek,
+      contained,
+      animationDuration,
+    }),
+    [state, open, openMobile, isMobile, width, isResizing, isPeeking],
+  );
 
   return (
     <SidebarContext.Provider value={contextValue}>
@@ -337,13 +370,12 @@ function SidebarProvider({
             "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
             "--sidebar-animation-duration": `${animationDuration}ms`,
             "--sidebar-easing": SIDEBAR_EASING,
-            "--sidebar-bg": "var(--color-kumo-base)",
             ...style,
           } as CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper isolate flex w-full",
-          !contained && "min-h-svh",
+          "group/sidebar-wrapper relative isolate flex w-full [--sidebar-bg:var(--color-kumo-base)] [--sidebar-active-bg:var(--color-kumo-tint)]",
+          !contained && !isMobile && "min-h-svh",
           "has-data-[variant=inset]:bg-kumo-recessed",
           isResizing && "select-none",
           className,
@@ -364,6 +396,8 @@ SidebarProvider.displayName = "Sidebar.Provider";
 export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
   /** Additional CSS classes for the sidebar element. */
   className?: string;
+  /** Additional CSS classes for the inner content container. */
+  contentClassName?: string;
   /** Sidebar content — Header, Content, Footer, etc. */
   children: ReactNode;
 }
@@ -384,7 +418,7 @@ export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
  * ```
  */
 const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, contentClassName, children, ...props }, ref) => {
     const {
       state,
       open,
@@ -435,45 +469,47 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
 
     if (isMobile) {
       return (
-        <DialogBase.Root open={openMobile} onOpenChange={setOpenMobile}>
-          <DialogBase.Portal>
-            <DialogBase.Backdrop data-sidebar-backdrop="" className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-            <DialogBase.Popup
-              data-sidebar-popup=""
-              className={cn(
-                "fixed inset-y-0 flex w-[--sidebar-width] flex-col bg-kumo-base p-0",
-                "duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
-                side === "left" &&
-                  "left-0 data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full",
-                side === "right" &&
-                  "right-0 data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full",
-              )}
-              style={
-                {
-                  "--sidebar-width": SIDEBAR_WIDTH,
-                  transitionProperty: "transform, opacity",
-                  transitionTimingFunction:
-                    "var(--default-transition-timing-function)",
-                } as CSSProperties
-              }
-            >
-              <div
-                data-state="expanded"
-                data-side={side}
-                data-variant={variant}
-                data-collapsible={collapsible}
-                data-sidebar="sidebar"
-                data-mobile="true"
-                className={cn(
-                  "group/sidebar flex h-full w-full flex-col bg-kumo-base text-kumo-default",
-                  className,
-                )}
-              >
-                {children}
-              </div>
-            </DialogBase.Popup>
-          </DialogBase.Portal>
-        </DialogBase.Root>
+        <>
+          {/* Backdrop — click to close */}
+          <div
+            data-sidebar-backdrop=""
+            className={cn(
+              "fixed inset-0 z-40 bg-kumo-recessed",
+              "transition-opacity duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+              "motion-reduce:transition-none",
+              openMobile ? "opacity-80" : "opacity-0 pointer-events-none",
+            )}
+            onClick={() => setOpenMobile(false)}
+            aria-hidden="true"
+          />
+
+          {/* Sidebar — same structure as desktop, slides via transform */}
+          <aside
+            ref={ref}
+            data-state={openMobile ? "expanded" : "collapsed"}
+            data-side={side}
+            data-variant={variant}
+            data-collapsible={collapsible}
+            data-sidebar="sidebar"
+            data-mobile="true"
+            className={cn(
+              "group/sidebar fixed inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden",
+              "border-r border-kumo-line bg-(--sidebar-bg) text-kumo-default",
+              "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+              "motion-reduce:transition-none",
+              side === "left" && "left-0",
+              side === "right" && "right-0",
+              side === "left" &&
+                (openMobile ? "translate-x-0" : "-translate-x-full"),
+              side === "right" &&
+                (openMobile ? "translate-x-0" : "translate-x-full"),
+              className,
+            )}
+            {...props}
+          >
+            {children}
+          </aside>
+        </>
       );
     }
 
@@ -537,12 +573,14 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             const footerChildren = childArray.filter(
               (child) =>
                 React.isValidElement(child) &&
-                (child.type as { displayName?: string })?.displayName === "Sidebar.Footer",
+                (child.type as { displayName?: string })?.displayName ===
+                  "Sidebar.Footer",
             );
             const nonFooterChildren = childArray.filter(
               (child) =>
                 !React.isValidElement(child) ||
-                (child.type as { displayName?: string })?.displayName !== "Sidebar.Footer",
+                (child.type as { displayName?: string })?.displayName !==
+                  "Sidebar.Footer",
             );
 
             return (
@@ -557,13 +595,15 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                   "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
                   "motion-reduce:transition-none",
                   isResizing && "transition-none!",
-                  !open && cn(
-                    contained ? "absolute" : "fixed",
-                    "inset-y-0 z-40",
-                    side === "left" && "left-0",
-                    side === "right" && "right-0",
-                  ),
+                  !open &&
+                    cn(
+                      contained ? "absolute" : "fixed",
+                      "inset-y-0 z-40",
+                      side === "left" && "left-0",
+                      side === "right" && "right-0",
+                    ),
                   open && "relative",
+                  contentClassName,
                 )}
               >
                 {/* Peek zone — header + content (not footer) */}
@@ -614,7 +654,9 @@ const SidebarHeader = forwardRef<
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex h-[58px] items-center gap-1 border-b border-kumo-line px-3.5",
+      "flex h-[58px] shrink-0 items-center gap-1 border-b border-kumo-line",
+      "px-2 group-not-data-[state=collapsed]/sidebar:px-3.5",
+      "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       "overflow-hidden",
       className,
     )}
@@ -649,15 +691,16 @@ const SidebarContent = forwardRef<
     {...props}
   >
     <ScrollAreaBase.Viewport
+      tabIndex={-1}
       className={cn(
-        "h-full px-[11px] py-[13px] group-not-data-[state=collapsed]/sidebar:px-3.5",
+        "h-full px-[11px] py-3 group-not-data-[state=collapsed]/sidebar:px-3.5",
         "transition-[padding] duration-(--sidebar-animation-duration)",
         "group-data-[state=collapsed]/sidebar:overflow-x-hidden!",
         // Scroll fade via CSS mask driven by Base UI overflow CSS variables
         "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
     >
-      <ScrollAreaBase.Content className="flex min-w-0 flex-col gap-2 group-data-[state=collapsed]/sidebar:min-w-0!">
+      <ScrollAreaBase.Content className="flex min-w-0 flex-col gap-3 group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:min-w-0! transition-[gap] duration-(--sidebar-animation-duration)">
         {children}
       </ScrollAreaBase.Content>
     </ScrollAreaBase.Viewport>
@@ -669,9 +712,7 @@ const SidebarContent = forwardRef<
         "data-[scrolling]:opacity-100 data-[hovering]:opacity-100",
       )}
     >
-      <ScrollAreaBase.Thumb
-        className="flex-1 rounded-full bg-kumo-line"
-      />
+      <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
     </ScrollAreaBase.Scrollbar>
   </ScrollAreaBase.Root>
 ));
@@ -734,18 +775,19 @@ SidebarFooter.displayName = "Sidebar.Footer";
  * </Sidebar.Group>
  * ```
  */
-const SidebarGroup = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<"div">>(
-  ({ className, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      data-sidebar="group"
-      className={cn("flex min-w-0 flex-col gap-y-px", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  ),
-);
+const SidebarGroup = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-sidebar="group"
+    className={cn("flex min-w-0 flex-col gap-y-px", className)}
+    {...props}
+  >
+    {children}
+  </div>
+));
 
 SidebarGroup.displayName = "Sidebar.Group";
 
@@ -774,6 +816,8 @@ const SidebarGroupLabel = forwardRef<
       // Grid-rows for smooth collapse animation
       "grid overflow-hidden",
       "transition-[grid-template-rows,margin,border-color] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      // Mobile: no collapse animation — sidebar is always expanded
+      "group-data-[mobile=true]/sidebar:transition-none",
       // Collapsed: spacer with divider line between icon groups
       "grid-rows-[0fr] my-3 border-b border-kumo-line",
       // First group: no spacer or divider needed
@@ -885,7 +929,10 @@ const SidebarMenuItem = forwardRef<
     <li
       ref={ref}
       data-sidebar="menu-item"
-      className={cn("relative group-data-[state=collapsed]/sidebar:overflow-hidden", className)}
+      className={cn(
+        "relative group-data-[state=collapsed]/sidebar:overflow-hidden",
+        className,
+      )}
       {...props}
     >
       {children}
@@ -901,10 +948,11 @@ SidebarMenuItem.displayName = "Sidebar.MenuItem";
 
 export type SidebarMenuButtonSize = "base" | "sm";
 
-export interface SidebarMenuButtonProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "className" | "children"
-> {
+export interface SidebarMenuButtonProps
+  extends Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    "className" | "children"
+  > {
   icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   active?: boolean;
   /**
@@ -970,7 +1018,10 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       const Comp = IconProp as React.ComponentType<{ className?: string }>;
       return (
         <Comp
-          className={cn("shrink-0 opacity-50", size === "base" ? "size-4" : "size-3.5")}
+          className={cn(
+            "shrink-0 opacity-40",
+            size === "base" ? "size-4" : "size-3.5",
+          )}
         />
       );
     })();
@@ -1002,14 +1053,14 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
       size === "sm" && "min-h-7 px-2 py-0 text-sm",
       "text-kumo-default",
-      "transition-[color,background-color,box-shadow,outline] duration-(--sidebar-animation-duration)",
-      !active && "hover:bg-kumo-tint",
+      "transition-[color,box-shadow,outline] duration-(--sidebar-animation-duration)",
+      !active && "hover:bg-(--sidebar-active-bg)",
       // Active state
-      active && "bg-kumo-tint",
+      active && "bg-(--sidebar-active-bg)",
       // When a child sub-button is active, don't show active styling on the parent trigger
-      "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
+      "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-(--sidebar-active-bg)",
       // Focus
-      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
+      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-(--sidebar-active-bg)",
       className,
     );
 
@@ -1071,7 +1122,10 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     // Auto-wrap in <li> when not already inside a MenuItem
     if (!isInsideMenuItem) {
       return (
-        <li data-sidebar="menu-item" className="relative group-data-[state=collapsed]/sidebar:overflow-hidden">
+        <li
+          data-sidebar="menu-item"
+          className="relative group-data-[state=collapsed]/sidebar:overflow-hidden"
+        >
           {button}
         </li>
       );
@@ -1146,8 +1200,6 @@ const SidebarMenuSub = forwardRef<
     data-sidebar="menu-sub"
     className={cn(
       "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0 overflow-hidden",
-      // Hidden when collapsed
-      "group-data-[state=collapsed]/sidebar:hidden",
       className,
     )}
     {...props}
@@ -1191,7 +1243,8 @@ SidebarMenuSubItem.displayName = "Sidebar.MenuSubItem";
 // Sidebar MenuSubButton
 // ============================================================================
 
-export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"button"> {
+export interface SidebarMenuSubButtonProps
+  extends ComponentPropsWithoutRef<"button"> {
   /** Marks this sub-item as currently active/selected. @default false */
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
@@ -1220,12 +1273,12 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "relative flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium outline-none cursor-pointer",
+    "group/menu-button relative flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium outline-none cursor-pointer",
     "before:absolute before:inset-x-0 before:-inset-y-px",
-    "text-kumo-default transition-colors duration-150",
-    !active && "hover:bg-kumo-tint",
-    active && "bg-kumo-tint",
-    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-kumo-tint",
+    "text-kumo-default transition-[color] duration-150",
+    !active && "hover:bg-(--sidebar-active-bg)",
+    active && "bg-(--sidebar-active-bg)",
+    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-(--sidebar-active-bg)",
     className,
   );
 
@@ -1300,10 +1353,7 @@ const SidebarSeparator = forwardRef<
   <div
     ref={ref}
     data-sidebar="separator"
-    className={cn(
-      "my-3 px-2",
-      className,
-    )}
+    className={cn("my-3 px-2", className)}
     {...props}
   >
     <div className="border-b border-kumo-line" />
@@ -1379,8 +1429,8 @@ const SidebarTrigger = forwardRef<
       aria-expanded={open}
       aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
-        "flex size-8.5 justify-center items-center rounded-lg cursor-pointer",
-        "text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint",
+        "flex shrink-0 size-8.5 justify-center items-center rounded-lg cursor-pointer",
+        "text-kumo-subtle hover:text-kumo-default hover:bg-(--sidebar-active-bg)",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
         className,
       )}
@@ -1453,8 +1503,17 @@ const SidebarResizeHandle = forwardRef<
   HTMLButtonElement,
   ComponentPropsWithoutRef<"button">
 >(({ className, ...props }, ref) => {
-  const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth, width: currentWidth, maxWidth } =
-    useSidebar();
+  const {
+    side,
+    resizable,
+    setIsResizing,
+    setWidth,
+    setOpen,
+    open,
+    minWidth,
+    width: currentWidth,
+    maxWidth,
+  } = useSidebar();
   const startX = useRef(0);
   const startWidth = useRef(0);
   const wasCollapsed = useRef(false);
@@ -1591,7 +1650,8 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   toggle: () => {},
 });
 
-export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
+export interface SidebarCollapsibleProps
+  extends ComponentPropsWithoutRef<"div"> {
   /** Initial open state (uncontrolled). @default false */
   defaultOpen?: boolean;
   /** Controlled open state. */
@@ -1623,7 +1683,17 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
  * ```
  */
 const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
-  ({ defaultOpen = false, open: openProp, onOpenChange, className, children, ...props }, ref) => {
+  (
+    {
+      defaultOpen = false,
+      open: openProp,
+      onOpenChange,
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
     const isOpen = openProp ?? internalOpen;
     const contentId = useId();
@@ -1720,7 +1790,9 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
     "data-open": isOpen || undefined,
     onClick: (e: React.MouseEvent) => {
       // Call any existing onClick on the render element
-      const existingOnClick = (render.props as { onClick?: (e: React.MouseEvent) => void }).onClick;
+      const existingOnClick = (
+        render.props as { onClick?: (e: React.MouseEvent) => void }
+      ).onClick;
       existingOnClick?.(e);
       toggle();
     },
@@ -1739,7 +1811,12 @@ const SidebarCollapsibleContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
 >(({ className, children, ...props }, ref) => {
-  const { contentId, isOpen } = useContext(SidebarCollapseContext);
+  const { contentId, isOpen: isCollapsibleOpen } = useContext(
+    SidebarCollapseContext,
+  );
+  const { state } = useSidebar();
+
+  const isOpen = isCollapsibleOpen && state !== "collapsed";
 
   return (
     <div
@@ -1747,8 +1824,6 @@ const SidebarCollapsibleContent = forwardRef<
       id={contentId}
       role="region"
       aria-hidden={!isOpen}
-      inert={inertValue(!isOpen)}
-      data-open={isOpen || undefined}
       className={cn(
         "grid",
         "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
@@ -1788,7 +1863,7 @@ function SidebarMenuChevron({ className }: { className?: string }) {
       size={12}
       weight="bold"
       className={cn(
-        "ml-auto shrink-0 text-kumo-subtle transition-transform duration-200",
+        "ml-auto shrink-0 opacity-40 group-hover/menu-button:opacity-100 transition-[transform,rotate,opacity] duration-200",
         isCollapsible && isOpen && "rotate-90",
         // Hidden when sidebar is collapsed
         "group-data-[state=collapsed]/sidebar:hidden",
@@ -1806,7 +1881,8 @@ SidebarMenuChevron.displayName = "Sidebar.MenuChevron";
 
 const SlidingViewActiveContext = createContext<string>("");
 
-export interface SidebarSlidingViewsProps extends ComponentPropsWithoutRef<"div"> {
+export interface SidebarSlidingViewsProps
+  extends ComponentPropsWithoutRef<"div"> {
   /** Key of the currently active view. Must match a child `SlidingView` value. */
   activeKey: string;
   /**
@@ -1836,8 +1912,20 @@ export interface SidebarSlidingViewsProps extends ComponentPropsWithoutRef<"div"
  * </Sidebar.SlidingViews>
  * ```
  */
-const SidebarSlidingViews = forwardRef<HTMLDivElement, SidebarSlidingViewsProps>(
-  ({ activeKey, direction: _direction = "left", className, children, ...props }, ref) => {
+const SidebarSlidingViews = forwardRef<
+  HTMLDivElement,
+  SidebarSlidingViewsProps
+>(
+  (
+    {
+      activeKey,
+      direction: _direction = "left",
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const childArray = React.Children.toArray(children);
     const activeIndex = childArray.findIndex(
       (child) =>
@@ -1855,7 +1943,10 @@ const SidebarSlidingViews = forwardRef<HTMLDivElement, SidebarSlidingViewsProps>
         <div
           ref={ref}
           data-sidebar="sliding-views"
-          className={cn("flex flex-1 min-h-0 overflow-hidden", className)}
+          className={cn(
+            "flex flex-1 min-h-0 max-w-(--sidebar-width) overflow-hidden",
+            className,
+          )}
           {...props}
         >
           <div
@@ -1877,7 +1968,8 @@ const SidebarSlidingViews = forwardRef<HTMLDivElement, SidebarSlidingViewsProps>
 
 SidebarSlidingViews.displayName = "Sidebar.SlidingViews";
 
-export interface SidebarSlidingViewProps extends ComponentPropsWithoutRef<"div"> {
+export interface SidebarSlidingViewProps
+  extends ComponentPropsWithoutRef<"div"> {
   /** Unique key matching this view. Must correspond to `activeKey` on `SlidingViews`. */
   value: string;
 }
@@ -1891,13 +1983,40 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
     const activeKey = useContext(SlidingViewActiveContext);
     const isActive = activeKey === value;
 
+    // Imperatively set inert — React 18.2 doesn't reliably forward the inert
+    // attribute to the DOM when set as a JSX prop on initial mount.
+    const inertRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        if (node) {
+          if (!isActive) {
+            node.setAttribute("inert", "");
+          } else {
+            node.removeAttribute("inert");
+          }
+        }
+      },
+      [isActive],
+    );
+
+    // Merge forwarded ref with inert ref
+    const mergedRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        inertRef(node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
+      },
+      [ref, inertRef],
+    );
+
     return (
       <div
-        ref={ref}
+        ref={mergedRef}
         data-sidebar="sliding-view"
         data-value={value}
         aria-hidden={!isActive}
-        inert={inertValue(!isActive)}
         className={cn(
           "flex w-full shrink-0 flex-col min-h-0",
           !isActive && "pointer-events-none",
