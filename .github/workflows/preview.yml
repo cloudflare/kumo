@@ -40,7 +40,9 @@ jobs:
             });
 
             if (prs.length === 0) {
-              core.setFailed(`No open PR found for branch ${branch}`);
+              core.warning(`No open PR found for branch ${branch}; skipping PR-scoped preview steps.`);
+              core.setOutput('pr_number', '');
+              core.setOutput('is_fork', '');
               return;
             }
 
