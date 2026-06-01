@@ -403,7 +403,7 @@ export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
 }
 
 /**
- * Main sidebar container. Renders as `<aside>` on desktop, Dialog sheet on mobile.
+ * Main sidebar container. Renders as `<aside>` on desktop, modal sidebar sheet on mobile.
  * Must be used inside `Sidebar.Provider`.
  *
  * @example
@@ -467,6 +467,64 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       );
     }
 
+    // Imperatively set inert on the mobile sidebar — React 18 doesn't
+    // reliably forward the inert attribute as a JSX prop on initial mount.
+    const mobileAsideRef = useCallback(
+      (node: HTMLElement | null) => {
+        if (node) {
+          if (!openMobile) {
+            node.setAttribute("inert", "");
+          } else {
+            node.removeAttribute("inert");
+          }
+        }
+      },
+      [openMobile],
+    );
+
+    // Merge forwarded ref with inert ref for the mobile aside
+    const mergedMobileRef = useCallback(
+      (node: HTMLElement | null) => {
+        mobileAsideRef(node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+        }
+      },
+      [ref, mobileAsideRef],
+    );
+
+    // Escape key closes the mobile sidebar
+    useEffect(() => {
+      if (!isMobile || !openMobile) return;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setOpenMobile(false);
+        }
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [isMobile, openMobile, setOpenMobile]);
+
+    // When the mobile sidebar opens, move focus into it;
+    // when it closes, return focus to the element that opened it.
+    const triggerRef = useRef<Element | null>(null);
+    const mobileNodeRef = useRef<HTMLElement | null>(null);
+    useEffect(() => {
+      if (!isMobile) return;
+      if (openMobile) {
+        triggerRef.current = document.activeElement;
+        // Wait a frame so the aside is no longer inert before focusing
+        requestAnimationFrame(() => {
+          mobileNodeRef.current?.focus();
+        });
+      } else if (triggerRef.current instanceof HTMLElement) {
+        triggerRef.current.focus();
+        triggerRef.current = null;
+      }
+    }, [isMobile, openMobile]);
+
     if (isMobile) {
       return (
         <>
@@ -483,9 +541,16 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             aria-hidden="true"
           />
 
-          {/* Sidebar — same structure as desktop, slides via transform */}
+          {/* Mobile sidebar — modal sheet with focus management */}
           <aside
-            ref={ref}
+            ref={(node) => {
+              mergedMobileRef(node);
+              mobileNodeRef.current = node;
+            }}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal={openMobile}
+            aria-hidden={!openMobile}
             data-state={openMobile ? "expanded" : "collapsed"}
             data-side={side}
             data-variant={variant}
@@ -963,6 +1028,8 @@ export interface SidebarMenuButtonProps
    */
   size?: SidebarMenuButtonSize;
   href?: string;
+  /** Link target — only meaningful when `href` is provided. */
+  target?: React.HTMLAttributeAnchorTarget;
   tooltip?: string;
   className?: string;
   children?: ReactNode;
@@ -1001,6 +1068,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       active = false,
       size = "base",
       href,
+      target,
       tooltip,
       children,
       ...props
@@ -1073,6 +1141,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           className={cn(buttonClasses, "no-underline!")}
           href={href}
           to={href}
+          target={target}
           data-active={active || undefined}
           data-sidebar="menu-button"
           data-kumo-component="Sidebar"
