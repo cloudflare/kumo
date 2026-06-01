@@ -5,13 +5,6 @@ on:
     paths-ignore:
       - "*.md"
       - ".changeset/**"
-  # Also trigger on push to PR branches (for bots that push via API)
-  push:
-    branches:
-      - "opencode/**"
-    paths-ignore:
-      - "*.md"
-      - ".changeset/**"
 
 permissions:
   contents: read
