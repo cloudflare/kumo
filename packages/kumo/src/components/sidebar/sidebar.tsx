@@ -1736,7 +1736,7 @@ const SidebarCollapsibleContent = forwardRef<
       id={contentId}
       role="region"
       aria-hidden={!isOpen}
-      inert={!isOpen ? true : undefined}
+      inert={!isOpen ? ("true" as unknown as boolean) : undefined}
       data-open={isOpen || undefined}
       className={cn(
         "grid",
@@ -1886,7 +1886,7 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
         data-sidebar="sliding-view"
         data-value={value}
         aria-hidden={!isActive}
-        inert={!isActive ? true : undefined}
+        inert={!isActive ? ("true" as unknown as boolean) : undefined}
         className={cn(
           "flex w-full shrink-0 flex-col min-h-0",
           !isActive && "pointer-events-none",
