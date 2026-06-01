@@ -129,11 +129,12 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - name: Install React ${{ matrix.react-version }} test dependencies
         run: |
-          pnpm --filter @cloudflare/kumo add --save-dev --ignore-scripts \
-            react@${{ matrix.react-version }} \
-            react-dom@${{ matrix.react-version }} \
-            @types/react@${{ matrix.types-react-version }} \
-            @types/react-dom@${{ matrix.types-react-dom-version }}
+          pnpm pkg set \
+            "pnpm.overrides.react=${{ matrix.react-version }}" \
+            "pnpm.overrides.react-dom=${{ matrix.react-version }}" \
+            "pnpm.overrides.@types/react=${{ matrix.types-react-version }}" \
+            "pnpm.overrides.@types/react-dom=${{ matrix.types-react-dom-version }}"
+          pnpm install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
       - uses: actions/download-artifact@v4
         with:
           name: kumo-dist
