@@ -1,27 +1,45 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Checkbox } from "./components/checkbox";
-import { Radio } from "./components/radio";
-import { Switch } from "./components/switch";
+import { Autocomplete } from "./components/autocomplete";
+import { Combobox } from "./components/combobox";
+
+const countries = ["Argentina", "Brazil", "Canada"];
+const fruits = ["Apple", "Banana", "Cherry"];
 
 describe("React compatibility", () => {
-  it("renders Kumo-owned context providers with React 18-compatible syntax", () => {
+  it("renders Autocomplete and Combobox context providers with React 18-compatible syntax", () => {
     render(
       <>
-        <Checkbox.Group legend="Notification channels">
-          <Checkbox.Item label="Email" value="email" />
-        </Checkbox.Group>
-        <Radio.Group legend="Plan" defaultValue="free">
-          <Radio.Item label="Free" value="free" />
-        </Radio.Group>
-        <Switch.Group legend="Features">
-          <Switch.Item label="Beta features" />
-        </Switch.Group>
+        <Autocomplete items={countries} label="Country" error="Required">
+          <Autocomplete.InputGroup placeholder="Search countries..." />
+          <Autocomplete.Content>
+            <Autocomplete.List>
+              {(item: string) => (
+                <Autocomplete.Item key={item} value={item}>
+                  {item}
+                </Autocomplete.Item>
+              )}
+            </Autocomplete.List>
+          </Autocomplete.Content>
+        </Autocomplete>
+        <Combobox items={fruits} label="Fruit" error="Required">
+          <Combobox.TriggerInput placeholder="Pick a fruit..." />
+          <Combobox.Content>
+            <Combobox.List>
+              {(item: string) => (
+                <Combobox.Item key={item} value={item}>
+                  {item}
+                </Combobox.Item>
+              )}
+            </Combobox.List>
+          </Combobox.Content>
+        </Combobox>
       </>,
     );
 
-    expect(screen.getByText("Notification channels")).toBeTruthy();
-    expect(screen.getByText("Plan")).toBeTruthy();
-    expect(screen.getByText("Features")).toBeTruthy();
+    expect(screen.getByText("Country")).toBeTruthy();
+    expect(screen.getByPlaceholderText("Search countries...")).toBeTruthy();
+    expect(screen.getByText("Fruit")).toBeTruthy();
+    expect(screen.getByPlaceholderText("Pick a fruit...")).toBeTruthy();
   });
 });
