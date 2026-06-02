@@ -148,6 +148,17 @@ export interface SidebarContextValue {
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
 
+const reactMajorVersion = parseInt(React.version, 10);
+
+function inertValue(value: boolean): boolean | undefined {
+  if (reactMajorVersion >= 19) {
+    return value;
+  }
+
+  // React <19 does not emit unknown boolean attributes like `inert={true}`.
+  return (value ? "true" : undefined) as boolean | undefined;
+}
+
 /**
  * Hook to access sidebar state and actions from any descendant component.
  *
@@ -1736,7 +1747,7 @@ const SidebarCollapsibleContent = forwardRef<
       id={contentId}
       role="region"
       aria-hidden={!isOpen}
-      inert={!isOpen ? ("true" as unknown as boolean) : undefined}
+      inert={inertValue(!isOpen)}
       data-open={isOpen || undefined}
       className={cn(
         "grid",
@@ -1886,7 +1897,7 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
         data-sidebar="sliding-view"
         data-value={value}
         aria-hidden={!isActive}
-        inert={!isActive ? ("true" as unknown as boolean) : undefined}
+        inert={inertValue(!isActive)}
         className={cn(
           "flex w-full shrink-0 flex-col min-h-0",
           !isActive && "pointer-events-none",

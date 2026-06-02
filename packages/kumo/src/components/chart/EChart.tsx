@@ -158,14 +158,26 @@ const transformTooltip = (tooltipObj: SafeTooltipOption) => {
   };
 };
 
-const prepareChartOptions = (options: KumoChartOption): EChartsOption => {
-  if (!options.tooltip) return options;
+const prepareChartOptions = ({
+  options,
+  isDarkMode,
+}: {
+  options: KumoChartOption;
+  isDarkMode?: boolean;
+}): EChartsOption => {
+  const withDefaults: EChartsOption = {
+    backgroundColor: "transparent",
+    color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
+    ...options,
+  };
+
+  if (!withDefaults.tooltip) return withDefaults;
 
   return {
-    ...options,
-    tooltip: Array.isArray(options.tooltip)
-      ? options.tooltip.map(transformTooltip)
-      : transformTooltip(options.tooltip),
+    ...withDefaults,
+    tooltip: Array.isArray(withDefaults.tooltip)
+      ? withDefaults.tooltip.map(transformTooltip)
+      : transformTooltip(withDefaults.tooltip as SafeTooltipOption),
   };
 };
 
@@ -221,14 +233,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   useEffect(() => {
     if (!elRef.current) return;
 
-    const chart = echarts.init(
-      elRef.current,
-      isDarkMode
-        ? "dark"
-        : {
-            color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
-          },
-    );
+    const chart = echarts.init(elRef.current, isDarkMode ? "dark" : undefined);
     chartRef.current = chart;
 
     if (typeof ref === "function") ref(chart);
@@ -252,7 +257,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const chart = chartRef.current;
     if (!chart) return;
 
-    chart.setOption(prepareChartOptions(options), {
+    chart.setOption(prepareChartOptions({ options, isDarkMode }), {
       notMerge: false,
       lazyUpdate: true,
       ...optionUpdateBehavior,
