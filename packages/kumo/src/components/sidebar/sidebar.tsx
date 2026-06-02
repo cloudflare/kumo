@@ -1743,6 +1743,7 @@ interface SidebarCollapseContextValue {
   contentId: string;
   isOpen: boolean;
   isCollapsible: boolean;
+  autoScrollOnOpen: boolean;
   toggle: () => void;
 }
 
@@ -1750,6 +1751,7 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   contentId: "",
   isOpen: true,
   isCollapsible: false,
+  autoScrollOnOpen: false,
   toggle: () => {},
 });
 
@@ -1761,6 +1763,8 @@ export interface SidebarCollapsibleProps
   open?: boolean;
   /** Callback when open state changes. */
   onOpenChange?: (open: boolean) => void;
+  /** Scroll the expanded content into view after opening. @default false */
+  autoScrollOnOpen?: boolean;
 }
 
 /**
@@ -1791,6 +1795,7 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       defaultOpen = false,
       open: openProp,
       onOpenChange,
+      autoScrollOnOpen = false,
       className,
       children,
       ...props
@@ -1811,8 +1816,14 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     }, [isOpen, onOpenChange]);
 
     const contextValue = useMemo<SidebarCollapseContextValue>(
-      () => ({ contentId, isOpen, isCollapsible: true, toggle }),
-      [contentId, isOpen, toggle],
+      () => ({
+        contentId,
+        isOpen,
+        isCollapsible: true,
+        autoScrollOnOpen,
+        toggle,
+      }),
+      [contentId, isOpen, autoScrollOnOpen, toggle],
     );
 
     const handleFocusIn = useCallback(
@@ -1917,9 +1928,27 @@ const SidebarCollapsibleContent = forwardRef<
   const { contentId, isOpen: isCollapsibleOpen } = useContext(
     SidebarCollapseContext,
   );
-  const { state } = useSidebar();
+  const { state, animationDuration } = useSidebar();
+  const { autoScrollOnOpen } = useContext(SidebarCollapseContext);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   const isOpen = isCollapsibleOpen && state !== "collapsed";
+
+  useEffect(() => {
+    if (!isOpen || !autoScrollOnOpen) return;
+
+    const timeout = window.setTimeout(() => {
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      contentRef.current?.scrollIntoView({
+        block: "nearest",
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
+    }, animationDuration);
+
+    return () => window.clearTimeout(timeout);
+  }, [isOpen, autoScrollOnOpen, animationDuration]);
 
   // Imperatively set inert — React 18 doesn't reliably forward
   // the inert attribute as a JSX prop on initial mount.
@@ -1938,6 +1967,7 @@ const SidebarCollapsibleContent = forwardRef<
 
   const mergedRef = useCallback(
     (node: HTMLDivElement | null) => {
+      contentRef.current = node;
       inertRef(node);
       if (typeof ref === "function") {
         ref(node);

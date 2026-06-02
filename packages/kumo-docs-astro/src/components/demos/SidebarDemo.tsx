@@ -386,7 +386,96 @@ export function SidebarPeekingDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Sliding Views — animated horizontal transitions between surfaces
+// 6. Auto Scroll — keep long collapsible content in view
+// ---------------------------------------------------------------------------
+
+/** Long sidebar where opening a lower collapsible scrolls its revealed content into view. */
+export function SidebarAutoScrollDemo() {
+  return (
+    <div className="relative h-[420px] w-full overflow-hidden rounded-lg border border-kumo-line bg-kumo-base">
+      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GlobeIcon}>
+                  Domains
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Platform</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ShieldCheckIcon}>
+                  Security
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={LockIcon}>
+                  Zero Trust
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GearIcon}>
+                  Settings
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible autoScrollOnOpen>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Workers
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>Overview</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>Deployments</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>Observability</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>Settings</Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuButton icon={CubeIcon}>
+                  Containers
+                  <Sidebar.MenuBadge>Beta</Sidebar.MenuBadge>
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <p>Open Workers near the bottom of the list</p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 7. Sliding Views — animated horizontal transitions between surfaces
 // ---------------------------------------------------------------------------
 
 /** Sidebar with animated sliding views between Account and Zone navigation. */
@@ -477,7 +566,7 @@ export function SidebarSlidingViewsDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 7. Full — kitchen sink showcasing every subcomponent
+// 8. Full — kitchen sink showcasing every subcomponent
 // ---------------------------------------------------------------------------
 
 /** Kitchen sink sidebar showcasing every subcomponent: header with account switcher, groups with labels, collapsible sections with nested expandable, badges, sliding views via Domains, and a footer trigger. */
@@ -644,7 +733,7 @@ export function SidebarFullDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 8. Mobile — modal sidebar sheet with focus trap and Escape to close
+// 9. Mobile — navigation drawer with Escape to close
 // ---------------------------------------------------------------------------
 
 function MobileToggleButton() {

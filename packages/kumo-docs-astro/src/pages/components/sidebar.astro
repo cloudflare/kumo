@@ -12,6 +12,7 @@ import {
   SidebarResizableDemo,
   SidebarRightDemo,
   SidebarPeekingDemo,
+  SidebarAutoScrollDemo,
   SidebarSlidingViewsDemo,
   SidebarMobileDemo,
 } from "../../components/demos/SidebarDemo";
@@ -208,6 +209,28 @@ const { toggleSidebar } = useSidebar();`}>
 const { state, isPeeking } = useSidebar();
 // state: "expanded" | "collapsed" | "peeking"`}>
           <SidebarPeekingDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Auto Scroll</Heading>
+        <p>
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">autoScrollOnOpen</code> on long collapsible sections to keep newly revealed content in view.
+          This is useful when a group near the bottom of a scrollable sidebar expands below the visible area.
+        </p>
+        <ComponentExample code={`<Sidebar.Collapsible autoScrollOnOpen>
+  <Sidebar.CollapsibleTrigger
+    render={
+      <Sidebar.MenuButton icon={CodeIcon}>
+        Workers <Sidebar.MenuChevron />
+      </Sidebar.MenuButton>
+    }
+  />
+  <Sidebar.CollapsibleContent>
+    <Sidebar.MenuSub>...</Sidebar.MenuSub>
+  </Sidebar.CollapsibleContent>
+</Sidebar.Collapsible>`}>
+          <SidebarAutoScrollDemo client:load />
         </ComponentExample>
       </div>
 

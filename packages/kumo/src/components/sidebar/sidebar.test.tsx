@@ -3,7 +3,7 @@ if (!HTMLElement.prototype.getAnimations) {
   HTMLElement.prototype.getAnimations = () => [];
 }
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { act, render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -255,13 +255,22 @@ describe("Sidebar toggle", () => {
 // ============================================================================
 
 describe("Sidebar.Collapsible", () => {
-  function CollapsibleTest({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  function CollapsibleTest({
+    defaultOpen = false,
+    autoScrollOnOpen = false,
+  }: {
+    defaultOpen?: boolean;
+    autoScrollOnOpen?: boolean;
+  }) {
     return (
       <TestSidebar defaultOpen>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarCollapsible defaultOpen={defaultOpen}>
+              <SidebarCollapsible
+                defaultOpen={defaultOpen}
+                autoScrollOnOpen={autoScrollOnOpen}
+              >
                 <SidebarCollapsibleTrigger
                   render={
                     <SidebarMenuButton>
@@ -326,6 +335,30 @@ describe("Sidebar.Collapsible", () => {
     const content = screen.getByTestId("collapsible-content");
     expect(content.hasAttribute("inert")).toBe(true);
     expect(content.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("should scroll opened content into view when enabled", () => {
+    vi.useFakeTimers();
+    const scrollIntoView = vi.fn();
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    try {
+      render(<CollapsibleTest autoScrollOnOpen />);
+
+      fireEvent.click(screen.getByText("Compute").closest("button")!);
+      act(() => {
+        vi.advanceTimersByTime(250);
+      });
+
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    } finally {
+      HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+      vi.useRealTimers();
+    }
   });
 });
 
