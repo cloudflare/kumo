@@ -340,8 +340,14 @@ describe("Sidebar.Collapsible", () => {
   it("should scroll opened content into view when enabled", () => {
     vi.useFakeTimers();
     const scrollIntoView = vi.fn();
-    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
-    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    const originalScrollIntoViewDescriptor = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      "scrollIntoView",
+    );
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
 
     try {
       render(<CollapsibleTest autoScrollOnOpen />);
@@ -356,7 +362,15 @@ describe("Sidebar.Collapsible", () => {
         behavior: "smooth",
       });
     } finally {
-      HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+      if (originalScrollIntoViewDescriptor) {
+        Object.defineProperty(
+          HTMLElement.prototype,
+          "scrollIntoView",
+          originalScrollIntoViewDescriptor,
+        );
+      } else {
+        delete HTMLElement.prototype.scrollIntoView;
+      }
       vi.useRealTimers();
     }
   });
