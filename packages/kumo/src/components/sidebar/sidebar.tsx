@@ -470,22 +470,34 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       [ref, mobileAsideRef],
     );
 
-    // Escape key closes the mobile sidebar
+    // Refs for mobile focus management (declared before effects that use them)
+    const triggerRef = useRef<Element | null>(null);
+    const mobileNodeRef = useRef<HTMLElement | null>(null);
+
+    // Escape key and focus-leave close the mobile sidebar
     useEffect(() => {
       if (!isMobile || !openMobile) return;
+      const node = mobileNodeRef.current;
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           setOpenMobile(false);
         }
       };
+      const handleFocusOut = (e: FocusEvent) => {
+        if (node && !node.contains(e.relatedTarget as Node)) {
+          setOpenMobile(false);
+        }
+      };
       document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
+      node?.addEventListener("focusout", handleFocusOut);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+        node?.removeEventListener("focusout", handleFocusOut);
+      };
     }, [isMobile, openMobile, setOpenMobile]);
 
     // When the mobile sidebar opens, move focus into it;
     // when it closes, return focus to the element that opened it.
-    const triggerRef = useRef<Element | null>(null);
-    const mobileNodeRef = useRef<HTMLElement | null>(null);
     useEffect(() => {
       if (!isMobile) return;
       if (openMobile) {
@@ -499,6 +511,15 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         triggerRef.current = null;
       }
     }, [isMobile, openMobile]);
+
+    const handlePeekBlur = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          stopPeek();
+        }
+      },
+      [stopPeek],
+    );
 
     if (collapsible === "none") {
       return (
@@ -546,15 +567,14 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             aria-hidden="true"
           />
 
-          {/* Mobile sidebar — modal sheet with focus management */}
-          <aside
+          {/* Mobile sidebar — navigation landmark with focus management */}
+          <nav
             ref={(node) => {
               mergedMobileRef(node);
               mobileNodeRef.current = node;
             }}
             tabIndex={-1}
-            role="dialog"
-            aria-modal={openMobile}
+            aria-label="Navigation"
             aria-hidden={!openMobile}
             data-state={openMobile ? "expanded" : "collapsed"}
             data-side={side}
@@ -580,7 +600,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             {...props}
           >
             {children}
-          </aside>
+          </nav>
         </>
       );
     }
@@ -588,15 +608,6 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     // --- Desktop two-layer architecture ---
     // Rail: the <aside> whose width drives layout (stays collapsed during peek).
     // Content container: holds actual sidebar content, can overlay when peeking.
-
-    const handlePeekBlur = useCallback(
-      (e: React.FocusEvent<HTMLDivElement>) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-          stopPeek();
-        }
-      },
-      [stopPeek],
-    );
 
     // Rail width: based on open state only (not peeking)
     const collapsedWidth =
@@ -1894,9 +1905,36 @@ const SidebarCollapsibleContent = forwardRef<
 
   const isOpen = isCollapsibleOpen && state !== "collapsed";
 
+  // Imperatively set inert — React 18 doesn't reliably forward
+  // the inert attribute as a JSX prop on initial mount.
+  const inertRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node) {
+        if (!isOpen) {
+          node.setAttribute("inert", "");
+        } else {
+          node.removeAttribute("inert");
+        }
+      }
+    },
+    [isOpen],
+  );
+
+  const mergedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      inertRef(node);
+      if (typeof ref === "function") {
+        ref(node);
+      } else if (ref) {
+        (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    },
+    [ref, inertRef],
+  );
+
   return (
     <div
-      ref={ref}
+      ref={mergedRef}
       id={contentId}
       role="region"
       aria-hidden={!isOpen}

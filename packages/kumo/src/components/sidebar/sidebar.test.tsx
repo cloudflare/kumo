@@ -317,10 +317,10 @@ describe("Sidebar.Collapsible", () => {
     expect(content.getAttribute("role")).toBe("region");
   });
 
-  it("should not set inert on closed content (uses aria-hidden + grid-rows instead)", () => {
+  it("should set inert on closed content", () => {
     render(<CollapsibleTest />);
     const content = screen.getByTestId("collapsible-content");
-    expect(content.hasAttribute("inert")).toBe(false);
+    expect(content.hasAttribute("inert")).toBe(true);
     expect(content.getAttribute("aria-hidden")).toBe("true");
   });
 });
