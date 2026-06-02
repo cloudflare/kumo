@@ -12,11 +12,11 @@ Sidebar: mobile rewrite, smooth collapse transitions, and new props
 
 **Fixes:**
 
-- Replaced Base UI Dialog mobile sidebar with a plain `<aside>` + backdrop for simpler, more predictable transitions
+- Replaced Base UI Dialog mobile sidebar with a plain `<nav>` + backdrop for simpler, more predictable transitions
 - Collapsible sections now animate closed smoothly when the sidebar collapses instead of snapping shut
 - Removed `hidden` class from `Sidebar.MenuSub` so sub-menus participate in collapse animations
 - Removed `inertValue` React-version helper — `SidebarSlidingView` now sets `inert` imperatively for React 18 compatibility
-- Removed `inert` and `data-open` attributes from `SidebarCollapsibleContent`
+- Restored `inert` on closed `SidebarCollapsibleContent` while removing its `data-open` attribute
 
 **Styling:**
 
