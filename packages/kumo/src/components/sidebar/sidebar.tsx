@@ -94,6 +94,8 @@ const SIDEBAR_WIDTH_ICON = "57px";
 const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
 const MOBILE_BREAKPOINT = 768;
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 // ============================================================================
 // Mobile detection hook
@@ -473,6 +475,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     // Refs for mobile focus management (declared before effects that use them)
     const triggerRef = useRef<Element | null>(null);
     const mobileNodeRef = useRef<HTMLElement | null>(null);
+    const shouldRestoreFocusRef = useRef(false);
 
     // Escape key and focus-leave close the mobile sidebar
     useEffect(() => {
@@ -480,11 +483,13 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       const node = mobileNodeRef.current;
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
+          shouldRestoreFocusRef.current = true;
           setOpenMobile(false);
         }
       };
       const handleFocusOut = (e: FocusEvent) => {
         if (node && !node.contains(e.relatedTarget as Node)) {
+          shouldRestoreFocusRef.current = false;
           setOpenMobile(false);
         }
       };
@@ -502,12 +507,20 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       if (!isMobile) return;
       if (openMobile) {
         triggerRef.current = document.activeElement;
+        shouldRestoreFocusRef.current = false;
         // Wait a frame so the aside is no longer inert before focusing
         requestAnimationFrame(() => {
-          mobileNodeRef.current?.focus();
+          const firstFocusable = mobileNodeRef.current?.querySelector<HTMLElement>(
+            FOCUSABLE_SELECTOR,
+          );
+          (firstFocusable ?? mobileNodeRef.current)?.focus();
         });
-      } else if (triggerRef.current instanceof HTMLElement) {
+      } else if (
+        shouldRestoreFocusRef.current &&
+        triggerRef.current instanceof HTMLElement
+      ) {
         triggerRef.current.focus();
+        shouldRestoreFocusRef.current = false;
         triggerRef.current = null;
       }
     }, [isMobile, openMobile]);
@@ -563,7 +576,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
               "motion-reduce:transition-none",
               openMobile ? "opacity-80" : "opacity-0 pointer-events-none",
             )}
-            onClick={() => setOpenMobile(false)}
+            onClick={() => {
+              shouldRestoreFocusRef.current = true;
+              setOpenMobile(false);
+            }}
             aria-hidden="true"
           />
 

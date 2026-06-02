@@ -3,7 +3,7 @@ if (!HTMLElement.prototype.getAnimations) {
   HTMLElement.prototype.getAnimations = () => [];
 }
 
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -66,12 +66,11 @@ function StateReader() {
   );
 }
 
-// Stub matchMedia for useIsMobile — always return desktop
-beforeEach(() => {
+function setMobileMatchMedia(matches: boolean) {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
-      matches: false,
+      matches,
       media: query,
       onchange: null,
       addListener: vi.fn(),
@@ -81,6 +80,11 @@ beforeEach(() => {
       dispatchEvent: vi.fn(),
     })),
   });
+}
+
+// Stub matchMedia for useIsMobile — default to desktop
+beforeEach(() => {
+  setMobileMatchMedia(false);
 });
 
 // ============================================================================
@@ -551,5 +555,105 @@ describe("Sidebar contained mode", () => {
     );
     const wrapper = document.querySelector("[data-sidebar-wrapper]")!;
     expect(wrapper.className).toContain("min-h-svh");
+  });
+});
+
+// ============================================================================
+// Mobile behavior
+// ============================================================================
+
+describe("Sidebar mobile behavior", () => {
+  function MobileToggle() {
+    const { toggleSidebar } = useSidebar();
+    return (
+      <button type="button" onClick={toggleSidebar} data-testid="mobile-toggle">
+        Open sidebar
+      </button>
+    );
+  }
+
+  function MobileTest() {
+    return (
+      <SidebarProvider mobileBreakpoint={9999}>
+        <MobileToggle />
+        <Sidebar>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuButton>Home</SidebarMenuButton>
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
+        <button type="button" data-testid="after-sidebar">
+          After sidebar
+        </button>
+      </SidebarProvider>
+    );
+  }
+
+  it("should render closed mobile navigation as inert and aria-hidden", () => {
+    setMobileMatchMedia(true);
+    render(<MobileTest />);
+
+    const nav = document.querySelector("nav[data-sidebar='sidebar']")!;
+    expect(nav.getAttribute("aria-hidden")).toBe("true");
+    expect(nav.hasAttribute("inert")).toBe(true);
+  });
+
+  it("should open mobile navigation and move focus to the first item", async () => {
+    setMobileMatchMedia(true);
+    const user = userEvent.setup();
+    render(<MobileTest />);
+
+    const nav = document.querySelector("nav[data-sidebar='sidebar']")!;
+    await user.click(screen.getByTestId("mobile-toggle"));
+
+    await waitFor(() => expect(nav.getAttribute("aria-hidden")).toBe("false"));
+    expect(nav.hasAttribute("inert")).toBe(false);
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: "Home" }),
+      ),
+    );
+  });
+
+  it("should close on Escape and return focus to the opener", async () => {
+    setMobileMatchMedia(true);
+    const user = userEvent.setup();
+    render(<MobileTest />);
+
+    const toggle = screen.getByTestId("mobile-toggle");
+    const nav = document.querySelector("nav[data-sidebar='sidebar']")!;
+    await user.click(toggle);
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: "Home" }),
+      ),
+    );
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    await waitFor(() => expect(nav.getAttribute("aria-hidden")).toBe("true"));
+    await waitFor(() => expect(document.activeElement).toBe(toggle));
+  });
+
+  it("should close on focus leave without stealing focus back", async () => {
+    setMobileMatchMedia(true);
+    const user = userEvent.setup();
+    render(<MobileTest />);
+
+    const nav = document.querySelector("nav[data-sidebar='sidebar']")!;
+    const afterSidebar = screen.getByTestId("after-sidebar");
+    await user.click(screen.getByTestId("mobile-toggle"));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: "Home" }),
+      ),
+    );
+
+    afterSidebar.focus();
+    fireEvent.focusOut(nav, { relatedTarget: afterSidebar });
+
+    await waitFor(() => expect(nav.getAttribute("aria-hidden")).toBe("true"));
+    expect(document.activeElement).toBe(afterSidebar);
   });
 });
