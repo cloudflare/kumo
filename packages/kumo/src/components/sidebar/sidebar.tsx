@@ -100,7 +100,10 @@ const MOBILE_BREAKPOINT = 768;
 // ============================================================================
 
 function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches;
+  });
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
@@ -437,35 +440,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       contained,
     } = useSidebar();
 
-    if (collapsible === "none") {
-      return (
-        <aside
-          ref={ref}
-          data-state="expanded"
-          data-side={side}
-          data-variant={variant}
-          data-sidebar="sidebar"
-          style={{
-            width: "var(--sidebar-width)",
-            minWidth: "var(--sidebar-width)",
-            maxWidth: "var(--sidebar-width)",
-          }}
-          className={cn(
-            "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-(--sidebar-bg) text-kumo-default",
-            variant === "sidebar" &&
-              (side === "left"
-                ? "border-r border-kumo-line"
-                : "border-l border-kumo-line"),
-            variant === "floating" &&
-              "m-2 rounded-lg border border-kumo-line shadow-lg",
-            className,
-          )}
-          {...props}
-        >
-          {children}
-        </aside>
-      );
-    }
+    // --- Mobile a11y hooks (must be before early returns) ---
 
     // Imperatively set inert on the mobile sidebar — React 18 doesn't
     // reliably forward the inert attribute as a JSX prop on initial mount.
@@ -525,6 +500,36 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       }
     }, [isMobile, openMobile]);
 
+    if (collapsible === "none") {
+      return (
+        <aside
+          ref={ref}
+          data-state="expanded"
+          data-side={side}
+          data-variant={variant}
+          data-sidebar="sidebar"
+          style={{
+            width: "var(--sidebar-width)",
+            minWidth: "var(--sidebar-width)",
+            maxWidth: "var(--sidebar-width)",
+          }}
+          className={cn(
+            "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-(--sidebar-bg) text-kumo-default",
+            variant === "sidebar" &&
+              (side === "left"
+                ? "border-r border-kumo-line"
+                : "border-l border-kumo-line"),
+            variant === "floating" &&
+              "m-2 rounded-lg border border-kumo-line shadow-lg",
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </aside>
+      );
+    }
+
     if (isMobile) {
       return (
         <>
@@ -532,7 +537,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
           <div
             data-sidebar-backdrop=""
             className={cn(
-              "fixed inset-0 z-40 bg-kumo-recessed",
+              contained ? "absolute inset-0 z-40 bg-kumo-recessed" : "fixed inset-0 z-40 bg-kumo-recessed",
               "transition-opacity duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
               openMobile ? "opacity-80" : "opacity-0 pointer-events-none",
@@ -558,7 +563,9 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             data-sidebar="sidebar"
             data-mobile="true"
             className={cn(
-              "group/sidebar fixed inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden",
+              contained
+                ? "group/sidebar absolute inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden"
+                : "group/sidebar fixed inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden",
               "border-r border-kumo-line bg-(--sidebar-bg) text-kumo-default",
               "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
@@ -720,9 +727,7 @@ const SidebarHeader = forwardRef<
     data-sidebar="header"
     className={cn(
       "flex h-[58px] shrink-0 items-center gap-1 border-b border-kumo-line",
-      "px-2 group-not-data-[state=collapsed]/sidebar:px-3.5",
-      "transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
-      "overflow-hidden",
+      "px-3 overflow-hidden",
       className,
     )}
     {...props}
@@ -765,7 +770,7 @@ const SidebarContent = forwardRef<
         "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
     >
-      <ScrollAreaBase.Content className="flex min-w-0 flex-col gap-3 group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:min-w-0! transition-[gap] duration-(--sidebar-animation-duration)">
+      <ScrollAreaBase.Content className="flex min-w-0 flex-col group-data-[state=collapsed]/sidebar:min-w-0!">
         {children}
       </ScrollAreaBase.Content>
     </ScrollAreaBase.Viewport>
@@ -889,6 +894,8 @@ const SidebarGroupLabel = forwardRef<
       "[[data-sidebar=group]:first-child_&]:my-0 [[data-sidebar=group]:first-child_&]:border-transparent",
       // Expanded: reveal the label text
       "group-not-data-[state=collapsed]/sidebar:grid-rows-[1fr] group-not-data-[state=collapsed]/sidebar:my-0 group-not-data-[state=collapsed]/sidebar:border-transparent",
+      // Mobile: always show labels (sidebar content is always expanded on mobile)
+      "group-data-[mobile=true]/sidebar:grid-rows-[1fr] group-data-[mobile=true]/sidebar:my-0 group-data-[mobile=true]/sidebar:border-transparent",
       className,
     )}
     {...props}
@@ -896,7 +903,7 @@ const SidebarGroupLabel = forwardRef<
     <div className="min-h-0">
       <div
         className={cn(
-          "truncate px-3 mt-4 mb-2 text-sm font-medium text-kumo-subtle",
+          "truncate px-3 mt-6 mb-2 text-sm font-medium text-kumo-subtle",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}

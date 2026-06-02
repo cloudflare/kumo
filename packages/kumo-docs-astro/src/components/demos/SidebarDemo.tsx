@@ -67,7 +67,7 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 group-data-[state=collapsed]/sidebar:px-1.5 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
+            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
@@ -502,7 +502,7 @@ export function SidebarFullDemo() {
                     <Sidebar.MenuButton
                       icon={MagnifyingGlassIcon}
                       tooltip="Search"
-                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-transparent"
+                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-transparent mb-3 group-data-[state=collapsed]/sidebar:mb-0 transition-[margin] duration-(--sidebar-animation-duration)"
                     >
                       Quick search&hellip;
                     </Sidebar.MenuButton>
@@ -640,5 +640,75 @@ export function SidebarFullDemo() {
         <DemoMain />
       </Sidebar.Provider>
     </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 8. Mobile — modal sidebar sheet with focus trap and Escape to close
+// ---------------------------------------------------------------------------
+
+function MobileToggleButton() {
+  const { toggleSidebar, openMobile } = useSidebar();
+  return (
+    <button
+      type="button"
+      onClick={toggleSidebar}
+      className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+    >
+      {openMobile ? "Close sidebar" : "Open sidebar"}
+    </button>
+  );
+}
+
+/** Mobile sidebar demo. Uses a high `mobileBreakpoint` to force mobile mode at any viewport width. */
+export function SidebarMobileDemo() {
+  return (
+    <div className="relative h-[540px] w-full overflow-hidden rounded-lg border border-kumo-line bg-kumo-base">
+      <Sidebar.Provider contained mobileBreakpoint={9999} className="h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={ChartBarIcon}>
+                  Analytics
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={GlobeIcon}>
+                  Domains
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={CodeIcon}>
+                  Compute
+                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={DatabaseIcon}>
+                  Storage
+                </Sidebar.MenuButton>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <MobileToggleButton />
+          <p>Click the button to open the mobile sidebar</p>
+          <p className="text-sm text-kumo-subtle">
+            Press Escape or click the backdrop to close
+          </p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </div>
   );
 }

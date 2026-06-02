@@ -13,6 +13,7 @@ import {
   SidebarRightDemo,
   SidebarPeekingDemo,
   SidebarSlidingViewsDemo,
+  SidebarMobileDemo,
 } from "../../components/demos/SidebarDemo";
 ---
 
@@ -276,6 +277,22 @@ const { state, isPeeking } = useSidebar();
   </Sidebar.Footer>
 </Sidebar>`}>
           <SidebarFullDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Mobile</Heading>
+        <p>
+          On narrow viewports the sidebar renders as a modal sheet. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">mobileBreakpoint</code> to control the threshold.
+          The sheet includes <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">inert</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">aria-hidden</code>, focus management, and Escape-to-close.
+          This demo forces mobile mode via a high breakpoint.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider mobileBreakpoint={9999}>
+  <Sidebar>
+    <Sidebar.Content>...</Sidebar.Content>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarMobileDemo client:load />
         </ComponentExample>
       </div>
 
