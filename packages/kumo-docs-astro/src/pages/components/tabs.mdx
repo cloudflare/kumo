@@ -15,6 +15,7 @@ import {
   TabsSmDemo,
   TabsControlledDemo,
   TabsManyDemo,
+  TabsTinyOverflowDemo,
 } from "~/components/demos/TabsDemo";
 
 {/* Hero Demo */}
@@ -116,6 +117,16 @@ export default function Example() {
 <p>Tabs automatically scroll horizontally when there are many items.</p>
 <ComponentExample demo="TabsManyDemo">
   <TabsManyDemo client:visible />
+</ComponentExample>
+
+### Tiny Overflow
+
+<p>
+  When tabs overflow by only a few pixels, the edge fade still reflects the
+  actual hidden content on each side.
+</p>
+<ComponentExample demo="TabsTinyOverflowDemo">
+  <TabsTinyOverflowDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>

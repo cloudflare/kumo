@@ -214,51 +214,27 @@
   }
 }
 
-/* Scroll-fade: gradient masks that appear on the edges of a horizontally
-   scrollable container based on scroll position. Uses scroll-driven
-   animations (Chrome 115+, Edge 115+). Degrades gracefully to no fade.
-   Activated by the `data-overflowing` attribute (set via JS ResizeObserver). */
-@keyframes scroll-fade-x-left {
-  to {
-    mask-size:
-      var(--scroll-fade-width, 3rem) 100%,
-      100% 100%,
-      var(--scroll-fade-width, 3rem) 100%;
-  }
-}
-
-@keyframes scroll-fade-x-right {
-  to {
-    mask-size:
-      var(--scroll-fade-width, 3rem) 100%,
-      100% 100%,
-      0 100%;
-  }
-}
-
-[data-overflowing] {
-  @supports (animation-timeline: scroll()) {
-    mask-image:
-      linear-gradient(to right, white, transparent),
-      linear-gradient(white, white),
-      linear-gradient(to right, transparent, white);
-    mask-size:
-      0 100%,
-      100% 100%,
-      var(--scroll-fade-width, 3rem) 100%;
-    mask-repeat: no-repeat;
-    mask-composite: exclude;
-    mask-position: left, center, right;
-
-    animation-name: scroll-fade-x-left, scroll-fade-x-right;
-    animation-timing-function: linear, linear;
-    animation-timeline: scroll(self x);
-    animation-range:
-      0 var(--scroll-fade-range, 3rem),
-      calc(100% - var(--scroll-fade-range, 3rem)) 100%;
-    animation-fill-mode: both;
-    animation-composition: replace;
-  }
+/* Scroll-fade: gradient masks driven by Base UI ScrollArea overflow distance
+   variables. This avoids scroll-timeline edge cases when overflow is only a
+   few px because the fade width is clamped to actual hidden content. */
+[data-kumo-scroll-fade] {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black min(
+      var(--scroll-fade-width, 3rem),
+      var(--scroll-area-overflow-x-start, 0px)
+    ),
+    black calc(
+      100% -
+        min(
+          var(--scroll-fade-width, 3rem),
+          var(--scroll-area-overflow-x-end, 0px)
+        )
+    ),
+    transparent 100%
+  );
+  mask-repeat: no-repeat;
 }
 
 /* Tab list scroll behavior. Scrollbar is only hidden when scroll-driven
@@ -268,7 +244,7 @@
   overscroll-behavior-x: contain;
 }
 
-@supports (animation-timeline: scroll()) {
+@supports (mask-image: linear-gradient(white, transparent)) {
   .kumo-tabs-list {
     scrollbar-width: none;
     -ms-overflow-style: none;

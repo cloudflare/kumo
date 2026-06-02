@@ -101,6 +101,42 @@ export function TabsManyDemo() {
   );
 }
 
+export function TabsTinyOverflowDemo() {
+  const [width, setWidth] = useState(596);
+
+  return (
+    <div className="w-full space-y-4">
+      <label className="flex max-w-md flex-col gap-2 text-sm text-kumo-subtle">
+        Container width: {width}px
+        <input
+          type="range"
+          min="520"
+          max="720"
+          value={width}
+          onChange={(event) => setWidth(Number(event.currentTarget.value))}
+        />
+      </label>
+      <div className="w-full overflow-hidden">
+        <div style={{ width }} className="max-w-full">
+          <Tabs
+            tabs={[
+              { value: "overview", label: "Overview" },
+              { value: "metrics", label: "Metrics" },
+              { value: "deployments", label: "Deployments" },
+              { value: "previews", label: "Previews" },
+              { value: "bindings", label: "Bindings" },
+              { value: "observability", label: "Observability" },
+              { value: "domains", label: "Domains" },
+              { value: "settings", label: "Settings" },
+            ]}
+            selectedValue="overview"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TabsSmDemo() {
   return (
     <div className="flex flex-col gap-6">
