@@ -117,13 +117,23 @@ function titleFromSlug(slug: string) {
 }
 
 function descriptionSummary(description: string) {
-  const normalized = description.replace(/\s+/g, " ").trim();
+  const normalized = plainAscii(description).replace(/\s+/g, " ").trim();
   const [firstSentence] = normalized.split(/\.\s+/);
   const summary =
     firstSentence.length > 180
       ? `${firstSentence.slice(0, 177)}...`
       : firstSentence;
   return summary.endsWith(".") ? summary : `${summary}.`;
+}
+
+function plainAscii(value: string) {
+  return value
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\u2026/g, "...")
+    .replace(/\u00A0/g, " ")
+    .replace(/[^\x20-\x7E\n]/g, "");
 }
 
 function registryDocs(
