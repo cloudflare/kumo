@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import componentRegistry from "@cloudflare/kumo/ai/component-registry.json";
 
+export const prerender = true;
+
 const SITE_URL = "https://kumo-ui.com";
 
 const componentDocPages = import.meta.glob("./components/*.{astro,mdx}");
