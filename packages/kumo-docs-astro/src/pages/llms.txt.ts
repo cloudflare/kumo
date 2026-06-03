@@ -1,10 +1,35 @@
 import type { APIRoute } from "astro";
+import componentRegistry from "@cloudflare/kumo/ai/component-registry.json";
 
 const SITE_URL = "https://kumo-ui.com";
+
+const componentDocPages = import.meta.glob("./components/*.{astro,mdx}");
+const blockDocPages = import.meta.glob("./blocks/*.{astro,mdx}");
+
+const registryRouteOverrides: Record<string, string> = {
+  Code: "code-highlighted",
+  DropdownMenu: "dropdown",
+  ResourceListPage: "resource-list",
+  Toasty: "toast",
+};
+
+const titleOverrides: Record<string, string> = {
+  "code-highlighted": "CodeHighlighted",
+  "input-area": "InputArea",
+  "input-group": "InputGroup",
+  "menu-bar": "MenuBar",
+  "resource-list": "Resource List",
+  "table-of-contents": "Table of Contents",
+};
 
 interface LlmLink {
   title: string;
   path: string;
+  description: string;
+}
+
+interface RegistryItem {
+  name: string;
   description: string;
 }
 
@@ -63,57 +88,75 @@ const coreDocs: LlmLink[] = [
   },
 ];
 
-function componentDoc(title: string, path: string): LlmLink {
-  return {
-    title,
-    path,
-    description: `${title} component docs, usage, and examples.`,
-  };
+function slugFromPagePath(pagePath: string) {
+  return pagePath
+    .replace(/^\.\/(components|blocks)\//, "")
+    .replace(/\.(astro|mdx)$/, "");
 }
 
-const components: LlmLink[] = [
-  componentDoc("Autocomplete", "/components/autocomplete.md"),
-  componentDoc("Badge", "/components/badge.md"),
-  componentDoc("Banner", "/components/banner.md"),
-  componentDoc("Breadcrumbs", "/components/breadcrumbs.md"),
-  componentDoc("Button", "/components/button.md"),
-  componentDoc("Checkbox", "/components/checkbox.md"),
-  componentDoc("Clipboard Text", "/components/clipboard-text.md"),
-  componentDoc("Cloudflare Logo", "/components/cloudflare-logo.md"),
-  componentDoc("CodeHighlighted", "/components/code-highlighted.md"),
-  componentDoc("Collapsible", "/components/collapsible.md"),
-  componentDoc("Combobox", "/components/combobox.md"),
-  componentDoc("Command Palette", "/components/command-palette.md"),
-  componentDoc("Date Picker", "/components/date-picker.md"),
-  componentDoc("Dialog", "/components/dialog.md"),
-  componentDoc("Dropdown", "/components/dropdown.md"),
-  componentDoc("Empty", "/components/empty.md"),
-  componentDoc("Flow", "/components/flow.md"),
-  componentDoc("Grid", "/components/grid.md"),
-  componentDoc("Input", "/components/input.md"),
-  componentDoc("InputArea", "/components/input-area.md"),
-  componentDoc("InputGroup", "/components/input-group.md"),
-  componentDoc("Label", "/components/label.md"),
-  componentDoc("Layer Card", "/components/layer-card.md"),
-  componentDoc("Link", "/components/link.md"),
-  componentDoc("Loader", "/components/loader.md"),
-  componentDoc("MenuBar", "/components/menu-bar.md"),
-  componentDoc("Meter", "/components/meter.md"),
-  componentDoc("Pagination", "/components/pagination.md"),
-  componentDoc("Popover", "/components/popover.md"),
-  componentDoc("Radio", "/components/radio.md"),
-  componentDoc("Select", "/components/select.md"),
-  componentDoc("Sensitive Input", "/components/sensitive-input.md"),
-  componentDoc("Sidebar", "/components/sidebar.md"),
-  componentDoc("Skeleton Line", "/components/skeleton-line.md"),
-  componentDoc("Switch", "/components/switch.md"),
-  componentDoc("Table", "/components/table.md"),
-  componentDoc("Table of Contents", "/components/table-of-contents.md"),
-  componentDoc("Tabs", "/components/tabs.md"),
-  componentDoc("Text", "/components/text.md"),
-  componentDoc("Toast", "/components/toast.md"),
-  componentDoc("Tooltip", "/components/tooltip.md"),
-];
+function slugFromRegistryName(name: string) {
+  return (
+    registryRouteOverrides[name] ??
+    name
+      .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+      .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+      .toLowerCase()
+  );
+}
+
+function titleFromSlug(slug: string) {
+  return (
+    titleOverrides[slug] ??
+    slug
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+}
+
+function descriptionSummary(description: string) {
+  const normalized = description.replace(/\s+/g, " ").trim();
+  const [firstSentence] = normalized.split(/\.\s+/);
+  const summary =
+    firstSentence.length > 180
+      ? `${firstSentence.slice(0, 177)}...`
+      : firstSentence;
+  return summary.endsWith(".") ? summary : `${summary}.`;
+}
+
+function registryDocs(
+  pagePaths: Record<string, unknown>,
+  registryItems: RegistryItem[],
+  routePrefix: "blocks" | "components",
+) {
+  const documentedSlugs = new Set(Object.keys(pagePaths).map(slugFromPagePath));
+  const registryLinks = registryItems
+    .map((item) => ({ item, slug: slugFromRegistryName(item.name) }))
+    .filter(({ slug }) => documentedSlugs.has(slug));
+  const registrySlugs = new Set(registryLinks.map(({ slug }) => slug));
+  const fallbackLinks = [...documentedSlugs]
+    .filter((slug) => !registrySlugs.has(slug))
+    .map((slug) => ({
+      title: titleFromSlug(slug),
+      path: `/${routePrefix}/${slug}.md`,
+      description: `${titleFromSlug(slug)} docs, usage, and examples.`,
+    }));
+  const links = registryLinks.map(({ item, slug }) => ({
+    title: titleFromSlug(slug),
+    path: `/${routePrefix}/${slug}.md`,
+    description: descriptionSummary(item.description),
+  }));
+
+  return [...links, ...fallbackLinks].toSorted((a, b) =>
+    a.title.localeCompare(b.title),
+  );
+}
+
+const components = registryDocs(
+  componentDocPages,
+  Object.values(componentRegistry.components),
+  "components",
+);
 
 const charts: LlmLink[] = [
   {
@@ -143,23 +186,11 @@ const charts: LlmLink[] = [
   },
 ];
 
-const blocks: LlmLink[] = [
-  {
-    title: "Page Header",
-    path: "/blocks/page-header.md",
-    description: "CLI-installed page header block docs.",
-  },
-  {
-    title: "Resource List",
-    path: "/blocks/resource-list.md",
-    description: "CLI-installed resource list block docs.",
-  },
-  {
-    title: "Delete Resource",
-    path: "/blocks/delete-resource.md",
-    description: "CLI-installed delete resource block docs.",
-  },
-];
+const blocks = registryDocs(
+  blockDocPages,
+  Object.values(componentRegistry.blocks),
+  "blocks",
+);
 
 function formatSection(title: string, links: LlmLink[]) {
   return [
