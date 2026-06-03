@@ -7,7 +7,9 @@ const SITE_URL = "https://kumo-ui.com";
 
 const componentDocPages = import.meta.glob("./components/*.{astro,mdx}");
 const blockDocPages = import.meta.glob("./blocks/*.{astro,mdx}");
+const chartDocPages = import.meta.glob("./charts/*.{astro,mdx}");
 
+// Add an override when the registry component name does not match its docs page slug.
 const registryRouteOverrides: Record<string, string> = {
   Code: "code-highlighted",
   DropdownMenu: "dropdown",
@@ -15,6 +17,7 @@ const registryRouteOverrides: Record<string, string> = {
   Toasty: "toast",
 };
 
+// Add an override when the docs page slug needs custom capitalization or spacing.
 const titleOverrides: Record<string, string> = {
   "code-highlighted": "CodeHighlighted",
   "input-area": "InputArea",
@@ -22,6 +25,20 @@ const titleOverrides: Record<string, string> = {
   "menu-bar": "MenuBar",
   "resource-list": "Resource List",
   "table-of-contents": "Table of Contents",
+};
+
+const chartTitleOverrides: Record<string, string> = {
+  colors: "Chart Colors",
+  custom: "Custom Chart",
+  index: "Charts",
+};
+
+const chartDescriptions: Record<string, string> = {
+  colors: "Chart color tokens and palette guidance.",
+  custom: "Guidance for custom chart implementations.",
+  index: "Overview of Kumo charting patterns.",
+  sankey: "Sankey chart usage and examples.",
+  timeseries: "Timeseries chart usage and examples.",
 };
 
 interface LlmLink {
@@ -92,7 +109,7 @@ const coreDocs: LlmLink[] = [
 
 function slugFromPagePath(pagePath: string) {
   return pagePath
-    .replace(/^\.\/(components|blocks)\//, "")
+    .replace(/^\.\/(components|blocks|charts)\//, "")
     .replace(/\.(astro|mdx)$/, "");
 }
 
@@ -118,7 +135,9 @@ function titleFromSlug(slug: string) {
 
 function descriptionSummary(description: string) {
   const normalized = plainAscii(description).replace(/\s+/g, " ").trim();
-  const [firstSentence] = normalized.split(/\.\s+/);
+  if (!normalized) return "";
+
+  const [firstSentence] = normalized.split(/\.\s+(?=[A-Z])/);
   const summary =
     firstSentence.length > 180
       ? `${firstSentence.slice(0, 177)}...`
@@ -164,39 +183,41 @@ function registryDocs(
   );
 }
 
+function pageDocs(
+  pagePaths: Record<string, unknown>,
+  routePrefix: "charts",
+  descriptions: Record<string, string>,
+  titles: Record<string, string>,
+) {
+  return Object.keys(pagePaths)
+    .map(slugFromPagePath)
+    .map((slug) => ({
+      title: titles[slug] ?? titleFromSlug(slug),
+      path:
+        slug === "index" ? `/${routePrefix}.md` : `/${routePrefix}/${slug}.md`,
+      description:
+        descriptions[slug] ??
+        `${titles[slug] ?? titleFromSlug(slug)} docs, usage, and examples.`,
+    }))
+    .toSorted((a, b) => {
+      if (a.path === `/${routePrefix}.md`) return -1;
+      if (b.path === `/${routePrefix}.md`) return 1;
+      return a.title.localeCompare(b.title);
+    });
+}
+
 const components = registryDocs(
   componentDocPages,
   Object.values(componentRegistry.components),
   "components",
 );
 
-const charts: LlmLink[] = [
-  {
-    title: "Charts",
-    path: "/charts.md",
-    description: "Overview of Kumo charting patterns.",
-  },
-  {
-    title: "Chart Colors",
-    path: "/charts/colors.md",
-    description: "Chart color tokens and palette guidance.",
-  },
-  {
-    title: "Timeseries",
-    path: "/charts/timeseries.md",
-    description: "Timeseries chart usage and examples.",
-  },
-  {
-    title: "Sankey",
-    path: "/charts/sankey.md",
-    description: "Sankey chart usage and examples.",
-  },
-  {
-    title: "Custom Chart",
-    path: "/charts/custom.md",
-    description: "Guidance for custom chart implementations.",
-  },
-];
+const charts = pageDocs(
+  chartDocPages,
+  "charts",
+  chartDescriptions,
+  chartTitleOverrides,
+);
 
 const blocks = registryDocs(
   blockDocPages,
