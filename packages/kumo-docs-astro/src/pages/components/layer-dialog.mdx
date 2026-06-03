@@ -1,0 +1,185 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Layer Dialog"
+description: "A dialog component built on top of LayerCard for a distinctive layered modal appearance."
+sourceFile: "components/layer-dialog"
+baseUIComponent: "dialog"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  LayerDialogBasicDemo,
+  LayerDialogWithForm,
+  LayerDialogWithForm2,
+  LayerDialogWithForm3,
+} from "~/components/demos/LayerDialogDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="LayerDialogWithForm">
+    <LayerDialogWithForm client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock code={`import { LayerDialog } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+  <CodeBlock
+    code={`import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+```tsx
+import { LayerDialog, Button } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <LayerDialog>
+      <LayerDialog.Trigger render={<Button>Open</Button>} />
+      <LayerDialog.Content>
+        <LayerDialog.Body>
+          <LayerDialog.Title>Dialog Title</LayerDialog.Title>
+          <LayerDialog.Description>
+            A short description of the dialog content.
+          </LayerDialog.Description>
+        </LayerDialog.Body>
+        <LayerDialog.Footer>
+          <LayerDialog.Close
+            render={<Button variant="secondary">Cancel</Button>}
+          />
+          <Button variant="primary">Confirm</Button>
+        </LayerDialog.Footer>
+      </LayerDialog.Content>
+    </LayerDialog>
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+
+## Examples
+
+### Basic Dialog
+
+<p>
+  A simple confirmation dialog with a title, description, and footer actions.
+  Use <code>LayerDialog.Close</code> to provide a dismiss action.
+</p>
+
+<ComponentExample demo="LayerDialogBasicDemo">
+  <LayerDialogBasicDemo client:load />
+</ComponentExample>
+
+### With Form
+
+<p>
+  A dialog containing a form with various inputs. The
+  <code>LayerDialog.Description</code> component provides context above the form
+  fields.
+</p>
+
+<ComponentExample demo="LayerDialogWithForm">
+  <LayerDialogWithForm client:load />
+</ComponentExample>
+
+### With Error Banner
+
+<p>
+  Display inline validation or error states inside a dialog using the Banner
+  component. Keep the dialog open so users can correct the issue.
+</p>
+
+<ComponentExample demo="LayerDialogWithForm2">
+  <LayerDialogWithForm2 client:load />
+</ComponentExample>
+
+### With Separator
+
+<p>
+  Use <code>LayerDialog.Separator</code> to visually divide related content
+  sections within the dialog body.
+</p>
+
+<ComponentExample demo="LayerDialogWithForm3">
+  <LayerDialogWithForm3 client:load />
+</ComponentExample>
+
+</ComponentSection>
+
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+### LayerDialog
+
+<p>The root component that controls the dialog state. Doesn't render its own HTML element.</p>
+<PropsTable component="LayerDialog" />
+
+### LayerDialog.Trigger
+
+<p>A button that opens the dialog when clicked.</p>
+<PropsTable component="LayerDialog.Trigger" />
+
+### LayerDialog.Content
+
+<p>Renders the portal, backdrop, and popup wrapped in a LayerCard.</p>
+<PropsTable component="LayerDialog.Content" />
+
+### LayerDialog.Body
+
+<p>The primary content area of the dialog, rendered as LayerCard.Primary with padding.</p>
+<PropsTable component="LayerDialog.Body" />
+
+### LayerDialog.Footer
+
+<p>The secondary action area of the dialog, rendered as LayerCard.Secondary with padding.</p>
+<PropsTable component="LayerDialog.Footer" />
+
+### LayerDialog.Title
+
+<p>A heading that labels the dialog for accessibility.</p>
+<PropsTable component="LayerDialog.Title" />
+
+### LayerDialog.Description
+
+<p>A paragraph providing additional context about the dialog.</p>
+<PropsTable component="LayerDialog.Description" />
+
+### LayerDialog.Close
+
+<p>A button that closes the dialog when clicked.</p>
+<PropsTable component="LayerDialog.Close" />
+
+### LayerDialog.Separator
+
+<p>A horizontal divider to separate content sections within the dialog body.</p>
+<PropsTable component="LayerDialog.Separator" />
+
+</ComponentSection>

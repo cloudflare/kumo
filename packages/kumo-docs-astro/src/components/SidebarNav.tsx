@@ -61,6 +61,7 @@ const componentItems: NavItem[] = [
   { label: "InputGroup", href: "/components/input-group" },
   { label: "Label", href: "/components/label" },
   { label: "Layer Card", href: "/components/layer-card" },
+  { label: "Layer Dialog", href: "/components/layer-dialog" },
   { label: "Link", href: "/components/link" },
   { label: "Loader", href: "/components/loader" },
   { label: "MenuBar", href: "/components/menu-bar" },

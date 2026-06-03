@@ -92,6 +92,10 @@
       "types": "./dist/src/components/layer-card/index.d.ts",
       "import": "./dist/components/layer-card.js"
     },
+    "./components/layer-dialog": {
+      "types": "./dist/src/components/layer-dialog/index.d.ts",
+      "import": "./dist/components/layer-dialog.js"
+    },
     "./components/label": {
       "types": "./dist/src/components/label/index.d.ts",
       "import": "./dist/components/label.js"

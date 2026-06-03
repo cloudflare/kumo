@@ -66,6 +66,7 @@ export {
   type DialogDescriptionProps,
   type DialogCloseProps,
 } from "./components/dialog";
+export { LayerDialog } from "./components/layer-dialog";
 export { DropdownMenu } from "./components/dropdown";
 export {
   Collapsible,

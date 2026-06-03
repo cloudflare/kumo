@@ -115,6 +115,10 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/layer-card/index.ts",
           ),
+          "components/layer-dialog": resolve(
+            __dirname,
+            "src/components/layer-dialog/index.ts",
+          ),
           "components/label": resolve(
             __dirname,
             "src/components/label/index.ts",
