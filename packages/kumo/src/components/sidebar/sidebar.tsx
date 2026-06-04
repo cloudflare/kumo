@@ -1139,7 +1139,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
         {iconNode}
         <span
           className={cn(
-            "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
+            "flex flex-1 items-center gap-2 min-w-0 text-left truncate",
           )}
         >
           {children}
