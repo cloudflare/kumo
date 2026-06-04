@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import type { TabsTab } from "@base-ui/react/tabs";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cn } from "../../utils/cn";
@@ -156,7 +163,12 @@ export function Tabs({
   return (
     <TabsPrimitive.Root
       {...rootProps}
-      className={cn("relative isolate min-w-0 font-medium", className)}
+      className={cn(
+        "relative isolate min-w-0 font-medium",
+        isSegmented &&
+          (isSm ? "rounded-md" : "rounded-lg") + " ring ring-kumo-hairline/70",
+        className,
+      )}
       onValueChange={(nextValue) => {
         const stringValue = String(nextValue);
         onValueChange?.(stringValue);
@@ -164,7 +176,12 @@ export function Tabs({
     >
       {/* Background element for segmented variant */}
       {isSegmented && (
-        <div className={cn("absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 rounded-lg bg-kumo-recessed", isSm ? "h-6.5" : "h-9")} />
+        <div
+          className={cn(
+            "absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 rounded-lg bg-kumo-recessed",
+            isSm ? "h-6.5" : "h-9",
+          )}
+        />
       )}
       <TabsPrimitive.List
         ref={listRef}
@@ -173,7 +190,8 @@ export function Tabs({
         {...bindDrag()}
         className={cn(
           "relative flex min-w-0 shrink items-stretch",
-          isSegmented && "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 ring ring-kumo-hairline/70 [--scroll-fade-width:3rem]",
+          isSegmented &&
+            "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 [--scroll-fade-width:3rem] scroll-px-(--scroll-fade-width)",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
@@ -188,13 +206,22 @@ export function Tabs({
             data-kumo-part="tab"
             value={tab.value}
             render={tab.render}
+            onClick={(e) => {
+              e.currentTarget.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest",
+              });
+            }}
             className={cn(
               "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
-              isOverflowing ? "cursor-grab active:cursor-grabbing" : "cursor-pointer",
+              isOverflowing
+                ? "cursor-grab active:cursor-grabbing"
+                : "cursor-pointer",
               isSm ? "text-xs" : "text-base",
               isSegmented &&
-                "my-0.5 rounded-md text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
-              isSegmented && (isSm ? "px-2" : "px-2.5"),
+                "my-0.5 text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
+              isSegmented && (isSm ? "px-2 rounded-sm" : "px-2.5 rounded-md"),
               isUnderline &&
                 "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
               isUnderline && (isSm ? "px-1.5 py-2.5" : "px-2 py-3"),
@@ -213,7 +240,10 @@ export function Tabs({
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
                 "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&
-                  cn("top-(--active-tab-top) h-(--active-tab-height) bg-kumo-base shadow-sm ring ring-kumo-line", isSm ? "rounded" : "rounded-md"),
+                  cn(
+                    "top-(--active-tab-top) h-(--active-tab-height) bg-kumo-base shadow-sm ring ring-kumo-line",
+                    isSm ? "rounded" : "rounded-md",
+                  ),
                 isUnderline && "bottom-0 h-0.5 bg-kumo-brand",
                 indicatorClassName,
               )}
@@ -260,7 +290,8 @@ function useHorizontalDragScroll(
     onPointerMoveCapture: (event: PointerEvent<HTMLElement>) => {
       const el = ref.current;
       const state = dragState.current;
-      if (!el || !enabled || !state || state.pointerId !== event.pointerId) return;
+      if (!el || !enabled || !state || state.pointerId !== event.pointerId)
+        return;
 
       const movementX = event.clientX - state.startX;
       if (!state.dragging) {
