@@ -797,7 +797,7 @@ const SidebarContent = forwardRef<
         "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
     >
-      <ScrollAreaBase.Content className="flex min-w-0 flex-col group-data-[state=collapsed]/sidebar:min-w-0!">
+      <ScrollAreaBase.Content className="flex min-w-0! flex-col">
         {children}
       </ScrollAreaBase.Content>
     </ScrollAreaBase.Viewport>
@@ -927,7 +927,7 @@ const SidebarGroupLabel = forwardRef<
     )}
     {...props}
   >
-    <div className="min-h-0">
+    <div className="min-h-0 min-w-0">
       <div
         className={cn(
           "truncate px-3 mt-6 mb-2 text-sm font-medium text-kumo-subtle",
@@ -1142,7 +1142,13 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
             "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
           )}
         >
-          {children}
+          {React.Children.map(children, (child) =>
+            typeof child === "string" || typeof child === "number" ? (
+              <span className="truncate">{child}</span>
+            ) : (
+              child
+            ),
+          )}
         </span>
       </div>
     );
@@ -1386,8 +1392,14 @@ const SidebarMenuSubButton = forwardRef<
   );
 
   const content = (
-    <span className="flex flex-1 items-center gap-2 truncate text-left">
-      {children}
+    <span className="flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden">
+      {React.Children.map(children, (child) =>
+        typeof child === "string" || typeof child === "number" ? (
+          <span className="truncate">{child}</span>
+        ) : (
+          child
+        ),
+      )}
     </span>
   );
 

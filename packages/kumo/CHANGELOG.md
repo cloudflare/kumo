@@ -1,5 +1,51 @@
 # @cloudflare/kumo
 
+## 2.5.0
+
+### Minor Changes
+
+- 7401701: Sidebar: mobile rewrite, smooth collapse transitions, and new props
+
+  **New features:**
+  - `mobileBreakpoint` prop on Provider — configurable viewport width for mobile detection
+  - `contentClassName` prop on Sidebar root — pass-through class for the inner content container
+  - Controlled mobile state — `open` prop now controls the mobile sidebar too, not just desktop
+
+  **Fixes:**
+  - Replaced Base UI Dialog mobile sidebar with a plain `<nav>` + backdrop for simpler, more predictable transitions
+  - Collapsible sections now animate closed smoothly when the sidebar collapses instead of snapping shut
+  - Removed `hidden` class from `Sidebar.MenuSub` so sub-menus participate in collapse animations
+  - Removed `inertValue` React-version helper — `SidebarSlidingView` now sets `inert` imperatively for React 18 compatibility
+  - Restored `inert` on closed `SidebarCollapsibleContent` while removing its `data-open` attribute
+
+  **Styling:**
+  - `bg-kumo-tint` → `bg-(--sidebar-active-bg)` CSS variable for active/hover/focus backgrounds
+  - Icon opacity `0.5` → `0.4`; chevron gains hover opacity transition
+  - Header gains `shrink-0` and animated padding on collapse
+  - Content scroll area gains animated `gap` transition and `tabIndex={-1}` on viewport
+  - Sliding views container gains `max-w-(--sidebar-width)` to prevent overflow
+  - Mobile sidebar uses `--sidebar-animation-duration` CSS variable for slide transition
+
+### Patch Changes
+
+- f957dbc: Add React 18 and React 19 compatibility checks for Kumo tests.
+- ac46184: Fix `Chart` (and `SankeyChart`) rendering in dark mode. The chart canvas
+  now stays transparent so the surrounding `bg-kumo-*` surface shows through
+  symmetrically in both modes, and ECharts' built-in `"dark"` theme is
+  applied when `isDarkMode` is true so the tooltip card, axes, splitLines,
+  and legend text are themed correctly.
+- e25a3d6: fix(sidebar): add text truncation with ellipsis to Sidebar.MenuButton content
+
+  Previously, `Sidebar.MenuButton` used `overflow-hidden` which clipped long text without showing an ellipsis. Now uses `truncate` to match `Sidebar.MenuSubButton`'s behavior.
+
+- d3feec0: Fix segmented `Tabs` scroll fade, scroll-into-view, and ring styling:
+  - Rewrite CSS scroll-fade masking to use `@property`-animated custom properties, fixing proportional fade rendering across browsers.
+  - Scroll the selected tab into view on click so it stays visible in overflowing tab lists.
+  - Move `ring ring-kumo-hairline/70` from the inner list to the root container so the segmented variant ring wraps the entire component correctly.
+
+- f831482: Fix Flow connector rendering in Firefox by emitting valid SVG path data without array commas and setting visible overflow on the SVG element attribute.
+- 4a8b992: Restore React 18-compatible Sidebar inert attribute handling while keeping the full React compatibility CI suite.
+
 ## 2.4.1
 
 ### Patch Changes
