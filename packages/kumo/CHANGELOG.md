@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 2.5.1
+
+### Patch Changes
+
+- b06e35b: Allow unprefixed Dialog max-width classes to override the default viewport cap at desktop breakpoints.
+
 ## 2.5.0
 
 ### Minor Changes
