@@ -930,7 +930,7 @@ const SidebarGroupLabel = forwardRef<
     <div className="min-h-0 min-w-0">
       <div
         className={cn(
-          "truncate px-3 mt-6 mb-2 text-sm font-medium text-kumo-subtle",
+          "truncate px-3 mt-4 mb-2 text-sm font-medium text-kumo-subtle",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
