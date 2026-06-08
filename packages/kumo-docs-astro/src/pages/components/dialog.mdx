@@ -15,6 +15,7 @@ import {
   DialogWithActionsDemo,
   DialogConfirmationDemo,
   DialogAlertDemo,
+  DialogMaxWidthDemo,
   DialogWithSelectDemo,
   DialogWithComboboxDemo,
   DialogWithDropdownDemo,
@@ -169,6 +170,20 @@ export default function Example() {
 
 <ComponentExample demo="DialogWithActionsDemo">
   <DialogWithActionsDemo client:load />
+</ComponentExample>
+
+### Custom Max Width
+
+<p>
+  Consumer max-width utilities such as `max-w-lg` should cap the dialog on
+  desktop, even when the dialog contains wide intrinsic content.
+</p>
+<ComponentExample
+  demo="DialogMaxWidthDemo"
+  vrSection="custom-max-width"
+  vrTitle="Custom Max Width"
+>
+  <DialogMaxWidthDemo client:load />
 </ComponentExample>
 
 ### With Select
