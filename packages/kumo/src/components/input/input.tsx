@@ -1,11 +1,12 @@
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   forwardRef,
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
-import { Field, type FieldErrorMatch } from "../field/field";
+import { Field, normalizeFieldError, type FieldErrorMatch } from "../field/field";
 
 /** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {
@@ -29,11 +30,11 @@ export const KUMO_INPUT_VARIANTS = {
   },
   variant: {
     default: {
-      classes: "focus:ring-kumo-ring",
+      classes: "focus:ring-kumo-focus/50 focus:ring-[1.5px]",
       description: "Default input appearance",
     },
     error: {
-      classes: "!ring-kumo-danger focus:ring-kumo-danger",
+      classes: "!ring-kumo-danger focus:ring-kumo-danger/50 focus:ring-[1.5px]",
       description: "Error state for validation failures",
     },
   },
@@ -106,16 +107,30 @@ export function inputVariants({
 }: KumoInputVariantsProps = {}) {
   return cn(
     // Base styles
-    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line",
+    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line outline-none focus:outline-none",
     // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
-    "kumo-input-placeholder disabled:text-kumo-subtle",
+    "kumo-input-placeholder disabled:text-kumo-disabled",
     // Apply size styles from KUMO_INPUT_VARIANTS
-    KUMO_INPUT_VARIANTS.size[size].classes,
+    resolveVariant(
+      KUMO_INPUT_VARIANTS.size,
+      size,
+      KUMO_INPUT_DEFAULT_VARIANTS.size,
+    ).classes,
     // Apply variant styles from KUMO_INPUT_VARIANTS
-    KUMO_INPUT_VARIANTS.variant[variant].classes,
+    resolveVariant(
+      KUMO_INPUT_VARIANTS.variant,
+      variant,
+      KUMO_INPUT_DEFAULT_VARIANTS.variant,
+    ).classes,
     // Focus state handling
-    parentFocusIndicator && "focus-within:ring-kumo-ring",
-    focusIndicator && "focus:ring-kumo-ring",
+    parentFocusIndicator &&
+      (variant === "error"
+        ? "focus-within:ring-kumo-danger/50 focus-within:ring-[1.5px]"
+        : "focus-within:ring-kumo-focus/50 focus-within:ring-[1.5px]"),
+    focusIndicator &&
+      (variant === "error"
+        ? "focus:ring-kumo-danger/50 focus:ring-[1.5px]"
+        : "focus:ring-kumo-focus/50 focus:ring-[1.5px]"),
   );
 }
 
@@ -123,13 +138,27 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const {
     className,
     size = "base",
-    variant = "default",
+    variant: variantProp,
     label,
     labelTooltip,
     description,
     error,
+    passwordManagerIgnore = false,
     ...inputProps
   } = props;
+
+  // Deprecation warning for variant="error"
+  if (process.env.NODE_ENV !== "production" && variantProp === "error") {
+    console.warn(
+      '[Kumo Input]: variant="error" is deprecated. ' +
+        "Error styling is now automatically applied when the `error` prop is truthy. " +
+        "Simply remove the variant prop and pass an error message instead.",
+    );
+  }
+
+  // Auto-apply error styling when error prop is truthy
+  // Explicit variant prop takes precedence for backwards compatibility
+  const variant = variantProp ?? (error ? "error" : "default");
 
   // Extract required from inputProps to pass to Field for label decoration
   const { required } = inputProps;
@@ -137,16 +166,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   // A11y enforcement: warn in dev if no accessible name provided
   if (process.env.NODE_ENV !== "production") {
     const hasLabel = Boolean(label);
-    const hasPlaceholderAndAriaLabel = Boolean(
-      inputProps.placeholder && inputProps["aria-label"],
-    );
+    const hasAriaLabel = Boolean(inputProps["aria-label"]);
     const hasAriaLabelledBy = Boolean(inputProps["aria-labelledby"]);
 
-    if (!hasLabel && !hasPlaceholderAndAriaLabel && !hasAriaLabelledBy) {
+    if (!hasLabel && !hasAriaLabel && !hasAriaLabelledBy) {
       console.warn(
         "[Kumo Input]: Input must have an accessible name. Provide either:\n" +
           "  - label prop: <Input label='Email' />\n" +
-          "  - placeholder + aria-label: <Input placeholder='Email' aria-label='Email address' />\n" +
+          "  - aria-label: <Input aria-label='Email address' />\n" +
           "  - aria-labelledby for custom label association",
       );
     }
@@ -157,27 +184,30 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
       ref={ref}
       className={cn(
         inputVariants({ size, variant, focusIndicator: true }),
+        passwordManagerIgnore && "keeper-ignore",
         className,
       )}
+      {...(passwordManagerIgnore
+        ? {
+            "data-1p-ignore": "true",
+            "data-bwignore": "true",
+            "data-form-type": "other",
+            "data-lpignore": "true",
+          }
+        : {})}
       {...inputProps}
     />
   );
 
-  // Render with Field wrapper if label is provided
-  if (label) {
+  // Render with Field wrapper if label, error, or description is provided
+  if (label || error || description) {
     return (
       <Field
         label={label}
         required={required}
         labelTooltip={labelTooltip}
         description={description}
-        error={
-          error
-            ? typeof error === "string"
-              ? { message: error, match: true }
-              : error
-            : undefined
-        }
+        error={normalizeFieldError(error)}
       >
         {input}
       </Field>
@@ -219,7 +249,6 @@ Input.displayName = "Input";
  *   label="Password"
  *   description="Must be at least 8 characters"
  *   error="Password is too short"
- *   variant="error"
  * />
  */
 export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
@@ -232,4 +261,6 @@ export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
     description?: ReactNode;
     /** Error message or validation error object */
     error?: string | { message: ReactNode; match: FieldErrorMatch };
+    /** Suppress browser extension password manager overlays on non-credential inputs. */
+    passwordManagerIgnore?: boolean;
   };

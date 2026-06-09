@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "1.16.0",
+  "version": "2.5.1",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -83,6 +83,10 @@
     "./components/input": {
       "types": "./dist/src/components/input/index.d.ts",
       "import": "./dist/components/input.js"
+    },
+    "./components/input-group": {
+      "types": "./dist/src/components/input-group/index.d.ts",
+      "import": "./dist/components/input-group.js"
     },
     "./components/layer-card": {
       "types": "./dist/src/components/layer-card/index.d.ts",
@@ -187,9 +191,17 @@
       "types": "./dist/src/components/flow/index.d.ts",
       "import": "./dist/components/flow.js"
     },
+    "./components/autocomplete": {
+      "types": "./dist/src/components/autocomplete/index.d.ts",
+      "import": "./dist/components/autocomplete.js"
+    },
     "./components/sidebar": {
       "types": "./dist/src/components/sidebar/index.d.ts",
       "import": "./dist/components/sidebar.js"
+    },
+    "./components/table-of-contents": {
+      "types": "./dist/src/components/table-of-contents/index.d.ts",
+      "import": "./dist/components/table-of-contents.js"
     },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
@@ -290,6 +302,10 @@
     "./primitives/number-field": {
       "types": "./dist/src/primitives/number-field.d.ts",
       "import": "./dist/primitives/number-field.js"
+    },
+    "./primitives/otp-field": {
+      "types": "./dist/src/primitives/otp-field.d.ts",
+      "import": "./dist/primitives/otp-field.js"
     },
     "./primitives/popover": {
       "types": "./dist/src/primitives/popover.d.ts",
@@ -435,18 +451,21 @@
   },
   "peerDependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "echarts": "^6.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "zod": "^4.0.0",
-    "echarts": "^6.0.0"
+    "zod": "^4.0.0"
   },
   "peerDependenciesMeta": {
     "zod": {
       "optional": true
+    },
+    "echarts": {
+      "optional": true
     }
   },
   "dependencies": {
-    "@base-ui/react": "^1.2.0",
+    "@base-ui/react": "^1.5.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "clsx": "^2.1.1",

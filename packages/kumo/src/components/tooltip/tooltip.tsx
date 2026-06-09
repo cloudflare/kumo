@@ -1,6 +1,7 @@
 import { Tooltip as TooltipBase } from "@base-ui/react/tooltip";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -54,12 +55,16 @@ export function tooltipVariants({
     // Base styles
     "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-2.5 py-1.5 text-sm text-kumo-default",
     "shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill",
-    "transition-[transform,opacity] duration-150",
+    "transition-[transform,scale,opacity] duration-150",
     "data-[starting-style]:scale-90 data-[starting-style]:opacity-0",
     "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
     "data-[instant]:duration-0",
     // Apply side-specific styles (currently none, but extensible)
-    KUMO_TOOLTIP_VARIANTS.side[side].classes,
+    resolveVariant(
+      KUMO_TOOLTIP_VARIANTS.side,
+      side,
+      KUMO_TOOLTIP_DEFAULT_VARIANTS.side,
+    ).classes,
   );
 }
 
@@ -77,8 +82,8 @@ type TooltipAlign = "start" | "center" | "end";
  *
  * @example
  * ```tsx
- * <Tooltip content="Add new item" asChild>
- *   <Button shape="square" icon={PlusIcon} />
+ * <Tooltip content="Add new item" render={<Button shape="square" icon={PlusIcon} />}>
+ *   Add
  * </Tooltip>
  * ```
  */
@@ -91,7 +96,10 @@ export type TooltipProps = BaseTooltipProps &
      * - `"end"` — Align to the end edge
      */
     align?: TooltipAlign;
-    /** When `true`, the trigger wraps the child element instead of adding a wrapper. */
+    /**
+     * @deprecated Use the `render` prop instead.
+     * @example `<Tooltip render={<Button />}>Label</Tooltip>` instead of `<Tooltip asChild><Button>Label</Button></Tooltip>`
+     */
     asChild?: boolean;
     /** Additional CSS classes merged via `cn()`. */
     className?: string;
@@ -103,6 +111,21 @@ export type TooltipProps = BaseTooltipProps &
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
+    /**
+     * How long to wait before closing the tooltip. Specified in milliseconds.
+     * @default 0
+     */
+    closeDelay?: number;
+    /**
+     * How long to wait before opening the tooltip. Specified in milliseconds.
+     * @default 600
+     */
+    delay?: number;
+    /**
+     * Element to render as the tooltip trigger. Children are passed to this element.
+     * @example `<Tooltip content="Save" render={<Button />}>Save</Tooltip>`
+     */
+    render?: TriggerProps["render"];
   };
 
 /**
@@ -111,8 +134,8 @@ export type TooltipProps = BaseTooltipProps &
  *
  * @example
  * ```tsx
- * <Tooltip content="Save changes" asChild>
- *   <Button variant="primary">Save</Button>
+ * <Tooltip content="Save changes" render={<Button variant="primary" />}>
+ *   Save
  * </Tooltip>
  * ```
  */
@@ -121,36 +144,51 @@ export function Tooltip({
   children,
   align,
   asChild,
+  render,
   side,
   className,
   container: containerProp,
+  closeDelay,
+  delay,
   ...props
 }: TooltipProps) {
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
 
+  // Support both render prop (preferred) and deprecated asChild pattern
+  // When using asChild, children IS the render element, so don't pass it as children
+  const resolvedRender =
+    render ?? (asChild ? (children as TriggerProps["render"]) : undefined);
+  const shouldUseRender = resolvedRender !== undefined;
+
   return (
     <TooltipBase.Root {...props}>
       <TooltipBase.Trigger
+        closeDelay={closeDelay}
+        delay={delay}
         className={cn(
-          // Defensive resets when rendering as button wrapper (not asChild)
+          // Defensive resets when rendering as button wrapper (not render/asChild)
           // These prevent global button styles from polluting the trigger
           // Consumer styles passed via className will override these (tailwind-merge)
-          !asChild &&
+          !shouldUseRender &&
             "inline-flex items-center bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0]",
+          // Tooltip triggers are disclosure elements, not actions — override
+          // cursor: pointer (e.g. from Button used via render prop) so the
+          // trigger doesn't appear clickable
+          "cursor-default",
           className,
         )}
-        render={asChild ? (children as TriggerProps["render"]) : undefined}
+        render={resolvedRender}
       >
         {asChild ? undefined : (children as ReactNode)}
       </TooltipBase.Trigger>
       <TooltipBase.Portal container={container}>
-        <TooltipBase.Positioner align={align} side={side} sideOffset={10}>
+        <TooltipBase.Positioner align={align} side={side} sideOffset={10} className="max-w-[var(--available-width)]">
           <TooltipBase.Popup
             className={cn(
               "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-2.5 py-1.5 text-sm text-kumo-default",
               "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
-              "transition-[transform,opacity] duration-150",
+              "transition-[transform,scale,opacity] duration-150",
               "data-[starting-style]:scale-90 data-[starting-style]:opacity-0",
               "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
               "data-[instant]:duration-0",

@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils";
-import { Checkbox } from "../checkbox";
+import { resolveVariant } from "../../utils/resolve-variant";
+import { Checkbox, type CheckboxChangeEventDetails } from "../checkbox";
 
 /** Table layout and row variant definitions mapping names to their Tailwind classes. */
 export const KUMO_TABLE_VARIANTS = {
@@ -48,22 +49,40 @@ export type KumoTableStickyColumn = keyof typeof KUMO_TABLE_VARIANTS.sticky;
  *   - `z-0` — normal cells (default)
  *   - `z-1` — sticky body cells (`<td>`)
  *   - `z-2` — sticky header cells (`<th>`) so they sit above sticky body cells
+ *
+ * Header cells use `:has()` to detect if they're in a compact header (which has
+ * `bg-kumo-elevated`) and adjust both the background and gradient fade colors.
  */
 const stickyColumnClasses = (
   side: KumoTableStickyColumn,
   /** "head" renders at z-2, "cell" at z-1 */
   element: "head" | "cell",
 ) => {
-  const base = KUMO_TABLE_VARIANTS.sticky[side].classes;
-  const fade =
-    side === "right"
-      ? // Gradient fades from transparent on the left to opaque on the right
-        "before:pointer-events-none before:absolute before:inset-y-0 before:-left-6 before:w-6 before:bg-gradient-to-r before:from-transparent before:to-kumo-base"
-      : "before:pointer-events-none before:absolute before:inset-y-0 before:-right-6 before:w-6 before:bg-gradient-to-l before:from-transparent before:to-kumo-base";
-
+  const base = resolveVariant(KUMO_TABLE_VARIANTS.sticky, side, "left").classes;
   const z = element === "head" ? "z-2" : "z-1";
 
-  return cn(base, z, "bg-kumo-base", fade);
+  const fadePosition = side === "right" ? "before:-left-6" : "before:-right-6";
+  const fadeBase =
+    "before:pointer-events-none before:absolute before:inset-y-0 before:w-6";
+
+  if (element === "cell") {
+    // Body cells always use kumo-base
+    const fade =
+      side === "right"
+        ? "before:bg-gradient-to-r before:from-transparent before:to-kumo-base"
+        : "before:bg-gradient-to-l before:from-transparent before:to-kumo-base";
+    return cn(base, z, "bg-kumo-base", fadeBase, fadePosition, fade);
+  }
+
+  // Header cells: use kumo-base by default, kumo-elevated when in compact header
+  // The compact header applies a data attribute we can target with :has()
+  const bg = "bg-kumo-base group-data-[compact]/header:bg-kumo-elevated";
+  const fade =
+    side === "right"
+      ? "before:bg-gradient-to-r before:from-transparent before:to-kumo-base group-data-[compact]/header:before:to-kumo-elevated"
+      : "before:bg-gradient-to-l before:from-transparent before:to-kumo-base group-data-[compact]/header:before:to-kumo-elevated";
+
+  return cn(base, z, bg, fadeBase, fadePosition, fade);
 };
 
 export const KUMO_TABLE_DEFAULT_VARIANTS = {
@@ -109,12 +128,12 @@ const TableRoot = forwardRef<
 >(({ layout = "auto", ...props }, ref) => {
   const className = cn(
     "isolate w-full", // isolate creates a stacking context so z-0/z-1/z-2 never leak out
-    KUMO_TABLE_VARIANTS.layout[layout].classes,
+    resolveVariant(KUMO_TABLE_VARIANTS.layout, layout, KUMO_TABLE_DEFAULT_VARIANTS.layout).classes,
     "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
     "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold [&_th]:text-base", // Header styles
     "[&_th]:bg-kumo-base", // Header background color
-    "text-left text-kumo-default",
+    "text-base text-left text-kumo-default",
     props.className,
   );
 
@@ -133,14 +152,22 @@ const TableHeader = forwardRef<
     sticky?: boolean;
   }
 >(({ variant = "default", sticky, ...props }, ref) => {
+  const isCompact = variant === "compact";
   const className = cn(
-    variant === "compact" &&
-      "[&_th]:bg-kumo-elevated [&_th]:py-2 text-xs text-kumo-strong",
+    "group/header",
+    isCompact && "[&_th]:bg-kumo-elevated [&_th]:py-2 text-xs text-kumo-strong",
     sticky && "[&_th]:sticky [&_th]:top-0 [&_th]:z-1",
     props.className,
   );
 
-  return <thead ref={ref} {...props} className={className} />;
+  return (
+    <thead
+      ref={ref}
+      {...props}
+      className={className}
+      {...(isCompact && { "data-compact": "" })}
+    />
+  );
 });
 
 const TableHead = forwardRef<
@@ -170,7 +197,7 @@ const TableRow = forwardRef<
   }
 >(({ variant = KUMO_TABLE_DEFAULT_VARIANTS.variant, ...props }, ref) => {
   const className = cn(
-    KUMO_TABLE_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_TABLE_VARIANTS.variant, variant, KUMO_TABLE_DEFAULT_VARIANTS.variant).classes,
     props.className,
   );
 
@@ -226,9 +253,10 @@ const TableResizeHandle = forwardRef<
         "cursor-col-resize touch-none select-none", // Prevent selection and touch events
         "absolute top-0 right-0", // Position the handle
         "m-0 bg-kumo-base p-0", // Override the stratus button styles
+        "focus-visible:ring-2 focus-visible:ring-kumo-brand", // Consistent keyboard focus styling
       )}
     >
-      <span className="h-5 w-[2px] rounded bg-kumo-ring" />
+      <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
     </button>
   );
 });
@@ -242,13 +270,31 @@ const TableCheckCell = forwardRef<
   React.TdHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
     indeterminate?: boolean;
+    /**
+     * Called when the checkbox's checked state changes. The optional second
+     * argument exposes event details from the underlying Checkbox, matching
+     * the Checkbox component's signature.
+     */
+    onCheckedChange?: (
+      checked: boolean,
+      eventDetails?: CheckboxChangeEventDetails,
+    ) => void;
+    /** @deprecated Use `onCheckedChange` instead. Will be removed in a future major version. */
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
 >(
   (
-    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    {
+      checked,
+      indeterminate,
+      onCheckedChange,
+      onValueChange,
+      label,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -260,7 +306,8 @@ const TableCheckCell = forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
+          onCheckedChange={(newChecked, eventDetails) => {
+            onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
           aria-label={label ?? "Select row"}
@@ -277,13 +324,31 @@ const TableCheckHead = forwardRef<
   React.ThHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
     indeterminate?: boolean;
+    /**
+     * Called when the checkbox's checked state changes. The optional second
+     * argument exposes event details from the underlying Checkbox, matching
+     * the Checkbox component's signature.
+     */
+    onCheckedChange?: (
+      checked: boolean,
+      eventDetails?: CheckboxChangeEventDetails,
+    ) => void;
+    /** @deprecated Use `onCheckedChange` instead. Will be removed in a future major version. */
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
 >(
   (
-    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    {
+      checked,
+      indeterminate,
+      onCheckedChange,
+      onValueChange,
+      label,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -295,7 +360,8 @@ const TableCheckHead = forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
+          onCheckedChange={(newChecked, eventDetails) => {
+            onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
           aria-label={label ?? "Select all rows"}
@@ -329,14 +395,14 @@ TableCheckHead.displayName = "Table.CheckHead";
  * <Table>
  *   <Table.Header>
  *     <Table.Row>
- *       <Table.CheckHead checked={allSelected} onValueChange={toggleAll} />
+ *       <Table.CheckHead checked={allSelected} onCheckedChange={toggleAll} />
  *       <Table.Head>Name</Table.Head>
  *     </Table.Row>
  *   </Table.Header>
  *   <Table.Body>
  *     {rows.map((row) => (
  *       <Table.Row key={row.id} variant={selected.has(row.id) ? "selected" : "default"}>
- *         <Table.CheckCell checked={selected.has(row.id)} onValueChange={() => toggle(row.id)} />
+ *         <Table.CheckCell checked={selected.has(row.id)} onCheckedChange={() => toggle(row.id)} />
  *         <Table.Cell>{row.name}</Table.Cell>
  *       </Table.Row>
  *     ))}

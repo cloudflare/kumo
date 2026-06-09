@@ -77,13 +77,13 @@ export function StickyDocHeader({
         >
           <span className="pointer-events-auto flex items-center gap-2 text-base">
             <span className="text-kumo-subtle">/ </span>
-            <span className="font-semibold">{title}</span>
+            <span className="font-semibold tracking-tight">{title}</span>
             {githubSourceUrl && (
               <a
                 href={githubSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View source on GitHub"
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle ? 0 : -1}
@@ -96,7 +96,7 @@ export function StickyDocHeader({
                 href={baseUIUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View Base UI documentation"
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle ? 0 : -1}
@@ -111,9 +111,9 @@ export function StickyDocHeader({
       {/* Sticky header bar */}
       <header
         ref={headerRef}
-        className="sticky flex h-12 top-12 md:top-0 z-10 border-b border-kumo-line bg-kumo-elevated"
+        className="sticky flex h-12 top-12 md:top-0 z-10 border-b border-kumo-hairline bg-kumo-elevated"
       >
-        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-line">
+        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-hairline">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
@@ -122,7 +122,7 @@ export function StickyDocHeader({
                 : "pointer-events-none opacity-0",
             )}
           >
-            <span className="text-lg font-semibold text-kumo-default">
+            <span className="text-lg font-semibold tracking-tight text-kumo-default">
               {title}
             </span>
             {githubSourceUrl && (
@@ -130,7 +130,7 @@ export function StickyDocHeader({
                 href={githubSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View source on GitHub"
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
@@ -143,7 +143,7 @@ export function StickyDocHeader({
                 href={baseUIUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-strong"
+                className="text-kumo-subtle transition-colors hover:text-kumo-default"
                 title="View Base UI documentation"
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}

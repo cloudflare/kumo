@@ -275,7 +275,7 @@ export function getStateStylesMap(): Record<
  *
  * These are derived from the stateClasses in component-registry.json:
  * - hover: hover:bg-* classes
- * - focus: ring-kumo-ring (focus-visible ring)
+ * - focus: ring-kumo-hairline (focus-visible ring)
  * - pressed: same as hover but slightly darker
  *
  * Note: Figma doesn't support pseudo-states, so we create separate
@@ -485,7 +485,7 @@ async function createButtonComponent(
         }
       }
 
-      // Add focus ring (ring-kumo-ring)
+      // Add focus ring (ring-kumo-hairline)
       if (stateStyle.addRing) {
         const ringVar = getVariableByName(VAR_NAMES.color.brand);
         if (ringVar) {

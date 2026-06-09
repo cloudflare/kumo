@@ -2,6 +2,7 @@ import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Button } from "../../components/button";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Empty state size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_EMPTY_VARIANTS = {
@@ -43,7 +44,7 @@ export function emptyVariants({
 }: KumoEmptyVariantsProps = {}) {
   return cn(
     "flex w-full flex-col items-center rounded-xl border border-kumo-fill bg-kumo-control text-kumo-default",
-    KUMO_EMPTY_VARIANTS.size[size].classes,
+    resolveVariant(KUMO_EMPTY_VARIANTS.size, size, KUMO_EMPTY_DEFAULT_VARIANTS.size).classes,
   );
 }
 
@@ -100,7 +101,7 @@ export function Empty({
       <h2 className="text-2xl font-semibold">{title}</h2>
 
       {description && (
-        <p className="max-w-140 text-center text-kumo-strong">{description}</p>
+        <p className="max-w-140 text-center text-kumo-subtle">{description}</p>
       )}
 
       {commandLine && (
@@ -113,7 +114,7 @@ export function Empty({
           )}
         >
           <span className="text-xs text-kumo-inactive select-none">$</span>
-          <span className="no-scrollbar overflow-scroll text-[14px] whitespace-nowrap text-kumo-brand">
+          <span className="no-scrollbar overflow-scroll text-base whitespace-nowrap text-kumo-brand">
             {commandLine}
           </span>
           <Button

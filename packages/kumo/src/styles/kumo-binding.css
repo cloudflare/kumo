@@ -9,10 +9,14 @@
   --color-blue-400: oklch(70.7% 0.165 254.624);
   --color-blue-800: oklch(42.4% 0.199 265.638);
 
+  --color-orange-650: oklch(81.5% 0.197 76);
+  --color-teal-650: oklch(54.9% 0.096 184.565);
+
   --color-kumo-neutral-50: oklch(98.75% 0 0);
   --color-kumo-neutral-75: oklch(98% 0 0);
   --color-kumo-neutral-125: oklch(96.5% 0 0);
   --color-kumo-neutral-450: oklch(89% 0 0);
+  --color-kumo-neutral-750: oklch(32% 0 0);
   --color-kumo-neutral-850: oklch(24% 0 0);
   --color-kumo-neutral-925: oklch(17% 0 0);
   --color-kumo-neutral-950: oklch(15% 0 0);
@@ -207,6 +211,78 @@
       rgba(255, 255, 255, 0.05) 50%,
       rgba(255, 255, 255, 0) 100%
     );
+  }
+}
+
+/* Scroll-fade: gradient masks that appear on the edges of a horizontally
+   scrollable container based on scroll position. Uses scroll-driven
+   animations (Chrome 115+, Edge 115+). Degrades gracefully to no fade.
+   Activated by the `data-overflowing` attribute (set via JS ResizeObserver). */
+@property --fade-left-n {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --fade-right-n {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes scroll-fade-x-left {
+  from {
+    --fade-left-n: 0;
+  }
+  to {
+    --fade-left-n: 1;
+  }
+}
+
+@keyframes scroll-fade-x-right {
+  from {
+    --fade-right-n: 1;
+  }
+  to {
+    --fade-right-n: 0;
+  }
+}
+
+[data-overflowing] {
+  @supports (animation-timeline: scroll()) {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      white calc(var(--fade-left-n) * var(--scroll-fade-width, 3rem)),
+      white calc(100% - var(--fade-right-n) * var(--scroll-fade-width, 3rem)),
+      transparent
+    );
+
+    animation-name: scroll-fade-x-left, scroll-fade-x-right;
+    animation-timing-function: linear, linear;
+    animation-timeline: scroll(self x);
+    animation-range:
+      0 var(--scroll-fade-range, 3rem),
+      calc(100% - var(--scroll-fade-range, 3rem)) 100%;
+    animation-fill-mode: both;
+  }
+}
+
+/* Tab list scroll behavior. Scrollbar is only hidden when scroll-driven
+   animations are supported (the fade replaces it as the affordance).
+   Unsupported browsers keep the native scrollbar. */
+.kumo-tabs-list {
+  overscroll-behavior-x: contain;
+}
+
+@supports (animation-timeline: scroll()) {
+  .kumo-tabs-list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .kumo-tabs-list::-webkit-scrollbar {
+    display: none;
   }
 }
 

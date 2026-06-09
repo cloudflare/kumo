@@ -43,8 +43,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-600, oklch(43.9% 0 0))",
-          dark: "var(--color-neutral-400, oklch(70.8% 0 0))",
+          light: "var(--color-neutral-950, oklch(14.5% 0 0))", // darker than default
+          dark: "var(--color-neutral-50, oklch(98.5% 0 0))", // lighter than default
         },
       },
     },
@@ -52,8 +52,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-500, oklch(55.6% 0 0))",
-          dark: "var(--color-kumo-neutral-50, oklch(97.5% 0 0))",
+          light: "var(--color-neutral-500, oklch(55.6% 0 0))", // lighter than default
+          dark: "var(--color-neutral-400, oklch(70.8% 0 0))", // darker than default
         },
       },
     },
@@ -61,17 +61,17 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-600, oklch(70.8% 0 0))",
+          light: "var(--color-neutral-300, oklch(87% 0 0))", // lighter than subtle
+          dark: "var(--color-neutral-600, oklch(43.9% 0 0))", // darker than subtle
         },
       },
     },
-    "kumo-placeholder": {
+    "kumo-placeholder": { // in between subtle and inactive
       newName: "",
       theme: {
         kumo: {
           light: "var(--color-neutral-400, oklch(70.8% 0 0))",
-          dark: "var(--color-neutral-500, oklch(55.6% 0 0))",
+          dark: "var(--color-neutral-500, oklch(55.6% 0 0))", 
         },
       },
     },
@@ -97,7 +97,7 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-blue-700, oklch(48.8% 0.243 264.376))",
+          light: "var(--color-blue-800, oklch(42.4% 0.199 265.638))",
           dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
         },
       },
@@ -106,8 +106,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-green-500, oklch(72.3% 0.219 149.579))",
-          dark: "var(--color-green-400, oklch(79.2% 0.209 151.711))",
+          light: "var(--color-emerald-800, oklch(43.2% 0.095 166.913))",
+          dark: "var(--color-emerald-200, oklch(90.5% 0.093 164.15))",
         },
       },
     },
@@ -134,16 +134,6 @@ export const THEME_CONFIG: ThemeConfig = {
      * Badge text color tokens
      * Subtle variants need colored text; inverted needs flipping text
      */
-    "kumo-badge-red-subtle": {
-      newName: "",
-      description: "Text color for subtle red badge",
-      theme: {
-        kumo: {
-          light: "var(--color-red-800, oklch(44.4% 0.177 26.899))",
-          dark: "var(--color-red-200, oklch(88.5% 0.062 18.334))",
-        },
-      },
-    },
     "kumo-badge-orange-subtle": {
       newName: "",
       description: "Text color for subtle orange badge",
@@ -154,26 +144,6 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-badge-yellow-subtle": {
-      newName: "",
-      description: "Text color for subtle yellow badge",
-      theme: {
-        kumo: {
-          light: "var(--color-yellow-800, oklch(47.6% 0.114 61.907))",
-          dark: "var(--color-yellow-200, oklch(94.5% 0.129 101.54))",
-        },
-      },
-    },
-    "kumo-badge-green-subtle": {
-      newName: "",
-      description: "Text color for subtle green badge",
-      theme: {
-        kumo: {
-          light: "var(--color-emerald-800, oklch(43.2% 0.095 166.913))",
-          dark: "var(--color-emerald-200, oklch(90.5% 0.093 164.15))",
-        },
-      },
-    },
     "kumo-badge-teal-subtle": {
       newName: "",
       description: "Text color for subtle teal badge",
@@ -181,16 +151,6 @@ export const THEME_CONFIG: ThemeConfig = {
         kumo: {
           light: "var(--color-teal-800, oklch(43.7% 0.078 188.216))",
           dark: "var(--color-teal-200, oklch(91% 0.096 180.426))",
-        },
-      },
-    },
-    "kumo-badge-blue-subtle": {
-      newName: "",
-      description: "Text color for subtle blue badge",
-      theme: {
-        kumo: {
-          light: "var(--color-blue-800, oklch(42.4% 0.199 265.638))",
-          dark: "var(--color-blue-200, oklch(88.2% 0.059 254.128))",
         },
       },
     },
@@ -206,7 +166,8 @@ export const THEME_CONFIG: ThemeConfig = {
     },
     "kumo-badge-inverted": {
       newName: "",
-      description: "Text color for inverted badge (white in light, black in dark)",
+      description:
+        "Text color for inverted badge (white in light, black in dark)",
       theme: {
         kumo: {
           light: "var(--color-white, #fff)",
@@ -234,7 +195,7 @@ export const THEME_CONFIG: ThemeConfig = {
           dark: "#5b697c",
         },
       },
-    }, 
+    },
     "kumo-elevated": {
       newName: "",
       theme: {
@@ -249,7 +210,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-125, oklch(96% 0 0))",
-          dark: "var(--color-kumo-neutral-950, oklch(12% 0 0))",
+          dark: "var(--color-kumo-neutral-950, oklch(15% 0 0))",
         },
       },
     },
@@ -352,20 +313,30 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(14.5% 0 0 / 0.1)",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "var(--color-kumo-neutral-750, oklch(32% 0 0))",
         },
       },
     },
-    "kumo-ring": {
+    "kumo-hairline": {
       newName: "",
       theme: {
         kumo: {
           light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
-          dark: "var(--color-neutral-700, oklch(37.1% 0 0))",
-        },
+          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+      },
         fedramp: {
           light: "#c8d4e5",
           dark: "#c8d4e5",
+        },
+      },
+    },
+    "kumo-focus": {
+      newName: "",
+      description: "Primary focus ring/border color",
+      theme: {
+        kumo: {
+          light: "var(--color-kumo-neutral-950, oklch(15% 0 0))",
+          dark: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
         },
       },
     },
@@ -407,30 +378,22 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-info": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-blue-500, oklch(62.3% 0.214 259.815))",
-          dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
-        },
-      },
-    },
     "kumo-info-tint": {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-blue-300, oklch(80.9% 0.105 251.813))",
+          light: "var(--color-blue-100, oklch(93.2% 0.032 255.585))",
           dark: "var(--color-blue-900, oklch(37.9% 0.146 265.522))",
         },
       },
     },
-    "kumo-warning": {
+    "kumo-info": {
       newName: "",
+      // Aligned with fill.kumo-info so `bg-kumo-info` matches `fill-kumo-info`.
       theme: {
         kumo: {
-          light: "var(--color-yellow-500, oklch(79.5% 0.184 86.047))",
-          dark: "var(--color-yellow-700, oklch(55.4% 0.135 66.442))",
+          light: "var(--color-blue-500, oklch(68.5% 0.169 237.323))",
+          dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
         },
       },
     },
@@ -438,17 +401,18 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-yellow-300, oklch(90.5% 0.182 98.111))",
-          dark: "var(--color-yellow-900, oklch(42.1% 0.095 57.708))",
+          light: "var(--color-yellow-100, oklch(97.3% 0.071 103.193))",
+          dark: "var(--color-yellow-700, oklch(55.4% 0.135 66.442))",
         },
       },
     },
-    "kumo-danger": {
+    "kumo-warning": {
       newName: "",
+      // Aligned with fill.kumo-warning so `bg-kumo-warning` matches `fill-kumo-warning`.
       theme: {
         kumo: {
-          light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
-          dark: "var(--color-red-700, oklch(50.5% 0.213 27.518))",
+          light: "var(--color-yellow-500, oklch(79.5% 0.184 86.047))",
+          dark: "var(--color-yellow-400, oklch(85.2% 0.199 91.936))",
         },
       },
     },
@@ -456,17 +420,18 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-red-300, oklch(80.8% 0.114 19.571))",
+          light: "var(--color-red-100, oklch(93.6% 0.032 17.717))",
           dark: "var(--color-red-900, oklch(39.6% 0.141 25.723))",
         },
       },
     },
-    "kumo-success": {
+    "kumo-danger": {
       newName: "",
+      // Aligned with fill.kumo-danger so `bg-kumo-danger` matches `fill-kumo-danger`.
       theme: {
         kumo: {
-          light: "var(--color-green-500, oklch(72.3% 0.219 149.579))",
-          dark: "var(--color-green-700, oklch(52.7% 0.154 150.069))",
+          light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
+          dark: "var(--color-red-400, oklch(70.4% 0.191 22.216))",
         },
       },
     },
@@ -474,8 +439,43 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-green-300, oklch(87.1% 0.15 154.449))",
-          dark: "var(--color-green-900, oklch(39.3% 0.095 152.535))",
+          light: "var(--color-emerald-100, oklch(95% 0.052 163.051))",
+          dark: "var(--color-emerald-900, oklch(37.8% 0.077 168.94))",
+        },
+      },
+    },
+    "kumo-success": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-emerald-600, oklch(59.6% 0.145 163.225))",
+          dark: "var(--color-emerald-400, oklch(76.5% 0.177 163.223))",
+        },
+      },
+    },
+
+    /*
+     * Banner background tokens
+     * Pre-baked opacity per mode so banners don't need dark: overrides.
+     * Mirrors the *-tint hues but tuned for the Banner component's surface contrast.
+     */
+    "kumo-banner-info": {
+      newName: "",
+      description: "Info banner background (informational/default variant)",
+      theme: {
+        kumo: {
+          light: "oklch(93.2% 0.032 255.585 / 0.7)",
+          dark: "oklch(37.9% 0.146 265.522 / 0.5)",
+        },
+      },
+    },
+    "kumo-banner-warning": {
+      newName: "",
+      description: "Warning banner background (alert variant)",
+      theme: {
+        kumo: {
+          light: "var(--color-yellow-100, oklch(97.3% 0.071 103.193))",
+          dark: "oklch(55.4% 0.135 66.442 / 0.5)",
         },
       },
     },
@@ -497,16 +497,6 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-badge-red-subtle": {
-      newName: "",
-      description: "Subtle red badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-red-100, oklch(93.6% 0.032 17.717))",
-          dark: "var(--color-red-900, oklch(39.6% 0.141 25.723))",
-        },
-      },
-    },
 
     // Orange
     "kumo-badge-orange": {
@@ -514,62 +504,20 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Orange badge background",
       theme: {
         kumo: {
-          light: "var(--color-orange-600, oklch(64.6% 0.222 41.116))",
-          dark: "var(--color-orange-700, oklch(55.3% 0.195 38.402))",
-        },
-      },
-    },
-    "kumo-badge-orange-subtle": {
-      newName: "",
-      description: "Subtle orange badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-orange-100, oklch(95.4% 0.038 75.164))",
-          dark: "var(--color-orange-900, oklch(40.8% 0.123 38.172))",
+          light: "var(--color-orange-650, oklch(81.5% 0.197 76))",
+          dark: "var(--color-orange-650, oklch(81.5% 0.197 76))",
         },
       },
     },
 
-    // Yellow
-    "kumo-badge-yellow": {
+    // Purple
+    "kumo-badge-purple": {
       newName: "",
-      description: "Yellow badge background",
+      description: "Purple badge background",
       theme: {
         kumo: {
-          light: "var(--color-yellow-600, oklch(68.1% 0.162 75.834))",
-          dark: "var(--color-yellow-700, oklch(55.4% 0.135 66.442))",
-        },
-      },
-    },
-    "kumo-badge-yellow-subtle": {
-      newName: "",
-      description: "Subtle yellow badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-yellow-100, oklch(97.3% 0.071 103.193))",
-          dark: "var(--color-yellow-900, oklch(42.1% 0.095 57.708))",
-        },
-      },
-    },
-
-    // Green (emerald scale)
-    "kumo-badge-green": {
-      newName: "",
-      description: "Green badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-emerald-600, oklch(59.6% 0.145 163.225))",
-          dark: "var(--color-emerald-700, oklch(50.8% 0.118 165.612))",
-        },
-      },
-    },
-    "kumo-badge-green-subtle": {
-      newName: "",
-      description: "Subtle green badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-emerald-100, oklch(95% 0.052 163.051))",
-          dark: "var(--color-emerald-900, oklch(37.8% 0.077 168.94))",
+          light: "var(--color-purple-600, oklch(60% 0.118 184.704))",
+          dark: "var(--color-purple-700, oklch(50.8% 0.118 165.612))",
         },
       },
     },
@@ -580,18 +528,8 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Teal badge background",
       theme: {
         kumo: {
-          light: "var(--color-teal-600, oklch(60% 0.118 184.704))",
+          light: "var(--color-teal-650, oklch(54.9% 0.096 184.565))",
           dark: "var(--color-teal-700, oklch(51.1% 0.096 186.391))",
-        },
-      },
-    },
-    "kumo-badge-teal-subtle": {
-      newName: "",
-      description: "Subtle teal badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-teal-100, oklch(95.3% 0.051 180.801))",
-          dark: "var(--color-teal-900, oklch(38.6% 0.063 188.416))",
         },
       },
     },
@@ -607,16 +545,6 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-badge-blue-subtle": {
-      newName: "",
-      description: "Subtle blue badge background",
-      theme: {
-        kumo: {
-          light: "var(--color-blue-100, oklch(93.2% 0.032 255.585))",
-          dark: "var(--color-blue-900, oklch(37.9% 0.146 265.522))",
-        },
-      },
-    },
 
     // Neutral
     "kumo-badge-neutral": {
@@ -624,7 +552,7 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Neutral badge background",
       theme: {
         kumo: {
-          light: "var(--color-neutral-600, oklch(43.9% 0 0))",
+          light: "var(--color-neutral-500, oklch(55.6% 0 0))",
           dark: "var(--color-neutral-600, oklch(43.9% 0 0))",
         },
       },
@@ -635,7 +563,8 @@ export const THEME_CONFIG: ThemeConfig = {
     // Inverted
     "kumo-badge-inverted": {
       newName: "",
-      description: "Inverted badge background (near-black in light, white in dark)",
+      description:
+        "Inverted badge background (near-black in light, white in dark)",
       theme: {
         kumo: {
           light: "var(--color-neutral-950, oklch(14.5% 0 0))",

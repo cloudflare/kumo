@@ -13,7 +13,8 @@
     "lint": "oxlint src/"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^1.0.0"
+    "@cloudflare/puppeteer": "^1.0.0",
+    "hono": "^4.12.16"
   },
   "devDependencies": {
     "oxlint": "catalog:",

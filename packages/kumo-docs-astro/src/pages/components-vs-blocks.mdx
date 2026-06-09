@@ -16,7 +16,7 @@ This isn't just organizational preference — it's about responsibility. Compone
 
 Components are the atomic, reusable UI elements that form the foundation of your application. Button, Input, Dialog, Badge — these are content-agnostic, context-agnostic building blocks designed for maximum reuse across any product.
 
-**Characteristics**
+#### Characteristics
 
 - **Versioned & maintained** — We own the API, fix bugs, and ship updates
 - **Tree-shakeable** — Import only what you use, no bloat
@@ -41,7 +41,7 @@ When Kumo ships a new version, you get bug fixes and improvements automatically.
 
 Blocks are compositions of components that solve common patterns, but aren't agnostic enough to live in the core library. `PageHeader`, `ResourceList` — these are valuable, reusable patterns, but they may only apply to certain products or need product-specific customization.
 
-**Characteristics**
+#### Characteristics
 
 - **You own it** — Code lives in your project, you control the implementation
 - **Fully customizable** — Modify anything beyond what props allow
@@ -54,13 +54,17 @@ Blocks are compositions of components that solve common patterns, but aren't agn
 Install via CLI, then import from your project:
 
 ```bash
+
 # Initialize config (first time only)
+
 npx @cloudflare/kumo init
 
 # List available blocks
+
 npx @cloudflare/kumo blocks
 
 # Install a block to your project
+
 npx @cloudflare/kumo add PageHeader
 ```
 
@@ -103,7 +107,7 @@ All those components (`Surface`, `Text`, `Button`) come from Kumo. But the speci
 
 Asking "is this a component or a block?" really means asking about ownership and reuse:
 
-**Use a Component when...**
+#### Use a Component when...
 
 - It's content-agnostic (works with any data)
 - It's context-agnostic (works in any layout)
@@ -111,7 +115,7 @@ Asking "is this a component or a block?" really means asking about ownership and
 - Accessibility and consistency matter most
 - You want automatic updates and maintenance
 
-**Use a Block when...**
+#### Use a Block when...
 
 - You need to customize beyond props
 - The pattern is product-specific

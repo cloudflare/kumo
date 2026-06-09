@@ -4,9 +4,10 @@ import {
   useEffect,
   useMemo,
   useState,
+  type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { InputGroup } from "../input";
+import { InputGroup } from "../input-group";
 import {
   CaretDoubleLeftIcon,
   CaretDoubleRightIcon,
@@ -14,9 +15,52 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Select } from "../select";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+// ============================================================================
+// i18n Labels
+// ============================================================================
+
+/**
+ * Labels for internationalization of Pagination component.
+ * All labels have English defaults and can be overridden for other locales.
+ *
+ * Note: To customize the "Showing X-Y of Z" text, use the `children` render prop
+ * on `Pagination.Info` instead. To customize the "Per page:" label, use the
+ * `label` prop on `Pagination.PageSize`.
+ */
+export interface PaginationLabels {
+  /** Aria label for the navigation landmark. @default "Pagination" */
+  navigation?: string;
+  /** Aria label for the first page button. @default "First page" */
+  firstPage?: string;
+  /** Aria label for the previous page button. @default "Previous page" */
+  previousPage?: string;
+  /** Aria label for the next page button. @default "Next page" */
+  nextPage?: string;
+  /** Aria label for the last page button. @default "Last page" */
+  lastPage?: string;
+  /** Aria label for the page number input/select. @default "Page number" */
+  pageNumber?: string;
+  /** Aria label for the page size select. @default "Page size" */
+  pageSize?: string;
+}
+
+const DEFAULT_LABELS: Required<PaginationLabels> = {
+  navigation: "Pagination",
+  firstPage: "First page",
+  previousPage: "Previous page",
+  nextPage: "Next page",
+  lastPage: "Last page",
+  pageNumber: "Page number",
+  pageSize: "Page size",
+};
 
 /** Pagination controls variant definitions. */
 export const KUMO_PAGINATION_VARIANTS = {
@@ -50,7 +94,7 @@ export function paginationVariants({
 }: KumoPaginationVariantsProps = {}) {
   return cn(
     "flex items-center justify-between gap-2",
-    KUMO_PAGINATION_VARIANTS.controls[controls].classes,
+    resolveVariant(KUMO_PAGINATION_VARIANTS.controls, controls, KUMO_PAGINATION_DEFAULT_VARIANTS.controls).classes,
   );
 }
 
@@ -67,6 +111,7 @@ interface PaginationContextValue {
   setPage: (page: number) => void;
   editingPage: number;
   setEditingPage: (page: number) => void;
+  labels: Required<PaginationLabels>;
 }
 
 const PaginationContext = createContext<PaginationContextValue | null>(null);
@@ -113,7 +158,7 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
   return (
     <div
       data-slot="pagination-info"
-      className={cn("text-sm text-kumo-strong", className)}
+      className={cn("text-sm text-kumo-subtle", className)}
     >
       {content}
     </div>
@@ -133,7 +178,10 @@ export interface PaginationPageSizeProps {
   onChange: (size: number) => void;
   /** Available page size options */
   options?: number[];
-  /** Label text shown before the selector */
+  /**
+   * Label text shown before the selector.
+   * @default "Per page:"
+   */
   label?: ReactNode;
   /** Additional CSS classes */
   className?: string;
@@ -146,14 +194,16 @@ function PaginationPageSize({
   label = "Per page:",
   className,
 }: PaginationPageSizeProps) {
+  const { labels } = usePaginationContext();
+
   return (
     <div
       data-slot="pagination-page-size"
       className={cn("flex items-center gap-2", className)}
     >
-      {label && <span className="text-sm text-kumo-strong">{label}</span>}
+      {label && <span className="text-sm text-kumo-subtle">{label}</span>}
       <Select
-        aria-label="Page size"
+        aria-label={labels.pageSize}
         value={value}
         onValueChange={(v) => onChange(v as number)}
       >
@@ -174,15 +224,26 @@ PaginationPageSize.displayName = "Pagination.PageSize";
 // ============================================================================
 
 export interface PaginationControlsProps extends KumoPaginationVariantsProps {
+  /**
+   * How the page number selector is rendered in "full" controls mode.
+   * - `"input"` (default): A text input where users type a page number.
+   * - `"dropdown"`: A dropdown select with all page numbers as options.
+   *
+   * **Note:** `"dropdown"` renders an option for every page, so it is best
+   * suited for small page counts. For large datasets (hundreds of pages or
+   * more) prefer `"input"` to avoid rendering performance overhead.
+   */
+  pageSelector?: "input" | "dropdown";
   /** Additional CSS classes */
   className?: string;
 }
 
 function PaginationControls({
   controls = KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
+  pageSelector = "input",
   className,
 }: PaginationControlsProps) {
-  const { page, maxPage, setPage, editingPage, setEditingPage } =
+  const { page, maxPage, setPage, editingPage, setEditingPage, labels } =
     usePaginationContext();
 
   return (
@@ -190,12 +251,12 @@ function PaginationControls({
       data-slot="pagination-controls"
       className={cn("grow flex flex-col items-end", className)}
     >
-      <div>
-        <InputGroup focusMode="individual">
+      <nav aria-label={labels.navigation}>
+        <InputGroup>
           {controls === "full" && (
             <InputGroup.Button
               variant="secondary"
-              aria-label="First page"
+              aria-label={labels.firstPage}
               disabled={page <= 1}
               onClick={() => {
                 setPage(1);
@@ -207,7 +268,7 @@ function PaginationControls({
           )}
           <InputGroup.Button
             variant="secondary"
-            aria-label="Previous page"
+            aria-label={labels.previousPage}
             disabled={page <= 1}
             onClick={() => {
               const previousPage = Math.max(page - 1, 1);
@@ -217,31 +278,55 @@ function PaginationControls({
           >
             <CaretLeftIcon size={16} />
           </InputGroup.Button>
-          {controls === "full" && (
-            <InputGroup.Input
-              style={{ width: 50 }}
-              className="text-center"
-              aria-label="Page number"
-              value={editingPage}
-              onValueChange={(value: string) => {
-                setEditingPage(Number(value));
-              }}
-              onBlur={() => {
-                let number = Math.max(editingPage, 1);
-                number = Math.min(number, maxPage);
-                setPage(number);
-                setEditingPage(number);
-              }}
-              // Prevent password managers from auto-filling
-              autoComplete="off"
-              data-1p-ignore
-              data-lpignore="true"
-              data-form-type="other"
-            />
-          )}
+          {controls === "full" &&
+            (pageSelector === "dropdown" ? (
+              <Select
+                aria-label={labels.pageNumber}
+                className="rounded-none ring-kumo-hairline"
+                value={page}
+                onValueChange={(value) => {
+                  const num = value as number;
+                  setPage(num);
+                  setEditingPage(num);
+                }}
+              >
+                {Array.from({ length: maxPage }, (_, i) => i + 1).map((p) => (
+                  <Select.Option key={p} value={p}>
+                    {p}
+                  </Select.Option>
+                ))}
+              </Select>
+            ) : (
+              <InputGroup.Input
+                style={{ width: 50 }}
+                className="text-center"
+                aria-label={labels.pageNumber}
+                value={editingPage}
+                onValueChange={(value: string) => {
+                  setEditingPage(Number(value));
+                }}
+                onBlur={() => {
+                  const clamped = clamp(editingPage, 1, maxPage);
+                  setPage(clamped);
+                  setEditingPage(clamped);
+                }}
+                onKeyDown={(e: KeyboardEvent) => {
+                  if (e.key === "Enter") {
+                    const clamped = clamp(editingPage, 1, maxPage);
+                    setPage(clamped);
+                    setEditingPage(clamped);
+                  }
+                }}
+                // Prevent password managers from auto-filling
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
+              />
+            ))}
           <InputGroup.Button
             variant="secondary"
-            aria-label="Next page"
+            aria-label={labels.nextPage}
             disabled={page === maxPage}
             onClick={() => {
               const nextPage = Math.min(page + 1, maxPage);
@@ -254,7 +339,7 @@ function PaginationControls({
           {controls === "full" && (
             <InputGroup.Button
               variant="secondary"
-              aria-label="Last page"
+              aria-label={labels.lastPage}
               disabled={page === maxPage}
               onClick={() => {
                 setPage(maxPage);
@@ -265,7 +350,7 @@ function PaginationControls({
             </InputGroup.Button>
           )}
         </InputGroup>
-      </div>
+      </nav>
     </div>
   );
 }
@@ -285,7 +370,7 @@ function PaginationSeparator({ className }: PaginationSeparatorProps) {
   return (
     <div
       data-slot="pagination-separator"
-      className={cn("mx-2 h-6 border-l border-kumo-line", className)}
+      className={cn("mx-2 h-6 border-l border-kumo-hairline", className)}
     />
   );
 }
@@ -311,6 +396,29 @@ interface PaginationBaseProps {
   totalCount?: number;
   /** Additional CSS classes for the container */
   className?: string;
+  /**
+   * Labels for internationalization of aria-labels. All labels have English defaults.
+   *
+   * For visible text like "Showing X of Y", use render props on sub-components:
+   * - `Pagination.Info` children for the info text
+   * - `Pagination.PageSize` label prop for the "Per page:" text
+   *
+   * @example
+   * ```tsx
+   * <Pagination
+   *   labels={{
+   *     firstPage: "Première page",
+   *     previousPage: "Page précédente",
+   *     nextPage: "Page suivante",
+   *     lastPage: "Dernière page",
+   *     pageNumber: "Numéro de page",
+   *     pageSize: "Taille de page",
+   *   }}
+   *   // ...
+   * />
+   * ```
+   */
+  labels?: PaginationLabels;
 }
 
 /**
@@ -353,8 +461,7 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  * ```
  */
 export interface PaginationLegacyProps
-  extends PaginationBaseProps,
-    KumoPaginationVariantsProps {
+  extends PaginationBaseProps, KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {
@@ -403,7 +510,15 @@ export type PaginationProps = PaginationCompoundProps | PaginationLegacyProps;
  * ```
  */
 function PaginationRoot(props: PaginationProps) {
-  const { page = 1, perPage, totalCount, setPage, children, className } = props;
+  const {
+    page = 1,
+    perPage,
+    totalCount,
+    setPage,
+    children,
+    className,
+    labels: labelsProp,
+  } = props;
 
   // Extract legacy props (only present when children is not provided)
   const text = "text" in props ? props.text : undefined;
@@ -412,6 +527,12 @@ function PaginationRoot(props: PaginationProps) {
       ? (props.controls ?? KUMO_PAGINATION_DEFAULT_VARIANTS.controls)
       : KUMO_PAGINATION_DEFAULT_VARIANTS.controls;
   const [editingPage, setEditingPage] = useState<number>(1);
+
+  // Merge provided labels with defaults
+  const labels = useMemo<Required<PaginationLabels>>(
+    () => ({ ...DEFAULT_LABELS, ...labelsProp }),
+    [labelsProp],
+  );
 
   useEffect(() => {
     setEditingPage(page);
@@ -440,6 +561,7 @@ function PaginationRoot(props: PaginationProps) {
     setPage,
     editingPage,
     setEditingPage,
+    labels,
   };
 
   // Compound component mode: render children within context
@@ -478,8 +600,10 @@ function PaginationRoot(props: PaginationProps) {
         className={cn("flex items-center gap-2 w-full", className)}
       >
         <div
+          aria-live="polite"
+          aria-atomic="true"
           data-slot="pagination-info"
-          className="grow text-sm text-kumo-strong"
+          className="grow text-sm text-kumo-subtle"
         >
           {getPaginationText()}
         </div>

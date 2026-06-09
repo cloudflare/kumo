@@ -94,7 +94,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       onValueChange,
       onCopy,
       size = KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS.size,
-      variant = KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS.variant,
+      variant: variantProp,
       disabled = false,
       readOnly = false,
       id,
@@ -109,6 +109,18 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
     },
     ref,
   ) => {
+    // Deprecation warning for variant="error"
+    if (process.env.NODE_ENV !== "production" && variantProp === "error") {
+      console.warn(
+        '[Kumo SensitiveInput]: variant="error" is deprecated. ' +
+          "Error styling is now automatically applied when the `error` prop is truthy. " +
+          "Simply remove the variant prop and pass an error message instead.",
+      );
+    }
+
+    // Auto-apply error styling when error prop is truthy
+    // Explicit variant prop takes precedence for backwards compatibility
+    const variant = variantProp ?? (error ? "error" : "default");
     // For aria-label, only use string labels (ReactNode labels can't be used for aria-label)
     const ariaLabelFallback =
       typeof label === "string" ? label : "Sensitive value";
@@ -315,7 +327,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       inputVariants({ size, variant, parentFocusIndicator: true }),
       "group/container relative flex w-full items-center",
       // Show browser-native focus outline on container when child input is focused
-      "focus-within:outline focus-within:outline-2 focus-within:outline-[-webkit-focus-ring-color]",
+      "focus-within:outline focus-within:outline-2 focus-within:outline-kumo-focus",
       isMaskedWithValue && !disabled && "cursor-pointer",
       disabled && "cursor-not-allowed",
       className,
@@ -395,12 +407,14 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
         {/* Eye button - absolutely positioned to the right */}
         <button
           type="button"
+          data-kumo-component="SensitiveInput"
+          data-kumo-part="toggle-visibility"
           onClick={handleToggleVisibility}
           onKeyDown={(e) => e.stopPropagation()}
           aria-label={mode === "revealed" ? "Hide value" : "Reveal value"}
           tabIndex={showEyeButton ? 0 : -1}
           className={cn(
-            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus-visible:ring-1 focus-visible:ring-kumo-ring focus-visible:rounded-sm",
+            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:rounded-sm",
             // Defensive styles to prevent global CSS pollution (e.g., button { background: gray })
             "bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 inline-flex items-center justify-center",
             // Match right padding from inputVariants
@@ -423,11 +437,13 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
         {hasValue && !disabled && (
           <button
             type="button"
+            data-kumo-component="SensitiveInput"
+            data-kumo-part="copy"
             onClick={copyToClipboard}
             onKeyDown={(e) => e.stopPropagation()}
             aria-label={copied ? "Copied" : "Copy to clipboard"}
             className={cn(
-              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-kumo-ring",
+              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               // Defensive styles to prevent global CSS pollution
               "border-none shadow-none m-0 h-auto min-h-0",
             )}
@@ -447,6 +463,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             // Using role="button" with proper keyboard handling instead.
             // oxlint-disable-next-line prefer-tag-over-role
             role="button"
+            data-kumo-component="SensitiveInput"
+            data-kumo-part="masked-container"
             tabIndex={disabled ? -1 : 0}
             className={containerClassName}
             onClick={handleContainerClick}

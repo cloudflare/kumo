@@ -96,19 +96,22 @@ export function Label({
     <>
       {children}
       {showOptional && (
-        <span className="font-normal text-kumo-strong">(optional)</span>
+        <span className="font-normal text-kumo-subtle">(optional)</span>
       )}
       {tooltip && (
-        <Tooltip content={tooltip} asChild>
-          <Button
-            variant="ghost"
-            size="xs"
-            shape="square"
-            aria-label="More information"
-          >
-            <Info className="size-4" />
-          </Button>
-        </Tooltip>
+        <Tooltip
+          content={tooltip}
+          render={
+            <Button
+              variant="ghost"
+              size="xs"
+              shape="square"
+              aria-label="More information"
+            >
+              <Info className="size-4" />
+            </Button>
+          }
+        />
       )}
     </>
   );

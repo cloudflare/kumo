@@ -63,16 +63,8 @@ export function SwitchNeutralStatesDemo() {
 export function SwitchVariantsDemo() {
   return (
     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-      <Switch
-        label="Default off"
-        checked={false}
-        onCheckedChange={() => {}}
-      />
-      <Switch
-        label="Default on"
-        checked={true}
-        onCheckedChange={() => {}}
-      />
+      <Switch label="Default off" checked={false} onCheckedChange={() => {}} />
+      <Switch label="Default on" checked={true} onCheckedChange={() => {}} />
       <Switch
         label="Neutral off"
         variant="neutral"
@@ -86,6 +78,56 @@ export function SwitchVariantsDemo() {
         onCheckedChange={() => {}}
       />
     </div>
+  );
+}
+
+/** Switch with a custom id prop — clicking the label should still toggle the switch. */
+export function SwitchCustomIdDemo() {
+  const [checked, setChecked] = useState(false);
+  return (
+    <Switch
+      id="my-custom-switch"
+      label="Custom ID"
+      checked={checked}
+      onCheckedChange={setChecked}
+    />
+  );
+}
+
+/** Shows a Switch.Group with a legend for grouping related switches */
+export function SwitchGroupDemo() {
+  return (
+    <Switch.Group legend="Notification settings">
+      <Switch.Item label="Email notifications" />
+      <Switch.Item label="SMS notifications" />
+      <Switch.Item label="Push notifications" />
+    </Switch.Group>
+  );
+}
+
+/** Shows Switch.Legend with sr-only to visually hide the legend while keeping it accessible, useful when a parent Field already provides a visible label */
+export function SwitchLegendSrOnlyDemo() {
+  return (
+    <Switch.Group>
+      <Switch.Legend className="sr-only">Notification settings</Switch.Legend>
+      <Switch.Item label="Email notifications" />
+      <Switch.Item label="SMS notifications" />
+      <Switch.Item label="Push notifications" />
+    </Switch.Group>
+  );
+}
+
+/** Shows Switch.Legend with custom styling for full control over legend presentation */
+export function SwitchLegendCustomDemo() {
+  return (
+    <Switch.Group>
+      <Switch.Legend className="text-sm font-normal text-kumo-subtle">
+        Notification settings
+      </Switch.Legend>
+      <Switch.Item label="Email notifications" />
+      <Switch.Item label="SMS notifications" />
+      <Switch.Item label="Push notifications" />
+    </Switch.Group>
   );
 }
 

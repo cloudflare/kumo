@@ -1,5 +1,342 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.8
+
+### Patch Changes
+
+- Updated dependencies [b06e35b]
+  - @cloudflare/kumo@2.5.1
+
+## 1.5.7
+
+### Patch Changes
+
+- Updated dependencies [f957dbc]
+- Updated dependencies [7401701]
+- Updated dependencies [ac46184]
+- Updated dependencies [e25a3d6]
+- Updated dependencies [d3feec0]
+- Updated dependencies [f831482]
+- Updated dependencies [4a8b992]
+  - @cloudflare/kumo@2.5.0
+
+## 1.5.6
+
+### Patch Changes
+
+- Updated dependencies [2daa237]
+  - @cloudflare/kumo@2.4.1
+
+## 1.5.5
+
+### Patch Changes
+
+- 59f6e37: Fix stray `<p>` elements rendering around inline `<code>` in MDX docs (notably on the Select page's Grouped Options section). Replace inline `<code class="...">` tags with markdown backticks so Prettier line-wrapping no longer breaks the surrounding paragraph.
+- Updated dependencies [ab273fe]
+- Updated dependencies [b93d881]
+- Updated dependencies [351fac9]
+- Updated dependencies [3db8294]
+- Updated dependencies [a9a1526]
+- Updated dependencies [6d5d9f0]
+- Updated dependencies [5081d35]
+- Updated dependencies [9d4a2ff]
+- Updated dependencies [3db8294]
+- Updated dependencies [18f5e42]
+- Updated dependencies [1585bfe]
+- Updated dependencies [6e9b524]
+- Updated dependencies [729caa3]
+  - @cloudflare/kumo@2.4.0
+
+## 1.5.4
+
+### Patch Changes
+
+- b68caba: Added `Badge` dot styling as a new variant for indicators that need a subtle visual cue.
+  Updated badge docs and demo examples to reflect the new badge variant and dot-style behavior.
+- 4f2b47c: Add inline label layout and fix auto-assigned node colors in tooltips
+- Updated dependencies [b68caba]
+- Updated dependencies [a210c9c]
+- Updated dependencies [64a4bda]
+- Updated dependencies [0003bf5]
+- Updated dependencies [4f2b47c]
+- Updated dependencies [0e79214]
+  - @cloudflare/kumo@2.3.0
+
+## 1.5.3
+
+### Patch Changes
+
+- Updated dependencies [94d0c22]
+  - @cloudflare/kumo@2.2.2
+
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [57bbe62]
+- Updated dependencies [3d80fe7]
+- Updated dependencies [194aea8]
+  - @cloudflare/kumo@2.2.1
+
+## 1.5.1
+
+### Patch Changes
+
+- Updated dependencies [bccc684]
+- Updated dependencies [974277f]
+- Updated dependencies [8d43b8b]
+- Updated dependencies [93d04bd]
+- Updated dependencies [228a9c4]
+- Updated dependencies [862389a]
+- Updated dependencies [1bfbc0e]
+- Updated dependencies [da502ce]
+- Updated dependencies [59b6590]
+- Updated dependencies [798c2da]
+  - @cloudflare/kumo@2.2.0
+
+## 1.5.0
+
+### Minor Changes
+
+- 8a33813: Create Sankey Chart component
+
+### Patch Changes
+
+- Updated dependencies [a21cc3a]
+- Updated dependencies [0414c54]
+- Updated dependencies [8b12a4c]
+- Updated dependencies [7d8ec27]
+- Updated dependencies [8a33813]
+  - @cloudflare/kumo@2.1.0
+
+## 1.4.5
+
+### Patch Changes
+
+- Updated dependencies [8f8a55d]
+  - @cloudflare/kumo@2.0.5
+
+## 1.4.4
+
+### Patch Changes
+
+- Updated dependencies [8926ee7]
+- Updated dependencies [75d4f4d]
+- Updated dependencies [f2d356d]
+  - @cloudflare/kumo@2.0.4
+
+## 1.4.3
+
+### Patch Changes
+
+- Updated dependencies [3b36e21]
+- Updated dependencies [5d5d810]
+- Updated dependencies [62e093c]
+  - @cloudflare/kumo@2.0.3
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies [fbf3eef]
+- Updated dependencies [40491c2]
+- Updated dependencies [3427221]
+  - @cloudflare/kumo@2.0.2
+
+## 1.4.1
+
+### Patch Changes
+
+- e53bd68: Rebalanced semantic text token usage to improve hierarchy and consistency across components, docs, and generated Figma output.
+  - Updated theme token definitions so `text-kumo-strong` represents high-emphasis text and `text-kumo-inactive` is lighter/inactive in both light and dark modes.
+  - Migrated affected UI surfaces from `text-kumo-strong` to `text-kumo-subtle` where content is supportive metadata, labels, or secondary text.
+  - Synced token usage in docs and Figma code generators with the updated semantic text mapping.
+
+- Updated dependencies [e53bd68]
+  - @cloudflare/kumo@2.0.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 353faea: Adds Autocomplete component. A free-form text input with an optional filtered suggestion list. Unlike Combobox, the value is not constrained to the items list.
+
+### Patch Changes
+
+- ec73bc5: Update chart color docs and demos, including sequential heatmap/CVD coverage and improved chart demo behavior.
+- 8cc65bf: Clean up the Contributing page: remove the "Questions?" section that referenced an internal channel, and fix the "Related Docs" links to point to absolute GitHub URLs instead of relative paths that 404'd.
+- 1eee41a: Add `InputGroup` compound component for composing decorated inputs
+
+  Compound structure: `InputGroup`, `InputGroup.Input`, `InputGroup.Addon`, `InputGroup.Suffix`, `InputGroup.Button`.
+  - Field integration — pass `label`, `description`, `error`, `required`, and `labelTooltip` directly to `InputGroup`
+  - Size variants (`xs`, `sm`, `base`, `lg`) propagate to all sub-components via context, including icon sizing in addons
+  - `InputGroup.Addon` — positions icons, text, or buttons at `align="start"` (default) or `align="end"` of the input
+  - `InputGroup.Suffix` — inline text suffix (e.g. `.workers.dev`)
+  - `InputGroup.Button` — ghost button for secondary actions with tooltip support
+  - Deprecated `InputGroup.Label` — use `InputGroup.Addon` instead
+  - Deprecated `InputGroup.Description` — use `InputGroup.Suffix` instead
+
+  ```tsx
+  {
+    /* Reveal / hide password */
+  }
+  <InputGroup>
+    <InputGroup.Input
+      type={show ? "text" : "password"}
+      defaultValue="password"
+      aria-label="Password"
+    />
+    <InputGroup.Addon align="end" className="pr-1">
+      <InputGroup.Button
+        size="sm"
+        aria-label={show ? "Hide password" : "Show password"}
+        onClick={() => setShow(!show)}
+      >
+        {show ? <EyeSlashIcon size={16} /> : <EyeIcon size={16} />}
+      </InputGroup.Button>
+    </InputGroup.Addon>
+  </InputGroup>;
+  ```
+
+  ```tsx
+  {
+    /* Search input */
+  }
+  <InputGroup>
+    <InputGroup.Addon>
+      <MagnifyingGlassIcon className="text-kumo-subtle" />
+    </InputGroup.Addon>
+    <InputGroup.Input placeholder="Search..." />
+  </InputGroup>;
+  ```
+
+- f774e84: Fix copy code button z-index so it no longer appears above the sticky header when scrolling
+- c019b41: Improved focus and keyboard accessibility styles across Kumo components and docs navigation.
+  - Added the `kumo-focus` semantic token to the theme generator config and generated `theme-kumo.css` output.
+  - Updated focus ring behavior across interactive components (including `Button`, `Input`, `InputGroup`, `Select`, `Checkbox`, `Radio`, `Switch`, `Sidebar`, `Tabs`, `Menubar`, and related controls) for more consistent and visible keyboard focus visibility.
+  - Text-entry controls use a lighter opacity `kumo-focus` ring to keep pointer and keyboard focus visually consistent where browsers apply `:focus-visible` heuristics to typed-input controls.
+  - Refined `Select` and `Input` styling/state combinations to align focus visuals with current semantic token usage.
+  - Updated docs `SidebarNav` keyboard-focus affordances (links, section toggles, search trigger) and adjusted collapsible list overflow so focus rings remain visible.
+  - Replace raw colors in `Select` with kumo semantic tokens.
+
+- 87432f8: Add global letter-spacing and typography defaults
+  - Set global `letter-spacing: -0.01em`, `line-height: 1.5`, and OpenType font features (`cv02`, `cv03`, `cv04`, `calt`) on `html`
+  - Reset `letter-spacing: normal` on `pre`, `code`, `kbd`, and `.font-mono` elements
+  - Replace hardcoded `tracking-[-0.02em]` with `tracking-tight` utility across headings
+  - Switch prose paragraphs and lists from `leading-relaxed` to `leading-normal`
+
+- Updated dependencies [ac6df5f]
+- Updated dependencies [ec73bc5]
+- Updated dependencies [bf68ac0]
+- Updated dependencies [f9ba3f9]
+- Updated dependencies [7d12918]
+- Updated dependencies [69bfc53]
+- Updated dependencies [30bfd82]
+- Updated dependencies [1954aa8]
+- Updated dependencies [3256a7b]
+- Updated dependencies [1eee41a]
+- Updated dependencies [b923281]
+- Updated dependencies [06b8852]
+- Updated dependencies [c019b41]
+- Updated dependencies [21ed1a1]
+- Updated dependencies [fa991d9]
+- Updated dependencies [353faea]
+- Updated dependencies [431de04]
+- Updated dependencies [f9d8b76]
+- Updated dependencies [07426f6]
+- Updated dependencies [c1c60c8]
+- Updated dependencies [267ba7a]
+- Updated dependencies [6765526]
+  - @cloudflare/kumo@2.0.0
+
+## 1.3.18
+
+### Patch Changes
+
+- 547c7fa: Updated the token value for `kumo-line` and `kumo-hairline` in dark mode so they are more visible.
+  - replace `kumo-line` usages with `kumo-hairline` across Kumo components and docs UI/content styles
+  - use `ring-kumo-line` for shadowed surfaces (for example combobox, dialog, select, dropdown, toast, and related surface wrappers)
+  - adjust theme token configuration and generated styles to support updated neutral/hairline appearance
+
+- Updated dependencies [da6eee1]
+- Updated dependencies [4785c43]
+- Updated dependencies [1e7ba10]
+- Updated dependencies [2682319]
+- Updated dependencies [a0f2b18]
+- Updated dependencies [9eb1306]
+- Updated dependencies [4565baa]
+- Updated dependencies [4dfdc3f]
+- Updated dependencies [98e3170]
+- Updated dependencies [9c3cdbf]
+- Updated dependencies [27bcd59]
+- Updated dependencies [a8adf02]
+- Updated dependencies [547c7fa]
+- Updated dependencies [58b5777]
+- Updated dependencies [460a603]
+- Updated dependencies [0cae077]
+  - @cloudflare/kumo@1.19.0
+
+## 1.3.17
+
+### Patch Changes
+
+- cf6b917: Align semantic token documentation and docs presentation updates.
+  - Update `colors.mdx` token documentation structure.
+  - Replaced `kumo-ring` with `kumo-hairline` for border/ring colors and all its instances in kumo components and docs.
+  - Sync `packages/kumo/ai/USAGE.md` token reference categories and descriptions with the docs token guide.
+  - Adjust the typo in the recessed dark token value in theme generator config and regenerate `theme-kumo.css`.
+  - Updated `kumo-fill-hover` token value from `neutral-700` to `neutral-800`
+
+- Updated dependencies [dacf445]
+- Updated dependencies [44c26f5]
+- Updated dependencies [2bb8628]
+- Updated dependencies [e8bcf6f]
+- Updated dependencies [c3beded]
+- Updated dependencies [4a2fb02]
+- Updated dependencies [b1e51a8]
+- Updated dependencies [e676f0b]
+- Updated dependencies [5e4c7b1]
+- Updated dependencies [6458fae]
+- Updated dependencies [cf6b917]
+- Updated dependencies [a685953]
+  - @cloudflare/kumo@1.18.0
+
+## 1.3.16
+
+### Patch Changes
+
+- 6c21970: Fix missing disabled styling on Combobox triggers. `TriggerValue` and `TriggerMultipleWithInput` now apply `opacity-50` and `cursor-not-allowed` when disabled, matching the behaviour of the `Select` component.
+- 36f1609: - Added a table-of-contents to the docs pages
+  - Refined layout updates
+  - Improved prose styling while avoiding impacts to embedded component previews
+- c58357d: Add changelog page
+- 0e5dd5e: restructure contributing docs into a complete contributor workflow so setup, validation, changeset, and PR guidance are all in one place
+- Updated dependencies [355a1b5]
+- Updated dependencies [250a6dd]
+- Updated dependencies [7721bc5]
+- Updated dependencies [8c244d2]
+- Updated dependencies [6c21970]
+- Updated dependencies [0e4247a]
+- Updated dependencies [ef15662]
+- Updated dependencies [0060bb9]
+- Updated dependencies [04a1f07]
+- Updated dependencies [94d50e2]
+- Updated dependencies [cd0c22f]
+- Updated dependencies [db75c51]
+- Updated dependencies [17f21f3]
+- Updated dependencies [eb68b35]
+- Updated dependencies [e21a6df]
+- Updated dependencies [29c56fd]
+- Updated dependencies [9272b4a]
+- Updated dependencies [6b15bac]
+- Updated dependencies [d1f697b]
+- Updated dependencies [cfe814d]
+- Updated dependencies [7ac73d2]
+- Updated dependencies [56e3640]
+- Updated dependencies [dcbf185]
+- Updated dependencies [f0c8952]
+  - @cloudflare/kumo@1.17.0
+
 ## 1.3.15
 
 ### Patch Changes

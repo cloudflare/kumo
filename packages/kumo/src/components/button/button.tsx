@@ -3,6 +3,7 @@ import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
 import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
@@ -48,12 +49,12 @@ export const KUMO_BUTTON_VARIANTS = {
   variant: {
     primary: {
       classes:
-        "bg-kumo-brand !text-white hover:bg-kumo-brand-hover focus:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
+        "bg-kumo-brand !text-white hover:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
       description: "High-emphasis button for primary actions",
     },
     secondary: {
       classes:
-        "bg-kumo-base !text-kumo-default ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-ring data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-default ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
       description: "Default button style for most actions",
     },
     ghost: {
@@ -66,12 +67,12 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:border-secondary! not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
-      classes: "bg-transparent text-kumo-default ring ring-kumo-ring",
+      classes: "bg-transparent text-kumo-default ring ring-kumo-hairline",
       description: "Bordered button with transparent background",
     },
   },
@@ -130,14 +131,32 @@ export function buttonVariants({
     // Base styles
     "group flex w-max shrink-0 items-center font-medium select-none",
     "border-0 shadow-xs",
+    "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
     // Apply variant, size, shape styles from KUMO_BUTTON_VARIANTS
-    KUMO_BUTTON_VARIANTS.variant[variant].classes,
-    KUMO_BUTTON_VARIANTS.size[size].classes,
-    KUMO_BUTTON_VARIANTS.shape[shape].classes,
-    isCompactShape && KUMO_BUTTON_VARIANTS.compactSize[size].classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.variant,
+      variant,
+      KUMO_BUTTON_DEFAULT_VARIANTS.variant,
+    ).classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.size,
+      size,
+      KUMO_BUTTON_DEFAULT_VARIANTS.size,
+    ).classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.shape,
+      shape,
+      KUMO_BUTTON_DEFAULT_VARIANTS.shape,
+    ).classes,
+    isCompactShape &&
+      resolveVariant(
+        KUMO_BUTTON_VARIANTS.compactSize,
+        size,
+        KUMO_BUTTON_DEFAULT_VARIANTS.size,
+      ).classes,
   );
 }
 
@@ -242,9 +261,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const button = (
       <button
         ref={ref}
+        data-kumo-component="Button"
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "focus:opacity-100 focus-visible:ring-1 focus-visible:ring-kumo-ring *:in-focus:opacity-100", // Focus styles
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -252,19 +271,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type={type ?? "button"}
         {...restProps}
       >
-        {loading && <Loader size={size === "lg" ? 16 : 14} />}
-        {!loading && renderIconNode(IconComponent)}
-
-        {children}
+        {loading ? (
+          <Loader size={size === "lg" ? 16 : 14} />
+        ) : (
+          renderIconNode(IconComponent)
+        )}
+        {children != null && <span className="contents">{children}</span>}
       </button>
     );
 
     if (title) {
-      return (
-        <Tooltip content={title} asChild>
-          {button}
-        </Tooltip>
-      );
+      return <Tooltip content={title} render={button} />;
     }
 
     return button;
@@ -330,6 +347,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     return (
       <LinkComponent
         ref={ref}
+        data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({ variant, size, shape }),
           "flex items-center no-underline!",

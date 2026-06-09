@@ -27,6 +27,36 @@ export type SupportedLanguage =
   | "toml";
 
 /**
+ * Common language aliases mapped to their canonical SupportedLanguage names.
+ *
+ * Markdown code fences often use short aliases (e.g., `js`, `ts`, `sh`) that
+ * don't match the canonical grammar names but should resolve to them.
+ *
+ * Note: `mdx` is intentionally omitted because it has a distinct grammar
+ * (Markdown + JSX) that would lose JSX highlighting if mapped to `markdown`.
+ */
+export const LANGUAGE_ALIASES = {
+  js: "javascript",
+  cjs: "javascript",
+  mjs: "javascript",
+  ts: "typescript",
+  cts: "typescript",
+  mts: "typescript",
+  sh: "bash",
+  zsh: "bash",
+  yml: "yaml",
+  py: "python",
+  md: "markdown",
+  gql: "graphql",
+} as const satisfies Record<string, SupportedLanguage>;
+
+/** A known alias that maps to a SupportedLanguage. */
+export type LanguageAlias = keyof typeof LANGUAGE_ALIASES;
+
+/** Any language identifier accepted by ShikiProvider and highlight(). */
+export type LanguageInput = SupportedLanguage | LanguageAlias;
+
+/**
  * Shiki engine choice for syntax highlighting.
  * - `"javascript"` — Smaller bundle (~50KB), slightly less accurate
  * - `"wasm"` — Larger bundle (~180KB), VS Code-accurate highlighting
@@ -56,10 +86,10 @@ export interface ShikiProviderProps {
 
   /**
    * Languages to support. Only these languages will be loaded.
-   * Must be from the supported language set.
-   * @example ['tsx', 'typescript', 'bash', 'json']
+   * Accepts canonical names (`'javascript'`) or common aliases (`'js'`).
+   * @example ['tsx', 'ts', 'bash', 'json']
    */
-  languages: SupportedLanguage[];
+  languages: LanguageInput[];
 
   /**
    * Localized labels for UI elements (copy button, etc.).
@@ -80,8 +110,11 @@ export interface UseShikiHighlighterResult {
    * Highlight code and return HTML string.
    * Returns `null` if highlighter is not ready or highlighting fails.
    * When `null` is returned, render the code as plain text.
+   *
+   * Accepts language aliases (e.g., 'js', 'ts', 'sh') which are automatically
+   * normalized to their canonical SupportedLanguage names.
    */
-  highlight: (code: string, lang: SupportedLanguage) => string | null;
+  highlight: (code: string, lang: LanguageInput | (string & {})) => string | null;
 
   /** True while Shiki is loading */
   isLoading: boolean;
@@ -105,9 +138,10 @@ export interface CodeHighlightedProps {
 
   /**
    * Language identifier for syntax highlighting.
+   * Accepts canonical names or common aliases (e.g., 'js', 'ts').
    * Must be included in the ShikiProvider's `languages` array.
    */
-  lang: SupportedLanguage;
+  lang: LanguageInput | (string & {});
 
   /** Display line numbers */
   showLineNumbers?: boolean;

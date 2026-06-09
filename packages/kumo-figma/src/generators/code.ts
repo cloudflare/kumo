@@ -9,13 +9,13 @@
  * ## Implementation Notes
  *
  * The Code component is a simple typography primitive for displaying code snippets.
- * It has no backgrounds or borders (transparent), uses monospace font, and text-kumo-strong color.
+ * It has no backgrounds or borders (transparent), uses monospace font, and text-kumo-subtle color.
  *
  * ### Variant Categories
  * - lang variants: Only used for semantic meaning, no visual styling differences
  *
  * ### Base Styling (from code.tsx line 45)
- * "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-strong"
+ * "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-subtle"
  */
 
 import {
@@ -102,12 +102,12 @@ async function createCodeComponent(lang: string): Promise<ComponentNode> {
   await figma.loadFontAsync({ family: "Roboto Mono", style: "Regular" });
   textNode.fontName = { family: "Roboto Mono", style: "Regular" };
 
-  // Apply text color - text-kumo-strong with fallback to text-kumo-default
+  // Apply text color - text-kumo-subtle with fallback to text-kumo-default
   const labelVar = getVariableByName(VAR_NAMES.text.label);
   if (labelVar) {
     bindTextColorToVariable(textNode, labelVar.id);
   } else {
-    // Fallback to text-kumo-default if text-kumo-strong doesn't exist
+    // Fallback to text-kumo-default if text-kumo-subtle doesn't exist
     const surfaceVar = getVariableByName(VAR_NAMES.text.default);
     if (surfaceVar) {
       bindTextColorToVariable(textNode, surfaceVar.id);
@@ -313,7 +313,7 @@ export function getBaseStyles() {
     codeStyling.appearance?.borderRadius || "",
     codeStyling.appearance?.border || "",
     codeStyling.appearance?.background || "",
-    ...codeStyling.baseTokens, // ["text-kumo-strong"]
+    ...codeStyling.baseTokens, // ["text-kumo-subtle"]
   ].filter(Boolean);
 
   const raw = baseStyleParts.join(" ");

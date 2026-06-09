@@ -98,7 +98,7 @@ export function createRoundedPath(
 
     const commands = [
       `M ${x1} ${y1}`,
-      isBottom ? [...bottomCurveCommands] : [...topCurveCommands],
+      ...(isBottom ? bottomCurveCommands : topCurveCommands),
       `L ${pathEndX} ${y2}`,
     ];
 
@@ -144,7 +144,7 @@ export function createRoundedPath(
 
   const commands = [
     `M ${x1} ${y1}`, // Move the cursor to the starting point
-    isBottom ? [...bottomCurveCommands] : [...topCurveCommands],
+    ...(isBottom ? bottomCurveCommands : topCurveCommands),
     `L ${x2} ${pathEndY}`, // Draw the final line to the end point
   ];
 
@@ -158,6 +158,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
       <svg
         width="100%"
         height="100%"
+        overflow="visible"
         aria-hidden="true"
         className="text-kumo-inactive overflow-visible"
         ref={svgRef}

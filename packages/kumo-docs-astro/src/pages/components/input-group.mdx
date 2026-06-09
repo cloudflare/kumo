@@ -1,0 +1,326 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "InputGroup"
+description: "Compose inputs with addons, icons, buttons, and text for rich form fields."
+sourceFile: "components/input-group"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  InputGroupDemo,
+  InputGroupIconsDemo,
+  InputGroupTextDemo,
+  InputGroupButtonsDemo,
+  InputGroupTooltipButtonDemo,
+  InputGroupKbdDemo,
+  InputGroupLoadingDemo,
+  InputGroupSuffixDemo,
+  InputGroupSizesDemo,
+  InputGroupStatesDemo,
+} from "~/components/demos/InputGroupDemo";
+
+<ComponentSection>
+  <ComponentExample demo="InputGroupDemo">
+    <InputGroupDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock code={`import { InputGroup } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+  <CodeBlock
+    code={`import { InputGroup } from "@cloudflare/kumo/components/input-group";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+### With Built-in Field (Recommended)
+
+<p>
+  Pass the `label` prop to InputGroup to enable the built-in Field wrapper with
+  label, description, and error support.
+</p>
+
+```tsx
+import { InputGroup } from "@cloudflare/kumo";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <InputGroup label="Search" description="Find pages, components, and more">
+      <InputGroup.Addon>
+        <MagnifyingGlassIcon />
+      </InputGroup.Addon>
+      <InputGroup.Input placeholder="Search..." />
+    </InputGroup>
+  );
+}
+```
+
+### Bare InputGroup (Custom Layouts)
+
+<p>
+  For custom form layouts, use InputGroup without `label`. Must provide
+  `aria-label` on `InputGroup.Input` for accessibility.
+</p>
+
+```tsx
+import { InputGroup } from "@cloudflare/kumo";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <InputGroup>
+      <InputGroup.Addon>
+        <MagnifyingGlassIcon />
+      </InputGroup.Addon>
+      <InputGroup.Input placeholder="Search..." aria-label="Search" />
+    </InputGroup>
+  );
+}
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Examples
+
+### Icon
+
+<p>
+  Use Addon to place an icon at the start of the input as a visual identifier.
+</p>
+<ComponentExample demo="InputGroupIconsDemo">
+  <InputGroupIconsDemo client:visible />
+</ComponentExample>
+
+### Text
+
+<p>Use Addon to place text prefixes or suffixes alongside the input.</p>
+<ComponentExample demo="InputGroupTextDemo">
+  <InputGroupTextDemo client:visible />
+</ComponentExample>
+
+### Button
+
+<p>
+  Place `InputGroup.Button` inside an Addon for actions that operate directly on
+  the input value, such as reveal/hide or clear.
+</p>
+<ComponentExample demo="InputGroupButtonsDemo">
+  <InputGroupButtonsDemo client:visible />
+</ComponentExample>
+
+### Button with Tooltip
+
+<p>
+  Pass a `tooltip` prop to `InputGroup.Button` to show a tooltip on hover. When
+  no explicit `aria-label` is provided, the button derives it from a string
+  tooltip value.
+</p>
+<ComponentExample demo="InputGroupTooltipButtonDemo">
+  <InputGroupTooltipButtonDemo client:visible />
+</ComponentExample>
+
+### Kbd
+
+<p>Place a keyboard shortcut hint inside an end Addon.</p>
+<ComponentExample demo="InputGroupKbdDemo">
+  <InputGroupKbdDemo client:visible />
+</ComponentExample>
+
+### Loading
+
+<p>
+  Place a Loader inside an end Addon as a status indicator while validating the
+  input value.
+</p>
+<ComponentExample demo="InputGroupLoadingDemo">
+  <InputGroupLoadingDemo client:visible />
+</ComponentExample>
+
+### Inline Suffix
+
+<p>
+  Suffix renders text that flows seamlessly next to the typed value — useful for
+  domain inputs like `.workers.dev`. Pair with a status icon Addon to show
+  validation state.
+</p>
+<ComponentExample demo="InputGroupSuffixDemo">
+  <InputGroupSuffixDemo client:visible />
+</ComponentExample>
+
+### Sizes
+
+<p>
+  Four sizes: `xs`, `sm`, `base` (default), and `lg`. The size applies to the
+  entire group.
+</p>
+<ComponentExample demo="InputGroupSizesDemo">
+  <InputGroupSizesDemo client:visible />
+</ComponentExample>
+
+### States
+
+<p>
+  Various input states including error, disabled, and with description. Pass `label`, `error`, and `description` props directly to `InputGroup`.
+</p>
+<ComponentExample demo="InputGroupStatesDemo">
+  <InputGroupStatesDemo client:visible />
+</ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## API Reference
+
+### `InputGroup`
+
+<p>
+  The root container that provides context to all child components. Accepts
+  Field props (`label`, `description`, `error`) and wraps content in a Field
+  when label is provided.
+</p>
+<PropsTable component="InputGroup" />
+
+### `InputGroup.Input`
+
+<p>
+  The text input element. Inherits `size`, `disabled`, and `error` from
+  InputGroup context. Accepts all standard input attributes except Field-related
+  props which are handled by the parent.
+</p>
+<PropsTable component="InputGroup.Input" />
+
+### `InputGroup.Addon`
+
+<p>
+  Container for icons, text, or compact buttons positioned at the start or end
+  of the input.
+</p>
+<PropsTable component="InputGroup.Addon" />
+
+### `InputGroup.Button`
+
+<p>
+  Button for secondary actions like toggle, copy, or help. Renders inside an
+  Addon. Pass a `tooltip` prop to show a tooltip on hover.
+</p>
+<PropsTable component="InputGroup.Button" />
+
+### `InputGroup.Suffix`
+
+<p>
+  Inline text that flows seamlessly next to the typed value (e.g.,
+  `.workers.dev`). The input width adjusts automatically as the user types.
+</p>
+<PropsTable component="InputGroup.Suffix" />
+
+### Validation Error Types
+
+<p>
+  When using `error` as an object, the `match` property corresponds to HTML5 ValidityState values:
+</p>
+<div class="overflow-hidden rounded-lg border border-kumo-hairline">
+  <table class="w-full text-sm">
+    <thead class="bg-kumo-elevated">
+      <tr>
+        <th class="px-4 py-3 text-left font-medium">Match</th>
+        <th class="px-4 py-3 text-left font-medium">Description</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-kumo-hairline">
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">valueMissing</td>
+        <td class="px-4 py-3 text-xs">Required field is empty</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">typeMismatch</td>
+        <td class="px-4 py-3 text-xs">Value doesn't match type (e.g., invalid email)</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">patternMismatch</td>
+        <td class="px-4 py-3 text-xs">Value doesn't match pattern attribute</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">tooShort</td>
+        <td class="px-4 py-3 text-xs">Value shorter than minLength</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">tooLong</td>
+        <td class="px-4 py-3 text-xs">Value longer than maxLength</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">rangeUnderflow</td>
+        <td class="px-4 py-3 text-xs">Value less than min</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">rangeOverflow</td>
+        <td class="px-4 py-3 text-xs">Value greater than max</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-mono text-xs">true</td>
+        <td class="px-4 py-3 text-xs">Always show error (for server-side validation)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</ComponentSection>
+
+<ComponentSection>
+
+## Accessibility
+
+  <div class="space-y-4 text-sm">
+    <div>
+
+      ### Label Requirement
+
+      <p>
+        InputGroup requires an accessible name via one of:
+      </p>
+      <ul class="mt-2 ml-4 list-disc space-y-1">
+        <li>
+          `label` prop on InputGroup (renders a visible label with built-in
+          Field support)
+        </li>
+        <li>
+          `aria-label` on InputGroup.Input for inputs without a visible label
+        </li>
+        <li>
+          `aria-labelledby` on InputGroup.Input for custom label association
+        </li>
+      </ul>
+      <p class="mt-2">
+        Missing accessible names trigger console warnings in development.
+      </p>
+    </div>
+    <div>
+
+      ### Group Role
+
+      <p>
+        InputGroup automatically renders with `role="group"`, which semantically
+        associates the input with its addons for assistive technologies.
+      </p>
+    </div>
+
+  </div>
+</ComponentSection>

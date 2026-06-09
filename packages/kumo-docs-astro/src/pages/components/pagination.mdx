@@ -7,7 +7,6 @@ sourceFile: "components/pagination"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   PaginationBasicDemo,
@@ -19,7 +18,9 @@ import {
   PaginationPageSizeSelectorDemo,
   PaginationCustomPageSizeOptionsDemo,
   PaginationCompoundCustomInfoDemo,
+  PaginationDropdownSelectorDemo,
   PaginationPageSizeRightDemo,
+  PaginationI18nDemo,
 } from "~/components/demos/PaginationDemo";
 
 {/* Hero Demo */}
@@ -33,14 +34,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Pagination } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Pagination } from "@cloudflare/kumo/components/pagination";
@@ -51,7 +54,8 @@ import { Pagination } from "@cloudflare/kumo/components/pagination";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { useState } from "react";
@@ -71,9 +75,11 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Full Controls (Default)</Heading>
+## Examples
+
+### Full Controls (Default)
+
 <p>
   The default pagination includes first, previous, page input, next, and last
   buttons.
@@ -82,7 +88,8 @@ export default function Example() {
   <PaginationFullDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Simple Controls</Heading>
+### Simple Controls
+
 <p>
   Use `controls="simple"` for a minimal pagination with only previous and next
   buttons.
@@ -91,19 +98,22 @@ export default function Example() {
   <PaginationSimpleDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Mid-Page State</Heading>
+### Mid-Page State
+
 <p>Pagination in the middle of a dataset with all navigation enabled.</p>
 <ComponentExample demo="PaginationMidPageDemo">
   <PaginationMidPageDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Large Dataset</Heading>
+### Large Dataset
+
 <p>Pagination handles large datasets with many pages.</p>
 <ComponentExample demo="PaginationLargeDatasetDemo">
   <PaginationLargeDatasetDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Text</Heading>
+### Custom Text
+
 <p>You can set custom pagination text.</p>
 <ComponentExample demo="PaginationCustomTextDemo">
   <PaginationCustomTextDemo client:visible />
@@ -114,18 +124,22 @@ export default function Example() {
 {/* Compound Components */}
 
 <ComponentSection>
-  <Heading level={2}>Compound Components</Heading>
+
+## Compound Components
+
   <p>
     For more control over layout and features, use the compound component API. This allows you to compose `Pagination.Info`, `Pagination.PageSize`, `Pagination.Controls`, and `Pagination.Separator` in any order.
   </p>
 
-<Heading level={3}>Page Size Selector</Heading>
+### Page Size Selector
+
 <p>Add a dropdown to let users select the number of items per page.</p>
 <ComponentExample demo="PaginationPageSizeSelectorDemo">
   <PaginationPageSizeSelectorDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Page Size Options</Heading>
+### Custom Page Size Options
+
 <p>
   Customize the available page size options with the `options` prop. Defaults to
   `[25, 50, 100, 250]`.
@@ -134,13 +148,15 @@ export default function Example() {
   <PaginationCustomPageSizeOptionsDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Info Text</Heading>
+### Custom Info Text
+
 <p>Use a render function to customize the info text.</p>
 <ComponentExample demo="PaginationCompoundCustomInfoDemo">
   <PaginationCompoundCustomInfoDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Layout</Heading>
+### Custom Layout
+
 <p>
   Arrange components in any order. Here the page size selector is on the right.
 </p>
@@ -148,11 +164,53 @@ export default function Example() {
   <PaginationPageSizeRightDemo client:visible />
 </ComponentExample>
 
+### Dropdown Page Selector
+
+    <p>
+      Use `pageSelector="dropdown"` on `Pagination.Controls` to render a dropdown
+      select instead of a text input for page navigation. This is useful when you
+      want users to pick from a list of available pages rather than typing a number.
+    </p>
+    <ComponentExample
+      code={`<Pagination page={page} setPage={setPage} perPage={perPage} totalCount={500}>
+
+  <Pagination.Info />
+  <Pagination.Separator />
+  <Pagination.PageSize
+    value={perPage}
+    onChange={(size) => {
+      setPerPage(size);
+      setPage(1);
+    }}
+  />
+  <Pagination.Controls pageSelector="dropdown" />
+</Pagination>`}
+    >
+      <PaginationDropdownSelectorDemo client:visible />
+    </ComponentExample>
+</ComponentSection>
+
+{/* Internationalization */}
+
+<ComponentSection>
+
+## Internationalization
+
+  <p>
+    Use the `labels` prop to customize all UI strings for different locales. All labels default to English.
+  </p>
+
+<ComponentExample demo="PaginationI18nDemo">
+  <PaginationI18nDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Pagination" />
 </ComponentSection>

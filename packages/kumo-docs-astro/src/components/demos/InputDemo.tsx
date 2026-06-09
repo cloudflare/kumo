@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@cloudflare/kumo";
 
 export function InputBasicDemo() {
@@ -26,7 +27,6 @@ export function InputErrorStringDemo() {
       label="Email"
       placeholder="you@example.com"
       value="invalid-email"
-      variant="error"
       error="Please enter a valid email address"
     />
   );
@@ -38,7 +38,6 @@ export function InputErrorObjectDemo() {
       label="Password"
       type="password"
       value="short"
-      variant="error"
       error={{
         message: "Password must be at least 8 characters",
         match: "tooShort",
@@ -65,6 +64,45 @@ export function InputDisabledDemo() {
 
 export function InputBareDemo() {
   return <Input placeholder="Search..." aria-label="Search products" />;
+}
+
+/** Input without a visible label, showing error and description via `aria-label`. */
+export function InputErrorWithoutLabelDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        aria-label="Hostname"
+        placeholder="example.com"
+        value="not a host"
+        error="Please enter a valid hostname"
+      />
+      <Input
+        aria-label="Path"
+        placeholder="/api/v1/users"
+        value="missing-slash"
+        error={{ message: "Path must start with /", match: true }}
+      />
+    </div>
+  );
+}
+
+/** Side-by-side comparison: Keeper shows its icon on the default input but not the ignored one. */
+export function InputPasswordManagerIgnoreDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        label="API Key (default)"
+        type="password"
+        placeholder="sk_live_..."
+      />
+      <Input
+        label="API Key (passwordManagerIgnore)"
+        type="password"
+        placeholder="sk_live_..."
+        passwordManagerIgnore
+      />
+    </div>
+  );
 }
 
 export function InputTypesDemo() {
@@ -109,6 +147,34 @@ export function InputReactNodeLabelDemo() {
       required
       placeholder="billing@company.com"
       type="email"
+    />
+  );
+}
+
+/** Controlled input using `onChange` (native React event). */
+export function InputControlledOnChangeDemo() {
+  const [value, setValue] = useState("");
+  return (
+    <Input
+      label="With onChange"
+      placeholder="Type something..."
+      description={value ? `Value: ${value}` : "Uses e.target.value"}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
+
+/** Controlled input using `onValueChange` (Base UI convenience — gives you the string directly). */
+export function InputControlledOnValueChangeDemo() {
+  const [value, setValue] = useState("");
+  return (
+    <Input
+      label="With onValueChange"
+      placeholder="Type something..."
+      description={value ? `Value: ${value}` : "Receives the value directly"}
+      value={value}
+      onValueChange={(v) => setValue(v)}
     />
   );
 }

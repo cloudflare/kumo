@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Autocomplete,
   Badge,
   Banner,
   Button,
@@ -27,9 +28,9 @@ import {
   Select,
   SensitiveInput,
   SkeletonLine,
-  Surface,
   Switch,
   Table,
+  TableOfContents,
   Tabs,
   Text,
   Toasty,
@@ -38,6 +39,7 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -57,6 +59,7 @@ const componentRoutes: Record<string, string> = {
   "clipboard-text": "/components/clipboard-text",
   "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
+  autocomplete: "/components/autocomplete",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
   "date-picker": "/components/date-picker",
@@ -67,6 +70,7 @@ const componentRoutes: Record<string, string> = {
   grid: "/components/grid",
   input: "/components/input",
   "input-area": "/components/input-area",
+  "input-group": "/components/input-group",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   link: "/components/link",
@@ -79,9 +83,9 @@ const componentRoutes: Record<string, string> = {
   select: "/components/select",
   "sensitive-input": "/components/sensitive-input",
   "skeleton-line": "/components/skeleton-line",
-  surface: "/components/surface",
   switch: "/components/switch",
   table: "/components/table",
+  "table-of-contents": "/components/table-of-contents",
   tabs: "/components/tabs",
   text: "/components/text",
   toast: "/components/toast",
@@ -150,6 +154,7 @@ export function HomeGrid() {
         <Select
           aria-label="Select version"
           className="w-[200px]"
+          placeholder="Select version"
           renderValue={(v) => {
             const labels: Record<string, string> = {
               all: "All deployed versions",
@@ -164,6 +169,26 @@ export function HomeGrid() {
           <Select.Option value="active">Active versions</Select.Option>
           <Select.Option value="specific">Specific versions</Select.Option>
         </Select>
+      ),
+    },
+    {
+      name: "Autocomplete",
+      id: "autocomplete",
+      Component: (
+        <Autocomplete
+          items={["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange"]}
+        >
+          <Autocomplete.InputGroup placeholder="Search fruits…" />
+          <Autocomplete.Content>
+            <Autocomplete.List>
+              {(item: string) => (
+                <Autocomplete.Item key={item} value={item}>
+                  {item}
+                </Autocomplete.Item>
+              )}
+            </Autocomplete.List>
+          </Autocomplete.Content>
+        </Autocomplete>
       ),
     },
     {
@@ -242,16 +267,23 @@ export function HomeGrid() {
       Component: (
         <TooltipProvider>
           <div className="flex gap-2">
-            <Tooltip content="Add" asChild open>
-              <Button shape="square" icon={PlusIcon} aria-label="Add" />
-            </Tooltip>
-            <Tooltip content="Change language" asChild>
-              <Button
-                shape="square"
-                icon={TranslateIcon}
-                aria-label="Change language"
-              />
-            </Tooltip>
+            <Tooltip
+              content="Add"
+              open
+              render={
+                <Button shape="square" icon={PlusIcon} aria-label="Add" />
+              }
+            />
+            <Tooltip
+              content="Change language"
+              render={
+                <Button
+                  shape="square"
+                  icon={TranslateIcon}
+                  aria-label="Change language"
+                />
+              }
+            />
           </div>
         </TooltipProvider>
       ),
@@ -273,13 +305,15 @@ export function HomeGrid() {
       name: "Collapsible",
       id: "collapsible",
       Component: (
-        <Collapsible
-          label="What is Kumo?"
+        <Collapsible.Root
           open={collapsibleOpen}
           onOpenChange={setCollapsibleOpen}
         >
-          Kumo is Cloudflare's component library.
-        </Collapsible>
+          <Collapsible.DefaultTrigger>What is Kumo?</Collapsible.DefaultTrigger>
+          <Collapsible.DefaultPanel>
+            Kumo is Cloudflare's component library.
+          </Collapsible.DefaultPanel>
+        </Collapsible.Root>
       ),
     },
     {
@@ -289,7 +323,7 @@ export function HomeGrid() {
         <Checkbox
           label="Max bandwidth"
           checked={checked}
-          onValueChange={(checked) => {
+          onCheckedChange={(checked) => {
             setChecked(checked);
           }}
         />
@@ -322,15 +356,6 @@ export function HomeGrid() {
       ),
     },
     {
-      name: "Surface",
-      id: "surface",
-      Component: (
-        <Surface className="flex h-24 w-40 items-center justify-center rounded-lg bg-kumo-canvas text-sm text-kumo-subtle">
-          <em>To put things over.</em>
-        </Surface>
-      ),
-    },
-    {
       name: "CodeHighlighted",
       id: "code-highlighted",
       Component: (
@@ -349,15 +374,15 @@ export function HomeGrid() {
       id: "banner",
       Component: (
         <div className="flex flex-col gap-2">
-          <Banner text="This is a default banner." />
+          <Banner description="This is a default banner." />
           <Banner
             icon={<WarningIcon weight="fill" />}
-            text="This is an alert banner."
+            title="This is an alert banner."
             variant="alert"
           />
           <Banner
             icon={<WarningOctagonIcon weight="fill" />}
-            text="This is an error banner."
+            title="This is an error banner."
             variant="error"
           />
         </div>
@@ -417,6 +442,11 @@ export function HomeGrid() {
       name: "InputArea",
       id: "input-area",
       Component: <InputArea placeholder="Enter your name" />,
+    },
+    {
+      name: "InputGroup",
+      id: "input-group",
+      Component: <InputGroupDemo />,
     },
     {
       name: "Meter",
@@ -555,7 +585,7 @@ export function HomeGrid() {
       id: "popover",
       Component: (
         <Popover>
-          <Popover.Trigger render={<Button>Open Popover</Button>} />
+          <Popover.Trigger render={<Button />}>Open Popover</Popover.Trigger>
           <Popover.Content>
             <Popover.Title>Popover Title</Popover.Title>
             <Popover.Description>This is a popover.</Popover.Description>
@@ -607,6 +637,20 @@ export function HomeGrid() {
       ),
     },
     {
+      name: "TableOfContents",
+      id: "table-of-contents",
+      Component: (
+        <TableOfContents>
+          <TableOfContents.Title>On this page</TableOfContents.Title>
+          <TableOfContents.List>
+            <TableOfContents.Item active>Introduction</TableOfContents.Item>
+            <TableOfContents.Item>Installation</TableOfContents.Item>
+            <TableOfContents.Item>Usage</TableOfContents.Item>
+          </TableOfContents.List>
+        </TableOfContents>
+      ),
+    },
+    {
       name: "Text",
       id: "text",
       Component: (
@@ -624,7 +668,7 @@ export function HomeGrid() {
   ];
 
   return (
-    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-line md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-hairline md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {components.map((c) => {
         const route = componentRoutes[c.id] || null;
         return (
@@ -644,7 +688,7 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            <div className="flex w-full items-center justify-center p-8">
+            <div className="flex w-full items-center justify-center p-8 tracking-normal leading-normal">
               {c.Component ?? (
                 <p className="text-base font-medium text-kumo-subtle">TBD</p>
               )}

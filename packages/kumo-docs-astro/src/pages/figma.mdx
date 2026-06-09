@@ -75,7 +75,9 @@ cp packages/kumo-figma/scripts/.env.example packages/kumo-figma/scripts/.env
 | `FIGMA_COLLECTION_NAME` | No       | Variable collection name in Figma. Defaults to `kumo-colors`      |
 
 ```bash
+
 # packages/kumo-figma/scripts/.env
+
 FIGMA_TOKEN=figd_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 FIGMA_FILE_KEY=sKKZc6pC6W1TtzWBLxDGSU
 FIGMA_COLLECTION_NAME=kumo-colors
@@ -120,7 +122,7 @@ The plugin generates a **"ui kit"** page containing ComponentSets for each Kumo 
 - **Auto-layout** — Components use Figma auto-layout matching the CSS flexbox behavior
 - **Proper sizing** — Spacing, padding, border-radius, and font sizes match the code implementation
 
-**Currently Generated Components (30+)**
+#### Currently Generated Components (30+)
 
 Badge, Banner, Breadcrumbs, Button, Checkbox, ClipboardText, Code, CodeBlock, Collapsible, Combobox, CommandPalette, Dialog, Dropdown, Empty, Input, InputArea, Label, LayerCard, LinkButton, Loader, MenuBar, Meter, Pagination, Radio, RefreshButton, Select, SensitiveInput, Surface, Switch, Table, Tabs, Text, Toast, Tooltip
 
@@ -133,19 +135,25 @@ The plugin uses **destructive sync** — it purges all existing generated conten
 The typical workflow when updating components:
 
 ```bash
+
 # 1. Make changes to Kumo components
+
 # ...edit packages/kumo/src/components/...
 
 # 2. Regenerate component registry
+
 pnpm --filter @cloudflare/kumo codegen:registry
 
 # 3. Sync tokens to Figma (if colors changed)
+
 pnpm --filter @cloudflare/kumo-figma figma:sync
 
 # 4. Build the plugin
+
 pnpm --filter @cloudflare/kumo-figma build
 
 # 5. Run in Figma: Plugins > Development > Kumo UI Kit Generator
+
 ```
 
 ## Plugin Architecture

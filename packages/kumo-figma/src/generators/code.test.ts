@@ -101,10 +101,10 @@ describe("Code Generator - Styling Metadata Validation", () => {
 describe("Code Generator - Base Styles Parsing", () => {
   /**
    * Test parsing of base Code styles from registry
-   * Base styles: "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-strong"
+   * Base styles: "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-subtle"
    */
   const BASE_STYLES_COMBINED =
-    "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-strong";
+    "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-subtle";
 
   it("should parse border-radius from base styles", () => {
     const parsed = parseTailwindClasses(BASE_STYLES_COMBINED);
@@ -331,7 +331,7 @@ describe("Code Generator - Expected Figma Output", () => {
 
   it("should produce correct Figma properties for base Code component", () => {
     const BASE_STYLES_COMBINED =
-      "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-strong";
+      "m-0 w-auto rounded-none border-none bg-transparent p-0 font-mono text-sm leading-[20px] text-kumo-subtle";
     const baseStyles = parseTailwindClasses(BASE_STYLES_COMBINED);
 
     // Verify parsed properties exist and have correct types

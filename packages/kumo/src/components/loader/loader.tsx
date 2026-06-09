@@ -1,3 +1,5 @@
+import { resolveVariant } from "../../utils/resolve-variant";
+
 /** Loader size variant definitions mapping sizes to their pixel values. */
 export const KUMO_LOADER_VARIANTS = {
   size: {
@@ -38,7 +40,7 @@ export function loaderVariants({
   size = KUMO_LOADER_DEFAULT_VARIANTS.size,
 }: KumoLoaderVariantsProps = {}): number {
   if (typeof size === "number") return size;
-  return KUMO_LOADER_VARIANTS.size[size].value;
+  return resolveVariant(KUMO_LOADER_VARIANTS.size, size, KUMO_LOADER_DEFAULT_VARIANTS.size).value;
 }
 
 /**
@@ -62,6 +64,12 @@ export interface LoaderProps {
    * @default "base"
    */
   size?: KumoLoaderSize | number;
+  /**
+   * Accessible label for the loader, announced by screen readers.
+   * Pass a translated string for internationalization.
+   * @default "Loading"
+   */
+  "aria-label"?: string;
 }
 
 /**
@@ -75,6 +83,7 @@ export interface LoaderProps {
 export const Loader = ({
   className,
   size = KUMO_LOADER_DEFAULT_VARIANTS.size,
+  "aria-label": ariaLabel = "Loading",
 }: LoaderProps) => {
   const sizeValue = loaderVariants({ size });
   return (
@@ -86,6 +95,8 @@ export const Loader = ({
       stroke="currentColor"
       className={className}
       style={{ height: sizeValue, width: sizeValue }}
+      role="status"
+      aria-label={ariaLabel}
     >
       <circle
         cx="12"

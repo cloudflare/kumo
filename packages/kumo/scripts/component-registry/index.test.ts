@@ -216,18 +216,18 @@ describe("extractStateClasses", () => {
   });
 
   it("extracts focus state", () => {
-    const classes = "ring-kumo-line focus:ring-kumo-ring";
+    const classes = "ring-kumo-line focus:ring-kumo-hairline";
     expect(extractStateClasses(classes)).toEqual({
-      focus: "focus:ring-kumo-ring",
+      focus: "focus:ring-kumo-hairline",
     });
   });
 
   it("extracts multiple states", () => {
     const classes =
-      "bg-kumo-base hover:bg-kumo-elevated focus:ring-kumo-ring disabled:opacity-50";
+      "bg-kumo-base hover:bg-kumo-elevated focus:ring-kumo-hairline disabled:opacity-50";
     expect(extractStateClasses(classes)).toEqual({
       hover: "hover:bg-kumo-elevated",
-      focus: "focus:ring-kumo-ring",
+      focus: "focus:ring-kumo-hairline",
       disabled: "disabled:opacity-50",
     });
   });
@@ -676,5 +676,312 @@ describe("jsonSchemaTypeToString", () => {
     expect(jsonSchemaTypeToString({ type: ["string", "null"] })).toBe(
       "string | null",
     );
+  });
+});
+
+// Tests for sub-component detection utilities
+
+import { writeFileSync, unlinkSync, mkdtempSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import {
+  detectSubComponents,
+  extractSubComponentProps,
+  extractPropsFromInterface,
+} from "./sub-components.js";
+
+function writeTempFile(content: string): {
+  filePath: string;
+  cleanup: () => void;
+} {
+  const dir = mkdtempSync(join(tmpdir(), "kumo-test-"));
+  const filePath = join(dir, "test.tsx");
+  writeFileSync(filePath, content);
+  return { filePath, cleanup: () => unlinkSync(filePath) };
+}
+
+const cliFlags = {
+  includeInheritedProps: false,
+  noCache: true,
+  verbose: false,
+};
+
+describe("detectSubComponents", () => {
+  it("detects sub-components from Object.assign with function declarations", () => {
+    const { filePath, cleanup } = writeTempFile(`
+function GroupComponent({ legend, children }: GroupProps) {
+  return <div>{children}</div>;
+}
+
+const Root = () => <div />;
+
+export const MyComponent = Object.assign(Root, {
+  Group: GroupComponent,
+});
+`);
+
+    try {
+      const result = detectSubComponents(filePath);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("Group");
+      expect(result[0].valueName).toBe("GroupComponent");
+      expect(result[0].propsType).toBe("GroupProps");
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("detects sub-components from Object.assign with multi-line forwardRef", () => {
+    const { filePath, cleanup } = writeTempFile(`
+import { forwardRef } from "react";
+
+export interface MyItemProps {
+  active?: boolean;
+  label: string;
+}
+
+const MyItem = forwardRef<
+  HTMLLIElement,
+  MyItemProps
+>(({ active, label, ...props }, ref) => (
+  <li ref={ref} {...props}>{label}</li>
+));
+
+const Root = forwardRef<HTMLElement, {}>(
+  (props, ref) => <nav ref={ref} {...props} />
+);
+
+export const MyComponent = Object.assign(Root, {
+  Item: MyItem,
+});
+`);
+
+    try {
+      const result = detectSubComponents(filePath);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("Item");
+      expect(result[0].valueName).toBe("MyItem");
+      expect(result[0].propsType).toBe("MyItemProps");
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("detects sub-components with single-line forwardRef generics", () => {
+    const { filePath, cleanup } = writeTempFile(`
+import { forwardRef } from "react";
+
+export interface CellProps { span?: number; }
+
+const TableCell = forwardRef<HTMLTableCellElement, CellProps>((props, ref) => (
+  <td ref={ref} {...props} />
+));
+
+const Root = forwardRef<HTMLTableElement, {}>((props, ref) => <table ref={ref} {...props} />);
+
+export const Table = Object.assign(Root, {
+  Cell: TableCell,
+});
+`);
+
+    try {
+      const result = detectSubComponents(filePath);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("Cell");
+      expect(result[0].valueName).toBe("TableCell");
+      expect(result[0].propsType).toBe("CellProps");
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("populates valueName field for direct property assignment", () => {
+    const { filePath, cleanup } = writeTempFile(`
+function Link({ href }: LinkProps) {
+  return <a href={href} />;
+}
+
+const Breadcrumbs = () => <nav />;
+Breadcrumbs.Link = Link;
+`);
+
+    try {
+      const result = detectSubComponents(filePath);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("Link");
+      expect(result[0].valueName).toBe("Link");
+    } finally {
+      cleanup();
+    }
+  });
+});
+
+describe("extractSubComponentProps", () => {
+  it("extracts props from interface via propsType (forwardRef pattern)", () => {
+    const { filePath, cleanup } = writeTempFile(`
+import { forwardRef } from "react";
+
+export interface ItemProps {
+  active?: boolean;
+  label: string;
+}
+
+const MyItem = forwardRef<HTMLLIElement, ItemProps>(
+  ({ active, label, ...props }, ref) => <li ref={ref} {...props}>{label}</li>
+);
+`);
+
+    try {
+      const props = extractSubComponentProps(
+        filePath,
+        {
+          name: "Item",
+          valueName: "MyItem",
+          propsType: "ItemProps",
+          description: "Item sub-component",
+          isPassThrough: false,
+        },
+        cliFlags,
+      );
+
+      expect(props).toHaveProperty("active");
+      expect(props.active).toEqual({ type: "boolean", optional: true });
+      expect(props).toHaveProperty("label");
+      expect(props.label).toEqual({ type: "string", required: true });
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("skips pass-through sub-components", () => {
+    const { filePath, cleanup } = writeTempFile("export const Foo = {};");
+
+    try {
+      const props = extractSubComponentProps(
+        filePath,
+        {
+          name: "Root",
+          valueName: "DialogBase.Root",
+          propsType: null,
+          description: "Root sub-component (wraps DialogBase)",
+          isPassThrough: true,
+          baseComponent: "DialogBase.Root",
+        },
+        cliFlags,
+      );
+
+      expect(props).toEqual({});
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("uses valueName for inline props lookup when name doesn't match", () => {
+    const { filePath, cleanup } = writeTempFile(`
+function TableOfContentsGroup({ label, href }: { label: string; href?: string }) {
+  return <div>{label}</div>;
+}
+`);
+
+    try {
+      const props = extractSubComponentProps(
+        filePath,
+        {
+          name: "Group",
+          valueName: "TableOfContentsGroup",
+          propsType: null,
+          description: "Group sub-component",
+          isPassThrough: false,
+        },
+        cliFlags,
+      );
+
+      expect(props).toHaveProperty("label");
+      expect(props.label).toEqual({ type: "string", required: true });
+      expect(props).toHaveProperty("href");
+      expect(props.href).toEqual({ type: "string", optional: true });
+    } finally {
+      cleanup();
+    }
+  });
+});
+
+describe("extractPropsFromInterface", () => {
+  it("extracts props from a simple interface", () => {
+    const content = `
+interface MyProps {
+  label: string;
+  active?: boolean;
+  count: number;
+}
+`;
+    const props = extractPropsFromInterface(content, "MyProps", cliFlags);
+    expect(props).toEqual({
+      label: { type: "string", required: true },
+      active: { type: "boolean", optional: true },
+      count: { type: "number", required: true },
+    });
+  });
+
+  it("extracts props from interface with extends", () => {
+    const content = `
+interface GroupProps extends BaseProps {
+  label: string;
+  href?: string;
+}
+`;
+    const props = extractPropsFromInterface(content, "GroupProps", cliFlags);
+    expect(props).toEqual({
+      label: { type: "string", required: true },
+      href: { type: "string", optional: true },
+    });
+  });
+
+  it("returns empty object when interface not found", () => {
+    const content = "interface OtherProps { foo: string; }";
+    const props = extractPropsFromInterface(content, "MyProps", cliFlags);
+    expect(props).toEqual({});
+  });
+});
+
+describe("SUB_COMPONENT_OVERRIDES", () => {
+  it("declares a Tooltip.Provider entry that passes through to TooltipBase.Provider", async () => {
+    const { SUB_COMPONENT_OVERRIDES, PASSTHROUGH_COMPONENT_DOCS } =
+      await import("./metadata.js");
+
+    expect(SUB_COMPONENT_OVERRIDES.Tooltip).toBeDefined();
+    const tooltipOverrides = SUB_COMPONENT_OVERRIDES.Tooltip;
+    expect(tooltipOverrides).toHaveLength(1);
+
+    const provider = tooltipOverrides[0];
+    expect(provider.name).toBe("Provider");
+    expect(provider.valueName).toBe("TooltipProvider");
+    expect(provider.isPassThrough).toBe(true);
+    expect(provider.baseComponent).toBe("TooltipBase.Provider");
+    expect(provider.propsType).toBeNull();
+
+    // The baseComponent must resolve to a documented passthrough entry so the
+    // merge + lookup path in index.ts produces real docs, not an empty stub.
+    expect(
+      PASSTHROUGH_COMPONENT_DOCS[provider.baseComponent as string],
+    ).toBeDefined();
+  });
+
+  it("entries have the same shape as detectSubComponents() results", async () => {
+    const { SUB_COMPONENT_OVERRIDES } = await import("./metadata.js");
+
+    for (const overrides of Object.values(SUB_COMPONENT_OVERRIDES)) {
+      for (const entry of overrides) {
+        // Required fields of SubComponentConfig.
+        expect(typeof entry.name).toBe("string");
+        expect(typeof entry.valueName).toBe("string");
+        expect(typeof entry.description).toBe("string");
+        expect(typeof entry.isPassThrough).toBe("boolean");
+        // propsType may be a string or null.
+        expect(
+          entry.propsType === null || typeof entry.propsType === "string",
+        ).toBe(true);
+      }
+    }
   });
 });

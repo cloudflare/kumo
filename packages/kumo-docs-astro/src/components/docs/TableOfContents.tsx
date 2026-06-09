@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { cn } from "@cloudflare/kumo";
-import { CaretDown } from "@phosphor-icons/react";
+import { TableOfContents as TOC } from "@cloudflare/kumo";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 export interface TocHeading {
   depth: number;
   slug: string;
   text: string;
+}
+
+interface HeadingGroup {
+  h2: TocHeading;
+  h3s: TocHeading[];
 }
 
 interface TableOfContentsProps {
@@ -19,7 +24,7 @@ interface TableOfContentsProps {
 }
 
 /**
- * Scrape h2 elements from the rendered `.kumo-prose` container.
+ * Scrape h2 and h3 elements from the rendered `.kumo-prose` container.
  * Only runs client-side for .astro pages that don't pass headings statically.
  */
 function scrapeHeadings(): TocHeading[] {
@@ -28,25 +33,50 @@ function scrapeHeadings(): TocHeading[] {
   const content = document.querySelector(".kumo-prose");
   if (!content) return [];
 
-  return Array.from(content.querySelectorAll("h2"))
+  return Array.from(content.querySelectorAll("h2, h3"))
     .filter((el) => el.id)
     .map((el) => ({
-      depth: 2,
+      depth: Number(el.tagName[1]),
       slug: el.id,
       text: el.textContent?.trim() ?? "",
     }));
+}
+
+/**
+ * Group a flat list of headings into h2 → h3[] pairs for nested TOC rendering.
+ * h3 headings that appear before any h2 are dropped.
+ */
+function groupHeadings(headings: TocHeading[]): HeadingGroup[] {
+  const groups: HeadingGroup[] = [];
+  for (const heading of headings) {
+    if (heading.depth === 2) {
+      groups.push({ h2: heading, h3s: [] });
+    } else if (heading.depth === 3 && groups.length > 0) {
+      groups[groups.length - 1].h3s.push(heading);
+    }
+  }
+  return groups;
 }
 
 export function TableOfContents({
   headings: headingsProp,
   layout = "sidebar",
 }: TableOfContentsProps) {
+  // Track whether we've hydrated to avoid SSR/client mismatch when scraping
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const headings = useMemo(() => {
     if (headingsProp && headingsProp.length > 0) {
-      return headingsProp.filter((h) => h.depth <= 2);
+      return headingsProp.filter((h) => h.depth <= 3);
     }
+    // Only scrape after mount to avoid hydration mismatch
+    if (!hasMounted) return [];
     return scrapeHeadings();
-  }, [headingsProp]);
+  }, [headingsProp, hasMounted]);
 
   const [activeId, setActiveId] = useState<string>(headings[0]?.slug ?? "");
 
@@ -132,15 +162,21 @@ export function TableOfContents({
               .getElementById(slug)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full appearance-none rounded-lg border border-kumo-line bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
+          className="w-full appearance-none rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
         >
-          {headings.map((heading) => (
-            <option key={heading.slug} value={heading.slug}>
-              {heading.text}
-            </option>
+          {groupHeadings(headings).map((group) => (
+            <optgroup key={group.h2.slug} label={group.h2.text}>
+              <option value={group.h2.slug}>{group.h2.text}</option>
+              {group.h3s.map((h3) => (
+                <option key={h3.slug} value={h3.slug}>
+                  {"  "}
+                  {h3.text}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
-        <CaretDown
+        <CaretDownIcon
           size={16}
           weight="bold"
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-kumo-subtle"
@@ -151,43 +187,44 @@ export function TableOfContents({
 
   // Sidebar layout (default)
   return (
-    <section>
-      <p className="mb-3 text-xs font-semibold tracking-wide text-kumo-subtle uppercase">
-        On this page
-      </p>
-      <nav
-        aria-label="Table of contents"
-        className="relative space-y-1.5 before:absolute before:inset-y-0 before:left-0.5 before:w-px before:bg-kumo-line"
-        ref={navRef}
-      >
-        {headings.map((heading) => {
-          const isActive = activeId === heading.slug;
+    <TOC>
+      <TOC.Title>On this page</TOC.Title>
+      <TOC.List ref={navRef}>
+        {groupHeadings(headings).map((group) => {
+          if (group.h3s.length === 0) {
+            return (
+              <TOC.Item
+                key={group.h2.slug}
+                href={`#${group.h2.slug}`}
+                active={activeId === group.h2.slug}
+                onClick={() => handleClick(group.h2.slug)}
+              >
+                {group.h2.text}
+              </TOC.Item>
+            );
+          }
           return (
-            <a
-              key={heading.slug}
-              href={`#${heading.slug}`}
-              onClick={() => handleClick(heading.slug)}
-              className={cn(
-                "group relative block truncate rounded-md py-1 pl-5 text-sm no-underline transition-all duration-500",
-                isActive
-                  ? "text-kumo-default font-medium"
-                  : "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default hover:font-medium",
-              )}
+            <TOC.Group
+              key={group.h2.slug}
+              label={group.h2.text}
+              href={`#${group.h2.slug}`}
+              active={activeId === group.h2.slug}
+              onClick={() => handleClick(group.h2.slug)}
             >
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "absolute inset-y-0 left-0.5 w-0.5 rounded-full transition-all duration-200",
-                  isActive
-                    ? "bg-kumo-brand opacity-100"
-                    : "bg-kumo-brand opacity-0 group-hover:opacity-60",
-                )}
-              />
-              <span className="block min-w-0 leading-5">{heading.text}</span>
-            </a>
+              {group.h3s.map((h3) => (
+                <TOC.Item
+                  key={h3.slug}
+                  href={`#${h3.slug}`}
+                  active={activeId === h3.slug}
+                  onClick={() => handleClick(h3.slug)}
+                >
+                  {h3.text}
+                </TOC.Item>
+              ))}
+            </TOC.Group>
           );
         })}
-      </nav>
-    </section>
+      </TOC.List>
+    </TOC>
   );
 }

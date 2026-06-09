@@ -11,7 +11,7 @@
  *
  * **Component categories:**
  * - **Action:** Button, ClipboardText
- * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Text
+ * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Surface (deprecated), Text
  * - **Feedback:** Banner, Loader, Toast
  * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
  * - **Layout:** Grid, Surface
@@ -43,7 +43,12 @@ export {
  * @deprecated Use {@link DatePicker} with `mode="range"` instead.
  */
 export { DateRangePicker } from "./components/date-range-picker";
-export { Checkbox, type CheckboxProps } from "./components/checkbox";
+export {
+  Checkbox,
+  type CheckboxProps,
+  type CheckboxLegendProps,
+  type CheckboxChangeEventDetails,
+} from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
@@ -62,7 +67,15 @@ export {
   type DialogCloseProps,
 } from "./components/dialog";
 export { DropdownMenu } from "./components/dropdown";
-export { Collapsible } from "./components/collapsible";
+export {
+  Collapsible,
+  type CollapsibleProps,
+  type CollapsibleRootProps,
+  type CollapsibleTriggerProps,
+  type CollapsiblePanelProps,
+  type CollapsibleDefaultTriggerProps,
+  type CollapsibleDefaultPanelProps,
+} from "./components/collapsible";
 export {
   Field,
   type FieldProps,
@@ -86,8 +99,15 @@ export {
   InputArea,
   Textarea,
   type InputAreaProps,
-  InputGroup,
 } from "./components/input";
+export {
+  InputGroup,
+  type InputGroupRootProps,
+  type InputGroupAddonProps,
+  type InputGroupSuffixProps,
+  type InputGroupInputProps,
+  type InputGroupButtonProps,
+} from "./components/input-group";
 export { LayerCard } from "./components/layer-card";
 export {
   DeleteResource,
@@ -100,8 +120,11 @@ export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
 export { Select } from "./components/select";
+/**
+ * @deprecated Use {@link LayerCard} instead.
+ */
 export { Surface } from "./components/surface";
-export { Switch } from "./components/switch";
+export { Switch, type SwitchLegendProps } from "./components/switch";
 export { Tabs, type TabsProps, type TabsItem } from "./components/tabs";
 export { Table } from "./components/table";
 export { Text } from "./components/text";
@@ -110,6 +133,7 @@ export {
   ToastProvider,
   Toast,
   useKumoToastManager,
+  createKumoToastManager,
 } from "./components/toast";
 export { Tooltip, TooltipProvider } from "./components/tooltip";
 export {
@@ -136,6 +160,7 @@ export {
   KUMO_RADIO_DEFAULT_VARIANTS,
   radioVariants,
   type RadioGroupProps,
+  type RadioLegendProps,
   type RadioItemProps,
   type RadioControlPosition,
   type KumoRadioVariant,
@@ -148,6 +173,7 @@ export {
   KUMO_COMMAND_PALETTE_VARIANTS,
   KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS,
   type CommandPaletteRootProps,
+  type CommandPaletteInputProps,
   type CommandPaletteItemProps,
   type CommandPaletteResultItemProps,
   type CommandPaletteFooterProps,
@@ -197,7 +223,6 @@ export {
   type CloudflareLogoSvgVariant,
   type CloudflareLogoSvgColor,
 } from "./components/cloudflare-logo";
-
 // DatePicker
 export {
   DatePicker,
@@ -210,9 +235,23 @@ export { Flow } from "./components/flow";
 export {
   Chart,
   ChartPalette,
+  SankeyChart,
   TimeseriesChart,
   ChartLegend,
+  type KumoChartOption,
+  type SankeyChartProps,
+  type SankeyNodeData,
+  type SankeyLinkData,
+  type SankeyTooltipParams,
 } from "./components/chart";
+export {
+  Autocomplete,
+  type AutocompleteProps,
+  type KumoAutocompleteSize,
+  autocompleteVariants,
+  KUMO_AUTOCOMPLETE_VARIANTS,
+  KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS,
+} from "./components/autocomplete";
 
 // Sidebar
 export {
@@ -224,17 +263,14 @@ export {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarSeparator,
-  SidebarInput,
   SidebarTrigger,
   SidebarRail,
   SidebarResizeHandle,
@@ -242,10 +278,13 @@ export {
   SidebarCollapsible,
   SidebarCollapsibleTrigger,
   SidebarCollapsibleContent,
+  SidebarSlidingViews,
+  SidebarSlidingView,
   useSidebar,
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
+  type SidebarState,
   type SidebarSide,
   type SidebarVariant,
   type SidebarCollapsible as SidebarCollapsibleType,
@@ -255,8 +294,18 @@ export {
   type SidebarMenuButtonSize,
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
-  type SidebarInputProps,
 } from "./components/sidebar";
+export {
+  TableOfContents,
+  type TableOfContentsProps,
+  type TableOfContentsTitleProps,
+  type TableOfContentsListProps,
+  type TableOfContentsItemProps,
+  type TableOfContentsGroupProps,
+  KUMO_TABLE_OF_CONTENTS_VARIANTS,
+  KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
+  type KumoTableOfContentsState,
+} from "./components/table-of-contents";
 // PLOP_INJECT_EXPORT
 
 // Utils

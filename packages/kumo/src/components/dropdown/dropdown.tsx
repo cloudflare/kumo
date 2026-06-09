@@ -1,6 +1,7 @@
 import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import * as React from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
 import {
   usePortalContainer,
@@ -48,7 +49,7 @@ export interface KumoDropdownVariantsProps {
 export function dropdownVariants({
   variant = KUMO_DROPDOWN_DEFAULT_VARIANTS.variant,
 }: KumoDropdownVariantsProps = {}) {
-  return cn(KUMO_DROPDOWN_VARIANTS.variant[variant].classes);
+  return cn(resolveVariant(KUMO_DROPDOWN_VARIANTS.variant, variant, KUMO_DROPDOWN_DEFAULT_VARIANTS.variant).classes);
 }
 
 const DropdownMenuSubTrigger = React.forwardRef<
@@ -62,10 +63,12 @@ const DropdownMenuSubTrigger = React.forwardRef<
 >(({ className, inset, children, icon: IconComponent, ...props }, ref) => (
   <DropdownMenuPrimitive.SubmenuTrigger
     ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="submenu-trigger"
     className={cn(
       "flex cursor-default items-center rounded-sm text-base outline-hidden select-none", // base styles
       "px-2 py-1.5", // spacing
-      "focus:bg-kumo-tint", // focus state
+      "focus:bg-kumo-tint focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand", // focus state
       "data-[state=open]:bg-kumo-tint", // open state
       inset && "pl-8", // conditional inset
       className,
@@ -236,8 +239,10 @@ const DropdownMenuItem = React.forwardRef<
     return (
       <DropdownMenuPrimitive.Item
         ref={ref}
+        data-kumo-component="DropdownMenu"
+        data-kumo-part="item"
         className={cn(
-          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none focus:text-kumo-default data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
           inset && "pl-8",
           dropdownVariants({ variant }),
           className,
@@ -299,9 +304,11 @@ const DropdownMenuLinkItem = React.forwardRef<
     return (
       <DropdownMenuPrimitive.LinkItem
         ref={ref}
+        data-kumo-component="DropdownMenu"
+        data-kumo-part="link-item"
         className={cn(
           "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
-          "focus:text-kumo-default data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          "focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
           "text-inherit no-underline",
           inset && "pl-8",
           dropdownVariants({ variant }),
@@ -324,8 +331,10 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 >(({ className, children, checked, ...props }, ref) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="checkbox-item"
     className={cn(
-      "relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-base outline-hidden transition-colors select-none focus:bg-kumo-tint focus:text-kumo-default data-disabled:pointer-events-none data-disabled:opacity-50",
+      "relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-base outline-hidden transition-colors select-none focus:bg-kumo-tint focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50",
       className,
     )}
     checked={checked}
@@ -364,7 +373,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-kumo-line", className)}
+    className={cn("-mx-1 my-1 h-px bg-kumo-hairline", className)}
     {...props}
   />
 ));
@@ -392,6 +401,8 @@ const DropdownMenuRadioItem = React.forwardRef<
 >(({ className, children, inset, icon: IconComponent, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="radio-item"
     className={cn(
       "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
       "data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-tint",
@@ -425,25 +436,34 @@ DropdownMenuRadioItemIndicator.displayName = "DropdownMenuRadioItemIndicator";
 /**
  * Custom Trigger that converts a single child element to the `render` prop
  * to avoid nested button issues with base-ui's Menu.Trigger.
+ *
+ * When an explicit `render` prop is provided, children are passed through
+ * to the rendered element.
  */
 const DropdownMenuTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
 >(({ children, render, ...props }, ref) => {
-  // If render prop is provided, use it directly
-  // Otherwise, convert single child element to render prop
+  // If render prop is explicitly provided, use it and pass children through
+  if (render) {
+    return (
+      <DropdownMenuPrimitive.Trigger ref={ref} {...props} render={render}>
+        {children}
+      </DropdownMenuPrimitive.Trigger>
+    );
+  }
+
+  // Otherwise, auto-promote single child element to render prop
   const childElement = React.isValidElement(children) ? children : null;
-  const effectiveRender = render ?? childElement;
 
   return (
     <DropdownMenuPrimitive.Trigger
       ref={ref}
       {...props}
-      {...(effectiveRender && {
-        render: effectiveRender as React.ReactElement<Record<string, unknown>>,
+      {...(childElement && {
+        render: childElement as React.ReactElement<Record<string, unknown>>,
       })}
     >
-      {/* Only pass children if not using as render prop */}
       {childElement ? undefined : children}
     </DropdownMenuPrimitive.Trigger>
   );

@@ -38,6 +38,7 @@ const staticPages: NavItem[] = [
 ];
 
 const componentItems: NavItem[] = [
+  { label: "Autocomplete", href: "/components/autocomplete" },
   { label: "Badge", href: "/components/badge" },
   { label: "Banner", href: "/components/banner" },
   { label: "Breadcrumbs", href: "/components/breadcrumbs" },
@@ -57,6 +58,7 @@ const componentItems: NavItem[] = [
   { label: "Grid", href: "/components/grid" },
   { label: "Input", href: "/components/input" },
   { label: "InputArea", href: "/components/input-area" },
+  { label: "InputGroup", href: "/components/input-group" },
   { label: "Label", href: "/components/label" },
   { label: "Layer Card", href: "/components/layer-card" },
   { label: "Link", href: "/components/link" },
@@ -70,9 +72,9 @@ const componentItems: NavItem[] = [
   { label: "Sensitive Input", href: "/components/sensitive-input" },
   { label: "Sidebar", href: "/components/sidebar" },
   { label: "Skeleton Line", href: "/components/skeleton-line" },
-  { label: "Surface", href: "/components/surface" },
   { label: "Switch", href: "/components/switch" },
   { label: "Table", href: "/components/table" },
+  { label: "Table of Contents", href: "/components/table-of-contents" },
   { label: "Tabs", href: "/components/tabs" },
   { label: "Text", href: "/components/text" },
   { label: "Toast", href: "/components/toast" },
@@ -81,7 +83,9 @@ const componentItems: NavItem[] = [
 
 const chartItems: NavItem[] = [
   { label: "Charts", href: "/charts" },
+  { label: "Colors", href: "/charts/colors" },
   { label: "Timeseries", href: "/charts/timeseries" },
+  { label: "Sankey", href: "/charts/sankey" },
   { label: "Custom Chart", href: "/charts/custom" },
 ];
 
@@ -100,7 +104,7 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
-  "block rounded-lg text-kumo-strong hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10";
+  "block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
 const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
 
 interface SidebarNavProps {
@@ -124,6 +128,9 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
   const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
+  const preventPointerFocus = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+  };
 
   // Keyboard shortcut: Cmd+K / Ctrl+K + custom event from headers
   useEffect(() => {
@@ -192,7 +199,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     <>
       <button
         onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-ring"
+        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
       >
         <MagnifyingGlassIcon size={16} className="shrink-0" />
         <span>Search...</span>
@@ -203,6 +210,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <li key={item.href}>
             <a
               href={item.href}
+              onMouseDown={preventPointerFocus}
               className={cn(
                 LI_STYLE,
                 isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
@@ -214,13 +222,13 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         ))}
       </ul>
 
-      <div className="my-4 border-b border-kumo-line" />
+      <div className="my-4 border-b border-kumo-hairline" />
 
       <div className="mb-4">
         {/* Components Section */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
           onClick={() => setComponentsOpen(!componentsOpen)}
         >
           <span>Components</span>
@@ -234,7 +242,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </button>
         <ul
           className={cn(
-            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
             componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
           )}
         >
@@ -242,6 +250,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
                   "pl-4",
@@ -259,7 +268,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div className="mb-4">
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
           onClick={() => setChartsOpen(!chartsOpen)}
         >
           <span>Charts</span>
@@ -273,7 +282,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </button>
         <ul
           className={cn(
-            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
             chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
           )}
         >
@@ -281,6 +290,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
                   "pl-4",
@@ -298,7 +308,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         {/* Blocks Section */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
           onClick={() => setBlocksOpen(!blocksOpen)}
         >
           <span>Blocks</span>
@@ -312,7 +322,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </button>
         <ul
           className={cn(
-            "flex flex-col gap-px overflow-hidden transition-all duration-300 ease-in-out mt-1",
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
             blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
           )}
         >
@@ -320,6 +330,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
                   "pl-4",
@@ -341,7 +352,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-canvas px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:hidden",
         )}
       >
         <Button
@@ -359,12 +370,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-canvas md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas md:hidden",
           "transition-transform duration-300 will-change-transform",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3">
+        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-hairline px-3">
           <h1 className="text-base font-medium">Kumo</h1>
           <Button
             variant="ghost"
@@ -378,7 +389,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         <div
           ref={mobileScrollRef}
           data-sidebar-scroll="mobile"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
           style={{ scrollBehavior: "auto" }}
         >
           {navContent}
@@ -389,10 +400,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block",
-          "border-r border-kumo-line",
+          "border-r border-kumo-hairline",
         )}
       >
-        <div className="relative h-12 border-b border-kumo-line">
+        <div className="relative h-12 border-b border-kumo-hairline">
           <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
@@ -419,16 +430,16 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
           "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
-            ? "translate-x-0 border-r border-kumo-line"
+            ? "translate-x-0 border-r border-kumo-hairline"
             : "-translate-x-full",
         )}
       >
-        <div className="h-12 flex-none border-b border-kumo-line" />
+        <div className="h-12 flex-none border-b border-kumo-hairline" />
 
         <div
           ref={desktopScrollRef}
           data-sidebar-scroll="desktop"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-strong"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
         >
           {navContent}
         </div>

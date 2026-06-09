@@ -141,7 +141,10 @@ export function generateKumoThemeCSS(
   lines.push("}");
   lines.push("");
 
-  // Color tokens (bg, border, ring, etc.)
+  // Color tokens (bg, border, ring, fill, stroke, etc.)
+  // Tailwind v4 resolves every color-aware utility family against this
+  // single `--color-*` palette — including SVG `fill-*` and `stroke-*` —
+  // so one declaration here covers backgrounds, borders, and icon glyphs.
   lines.push("@theme {");
 
   for (const [tokenName, def] of Object.entries(config.color)) {

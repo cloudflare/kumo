@@ -1,9 +1,25 @@
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { useState } from "react";
 import { Select } from "./select";
 
 describe("Select", () => {
+  describe("size", () => {
+    it("applies size classes to the trigger", () => {
+      const { container } = render(
+        <Select aria-label="Pick one" size="xs">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = container.querySelector('[role="combobox"]');
+      expect(trigger).toBeTruthy();
+      expect(trigger?.className).toContain("h-5");
+      expect(trigger?.className).toContain("px-1.5");
+      expect(trigger?.className).toContain("text-xs");
+    });
+  });
+
   describe("label visibility (new behavior)", () => {
     it("shows visible label by default when label prop is provided", () => {
       render(
@@ -288,6 +304,400 @@ describe("Select", () => {
       );
 
       expect(screen.getByText("Choose a database")).toBeTruthy();
+    });
+  });
+
+  describe("disabled options", () => {
+    it("renders a disabled option that cannot be selected", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a">Option A</Select.Option>
+          <Select.Option value="b" disabled>
+            Option B
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      const disabledOption = options.find((o) =>
+        o.textContent?.includes("Option B"),
+      );
+      expect(disabledOption).toBeTruthy();
+      expect(disabledOption?.getAttribute("aria-disabled")).toBe("true");
+    });
+
+    it("applies disabled styling classes", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a" disabled>
+            Disabled
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const option = screen.getByRole("option");
+      expect(option.className).toContain("data-[disabled]");
+    });
+
+    it("does not fire onValueChange when clicking a disabled option", async () => {
+      const handleChange = vi.fn();
+      render(
+        <Select aria-label="Pick one" onValueChange={handleChange}>
+          <Select.Option value="a">Option A</Select.Option>
+          <Select.Option value="b" disabled>
+            Option B
+          </Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      const disabledOption = options.find((o) =>
+        o.textContent?.includes("Option B"),
+      );
+
+      await act(async () => {
+        fireEvent.click(disabledOption!);
+      });
+
+      expect(handleChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("disabled items via items prop", () => {
+    it("renders disabled options from object-map items with descriptor", async () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          items={{
+            apple: "Apple",
+            banana: {
+              label: "Banana",
+              disabled: true,
+            },
+          }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      expect(options).toHaveLength(2);
+
+      const bananaOption = options.find((o) =>
+        o.textContent?.includes("Banana"),
+      );
+      expect(bananaOption?.getAttribute("aria-disabled")).toBe("true");
+    });
+
+    it("renders enabled options from object-map items with descriptor", async () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          items={{
+            apple: "Apple",
+            banana: { label: "Banana", disabled: false },
+          }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      const bananaOption = options.find((o) =>
+        o.textContent?.includes("Banana"),
+      );
+      expect(bananaOption?.getAttribute("aria-disabled")).not.toBe("true");
+    });
+
+    it("mixes plain ReactNode and descriptor values in items prop", async () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          items={{
+            apple: "Apple",
+            banana: {
+              label: "Banana",
+              disabled: true,
+            },
+            cherry: "Cherry",
+          }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const options = screen.getAllByRole("option");
+      expect(options).toHaveLength(3);
+    });
+  });
+
+  describe("groups and separators", () => {
+    it("renders Select.Group with Select.GroupLabel", async () => {
+      render(
+        <Select aria-label="Pick a fruit">
+          <Select.Group>
+            <Select.GroupLabel>Fruits</Select.GroupLabel>
+            <Select.Option value="apple">Apple</Select.Option>
+            <Select.Option value="banana">Banana</Select.Option>
+          </Select.Group>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const group = screen.getByRole("group");
+      expect(group).toBeTruthy();
+      expect(screen.getByText("Fruits")).toBeTruthy();
+    });
+
+    it("renders Select.Separator as a visual divider", async () => {
+      render(
+        <Select aria-label="Pick one">
+          <Select.Option value="a">Option A</Select.Option>
+          <Select.Separator />
+          <Select.Option value="b">Option B</Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      // Separator is inside the portaled popup — query from document
+      const separator = document.querySelector('[role="separator"]');
+      expect(separator).toBeTruthy();
+      expect(separator?.className).toContain("bg-kumo-hairline");
+    });
+
+    it("renders multiple groups with separators", async () => {
+      render(
+        <Select aria-label="Pick a food">
+          <Select.Group>
+            <Select.GroupLabel>Fruits</Select.GroupLabel>
+            <Select.Option value="apple">Apple</Select.Option>
+          </Select.Group>
+          <Select.Separator />
+          <Select.Group>
+            <Select.GroupLabel>Vegetables</Select.GroupLabel>
+            <Select.Option value="carrot">Carrot</Select.Option>
+          </Select.Group>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const groups = screen.getAllByRole("group");
+      expect(groups).toHaveLength(2);
+
+      expect(screen.getByText("Fruits")).toBeTruthy();
+      expect(screen.getByText("Vegetables")).toBeTruthy();
+
+      // Separator is inside the portaled popup — query from document
+      const separator = document.querySelector('[role="separator"]');
+      expect(separator).toBeTruthy();
+    });
+  });
+
+  describe("error styling", () => {
+    it("applies error border when error prop is truthy", () => {
+      render(
+        <Select aria-label="Pick one" error="Please select a value">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.className).toContain("ring-kumo-danger");
+    });
+  });
+
+  describe("popup structure", () => {
+    it("opens a listbox popup from the trigger", async () => {
+      render(
+        <Select aria-label="Select a country">
+          <Select.Option value="af">Afghanistan</Select.Option>
+          <Select.Option value="al">Albania</Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      expect(screen.getByRole("listbox")).toBeTruthy();
+    });
+
+    it("uses a presentation popup and inner listbox after the refactor", async () => {
+      render(
+        <Select aria-label="Select a country">
+          <Select.Option value="af">Afghanistan</Select.Option>
+          <Select.Option value="al">Albania</Select.Option>
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const listbox = screen.getByRole("listbox");
+      expect(listbox).toBeTruthy();
+      expect(listbox.className).toContain("overflow-y-auto");
+
+      const popup = listbox.parentElement;
+      expect(popup?.getAttribute("role")).toBe("presentation");
+      expect(popup?.className).toContain("max-h-[var(--available-height)]");
+      expect(popup?.className).not.toContain("overscroll");
+    });
+
+    it("applies height and overscroll-none to the inner scroll container", async () => {
+      // DOM structure assertion only: real touch scroll behavior still needs manual/device validation.
+      render(
+        <Select aria-label="Select many countries">
+          {Array.from({ length: 30 }, (_, index) => (
+            <Select.Option key={index} value={`value-${index}`}>
+              {`Option ${index}`}
+            </Select.Option>
+          ))}
+        </Select>,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+
+      const listbox = screen.getByRole("listbox");
+      expect(listbox.className).toContain("overflow-y-auto");
+      expect(listbox.className).toContain("overscroll-none");
+    });
+  });
+
+  describe("renderValue with placeholder", () => {
+    it("shows placeholder when value is empty string", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value=""
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+      expect(screen.queryByText("Selected:")).toBeNull();
+    });
+
+    it("shows placeholder when value is null", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value={null}
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+    });
+
+    it("shows placeholder when value is undefined", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value={undefined}
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+    });
+
+    it("falls back to placeholder when renderValue returns undefined", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value="a"
+          renderValue={() => undefined}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Choose...")).toBeTruthy();
+    });
+
+    it("renders the ReactNode returned by renderValue", () => {
+      render(
+        <Select
+          aria-label="Pick one"
+          placeholder="Choose..."
+          value="a"
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("Selected: a")).toBeTruthy();
+      expect(screen.queryByText("Choose...")).toBeNull();
+    });
+
+    it("renders nothing without crashing when value is empty string and no placeholder", () => {
+      const { container } = render(
+        <Select
+          aria-label="Pick one"
+          value=""
+          renderValue={(v) => `Selected: ${v}`}
+          items={[
+            { value: "a", label: "Option A" },
+            { value: "b", label: "Option B" },
+          ]}
+        />,
+      );
+
+      const trigger = container.querySelector('[role="combobox"]');
+      expect(trigger).toBeTruthy();
+      // Should not render the renderValue output for empty string
+      expect(screen.queryByText("Selected:")).toBeNull();
     });
   });
 });

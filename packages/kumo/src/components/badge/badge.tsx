@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Base styles applied to all badge variants. */
 export const KUMO_BADGE_BASE_STYLES =
@@ -8,37 +9,66 @@ export const KUMO_BADGE_BASE_STYLES =
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
   variant: {
+    /** Semantic token badges */
+    primary: {
+      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
+      description: "Primary badge",
+    },
+    secondary: {
+      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
+      description: "Secondary badge",
+    },
+    error: {
+      classes: "bg-kumo-danger-tint/60 text-kumo-danger",
+      description: "Error badge",
+    },
+    warning: {
+      classes: "bg-kumo-warning-tint/70 text-kumo-warning",
+      description: "Warning badge",
+    },
+    success: {
+      classes: "bg-kumo-success-tint/70 text-kumo-success",
+      description: "Success badge",
+    },
+    destructive: {
+      classes: "bg-kumo-badge-red text-white",
+      description: "Deprecated. Use red instead.",
+    },
+    info: {
+      classes: "bg-kumo-info-tint/70 text-kumo-info",
+      description: "Info badge",
+    },
+    beta: {
+      classes:
+        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
+      description: "Indicates beta or experimental features",
+    },
+    outline: {
+      classes: "border border-kumo-fill bg-transparent text-kumo-default",
+      description: "Bordered badge with transparent background",
+    },
+
+    /** Other color token variants */
+
     red: {
       classes: "bg-kumo-badge-red text-white",
       description: "Red badge",
-    },
-    "red-subtle": {
-      classes: "bg-kumo-badge-red-subtle text-kumo-badge-red-subtle",
-      description: "Subtle red badge",
-    },
-    orange: {
-      classes: "bg-kumo-badge-orange text-white",
-      description: "Orange badge",
-    },
-    "orange-subtle": {
-      classes: "bg-kumo-badge-orange-subtle text-kumo-badge-orange-subtle",
-      description: "Subtle orange badge",
-    },
-    yellow: {
-      classes: "bg-kumo-badge-yellow text-white",
-      description: "Yellow badge",
-    },
-    "yellow-subtle": {
-      classes: "bg-kumo-badge-yellow-subtle text-kumo-badge-yellow-subtle",
-      description: "Subtle yellow badge",
     },
     green: {
       classes: "bg-kumo-badge-green text-white",
       description: "Green badge",
     },
-    "green-subtle": {
-      classes: "bg-kumo-badge-green-subtle text-kumo-badge-green-subtle",
-      description: "Subtle green badge",
+    neutral: {
+      classes: "bg-kumo-badge-neutral text-white",
+      description: "Neutral badge",
+    },
+    orange: {
+      classes: "bg-kumo-badge-orange text-black",
+      description: "Orange badge",
+    },
+    purple: {
+      classes: "bg-kumo-badge-purple text-white",
+      description: "Purple badge",
     },
     teal: {
       classes: "bg-kumo-badge-teal text-white",
@@ -52,75 +82,79 @@ export const KUMO_BADGE_VARIANTS = {
       classes: "bg-kumo-badge-blue text-white",
       description: "Blue badge",
     },
-    "blue-subtle": {
-      classes: "bg-kumo-badge-blue-subtle text-kumo-badge-blue-subtle",
-      description: "Subtle blue badge",
+  },
+  appearance: {
+    filled: {
+      classes: "",
+      description: "Filled badge with background color (default)",
+    },
+    dot: {
+      classes:
+        "gap-1.5 bg-transparent text-kumo-default ring ring-kumo-hairline",
+      description: "Outlined badge with a colored circle dot indicating status",
+    },
+  },
+  dotColor: {
+    none: {
+      classes: "",
+      description: "No dot indicator (used when appearance is not dot, or variant has no dot color)",
+    },
+    success: {
+      classes: "bg-kumo-success",
+      description: "Green dot for success status",
+    },
+    warning: {
+      classes: "bg-kumo-badge-orange",
+      description: "Orange dot for warning status",
+    },
+    error: {
+      classes: "bg-kumo-badge-red",
+      description: "Red dot for error status",
     },
     neutral: {
-      classes: "bg-kumo-badge-neutral text-white",
-      description: "Neutral badge",
-    },
-    "neutral-subtle": {
-      classes: "bg-kumo-fill text-kumo-badge-neutral-subtle",
-      description: "Subtle neutral badge",
-    },
-    inverted: {
-      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
-      description: "Inverted badge",
-    },
-    outline: {
-      classes: "border border-kumo-fill bg-transparent text-kumo-default",
-      description: "Bordered badge with transparent background",
-    },
-    beta: {
-      classes:
-        "border border-dashed border-kumo-brand bg-transparent text-kumo-link",
-      description: "Indicates beta or experimental features",
-    },
-    /** @deprecated Use `"inverted"` instead. */
-    primary: {
-      classes: "bg-kumo-badge-inverted text-kumo-badge-inverted",
-      description: "Deprecated. Use inverted instead.",
-    },
-    /** @deprecated Use `"neutral"` instead. */
-    secondary: {
-      classes: "bg-kumo-badge-neutral text-white",
-      description: "Deprecated. Use neutral instead.",
-    },
-    /** @deprecated Use `"red"` instead. */
-    destructive: {
-      classes: "bg-kumo-badge-red text-white",
-      description: "Deprecated. Use red instead.",
-    },
-    /** @deprecated Use `"green"` instead. */
-    success: {
-      classes: "bg-kumo-badge-green text-white",
-      description: "Deprecated. Use green instead.",
+      classes: "bg-kumo-badge-neutral",
+      description: "Neutral dot for informational status",
     },
   },
 } as const;
 
 export const KUMO_BADGE_DEFAULT_VARIANTS = {
-  variant: "neutral",
+  variant: "primary",
+  appearance: "filled",
+  dotColor: "none",
 } as const;
 
 // Derived types from KUMO_BADGE_VARIANTS
 export type KumoBadgeVariant = keyof typeof KUMO_BADGE_VARIANTS.variant;
+export type KumoBadgeAppearance = keyof typeof KUMO_BADGE_VARIANTS.appearance;
+export type KumoBadgeDotColor = keyof typeof KUMO_BADGE_VARIANTS.dotColor;
 
 export interface KumoBadgeVariantsProps {
   variant?: KumoBadgeVariant;
+  appearance?: KumoBadgeAppearance;
 }
 
 export function badgeVariants({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
+  appearance = KUMO_BADGE_DEFAULT_VARIANTS.appearance,
 }: KumoBadgeVariantsProps = {}) {
-  const variantConfig = KUMO_BADGE_VARIANTS.variant[variant];
+  const variantClasses = resolveVariant(
+    KUMO_BADGE_VARIANTS.variant,
+    variant,
+    KUMO_BADGE_DEFAULT_VARIANTS.variant,
+  ).classes;
+  const appearanceClasses = resolveVariant(
+    KUMO_BADGE_VARIANTS.appearance,
+    appearance,
+    KUMO_BADGE_DEFAULT_VARIANTS.appearance,
+  ).classes;
   return cn(
     // Base styles (exported as KUMO_BADGE_BASE_STYLES for Figma plugin)
     KUMO_BADGE_BASE_STYLES,
-    // Apply variant styles from KUMO_BADGE_VARIANTS (fallback to primary if variant not found)
-    variantConfig?.classes ??
-      KUMO_BADGE_VARIANTS.variant[KUMO_BADGE_DEFAULT_VARIANTS.variant].classes,
+    // The dot appearance overrides background/text colors from the variant,
+    // so only apply variant classes when we're not in dot mode.
+    appearance === "dot" ? "" : variantClasses,
+    appearanceClasses,
   );
 }
 
@@ -135,28 +169,38 @@ export type BadgeVariant = KumoBadgeVariant;
  * <Badge variant="green">Active</Badge>
  * <Badge variant="red">Error</Badge>
  * <Badge variant="neutral">Inactive</Badge>
+ * <Badge variant="success" appearance="dot">Healthy</Badge>
  * ```
  */
 export interface BadgeProps {
   /**
    * Color variant of the badge.
-   * - `"red"` / `"red-subtle"` — Red badge
-   * - `"orange"` / `"orange-subtle"` — Orange badge
-   * - `"yellow"` / `"yellow-subtle"` — Yellow badge
-   * - `"green"` / `"green-subtle"` — Green badge (emerald scale)
-   * - `"teal"` / `"teal-subtle"` — Teal badge
-   * - `"blue"` / `"blue-subtle"` — Blue badge
-   * - `"neutral"` / `"neutral-subtle"` — Neutral badge
-   * - `"inverted"` — Inverted badge (near-black, white in dark mode)
+   * Recommended semantic variants:
+   * - `"primary"` — Primary badge
+   * - `"secondary"` — Secondary badge
+   * - `"error"` — Error badge
+   * - `"warning"` — Warning badge
+   * - `"success"` — Success badge
+   * - `"info"` — Info badge
+   *
+   * Additional token variants:
+   * - `"red"`, `"orange"`, `"green"`, `"teal"`, `"blue"`, `"purple"`, `"neutral"`
+   * - `"teal-subtle"`, `"neutral-subtle"`
+   * - `"inverted"`
    * - `"outline"` — Bordered badge with transparent background
    * - `"beta"` — Dashed-border badge for beta/experimental features
-   * - `"primary"` — **Deprecated.** Use `"inverted"` instead.
-   * - `"secondary"` — **Deprecated.** Use `"neutral"` instead.
-   * - `"destructive"` — **Deprecated.** Use `"red"` instead.
-   * - `"success"` — **Deprecated.** Use `"green"` instead.
-   * @default "neutral"
+   * @default "primary"
    */
   variant?: KumoBadgeVariant;
+  /**
+   * Visual appearance of the badge.
+   * - `"filled"` — Filled background using the variant color (default)
+   * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
+   *   `warning`, `error`, and `neutral` variants show a dot; other variants
+   *   render the badge without a dot.
+   * @default "filled"
+   */
+  appearance?: KumoBadgeAppearance;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Content rendered inside the badge. */
@@ -169,15 +213,34 @@ export interface BadgeProps {
  * @example
  * ```tsx
  * <Badge variant="green">Active</Badge>
+ * <Badge variant="success" appearance="dot">Healthy</Badge>
  * ```
  */
 export function Badge({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
+  appearance = KUMO_BADGE_DEFAULT_VARIANTS.appearance,
   className,
   children,
 }: BadgeProps) {
+  // Crash-safe dot-color lookup via resolveVariant — unknown variants fall
+  // back to "none" (no dot) instead of throwing.
+  const dotColor =
+    appearance === "dot"
+      ? resolveVariant(
+          KUMO_BADGE_VARIANTS.dotColor,
+          variant,
+          KUMO_BADGE_DEFAULT_VARIANTS.dotColor,
+        ).classes
+      : "";
+
   return (
-    <span className={cn(badgeVariants({ variant }), className)}>
+    <span className={cn(badgeVariants({ variant, appearance }), className)}>
+      {dotColor ? (
+        <span
+          aria-hidden="true"
+          className={cn("size-1.75 rounded-full shrink-0", dotColor)}
+        />
+      ) : null}
       {children}
     </span>
   );

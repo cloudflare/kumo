@@ -8,6 +8,7 @@ import {
   useContext,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Field } from "../field/field";
 import { Fieldset } from "@base-ui/react/fieldset";
 
@@ -70,12 +71,8 @@ export function switchVariants({
   size = KUMO_SWITCH_DEFAULT_VARIANTS.size,
   variant = KUMO_SWITCH_DEFAULT_VARIANTS.variant,
 }: KumoSwitchVariantsProps = {}) {
-  // Fallback to defaults if invalid size/variant passed
-  const sizeConfig =
-    KUMO_SWITCH_VARIANTS.size[size] ?? KUMO_SWITCH_VARIANTS.size.base;
-  const variantConfig =
-    KUMO_SWITCH_VARIANTS.variant[variant] ??
-    KUMO_SWITCH_VARIANTS.variant.default;
+  const sizeConfig = resolveVariant(KUMO_SWITCH_VARIANTS.size, size, KUMO_SWITCH_DEFAULT_VARIANTS.size);
+  const variantConfig = resolveVariant(KUMO_SWITCH_VARIANTS.variant, variant, KUMO_SWITCH_DEFAULT_VARIANTS.variant);
   return cn(sizeConfig.classes, variantConfig.classes);
 }
 
@@ -149,10 +146,34 @@ export type SwitchProps = Omit<
  * </Switch.Group>
  * ```
  */
+/**
+ * Props for Switch.Legend — a composable sub-component for labeling a Switch.Group.
+ *
+ * Place as a direct child of `<Switch.Group>` to provide a styled, accessible legend.
+ * Accepts `className` for full styling control (e.g. `className="sr-only"` to visually hide).
+ *
+ * @example
+ * ```tsx
+ * <Switch.Group>
+ *   <Switch.Legend className="sr-only">Notification settings</Switch.Legend>
+ *   <Switch.Item label="Email" value="email" />
+ * </Switch.Group>
+ * ```
+ */
+export interface SwitchLegendProps {
+  /** Legend content */
+  children: ReactNode;
+  /** Additional CSS classes (e.g. "sr-only" to visually hide the legend) */
+  className?: string;
+}
+
 export interface SwitchGroupProps {
-  /** Legend text for the group */
-  legend: string;
-  /** Child Switch.Item components */
+  /**
+   * Legend text for the group.
+   * For more control over legend styling, omit this prop and use `<Switch.Legend>` as a child instead.
+   */
+  legend?: string;
+  /** Child Switch.Item components (and optionally a Switch.Legend) */
   children: ReactNode;
   /** Error message for the group (only appears in groups, not single switches) */
   error?: string;
@@ -198,6 +219,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
       controlFirst = true,
       onCheckedChange,
       transitioning,
+      id,
       ...props
     },
     ref,
@@ -207,6 +229,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
     const switchControl = (
       <BaseSwitch.Root
         ref={ref}
+        id={id}
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
@@ -245,7 +268,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
           const trackColors = isNeutral
             ? state.checked
               ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-              : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+              : "bg-neutral-150 dark:bg-kumo-base ring-kumo-hairline"
             : state.checked
               ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
               : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
@@ -261,7 +284,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "transition-colors duration-150 ease-out motion-reduce:transition-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
             s.track,
@@ -292,6 +315,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
               {...restRootProps}
               {...props}
               ref={rootRef}
+              data-kumo-component="Switch"
               type="button"
               role={role}
               {...checkedA11yProps}
@@ -346,6 +370,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
     return (
       <label
+        data-kumo-component="Switch"
+        data-kumo-part="item-label"
         className={cn(
           "m-0 relative inline-flex items-center gap-2",
           // Control first (default): switch before label
@@ -395,7 +421,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
             const trackColors = isNeutral
               ? state.checked
                 ? "bg-neutral-500 dark:bg-kumo-base ring-neutral-600 dark:ring-neutral-700"
-                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-line"
+                : "bg-neutral-150 dark:bg-kumo-base ring-kumo-hairline"
               : state.checked
                 ? "bg-blue-500 dark:bg-blue-600 ring-blue-600 dark:ring-blue-500"
                 : "bg-neutral-200 dark:bg-neutral-700 ring-neutral-300 dark:ring-neutral-600";
@@ -411,7 +437,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+              "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               "transition-colors duration-150 ease-out motion-reduce:transition-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
               s.track,
@@ -439,6 +465,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               <button
                 {...restRootProps}
                 ref={rootRef}
+                data-kumo-component="Switch"
+                data-kumo-part="item"
                 type="button"
                 role={role}
                 {...checkedA11yProps}
@@ -458,6 +486,19 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
 SwitchItem.displayName = "Switch.Item";
 
+// Switch.Legend — composable legend sub-component for Switch.Group
+function SwitchLegend({ children, className }: SwitchLegendProps) {
+  return (
+    <Fieldset.Legend
+      className={cn("text-base font-medium text-kumo-default", className)}
+    >
+      {children}
+    </Fieldset.Legend>
+  );
+}
+
+SwitchLegend.displayName = "Switch.Legend";
+
 // Switch.Group with built-in Fieldset
 function SwitchGroup({
   legend,
@@ -471,15 +512,14 @@ function SwitchGroup({
   return (
     <SwitchGroupContext.Provider value={{ controlFirst }}>
       <Fieldset.Root
-        className={cn(
-          "flex flex-col gap-4 rounded-lg border border-kumo-line p-4",
-          className,
-        )}
+        className={cn("flex flex-col gap-4", className)}
         disabled={disabled}
       >
-        <Fieldset.Legend className="text-lg font-medium text-kumo-default">
-          {legend}
-        </Fieldset.Legend>
+        {legend && (
+          <Fieldset.Legend className="text-base font-medium text-kumo-default">
+            {legend}
+          </Fieldset.Legend>
+        )}
         <div className="flex flex-col gap-2">{children}</div>
         {error && <p className="text-sm text-kumo-danger">{error}</p>}
         {description && (
@@ -494,6 +534,7 @@ function SwitchGroup({
 export const Switch = Object.assign(SwitchBase, {
   Item: SwitchItem,
   Group: SwitchGroup,
+  Legend: SwitchLegend,
 });
 
 Switch.displayName = "Switch";

@@ -82,7 +82,7 @@ export function CloudflareLogoCopyDemo() {
         <DropdownMenu.Content>
           <DropdownMenu.Item
             icon={CloudIcon}
-            onSelect={() =>
+            onClick={() =>
               copyToClipboard(
                 generateCloudflareLogoSvg({ variant: "glyph" }),
                 "glyph",
@@ -93,7 +93,7 @@ export function CloudflareLogoCopyDemo() {
           </DropdownMenu.Item>
           <DropdownMenu.Item
             icon={CodeIcon}
-            onSelect={() =>
+            onClick={() =>
               copyToClipboard(
                 generateCloudflareLogoSvg({ variant: "full" }),
                 "full",
@@ -104,7 +104,7 @@ export function CloudflareLogoCopyDemo() {
           </DropdownMenu.Item>
           <DropdownMenu.Item
             icon={DownloadSimpleIcon}
-            onSelect={() =>
+            onClick={() =>
               window.open(
                 "https://www.cloudflare.com/press-kit/",
                 "_blank",
@@ -117,7 +117,7 @@ export function CloudflareLogoCopyDemo() {
           <DropdownMenu.Separator />
           <DropdownMenu.Item
             icon={ArrowSquareOutIcon}
-            onSelect={() =>
+            onClick={() =>
               window.open(
                 "https://www.cloudflare.com/brand-assets/",
                 "_blank",
@@ -159,7 +159,7 @@ export function PoweredByCloudflareVariantsDemo() {
 
 export function PoweredByCloudflareFooterDemo() {
   return (
-    <footer className="flex w-full items-center justify-between rounded-lg border border-kumo-line bg-kumo-elevated px-6 py-4">
+    <footer className="flex w-full items-center justify-between rounded-lg border border-kumo-hairline bg-kumo-elevated px-6 py-4">
       <span className="text-sm text-kumo-subtle">
         &copy; 2026 Your Company. All rights reserved.
       </span>

@@ -86,6 +86,44 @@ export function DialogWithActionsDemo() {
   );
 }
 
+/**
+ * Dialog with a consumer-provided max width and wide intrinsic content.
+ * The panel should stay capped at max-w-lg on desktop.
+ */
+export function DialogMaxWidthDemo() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={(p) => <Button {...p}>Open capped dialog</Button>} />
+      <Dialog className="max-w-lg p-8">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <Dialog.Title className="text-2xl font-semibold">
+            Max width override
+          </Dialog.Title>
+          <Dialog.Close
+            aria-label="Close"
+            render={(props) => (
+              <Button
+                {...props}
+                variant="secondary"
+                shape="square"
+                icon={<X />}
+                aria-label="Close"
+              />
+            )}
+          />
+        </div>
+        <Dialog.Description className="text-kumo-subtle">
+          This dialog uses <code>className="max-w-lg"</code> and should stay
+          capped around 512px on desktop.
+        </Dialog.Description>
+        <div className="mt-4 truncate rounded-md border border-kumo-line bg-kumo-recessed p-3 font-mono text-sm">
+          abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+        </div>
+      </Dialog>
+    </Dialog.Root>
+  );
+}
+
 export function DialogConfirmationDemo() {
   return (
     <Dialog.Root disablePointerDismissal>
@@ -212,8 +250,9 @@ export function DialogWithSelectDemo() {
         </Dialog.Description>
         <Select
           className="w-full"
+          placeholder="Select region..."
           renderValue={(v) =>
-            regions.find((r) => r.value === v)?.label ?? "Select region..."
+            regions.find((r) => r.value === v)?.label
           }
         >
           {regions.map((region) => (

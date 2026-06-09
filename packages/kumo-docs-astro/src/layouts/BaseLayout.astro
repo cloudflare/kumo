@@ -16,14 +16,20 @@ declare const __DOCS_VERSION__: string;
 declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
-const kumoVersion = typeof __KUMO_VERSION__ !== "undefined" ? __KUMO_VERSION__ : "dev";
-const docsVersion = typeof __DOCS_VERSION__ !== "undefined" ? __DOCS_VERSION__ : "dev";
-const buildCommit = typeof __BUILD_COMMIT__ !== "undefined" ? __BUILD_COMMIT__ : "local";
-const buildDate = typeof __BUILD_DATE__ !== "undefined" ? __BUILD_DATE__ : new Date().toISOString();
+const kumoVersion =
+  typeof __KUMO_VERSION__ !== "undefined" ? __KUMO_VERSION__ : "dev";
+const docsVersion =
+  typeof __DOCS_VERSION__ !== "undefined" ? __DOCS_VERSION__ : "dev";
+const buildCommit =
+  typeof __BUILD_COMMIT__ !== "undefined" ? __BUILD_COMMIT__ : "local";
+const buildDate =
+  typeof __BUILD_DATE__ !== "undefined"
+    ? __BUILD_DATE__
+    : new Date().toISOString();
 ---
 
 <!doctype html>
-<html class="bg-kumo-canvas" lang="en">
+<html class="bg-kumo-canvas text-kumo-default" lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,6 +39,7 @@ const buildDate = typeof __BUILD_DATE__ !== "undefined" ? __BUILD_DATE__ : new D
     <meta name="build-date" content={buildDate} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,7 +51,7 @@ const buildDate = typeof __BUILD_DATE__ !== "undefined" ? __BUILD_DATE__ : new D
     <script is:inline>
       // Initialize theme from localStorage or system preference
       // This runs immediately (blocking) to prevent flash of unstyled content
-      (function() {
+      (function () {
         const stored = localStorage.getItem("theme");
         if (stored) {
           document.documentElement.setAttribute("data-mode", stored);
@@ -56,5 +63,87 @@ const buildDate = typeof __BUILD_DATE__ !== "undefined" ? __BUILD_DATE__ : new D
   </head>
   <body>
     <slot />
+    <script>
+      function initCopyButtons() {
+        document.querySelectorAll("pre.astro-code").forEach((pre) => {
+          // Skip <pre> elements already inside a .code-block parent
+          if (pre.parentElement?.classList.contains("code-block")) return;
+
+          // Wrap in .code-block relative
+          const wrapper = document.createElement("div");
+          wrapper.className = "code-block relative";
+
+          if (!pre.parentNode) return;
+
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+
+          // Create button with innerHTML for simplicity
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "code-block-copy-btn";
+          button.setAttribute("aria-label", "Copy code to clipboard");
+          button.innerHTML = `
+            <span class="code-block-copy-btn__icons">
+              <span class="code-block-copy-btn__icon code-block-copy-btn__icon--check" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
+                </svg>
+              </span>
+              <span class="code-block-copy-btn__icon code-block-copy-btn__icon--copy" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path>
+                </svg>
+              </span>
+            </span>
+          `;
+
+          // Append button to the wrapper, as a sibling of <pre>
+          wrapper.appendChild(button);
+        });
+
+        // Click handler via event delegation
+        const timers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
+        document.addEventListener("click", async (e) => {
+          const btn = (e.target as Element).closest(".code-block-copy-btn");
+
+          if (!btn) return;
+
+          const pre = btn.closest(".code-block")?.querySelector("pre");
+
+          if (!pre) return;
+
+          const code = pre.textContent || "";
+
+          const existingTimer = timers.get(btn);
+
+          if (existingTimer) clearTimeout(existingTimer);
+
+          // Set animation immediately (optimistic)
+          btn.setAttribute("data-copied", "");
+          btn.setAttribute("aria-label", "Copied!");
+
+          try {
+            await navigator.clipboard.writeText(code);
+          } catch {
+            // Roll back on failure
+            btn.removeAttribute("data-copied");
+            btn.setAttribute("aria-label", "Copy code to clipboard");
+            return;
+          }
+
+          timers.set(
+            btn,
+            setTimeout(() => {
+              btn.removeAttribute("data-copied");
+              btn.setAttribute("aria-label", "Copy code to clipboard");
+              timers.delete(btn);
+            }, 1500),
+          );
+        });
+      }
+
+      initCopyButtons();
+    </script>
   </body>
 </html>

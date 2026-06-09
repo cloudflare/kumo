@@ -11,8 +11,7 @@ const proseStyles = cn(
   "[&>:first-child]:mt-0 [&>:last-child]:mb-0",
   "[&_h1]:text-xl [&_h2]:text-lg [&_h3]:text-base",
   "[&_:is(h1,h2,h3)]:font-semibold [&_:is(h1,h2,h3)]:text-kumo-default",
-  "[&_p]:text-kumo-default",
-  "[&_pre]:overflow-x-auto",
+  "[&_pre]:overflow-x-auto [&_pre]:text-base",
 );
 
 interface ChangelogEntryProps {
@@ -27,7 +26,7 @@ export function ChangelogEntry({ hash, text }: ChangelogEntryProps) {
         href={`${GITHUB_COMMIT_URL}${hash}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 text-xs text-kumo-subtle hover:text-kumo-strong transition-colors"
+        className="shrink-0 text-xs text-kumo-subtle hover:text-kumo-default transition-colors"
       >
         <Text as="span" variant="mono-secondary">
           {hash}

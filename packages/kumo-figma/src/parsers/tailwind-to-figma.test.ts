@@ -350,12 +350,12 @@ describe("parseTailwindClasses", () => {
     });
 
     it("should parse focus state classes", () => {
-      const result = parseTailwindClasses("focus:ring-kumo-ring");
+      const result = parseTailwindClasses("focus:ring-kumo-hairline");
       expect(result.states).toBeDefined();
-      // Note: ring-kumo-ring is parsed as strokeVariable and hasBorder
+      // Note: ring-kumo-hairline is parsed as strokeVariable and hasBorder
       expect(result.states?.focus).toEqual({
         hasBorder: true,
-        strokeVariable: "color-kumo-ring",
+        strokeVariable: "color-kumo-hairline",
       });
     });
 
@@ -368,7 +368,7 @@ describe("parseTailwindClasses", () => {
 
     it("should parse both base classes and state variants", () => {
       const result = parseTailwindClasses(
-        "bg-kumo-brand hover:bg-kumo-control text-white focus:ring-kumo-ring",
+        "bg-kumo-brand hover:bg-kumo-control text-white focus:ring-kumo-hairline",
       );
       expect(result).toEqual({
         fillVariable: "color-kumo-brand",
@@ -380,7 +380,7 @@ describe("parseTailwindClasses", () => {
           },
           focus: {
             hasBorder: true,
-            strokeVariable: "color-kumo-ring",
+            strokeVariable: "color-kumo-hairline",
           },
         },
       });
@@ -575,9 +575,9 @@ describe("parseTailwindClasses", () => {
     });
 
     it("should parse ring color opacity modifiers", () => {
-      expect(parseTailwindClasses("ring-kumo-ring/50")).toEqual({
+      expect(parseTailwindClasses("ring-kumo-hairline/50")).toEqual({
         hasBorder: true,
-        strokeVariable: "color-kumo-ring/50",
+        strokeVariable: "color-kumo-hairline/50",
         strokeOpacity: 0.5,
       });
       expect(parseTailwindClasses("ring-kumo-danger/70")).toEqual({

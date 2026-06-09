@@ -137,6 +137,32 @@ export function PaginationCompoundCustomInfoDemo() {
   );
 }
 
+/** Pagination with a dropdown page selector instead of a text input. */
+export function PaginationDropdownSelectorDemo() {
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(25);
+
+  return (
+    <Pagination
+      page={page}
+      setPage={setPage}
+      perPage={perPage}
+      totalCount={500}
+    >
+      <Pagination.Info />
+      <Pagination.Separator />
+      <Pagination.PageSize
+        value={perPage}
+        onChange={(size) => {
+          setPerPage(size);
+          setPage(1);
+        }}
+      />
+      <Pagination.Controls pageSelector="dropdown" />
+    </Pagination>
+  );
+}
+
 /** Pagination with page size selector on the right side. */
 export function PaginationPageSizeRightDemo() {
   const [page, setPage] = useState(1);
@@ -161,6 +187,39 @@ export function PaginationPageSizeRightDemo() {
           }}
         />
       </div>
+    </Pagination>
+  );
+}
+
+/** Pagination with French labels for internationalization. */
+export function PaginationI18nDemo() {
+  const [page, setPage] = useState(1);
+
+  return (
+    <Pagination
+      page={page}
+      setPage={setPage}
+      perPage={10}
+      totalCount={100}
+      labels={{
+        firstPage: "Première page",
+        previousPage: "Page précédente",
+        nextPage: "Page suivante",
+        lastPage: "Dernière page",
+        pageNumber: "Numéro de page",
+        pageSize: "Taille de page",
+      }}
+    >
+      <Pagination.Info>
+        {({ pageShowingRange, totalCount }) => (
+          <>
+            Affichage de{" "}
+            <span className="tabular-nums">{pageShowingRange}</span> sur{" "}
+            <span className="tabular-nums">{totalCount}</span>
+          </>
+        )}
+      </Pagination.Info>
+      <Pagination.Controls />
     </Pagination>
   );
 }

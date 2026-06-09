@@ -7,7 +7,6 @@ sourceFile: "components/loader"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   LoaderBasicDemo,
@@ -25,14 +24,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { Loader } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { Loader } from "@cloudflare/kumo/components/loader";
@@ -43,7 +44,8 @@ import { Loader } from "@cloudflare/kumo/components/loader";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { Loader } from "@cloudflare/kumo";
@@ -58,14 +60,17 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Default Size</Heading>
+## Examples
+
+### Default Size
+
 <ComponentExample demo="LoaderBasicDemo">
   <LoaderBasicDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Custom Size</Heading>
+### Custom Size
+
 <ComponentExample demo="LoaderCustomSizeDemo">
   <LoaderCustomSizeDemo client:visible />
 </ComponentExample>
@@ -75,6 +80,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="Loader" />
 </ComponentSection>

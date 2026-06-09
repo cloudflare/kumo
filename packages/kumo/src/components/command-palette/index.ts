@@ -6,6 +6,7 @@ export {
 export type {
   HighlightRange,
   CommandPaletteRootProps,
+  CommandPaletteInputProps,
   CommandPaletteItemProps,
   CommandPaletteFooterProps,
   CommandPaletteListProps,

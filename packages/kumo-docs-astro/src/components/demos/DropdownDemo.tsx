@@ -9,6 +9,9 @@ import {
   GearIcon,
   BookOpenIcon,
   ArrowSquareOutIcon,
+  CopyIcon,
+  PencilSimpleIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 
 export function DropdownBasicDemo() {
@@ -134,6 +137,98 @@ export function DropdownNestedDemo() {
           </DropdownMenu.SubContent>
         </DropdownMenu.Sub>
 
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item icon={SignOutIcon} variant="danger">
+          Log out
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Use `inset` on items without an icon to align their text with items that have one.
+ */
+export function DropdownInsetDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Edit</Button>} />
+      <DropdownMenu.Content>
+        <DropdownMenu.Item icon={PencilSimpleIcon}>Rename</DropdownMenu.Item>
+        <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item inset>Move to folder</DropdownMenu.Item>
+        <DropdownMenu.Item inset>Add to favorites</DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item icon={TrashIcon} variant="danger">
+          Delete
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Use `onClick` on `DropdownMenu.Item` to handle item actions.
+ * Each item receives a standard React mouse event handler.
+ */
+export function DropdownOnClickDemo() {
+  const [lastAction, setLastAction] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <DropdownMenu>
+        <DropdownMenu.Trigger render={<Button>Actions</Button>} />
+        <DropdownMenu.Content>
+          <DropdownMenu.Item
+            icon={CopyIcon}
+            onClick={() => setLastAction("Duplicated")}
+          >
+            Duplicate
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            icon={PencilSimpleIcon}
+            onClick={() => setLastAction("Renamed")}
+          >
+            Rename
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            icon={TrashIcon}
+            variant="danger"
+            onClick={() => setLastAction("Deleted")}
+          >
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
+      {lastAction && (
+        <p className="text-sm text-kumo-subtle">
+          Last action: <span className="text-kumo-default">{lastAction}</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Demonstrates using the render prop with children to compose a custom trigger
+ * that contains other elements. The render prop provides the trigger element,
+ * while children are rendered inside it.
+ */
+export function DropdownAvatarTriggerDemo() {
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger
+        render={<button type="button" className="rounded-full" />}
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-kumo-brand text-sm font-medium text-white">
+          MR
+        </span>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Item icon={UserIcon}>Profile</DropdownMenu.Item>
+        <DropdownMenu.Item icon={GearIcon}>Settings</DropdownMenu.Item>
         <DropdownMenu.Separator />
         <DropdownMenu.Item icon={SignOutIcon} variant="danger">
           Log out

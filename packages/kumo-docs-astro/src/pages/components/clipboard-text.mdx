@@ -7,7 +7,6 @@ sourceFile: "components/clipboard-text"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import Heading from "~/components/docs/Heading.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   ClipboardTextBasicDemo,
@@ -29,14 +28,16 @@ import {
 {/* Installation */}
 
 <ComponentSection>
-  <Heading level={2}>Installation</Heading>
-  <Heading level={3}>Barrel</Heading>
+
+## Installation
+
+### Barrel
 
 ```tsx
 import { ClipboardText } from "@cloudflare/kumo";
 ```
 
-<Heading level={3}>Granular</Heading>
+### Granular
 
 ```tsx
 import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";
@@ -47,7 +48,8 @@ import { ClipboardText } from "@cloudflare/kumo/components/clipboard-text";
 {/* Usage */}
 
 <ComponentSection>
-  <Heading level={2}>Usage</Heading>
+
+## Usage
 
 ```tsx
 import { ClipboardText } from "@cloudflare/kumo";
@@ -62,29 +64,35 @@ export default function Example() {
 {/* Examples */}
 
 <ComponentSection>
-  <Heading level={2}>Examples</Heading>
 
-<Heading level={3}>Short Text</Heading>
+## Examples
+
+### Short Text
+
 <ComponentExample demo="ClipboardTextShortDemo">
   <ClipboardTextShortDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>API Key</Heading>
+### API Key
+
 <ComponentExample demo="ClipboardTextApiKeyDemo">
   <ClipboardTextApiKeyDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Copy Alternate Text</Heading>
+### Copy Alternate Text
+
 <ComponentExample demo="ClipboardTextAlternateTextToCopyDemo">
   <ClipboardTextAlternateTextToCopyDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>Long Text</Heading>
+### Long Text
+
 <ComponentExample demo="ClipboardTextLongDemo">
   <ClipboardTextLongDemo client:visible />
 </ComponentExample>
 
-<Heading level={3}>With Tooltip</Heading>
+### With Tooltip
+
 <p>Shows "Copy" tooltip on hover, "Copied!" toast on click.</p>
 <ComponentExample demo="ClipboardTextWithTooltipDemo">
   <ClipboardTextWithTooltipDemo client:visible />
@@ -95,6 +103,8 @@ export default function Example() {
 {/* API Reference */}
 
 <ComponentSection>
-  <Heading level={2}>API Reference</Heading>
+
+## API Reference
+
   <PropsTable component="ClipboardText" />
 </ComponentSection>
