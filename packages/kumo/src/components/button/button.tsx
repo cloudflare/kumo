@@ -54,7 +54,7 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     secondary: {
       classes:
-        "bg-kumo-base !text-kumo-default ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-default ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description: "Default button style for most actions",
     },
     ghost: {
