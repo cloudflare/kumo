@@ -67,13 +67,13 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:!text-kumo-danger not-disabled:hover:ring-kumo-danger/30 disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:!text-kumo-danger not-disabled:hover:ring-kumo-danger/30 disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
       classes:
-        "bg-transparent text-kumo-default ring ring-kumo-hairline transition-colors not-disabled:hover:text-kumo-strong not-disabled:hover:ring-kumo-focus/25",
+        "bg-transparent text-kumo-default ring ring-kumo-line transition-colors not-disabled:hover:text-kumo-strong not-disabled:hover:ring-kumo-focus/25",
       description: "Bordered button with transparent background",
     },
   },
