@@ -1,5 +1,13 @@
 # @cloudflare/kumo
 
+## 2.5.2
+
+### Patch Changes
+
+- 9a13576: fix(button): use ring-kumo-line for default secondary button ring
+- b18837c: Refine outline and secondary destructive button hover states.
+- 595d10e: fix(sidebar): correct GroupLabel top margin from mt-6 to mt-4
+
 ## 2.5.1
 
 ### Patch Changes
