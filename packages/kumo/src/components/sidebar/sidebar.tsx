@@ -792,7 +792,7 @@ const SidebarContent = forwardRef<
       className={cn(
         "h-full px-[11px] py-3 group-not-data-[state=collapsed]/sidebar:px-3.5",
         "transition-[padding] duration-(--sidebar-animation-duration)",
-        "group-data-[state=collapsed]/sidebar:overflow-x-hidden!",
+        "overflow-x-hidden!",
         // Scroll fade via CSS mask driven by Base UI overflow CSS variables
         "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
