@@ -242,6 +242,40 @@ export function RadioCardControlStartDemo() {
   );
 }
 
+enum ThemeType {
+  dark = "dark",
+  light = "light",
+  system = "system",
+}
+
+/** Shows Radio.Group with typed values: a numeric union and a TypeScript enum. */
+export function RadioTypedValueDemo() {
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [theme, setTheme] = useState<ThemeType>(ThemeType.system);
+  return (
+    <div className="grid grid-cols-2 gap-6">
+      <Radio.Group<number>
+        legend="Items per page"
+        value={pageSize}
+        onValueChange={setPageSize}
+      >
+        <Radio.Item<number> label="10" value={10} />
+        <Radio.Item<number> label="25" value={25} />
+        <Radio.Item<number> label="50" value={50} />
+      </Radio.Group>
+      <Radio.Group<ThemeType>
+        legend="Theme"
+        value={theme}
+        onValueChange={setTheme}
+      >
+        <Radio.Item<ThemeType> label="Light" value={ThemeType.light} />
+        <Radio.Item<ThemeType> label="Dark" value={ThemeType.dark} />
+        <Radio.Item<ThemeType> label="System" value={ThemeType.system} />
+      </Radio.Group>
+    </div>
+  );
+}
+
 /** Shows Radio.Item labels with rich ReactNode content (icons, badges, or additional markup) */
 export function RadioRichLabelDemo() {
   const [value, setValue] = useState("pro");
