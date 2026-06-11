@@ -574,7 +574,7 @@ export function LegendHighlightDemo() {
       },
       {
         name: "P50",
-        color: ChartPalette.semantic("NeutralLight", isDarkMode),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
         value: "10",
         unit: "ms",
       },
