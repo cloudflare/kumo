@@ -9,16 +9,18 @@ import {
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { Fieldset } from "@base-ui/react/fieldset";
-import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
+import {
+  RadioGroup as BaseRadioGroup,
+  type RadioGroup as BaseRadioGroupNamespace,
+} from "@base-ui/react/radio-group";
 import { Radio as BaseRadio } from "@base-ui/react/radio";
 
 /**
  * Event details passed as the second argument to `onValueChange`. Carries the
  * native event and interaction metadata. Re-exported from Base UI.
  */
-export type RadioGroupChangeEventDetails = Parameters<
-  NonNullable<BaseRadioGroup.Props<unknown>["onValueChange"]>
->[1];
+export type RadioGroupChangeEventDetails =
+  BaseRadioGroupNamespace.ChangeEventDetails;
 
 /** Radio variant definitions mapping variant names to their Tailwind classes. */
 export const KUMO_RADIO_VARIANTS = {
