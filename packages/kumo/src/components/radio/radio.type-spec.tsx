@@ -1,9 +1,23 @@
+/**
+ * Type-level specification for the Radio component.
+ *
+ * This file is NOT a vitest test file (no `.test.tsx` suffix) — it lives in
+ * the regular tsconfig `include` glob so `tsc --noEmit` (i.e.
+ * `pnpm typecheck`) evaluates every `@ts-expect-error` directive. If one of
+ * the "should be a compile error" cases below stops being an error, tsc
+ * will fail with "Unused '@ts-expect-error' directive" and CI goes red.
+ */
+
 import {
   Radio,
   type RadioGroupChangeEventDetails,
   type RadioGroupProps,
   type RadioItemProps,
 } from "./radio";
+
+// ---------------------------------------------------------------------------
+// Positive cases — these MUST compile cleanly.
+// ---------------------------------------------------------------------------
 
 enum ThemeType {
   light = "light",
@@ -62,6 +76,12 @@ const numericItemProps: RadioItemProps<number> = {
   value: 50,
 };
 
+// ---------------------------------------------------------------------------
+// Negative cases — these MUST NOT compile. The `@ts-expect-error` directive
+// asserts that tsc produces an error on the following line; if it doesn't,
+// tsc itself fails the typecheck with "Unused '@ts-expect-error' directive".
+// ---------------------------------------------------------------------------
+
 // @ts-expect-error - default radio values are strings when no generic is provided.
 const defaultStringValue: RadioGroupProps = { children: stringGroup, value: 1 };
 
@@ -77,9 +97,15 @@ const mismatchedItemValue: RadioItemProps<number> = {
   value: "25",
 };
 
-void enumGroup;
-void numericGroupProps;
-void numericItemProps;
-void defaultStringValue;
-void mismatchedGroupValue;
-void mismatchedItemValue;
+// Silence unused-variable warnings for all the sentinels above.
+// This file is never executed; it exists purely for type checking.
+export const __typeSpec = {
+  numericGroup,
+  enumGroup,
+  stringGroup,
+  numericGroupProps,
+  numericItemProps,
+  defaultStringValue,
+  mismatchedGroupValue,
+  mismatchedItemValue,
+};
