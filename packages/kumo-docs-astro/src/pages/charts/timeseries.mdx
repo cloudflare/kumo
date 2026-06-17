@@ -14,6 +14,7 @@ import {
   GradientLineChartDemo,
   IncompleteDataChartDemo,
   LegendHighlightDemo,
+  LegendOnClickDemo,
   LoadingChartDemo,
   TimeRangeSelectionChartDemo,
   TooltipFollowCursorDemo,
@@ -155,6 +156,21 @@ import {
 
   <ComponentExample demo="LegendHighlightDemo">
     <LegendHighlightDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Legend Click
+
+<p>
+  Clicking a <code>ChartLegend</code> item isolates that series, showing only
+  it and hiding the rest. Clicking the already-isolated series restores them
+  all.
+</p>
+
+  <ComponentExample demo="LegendOnClickDemo">
+    <LegendOnClickDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

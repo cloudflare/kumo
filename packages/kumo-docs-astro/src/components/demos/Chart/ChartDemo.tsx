@@ -9,13 +9,14 @@ import {
 import * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIsDarkMode } from "~/lib/use-is-dark-mode";
 import {
   AriaComponent,
   AxisPointerComponent,
   BrushComponent,
   GridComponent,
+  LegendComponent,
   ToolboxComponent,
   TooltipComponent,
 } from "echarts/components";
@@ -29,6 +30,7 @@ echarts.use([
   AxisPointerComponent,
   BrushComponent,
   GridComponent,
+  LegendComponent,
   ToolboxComponent,
   TooltipComponent,
   AriaComponent,
@@ -596,7 +598,7 @@ export function LegendHighlightDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line gap-4 px-2 mb-2">
+        <div className="flex divide-x divide-kumo-line px-2 mb-2">
           {series.map((s) => (
             <ChartLegend.LargeItem
               key={s.name}
@@ -619,6 +621,7 @@ export function LegendHighlightDemo() {
                   seriesName: s.name,
                 });
               }}
+              className="not-first:pl-4"
             />
           ))}
         </div>
@@ -629,6 +632,120 @@ export function LegendHighlightDemo() {
           isDarkMode={isDarkMode}
           data={data}
           height={300}
+        />
+      </LayerCard.Primary>
+    </LayerCard>
+  );
+}
+
+/**
+ * Timeseries chart where the legend isolates a series on click. Clicking a
+ * `ChartLegend` item shows only that series and hides the rest; clicking the
+ * already-isolated series restores all. Visibility is driven through a hidden
+ * ECharts legend via the `legendSelect` / `legendUnSelect` actions.
+ */
+export function LegendOnClickDemo() {
+  const isDarkMode = useIsDarkMode();
+  const chartRef = useRef<echarts.ECharts>(null);
+  const [hiddenSeries, setHiddenSeries] = useState<Record<string, boolean>>({});
+
+  const series = useMemo(
+    () => [
+      {
+        name: "P99",
+        color: ChartPalette.semantic("Attention", isDarkMode),
+        value: "124",
+        unit: "ms",
+      },
+      {
+        name: "P95",
+        color: ChartPalette.semantic("Warning", isDarkMode),
+        value: "76",
+        unit: "ms",
+      },
+      {
+        name: "P75",
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+        value: "32",
+        unit: "ms",
+      },
+      {
+        name: "P50",
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+        value: "10",
+        unit: "ms",
+      },
+    ],
+    [isDarkMode],
+  );
+
+  const data = useMemo(
+    () =>
+      series.map((s, i) => ({
+        name: s.name,
+        data: buildSeriesData(3 - i, 30, 60_000, 1 - i * 0.2),
+        color: s.color,
+      })),
+    [series],
+  );
+
+  // A theme switch re-inits the ECharts instance, resetting legend selection to
+  // all-visible. Reset our state to match so the legend doesn't desync.
+  useEffect(() => {
+    setHiddenSeries({});
+  }, [isDarkMode]);
+
+  // Click isolates a series: show only the clicked one and hide the rest via the
+  // (hidden) ECharts legend. Clicking the already-isolated series restores all.
+  const handleClick = (name: string) => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    setHiddenSeries((prev) => {
+      // Already isolated to this series? (only it visible, everything else hidden)
+      const isIsolated = series.every((s) =>
+        s.name === name ? !prev[s.name] : prev[s.name],
+      );
+
+      const nextHidden: Record<string, boolean> = {};
+      for (const s of series) {
+        const shouldHide = isIsolated ? false : s.name !== name;
+        nextHidden[s.name] = shouldHide;
+        chart.dispatchAction({
+          type: shouldHide ? "legendUnSelect" : "legendSelect",
+          name: s.name,
+        });
+      }
+      return nextHidden;
+    });
+  };
+
+  return (
+    <LayerCard>
+      <LayerCard.Secondary>Read latency</LayerCard.Secondary>
+      <LayerCard.Primary>
+        <div className="flex divide-x divide-kumo-line px-2 mb-2">
+          {series.map((s) => (
+            <ChartLegend.LargeItem
+              key={s.name}
+              name={s.name}
+              color={s.color}
+              value={s.value}
+              unit={s.unit}
+              inactive={hiddenSeries[s.name] ?? false}
+              onClick={() => handleClick(s.name)}
+              className="not-first:pl-4"
+            />
+          ))}
+        </div>
+        <TimeseriesChart
+          ref={chartRef}
+          xAxisName="Time (UTC)"
+          echarts={echarts}
+          isDarkMode={isDarkMode}
+          data={data}
+          height={300}
+          enableLegendSelection
         />
       </LayerCard.Primary>
     </LayerCard>
@@ -715,7 +832,9 @@ const FOLLOW_CURSOR_OPTIONS: FollowCursorOption[] = [
  */
 export function TooltipFollowCursorDemo() {
   const isDarkMode = useIsDarkMode();
-  const [selected, setSelected] = useState<FollowCursorOption>(FOLLOW_CURSOR_OPTIONS[0]);
+  const [selected, setSelected] = useState<FollowCursorOption>(
+    FOLLOW_CURSOR_OPTIONS[0],
+  );
 
   const data = useMemo(
     () => [
@@ -738,7 +857,9 @@ export function TooltipFollowCursorDemo() {
       <Select
         label="Tooltip follow cursor"
         value={selected}
-        onValueChange={(v) => { if (v) setSelected(v); }}
+        onValueChange={(v) => {
+          if (v) setSelected(v);
+        }}
         renderValue={(v) => v.label}
       >
         {FOLLOW_CURSOR_OPTIONS.map((opt) => (
@@ -767,7 +888,10 @@ export function TooltipFollowCursorDemo() {
 export function TooltipBoundaryDemo() {
   const isDarkMode = useIsDarkMode();
   const [boundary, setBoundary] = useState<HTMLDivElement | null>(null);
-  const boundaryRef = useCallback((el: HTMLDivElement | null) => setBoundary(el), []);
+  const boundaryRef = useCallback(
+    (el: HTMLDivElement | null) => setBoundary(el),
+    [],
+  );
 
   const data = useMemo(
     () => [

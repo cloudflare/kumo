@@ -498,6 +498,18 @@ export const THEME_CONFIG: ThemeConfig = {
       },
     },
 
+    // Green
+    "kumo-badge-green": {
+      newName: "",
+      description: "Green badge background",
+      theme: {
+        kumo: {
+          light: "var(--color-emerald-600, oklch(59.6% 0.145 163.225))",
+          dark: "var(--color-emerald-700, oklch(50.8% 0.118 165.612))",
+        },
+      },
+    },
+
     // Orange
     "kumo-badge-orange": {
       newName: "",

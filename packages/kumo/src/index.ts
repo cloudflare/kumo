@@ -160,6 +160,7 @@ export {
   KUMO_RADIO_DEFAULT_VARIANTS,
   radioVariants,
   type RadioGroupProps,
+  type RadioGroupChangeEventDetails,
   type RadioLegendProps,
   type RadioItemProps,
   type RadioControlPosition,
