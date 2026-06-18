@@ -1,0 +1,136 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "ControlGroup"
+description: "Compose adjacent form controls into one clean grouped card."
+sourceFile: "components/control-group"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  ControlGroupDemo,
+  ControlGroupSizesDemo,
+  ControlGroupMixedControlsDemo,
+  ControlGroupInputGroupDemo,
+  ControlGroupActionsDemo,
+  ControlGroupLabelsDemo,
+} from "~/components/demos/ControlGroupDemo";
+
+<ComponentSection>
+  <ComponentExample demo="ControlGroupDemo">
+    <ControlGroupDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock code={`import { ControlGroup } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+<CodeBlock
+  code={`import { ControlGroup } from "@cloudflare/kumo/components/control-group";`}
+  lang="tsx"
+/>
+</ComponentSection>
+
+<ComponentSection>
+
+## Usage
+
+Use `ControlGroup` when multiple standalone controls should read as one compact
+toolbar or filter card. Supported child controls automatically inherit the group
+size and adjust borders, radii, labels, and descriptions for the grouped layout.
+
+```tsx
+import { Button, ControlGroup, Input } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <ControlGroup size="sm">
+      <Input type="text" placeholder="Search..." aria-label="Search" />
+      <Button>Edit</Button>
+      <Button>Add</Button>
+    </ControlGroup>
+  );
+}
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Behavior
+
+`ControlGroup` intentionally owns grouped control presentation:
+
+- Child `size` props are ignored and replaced by the group `size`.
+- `Button` and `LinkButton` children render as ghost buttons.
+- Labels on controls like `Input`, `Select`, and `Combobox` stay accessible but are visually hidden.
+- Descriptions on grouped controls are ignored to keep the row compact.
+- Adjacent controls share borders and only the outer corners are rounded.
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Examples
+
+### Mixed Controls
+
+Use different control types together for filter bars and table actions.
+
+<ComponentExample demo="ControlGroupMixedControlsDemo">
+  <ControlGroupMixedControlsDemo client:visible />
+</ComponentExample>
+
+### Input Group
+
+Use `InputGroup` inside `ControlGroup` when one grouped item needs its own
+inline addon or suffix.
+
+<ComponentExample demo="ControlGroupInputGroupDemo">
+  <ControlGroupInputGroupDemo client:visible />
+</ComponentExample>
+
+### Sizes
+
+The `size` prop supports `xs`, `sm`, `base`, and `lg`. Every supported child
+control is locked to the same size.
+
+<ComponentExample demo="ControlGroupSizesDemo">
+  <ControlGroupSizesDemo client:visible />
+</ComponentExample>
+
+### Button Actions
+
+Button variants are ignored inside a ControlGroup, so grouped actions remain
+visually quiet and consistent.
+
+<ComponentExample demo="ControlGroupActionsDemo">
+  <ControlGroupActionsDemo client:visible />
+</ComponentExample>
+
+### Accessible Labels
+
+Controls can still receive `label` props for accessibility. The group hides
+those labels visually and ignores descriptions.
+
+<ComponentExample demo="ControlGroupLabelsDemo">
+  <ControlGroupLabelsDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+<ComponentSection>
+
+## API Reference
+
+<PropsTable component="ControlGroup" hiddenProps={["id", "lang", "title"]} />
+</ComponentSection>

@@ -7,6 +7,10 @@ import {
 } from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
 import { Field, normalizeFieldError, type FieldErrorMatch } from "../field/field";
+import {
+  controlGroupItemClassName,
+  useControlGroupContext,
+} from "../control-group";
 
 /** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {
@@ -143,9 +147,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     labelTooltip,
     description,
     error,
+    hideLabel = false,
     passwordManagerIgnore = false,
     ...inputProps
   } = props;
+  const controlGroup = useControlGroupContext();
+  const controlGroupSize = controlGroup?.size;
+  const resolvedSize = controlGroupSize ?? size;
+  const resolvedDescription = controlGroup ? undefined : description;
+  const shouldHideLabel = hideLabel || Boolean(controlGroup);
+  const classNameString = typeof className === "string" ? className : undefined;
 
   // Deprecation warning for variant="error"
   if (process.env.NODE_ENV !== "production" && variantProp === "error") {
@@ -183,10 +194,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     <BaseInput
       ref={ref}
       className={cn(
-        inputVariants({ size, variant, focusIndicator: true }),
+        inputVariants({ size: resolvedSize, variant, focusIndicator: true }),
         passwordManagerIgnore && "keeper-ignore",
-        className,
+        controlGroup ? controlGroupItemClassName(classNameString) : className,
       )}
+      aria-label={
+        controlGroup && label && typeof label === "string"
+          ? (inputProps["aria-label"] ?? label)
+          : inputProps["aria-label"]
+      }
       {...(passwordManagerIgnore
         ? {
             "data-1p-ignore": "true",
@@ -200,14 +216,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   );
 
   // Render with Field wrapper if label, error, or description is provided
-  if (label || error || description) {
+  if (controlGroup) {
+    return input;
+  }
+
+  if (label || error || resolvedDescription) {
     return (
       <Field
         label={label}
         required={required}
-        labelTooltip={labelTooltip}
-        description={description}
+        labelTooltip={shouldHideLabel ? undefined : labelTooltip}
+        description={resolvedDescription}
         error={normalizeFieldError(error)}
+        labelClassName={shouldHideLabel ? "sr-only" : undefined}
       >
         {input}
       </Field>
@@ -259,6 +280,8 @@ export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
     labelTooltip?: ReactNode;
     /** Helper text displayed below the input */
     description?: ReactNode;
+    /** Visually hide the label while keeping it available to screen readers. */
+    hideLabel?: boolean;
     /** Error message or validation error object */
     error?: string | { message: ReactNode; match: FieldErrorMatch };
     /** Suppress browser extension password manager overlays on non-credential inputs. */

@@ -19,6 +19,10 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
+import {
+  controlGroupItemClassName,
+  useControlGroupContext,
+} from "../control-group";
 
 /** Combobox variant definitions. */
 export const KUMO_COMBOBOX_VARIANTS = {
@@ -44,7 +48,9 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
 const ComboboxContext = createContext<{
   size: KumoInputSize;
   hasError: boolean;
-}>({ size: "base", hasError: false });
+  isControlGroup: boolean;
+  hiddenLabel?: ReactNode;
+}>({ size: "base", hasError: false, isControlGroup: false });
 
 // Derived types from KUMO_COMBOBOX_VARIANTS
 export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
@@ -147,6 +153,8 @@ export interface ComboboxProps extends KumoComboboxVariantsProps {
   description?: ReactNode;
   /** Error message or validation error object */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
+  /** Visually hide the label while keeping it available to screen readers. */
+  hideLabel?: boolean;
 }
 
 function Root<Value, Multiple extends boolean | undefined = false>({
@@ -157,6 +165,8 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   error,
   children,
   size = "base",
+  hideLabel = false,
+  className,
   ...props
 }: ComboboxBase.Root.Props<Value, Multiple> & {
   label?: ReactNode;
@@ -165,12 +175,33 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   description?: ReactNode;
   error?: string | { message: ReactNode; match: FieldErrorMatch };
   size?: KumoComboboxSize;
+  hideLabel?: boolean;
+  className?: string;
 }) {
+  const controlGroup = useControlGroupContext();
+  const resolvedSize = controlGroup?.size ?? size;
+  const shouldHideLabel = hideLabel || Boolean(controlGroup);
+  const classNameString = typeof className === "string" ? className : undefined;
   const comboboxControl = (
-    <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
+    <ComboboxContext.Provider
+      value={{
+        size: resolvedSize,
+        hasError: Boolean(error),
+        isControlGroup: Boolean(controlGroup),
+        hiddenLabel: controlGroup ? label : undefined,
+      }}
+    >
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
     </ComboboxContext.Provider>
   );
+
+  if (controlGroup) {
+    return (
+      <div className={controlGroupItemClassName(classNameString)}>
+        {comboboxControl}
+      </div>
+    );
+  }
 
   // Render with Field wrapper if label, description, or error are provided
   if (label) {
@@ -178,8 +209,8 @@ function Root<Value, Multiple extends boolean | undefined = false>({
       <Field
         label={label}
         required={required}
-        labelTooltip={labelTooltip}
-        description={description}
+        labelTooltip={shouldHideLabel ? undefined : labelTooltip}
+        description={controlGroup ? undefined : description}
         error={
           error
             ? typeof error === "string"
@@ -187,6 +218,7 @@ function Root<Value, Multiple extends boolean | undefined = false>({
               : error
             : undefined
         }
+        labelClassName={shouldHideLabel ? "sr-only" : undefined}
       >
         {comboboxControl}
       </Field>
@@ -261,7 +293,8 @@ function TriggerValue({
   className,
   ...props
 }: ComboboxBase.Value.Props & { className?: string }) {
-  const { size, hasError } = useContext(ComboboxContext);
+  const { size, hasError, isControlGroup, hiddenLabel } =
+    useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
   return (
@@ -274,9 +307,16 @@ function TriggerValue({
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
+        isControlGroup &&
+          "rounded-[inherit] bg-transparent shadow-none ring-0 focus:z-2 focus-visible:z-2",
         className,
       )}
     >
+      {hiddenLabel && (
+        <span className="sr-only">
+          {hiddenLabel}
+        </span>
+      )}
       <ComboboxBase.Value {...props} />
       <ComboboxBase.Icon
         className={cn(
@@ -335,17 +375,19 @@ function TriggerInput({
    */
   showOptionsLabel?: string;
 }) {
-  const { size, hasError } = useContext(ComboboxContext);
+  const { size, hasError, isControlGroup, hiddenLabel } =
+    useContext(ComboboxContext);
   const iconStyles = triggerInputIconStyles[size];
-
   return (
     <div
       className={cn(
         "relative inline-block w-full max-w-xs",
         "has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed",
+        isControlGroup && "max-w-none rounded-[inherit] focus-within:z-2",
         props.className,
       )}
     >
+      {hiddenLabel && <span className="sr-only">{hiddenLabel}</span>}
       <ComboboxBase.Input
         {...props}
         className={cn(
@@ -353,6 +395,8 @@ function TriggerInput({
           "w-full",
           iconStyles.padding,
           "disabled:cursor-not-allowed",
+          isControlGroup &&
+            "relative rounded-[inherit] bg-transparent shadow-none ring-0 focus:z-2 focus-visible:z-2",
         )}
       />
 
@@ -534,7 +578,8 @@ function TriggerMultipleWithInput<ValueType>({
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
 }) {
-  const { size, hasError } = useContext(ComboboxContext);
+  const { size, hasError, isControlGroup, hiddenLabel } =
+    useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
 
@@ -547,9 +592,12 @@ function TriggerMultipleWithInput<ValueType>({
         sizeToMinHeight[size],
         "h-auto",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+        isControlGroup &&
+          "rounded-[inherit] bg-transparent shadow-none ring-0 focus:z-2 focus-visible:z-2",
         className,
       )}
     >
+      {hiddenLabel && <span className="sr-only">{hiddenLabel}</span>}
       {inputSide === "top" && (
         <ComboboxBase.Input
           placeholder={placeholder}

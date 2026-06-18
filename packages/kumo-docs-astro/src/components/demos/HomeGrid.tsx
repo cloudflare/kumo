@@ -8,6 +8,7 @@ import {
   ClipboardText,
   Collapsible,
   Combobox,
+  ControlGroup,
   DatePicker,
   Dialog,
   DropdownMenu,
@@ -62,6 +63,7 @@ const componentRoutes: Record<string, string> = {
   autocomplete: "/components/autocomplete",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
+  "control-group": "/components/control-group",
   "date-picker": "/components/date-picker",
   dialog: "/components/dialog",
   dropdown: "/components/dropdown",
@@ -169,6 +171,17 @@ export function HomeGrid() {
           <Select.Option value="active">Active versions</Select.Option>
           <Select.Option value="specific">Specific versions</Select.Option>
         </Select>
+      ),
+    },
+    {
+      name: "ControlGroup",
+      id: "control-group",
+      Component: (
+        <ControlGroup className="w-[260px]">
+          <Input aria-label="Search DNS records" placeholder="Search..." />
+          <Button shape="square" icon={MagnifyingGlassIcon} aria-label="Search" />
+          <Button shape="square" icon={PlusIcon} aria-label="Add" />
+        </ControlGroup>
       ),
     },
     {

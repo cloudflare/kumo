@@ -110,11 +110,12 @@ export interface FieldProps extends KumoFieldVariantsProps {
   description?: ReactNode;
   /** When `true`, places the control before the label (for checkbox/switch layouts). */
   controlFirst?: boolean;
+  /** Additional CSS classes for the label. */
+  labelClassName?: string;
   /**
    * When `true`, Field renders layout, description, and error but skips
    * the `<label>` element. Use when the child component provides its own
-   * accessible label (e.g. Select uses Base UI's `Select.Label` to avoid
-   * hover/focus coupling from native `<label>`).
+   * accessible label.
    * @default false
    */
   hideLabel?: boolean;
@@ -139,6 +140,7 @@ export function Field({
   error,
   description,
   controlFirst = false,
+  labelClassName,
   hideLabel = false,
 }: FieldProps) {
   // Show "(optional)" when required is explicitly false
@@ -147,7 +149,12 @@ export function Field({
   return (
     <FieldBase.Root className={fieldVariants({ controlFirst })}>
       {!hideLabel && (
-        <FieldBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
+        <FieldBase.Label
+          className={cn(
+            "m-0 select-none text-base font-medium text-kumo-default",
+            labelClassName,
+          )}
+        >
           <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
             {label}
           </Label>

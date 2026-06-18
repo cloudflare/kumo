@@ -5,6 +5,10 @@ import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
+import {
+  controlGroupItemClassName,
+  useControlGroupContext,
+} from "../control-group";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
 export const KUMO_BUTTON_VARIANTS = {
@@ -258,15 +262,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
+    const controlGroup = useControlGroupContext();
     const { type, ...restProps } = props;
     const button = (
       <button
         ref={ref}
         data-kumo-component="Button"
         className={cn(
-          buttonVariants({ variant, size, shape }),
+          buttonVariants({
+            variant: controlGroup ? "ghost" : variant,
+            size: controlGroup?.size ?? size,
+            shape,
+          }),
           disabled && "cursor-not-allowed opacity-50",
-          className,
+          controlGroup ? controlGroupItemClassName(className) : className,
         )}
         disabled={loading || disabled}
         type={type ?? "button"}
@@ -340,6 +349,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     },
     ref,
   ) => {
+    const controlGroup = useControlGroupContext();
     const LinkComponent = useLinkComponent();
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
@@ -350,9 +360,13 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         ref={ref}
         data-kumo-component="LinkButton"
         className={cn(
-          buttonVariants({ variant, size, shape }),
+          buttonVariants({
+            variant: controlGroup ? "ghost" : variant,
+            size: controlGroup?.size ?? size,
+            shape,
+          }),
           "flex items-center no-underline!",
-          className,
+          controlGroup ? controlGroupItemClassName(className) : className,
         )}
         href={href}
         to={typeof href === "string" ? href : undefined}

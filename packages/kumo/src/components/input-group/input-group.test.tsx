@@ -2,6 +2,7 @@ import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ControlGroup } from "../control-group/control-group";
 import { InputGroup } from "./input-group";
 import { INPUT_GROUP_SIZE, detectFocusMode } from "./context";
 import type { KumoInputSize } from "../input/input";
@@ -72,6 +73,27 @@ describe("InputGroup", () => {
       expect(screen.getByText("/api/")).toBeTruthy();
       expect(screen.getByPlaceholderText("endpoint")).toBeTruthy();
       expect(screen.getByText(".json")).toBeTruthy();
+    });
+
+    it("inherits ControlGroup size and styles only on the outer group", () => {
+      const { container } = render(
+        <ControlGroup size="sm">
+          <InputGroup label="Hostname">
+            <InputGroup.Input placeholder="example" aria-label="Hostname" />
+            <InputGroup.Suffix>.workers.dev</InputGroup.Suffix>
+          </InputGroup>
+        </ControlGroup>,
+      );
+
+      const group = container.querySelector(
+        '[data-slot="input-group"]',
+      ) as HTMLElement;
+      const input = screen.getByRole("textbox");
+
+      expect(group.className).toContain("h-6.5");
+      expect(group.className).toContain("rounded-none");
+      expect(input.className).not.toContain("not-first:border-l");
+      expect(screen.getByText("Hostname").className).toContain("sr-only");
     });
   });
 

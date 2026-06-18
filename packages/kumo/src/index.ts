@@ -53,6 +53,13 @@ export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
 export {
+  ControlGroup,
+  KUMO_CONTROL_GROUP_VARIANTS,
+  KUMO_CONTROL_GROUP_DEFAULT_VARIANTS,
+  type ControlGroupProps,
+  type ControlGroupSize,
+} from "./components/control-group";
+export {
   Dialog,
   DialogRoot,
   DialogTrigger,

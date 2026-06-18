@@ -6,6 +6,11 @@ import {
   type PropsWithChildren,
 } from "react";
 import { cn } from "../../utils/cn";
+import {
+  ControlGroupContext,
+  controlGroupItemClassName,
+  useControlGroupContext,
+} from "../control-group/control-group";
 import { inputVariants } from "../input/input";
 import { Field } from "../field/field";
 import {
@@ -100,18 +105,30 @@ const Root = forwardRef<
     },
     forwardedRef,
   ) => {
+    const controlGroup = useControlGroupContext();
+    const resolvedSize = controlGroup?.size ?? size;
     const inputId = useId();
     const focusMode = detectFocusMode(children);
+    // InputGroup is itself one ControlGroup item. Null the context for its
+    // internals so InputGroup.Input/Button don't style themselves as siblings.
+    const renderInsideControlGroupBoundary = (node: React.ReactNode) =>
+      controlGroup ? (
+        <ControlGroupContext.Provider value={null}>
+          {node}
+        </ControlGroupContext.Provider>
+      ) : (
+        node
+      );
 
     const contextValue = useMemo(
       () => ({
-        size,
+        size: resolvedSize,
         focusMode,
         disabled,
         error,
         inputId,
       }),
-      [size, focusMode, disabled, error, inputId],
+      [resolvedSize, focusMode, disabled, error, inputId],
     );
 
     // When label is provided, Field already renders a <label> with htmlFor
@@ -122,7 +139,7 @@ const Root = forwardRef<
       // Establish positioning context and make the whole area a click target
       "relative w-full cursor-text",
       // inputVariants provides base ring-kumo-line; must come before state overrides
-      inputVariants({ size }),
+      inputVariants({ size: resolvedSize }),
       // Subtle drop shadow to separate the group from the page surface
       "shadow-xs",
       // Disabled state: prevent interaction and dim the entire group
@@ -150,10 +167,10 @@ const Root = forwardRef<
       "has-[[data-slot=input-group-suffix]]:[&_input]:grow-0",
       "has-[[data-slot=input-group-suffix]]:[&_input]:pr-0",
       // Size-specific padding adjustments when addons or suffixes are present
-      INPUT_GROUP_HAS_CLASSES[size],
+      INPUT_GROUP_HAS_CLASSES[resolvedSize],
       // Reset bottom margin to avoid inherited spacing from parent <label> styles
       "!mb-0",
-      className,
+      controlGroup ? controlGroupItemClassName(className) : className,
     );
 
     // Data attributes drive CSS selectors in kumo-binding.css (focus outline)
@@ -187,7 +204,7 @@ const Root = forwardRef<
               data-slot="input-group-container-zone"
               className={cn(
                 // Base input sizing/shape from shared variant function
-                inputVariants({ size }),
+                inputVariants({ size: resolvedSize }),
                 // Clip children to rounded corners within the zone
                 "overflow-hidden",
                 // Show red ring on validation error
@@ -208,7 +225,7 @@ const Root = forwardRef<
                 // Outer edges inherit radius; inner edges are flat against sibling buttons
                 "first:rounded-l-[inherit] last:rounded-r-[inherit] rounded-none",
                 // Size-specific padding adjustments when addons or suffixes are present
-                INPUT_GROUP_HAS_CLASSES[size],
+                INPUT_GROUP_HAS_CLASSES[resolvedSize],
                 // When a suffix is present, let the input shrink to its content width
                 "has-data-[slot=input-group-suffix]:[&_input]:field-sizing-content",
                 "has-data-[slot=input-group-suffix]:[&_input]:max-w-full",
@@ -227,11 +244,16 @@ const Root = forwardRef<
                   aria-hidden="true"
                 />
               )}
-              {containerZone}
+              {label && controlGroup && typeof label === "string" && (
+                <label htmlFor={inputId} className="sr-only">
+                  {label}
+                </label>
+              )}
+              {renderInsideControlGroupBoundary(containerZone)}
             </div>
           </InputGroupContext.Provider>
           {/* Individual zone — buttons with their own borders */}
-          {individualZone}
+          {renderInsideControlGroupBoundary(individualZone)}
         </>
       );
 
@@ -249,7 +271,7 @@ const Root = forwardRef<
         </InputGroupContext.Provider>
       );
 
-      if (label) {
+      if (label && !controlGroup) {
         return (
           <Field
             label={label}
@@ -286,7 +308,12 @@ const Root = forwardRef<
               className="absolute inset-0 z-0 mb-0!"
               aria-hidden="true"
             />
-            {children}
+            {label && controlGroup && typeof label === "string" && (
+              <label htmlFor={inputId} className="sr-only">
+                {label}
+              </label>
+            )}
+            {renderInsideControlGroupBoundary(children)}
           </div>
         ) : useLabelContainer ? (
           // Standalone container mode: <label> enables click-to-focus on empty space.
@@ -296,7 +323,7 @@ const Root = forwardRef<
             className={cn(containerClassName, "mb-0!")}
             {...rest}
           >
-            {children}
+            {renderInsideControlGroupBoundary(children)}
           </label>
         ) : (
           // Individual mode: <div> avoids :hover propagating to the first labelable sibling.
@@ -306,13 +333,13 @@ const Root = forwardRef<
             className={containerClassName}
             {...rest}
           >
-            {children}
+            {renderInsideControlGroupBoundary(children)}
           </div>
         )}
       </InputGroupContext.Provider>
     );
 
-    if (label) {
+    if (label && !controlGroup) {
       return (
         <Field
           label={label}

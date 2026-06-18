@@ -20,6 +20,7 @@ const registryRouteOverrides: Record<string, string> = {
 // Add an override when the docs page slug needs custom capitalization or spacing.
 const titleOverrides: Record<string, string> = {
   "code-highlighted": "CodeHighlighted",
+  "control-group": "ControlGroup",
   "input-area": "InputArea",
   "input-group": "InputGroup",
   "menu-bar": "MenuBar",
