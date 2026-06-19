@@ -67,7 +67,12 @@ export default function Example() {
   const [value, setValue] = useState<string | null>(null);
 
   return (
-    <Combobox value={value} onValueChange={setValue} items={fruits}>
+    <Combobox
+      value={value}
+      onValueChange={setValue}
+      items={fruits}
+      label="Fruit"
+    >
       <Combobox.TriggerInput placeholder="Select a fruit" />
       <Combobox.Content>
         <Combobox.Empty />
@@ -82,6 +87,88 @@ export default function Example() {
     </Combobox>
   );
 }
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Accessibility
+
+<p>
+  Every combobox trigger or search input needs an accessible name. Prefer the
+  root `label` prop for visible field labels. For compact or custom layouts,
+  pass `aria-label` or `aria-labelledby` to `Combobox.TriggerInput`,
+  `Combobox.TriggerValue`, `Combobox.TriggerMultipleWithInput`, or popup
+  `Combobox.Input` as needed. Placeholder text is only a hint and does not
+  count as the accessible name.
+</p>
+
+```tsx
+<Combobox items={fruits} label="Fruit">
+  <Combobox.TriggerInput placeholder="Select a fruit" />
+</Combobox>
+
+<Combobox items={fruits}>
+  <Combobox.TriggerInput
+    aria-label="Select fruit"
+    placeholder="Select a fruit"
+  />
+</Combobox>
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Localization
+
+<p>
+  Combobox exposes a few Kumo-owned strings for localizing secondary controls
+  and empty states:
+</p>
+
+<ul class="list-disc list-inside space-y-1">
+  <li>
+    <code>Combobox.TriggerInput.clearLabel</code> labels the clear-selection
+    button.
+  </li>
+  <li>
+    <code>Combobox.TriggerInput.showOptionsLabel</code> labels the dropdown
+    options button.
+  </li>
+  <li>
+    <code>Combobox.Chip.removeLabel</code> labels each chip remove button in
+    multiple mode.
+  </li>
+  <li>
+    <code>Combobox.Empty</code> children provide localized empty-state content.
+  </li>
+</ul>
+
+```tsx
+<Combobox items={fruits} label="Fruit">
+  <Combobox.TriggerInput
+    clearLabel="Clear selected fruit"
+    placeholder="Select a fruit"
+    showOptionsLabel="Show fruit options"
+  />
+  <Combobox.Content>
+    <Combobox.Empty>No fruit found.</Combobox.Empty>
+    <Combobox.List>{/* ... */}</Combobox.List>
+  </Combobox.Content>
+</Combobox>
+
+<Combobox multiple items={bots} label="Bots">
+  <Combobox.TriggerMultipleWithInput
+    placeholder="Select bots"
+    renderItem={(bot) => (
+      <Combobox.Chip key={bot.value} removeLabel={`Remove ${bot.label}`}>
+        {bot.label}
+      </Combobox.Chip>
+    )}
+  />
+</Combobox>
 ```
 
 </ComponentSection>
@@ -236,7 +323,7 @@ function LanguagePicker() {
   );
 
   return (
-    <Combobox items={languages} filter={filter}>
+    <Combobox items={languages} label="Language" filter={filter}>
       {/* ... */}
     </Combobox>
   );
@@ -249,7 +336,7 @@ function LanguagePicker() {
 </p>
 
 ```tsx
-<Combobox items={results} filter={null}>
+<Combobox items={results} label="Search results" filter={null}>
   ...
 </Combobox>
 ```

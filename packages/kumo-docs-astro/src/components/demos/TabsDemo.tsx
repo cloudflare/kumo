@@ -145,13 +145,19 @@ export function TabsRenderPropDemo() {
         {
           value: "tab2",
           label: "Link Tab",
-          render: (props) => <a {...props} href="#tab2" />,
+          render: (props) => (
+            <a {...props} href="#tab2">
+              Link Tab
+            </a>
+          ),
         },
         {
           value: "tab3",
           label: "Cloudflare",
           render: (props) => (
-            <a {...props} href="https://cloudflare.com" target="_blank" />
+            <a {...props} href="https://cloudflare.com" target="_blank">
+              Cloudflare
+            </a>
           ),
         },
       ]}

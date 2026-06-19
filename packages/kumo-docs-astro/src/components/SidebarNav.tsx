@@ -25,6 +25,10 @@ function isActivePath(activePath: string, href: string) {
   return activePath === normalized || activePath.startsWith(normalized + "/");
 }
 
+function isCurrentPath(activePath: string, href: string) {
+  return activePath === normalizePathname(href);
+}
+
 const staticPages: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Installation", href: "/installation" },
@@ -104,8 +108,36 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
-  "block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
+  "block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors motion-reduce:transition-none no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
 const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
+const MOBILE_DRAWER_ID = "kumo-mobile-navigation-drawer";
+const MOBILE_DRAWER_TITLE_ID = "kumo-mobile-navigation-title";
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+  '[contenteditable="true"]',
+].join(",");
+
+function getFocusableElements(container: HTMLElement) {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+  ).filter((element) => {
+    if (element.closest("[inert]") || element.closest('[aria-hidden="true"]')) {
+      return false;
+    }
+
+    const style = window.getComputedStyle(element);
+    return style.display !== "none" && style.visibility !== "hidden";
+  });
+}
+
+function preventPointerFocus(e: React.MouseEvent<HTMLElement>) {
+  e.preventDefault();
+}
 
 interface SidebarNavProps {
   currentPath: string;
@@ -125,12 +157,15 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   // Refs for scroll containers
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const desktopScrollRef = useRef<HTMLDivElement>(null);
+  const mobileHeaderRef = useRef<HTMLDivElement>(null);
+  const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
+  const mobileDrawerRef = useRef<HTMLElement>(null);
+  const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const wasMobileMenuOpenRef = useRef(false);
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
-  const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
-  const preventPointerFocus = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-  };
+  const openMobileMenu = () => setMobileMenuOpen(true);
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K + custom event from headers
   useEffect(() => {
@@ -194,172 +229,338 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     };
   }, []);
 
-  // Shared nav content for both mobile and desktop
-  const navContent = (
-    <>
-      <button
-        onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
-      >
-        <MagnifyingGlassIcon size={16} className="shrink-0" />
-        <span>Search...</span>
-      </button>
+  useEffect(() => {
+    if (!mobileMenuOpen) {
+      if (wasMobileMenuOpenRef.current) {
+        mobileMenuTriggerRef.current?.focus({ preventScroll: true });
+      }
+      wasMobileMenuOpenRef.current = false;
+      return;
+    }
 
-      <ul className="flex flex-col gap-px">
-        {staticPages.map((item) => (
-          <li key={item.href}>
-            <a
-              href={item.href}
-              onMouseDown={preventPointerFocus}
+    wasMobileMenuOpenRef.current = true;
+
+    if (searchOpen) return;
+
+    const drawer = mobileDrawerRef.current;
+    if (!drawer) return;
+
+    const focusInitialElement = () => {
+      const initialElement =
+        mobileCloseButtonRef.current ??
+        getFocusableElements(drawer)[0] ??
+        drawer;
+      initialElement.focus({ preventScroll: true });
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeMobileMenu();
+        return;
+      }
+
+      if (e.key !== "Tab") return;
+
+      const focusableElements = getFocusableElements(drawer);
+      if (focusableElements.length === 0) {
+        e.preventDefault();
+        drawer.focus({ preventScroll: true });
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (!drawer.contains(activeElement)) {
+        e.preventDefault();
+        firstElement.focus({ preventScroll: true });
+        return;
+      }
+
+      if (e.shiftKey && activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus({ preventScroll: true });
+        return;
+      }
+
+      if (!e.shiftKey && activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus({ preventScroll: true });
+      }
+    };
+
+    focusInitialElement();
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileMenuOpen, searchOpen]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const backgroundElements = [
+      document.querySelector<HTMLElement>(".docs-skip-link"),
+      mobileHeaderRef.current,
+      document.getElementById("main-content"),
+    ].filter((element): element is HTMLElement => Boolean(element));
+
+    const previousState = backgroundElements.map((element) => ({
+      element,
+      ariaHidden: element.getAttribute("aria-hidden"),
+      hadAriaHidden: element.hasAttribute("aria-hidden"),
+      hadInert: element.hasAttribute("inert"),
+    }));
+
+    for (const element of backgroundElements) {
+      element.setAttribute("aria-hidden", "true");
+      element.setAttribute("inert", "");
+    }
+
+    return () => {
+      for (const {
+        element,
+        ariaHidden,
+        hadAriaHidden,
+        hadInert,
+      } of previousState) {
+        if (hadAriaHidden && ariaHidden !== null) {
+          element.setAttribute("aria-hidden", ariaHidden);
+        } else {
+          element.removeAttribute("aria-hidden");
+        }
+
+        if (!hadInert) {
+          element.removeAttribute("inert");
+        }
+      }
+    };
+  }, [mobileMenuOpen]);
+
+  // Shared nav content for both mobile and desktop. IDs include the panel
+  // context because both nav trees are mounted in the DOM at the same time.
+  const renderNavContent = (panelId: "mobile" | "desktop") => {
+    const componentsListId = `kumo-${panelId}-components-nav`;
+    const chartsListId = `kumo-${panelId}-charts-nav`;
+    const blocksListId = `kumo-${panelId}-blocks-nav`;
+
+    return (
+      <>
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-[background-color,color,box-shadow] hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand motion-reduce:transition-none"
+        >
+          <MagnifyingGlassIcon
+            size={16}
+            className="shrink-0"
+            aria-hidden="true"
+            focusable="false"
+          />
+          <span>Search...</span>
+        </button>
+
+        <ul className="flex flex-col gap-px">
+          {staticPages.map((item) => {
+            const isActive = isActivePath(activePath, item.href);
+            const isCurrent = isCurrentPath(activePath, item.href);
+
+            return (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  aria-current={isCurrent ? "page" : undefined}
+                  onMouseDown={preventPointerFocus}
+                  className={cn(LI_STYLE, isActive && LI_ACTIVE_STYLE)}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="my-4 border-b border-kumo-hairline" />
+
+        <div className="mb-4">
+          {/* Components Section */}
+          <button
+            type="button"
+            aria-expanded={componentsOpen}
+            aria-controls={componentsListId}
+            className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand motion-reduce:transition-none"
+            onClick={() => setComponentsOpen(!componentsOpen)}
+          >
+            <span>Components</span>
+            <CaretDownIcon
+              size={12}
               className={cn(
-                LI_STYLE,
-                isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
+                "text-kumo-subtle transition-transform duration-200 motion-reduce:transition-none",
+                !componentsOpen && "-rotate-90",
               )}
-            >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <div className="my-4 border-b border-kumo-hairline" />
-
-      <div className="mb-4">
-        {/* Components Section */}
-        <button
-          type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
-          onClick={() => setComponentsOpen(!componentsOpen)}
-        >
-          <span>Components</span>
-          <CaretDownIcon
-            size={12}
+              aria-hidden="true"
+              focusable="false"
+            />
+          </button>
+          <ul
+            id={componentsListId}
+            aria-hidden={!componentsOpen}
+            inert={!componentsOpen}
             className={cn(
-              "text-kumo-subtle transition-transform duration-200",
-              !componentsOpen && "-rotate-90",
+              "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+              componentsOpen
+                ? "max-h-[2000px] opacity-100"
+                : "max-h-0 opacity-0",
             )}
-          />
-        </button>
-        <ul
-          className={cn(
-            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
-            componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
-          )}
-        >
-          {componentItems.map((item) => (
-            <li key={item.href}>
-              <a
-                href={item.href}
-                onMouseDown={preventPointerFocus}
-                className={cn(
-                  LI_STYLE,
-                  "pl-4",
-                  activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
-                )}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+          >
+            {componentItems.map((item) => {
+              const isCurrent = isCurrentPath(activePath, item.href);
 
-      <div className="mb-4">
-        <button
-          type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
-          onClick={() => setChartsOpen(!chartsOpen)}
-        >
-          <span>Charts</span>
-          <CaretDownIcon
-            size={12}
-            className={cn(
-              "text-kumo-subtle transition-transform duration-200",
-              !chartsOpen && "-rotate-90",
-            )}
-          />
-        </button>
-        <ul
-          className={cn(
-            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
-            chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
-          )}
-        >
-          {chartItems.map((item) => (
-            <li key={item.href}>
-              <a
-                href={item.href}
-                onMouseDown={preventPointerFocus}
-                className={cn(
-                  LI_STYLE,
-                  "pl-4",
-                  currentPath === item.href && LI_ACTIVE_STYLE,
-                )}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+              return (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    onMouseDown={preventPointerFocus}
+                    className={cn(
+                      LI_STYLE,
+                      "pl-4",
+                      isCurrent && LI_ACTIVE_STYLE,
+                    )}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
-      <div>
-        {/* Blocks Section */}
-        <button
-          type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
-          onClick={() => setBlocksOpen(!blocksOpen)}
-        >
-          <span>Blocks</span>
-          <CaretDownIcon
-            size={12}
+        <div className="mb-4">
+          <button
+            type="button"
+            aria-expanded={chartsOpen}
+            aria-controls={chartsListId}
+            className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand motion-reduce:transition-none"
+            onClick={() => setChartsOpen(!chartsOpen)}
+          >
+            <span>Charts</span>
+            <CaretDownIcon
+              size={12}
+              className={cn(
+                "text-kumo-subtle transition-transform duration-200 motion-reduce:transition-none",
+                !chartsOpen && "-rotate-90",
+              )}
+              aria-hidden="true"
+              focusable="false"
+            />
+          </button>
+          <ul
+            id={chartsListId}
+            aria-hidden={!chartsOpen}
+            inert={!chartsOpen}
             className={cn(
-              "text-kumo-subtle transition-transform duration-200",
-              !blocksOpen && "-rotate-90",
+              "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+              chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
             )}
-          />
-        </button>
-        <ul
-          className={cn(
-            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
-            blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
-          )}
-        >
-          {blockItems.map((item) => (
-            <li key={item.href}>
-              <a
-                href={item.href}
-                onMouseDown={preventPointerFocus}
-                className={cn(
-                  LI_STYLE,
-                  "pl-4",
-                  activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
-                )}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
-  );
+          >
+            {chartItems.map((item) => {
+              const isCurrent = isCurrentPath(activePath, item.href);
+
+              return (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    onMouseDown={preventPointerFocus}
+                    className={cn(
+                      LI_STYLE,
+                      "pl-4",
+                      isCurrent && LI_ACTIVE_STYLE,
+                    )}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <div>
+          {/* Blocks Section */}
+          <button
+            type="button"
+            aria-expanded={blocksOpen}
+            aria-controls={blocksListId}
+            className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand motion-reduce:transition-none"
+            onClick={() => setBlocksOpen(!blocksOpen)}
+          >
+            <span>Blocks</span>
+            <CaretDownIcon
+              size={12}
+              className={cn(
+                "text-kumo-subtle transition-transform duration-200 motion-reduce:transition-none",
+                !blocksOpen && "-rotate-90",
+              )}
+              aria-hidden="true"
+              focusable="false"
+            />
+          </button>
+          <ul
+            id={blocksListId}
+            aria-hidden={!blocksOpen}
+            inert={!blocksOpen}
+            className={cn(
+              "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+              blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+            )}
+          >
+            {blockItems.map((item) => {
+              const isCurrent = isCurrentPath(activePath, item.href);
+
+              return (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    onMouseDown={preventPointerFocus}
+                    className={cn(
+                      LI_STYLE,
+                      "pl-4",
+                      isCurrent && LI_ACTIVE_STYLE,
+                    )}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </>
+    );
+  };
 
   return (
     <>
       {/* Mobile header bar with hamburger */}
       <div
+        ref={mobileHeaderRef}
         className={cn(
           "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:hidden",
         )}
       >
         <Button
+          ref={mobileMenuTriggerRef}
           variant="ghost"
           shape="square"
           aria-label="Open menu"
-          onClick={toggleMobileMenu}
+          aria-controls={MOBILE_DRAWER_ID}
+          aria-expanded={mobileMenuOpen}
+          onClick={openMobileMenu}
         >
           <KumoMenuIcon />
         </Button>
@@ -369,21 +570,32 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
 
       {/* Mobile slide-out drawer */}
       <aside
+        ref={mobileDrawerRef}
+        id={MOBILE_DRAWER_ID}
+        role="dialog"
+        aria-modal={mobileMenuOpen}
+        aria-labelledby={MOBILE_DRAWER_TITLE_ID}
+        aria-hidden={!mobileMenuOpen}
+        inert={!mobileMenuOpen}
+        tabIndex={-1}
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas md:hidden",
-          "transition-transform duration-300 will-change-transform",
+          "transition-transform duration-300 will-change-transform motion-reduce:transition-none motion-reduce:will-change-auto",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-hairline px-3">
-          <h1 className="text-base font-medium">Kumo</h1>
+          <h1 id={MOBILE_DRAWER_TITLE_ID} className="text-base font-medium">
+            Kumo
+          </h1>
           <Button
+            ref={mobileCloseButtonRef}
             variant="ghost"
             shape="square"
             aria-label="Close menu"
-            onClick={toggleMobileMenu}
+            onClick={closeMobileMenu}
           >
-            <XIcon size={20} />
+            <XIcon size={20} aria-hidden="true" focusable="false" />
           </Button>
         </div>
         <div
@@ -392,7 +604,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
           style={{ scrollBehavior: "auto" }}
         >
-          {navContent}
+          {renderNavContent("mobile")}
         </div>
       </aside>
 
@@ -426,9 +638,11 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Desktop: Sliding panel that opens to the right of the rail */}
       <aside
         data-sidebar-open={sidebarOpen}
+        aria-hidden={!sidebarOpen}
+        inert={!sidebarOpen}
         className={cn(
           "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
-          "transition-transform duration-300 ease-out will-change-transform",
+          "transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none motion-reduce:will-change-auto",
           sidebarOpen
             ? "translate-x-0 border-r border-kumo-hairline"
             : "-translate-x-full",
@@ -441,7 +655,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           data-sidebar-scroll="desktop"
           className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
         >
-          {navContent}
+          {renderNavContent("desktop")}
         </div>
       </aside>
 

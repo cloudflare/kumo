@@ -6,6 +6,7 @@ import {
   type ReactNode,
   createContext,
   useContext,
+  useId,
 } from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -86,7 +87,14 @@ const SwitchGroupContext = createContext<{ controlFirst: boolean }>({
 });
 
 /**
- * Single switch component props (with built-in Field)
+ * Single switch component props (with built-in Field).
+ *
+ * **Accessible Name Required:** Switch should have one of:
+ * 1. `label` prop (recommended) - built-in Field wrapper with horizontal layout
+ * 2. `aria-label` - for switches without visible label
+ * 3. `aria-labelledby` - for custom label association
+ *
+ * Missing accessible names will trigger console warnings in development.
  *
  * Usage patterns:
  *
@@ -114,7 +122,7 @@ export type SwitchProps = Omit<
 > & {
   /** Visual variant: "default" (pill, brand color) or "neutral" (squircle, monochrome) */
   variant?: SwitchVariant;
-  /** Label content for the switch (Field wrapper is built-in) - can be a string or any React node. Optional when used standalone for visual-only purposes. */
+  /** Label content for the switch (Field wrapper is built-in) - can be a string or any React node. */
   label?: ReactNode;
   /** Tooltip content to display next to the label via an info icon */
   labelTooltip?: ReactNode;
@@ -220,12 +228,31 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
       onCheckedChange,
       transitioning,
       id,
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
+      role: roleProp,
       ...props
     },
     ref,
   ) => {
-    // For aria-label, only use string labels (ReactNode labels can't be used for aria-label)
-    const ariaLabelFallback = typeof label === "string" ? label : "Switch";
+    // A11y enforcement: warn in dev if no accessible name provided.
+    if (process.env.NODE_ENV !== "production") {
+      const hasLabel = Boolean(label);
+      const hasAriaLabel = Boolean(ariaLabel);
+      const hasAriaLabelledBy = Boolean(ariaLabelledBy);
+
+      if (!hasLabel && !hasAriaLabel && !hasAriaLabelledBy) {
+        console.warn(
+          "[Kumo Switch]: Switch must have an accessible name. Provide either:\n" +
+            "  - label prop: <Switch label='Enable notifications' />\n" +
+            "  - aria-label: <Switch aria-label='Enable notifications' />\n" +
+            "  - aria-labelledby for custom label association",
+        );
+      }
+    }
+
+    // For aria-label, only use string labels (ReactNode labels can't be used for aria-label).
+    const stringLabel = typeof label === "string" ? label : undefined;
     const switchControl = (
       <BaseSwitch.Root
         ref={ref}
@@ -239,6 +266,8 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             ref: rootRef,
             className: baseClassName,
             role: baseRole,
+            "aria-label": rootAriaLabel,
+            "aria-labelledby": rootAriaLabelledBy,
             "aria-checked": _ariaChecked,
             "aria-pressed": _ariaPressed,
             ...restRootProps
@@ -246,6 +275,8 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             ref?: Ref<HTMLButtonElement>;
             className?: string;
             role?: string;
+            "aria-label"?: string;
+            "aria-labelledby"?: string;
             "aria-checked"?: boolean;
             "aria-pressed"?: boolean;
           };
@@ -284,6 +315,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
+            "before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] disabled:before:hidden",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "transition-colors duration-150 ease-out motion-reduce:transition-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
@@ -303,12 +335,16 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
             state.checked ? s.slide : "left-0",
           );
 
-          const role =
-            (props.role as string | undefined) ?? baseRole ?? "switch";
+          const role = (roleProp as string | undefined) ?? baseRole ?? "switch";
           const checkedA11yProps =
             role === "switch"
               ? { "aria-checked": state.checked }
               : { "aria-pressed": state.checked };
+          const controlLabelledBy = ariaLabelledBy ?? rootAriaLabelledBy;
+          const controlAriaLabel =
+            ariaLabel ??
+            rootAriaLabel ??
+            (controlLabelledBy ? undefined : stringLabel);
 
           return (
             <button
@@ -320,7 +356,8 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
               role={role}
               {...checkedA11yProps}
               aria-busy={transitioning || undefined}
-              aria-label={props["aria-label"] ?? ariaLabelFallback}
+              aria-labelledby={controlLabelledBy}
+              aria-label={controlAriaLabel}
               className={trackClassName}
             >
               <div className={thumbClassName} />
@@ -437,6 +474,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
+              "before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] disabled:before:hidden",
               "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               "transition-colors duration-150 ease-out motion-reduce:transition-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
@@ -509,11 +547,19 @@ function SwitchGroup({
   controlFirst = true,
   className,
 }: SwitchGroupProps) {
+  const groupId = useId();
+  const errorId = error ? `${groupId}-error` : undefined;
+  const descriptionId = description ? `${groupId}-description` : undefined;
+  const describedBy =
+    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
+
   return (
     <SwitchGroupContext.Provider value={{ controlFirst }}>
       <Fieldset.Root
         className={cn("flex flex-col gap-4", className)}
         disabled={disabled}
+        aria-describedby={describedBy}
+        aria-invalid={error ? true : undefined}
       >
         {legend && (
           <Fieldset.Legend className="text-base font-medium text-kumo-default">
@@ -521,9 +567,15 @@ function SwitchGroup({
           </Fieldset.Legend>
         )}
         <div className="flex flex-col gap-2">{children}</div>
-        {error && <p className="text-sm text-kumo-danger">{error}</p>}
+        {error && (
+          <p id={errorId} role="alert" className="text-sm text-kumo-danger">
+            {error}
+          </p>
+        )}
         {description && (
-          <p className="text-sm text-kumo-subtle">{description}</p>
+          <p id={descriptionId} className="text-sm text-kumo-subtle">
+            {description}
+          </p>
         )}
       </Fieldset.Root>
     </SwitchGroupContext.Provider>

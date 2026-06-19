@@ -27,7 +27,7 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <Button variant="ghost" shape="square" aria-label="Toggle theme">
-        <SunIcon size={20} />
+        <SunIcon size={20} aria-hidden="true" focusable="false" />
       </Button>
     );
   }
@@ -39,7 +39,11 @@ export function ThemeToggle() {
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
       onClick={toggleTheme}
     >
-      {theme === "light" ? <MoonIcon size={20} /> : <SunIcon size={20} />}
+      {theme === "light" ? (
+        <MoonIcon size={20} aria-hidden="true" focusable="false" />
+      ) : (
+        <SunIcon size={20} aria-hidden="true" focusable="false" />
+      )}
     </Button>
   );
 }

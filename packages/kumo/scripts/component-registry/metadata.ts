@@ -558,6 +558,64 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       description: "Additional CSS classes.",
     },
   },
+  "Table.CheckCell": {
+    checked: {
+      type: "boolean",
+      description: "Whether the row selection checkbox is checked.",
+    },
+    indeterminate: {
+      type: "boolean",
+      description: "Whether the row selection checkbox is indeterminate.",
+    },
+    onCheckedChange: {
+      type: "(checked: boolean, eventDetails?: CheckboxChangeEventDetails) => void",
+      description:
+        "Callback fired when the row selection checkbox changes. The optional second argument carries native event details from the underlying Checkbox.",
+    },
+    onValueChange: {
+      type: "(checked: boolean) => void",
+      description:
+        "Deprecated callback fired when the row selection checkbox changes. Use onCheckedChange instead.",
+    },
+    label: {
+      type: "string",
+      description:
+        "Legacy fallback accessible label for the inner checkbox. Prefer passing a localized aria-label instead.",
+    },
+    disabled: {
+      type: "boolean",
+      description: "Whether the row selection checkbox is disabled.",
+    },
+  },
+  "Table.CheckHead": {
+    checked: {
+      type: "boolean",
+      description: "Whether the select-all checkbox is checked.",
+    },
+    indeterminate: {
+      type: "boolean",
+      description: "Whether the select-all checkbox is indeterminate.",
+    },
+    onCheckedChange: {
+      type: "(checked: boolean, eventDetails?: CheckboxChangeEventDetails) => void",
+      description:
+        "Callback fired when the select-all checkbox changes. The optional second argument carries native event details from the underlying Checkbox.",
+    },
+    onValueChange: {
+      type: "(checked: boolean) => void",
+      description:
+        "Deprecated callback fired when the select-all checkbox changes. Use onCheckedChange instead.",
+    },
+    label: {
+      type: "string",
+      description:
+        "Legacy fallback accessible label for the inner checkbox. Prefer passing a localized aria-label instead.",
+    },
+    disabled: {
+      type: "boolean",
+      description: "Whether the select-all checkbox is disabled.",
+    },
+  },
 };
 
 // =============================================================================

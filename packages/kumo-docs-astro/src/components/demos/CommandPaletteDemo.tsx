@@ -23,6 +23,11 @@ interface CommandGroup {
   items: CommandItem[];
 }
 
+const decorativeIconProps = {
+  "aria-hidden": true,
+  focusable: "false",
+} as const;
+
 // Sample data
 const sampleGroups: CommandGroup[] = [
   {
@@ -32,13 +37,17 @@ const sampleGroups: CommandGroup[] = [
       {
         id: "new-project",
         title: "Create New Project",
-        icon: <FolderIcon size={16} />,
+        icon: <FolderIcon {...decorativeIconProps} size={16} />,
       },
-      { id: "settings", title: "Open Settings", icon: <GearIcon size={16} /> },
+      {
+        id: "settings",
+        title: "Open Settings",
+        icon: <GearIcon {...decorativeIconProps} size={16} />,
+      },
       {
         id: "search",
         title: "Search Files",
-        icon: <MagnifyingGlassIcon size={16} />,
+        icon: <MagnifyingGlassIcon {...decorativeIconProps} size={16} />,
       },
     ],
   },
@@ -46,13 +55,21 @@ const sampleGroups: CommandGroup[] = [
     id: "pages",
     label: "Pages",
     items: [
-      { id: "home", title: "Home", icon: <HouseIcon size={16} /> },
+      {
+        id: "home",
+        title: "Home",
+        icon: <HouseIcon {...decorativeIconProps} size={16} />,
+      },
       {
         id: "dashboard",
         title: "Dashboard",
-        icon: <ChartLineIcon size={16} />,
+        icon: <ChartLineIcon {...decorativeIconProps} size={16} />,
       },
-      { id: "users", title: "Users", icon: <UsersIcon size={16} /> },
+      {
+        id: "users",
+        title: "Users",
+        icon: <UsersIcon {...decorativeIconProps} size={16} />,
+      },
     ],
   },
 ];
@@ -115,7 +132,10 @@ export function CommandPaletteBasicDemo() {
         }}
         getSelectableItems={getSelectableItems}
       >
-        <CommandPalette.Input placeholder="Type a command or search..." />
+        <CommandPalette.Input
+          aria-label="Search commands and pages"
+          placeholder="Type a command or search..."
+        />
         <CommandPalette.List>
           <CommandPalette.Results>
             {(group: CommandGroup) => (
@@ -198,7 +218,10 @@ export function CommandPaletteSimpleDemo() {
         }}
         getSelectableItems={(items) => items}
       >
-        <CommandPalette.Input placeholder="Search actions..." />
+        <CommandPalette.Input
+          aria-label="Filter editing actions"
+          placeholder="Search actions..."
+        />
         <CommandPalette.List>
           <CommandPalette.Results>
             {(item: SimpleItem) => (
@@ -250,7 +273,10 @@ export function CommandPaletteLoadingDemo() {
         itemToStringValue={(group) => group.label}
         getSelectableItems={getSelectableItems}
       >
-        <CommandPalette.Input placeholder="Search..." />
+        <CommandPalette.Input
+          aria-label="Search commands while results load"
+          placeholder="Search..."
+        />
         <CommandPalette.List>
           {loading ? (
             <CommandPalette.Loading />
@@ -320,6 +346,7 @@ export function CommandPaletteNoAutocompleteDemo() {
         getSelectableItems={getSelectableItems}
       >
         <CommandPalette.Input
+          aria-label="Search commands without browser autocomplete"
           placeholder="Search commands..."
           autoComplete="off"
           autoCorrect="off"
@@ -377,19 +404,19 @@ const searchResults: SearchResult[] = [
     id: "1",
     title: "Button",
     breadcrumbs: ["Components"],
-    icon: <FileIcon size={16} />,
+    icon: <FileIcon {...decorativeIconProps} size={16} />,
   },
   {
     id: "2",
     title: "Dialog",
     breadcrumbs: ["Components"],
-    icon: <FileIcon size={16} />,
+    icon: <FileIcon {...decorativeIconProps} size={16} />,
   },
   {
     id: "3",
     title: "Page Header",
     breadcrumbs: ["Blocks"],
-    icon: <FileIcon size={16} />,
+    icon: <FileIcon {...decorativeIconProps} size={16} />,
   },
 ];
 
@@ -410,7 +437,10 @@ export function CommandPaletteResultItemDemo() {
         itemToStringValue={(item) => item.title}
         getSelectableItems={(items) => items}
       >
-        <CommandPalette.Input placeholder="Search documentation..." />
+        <CommandPalette.Input
+          aria-label="Search documentation pages"
+          placeholder="Search documentation..."
+        />
         <CommandPalette.List>
           <CommandPalette.Results>
             {(item: SearchResult) => (

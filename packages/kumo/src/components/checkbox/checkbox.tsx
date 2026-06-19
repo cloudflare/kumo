@@ -1,4 +1,10 @@
-import { forwardRef, createContext, useContext, type ReactNode } from "react";
+import {
+  forwardRef,
+  createContext,
+  useContext,
+  useId,
+  type ReactNode,
+} from "react";
 import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -419,6 +425,12 @@ function CheckboxGroup({
   controlFirst = true,
   className,
 }: CheckboxGroupProps) {
+  const groupId = useId();
+  const errorId = error ? `${groupId}-error` : undefined;
+  const descriptionId = description ? `${groupId}-description` : undefined;
+  const describedBy =
+    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
+
   return (
     <CheckboxGroupContext.Provider value={{ controlFirst }}>
       <BaseCheckboxGroup
@@ -427,17 +439,29 @@ function CheckboxGroup({
         onValueChange={onValueChange}
         allValues={allValues}
         disabled={disabled}
+        aria-describedby={describedBy}
+        aria-invalid={error ? true : undefined}
       >
-        <Fieldset.Root className={cn("flex flex-col gap-4", className)}>
+        <Fieldset.Root
+          className={cn("flex flex-col gap-4", className)}
+          aria-describedby={describedBy}
+          aria-invalid={error ? true : undefined}
+        >
           {legend && (
             <Fieldset.Legend className="text-base font-medium text-kumo-default">
               {legend}
             </Fieldset.Legend>
           )}
           <div className="flex flex-col gap-2">{children}</div>
-          {error && <p className="text-sm text-kumo-danger">{error}</p>}
+          {error && (
+            <p id={errorId} role="alert" className="text-sm text-kumo-danger">
+              {error}
+            </p>
+          )}
           {description && (
-            <p className="text-sm text-kumo-subtle">{description}</p>
+            <p id={descriptionId} className="text-sm text-kumo-subtle">
+              {description}
+            </p>
           )}
         </Fieldset.Root>
       </BaseCheckboxGroup>

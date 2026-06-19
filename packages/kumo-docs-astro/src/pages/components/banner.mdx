@@ -70,6 +70,54 @@ export default function Example() {
 
 </ComponentSection>
 
+{/* Accessibility and localization */}
+
+<ComponentSection>
+
+## Accessibility and localization
+
+<p>
+  Banner forwards native <code>div</code> attributes. Use live-region attributes
+  only for banners that appear or change after page load. For non-critical
+  status updates, pass <code>role="status"</code> with
+  <code>aria-live="polite"</code>.
+</p>
+
+```tsx
+<Banner
+  role="status"
+  aria-live="polite"
+  icon={<Info weight="fill" />}
+  title="Update available"
+  description="A new version is ready to install."
+/>
+```
+
+<p>
+  For critical errors that should be announced immediately, pass
+  <code>role="alert"</code>. Do not use <code>role="banner"</code> on this
+  component; that role is reserved for page or site header landmarks.
+</p>
+
+```tsx
+<Banner
+  role="alert"
+  variant="error"
+  icon={<WarningCircle weight="fill" />}
+  title="Save failed"
+  description="We couldn't save your changes. Please try again."
+/>
+```
+
+<p>
+  Localize visible <code>title</code> and <code>description</code> content before
+  passing it to Banner. Native live-region attributes such as
+  <code>role</code> and <code>aria-live</code> are inherited and intentionally do
+  not appear in the generated props table.
+</p>
+
+</ComponentSection>
+
 {/* Examples */}
 
 <ComponentSection>

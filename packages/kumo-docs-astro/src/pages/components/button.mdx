@@ -163,11 +163,11 @@ export default function Example() {
 ### Icon Only
 
 <p>
-  For icon-only buttons, use `shape="square"` or `shape="circle"` with the
-  `icon` prop.
-  <strong>Always include `aria-label`</strong>
-  for accessibility — without visible text, screen readers need the label to
-  convey the button's purpose.
+  Icon-only buttons need an accessible name regardless of shape. Use
+  `shape="square"` or `shape="circle"` for the common compact treatments, and
+  always provide localized text with `aria-label` or `aria-labelledby` whenever
+  there is no visible button text. The English labels below are examples only;
+  use names that match your product's locale.
 </p>
 <ComponentExample
   demo="ButtonIconOnlyDemo"

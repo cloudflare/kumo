@@ -1,7 +1,9 @@
 import {
   Children,
   cloneElement,
+  createContext,
   isValidElement,
+  useContext,
   useEffect,
   useState,
   type PropsWithChildren,
@@ -45,6 +47,59 @@ export interface KumoBreadcrumbsVariantsProps {
   size?: KumoBreadcrumbsSize;
 }
 
+/** Labels for internationalization of Breadcrumbs and its clipboard action. */
+export interface BreadcrumbsClipboardLabels {
+  /** Aria label for the copy button. @default "Copy" */
+  copyAction?: string;
+  /** Tooltip text shown before copying. @default "Click to copy" */
+  copyTooltip?: string;
+  /** Feedback text announced after copying. @default "Copied" */
+  copiedFeedback?: string;
+}
+
+export interface BreadcrumbsLabels extends BreadcrumbsClipboardLabels {
+  /** Aria label for the navigation landmark. @default "Breadcrumb" */
+  navigation?: string;
+}
+
+const DEFAULT_BREADCRUMBS_LABELS: Required<BreadcrumbsLabels> = {
+  navigation: "Breadcrumb",
+  copyAction: "Copy",
+  copyTooltip: "Click to copy",
+  copiedFeedback: "Copied",
+};
+
+const BreadcrumbsLabelsContext = createContext<Required<BreadcrumbsLabels>>(
+  DEFAULT_BREADCRUMBS_LABELS,
+);
+
+const DECORATIVE_ICON_PROPS = {
+  "aria-hidden": true,
+  focusable: "false",
+} as const;
+
+function resolveBreadcrumbsLabels(
+  labels?: BreadcrumbsLabels,
+): Required<BreadcrumbsLabels> {
+  return {
+    navigation: labels?.navigation ?? DEFAULT_BREADCRUMBS_LABELS.navigation,
+    copyAction: labels?.copyAction ?? DEFAULT_BREADCRUMBS_LABELS.copyAction,
+    copyTooltip: labels?.copyTooltip ?? DEFAULT_BREADCRUMBS_LABELS.copyTooltip,
+    copiedFeedback:
+      labels?.copiedFeedback ?? DEFAULT_BREADCRUMBS_LABELS.copiedFeedback,
+  };
+}
+
+function useBreadcrumbsLabels(labels?: BreadcrumbsClipboardLabels) {
+  const contextLabels = useContext(BreadcrumbsLabelsContext);
+  return {
+    navigation: contextLabels.navigation,
+    copyAction: labels?.copyAction ?? contextLabels.copyAction,
+    copyTooltip: labels?.copyTooltip ?? contextLabels.copyTooltip,
+    copiedFeedback: labels?.copiedFeedback ?? contextLabels.copiedFeedback,
+  };
+}
+
 export function breadcrumbsVariants({
   size = KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size,
 }: KumoBreadcrumbsVariantsProps = {}) {
@@ -57,6 +112,18 @@ export function breadcrumbsVariants({
 export interface BreadcrumbsItemProps {
   href: string;
   icon?: React.ReactNode;
+}
+
+function DecorativeIcon({ icon }: { icon: ReactNode }) {
+  const iconNode = isValidElement<Record<string, unknown>>(icon)
+    ? cloneElement(icon, DECORATIVE_ICON_PROPS)
+    : icon;
+
+  return (
+    <span className="flex shrink-0 items-center" aria-hidden="true">
+      {iconNode}
+    </span>
+  );
 }
 
 const Link = ({
@@ -73,7 +140,7 @@ const Link = ({
       to={href}
       className="flex min-w-0 max-w-full items-center gap-1 text-kumo-subtle no-underline"
     >
-      {!!icon && <span className="flex shrink-0 items-center">{icon}</span>}
+      {!!icon && <DecorativeIcon icon={icon} />}
       <span className="truncate">{children}</span>
     </LinkComponent>
   );
@@ -92,7 +159,7 @@ function Current({
   if (loading) {
     return (
       <div className="flex w-[125px] min-w-0 items-center gap-1">
-        {icon && <span className="flex shrink-0 items-center">{icon}</span>}
+        {icon && <DecorativeIcon icon={icon} />}
         <SkeletonLine />
       </div>
     );
@@ -103,7 +170,7 @@ function Current({
       className="flex min-w-0 max-w-full items-center gap-1 font-medium"
       aria-current="page"
     >
-      {icon && <span className="flex shrink-0 items-center">{icon}</span>}
+      {icon && <DecorativeIcon icon={icon} />}
       <span className="truncate">{children}</span>
     </div>
   );
@@ -115,7 +182,14 @@ function Separator() {
       className="flex shrink-0 items-center text-kumo-inactive"
       aria-hidden="true"
     >
-      <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+      <svg
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+      >
         <path
           stroke="currentColor"
           strokeLinecap="round"
@@ -136,8 +210,16 @@ function MobileEllipsis() {
   );
 }
 
-function Clipboard({ text }: { text: string }) {
+export interface BreadcrumbsClipboardProps {
+  /** Text copied to the clipboard. */
+  text: string;
+  /** Overrides for clipboard labels. Root `Breadcrumbs.labels` are used by default. */
+  labels?: BreadcrumbsClipboardLabels;
+}
+
+function Clipboard({ text, labels }: BreadcrumbsClipboardProps) {
   const [isCopied, setIsCopied] = useState(false);
+  const resolvedLabels = useBreadcrumbsLabels(labels);
 
   useEffect(() => {
     if (!isCopied) return;
@@ -158,21 +240,33 @@ function Clipboard({ text }: { text: string }) {
   };
 
   return (
-    <Button
-      variant="ghost"
-      shape="square"
-      size="sm"
-      className="opacity-0 transition-[opacity] group-hover:opacity-100"
-      onClick={handleCopyDeeplink}
-      title="Click to copy"
-      aria-label="Copy"
-    >
-      {isCopied ? (
-        <CheckIcon weight="bold" className="text-kumo-success" />
-      ) : (
-        <CopyIcon weight="regular" />
-      )}
-    </Button>
+    <>
+      <Button
+        variant="ghost"
+        shape="square"
+        size="sm"
+        className="opacity-0 transition-[opacity] group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100 focus-visible:opacity-100"
+        onClick={handleCopyDeeplink}
+        title={
+          isCopied ? resolvedLabels.copiedFeedback : resolvedLabels.copyTooltip
+        }
+        aria-label={resolvedLabels.copyAction}
+      >
+        {isCopied ? (
+          <CheckIcon
+            weight="bold"
+            className="text-kumo-success"
+            aria-hidden="true"
+            focusable="false"
+          />
+        ) : (
+          <CopyIcon weight="regular" aria-hidden="true" focusable="false" />
+        )}
+      </Button>
+      <span className="sr-only" aria-live="polite">
+        {isCopied ? resolvedLabels.copiedFeedback : ""}
+      </span>
+    </>
   );
 }
 
@@ -195,6 +289,8 @@ export interface BreadcrumbsProps
     KumoBreadcrumbsVariantsProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Accessible labels and clipboard text for i18n. */
+  labels?: BreadcrumbsLabels;
 }
 
 /**
@@ -214,18 +310,22 @@ export function Breadcrumb({
   children,
   size = "base",
   className,
+  labels,
 }: BreadcrumbsProps) {
   const childArray = Children.toArray(children);
   const mobileChildren = getMobileBreadcrumbChildren(childArray);
+  const resolvedLabels = resolveBreadcrumbsLabels(labels);
 
   return (
-    <nav
-      className={cn(breadcrumbsVariants({ size }), className)}
-      aria-label="breadcrumb"
-    >
-      <div className="contents sm:hidden">{mobileChildren}</div>
-      <div className="hidden sm:contents">{childArray}</div>
-    </nav>
+    <BreadcrumbsLabelsContext.Provider value={resolvedLabels}>
+      <nav
+        className={cn(breadcrumbsVariants({ size }), className)}
+        aria-label={resolvedLabels.navigation}
+      >
+        <div className="contents sm:hidden">{mobileChildren}</div>
+        <div className="hidden sm:contents">{childArray}</div>
+      </nav>
+    </BreadcrumbsLabelsContext.Provider>
   );
 }
 

@@ -7,7 +7,11 @@ import { buttonVariants } from "../button";
 import { KUMO_INPUT_VARIANTS, type KumoInputSize } from "../input/input";
 import { SkeletonLine } from "../loader";
 import { Label } from "../label";
-import { Field, type FieldErrorMatch } from "../field/field";
+import {
+  Field,
+  normalizeFieldError,
+  type FieldErrorMatch,
+} from "../field/field";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -83,6 +87,13 @@ export function selectVariants({
     "justify-between font-normal",
     "focus:opacity-100 focus:ring-kumo-focus/50 focus-visible:ring-inset *:in-focus:opacity-100",
   );
+}
+
+function composeAriaDescribedBy(
+  ...ids: Array<string | undefined>
+): string | undefined {
+  const describedBy = ids.filter(Boolean).join(" ");
+  return describedBy || undefined;
 }
 
 const triggerIconStyles: Record<
@@ -361,13 +372,37 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
+  const descriptionId = useId();
+  const errorId = useId();
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
   const propLookup = props as Record<string, unknown>;
   const ariaLabel = propLookup["aria-label"] as string | undefined;
   const ariaLabelledby = propLookup["aria-labelledby"] as string | undefined;
+  const ariaDescribedBy = propLookup["aria-describedby"] as string | undefined;
+  const ariaInvalid = propLookup["aria-invalid"] as
+    | boolean
+    | "false"
+    | "true"
+    | "grammar"
+    | "spelling"
+    | undefined;
   // For aria-label, use string label or placeholder (ReactNode labels can't be used for aria-label)
   const fallbackLabel = typeof label === "string" ? label : placeholder;
+  const normalizedError = normalizeFieldError(error);
+  const feedbackId =
+    label && hideLabel !== true
+      ? undefined
+      : normalizedError
+        ? errorId
+        : description
+          ? descriptionId
+          : undefined;
+  const triggerAriaDescribedBy = composeAriaDescribedBy(
+    ariaDescribedBy,
+    feedbackId,
+  );
+  const triggerAriaInvalid = normalizedError ? true : ariaInvalid;
 
   // Deprecation warning for hideLabel
   if (process.env.NODE_ENV !== "production" && hideLabel !== undefined) {
@@ -462,6 +497,8 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         )}
         aria-label={triggerAriaLabel}
         aria-labelledby={triggerLabelledBy}
+        aria-describedby={triggerAriaDescribedBy}
+        aria-invalid={triggerAriaInvalid}
       >
         {loading ? (
           <SkeletonLine className="w-32" />
@@ -516,13 +553,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         required={required}
         labelTooltip={labelTooltip}
         description={description}
-        error={
-          error
-            ? typeof error === "string"
-              ? { message: error, match: true }
-              : error
-            : undefined
-        }
+        error={normalizedError}
         hideLabel
       >
         {selectControl}
@@ -532,12 +563,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
 
   // Render with standalone label when label is hidden (sr-only)
   // Still show description/error for accessibility and UX
-  const normalizedError = error
-    ? typeof error === "string"
-      ? { message: error, match: true as const }
-      : error
-    : undefined;
-
   return (
     <div className="grid gap-2">
       {label && (
@@ -547,12 +572,15 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       )}
       {selectControl}
       {normalizedError ? (
-        <span className="text-sm text-kumo-danger">
+        <span id={errorId} className="text-sm text-kumo-danger">
           {normalizedError.message}
         </span>
       ) : (
         description && (
-          <span className="text-sm leading-snug text-kumo-subtle">
+          <span
+            id={descriptionId}
+            className="text-sm leading-snug text-kumo-subtle"
+          >
             {description}
           </span>
         )

@@ -14,6 +14,27 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 
 <ComponentSection>
 
+## Accessibility and localization
+
+The low-level `Chart` component accepts Kumo-owned `ariaLabel` and
+`ariaDescription` props. Provide localized text that names the chart and
+summarizes the data or trend for screen reader users. Register ECharts'
+`AriaComponent` when you want ECharts to generate its own data summary from the
+chart options.
+
+```tsx
+<Chart
+  echarts={echarts}
+  options={options}
+  ariaLabel={t("charts.planBreakdown.label")}
+  ariaDescription={t("charts.planBreakdown.description")}
+/>
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
 ## Custom Chart
 
   <ComponentExample demo="PieChartDemo">

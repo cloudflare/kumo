@@ -7,11 +7,11 @@ import {
 } from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
 import { SankeyChart as SankeyChartType } from "echarts/charts";
-import { TooltipComponent } from "echarts/components";
+import { AriaComponent, TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { useIsDarkMode } from "~/lib/use-is-dark-mode";
 
-echarts.use([SankeyChartType, TooltipComponent, CanvasRenderer]);
+echarts.use([SankeyChartType, AriaComponent, TooltipComponent, CanvasRenderer]);
 
 /** Escape HTML special characters to prevent XSS in custom tooltips */
 const escapeHtml = (str: string): string =>

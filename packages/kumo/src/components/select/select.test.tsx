@@ -115,6 +115,46 @@ describe("Select", () => {
       expect(screen.getByText("Please select a database")).toBeTruthy();
       expect(screen.queryByText("Select your preferred database")).toBeNull();
     });
+
+    it("associates description with an aria-label-only trigger", () => {
+      const { container } = render(
+        <Select
+          aria-label="Select a database"
+          description="Choose the database for this environment"
+        >
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox", {
+        name: "Select a database",
+      });
+      const description = screen.getByText(
+        "Choose the database for this environment",
+      );
+
+      expect(description.id).toBeTruthy();
+      expect(trigger.getAttribute("aria-describedby")).toBe(description.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
+
+    it("associates error with an aria-label-only trigger", () => {
+      const { container } = render(
+        <Select aria-label="Select a database" error="Select a database first">
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox", {
+        name: "Select a database",
+      });
+      const error = screen.getByText("Select a database first");
+
+      expect(error.id).toBeTruthy();
+      expect(trigger.getAttribute("aria-invalid")).toBe("true");
+      expect(trigger.getAttribute("aria-describedby")).toBe(error.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
   });
 
   describe("placeholder prop", () => {

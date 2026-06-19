@@ -3,8 +3,13 @@ import {
   useCallback,
   createContext,
   useContext,
+  useEffect,
   forwardRef,
+  cloneElement,
+  isValidElement,
   type CSSProperties,
+  type ReactElement,
+  type SVGProps,
 } from "react";
 import { Autocomplete } from "@base-ui/react/autocomplete";
 import { Dialog as DialogBase } from "@base-ui/react/dialog";
@@ -18,12 +23,10 @@ import {
 import { LayerCard } from "../layer-card";
 import { Loader } from "../loader";
 import { cn } from "../../utils";
-import {
-  usePortalContainer,
-  type PortalContainer,
-} from "../../utils/portal-provider";
+import { usePortalContainer } from "../../utils/portal-provider";
 import type {
   HighlightRange,
+  CommandPaletteDialogProps,
   CommandPaletteRootProps,
   CommandPaletteInputProps,
   CommandPaletteListProps,
@@ -35,6 +38,44 @@ import type {
   CommandPaletteFooterProps,
   CommandPaletteResultItemProps,
 } from "./types";
+
+const DEFAULT_DIALOG_TITLE = "Command palette";
+const DEFAULT_LOADING_LABEL = "Loading results";
+const DECORATIVE_ICON_PROPS = {
+  "aria-hidden": true,
+  focusable: "false",
+} as const;
+
+function renderDecorativeIcon(icon: React.ReactNode) {
+  if (!isValidElement(icon)) return icon;
+
+  return cloneElement(
+    icon as ReactElement<SVGProps<SVGSVGElement>>,
+    DECORATIVE_ICON_PROPS,
+  );
+}
+
+function warnIfMissingInputAccessibleName({
+  input,
+  ariaLabel,
+  ariaLabelledBy,
+}: {
+  input: HTMLInputElement | null;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+}) {
+  if (process.env.NODE_ENV === "production") return;
+
+  const hasVisibleLabel = (input?.labels?.length ?? 0) > 0;
+
+  if (!ariaLabel?.trim() && !ariaLabelledBy?.trim() && !hasVisibleLabel) {
+    console.warn(
+      "[Kumo CommandPalette]: CommandPalette.Input must have an accessible name. Placeholder text is only a hint, not a label. Provide either:\n" +
+        "  - aria-label: <CommandPalette.Input aria-label='Search documentation' /> when there is no visible label\n" +
+        "  - aria-labelledby or an associated <label> for custom visible label text",
+    );
+  }
+}
 
 /**
  * CommandPalette - A composable command palette component for Kumo
@@ -53,6 +94,7 @@ import type {
  * <CommandPalette.Root
  *   open={open}
  *   onOpenChange={setOpen}
+ *   dialogTitle="Search documentation"
  *   items={results}
  *   value={searchTerm}
  *   onValueChange={setSearchTerm}
@@ -60,7 +102,7 @@ import type {
  *   onSelect={(item, { newTab }) => handleSelect(item, newTab)}
  *   getSelectableItems={(groups) => groups.flatMap(g => g.items)}
  * >
- *   <CommandPalette.Input placeholder="Search..." />
+ *   <CommandPalette.Input aria-label="Search documentation" placeholder="Search..." />
  *   <CommandPalette.List>
  *     <Autocomplete.List>
  *       {(group) => (
@@ -93,30 +135,6 @@ interface DialogContextValue {
 const DialogContext = createContext<DialogContextValue>({});
 
 /**
- * Props for the Dialog component
- */
-interface DialogProps {
-  /** Whether the dialog is open */
-  open: boolean;
-  /** Callback when the open state changes */
-  onOpenChange: (open: boolean) => void;
-  /**
-   * Optional callback when backdrop is clicked.
-   * Receives the mouse event for position tracking (e.g., for ripple effects).
-   * If not provided, backdrop click calls onOpenChange(false).
-   */
-  onBackdropClick?: (e: React.MouseEvent) => void;
-  /** Child content - typically one or more Panel components */
-  children: React.ReactNode;
-  /**
-   * Container element for the portal. Use this to render the command palette inside
-   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
-   * @default document.body (or KumoPortalProvider container if set)
-   */
-  container?: PortalContainer;
-}
-
-/**
  * Dialog component - Modal wrapper for command palette content.
  *
  * Use this when you need a dialog that can swap between different Panel contents
@@ -124,7 +142,11 @@ interface DialogProps {
  *
  * @example
  * ```tsx
- * <CommandPalette.Dialog open={open} onOpenChange={setOpen}>
+ * <CommandPalette.Dialog
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   dialogTitle="Search documentation"
+ * >
  *   {showDrillDown ? (
  *     <ZonePicker />
  *   ) : (
@@ -140,10 +162,12 @@ function Dialog({
   onOpenChange,
   onBackdropClick,
   children,
+  dialogTitle,
   container: containerProp,
-}: DialogProps) {
+}: CommandPaletteDialogProps) {
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
+  const accessibleTitle = dialogTitle?.trim() || DEFAULT_DIALOG_TITLE;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (onBackdropClick) {
@@ -179,6 +203,9 @@ function Dialog({
             } as CSSProperties
           }
         >
+          <DialogBase.Title className="sr-only">
+            {accessibleTitle}
+          </DialogBase.Title>
           <DialogContext.Provider value={{ onClose: handleClose }}>
             {children}
           </DialogContext.Provider>
@@ -205,6 +232,7 @@ function Root<TGroup, TItem = TGroup>({
   onOpenChange,
   onBackdropClick,
   children,
+  dialogTitle,
   items,
   value,
   onValueChange,
@@ -220,6 +248,7 @@ function Root<TGroup, TItem = TGroup>({
       open={open}
       onOpenChange={onOpenChange}
       onBackdropClick={onBackdropClick}
+      dialogTitle={dialogTitle}
       container={container}
     >
       <Panel
@@ -255,6 +284,7 @@ function InputHeader({
     <div className="flex items-center gap-3 bg-kumo-base px-4 py-3 focus-within:ring-2 focus-within:ring-kumo-brand">
       {leading ?? (
         <MagnifyingGlassIcon
+          {...DECORATIVE_ICON_PROPS}
           className="h-4 w-4 text-kumo-subtle"
           weight="bold"
         />
@@ -274,10 +304,11 @@ function InputHeader({
 const List = forwardRef<
   HTMLDivElement,
   CommandPaletteListProps & { className?: string }
->(function List({ children, className }, ref) {
+>(function List({ children, className, busy = false }, ref) {
   return (
     <div
       ref={ref}
+      aria-busy={busy || undefined}
       className={cn(
         "relative min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 scroll-py-2 ring-1 ring-kumo-hairline",
         className,
@@ -371,10 +402,8 @@ function Item<T>({
  */
 function Empty({ children }: CommandPaletteEmptyProps) {
   return (
-    <Autocomplete.Empty>
-      <div className="p-8 text-center">
-        <p className="text-kumo-subtle">{children ?? "No results found"}</p>
-      </div>
+    <Autocomplete.Empty className="p-8 text-center">
+      <p className="text-kumo-subtle">{children ?? "No results found"}</p>
     </Autocomplete.Empty>
   );
 }
@@ -384,10 +413,26 @@ function Empty({ children }: CommandPaletteEmptyProps) {
  *
  * Centered loading spinner using Kumo Loader.
  */
-function Loading({ children }: CommandPaletteLoadingProps) {
+function Loading({ children, label }: CommandPaletteLoadingProps) {
+  const accessibleLabel =
+    label ?? (children == null ? DEFAULT_LOADING_LABEL : undefined);
+
   return (
-    <div className="flex items-center justify-center p-8">
-      {children ?? <Loader size={24} />}
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
+      className="flex items-center justify-center p-8"
+    >
+      {children ?? (
+        <span aria-hidden="true">
+          <Loader size={24} />
+        </span>
+      )}
+      {accessibleLabel ? (
+        <span className="sr-only">{accessibleLabel}</span>
+      ) : null}
     </div>
   );
 }
@@ -500,8 +545,11 @@ function ResultItem<T>({
       )}
     >
       {icon && (
-        <div className="flex flex-shrink-0 items-center text-kumo-subtle">
-          {icon}
+        <div
+          aria-hidden="true"
+          className="flex flex-shrink-0 items-center text-kumo-subtle"
+        >
+          {renderDecorativeIcon(icon)}
         </div>
       )}
       <div className="min-w-0 flex-1">
@@ -514,6 +562,7 @@ function ResultItem<T>({
                 className="text-base text-kumo-default"
               />
               <CaretRightIcon
+                {...DECORATIVE_ICON_PROPS}
                 className="h-3 w-3 flex-shrink-0 text-kumo-subtle"
                 weight="bold"
               />
@@ -525,7 +574,10 @@ function ResultItem<T>({
             className="text-base text-kumo-default"
           />
           {external && (
-            <ArrowSquareOutIcon className="h-3.5 w-3.5 flex-shrink-0 text-kumo-subtle" />
+            <ArrowSquareOutIcon
+              {...DECORATIVE_ICON_PROPS}
+              className="h-3.5 w-3.5 flex-shrink-0 text-kumo-subtle"
+            />
           )}
           {description && (
             <>
@@ -538,7 +590,10 @@ function ResultItem<T>({
         </div>
       </div>
       {showArrow && !external && !nonInteractive && (
-        <ArrowRightIcon className="h-4 w-4 flex-shrink-0 text-kumo-subtle opacity-0 transition-opacity group-data-[highlighted]:opacity-100" />
+        <ArrowRightIcon
+          {...DECORATIVE_ICON_PROPS}
+          className="h-4 w-4 flex-shrink-0 text-kumo-subtle opacity-0 transition-opacity group-data-[highlighted]:opacity-100"
+        />
       )}
     </Autocomplete.Item>
   );
@@ -630,7 +685,7 @@ interface PanelProps<TGroup, TItem = TGroup> {
  *       onValueChange={setSearchTerm}
  *       itemToStringValue={(group) => group.label}
  *     >
- *       <CommandPalette.Input placeholder="Search..." />
+ *       <CommandPalette.Input aria-label="Search documentation" placeholder="Search..." />
  *       <CommandPalette.List>
  *         <CommandPalette.Results>
  *           {(group) => (
@@ -731,10 +786,21 @@ function PanelInput({
   onKeyDown: onKeyDownProp,
   leading,
   trailing,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   ...props
 }: CommandPaletteInputProps) {
   const { onInputKeyDown } = useContext(PanelContext);
   const { onClose } = useContext(DialogContext);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    warnIfMissingInputAccessibleName({
+      input: inputRef.current,
+      ariaLabel,
+      ariaLabelledBy,
+    });
+  }, [ariaLabel, ariaLabelledBy]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -756,7 +822,10 @@ function PanelInput({
   return (
     <InputHeader leading={leading} trailing={trailing}>
       <Autocomplete.Input
+        ref={inputRef}
         placeholder={placeholder}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         className={cn(
           "flex-1 border-none bg-transparent text-base kumo-input-placeholder",
           "outline-none",
@@ -819,7 +888,7 @@ export const KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS = {} as const;
  *   onSelect={(item, { newTab }) => navigate(item, newTab)}
  *   getSelectableItems={(groups) => groups.flatMap((g) => g.items)}
  * >
- *   <CommandPalette.Input placeholder="Search…" />
+ *   <CommandPalette.Input aria-label="Search documentation" placeholder="Search..." />
  *   <CommandPalette.List>
  *     <CommandPalette.Results>
  *       {(group) => (

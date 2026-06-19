@@ -4,7 +4,7 @@ import type {
   SetOptionOpts,
   TooltipComponentOption,
 } from "echarts";
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useId, useMemo, useRef, useState } from "react";
 import { cn } from "../../utils";
 import { CHART_DARK_COLORS, CHART_LIGHT_COLORS } from "./Color";
 
@@ -51,6 +51,8 @@ export type KumoChartOption = {
     ? SafeTooltipOption | SafeTooltipOption[] | undefined
     : EChartsOption[K];
 };
+
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /**
  * ECharts event handlers that can be attached to a `Chart`.
@@ -148,6 +150,16 @@ export interface ChartProps {
   /** Additional CSS classes applied to the chart container `<div>` */
   className?: string;
   /**
+   * Accessible name for the chart wrapper. Use a specific, localized label
+   * that identifies what this chart shows, for example "Requests over time".
+   */
+  ariaLabel?: string;
+  /**
+   * Accessible description for the chart wrapper and ECharts' generated aria
+   * summary. Use this for longer localized context, trends, or data caveats.
+   */
+  ariaDescription?: string;
+  /**
    * When `true`, initialises ECharts with its built-in dark theme.
    * Changing this value after mount destroys and re-creates the chart instance.
    */
@@ -166,18 +178,101 @@ const transformTooltip = (tooltipObj: SafeTooltipOption) => {
   };
 };
 
+const getPrefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia(REDUCED_MOTION_QUERY).matches;
+
+const disableSeriesAnimation = (
+  series: EChartsOption["series"],
+): EChartsOption["series"] => {
+  if (Array.isArray(series)) {
+    return series.map((seriesOption) =>
+      isRecord(seriesOption)
+        ? { ...seriesOption, animation: false }
+        : seriesOption,
+    ) as EChartsOption["series"];
+  }
+
+  return isRecord(series)
+    ? ({ ...series, animation: false } as EChartsOption["series"])
+    : series;
+};
+
+const applyReducedMotionOptions = (options: EChartsOption): EChartsOption => ({
+  ...options,
+  animation: false,
+  ...(options.series !== undefined
+    ? { series: disableSeriesAnimation(options.series) }
+    : {}),
+});
+
+const usePrefersReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    getPrefersReducedMotion,
+  );
+
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
+      return;
+    }
+
+    const mediaQueryList = window.matchMedia(REDUCED_MOTION_QUERY);
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+
+    setPrefersReducedMotion(mediaQueryList.matches);
+
+    if (typeof mediaQueryList.addEventListener === "function") {
+      mediaQueryList.addEventListener("change", handleChange);
+    } else {
+      mediaQueryList.addListener?.(handleChange);
+    }
+
+    return () => {
+      if (typeof mediaQueryList.removeEventListener === "function") {
+        mediaQueryList.removeEventListener("change", handleChange);
+      } else {
+        mediaQueryList.removeListener?.(handleChange);
+      }
+    };
+  }, []);
+
+  return prefersReducedMotion;
+};
+
 const prepareChartOptions = ({
   options,
   isDarkMode,
+  ariaLabel,
+  ariaDescription,
+  prefersReducedMotion,
 }: {
   options: KumoChartOption;
   isDarkMode?: boolean;
+  ariaLabel?: string;
+  ariaDescription?: string;
+  prefersReducedMotion?: boolean;
 }): EChartsOption => {
-  const withDefaults: EChartsOption = {
+  let withDefaults: EChartsOption = {
     backgroundColor: "transparent",
     color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
     ...options,
   };
+
+  if (prefersReducedMotion) {
+    withDefaults = applyReducedMotionOptions(withDefaults);
+  }
+
+  withDefaults = mergeAriaOptions({
+    options: withDefaults,
+    shouldEnableAria: Boolean(ariaLabel || ariaDescription),
+    ariaDescription,
+  });
 
   if (!withDefaults.tooltip) return withDefaults;
 
@@ -187,6 +282,52 @@ const prepareChartOptions = ({
       ? withDefaults.tooltip.map(transformTooltip)
       : transformTooltip(withDefaults.tooltip as SafeTooltipOption),
   };
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isAriaEnabled = (aria: EChartsOption["aria"] | undefined): boolean =>
+  isRecord(aria) && aria.enabled === true;
+
+const mergeAriaOptions = ({
+  options,
+  shouldEnableAria,
+  ariaDescription,
+}: {
+  options: EChartsOption;
+  shouldEnableAria: boolean;
+  ariaDescription?: string;
+}): EChartsOption => {
+  const userAria = options.aria;
+
+  if (!shouldEnableAria && !ariaDescription && !userAria) {
+    return options;
+  }
+
+  const ariaRecord = isRecord(userAria) ? userAria : {};
+  const userLabel = isRecord(ariaRecord.label) ? ariaRecord.label : {};
+  const nextAria: Record<string, unknown> = {
+    enabled: true,
+    ...ariaRecord,
+  };
+
+  if (ariaDescription || ariaRecord.label !== undefined) {
+    nextAria.label = {
+      ...(ariaDescription ? { description: ariaDescription } : {}),
+      ...userLabel,
+    };
+  }
+
+  return {
+    ...options,
+    aria: nextAria as EChartsOption["aria"],
+  };
+};
+
+const mergeIds = (...ids: Array<string | undefined>): string | undefined => {
+  const merged = ids.filter(Boolean).join(" ");
+  return merged || undefined;
 };
 
 /**
@@ -220,6 +361,8 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     options,
     optionUpdateBehavior,
     className,
+    ariaLabel,
+    ariaDescription,
     isDarkMode,
     height = 350,
     onEvents,
@@ -236,6 +379,22 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   const wrappersRef = useRef<Record<string, (params: any) => void>>({});
   // Tracks which event names are currently bound to the chart instance
   const boundEventsRef = useRef<Set<string>>(new Set());
+  const descriptionId = useId();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const preparedOptions = useMemo(
+    () =>
+      prepareChartOptions({
+        options,
+        isDarkMode,
+        ariaLabel,
+        ariaDescription,
+        prefersReducedMotion,
+      }),
+    [ariaDescription, ariaLabel, isDarkMode, options, prefersReducedMotion],
+  );
+  const chartDescriptionId = ariaDescription ? descriptionId : undefined;
+  const chartHasAccessibleWrapper =
+    Boolean(ariaLabel || ariaDescription) || isAriaEnabled(preparedOptions.aria);
 
   // Init and cleanup
   useEffect(() => {
@@ -265,12 +424,19 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const chart = chartRef.current;
     if (!chart) return;
 
-    chart.setOption(prepareChartOptions({ options, isDarkMode }), {
+    chart.setOption(preparedOptions, {
       notMerge: false,
       lazyUpdate: true,
       ...optionUpdateBehavior,
     });
-  }, [isDarkMode, optionUpdateBehavior, options]);
+
+    // ECharts may write its own aria-label when aria support is enabled. Reapply
+    // Kumo's explicit wrapper label after setOption so consumer-provided labels
+    // remain the accessible name.
+    if (ariaLabel && elRef.current) {
+      elRef.current.setAttribute("aria-label", ariaLabel);
+    }
+  }, [ariaLabel, optionUpdateBehavior, preparedOptions]);
 
   // Keep handlersRef in sync so wrapper closures always call the latest handler
   // without needing to re-bind listeners on every render
@@ -340,13 +506,22 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   }, []);
 
   return (
-    <div
-      ref={elRef}
-      className={cn("w-full", className)}
-      style={{ height }}
-      tabIndex={options.aria?.enabled ? 0 : undefined}
-      role={options.aria?.enabled ? "img" : undefined}
-    />
+    <>
+      <div
+        ref={elRef}
+        className={cn("w-full", className)}
+        style={{ height }}
+        tabIndex={chartHasAccessibleWrapper ? 0 : undefined}
+        role={chartHasAccessibleWrapper ? "img" : undefined}
+        aria-label={ariaLabel}
+        aria-describedby={mergeIds(chartDescriptionId)}
+      />
+      {ariaDescription && (
+        <div id={descriptionId} className="sr-only">
+          {ariaDescription}
+        </div>
+      )}
+    </>
   );
 });
 

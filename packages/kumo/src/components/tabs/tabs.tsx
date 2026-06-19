@@ -208,7 +208,7 @@ export function Tabs({
             render={tab.render}
             onClick={(e) => {
               e.currentTarget.scrollIntoView({
-                behavior: "smooth",
+                behavior: getMotionSafeScrollBehavior(),
                 block: "nearest",
                 inline: "nearest",
               });
@@ -237,7 +237,7 @@ export function Tabs({
               {...props}
               className={cn(
                 "absolute z-1 left-0",
-                "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
+                "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200 motion-reduce:transition-none",
                 "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&
                   cn(
@@ -366,4 +366,13 @@ function useOverflowDetect(enabled: boolean) {
   }, [enabled]);
 
   return { ref, isOverflowing };
+}
+
+function getMotionSafeScrollBehavior(): ScrollBehavior {
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  return prefersReducedMotion ? "auto" : "smooth";
 }

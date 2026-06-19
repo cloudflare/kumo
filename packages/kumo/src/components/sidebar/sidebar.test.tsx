@@ -526,6 +526,8 @@ describe("Sidebar.ResizeHandle", () => {
     expect(handle.tagName).toBe("BUTTON");
     expect(handle.getAttribute("aria-label")).toBe("Resize sidebar");
     expect(handle.getAttribute("tabindex")).toBe("0");
+    expect(handle.className).toContain("w-6");
+    expect(handle.className).toContain("-right-3");
   });
 });
 

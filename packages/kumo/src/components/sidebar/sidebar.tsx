@@ -1728,14 +1728,14 @@ const SidebarResizeHandle = forwardRef<
       tabIndex={0}
       data-sidebar="resize-handle"
       className={cn(
-        // Hit area inside the sidebar edge; thin visual line pinned to the edge via ::after
-        "absolute inset-y-0 z-2 hidden w-3 cursor-col-resize sm:block",
-        "after:absolute after:inset-y-0 after:w-0.5",
+        // 24px hit area centered on the sidebar edge; thin visual line via ::after.
+        "absolute inset-y-0 z-2 hidden w-6 cursor-col-resize sm:block",
+        "after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 after:-translate-x-1/2",
         "after:bg-transparent after:transition-colors",
         "hover:after:bg-kumo-hairline active:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline",
-        "focus:outline-none",
-        side === "left" && "right-0 after:right-0",
-        side === "right" && "left-0 after:left-0",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        side === "left" && "-right-3",
+        side === "right" && "-left-3",
         className,
       )}
       onPointerDown={handlePointerDown}

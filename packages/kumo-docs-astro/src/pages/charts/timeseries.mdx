@@ -28,6 +28,44 @@ import {
 
 <ComponentSection>
 
+## Accessibility and localization
+
+<p>
+  Provide a localized <code>ariaLabel</code> so assistive technologies can
+  identify the chart, and add <code>ariaDescription</code> when the visual trend
+  needs a longer summary. Register ECharts' <code>AriaComponent</code> in your
+  chart setup so the generated data summary is available alongside Kumo's
+  wrapper label and description.
+</p>
+
+<p>
+  Localize axis names and formatter output with <code>xAxisName</code>,
+  <code>yAxisName</code>, <code>xAxisTickFormat</code>,
+  <code>yAxisTickFormat</code>, and <code>tooltipValueFormat</code>. When using
+  <code>loading</code>, override <code>loadingText</code> with localized status
+  text; it defaults to <code>"Loading chart"</code>.
+</p>
+
+```tsx
+<TimeseriesChart
+  echarts={echarts}
+  data={data}
+  ariaLabel={t("charts.requests.label")}
+  ariaDescription={t("charts.requests.description")}
+  loading={isLoading}
+  loadingText={t("charts.loading")}
+  xAxisName={t("charts.axis.time")}
+  yAxisName={t("charts.axis.requests")}
+  tooltipValueFormat={(value) =>
+    new Intl.NumberFormat(locale).format(value)
+  }
+/>
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
 ## Basic Line Chart
 
 <p>A simple line chart displaying multiple data series over time.</p>
@@ -88,8 +126,42 @@ import {
 
 <p>
   Enable time range selection by providing the <code>onTimeRangeChange</code>
-  callback. Users can click and drag on the chart to select a time range.
+  callback. Users can click and drag on the chart to select a time range, and
+  Kumo also renders fallback controls below the chart so the same range callback
+  is available without drag gestures.
 </p>
+
+<p>
+  The fallback includes keyboard and single-pointer controls for choosing start
+  and end timestamps, applying the selected range, or using the full available
+  range. Localize the control copy with <code>timeRangeControlsLabels</code>, and
+  format timestamp choices with <code>timeRangeControlsFormat</code>. When
+  <code>timeRangeControlsFormat</code> is omitted, the controls use
+  <code>xAxisTickFormat</code> when provided, then fall back to the browser locale.
+</p>
+
+```tsx
+<TimeseriesChart
+  echarts={echarts}
+  data={data}
+  onTimeRangeChange={(from, to) => setRange([from, to])}
+  timeRangeControlsLabels={{
+    groupLabel: t("charts.range.group"),
+    instructions: t("charts.range.instructions"),
+    startLabel: t("charts.range.start"),
+    endLabel: t("charts.range.end"),
+    applyLabel: t("charts.range.apply"),
+    fullRangeLabel: t("charts.range.full"),
+    emptyLabel: t("charts.range.empty"),
+  }}
+  timeRangeControlsFormat={(timestamp) =>
+    new Intl.DateTimeFormat(locale, {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(timestamp)
+  }
+/>
+```
 
   <ComponentExample demo="TimeRangeSelectionChartDemo">
     <TimeRangeSelectionChartDemo client:visible />

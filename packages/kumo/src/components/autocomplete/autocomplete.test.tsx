@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   Autocomplete,
   KUMO_AUTOCOMPLETE_VARIANTS,
@@ -13,7 +13,7 @@ function renderAutocomplete(
   props: Partial<React.ComponentProps<typeof Autocomplete>> = {},
 ) {
   return render(
-    <Autocomplete items={countries} {...props}>
+    <Autocomplete items={countries} label="Country" {...props}>
       <Autocomplete.InputGroup placeholder="Search countries…" />
       <Autocomplete.Content>
         <Autocomplete.List>
@@ -29,6 +29,10 @@ function renderAutocomplete(
 }
 
 describe("Autocomplete", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // Rendering
 
   it("renders without crashing", () => {
@@ -108,6 +112,25 @@ describe("Autocomplete", () => {
       });
       expect(screen.getByText("Country is required")).toBeTruthy();
     });
+
+    it("associates error with an aria-label-only input", () => {
+      const { container } = render(
+        <Autocomplete items={countries} error="Please select a country">
+          <Autocomplete.InputGroup
+            aria-label="Search countries"
+            placeholder="Search countries…"
+          />
+        </Autocomplete>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Search countries" });
+      const error = screen.getByText("Please select a country");
+
+      expect(error.id).toBeTruthy();
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      expect(input.getAttribute("aria-describedby")).toBe(error.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
   });
 
   // Input structure
@@ -125,6 +148,102 @@ describe("Autocomplete", () => {
 
       const input = screen.getByRole("combobox");
       expect(input.getAttribute("aria-autocomplete")).toBe("list");
+    });
+
+    it("passes aria-label through to the input", () => {
+      render(
+        <Autocomplete items={countries}>
+          <Autocomplete.InputGroup
+            aria-label="Search countries"
+            placeholder="Search countries…"
+          />
+        </Autocomplete>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Search countries" });
+      expect(input.getAttribute("aria-label")).toBe("Search countries");
+    });
+
+    it("associates description with an aria-label-only input", () => {
+      const { container } = render(
+        <Autocomplete
+          items={countries}
+          description="Start typing to filter countries"
+        >
+          <Autocomplete.InputGroup
+            aria-label="Search countries"
+            placeholder="Search countries…"
+          />
+        </Autocomplete>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Search countries" });
+      const description = screen.getByText("Start typing to filter countries");
+
+      expect(description.id).toBeTruthy();
+      expect(input.getAttribute("aria-describedby")).toBe(description.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
+
+    it("passes aria-labelledby through to the input", () => {
+      render(
+        <>
+          <span id="country-search-label">Country search</span>
+          <Autocomplete items={countries}>
+            <Autocomplete.InputGroup
+              aria-labelledby="country-search-label"
+              placeholder="Search countries…"
+            />
+          </Autocomplete>
+        </>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Country search" });
+      expect(input.getAttribute("aria-labelledby")).toBe(
+        "country-search-label",
+      );
+    });
+  });
+
+  describe("accessible name warnings", () => {
+    it("warns when InputGroup only has a placeholder", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Autocomplete items={countries}>
+          <Autocomplete.InputGroup placeholder="Search countries…" />
+        </Autocomplete>,
+      );
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        "[Kumo Autocomplete]: Autocomplete.InputGroup must have an accessible name. Provide either:\n" +
+          "  - label prop: <Autocomplete label='Country' ... />\n" +
+          "  - aria-label: <Autocomplete.InputGroup aria-label='Search countries' />\n" +
+          "  - aria-labelledby for custom label association",
+      );
+    });
+
+    it("does not warn when the root label provides the accessible name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      renderAutocomplete();
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("does not warn when aria-label provides the accessible name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Autocomplete items={countries}>
+          <Autocomplete.InputGroup
+            aria-label="Search countries"
+            placeholder="Search countries…"
+          />
+        </Autocomplete>,
+      );
+
+      expect(warnSpy).not.toHaveBeenCalled();
     });
   });
 });

@@ -4,6 +4,7 @@ import {
   Fragment,
   createContext,
   useContext,
+  useId,
   type PropsWithChildren,
   type ReactNode,
 } from "react";
@@ -14,7 +15,11 @@ import {
 } from "../input/input";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { Field, type FieldErrorMatch } from "../field/field";
+import {
+  Field,
+  normalizeFieldError,
+  type FieldErrorMatch,
+} from "../field/field";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -44,7 +49,23 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
 const ComboboxContext = createContext<{
   size: KumoInputSize;
   hasError: boolean;
-}>({ size: "base", hasError: false });
+  hasLabel: boolean;
+  describedBy?: string;
+}>({ size: "base", hasError: false, hasLabel: false });
+
+type AccessibleNameProps = {
+  /** Accessible name for the control when no visible `label` is provided. */
+  "aria-label"?: string;
+  /** ID of an element that labels the control when no visible `label` is provided. */
+  "aria-labelledby"?: string;
+};
+
+type AriaDescriptionProps = {
+  /** IDs of elements that describe the control. */
+  "aria-describedby"?: string;
+  /** Marks the control as invalid for assistive technologies. */
+  "aria-invalid"?: boolean | "false" | "true" | "grammar" | "spelling";
+};
 
 // Derived types from KUMO_COMBOBOX_VARIANTS
 export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
@@ -82,6 +103,13 @@ export function comboboxVariants({
   );
 }
 
+function composeAriaDescribedBy(
+  ...ids: Array<string | undefined>
+): string | undefined {
+  const describedBy = ids.filter(Boolean).join(" ");
+  return describedBy || undefined;
+}
+
 // Legacy type alias for backwards compatibility
 export type ComboboxInputSide = KumoComboboxInputSide;
 export type ComboboxSize = KumoComboboxSize;
@@ -100,7 +128,7 @@ export type ComboboxRootProps<
  * @example
  * ```tsx
  * // Single-select with search input
- * <Combobox value={value} onValueChange={setValue} items={options}>
+ * <Combobox value={value} onValueChange={setValue} items={options} label="Fruit">
  *   <Combobox.TriggerInput placeholder="Search…" />
  *   <Combobox.Content>
  *     <Combobox.List>
@@ -149,6 +177,31 @@ export interface ComboboxProps extends KumoComboboxVariantsProps {
   error?: string | { message: ReactNode; match: FieldErrorMatch };
 }
 
+function warnIfMissingAccessibleName({
+  component,
+  hasLabel,
+  ariaLabel,
+  ariaLabelledBy,
+  example,
+}: {
+  component: string;
+  hasLabel: boolean;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+  example: string;
+}) {
+  if (process.env.NODE_ENV === "production") return;
+
+  if (!hasLabel && !ariaLabel && !ariaLabelledBy) {
+    console.warn(
+      `[Kumo Combobox]: ${component} must have an accessible name. Provide either:\n` +
+        "  - label prop: <Combobox label='Fruit' ... />\n" +
+        `  - aria-label: ${example}\n` +
+        "  - aria-labelledby for custom label association",
+    );
+  }
+}
+
 function Root<Value, Multiple extends boolean | undefined = false>({
   label,
   required,
@@ -166,8 +219,25 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   error?: string | { message: ReactNode; match: FieldErrorMatch };
   size?: KumoComboboxSize;
 }) {
+  const descriptionId = useId();
+  const errorId = useId();
+  const normalizedError = normalizeFieldError(error);
+  const describedBy = !label
+    ? normalizedError
+      ? errorId
+      : description
+        ? descriptionId
+        : undefined
+    : undefined;
   const comboboxControl = (
-    <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
+    <ComboboxContext.Provider
+      value={{
+        size,
+        hasError: Boolean(normalizedError),
+        hasLabel: Boolean(label),
+        describedBy,
+      }}
+    >
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
     </ComboboxContext.Provider>
   );
@@ -180,16 +250,32 @@ function Root<Value, Multiple extends boolean | undefined = false>({
         required={required}
         labelTooltip={labelTooltip}
         description={description}
-        error={
-          error
-            ? typeof error === "string"
-              ? { message: error, match: true }
-              : error
-            : undefined
-        }
+        error={normalizedError}
       >
         {comboboxControl}
       </Field>
+    );
+  }
+
+  if (normalizedError || description) {
+    return (
+      <div className="grid gap-2">
+        {comboboxControl}
+        {normalizedError ? (
+          <span id={errorId} className="text-sm leading-snug text-kumo-danger">
+            {normalizedError.message}
+          </span>
+        ) : (
+          description && (
+            <span
+              id={descriptionId}
+              className="text-sm leading-snug text-kumo-subtle"
+            >
+              {description}
+            </span>
+          )
+        )}
+      </div>
     );
   }
 
@@ -259,15 +345,33 @@ const triggerValueIconStyles: Record<
 
 function TriggerValue({
   className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   ...props
-}: ComboboxBase.Value.Props & { className?: string }) {
-  const { size, hasError } = useContext(ComboboxContext);
+}: ComboboxBase.Value.Props &
+  { className?: string } &
+  AccessibleNameProps &
+  AriaDescriptionProps) {
+  const { size, hasError, hasLabel, describedBy } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
+  warnIfMissingAccessibleName({
+    component: "Combobox.TriggerValue",
+    hasLabel,
+    ariaLabel,
+    ariaLabelledBy,
+    example: "<Combobox.TriggerValue aria-label='Select fruit' />",
+  });
 
   return (
     <ComboboxBase.Trigger
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={composeAriaDescribedBy(ariaDescribedBy, describedBy)}
+      aria-invalid={hasError ? true : ariaInvalid}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
@@ -296,34 +400,39 @@ const triggerInputIconStyles: Record<
   { padding: string; iconSize: number; clearRight: string; caretRight: string }
 > = {
   xs: {
-    padding: "pr-7",
+    padding: "pr-12",
     iconSize: 12,
-    clearRight: "right-5",
-    caretRight: "right-1",
+    clearRight: "right-6",
+    caretRight: "right-0",
   },
   sm: {
-    padding: "pr-9",
+    padding: "pr-12",
     iconSize: 14,
     clearRight: "right-6",
-    caretRight: "right-1.5",
+    caretRight: "right-0",
   },
   base: {
     padding: "pr-12",
     iconSize: 16,
-    clearRight: "right-8",
-    caretRight: "right-2",
+    clearRight: "right-6",
+    caretRight: "right-0",
   },
   lg: {
     padding: "pr-14",
     iconSize: 18,
-    clearRight: "right-9",
-    caretRight: "right-3",
+    clearRight: "right-8",
+    caretRight: "right-2",
   },
 };
 
 function TriggerInput({
   clearLabel = "Clear selection",
   showOptionsLabel = "Show options",
+  className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   ...props
 }: ComboboxBase.Input.Props & {
   /** Accessible label for the clear button. Pass a translated string for i18n.
@@ -335,19 +444,30 @@ function TriggerInput({
    */
   showOptionsLabel?: string;
 }) {
-  const { size, hasError } = useContext(ComboboxContext);
+  const { size, hasError, hasLabel, describedBy } = useContext(ComboboxContext);
   const iconStyles = triggerInputIconStyles[size];
+  warnIfMissingAccessibleName({
+    component: "Combobox.TriggerInput",
+    hasLabel,
+    ariaLabel,
+    ariaLabelledBy,
+    example: "<Combobox.TriggerInput aria-label='Select fruit' />",
+  });
 
   return (
     <div
       className={cn(
         "relative inline-block w-full max-w-xs",
         "has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed",
-        props.className,
+        className,
       )}
     >
       <ComboboxBase.Input
         {...props}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={composeAriaDescribedBy(ariaDescribedBy, describedBy)}
+        aria-invalid={hasError ? true : ariaInvalid}
         className={cn(
           inputVariants({ size, variant: hasError ? "error" : "default" }),
           "w-full",
@@ -361,7 +481,9 @@ function TriggerInput({
         data-kumo-part="clear"
         aria-label={clearLabel}
         className={cn(
-          "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
+          "absolute top-1/2 flex -translate-y-1/2 items-center justify-center cursor-pointer rounded-sm bg-transparent p-0",
+          "before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-0",
           iconStyles.clearRight,
         )}
@@ -374,8 +496,10 @@ function TriggerInput({
         data-kumo-part="trigger"
         aria-label={showOptionsLabel}
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
+          "absolute top-1/2 flex -translate-y-1/2 items-center justify-center cursor-pointer rounded-sm text-kumo-subtle",
+          "before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
           "m-0 bg-transparent p-0", // Reset Stratus global button styles
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
           iconStyles.caretRight,
         )}
       >
@@ -427,10 +551,29 @@ function Empty(props: ComboboxBase.Empty.Props) {
   );
 }
 
-function Input(props: ComboboxBase.Input.Props) {
+function Input({
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  ...props
+}: ComboboxBase.Input.Props) {
+  const { hasError, hasLabel, describedBy } = useContext(ComboboxContext);
+  warnIfMissingAccessibleName({
+    component: "Combobox.Input",
+    hasLabel,
+    ariaLabel,
+    ariaLabelledBy,
+    example: "<Combobox.Input aria-label='Search fruits' />",
+  });
+
   return (
     <ComboboxBase.Input
       {...props}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={composeAriaDescribedBy(ariaDescribedBy, describedBy)}
+      aria-invalid={hasError ? true : ariaInvalid}
       className={cn(
         inputVariants(),
         "mx-1.5 w-[calc(100%-0.75rem)] shrink-0 first:mb-2",
@@ -502,8 +645,9 @@ function Chip({
         data-kumo-part="chip-remove"
         aria-label={removeLabel}
         className={cn(
-          "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
-          "bg-transparent flex",
+          "relative flex cursor-pointer items-center justify-center rounded-md p-1 hover:bg-kumo-fill-hover",
+          "before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+          "bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
         )}
       >
         <XIcon size={10} />
@@ -526,6 +670,10 @@ function TriggerMultipleWithInput<ValueType>({
   className,
   inputSide = "right",
   value: controlledValue,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
 }: {
   placeholder?: string;
   renderItem: (value: ValueType) => React.ReactNode;
@@ -533,8 +681,22 @@ function TriggerMultipleWithInput<ValueType>({
   inputSide?: "right" | "top";
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
-}) {
-  const { size, hasError } = useContext(ComboboxContext);
+} & AccessibleNameProps &
+  AriaDescriptionProps) {
+  const { size, hasError, hasLabel, describedBy } = useContext(ComboboxContext);
+  const inputAriaDescribedBy = composeAriaDescribedBy(
+    ariaDescribedBy,
+    describedBy,
+  );
+  const inputAriaInvalid = hasError ? true : ariaInvalid;
+  warnIfMissingAccessibleName({
+    component: "Combobox.TriggerMultipleWithInput",
+    hasLabel,
+    ariaLabel,
+    ariaLabelledBy,
+    example:
+      "<Combobox.TriggerMultipleWithInput aria-label='Select tags' ... />",
+  });
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
 
@@ -553,6 +715,10 @@ function TriggerMultipleWithInput<ValueType>({
       {inputSide === "top" && (
         <ComboboxBase.Input
           placeholder={placeholder}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
+          aria-describedby={inputAriaDescribedBy}
+          aria-invalid={inputAriaInvalid}
           className="w-full px-2 py-1 border-0 bg-inherit"
         />
       )}
@@ -577,6 +743,10 @@ function TriggerMultipleWithInput<ValueType>({
         {inputSide === "right" && (
           <ComboboxBase.Input
             placeholder={placeholder}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            aria-describedby={inputAriaDescribedBy}
+            aria-invalid={inputAriaInvalid}
             className="min-w-[100px] flex-1 px-2 py-1 border-0 bg-inherit"
           />
         )}
@@ -599,6 +769,10 @@ TriggerMultipleWithInput.displayName = "Combobox.TriggerMultipleWithInput";
  * Compound component: `Combobox` (Root), `.TriggerInput`, `.TriggerValue`,
  * `.TriggerMultipleWithInput`, `.Content`, `.Item`, `.Chip`, `.Input`,
  * `.Empty`, `.GroupLabel`, `.Group`, `.List`, `.Collection`.
+ *
+ * Provide an accessible name with `label` on the root, or with
+ * `aria-label`/`aria-labelledby` on the trigger/search input sub-component;
+ * placeholder text is not a substitute for an accessible name.
  *
  * @example
  * ```tsx

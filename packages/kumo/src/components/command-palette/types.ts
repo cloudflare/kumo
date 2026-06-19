@@ -4,6 +4,41 @@ import type { PortalContainer } from "../../utils/portal-provider";
 /** A single highlight range within a string [startIndex, endIndex] (inclusive) */
 export type HighlightRange = [number, number];
 
+/** Shared accessible-title prop for command palette dialogs. */
+export interface CommandPaletteDialogTitleProps {
+  /**
+   * Accessible dialog title announced by assistive technology.
+   * Provide localized text that describes the palette's purpose.
+   * @default "Command palette"
+   */
+  dialogTitle?: string;
+}
+
+/**
+ * Props for the CommandPalette.Dialog component - modal wrapper for Panel content.
+ */
+export interface CommandPaletteDialogProps
+  extends CommandPaletteDialogTitleProps {
+  /** Whether the dialog is open */
+  open: boolean;
+  /** Callback when the open state changes */
+  onOpenChange: (open: boolean) => void;
+  /**
+   * Optional callback when backdrop is clicked.
+   * Receives the mouse event for position tracking (e.g., for ripple effects).
+   * If not provided, backdrop click calls onOpenChange(false).
+   */
+  onBackdropClick?: (e: React.MouseEvent) => void;
+  /** Child content - typically one or more Panel components */
+  children: ReactNode;
+  /**
+   * Container element for the portal. Use this to render the command palette inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
+}
+
 /**
  * Props for the CommandPalette.Root component - main dialog wrapper with Autocomplete
  *
@@ -13,7 +48,8 @@ export type HighlightRange = [number, number];
  * @template TGroup - The type of items in the list (groups when using getSelectableItems)
  * @template TItem - The type of selectable items (defaults to TGroup for flat lists)
  */
-export interface CommandPaletteRootProps<TGroup, TItem = TGroup> {
+export interface CommandPaletteRootProps<TGroup, TItem = TGroup>
+  extends CommandPaletteDialogTitleProps {
   /** Whether the dialog is open */
   open: boolean;
   /** Callback when the open state changes */
@@ -99,6 +135,12 @@ export interface CommandPaletteFooterProps {
 export interface CommandPaletteListProps {
   /** Result items or groups to render */
   children: ReactNode;
+  /**
+   * Marks the results region as updating for assistive technology.
+   * Set this while showing `CommandPalette.Loading`.
+   * @default false
+   */
+  busy?: boolean;
 }
 
 /**
@@ -131,6 +173,12 @@ export interface CommandPaletteEmptyProps {
 export interface CommandPaletteLoadingProps {
   /** Optional custom loading content */
   children?: ReactNode;
+  /**
+   * Text announced to assistive technology while loading.
+   * Pass localized text, or provide children with their own text.
+   * @default "Loading results"
+   */
+  label?: ReactNode;
 }
 
 /**
@@ -163,6 +211,11 @@ export interface CommandPaletteResultItemProps<T = unknown> {
 
 /**
  * Props for the CommandPalette.Input component - search input inside the palette.
+ *
+ * This input does not render a visible label by default. Provide a localized
+ * `aria-label` when there is no visible label, or associate custom visible
+ * label text with `htmlFor`/`id` or `aria-labelledby`. Placeholder text is not
+ * a substitute for a label.
  *
  * Extends standard HTML input attributes so you can pass props like
  * `autoComplete`, `autoCorrect`, `autoCapitalize`, `spellCheck`, `data-*`, etc.

@@ -305,6 +305,39 @@ describe("InputGroup", () => {
       expect(input.getAttribute("aria-invalid")).toBe("true");
     });
 
+    it("associates error with an aria-label-only input", () => {
+      const { container } = render(
+        <InputGroup
+          error={{ message: "Please enter a valid email", match: true }}
+        >
+          <InputGroup.Input aria-label="Email" type="email" />
+        </InputGroup>,
+      );
+
+      const input = screen.getByRole("textbox", { name: "Email" });
+      const error = screen.getByText("Please enter a valid email");
+
+      expect(error.id).toBeTruthy();
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      expect(input.getAttribute("aria-describedby")).toBe(error.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
+
+    it("associates description with an aria-label-only input", () => {
+      const { container } = render(
+        <InputGroup description="Use your account email address">
+          <InputGroup.Input aria-label="Email" type="email" />
+        </InputGroup>,
+      );
+
+      const input = screen.getByRole("textbox", { name: "Email" });
+      const description = screen.getByText("Use your account email address");
+
+      expect(description.id).toBeTruthy();
+      expect(input.getAttribute("aria-describedby")).toBe(description.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
+
     it("does not set aria-invalid when no error is present", () => {
       render(
         <InputGroup>
@@ -411,15 +444,16 @@ describe("InputGroup", () => {
       ).toBeTruthy();
     });
 
-    it("container is a <label> element when no label prop is provided", () => {
+    it("container is a <div> element when no label prop is provided", () => {
       const { container } = render(
         <InputGroup>
           <InputGroup.Addon>@</InputGroup.Addon>
           <InputGroup.Input placeholder="username" aria-label="Username" />
         </InputGroup>,
       );
-      const label = container.querySelector("label[data-slot='input-group']");
-      expect(label).toBeTruthy();
+      const group = container.querySelector("[data-slot='input-group']");
+      expect(group?.tagName).toBe("DIV");
+      expect(container.querySelector("label")).toBeNull();
     });
 
     it("container is a <div> element when label prop is provided", () => {

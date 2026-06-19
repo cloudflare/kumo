@@ -234,7 +234,10 @@ describe("TableOfContents", () => {
     render(
       <TableOfContents>
         <TableOfContents.List>
-          <TableOfContents.Item render={<button type="button" />} active>
+          <TableOfContents.Item
+            render={<button type="button" aria-label="Custom" />}
+            active
+          >
             Custom
           </TableOfContents.Item>
         </TableOfContents.List>

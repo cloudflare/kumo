@@ -52,14 +52,28 @@ describe("Radio", () => {
   });
 
   it("renders error and description on the group", () => {
-    render(
+    const { container } = render(
       <Radio.Group legend="Choose" error="Required" description="Pick one">
         <Radio.Item label="A" value="a" />
       </Radio.Group>,
     );
 
-    expect(screen.getByText("Required")).toBeTruthy();
-    expect(screen.getByText("Pick one")).toBeTruthy();
+    const fieldset = container.querySelector("fieldset");
+    const radioGroup = screen.getByRole("radiogroup");
+    const error = screen.getByText("Required");
+    const description = screen.getByText("Pick one");
+
+    expect(error.id).toBeTruthy();
+    expect(description.id).toBeTruthy();
+    expect(error.getAttribute("role")).toBe("alert");
+    expect(fieldset?.getAttribute("aria-invalid")).toBe("true");
+    expect(fieldset?.getAttribute("aria-describedby")).toBe(
+      `${error.id} ${description.id}`,
+    );
+    expect(radioGroup.getAttribute("aria-invalid")).toBe("true");
+    expect(radioGroup.getAttribute("aria-describedby")).toBe(
+      `${error.id} ${description.id}`,
+    );
   });
 
   it("accepts ReactNode content for Radio.Item label", () => {

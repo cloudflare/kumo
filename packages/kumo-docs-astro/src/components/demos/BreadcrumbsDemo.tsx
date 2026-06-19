@@ -61,3 +61,23 @@ export function BreadcrumbsWithClipboardDemo() {
     </Breadcrumbs>
   );
 }
+
+export function BreadcrumbsLocalizedDemo() {
+  return (
+    <Breadcrumbs
+      labels={{
+        navigation: "Trilha de navegação",
+        copyAction: "Copiar",
+        copyTooltip: "Clique para copiar",
+        copiedFeedback: "Copiado",
+      }}
+    >
+      <Breadcrumbs.Link href="#">Início</Breadcrumbs.Link>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Link href="#">Documentação</Breadcrumbs.Link>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Current>Navegação estrutural</Breadcrumbs.Current>
+      <Breadcrumbs.Clipboard text="#navegacao-estrutural" />
+    </Breadcrumbs>
+  );
+}

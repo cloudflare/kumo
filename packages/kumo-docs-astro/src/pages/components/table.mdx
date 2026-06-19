@@ -96,6 +96,22 @@ export default function Example() {
   signature and exposes optional event details as a second argument.
 </p>
 <p>
+  Provide a localized `aria-label` for each selection checkbox. The legacy
+  `label` prop still works as a fallback, but `aria-label` mirrors the
+  underlying checkbox API and is easy to source from your i18n layer.
+</p>
+
+```tsx
+const tableLabels = {
+  selectAllRows: t("table.selectAllRows"),
+  selectRow: (subject: string) => t("table.selectRow", { subject }),
+};
+
+<Table.CheckHead aria-label={tableLabels.selectAllRows} />
+<Table.CheckCell aria-label={tableLabels.selectRow(row.subject)} />
+```
+
+<p>
   The older `onValueChange` prop still works but is deprecated — the lint
   rule will flag it and it will be removed in a future major version. Migrate
   by renaming the prop:
@@ -212,19 +228,26 @@ export default function Example() {
 
 ### Table.CheckHead
 
-<p>Header cell with checkbox for "select all" functionality.</p>
+<p>
+  Header cell with checkbox for "select all" functionality. Pass a localized
+  `aria-label` for the inner checkbox.
+</p>
 <PropsTable component="Table.CheckHead" />
 
 ### Table.CheckCell
 
-<p>Body cell with checkbox for row selection.</p>
+<p>
+  Body cell with checkbox for row selection. Pass a localized `aria-label` for
+  the inner checkbox.
+</p>
 <PropsTable component="Table.CheckCell" />
 
 ### Table.ResizeHandle
 
 <p>
   Draggable handle for column resizing. Use with TanStack Table or custom resize
-  logic.
+  logic. Pass a localized `aria-label` for the button; it defaults to "Resize
+  column" when omitted.
 </p>
 
 </ComponentSection>
@@ -248,6 +271,10 @@ import {
 import { Table } from "@cloudflare/kumo";
 
 function DataTable({ data, columns }) {
+  // Replace this with your app's translation helper.
+  const getResizeLabel = (columnId) =>
+    t("table.resizeColumn", { column: columnId });
+
   const table = useReactTable({
     data,
     columns,
@@ -272,6 +299,7 @@ function DataTable({ data, columns }) {
                   header.getContext(),
                 )}
                 <Table.ResizeHandle
+                  aria-label={getResizeLabel(header.column.id)}
                   onMouseDown={header.getResizeHandler()}
                   onTouchStart={header.getResizeHandler()}
                 />
@@ -314,8 +342,24 @@ function DataTable({ data, columns }) {
 
 <p>
   Always provide `aria-label` for `Table.CheckHead` and `Table.CheckCell` to
-  describe their purpose.
+  describe their purpose. Source these labels from your i18n layer, just like
+  any other user-facing copy.
 </p>
+
+### Resize Control Labels
+
+<p>
+  `Table.ResizeHandle` is a button. Override its default `aria-label` with a
+  localized string, especially when the label should include the column name.
+</p>
+
+```tsx
+<Table.ResizeHandle
+  aria-label={t("table.resizeColumn", { column: column.id })}
+  onMouseDown={column.getResizeHandler()}
+  onTouchStart={column.getResizeHandler()}
+/>
+```
 
 ### Keyboard Navigation
 

@@ -125,8 +125,16 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
   <App />
 </TooltipProvider>
 
-// Then use Tooltip anywhere inside
-<Tooltip content="Add" render={<Button shape="square" icon={PlusIcon} />} />
+// Then use Tooltip anywhere inside. Replace with localized copy for your app.
+const addItemLabel = "Add item";
+
+// Button renders its icon prop as decorative; aria-label names the control.
+<Tooltip
+  content={addItemLabel}
+  render={
+    <Button shape="square" icon={PlusIcon} aria-label={addItemLabel} />
+  }
+/>
 ```
 
 </ComponentSection>

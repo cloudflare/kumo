@@ -56,6 +56,25 @@ import { CommandPalette } from "@cloudflare/kumo/components/command-palette";
     primitive. It provides accessible keyboard navigation and customizable
     styling for command palette interfaces.
   </p>
+  <p>
+    `CommandPalette.Root` and `CommandPalette.Dialog` render a visually hidden
+    dialog title for screen readers. Set `dialogTitle` to localized text that
+    describes the palette's purpose, such as "Search documentation".
+  </p>
+  <p>
+    `CommandPalette.Input` does not render a visible `Label` by default.
+    Placeholder text is only a hint and should not be used as the accessible
+    name, so provide localized `aria-label` text when there is no visible label,
+    or associate custom visible label text with `htmlFor`/`id` or
+    `aria-labelledby` instead of adding a redundant `aria-label`.
+  </p>
+  <p>
+    `CommandPalette.Loading` and `CommandPalette.Empty` are announced as polite
+    status updates. Localize loading text with the `label` prop, or replace the
+    loading and empty content with localized `children`. When your app owns an
+    async error state, render it with `role="alert"` so the failure is announced
+    assertively.
+  </p>
 
 ```tsx
 import { useState } from "react";
@@ -77,17 +96,23 @@ export default function Example() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)}>Open</button>
+      <button type="button" onClick={() => setOpen(true)}>
+        Open
+      </button>
       <CommandPalette.Root
         open={open}
         onOpenChange={setOpen}
+        dialogTitle="Search actions"
         items={items}
         value={search}
         onValueChange={setSearch}
         itemToStringValue={(item) => item.title}
         getSelectableItems={(items) => items}
       >
-        <CommandPalette.Input placeholder="Search..." />
+        <CommandPalette.Input
+          aria-label="Search actions"
+          placeholder="Search..."
+        />
         <CommandPalette.List>
           <CommandPalette.Results>
             {(item) => (
@@ -189,7 +214,8 @@ export default function Example() {
 
 <p>
   Modal dialog wrapper. Use with Panel for swappable content (e.g., drill-down
-  navigation).
+  navigation). Pass `dialogTitle` to provide a localized accessible name for
+  the dialog.
 </p>
 
 ### CommandPalette.Panel
@@ -201,11 +227,20 @@ export default function Example() {
 
 ### CommandPalette.Input
 
-<p>Search input field with auto-focus and keyboard handling.</p>
+<p>
+  Search input field with auto-focus and keyboard handling. It does not render a
+  visible `Label` by default. Provide a localized accessible name with
+  `aria-label` when there is no visible label, or associate custom visible label
+  text with `htmlFor`/`id` or `aria-labelledby`; placeholder text is not a
+  substitute for a label.
+</p>
 
 ### CommandPalette.List
 
-<p>Scrollable container for results.</p>
+<p>
+  Scrollable container for results. Pass `busy` while async results are loading
+  to set `aria-busy` on the results region.
+</p>
 
 ### CommandPalette.Results
 
@@ -237,11 +272,17 @@ export default function Example() {
 
 ### CommandPalette.Empty
 
-<p>Empty state when no results match.</p>
+<p>
+  Empty state when no results match. Its children are announced as a polite
+  status update, so pass localized empty-state text.
+</p>
 
 ### CommandPalette.Loading
 
-<p>Loading spinner state.</p>
+<p>
+  Loading spinner state announced as a polite busy status. Pass a localized
+  `label`, or provide localized `children` when replacing the default spinner.
+</p>
 
 ### CommandPalette.Footer
 
@@ -263,6 +304,7 @@ interface CommandPaletteRootProps<TGroup, TItem> {
   // Dialog state
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  dialogTitle?: string; // localized accessible dialog title
   onBackdropClick?: (e: React.MouseEvent) => void;
 
   // Autocomplete
@@ -278,6 +320,24 @@ interface CommandPaletteRootProps<TGroup, TItem> {
   getSelectableItems?: (items: TGroup[]) => TItem[];
 
   children: React.ReactNode;
+}
+```
+
+### CommandPalette.List Props
+
+```tsx
+interface CommandPaletteListProps {
+  children: React.ReactNode;
+  busy?: boolean; // sets aria-busy while async results are loading
+}
+```
+
+### CommandPalette.Loading Props
+
+```tsx
+interface CommandPaletteLoadingProps {
+  children?: React.ReactNode;
+  label?: React.ReactNode; // localized status text; default: "Loading results"
 }
 ```
 

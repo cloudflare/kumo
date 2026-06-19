@@ -53,11 +53,11 @@ import {
       code={`import { SankeyChart, ChartPalette } from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
 import { SankeyChart as SankeyChartType } from "echarts/charts";
-import { TooltipComponent } from "echarts/components";
+import { AriaComponent, TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 
 // Register required ECharts modules
-echarts.use([SankeyChartType, TooltipComponent, CanvasRenderer]);
+echarts.use([SankeyChartType, AriaComponent, TooltipComponent, CanvasRenderer]);
 
 const nodes = [
   { name: "Users", value: 103600, color: ChartPalette.categorical(0) },
@@ -74,10 +74,35 @@ const links = [
 ];
 
 export default function Example() {
-  return <SankeyChart echarts={echarts} nodes={nodes} links={links} height={300} />;
+  return (
+    <SankeyChart
+      echarts={echarts}
+      nodes={nodes}
+      links={links}
+      height={300}
+      ariaLabel="User traffic flow by destination"
+      ariaDescription="Shows traffic flowing from users and devices to apps and tunnels."
+    />
+  );
 }`}
       lang="tsx"
     />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Accessibility</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      Provide a localized <code class="text-kumo-default">ariaLabel</code> and, when useful,
+      <code class="text-kumo-default">ariaDescription</code> so screen reader users know what the diagram represents.
+      Register ECharts' <code class="text-kumo-default">AriaComponent</code> to enable generated data summaries.
+    </p>
+    <p class="mb-4 text-kumo-subtle">
+      When <code class="text-kumo-default">onNodeClick</code> or <code class="text-kumo-default">onLinkClick</code>
+      is provided, SankeyChart renders a keyboard-accessible fallback action list. Use
+      <code class="text-kumo-default">keyboardActionsLabel</code>,
+      <code class="text-kumo-default">getNodeActionLabel</code>, and
+      <code class="text-kumo-default">getLinkActionLabel</code> to localize those actions.
+    </p>
   </ComponentSection>
 
   <!-- Examples -->
@@ -157,6 +182,10 @@ const customTooltip = (params: SankeyTooltipParams) => {
   links={links} 
   onNodeClick={(node) => console.log(node)}
   onLinkClick={(link) => console.log(link)}
+  ariaLabel="Interactive traffic flow"
+  getNodeActionLabel={(node) => "Select " + node.name}
+  getLinkActionLabel={(link, { sourceName, targetName }) =>
+    "Select link from " + sourceName + " to " + targetName}
 />`}>
           <SankeyChartInteractiveDemo client:visible />
         </ComponentExample>

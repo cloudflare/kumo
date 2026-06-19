@@ -13,6 +13,7 @@ import {
   SensitiveInputSizesDemo,
   SensitiveInputControlledDemo,
   SensitiveInputStatesDemo,
+  SensitiveInputLocalizationDemo,
 } from "~/components/demos/SensitiveInputDemo";
 
 {/* Hero Demo */}
@@ -96,6 +97,59 @@ export default function Example() {
   <ComponentExample demo="SensitiveInputStatesDemo">
     <SensitiveInputStatesDemo client:visible />
   </ComponentExample>
+</ComponentSection>
+
+{/* Accessibility and localization */}
+
+<ComponentSection>
+
+## Accessibility and localization
+
+<p>
+  SensitiveInput uses native buttons for revealing, hiding, and copying the
+  value. Provide a visible <code>label</code>, <code>aria-label</code>, or
+  <code>aria-labelledby</code> so assistive technologies can identify the
+  sensitive value. SensitiveInput does not add a generic fallback field name;
+  missing names warn in development. Use <code>aria-labelledby</code> when the
+  label is rich content that should stay associated with the reveal and hide
+  controls.
+</p>
+<p>
+  Use the <code>labels</code> prop to localize secondary controls and statuses:
+  reveal/hide button actions, copy button text, masked-state helper text, and
+  live-region status messages. These English defaults are overrideable and do
+  not replace the field's required accessible name.
+</p>
+<ComponentExample demo="SensitiveInputLocalizationDemo">
+  <SensitiveInputLocalizationDemo client:visible />
+</ComponentExample>
+
+```tsx
+<SensitiveInput
+  label="Chave de API"
+  defaultValue="sk_live_abc123xyz789"
+  labels={{
+    clickToReveal: "Clique para revelar",
+    revealValue: "Revelar valor",
+    hideValue: "Ocultar valor",
+    copy: "Copiar",
+    copyToClipboard: "Copiar para a área de transferência",
+    copied: "Copiado",
+    valueRevealed: "Valor revelado",
+    valueHidden: "Valor oculto",
+    copiedToClipboard: "Copiado para a área de transferência",
+    revealInstruction: "Pressione Enter ou Espaço para revelar.",
+  }}
+/>
+```
+
+```tsx
+<span id="token-label">
+  Production <strong>API token</strong>
+</span>
+<SensitiveInput aria-labelledby="token-label" defaultValue="sk_live_abc123" />
+```
+
 </ComponentSection>
 
 {/* API Reference */}

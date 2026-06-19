@@ -64,6 +64,7 @@ describe("Input", () => {
   it("renders with size 'xs'", () => {
     render(<Input aria-label="Test" size="xs" />);
     expect(screen.getByRole("textbox").className).toContain("h-5");
+    expect(screen.getByRole("textbox").className).not.toContain("min-h-6");
   });
 
   it("renders with size 'sm'", () => {
@@ -196,6 +197,12 @@ describe("Input", () => {
     const classes = inputVariants({ size: "lg" });
     expect(classes).toContain("h-10");
     expect(classes).toContain("px-4");
+  });
+
+  it("preserves the compact xs input visual height", () => {
+    const classes = inputVariants({ size: "xs" });
+    expect(classes).toContain("h-5");
+    expect(classes).not.toContain("min-h-6");
   });
 
   it("applies variant classes from KUMO_INPUT_VARIANTS", () => {

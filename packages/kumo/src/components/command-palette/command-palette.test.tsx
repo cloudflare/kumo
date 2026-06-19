@@ -58,8 +58,10 @@ const renderCommandPalette = ({
   value = "",
   onValueChange = vi.fn(),
   onSelect = vi.fn(),
+  dialogTitle,
   showLoading = false,
   showEmpty = false,
+  loadingLabel,
 }: {
   open?: boolean;
   onOpenChange?: ReturnType<typeof vi.fn>;
@@ -67,8 +69,10 @@ const renderCommandPalette = ({
   value?: string;
   onValueChange?: ReturnType<typeof vi.fn>;
   onSelect?: ReturnType<typeof vi.fn>;
+  dialogTitle?: string;
   showLoading?: boolean;
   showEmpty?: boolean;
+  loadingLabel?: string;
 } = {}) => {
   const displayItems = showEmpty ? emptyGroups : items;
 
@@ -81,12 +85,16 @@ const renderCommandPalette = ({
       onValueChange={onValueChange}
       itemToStringValue={(group: TestGroup) => group.label}
       onSelect={onSelect}
+      dialogTitle={dialogTitle}
       getSelectableItems={getSelectableItems}
     >
-      <CommandPalette.Input placeholder="Search commands..." />
-      <CommandPalette.List>
+      <CommandPalette.Input
+        aria-label="Search test commands"
+        placeholder="Search commands..."
+      />
+      <CommandPalette.List busy={showLoading}>
         {showLoading ? (
-          <CommandPalette.Loading />
+          <CommandPalette.Loading label={loadingLabel} />
         ) : (
           <>
             <Autocomplete.List className="space-y-3">
@@ -236,6 +244,15 @@ describe("CommandPalette", () => {
 
       expect(screen.getByText(/No results found/)).toBeTruthy();
     });
+
+    it("announces empty results as a polite status", () => {
+      renderCommandPalette({ showEmpty: true });
+
+      const status = screen.getByRole("status");
+      expect(status.getAttribute("aria-live")).toBe("polite");
+      expect(status.getAttribute("aria-atomic")).toBe("true");
+      expect(status.textContent).toContain("No results found");
+    });
   });
 
   describe("Loading State", () => {
@@ -246,6 +263,33 @@ describe("CommandPalette", () => {
       // Check for the loading container
       const loadingContainer = document.querySelector(".p-8.flex.items-center");
       expect(loadingContainer).toBeTruthy();
+    });
+
+    it("announces loading as a polite busy status", () => {
+      renderCommandPalette({ showLoading: true });
+
+      const status = screen.getByRole("status");
+      expect(status.getAttribute("aria-live")).toBe("polite");
+      expect(status.getAttribute("aria-busy")).toBe("true");
+      expect(status.textContent).toContain("Loading results");
+    });
+
+    it("supports localized loading announcement text", () => {
+      renderCommandPalette({
+        showLoading: true,
+        loadingLabel: "Cargando resultados",
+      });
+
+      const status = screen.getByRole("status");
+      expect(status.textContent).toContain("Cargando resultados");
+      expect(status.textContent).not.toContain("Loading results");
+    });
+
+    it("marks the results container busy while loading", () => {
+      renderCommandPalette({ showLoading: true });
+
+      const list = document.querySelector(".overflow-y-auto");
+      expect(list?.getAttribute("aria-busy")).toBe("true");
     });
   });
 
@@ -297,18 +341,148 @@ describe("CommandPalette", () => {
   });
 
   describe("Accessibility", () => {
-    it("has dialog role on popup", () => {
+    it("has a default accessible dialog name", () => {
       renderCommandPalette();
 
-      const dialog = document.querySelector('[role="dialog"]');
+      const dialog = screen.getByRole("dialog", { name: "Command palette" });
+      expect(dialog).toBeTruthy();
+    });
+
+    it("uses a localized accessible dialog name when provided", () => {
+      renderCommandPalette({ dialogTitle: "Buscar comandos" });
+
+      const dialog = screen.getByRole("dialog", { name: "Buscar comandos" });
       expect(dialog).toBeTruthy();
     });
 
     it("input has combobox role", () => {
       renderCommandPalette();
 
-      const input = screen.getByRole("combobox");
+      const input = screen.getByRole("combobox", {
+        name: "Search test commands",
+      });
       expect(input).toBeTruthy();
+    });
+
+    it("hides the default decorative input icon from assistive technology", () => {
+      renderCommandPalette();
+
+      const icon = document.querySelector("svg");
+      expect(icon?.getAttribute("aria-hidden")).toBe("true");
+      expect(icon?.getAttribute("focusable")).toBe("false");
+    });
+
+    it("forces ResultItem icons to be decorative", () => {
+      const results = [
+        { id: "button", title: "Button", breadcrumbs: ["Components"] },
+      ];
+
+      render(
+        <CommandPalette.Panel
+          items={results}
+          itemToStringValue={(item) => item.title}
+        >
+          <CommandPalette.List>
+            <CommandPalette.Results>
+              {(item: (typeof results)[number]) => (
+                <CommandPalette.ResultItem
+                  key={item.id}
+                  value={item}
+                  title={item.title}
+                  breadcrumbs={item.breadcrumbs}
+                  icon={
+                    <svg
+                      data-testid="result-icon"
+                      aria-label="File"
+                      focusable="true"
+                    />
+                  }
+                  onClick={() => {}}
+                />
+              )}
+            </CommandPalette.Results>
+          </CommandPalette.List>
+        </CommandPalette.Panel>,
+      );
+
+      const icon = screen.getByTestId("result-icon");
+      expect(icon.getAttribute("aria-hidden")).toBe("true");
+      expect(icon.getAttribute("focusable")).toBe("false");
+    });
+
+    it("warns in development when input has no accessible name", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      try {
+        render(
+          <CommandPalette.Panel items={[]}>
+            <CommandPalette.Input placeholder="Search commands..." />
+            <CommandPalette.List>
+              <CommandPalette.Empty>No commands found</CommandPalette.Empty>
+            </CommandPalette.List>
+          </CommandPalette.Panel>,
+        );
+
+        expect(warn).toHaveBeenCalledWith(
+          expect.stringContaining(
+            "[Kumo CommandPalette]: CommandPalette.Input must have an accessible name.",
+          ),
+        );
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it("does not warn when aria-labelledby provides the input name", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      try {
+        render(
+          <CommandPalette.Panel items={[]}>
+            <span id="command-search-label">Search documentation</span>
+            <CommandPalette.Input
+              aria-labelledby="command-search-label"
+              placeholder="Search docs..."
+            />
+            <CommandPalette.List>
+              <CommandPalette.Empty>No commands found</CommandPalette.Empty>
+            </CommandPalette.List>
+          </CommandPalette.Panel>,
+        );
+
+        expect(
+          screen.getByRole("combobox", { name: "Search documentation" }),
+        ).toBeTruthy();
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it("does not warn when a visible label provides the input name", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      try {
+        render(
+          <CommandPalette.Panel items={[]}>
+            <label htmlFor="command-search-input">Search documentation</label>
+            <CommandPalette.Input
+              id="command-search-input"
+              placeholder="Search docs..."
+            />
+            <CommandPalette.List>
+              <CommandPalette.Empty>No commands found</CommandPalette.Empty>
+            </CommandPalette.List>
+          </CommandPalette.Panel>,
+        );
+
+        expect(
+          screen.getByRole("combobox", { name: "Search documentation" }),
+        ).toBeTruthy();
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
     });
 
     it("auto-focuses input when dialog opens", async () => {

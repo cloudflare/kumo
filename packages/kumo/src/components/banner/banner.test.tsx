@@ -26,4 +26,30 @@ describe("Banner", () => {
     expect(banner.textContent).toBe("System status");
   });
 
+  it("forces structured banner icons to be decorative", () => {
+    render(
+      <Banner
+        title="System status"
+        icon={
+          <svg data-testid="banner-icon" aria-label="Info" focusable="true" />
+        }
+      />,
+    );
+
+    const icon = screen.getByTestId("banner-icon");
+    expect(icon.getAttribute("aria-hidden")).toBe("true");
+    expect(icon.getAttribute("focusable")).toBe("false");
+  });
+
+  it("forces legacy banner icons to be decorative", () => {
+    render(
+      <Banner icon={<svg data-testid="legacy-banner-icon" />}>
+        Legacy status
+      </Banner>,
+    );
+
+    const icon = screen.getByTestId("legacy-banner-icon");
+    expect(icon.getAttribute("aria-hidden")).toBe("true");
+    expect(icon.getAttribute("focusable")).toBe("false");
+  });
 });

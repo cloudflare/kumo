@@ -13,6 +13,10 @@ const currentPath = Astro.url.pathname;
 
 <BaseLayout title={title} description={description}>
   <div class="isolate">
+    <a class="docs-skip-link" href="#main-content">
+      Skip to main content
+    </a>
+
     <SidebarNav currentPath={currentPath} client:load />
 
     <script is:inline>
@@ -41,6 +45,7 @@ const currentPath = Astro.url.pathname;
     <!-- Main content area - margin controlled by CSS :has() based on sidebar state -->
     <div
       id="main-content"
+      tabindex="-1"
       class="main-content mt-12 md:mt-0 md:ml-12 transition-[margin] duration-300"
     >
       <slot />
@@ -49,6 +54,43 @@ const currentPath = Astro.url.pathname;
 </BaseLayout>
 
 <style is:global>
+  .docs-skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0.5rem;
+    background: var(--color-kumo-elevated);
+    color: var(--text-color-kumo-default);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    text-decoration: none;
+    outline: 2px solid var(--color-kumo-brand);
+    outline-offset: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(calc(-100% - 1rem));
+    transition:
+      opacity 150ms,
+      transform 150ms;
+  }
+
+  .docs-skip-link:focus {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .docs-skip-link {
+      transition: none;
+    }
+  }
+
   /* Use CSS :has() to detect sidebar state and adjust main content margin */
   @media (min-width: 768px) {
     /* When sidebar is open, add full margin */

@@ -49,6 +49,12 @@ const emailData = [
   },
 ];
 
+// In product code, source these strings from your i18n library.
+const localizedTableLabels = {
+  selectAllRows: "Select all rows",
+  selectRow: (subject: string) => `Select ${subject}`,
+} as const;
+
 export function TableBasicDemo() {
   return (
     <LayerCard className="p-0">
@@ -109,7 +115,7 @@ export function TableWithCheckboxDemo() {
                 selectedIds.size > 0 && selectedIds.size < rows.length
               }
               onCheckedChange={toggleAll}
-              aria-label="Select all rows"
+              aria-label={localizedTableLabels.selectAllRows}
             />
             <Table.Head>Subject</Table.Head>
             <Table.Head>From</Table.Head>
@@ -122,7 +128,7 @@ export function TableWithCheckboxDemo() {
               <Table.CheckCell
                 checked={selectedIds.has(row.id)}
                 onCheckedChange={() => toggleRow(row.id)}
-                aria-label={`Select ${row.subject}`}
+                aria-label={localizedTableLabels.selectRow(row.subject)}
               />
               <Table.Cell>{row.subject}</Table.Cell>
               <Table.Cell>{row.from}</Table.Cell>
@@ -195,7 +201,7 @@ export function TableSelectedRowDemo() {
                 selectedIds.size > 0 && selectedIds.size < rows.length
               }
               onCheckedChange={toggleAll}
-              aria-label="Select all rows"
+              aria-label={localizedTableLabels.selectAllRows}
             />
             <Table.Head>Subject</Table.Head>
             <Table.Head>From</Table.Head>
@@ -211,7 +217,7 @@ export function TableSelectedRowDemo() {
               <Table.CheckCell
                 checked={selectedIds.has(row.id)}
                 onCheckedChange={() => toggleRow(row.id)}
-                aria-label={`Select ${row.subject}`}
+                aria-label={localizedTableLabels.selectRow(row.subject)}
               />
               <Table.Cell>{row.subject}</Table.Cell>
               <Table.Cell>{row.from}</Table.Cell>
@@ -451,7 +457,7 @@ export function TableFullDemo() {
                 selectedIds.size > 0 && selectedIds.size < emailData.length
               }
               onCheckedChange={toggleAll}
-              aria-label="Select all rows"
+              aria-label={localizedTableLabels.selectAllRows}
             />
             <Table.Head>Subject</Table.Head>
             <Table.Head>From</Table.Head>
@@ -468,7 +474,7 @@ export function TableFullDemo() {
               <Table.CheckCell
                 checked={selectedIds.has(row.id)}
                 onCheckedChange={() => toggleRow(row.id)}
-                aria-label={`Select ${row.subject}`}
+                aria-label={localizedTableLabels.selectRow(row.subject)}
               />
               <Table.Cell>
                 <div className="flex items-center gap-2">

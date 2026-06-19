@@ -61,6 +61,34 @@ import {
 </p>
 </ComponentSection>
 
+{/* Accessibility */}
+
+<ComponentSection>
+
+## Accessibility
+
+<p>
+  Every autocomplete input needs an accessible name. Prefer the root `label`
+  prop for visible field labels. For compact or visually labelled layouts, pass
+  `aria-label` or `aria-labelledby` to `Autocomplete.InputGroup`. Placeholder
+  text is only a hint and does not count as the accessible name.
+</p>
+
+```tsx
+<Autocomplete items={countries} label="Country">
+  <Autocomplete.InputGroup placeholder="Search countries…" />
+</Autocomplete>
+
+<Autocomplete items={countries}>
+  <Autocomplete.InputGroup
+    aria-label="Search countries"
+    placeholder="Search countries…"
+  />
+</Autocomplete>
+```
+
+</ComponentSection>
+
 {/* Controlled */}
 
 <ComponentSection>
@@ -159,7 +187,7 @@ function LanguagePicker() {
   );
 
   return (
-    <Autocomplete items={languages} filter={filter}>
+    <Autocomplete items={languages} label="Language" filter={filter}>
       {/* ... */}
     </Autocomplete>
   );
@@ -172,7 +200,7 @@ function LanguagePicker() {
 </p>
 
 ```tsx
-<Autocomplete items={results} filter={null}>
+<Autocomplete items={results} label="Search results" filter={null}>
   ...
 </Autocomplete>
 ```
@@ -193,8 +221,8 @@ function LanguagePicker() {
 ### Autocomplete.InputGroup
 
 <p>
-  Self-contained input wrapper that renders the text input, clear button, and
-  dropdown trigger together.
+  Styled text input. Provide its accessible name with the root `label`, or pass
+  `aria-label` / `aria-labelledby` here when there is no visible label.
 </p>
 <PropsTable component="Autocomplete.InputGroup" />
 

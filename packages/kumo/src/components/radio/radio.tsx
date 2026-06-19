@@ -2,6 +2,7 @@ import {
   forwardRef,
   createContext,
   useContext,
+  useId,
   type ReactNode,
   type ReactElement,
   type ForwardedRef,
@@ -459,6 +460,12 @@ function RadioGroup<Value = string>({
   name,
   className,
 }: RadioGroupProps<Value>) {
+  const groupId = useId();
+  const errorId = error ? `${groupId}-error` : undefined;
+  const descriptionId = description ? `${groupId}-description` : undefined;
+  const describedBy =
+    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
+
   return (
     <RadioGroupContext.Provider value={{ controlPosition, appearance }}>
       <BaseRadioGroup<Value>
@@ -469,10 +476,14 @@ function RadioGroup<Value = string>({
         }
         disabled={disabled}
         name={name}
+        aria-describedby={describedBy}
+        aria-invalid={error ? true : undefined}
       >
         <Fieldset.Root
           disabled={disabled}
           className={cn("flex flex-col gap-4", className)}
+          aria-describedby={describedBy}
+          aria-invalid={error ? true : undefined}
         >
           {legend && (
             <Fieldset.Legend className="text-base font-medium text-kumo-default">
@@ -490,9 +501,15 @@ function RadioGroup<Value = string>({
           >
             {children}
           </div>
-          {error && <p className="text-sm text-kumo-danger">{error}</p>}
+          {error && (
+            <p id={errorId} role="alert" className="text-sm text-kumo-danger">
+              {error}
+            </p>
+          )}
           {description && (
-            <p className="text-sm text-kumo-subtle">{description}</p>
+            <p id={descriptionId} className="text-sm text-kumo-subtle">
+              {description}
+            </p>
           )}
         </Fieldset.Root>
       </BaseRadioGroup>

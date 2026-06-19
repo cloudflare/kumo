@@ -149,6 +149,7 @@ export {
 } from "./components/popover";
 export {
   SensitiveInput,
+  type SensitiveInputLabels,
   type SensitiveInputProps,
   KUMO_SENSITIVE_INPUT_VARIANTS,
   KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS,
@@ -173,6 +174,8 @@ export {
   CommandPalette,
   KUMO_COMMAND_PALETTE_VARIANTS,
   KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS,
+  type CommandPaletteDialogProps,
+  type CommandPaletteDialogTitleProps,
   type CommandPaletteRootProps,
   type CommandPaletteInputProps,
   type CommandPaletteItemProps,
@@ -194,7 +197,13 @@ export {
   type KumoLinkVariant,
   type KumoLinkVariantsProps,
 } from "./components/link";
-export { Breadcrumbs, type BreadcrumbsProps } from "./components/breadcrumbs";
+export {
+  Breadcrumbs,
+  type BreadcrumbsClipboardLabels,
+  type BreadcrumbsClipboardProps,
+  type BreadcrumbsLabels,
+  type BreadcrumbsProps,
+} from "./components/breadcrumbs";
 export { Empty, type EmptyProps } from "./components/empty";
 export {
   Grid,
@@ -240,6 +249,9 @@ export {
   TimeseriesChart,
   ChartLegend,
   type KumoChartOption,
+  type TimeseriesChartProps,
+  type TimeseriesData,
+  type TimeseriesTimeRangeControlsLabels,
   type SankeyChartProps,
   type SankeyNodeData,
   type SankeyLinkData,

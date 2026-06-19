@@ -1,8 +1,11 @@
 import {
-  type HTMLAttributes,
-  type ReactNode,
-  isValidElement,
+  cloneElement,
   forwardRef,
+  isValidElement,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+  type SVGProps,
 } from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -40,6 +43,20 @@ export const KUMO_BANNER_VARIANTS = {
 export const KUMO_BANNER_DEFAULT_VARIANTS = {
   variant: "default",
 } as const;
+
+const DECORATIVE_ICON_PROPS = {
+  "aria-hidden": true,
+  focusable: "false",
+} as const;
+
+function renderDecorativeIcon(icon: ReactNode) {
+  if (!isValidElement(icon)) return icon;
+
+  return cloneElement(
+    icon as ReactElement<SVGProps<SVGSVGElement>>,
+    DECORATIVE_ICON_PROPS,
+  );
+}
 
 // Derived types from KUMO_BANNER_VARIANTS
 export type KumoBannerVariant = keyof typeof KUMO_BANNER_VARIANTS.variant;
@@ -167,12 +184,13 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
       >
         {icon && (
           <span
+            aria-hidden="true"
             className={cn(
               "shrink-0 flex items-center h-[1.375em]",
               variantConfig.iconClasses,
             )}
           >
-            {icon}
+            {renderDecorativeIcon(icon)}
           </span>
         )}
         <div
@@ -212,8 +230,11 @@ export const Banner = forwardRef<HTMLDivElement, BannerProps>(function Banner(
       {...props}
     >
       {icon && (
-        <span className={cn("shrink-0", variantConfig.iconClasses)}>
-          {icon}
+        <span
+          aria-hidden="true"
+          className={cn("shrink-0", variantConfig.iconClasses)}
+        >
+          {renderDecorativeIcon(icon)}
         </span>
       )}
       {content}

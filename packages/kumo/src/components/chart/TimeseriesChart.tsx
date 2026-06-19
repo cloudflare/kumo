@@ -6,6 +6,7 @@ import {
   memo,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -21,6 +22,24 @@ export interface TimeseriesData {
   data: [number, number][];
   /** Hex color string used for this series' line, bars, and legend dot */
   color: string;
+}
+
+/** Localizable labels for the keyboard and single-pointer time range controls. */
+export interface TimeseriesTimeRangeControlsLabels {
+  /** Accessible name for the fallback controls form. Defaults to "Select time range". */
+  groupLabel?: string;
+  /** Instructional text shown above the controls. Defaults to "Choose a start and end time, then apply the range.". */
+  instructions?: string;
+  /** Label for the start timestamp select. Defaults to "Start". */
+  startLabel?: string;
+  /** Label for the end timestamp select. Defaults to "End". */
+  endLabel?: string;
+  /** Label for the submit button. Defaults to "Apply range". */
+  applyLabel?: string;
+  /** Label for the preset button that selects the full available range. Defaults to "Use full range". */
+  fullRangeLabel?: string;
+  /** Text shown when no timestamps are available. Defaults to "No timestamps available". */
+  emptyLabel?: string;
 }
 
 /** Props for `TimeseriesChart` */
@@ -129,6 +148,17 @@ export interface TimeseriesChartProps {
   height?: number;
   /** Callback fired when user selects a time range via brush selection */
   onTimeRangeChange?: (from: number, to: number) => void;
+  /**
+   * Localized labels for the fallback time-range controls shown when
+   * `onTimeRangeChange` is provided. These controls give users a keyboard and
+   * single-pointer alternative to ECharts' drag brush selection.
+   */
+  timeRangeControlsLabels?: TimeseriesTimeRangeControlsLabels;
+  /**
+   * Formats timestamp options in the fallback time-range controls. Defaults to
+   * `xAxisTickFormat` when provided, otherwise uses the browser locale.
+   */
+  timeRangeControlsFormat?: (timestamp: number) => string;
   /** When `true`, switches the chart to ECharts' built-in dark theme */
   isDarkMode?: boolean;
   /**
@@ -143,15 +173,25 @@ export interface TimeseriesChartProps {
    */
   loading?: boolean;
   /**
+   * Accessible name for the chart wrapper. Use a specific, localized label
+   * that identifies what this chart shows, for example "Requests over time".
+   */
+  ariaLabel?: string;
+  /**
    * Accessible description for screen readers. When provided, it is passed to
-   * ECharts' `aria.label.description` and announced when the chart receives
-   * focus. Consumers are responsible for writing a meaningful description —
+   * the chart wrapper and ECharts' `aria.label.description`. Consumers are
+   * responsible for writing a meaningful, localized description —
    * see the W3C guidance on complex images for recommendations.
    *
    * @see https://www.w3.org/WAI/tutorials/images/complex/
    * @see https://echarts.apache.org/handbook/en/best-practices/aria/
    */
   ariaDescription?: string;
+  /**
+   * Localized text announced while `loading` is true. Defaults to
+   * "Loading chart".
+   */
+  loadingText?: string;
   /**
    * Additional options passed as the second argument to `chart.setOption()`.
    * Defaults to `{ notMerge: false, lazyUpdate: true }`.
@@ -218,13 +258,17 @@ export const TimeseriesChart = forwardRef<
     yAxisTickCount,
     tooltipValueFormat,
     onTimeRangeChange,
+    timeRangeControlsLabels,
+    timeRangeControlsFormat,
     height = 350,
     incomplete,
     enableLegendSelection = false,
     isDarkMode,
     gradient,
     loading,
+    ariaLabel,
     ariaDescription,
+    loadingText = "Loading chart",
     optionUpdateBehavior,
     tooltipMode = "all",
     tooltipMaxItems = 10,
@@ -268,6 +312,11 @@ export const TimeseriesChart = forwardRef<
   tooltipMaxItemsRef.current = tooltipMaxItems;
 
   const [tooltipState, setTooltipState] = useState<TooltipState | null>(null);
+  const timeRangeControlTimestamps = useMemo(
+    () => getTimeRangeControlTimestamps(data),
+    [data],
+  );
+  const formatTimeRangeControl = timeRangeControlsFormat ?? xAxisTickFormat;
 
   // Track cursor position for single-mode y lookup (convertFromPixel needs relative coords)
   const mousePosRef = useRef({ x: 0, y: 0 });
@@ -580,19 +629,38 @@ export const TimeseriesChart = forwardRef<
             ref={containerRef}
             className="relative w-full"
             style={{ height }}
+            aria-busy={loading ? true : undefined}
           />
         }
       >
-        {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
-        {!loading && (
-          <Chart
-            echarts={echarts}
-            ref={mergedRef}
-            options={options as EChartsOption}
-            height={height}
-            isDarkMode={isDarkMode}
-            onEvents={events}
-            optionUpdateBehavior={optionUpdateBehavior}
+        <div className="relative w-full" style={{ height }}>
+          {loading ? (
+            <>
+              <ChartWaveLoader height={height} isDarkMode={isDarkMode} />
+              <div role="status" aria-live="polite" className="sr-only">
+                {loadingText}
+              </div>
+            </>
+          ) : (
+            <Chart
+              echarts={echarts}
+              ref={mergedRef}
+              options={options as EChartsOption}
+              height={height}
+              isDarkMode={isDarkMode}
+              ariaLabel={ariaLabel}
+              ariaDescription={ariaDescription}
+              onEvents={events}
+              optionUpdateBehavior={optionUpdateBehavior}
+            />
+          )}
+        </div>
+        {onTimeRangeChange && (
+          <TimeRangeControls
+            timestamps={timeRangeControlTimestamps}
+            labels={timeRangeControlsLabels}
+            formatTimestampLabel={formatTimeRangeControl}
+            onTimeRangeChange={onTimeRangeChange}
           />
         )}
       </TooltipPrimitive.Trigger>
@@ -675,7 +743,187 @@ const TooltipContent = memo(function TooltipContent({
   );
 });
 
+// ─── Time range controls ──────────────────────────────────────────────────────
+
+const DEFAULT_TIME_RANGE_CONTROL_LABELS = {
+  groupLabel: "Select time range",
+  instructions: "Choose a start and end time, then apply the range.",
+  startLabel: "Start",
+  endLabel: "End",
+  applyLabel: "Apply range",
+  fullRangeLabel: "Use full range",
+  emptyLabel: "No timestamps available",
+} satisfies Required<TimeseriesTimeRangeControlsLabels>;
+
+interface TimeRangeControlsProps {
+  timestamps: number[];
+  labels?: TimeseriesTimeRangeControlsLabels;
+  formatTimestampLabel?: (timestamp: number) => string;
+  onTimeRangeChange: (from: number, to: number) => void;
+}
+
+function TimeRangeControls({
+  timestamps,
+  labels: labelsProp,
+  formatTimestampLabel,
+  onTimeRangeChange,
+}: TimeRangeControlsProps) {
+  const instructionsId = useId();
+  const labels = {
+    groupLabel: labelsProp?.groupLabel ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.groupLabel,
+    instructions:
+      labelsProp?.instructions ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.instructions,
+    startLabel: labelsProp?.startLabel ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.startLabel,
+    endLabel: labelsProp?.endLabel ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.endLabel,
+    applyLabel: labelsProp?.applyLabel ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.applyLabel,
+    fullRangeLabel:
+      labelsProp?.fullRangeLabel ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.fullRangeLabel,
+    emptyLabel: labelsProp?.emptyLabel ?? DEFAULT_TIME_RANGE_CONTROL_LABELS.emptyLabel,
+  };
+  const timestampValues = useMemo(
+    () => timestamps.map((timestamp) => String(timestamp)),
+    [timestamps],
+  );
+  const firstValue = timestampValues[0] ?? "";
+  const lastValue = timestampValues[timestampValues.length - 1] ?? "";
+  const hasTimestamps = timestampValues.length > 0;
+
+  const [range, setRange] = useState({ from: firstValue, to: lastValue });
+
+  useEffect(() => {
+    setRange((current) => {
+      const next = {
+        from: timestampValues.includes(current.from) ? current.from : firstValue,
+        to: timestampValues.includes(current.to) ? current.to : lastValue,
+      };
+
+      if (current.from === next.from && current.to === next.to) {
+        return current;
+      }
+
+      return next;
+    });
+  }, [firstValue, lastValue, timestampValues]);
+
+  const applyRange = useCallback(
+    (fromValue: string, toValue: string) => {
+      const from = Number(fromValue);
+      const to = Number(toValue);
+
+      if (!Number.isFinite(from) || !Number.isFinite(to)) {
+        return;
+      }
+
+      // Match brush selection's timestamp tuple while keeping manual input forgiving.
+      onTimeRangeChange(Math.min(from, to), Math.max(from, to));
+    },
+    [onTimeRangeChange],
+  );
+
+  const formatOptionLabel = useCallback(
+    (timestamp: number) =>
+      formatTimestampLabel ? formatTimestampLabel(timestamp) : formatTimestamp(timestamp),
+    [formatTimestampLabel],
+  );
+
+  return (
+    <form
+      aria-label={labels.groupLabel}
+      className="mt-3 rounded-lg bg-kumo-elevated p-3 shadow-xs ring ring-kumo-line"
+      onSubmit={(event) => {
+        event.preventDefault();
+        applyRange(range.from, range.to);
+      }}
+    >
+      <p id={instructionsId} className="text-xs text-kumo-subtle text-pretty">
+        {labels.instructions}
+      </p>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <label className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <span className="text-xs font-medium text-kumo-subtle">
+            {labels.startLabel}
+          </span>
+          <select
+            value={range.from}
+            disabled={!hasTimestamps}
+            aria-describedby={instructionsId}
+            className="h-10 w-full rounded-lg border-0 bg-kumo-base px-3 text-sm text-kumo-default shadow-xs ring ring-kumo-line focus:outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px] disabled:cursor-not-allowed disabled:opacity-60"
+            onChange={(event) =>
+              setRange((current) => ({ ...current, from: event.target.value }))
+            }
+          >
+            {hasTimestamps ? (
+              timestamps.map((timestamp) => (
+                <option key={timestamp} value={String(timestamp)}>
+                  {formatOptionLabel(timestamp)}
+                </option>
+              ))
+            ) : (
+              <option value="">{labels.emptyLabel}</option>
+            )}
+          </select>
+        </label>
+        <label className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <span className="text-xs font-medium text-kumo-subtle">
+            {labels.endLabel}
+          </span>
+          <select
+            value={range.to}
+            disabled={!hasTimestamps}
+            aria-describedby={instructionsId}
+            className="h-10 w-full rounded-lg border-0 bg-kumo-base px-3 text-sm text-kumo-default shadow-xs ring ring-kumo-line focus:outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px] disabled:cursor-not-allowed disabled:opacity-60"
+            onChange={(event) =>
+              setRange((current) => ({ ...current, to: event.target.value }))
+            }
+          >
+            {hasTimestamps ? (
+              timestamps.map((timestamp) => (
+                <option key={timestamp} value={String(timestamp)}>
+                  {formatOptionLabel(timestamp)}
+                </option>
+              ))
+            ) : (
+              <option value="">{labels.emptyLabel}</option>
+            )}
+          </select>
+        </label>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            disabled={!hasTimestamps}
+            className="inline-flex h-10 items-center justify-center rounded-lg border-0 bg-kumo-base px-3 text-sm font-medium text-kumo-default shadow-xs ring ring-kumo-line transition-transform hover:bg-kumo-tint active:scale-[0.96] focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100"
+            onClick={() => applyRange(firstValue, lastValue)}
+          >
+            {labels.fullRangeLabel}
+          </button>
+          <button
+            type="submit"
+            disabled={!hasTimestamps}
+            className="inline-flex h-10 items-center justify-center rounded-lg border-0 bg-kumo-brand px-3 text-sm font-medium text-white shadow-xs transition-transform hover:bg-kumo-brand-hover active:scale-[0.96] focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100"
+          >
+            {labels.applyLabel}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getTimeRangeControlTimestamps(data: TimeseriesData[]): number[] {
+  const timestamps = new Set<number>();
+
+  for (const series of data) {
+    for (const [timestamp] of series.data) {
+      if (Number.isFinite(timestamp)) {
+        timestamps.add(timestamp);
+      }
+    }
+  }
+
+  return [...timestamps].sort((a, b) => a - b);
+}
 
 /** Binary search for the value in `data` whose timestamp is closest to `ts`. */
 function findNearest(data: [number, number][], ts: number): number | null {
@@ -761,17 +1009,14 @@ function ChartWaveLoader({
         height={height}
         viewBox={`0 0 ${period} ${height}`}
         preserveAspectRatio="none"
-        className="w-full animate-pulse"
+        className="kumo-chart-wave-loader w-full animate-pulse motion-reduce:animate-none"
       >
         <path
           d={d}
           fill="none"
           stroke={strokeColor}
           strokeWidth="2"
-          style={{
-            animation: `kumo-chart-wave 2.4s linear infinite`,
-            transformOrigin: "0 0",
-          }}
+          className="kumo-chart-wave-path"
         />
       </svg>
     </div>

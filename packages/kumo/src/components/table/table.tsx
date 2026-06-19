@@ -238,28 +238,34 @@ const TableFooter = forwardRef<
 
 const TableResizeHandle = forwardRef<
   HTMLButtonElement,
-  React.HTMLAttributes<HTMLButtonElement>
->((props, ref) => {
-  return (
-    <button
-      ref={ref}
-      {...props}
-      type="button"
-      aria-label="Resize column"
-      className={cn(
-        "invisible h-full group-hover:visible", // Make the handle invisible by default
-        "w-[10px]", // Hitting area
-        "flex items-center justify-center", // Center the handle
-        "cursor-col-resize touch-none select-none", // Prevent selection and touch events
-        "absolute top-0 right-0", // Position the handle
-        "m-0 bg-kumo-base p-0", // Override the stratus button styles
-        "focus-visible:ring-2 focus-visible:ring-kumo-brand", // Consistent keyboard focus styling
-      )}
-    >
-      <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
-    </button>
-  );
-});
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(
+  (
+    { "aria-label": ariaLabel = "Resize column", className, ...props },
+    ref,
+  ) => {
+    return (
+      <button
+        ref={ref}
+        {...props}
+        type="button"
+        aria-label={ariaLabel}
+        className={cn(
+          "h-full opacity-0 group-hover:opacity-100 focus-visible:opacity-100", // Keep the handle visually quiet until hover/focus
+          "w-6", // 24px hitting area
+          "flex items-center justify-center", // Center the handle
+          "cursor-col-resize touch-none select-none", // Prevent selection and touch events
+          "absolute top-0 -right-3", // Center the hit area on the column edge
+          "m-0 bg-transparent p-0", // Override the stratus button styles
+          "focus-visible:ring-2 focus-visible:ring-kumo-brand", // Consistent keyboard focus styling
+          className,
+        )}
+      >
+        <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
+      </button>
+    );
+  },
+);
 
 /**
  * Special cell that makes the entire cell area a hit target for the checkbox.
@@ -293,6 +299,7 @@ const TableCheckCell = forwardRef<
       onValueChange,
       label,
       disabled,
+      "aria-label": ariaLabel,
       ...props
     },
     ref,
@@ -310,7 +317,7 @@ const TableCheckCell = forwardRef<
             onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
-          aria-label={label ?? "Select row"}
+          aria-label={ariaLabel ?? label ?? "Select row"}
           disabled={disabled}
           className="relative before:absolute before:-inset-3 before:content-['']"
         />
@@ -347,6 +354,7 @@ const TableCheckHead = forwardRef<
       onValueChange,
       label,
       disabled,
+      "aria-label": ariaLabel,
       ...props
     },
     ref,
@@ -364,7 +372,7 @@ const TableCheckHead = forwardRef<
             onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
-          aria-label={label ?? "Select all rows"}
+          aria-label={ariaLabel ?? label ?? "Select all rows"}
           disabled={disabled}
           className="relative before:absolute before:-inset-3 before:content-['']"
         />

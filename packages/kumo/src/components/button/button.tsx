@@ -127,10 +127,11 @@ export function buttonVariants({
   shape = KUMO_BUTTON_DEFAULT_VARIANTS.shape,
 }: KumoButtonVariantsProps = {}) {
   const isCompactShape = shape === "square" || shape === "circle";
+  const needsMinimumHitArea = size === "xs";
 
   return cn(
     // Base styles
-    "group flex w-max shrink-0 items-center font-medium select-none",
+    "group relative flex w-max shrink-0 items-center font-medium select-none",
     "border-0 shadow-xs",
     "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
@@ -158,27 +159,69 @@ export function buttonVariants({
         size,
         KUMO_BUTTON_DEFAULT_VARIANTS.size,
       ).classes,
+    // Keep the compact visual size while meeting the WCAG 2.2 AA 24px
+    // minimum target floor for xs buttons and xs icon buttons.
+    needsMinimumHitArea &&
+      "before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] disabled:before:hidden",
   );
 }
 
-// Normalize icon prop to support both React elements and component types
+const DECORATIVE_ICON_PROPS = {
+  "aria-hidden": true,
+  focusable: "false",
+} as const;
+
+const collectMeaningfulButtonText = (node: ChildNode): string => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent ?? "";
+  }
+
+  if (!(node instanceof HTMLElement || node instanceof SVGElement)) {
+    return "";
+  }
+
+  if (node.getAttribute("aria-hidden") === "true") {
+    return "";
+  }
+
+  if (node instanceof SVGElement || node.tagName.toLowerCase() === "svg") {
+    return "";
+  }
+
+  return Array.from(node.childNodes).map(collectMeaningfulButtonText).join("");
+};
+
+const getMeaningfulButtonText = (element: HTMLElement): string =>
+  Array.from(element.childNodes)
+    .map(collectMeaningfulButtonText)
+    .join("")
+    .trim();
+
+// Normalize icon prop to support both React elements and component types.
+// The button or adjacent text provides the accessible name, so the icon is
+// always rendered as decorative.
 const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (!IconComponent) return null;
-  if (React.isValidElement(IconComponent)) return IconComponent;
+  if (React.isValidElement<Record<string, unknown>>(IconComponent)) {
+    return React.cloneElement(IconComponent, DECORATIVE_ICON_PROPS);
+  }
   const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
-  return <Comp />;
+  return <Comp {...DECORATIVE_ICON_PROPS} />;
 };
 
 /**
  * Button component props.
  *
- * Uses a discriminated union on `shape` so that icon-only buttons
- * (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ * Keeps the existing discriminated union on `shape` so compact icon-only
+ * buttons (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ * Runtime development warnings also cover any button without visible text or
+ * `aria-label`/`aria-labelledby`, regardless of shape.
+ * Use localized accessible names in product code.
  *
  * @example
  * ```tsx
  * <Button variant="primary">Save</Button>
- * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add" />
+ * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add item" />
  * <Button variant="destructive" loading>Deleting...</Button>
  * ```
  */
@@ -259,9 +302,39 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const { type, ...restProps } = props;
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    React.useImperativeHandle(
+      ref,
+      () => buttonRef.current as HTMLButtonElement,
+    );
+
+    const ariaLabel = restProps["aria-label"];
+    const ariaLabelledBy = restProps["aria-labelledby"];
+
+    React.useEffect(() => {
+      if (process.env.NODE_ENV === "production") return;
+
+      const hasAriaLabel =
+        typeof ariaLabel === "string" ? ariaLabel.trim().length > 0 : false;
+      const hasAriaLabelledBy =
+        typeof ariaLabelledBy === "string"
+          ? ariaLabelledBy.trim().length > 0
+          : false;
+      const hasMeaningfulContent = buttonRef.current
+        ? getMeaningfulButtonText(buttonRef.current).length > 0
+        : false;
+
+      if (!hasMeaningfulContent && !hasAriaLabel && !hasAriaLabelledBy) {
+        console.warn(
+          "[Kumo Button]: Button must have an accessible name when it has no visible text. " +
+            "Provide localized text content, aria-label, or aria-labelledby.",
+        );
+      }
+    }, [ariaLabel, ariaLabelledBy, children, IconComponent, loading]);
+
     const button = (
       <button
-        ref={ref}
+        ref={buttonRef}
         data-kumo-component="Button"
         className={cn(
           buttonVariants({ variant, size, shape }),
@@ -306,12 +379,14 @@ export const RefreshButton = ({
 }: ButtonProps) => (
   <Button shape="square" aria-label={ariaLabel} {...props}>
     <ArrowsClockwise
+      aria-hidden="true"
       className={cn({
         "animate-refresh": loading,
         "size-4.5": props.size === "base" || !props.size,
         "size-4": props.size === "sm",
         "size-5": props.size === "lg",
       })}
+      focusable="false"
     />
   </Button>
 );

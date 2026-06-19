@@ -61,6 +61,53 @@ export default function Example() {
 
 </ComponentSection>
 
+{/* Accessibility and localization */}
+
+<ComponentSection>
+
+## Accessibility and localization
+
+<p>
+  ClipboardText includes Kumo-owned strings for the icon-only copy button,
+  tooltip, and copied status. Pass these user-facing and assistive labels in
+  your consumer's language.
+</p>
+
+<ul class="list-disc list-inside space-y-1">
+  <li>
+    <code>labels.copyAction</code> names the copy button for assistive
+    technology. It defaults to <code>"Copy to clipboard"</code>.
+  </li>
+  <li>
+    <code>tooltip.text</code> shows the hover tooltip when tooltip mode is
+    enabled. It defaults to <code>"Copy"</code>.
+  </li>
+  <li>
+    <code>tooltip.copiedText</code> shows the copied toast in tooltip mode and
+    announces the copied status. It defaults to <code>"Copied"</code>.
+  </li>
+</ul>
+
+```tsx
+<ClipboardText
+  text="sk_live_***********"
+  textToCopy="sk_live_51H8_abc123"
+  labels={{ copyAction: t("clipboard.copyAction") }}
+  tooltip={{
+    text: t("clipboard.copy"),
+    copiedText: t("clipboard.copied"),
+  }}
+/>
+```
+
+<p>
+  The generated props table focuses on Kumo-owned props and does not enumerate
+  inherited ARIA/native attributes. Use the localization props above for
+  ClipboardText's built-in controls.
+</p>
+
+</ComponentSection>
+
 {/* Examples */}
 
 <ComponentSection>

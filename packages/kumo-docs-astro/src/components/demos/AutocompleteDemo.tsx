@@ -107,7 +107,10 @@ const servers: ServerGroup[] = [
 export function AutocompleteDemo() {
   return (
     <Autocomplete items={fruits}>
-      <Autocomplete.InputGroup placeholder="Search fruits…" />
+      <Autocomplete.InputGroup
+        aria-label="Search fruits"
+        placeholder="Search fruits…"
+      />
       <Autocomplete.Content>
         <Autocomplete.List>
           {(item: string) => (
@@ -189,7 +192,10 @@ export function AutocompleteErrorDemo() {
 export function AutocompleteGroupedDemo() {
   return (
     <Autocomplete items={servers}>
-      <Autocomplete.InputGroup placeholder="Select region…" />
+      <Autocomplete.InputGroup
+        aria-label="Select server region"
+        placeholder="Select region…"
+      />
       <Autocomplete.Content>
         <Autocomplete.List>
           {(group: ServerGroup) => (
@@ -215,7 +221,11 @@ export function AutocompleteSizesDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <Autocomplete items={fruits.slice(0, 10)}>
-        <Autocomplete.InputGroup size="xs" placeholder="xs" />
+        <Autocomplete.InputGroup
+          aria-label="Search fruits, extra small"
+          size="xs"
+          placeholder="xs"
+        />
         <Autocomplete.Content>
           <Autocomplete.List>
             {(item: string) => (
@@ -227,7 +237,11 @@ export function AutocompleteSizesDemo() {
         </Autocomplete.Content>
       </Autocomplete>
       <Autocomplete items={fruits.slice(0, 10)}>
-        <Autocomplete.InputGroup size="sm" placeholder="sm" />
+        <Autocomplete.InputGroup
+          aria-label="Search fruits, small"
+          size="sm"
+          placeholder="sm"
+        />
         <Autocomplete.Content>
           <Autocomplete.List>
             {(item: string) => (
@@ -239,7 +253,11 @@ export function AutocompleteSizesDemo() {
         </Autocomplete.Content>
       </Autocomplete>
       <Autocomplete items={fruits.slice(0, 10)}>
-        <Autocomplete.InputGroup size="base" placeholder="base (default)" />
+        <Autocomplete.InputGroup
+          aria-label="Search fruits, default"
+          size="base"
+          placeholder="base (default)"
+        />
         <Autocomplete.Content>
           <Autocomplete.List>
             {(item: string) => (
@@ -251,7 +269,11 @@ export function AutocompleteSizesDemo() {
         </Autocomplete.Content>
       </Autocomplete>
       <Autocomplete items={fruits.slice(0, 10)}>
-        <Autocomplete.InputGroup size="lg" placeholder="lg" />
+        <Autocomplete.InputGroup
+          aria-label="Search fruits, large"
+          size="lg"
+          placeholder="lg"
+        />
         <Autocomplete.Content>
           <Autocomplete.List>
             {(item: string) => (
@@ -277,7 +299,10 @@ export function AutocompleteControlledDemo() {
         value={value}
         onValueChange={(v) => setValue(v)}
       >
-        <Autocomplete.InputGroup placeholder="Type a fruit…" />
+        <Autocomplete.InputGroup
+          aria-label="Type a fruit"
+          placeholder="Type a fruit…"
+        />
         <Autocomplete.Content>
           <Autocomplete.List>
             {(item: string) => (

@@ -91,6 +91,17 @@
   animation: refresh 1s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .animate-refresh {
+    animation: none;
+  }
+
+  .skeleton {
+    background-position: 0 0;
+  }
+}
+
 /* ============================================
    react-day-picker styles for Calendar/DatePicker
    ============================================ */
@@ -330,6 +341,18 @@
 .rdp-root[data-nav-layout="around"] .rdp-month,
 .rdp-root[data-nav-layout="after"] .rdp-month {
   position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rdp-root {
+    --rdp-animation_duration: 0s;
+  }
+
+  .rdp-day_button,
+  .rdp-button_next,
+  .rdp-button_previous {
+    transition: none;
+  }
 }
 
 .rdp-root[data-nav-layout="around"] .rdp-month_caption {

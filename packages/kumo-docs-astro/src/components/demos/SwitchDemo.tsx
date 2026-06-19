@@ -4,16 +4,32 @@ import { Switch } from "@cloudflare/kumo";
 export function SwitchBasicDemo() {
   const [checked, setChecked] = useState(false);
   return (
-    <Switch label="Switch" checked={checked} onCheckedChange={setChecked} />
+    <Switch
+      label="Email notifications"
+      checked={checked}
+      onCheckedChange={setChecked}
+    />
   );
 }
 
 export function SwitchOffDemo() {
-  return <Switch label="Switch" checked={false} onCheckedChange={() => {}} />;
+  return (
+    <Switch
+      label="Email notifications"
+      checked={false}
+      onCheckedChange={() => {}}
+    />
+  );
 }
 
 export function SwitchOnDemo() {
-  return <Switch label="Switch" checked={true} onCheckedChange={() => {}} />;
+  return (
+    <Switch
+      label="Email notifications"
+      checked={true}
+      onCheckedChange={() => {}}
+    />
+  );
 }
 
 export function SwitchDisabledDemo() {

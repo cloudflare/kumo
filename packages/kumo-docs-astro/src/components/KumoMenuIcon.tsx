@@ -7,6 +7,10 @@ interface KumoMenuIconProps {
 
 export function KumoMenuIcon({ className }: KumoMenuIconProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const animatedPathClassName =
+    "origin-center-top transition-all duration-800 motion-reduce:transition-none";
+  const animatedRectClassName =
+    "origin-left-center transition-all duration-800 motion-reduce:transition-none";
 
   return (
     <div
@@ -22,6 +26,8 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="h-full w-full"
+        aria-hidden="true"
+        focusable="false"
       >
         <defs>
           <clipPath id="contentClip">
@@ -32,7 +38,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         {/* Vertical connector - NOT clipped */}
         <path
           className={cn(
-            "origin-center-top transition-all duration-800",
+            animatedPathClassName,
             isHovered
               ? "translate-y-[22px] scale-y-0 opacity-0"
               : "translate-y-0 scale-y-100 opacity-100",
@@ -49,7 +55,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         <g clipPath="url(#contentClip)">
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[33px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -63,7 +69,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-12px scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -77,7 +83,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[51px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -91,7 +97,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[70px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -105,7 +111,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "translate-y-[25px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -119,7 +125,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[5px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -133,7 +139,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[19px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -147,7 +153,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[19px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -161,7 +167,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[5px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -175,7 +181,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "translate-y-[9px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -189,7 +195,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "translate-y-[9px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -203,7 +209,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
           />
           <path
             className={cn(
-              "origin-center-top transition-all duration-800",
+              animatedPathClassName,
               isHovered
                 ? "-translate-y-[60px] scale-y-[0.01]"
                 : "translate-y-0 scale-y-100",
@@ -220,7 +226,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         {/* Hamburger lines (on top, not clipped) */}
         <rect
           className={cn(
-            "origin-left-center transition-all duration-800",
+            animatedRectClassName,
             isHovered
               ? "h-[6px] translate-x-[0.36px] translate-y-[24.88px]"
               : "h-[7px]",
@@ -235,7 +241,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         />
         <rect
           className={cn(
-            "origin-left-center transition-all duration-800",
+            animatedRectClassName,
             isHovered
               ? "h-[6px] translate-x-[7.36px] translate-y-[30.88px] scale-x-[0.863]"
               : "h-[9px]",
@@ -250,7 +256,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         />
         <rect
           className={cn(
-            "origin-left-center transition-all duration-800",
+            animatedRectClassName,
             isHovered
               ? "h-[6px] -translate-x-[3.64px] -translate-y-[11.12px] scale-x-[1.114] opacity-0"
               : "h-[6px] opacity-100",
@@ -265,7 +271,7 @@ export function KumoMenuIcon({ className }: KumoMenuIconProps) {
         />
         <rect
           className={cn(
-            "origin-left-center transition-all duration-800",
+            animatedRectClassName,
             isHovered
               ? "h-[6px] translate-x-[9.36px] -translate-y-[5.12px] scale-x-[0.83]"
               : "h-[6px]",

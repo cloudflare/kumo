@@ -90,12 +90,45 @@ export interface SankeyChartProps {
   linkColor?: "gradient" | "gray";
   linkOpacity?: number;
   className?: string;
+  /**
+   * Accessible name for the chart wrapper. Use a specific, localized label
+   * that identifies what this Sankey diagram shows.
+   */
+  ariaLabel?: string;
+  /**
+   * Accessible description for the chart wrapper and ECharts' generated aria
+   * summary. Use this for localized context, trends, or interaction guidance.
+   */
+  ariaDescription?: string;
   isDarkMode?: boolean;
   onNodeClick?: (node: SankeyNodeData) => void;
   onLinkClick?: (link: SankeyLinkData) => void;
+  /** Localized label for the keyboard-accessible fallback action list. */
+  keyboardActionsLabel?: string;
+  /** Localized label builder for keyboard node action buttons. */
+  getNodeActionLabel?: (node: SankeyNodeData, index: number) => string;
+  /** Localized label builder for keyboard link action buttons. */
+  getLinkActionLabel?: (
+    link: SankeyLinkData,
+    context: {
+      index: number;
+      sourceName: string;
+      targetName: string;
+      sourceNode?: SankeyNodeData;
+      targetNode?: SankeyNodeData;
+      formattedValue: string;
+    },
+  ) => string;
 }
 
 const defaultFormatValue = (value: number) => value.toLocaleString();
+const defaultKeyboardActionsLabel = "Sankey chart actions";
+const defaultGetNodeActionLabel = (node: SankeyNodeData) =>
+  `Select ${node.name}`;
+const defaultGetLinkActionLabel: NonNullable<
+  SankeyChartProps["getLinkActionLabel"]
+> = (_link, { sourceName, targetName, formattedValue }) =>
+  `Select link from ${sourceName} to ${targetName}, value ${formattedValue}`;
 
 /** Type guard for ECharts tooltip params */
 interface TooltipParams {
@@ -183,9 +216,14 @@ export function SankeyChart({
   linkColor = "gradient",
   linkOpacity = 0.5,
   className,
+  ariaLabel,
+  ariaDescription,
   isDarkMode,
   onNodeClick,
   onLinkClick,
+  keyboardActionsLabel = defaultKeyboardActionsLabel,
+  getNodeActionLabel = defaultGetNodeActionLabel,
+  getLinkActionLabel = defaultGetLinkActionLabel,
 }: SankeyChartProps) {
   const hasNodeValues = nodes.some((n) => n.value !== undefined);
   const shouldShowValues = showNodeValues ?? hasNodeValues;
@@ -222,6 +260,10 @@ export function SankeyChart({
     }));
 
     return {
+      aria: {
+        enabled: true,
+        ...(ariaDescription && { label: { description: ariaDescription } }),
+      },
       backgroundColor: "transparent",
       animation: true,
       animationDuration: 500,
@@ -371,6 +413,7 @@ export function SankeyChart({
     isInlineLayout,
     formatValue,
     tooltipFormatter,
+    ariaDescription,
   ]);
 
   const handleClick = useCallback(
@@ -430,15 +473,104 @@ export function SankeyChart({
   );
 
   return (
-    <Chart
-      echarts={echarts}
-      options={options}
-      className={className}
-      isDarkMode={isDarkMode}
-      height={height}
-      onEvents={onEvents}
-    />
+    <>
+      <Chart
+        echarts={echarts}
+        options={options}
+        className={className}
+        ariaLabel={ariaLabel}
+        ariaDescription={ariaDescription}
+        isDarkMode={isDarkMode}
+        height={height}
+        onEvents={onEvents}
+      />
+      <SankeyKeyboardActions
+        nodes={nodes}
+        links={links}
+        formatValue={formatValue}
+        onNodeClick={onNodeClick}
+        onLinkClick={onLinkClick}
+        keyboardActionsLabel={keyboardActionsLabel}
+        getNodeActionLabel={getNodeActionLabel}
+        getLinkActionLabel={getLinkActionLabel}
+      />
+    </>
   );
 }
 
 SankeyChart.displayName = "SankeyChart";
+
+function SankeyKeyboardActions({
+  nodes,
+  links,
+  formatValue,
+  onNodeClick,
+  onLinkClick,
+  keyboardActionsLabel,
+  getNodeActionLabel,
+  getLinkActionLabel,
+}: {
+  nodes: SankeyNodeData[];
+  links: SankeyLinkData[];
+  formatValue: (value: number) => string;
+  onNodeClick?: (node: SankeyNodeData) => void;
+  onLinkClick?: (link: SankeyLinkData) => void;
+  keyboardActionsLabel: string;
+  getNodeActionLabel: NonNullable<SankeyChartProps["getNodeActionLabel"]>;
+  getLinkActionLabel: NonNullable<SankeyChartProps["getLinkActionLabel"]>;
+}) {
+  if (!onNodeClick && !onLinkClick) return null;
+
+  return (
+    <div
+      role="group"
+      aria-label={keyboardActionsLabel}
+      className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:z-10 focus-within:m-2 focus-within:max-h-64 focus-within:overflow-auto focus-within:rounded-md focus-within:border focus-within:border-kumo-line focus-within:bg-kumo-base focus-within:p-2 focus-within:shadow-lg"
+    >
+      <div className="mb-2 text-xs font-medium text-kumo-subtle">
+        {keyboardActionsLabel}
+      </div>
+      <ul className="space-y-1">
+        {onNodeClick &&
+          nodes.map((node, index) => (
+            <li key={`node-${node.id ?? node.name}-${index}`}>
+              <button
+                type="button"
+                className="block w-full rounded-md px-2 py-1 text-left text-sm text-kumo-default hover:bg-kumo-elevated focus:bg-kumo-elevated focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand"
+                onClick={() => onNodeClick(node)}
+              >
+                {getNodeActionLabel(node, index)}
+              </button>
+            </li>
+          ))}
+        {onLinkClick &&
+          links.map((link, index) => {
+            const sourceNode = nodes[link.source];
+            const targetNode = nodes[link.target];
+            const sourceName = sourceNode?.name ?? String(link.source);
+            const targetName = targetNode?.name ?? String(link.target);
+            const formattedValue = formatValue(link.value);
+
+            return (
+              <li key={`link-${link.id ?? `${link.source}-${link.target}`}-${index}`}>
+                <button
+                  type="button"
+                  className="block w-full rounded-md px-2 py-1 text-left text-sm text-kumo-default hover:bg-kumo-elevated focus:bg-kumo-elevated focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand"
+                  onClick={() => onLinkClick(link)}
+                >
+                  {getLinkActionLabel(link, {
+                    index,
+                    sourceName,
+                    targetName,
+                    sourceNode,
+                    targetNode,
+                    formattedValue,
+                  })}
+                </button>
+              </li>
+            );
+          })}
+      </ul>
+    </div>
+  );
+}

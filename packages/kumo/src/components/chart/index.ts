@@ -2,6 +2,7 @@ export {
   TimeseriesChart,
   type TimeseriesChartProps,
   type TimeseriesData,
+  type TimeseriesTimeRangeControlsLabels,
 } from "./TimeseriesChart";
 
 export {

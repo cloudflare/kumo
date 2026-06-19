@@ -18,6 +18,8 @@ export function StickyDocHeader({
   const [showStickyTitle, setShowStickyTitle] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const headerRef = useRef<HTMLElement>(null);
+  const iconLinkClassName =
+    "relative inline-flex items-center justify-center rounded-sm text-kumo-subtle transition-colors hover:bg-kumo-tint hover:text-kumo-default focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']";
 
   // Watch for sidebar state changes
   useEffect(() => {
@@ -69,6 +71,7 @@ export function StickyDocHeader({
       {/* Sticky title that appears when sidebar is collapsed - positioned to appear after "Kumo" */}
       {!sidebarOpen && (
         <div
+          aria-hidden={!showStickyTitle}
           className={cn(
             "pointer-events-none fixed top-0 left-12 z-50 flex h-12 items-center font-medium transition-opacity duration-200 select-none",
             showStickyTitle ? "opacity-100" : "opacity-0",
@@ -83,7 +86,7 @@ export function StickyDocHeader({
                 href={githubSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-default"
+                className={iconLinkClassName}
                 title="View source on GitHub"
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle ? 0 : -1}
@@ -96,7 +99,7 @@ export function StickyDocHeader({
                 href={baseUIUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-default"
+                className={iconLinkClassName}
                 title="View Base UI documentation"
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle ? 0 : -1}
@@ -115,6 +118,7 @@ export function StickyDocHeader({
       >
         <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-hairline">
           <div
+            aria-hidden={!(showStickyTitle && sidebarOpen)}
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
               showStickyTitle && sidebarOpen
@@ -130,7 +134,7 @@ export function StickyDocHeader({
                 href={githubSourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-default"
+                className={iconLinkClassName}
                 title="View source on GitHub"
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
@@ -143,7 +147,7 @@ export function StickyDocHeader({
                 href={baseUIUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-kumo-subtle transition-colors hover:text-kumo-default"
+                className={iconLinkClassName}
                 title="View Base UI documentation"
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}

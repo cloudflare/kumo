@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   Combobox,
   KUMO_COMBOBOX_VARIANTS,
@@ -14,7 +14,10 @@ function renderComboboxWithInput(
 ) {
   return render(
     <Combobox items={fruits} {...props}>
-      <Combobox.TriggerInput placeholder="Pick a fruit…" />
+      <Combobox.TriggerInput
+        aria-label="Pick a fruit"
+        placeholder="Pick a fruit…"
+      />
       <Combobox.Content>
         <Combobox.List>
           {(item: string) => (
@@ -29,6 +32,10 @@ function renderComboboxWithInput(
 }
 
 describe("Combobox", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // Rendering
 
   it("renders without crashing", () => {
@@ -99,6 +106,7 @@ describe("Combobox", () => {
           items={fruits}
           error="Selection required"
           defaultValue="Apple"
+          label="Fruit"
         >
           <Combobox.TriggerValue placeholder="Select a fruit" />
           <Combobox.Content>
@@ -132,6 +140,25 @@ describe("Combobox", () => {
       });
       expect(screen.getByText("Fruit is required")).toBeTruthy();
     });
+
+    it("associates error with an aria-label-only TriggerInput", () => {
+      const { container } = render(
+        <Combobox items={fruits} error="Please select a fruit">
+          <Combobox.TriggerInput
+            aria-label="Pick a fruit"
+            placeholder="Pick a fruit…"
+          />
+        </Combobox>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Pick a fruit" });
+      const error = screen.getByText("Please select a fruit");
+
+      expect(error.id).toBeTruthy();
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      expect(input.getAttribute("aria-describedby")).toBe(error.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
   });
 
   // Trigger structure
@@ -149,6 +176,215 @@ describe("Combobox", () => {
 
       const trigger = screen.getByRole("button", { name: "Show options" });
       expect(trigger).toBeTruthy();
+    });
+
+    it("uses non-layout 24px hit targets for TriggerInput controls", () => {
+      render(
+        <Combobox items={fruits} defaultValue="Apple">
+          <Combobox.TriggerInput
+            aria-label="Pick a fruit"
+            placeholder="Pick a fruit…"
+          />
+        </Combobox>,
+      );
+
+      const clear = screen.getByRole("button", { name: "Clear selection" });
+      const trigger = screen.getByRole("button", { name: "Show options" });
+
+      expect(clear.className).toContain("before:min-h-6");
+      expect(clear.className).toContain("before:min-w-6");
+      expect(clear.className).not.toContain("size-6");
+      expect(clear.className).toContain("right-6");
+      expect(trigger.className).toContain("before:min-h-6");
+      expect(trigger.className).toContain("before:min-w-6");
+      expect(trigger.className).not.toContain("size-6");
+      expect(trigger.className).toContain("right-0");
+    });
+
+    it("uses a non-layout 24px hit target for chip remove controls", () => {
+      render(
+        <Combobox items={fruits} multiple>
+          <Combobox.TriggerMultipleWithInput
+            aria-label="Select fruits"
+            value={["Apple"]}
+            renderItem={(item: string) => (
+              <Combobox.Chip key={item}>{item}</Combobox.Chip>
+            )}
+          />
+        </Combobox>,
+      );
+
+      const remove = screen.getByRole("button", { name: "Remove" });
+      expect(remove.className).toContain("before:min-h-6");
+      expect(remove.className).toContain("before:min-w-6");
+      expect(remove.className).not.toContain("size-6");
+    });
+
+    it("passes aria-label through to TriggerInput", () => {
+      render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerInput
+            aria-label="Pick a fruit"
+            placeholder="Pick a fruit…"
+          />
+        </Combobox>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Pick a fruit" });
+      expect(input.getAttribute("aria-label")).toBe("Pick a fruit");
+    });
+
+    it("associates description with an aria-label-only TriggerInput", () => {
+      const { container } = render(
+        <Combobox
+          items={fruits}
+          description="Choose one fruit for the deployment"
+        >
+          <Combobox.TriggerInput
+            aria-label="Pick a fruit"
+            placeholder="Pick a fruit…"
+          />
+        </Combobox>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Pick a fruit" });
+      const description = screen.getByText(
+        "Choose one fruit for the deployment",
+      );
+
+      expect(description.id).toBeTruthy();
+      expect(input.getAttribute("aria-describedby")).toBe(description.id);
+      expect(container.querySelector("label")).toBeNull();
+    });
+
+    it("passes aria-labelledby through to TriggerInput", () => {
+      render(
+        <>
+          <span id="fruit-combobox-label">Fruit picker</span>
+          <Combobox items={fruits}>
+            <Combobox.TriggerInput
+              aria-labelledby="fruit-combobox-label"
+              placeholder="Pick a fruit…"
+            />
+          </Combobox>
+        </>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Fruit picker" });
+      expect(input.getAttribute("aria-labelledby")).toBe(
+        "fruit-combobox-label",
+      );
+    });
+
+    it("passes aria-label through to TriggerValue", () => {
+      render(
+        <Combobox items={fruits} defaultValue="Apple">
+          <Combobox.TriggerValue aria-label="Selected fruit" />
+        </Combobox>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Selected fruit" });
+      expect(trigger.getAttribute("aria-label")).toBe("Selected fruit");
+    });
+
+    it("passes aria-label through to TriggerMultipleWithInput", () => {
+      render(
+        <Combobox items={fruits} multiple>
+          <Combobox.TriggerMultipleWithInput
+            aria-label="Select fruits"
+            renderItem={(item: string) => (
+              <Combobox.Chip key={item}>{item}</Combobox.Chip>
+            )}
+          />
+        </Combobox>,
+      );
+
+      const input = screen.getByRole("combobox", { name: "Select fruits" });
+      expect(input.getAttribute("aria-label")).toBe("Select fruits");
+    });
+  });
+
+  describe("accessible name warnings", () => {
+    it("warns when TriggerInput only has a placeholder", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerInput placeholder="Pick a fruit…" />
+        </Combobox>,
+      );
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        "[Kumo Combobox]: Combobox.TriggerInput must have an accessible name. Provide either:\n" +
+          "  - label prop: <Combobox label='Fruit' ... />\n" +
+          "  - aria-label: <Combobox.TriggerInput aria-label='Select fruit' />\n" +
+          "  - aria-labelledby for custom label association",
+      );
+    });
+
+    it("warns when TriggerValue lacks a label or aria name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Combobox items={fruits} defaultValue="Apple">
+          <Combobox.TriggerValue />
+        </Combobox>,
+      );
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        "[Kumo Combobox]: Combobox.TriggerValue must have an accessible name. Provide either:\n" +
+          "  - label prop: <Combobox label='Fruit' ... />\n" +
+          "  - aria-label: <Combobox.TriggerValue aria-label='Select fruit' />\n" +
+          "  - aria-labelledby for custom label association",
+      );
+    });
+
+    it("warns when TriggerMultipleWithInput lacks a label or aria name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Combobox items={fruits} multiple>
+          <Combobox.TriggerMultipleWithInput
+            renderItem={(item: string) => (
+              <Combobox.Chip key={item}>{item}</Combobox.Chip>
+            )}
+          />
+        </Combobox>,
+      );
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        "[Kumo Combobox]: Combobox.TriggerMultipleWithInput must have an accessible name. Provide either:\n" +
+          "  - label prop: <Combobox label='Fruit' ... />\n" +
+          "  - aria-label: <Combobox.TriggerMultipleWithInput aria-label='Select tags' ... />\n" +
+          "  - aria-labelledby for custom label association",
+      );
+    });
+
+    it("does not warn when the root label provides the accessible name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Combobox items={fruits} label="Fruit">
+          <Combobox.TriggerInput placeholder="Pick a fruit…" />
+        </Combobox>,
+      );
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("does not warn when aria-label provides the accessible name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerInput
+            aria-label="Pick a fruit"
+            placeholder="Pick a fruit…"
+          />
+        </Combobox>,
+      );
+
+      expect(warnSpy).not.toHaveBeenCalled();
     });
   });
 });

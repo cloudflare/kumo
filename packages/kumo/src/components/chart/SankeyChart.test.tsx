@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   SankeyChart,
   type SankeyNodeData,
@@ -77,6 +77,29 @@ describe("SankeyChart", () => {
       expect(chartDiv).toBeTruthy();
     });
 
+    it("applies an accessible chart name and description", () => {
+      const mockEcharts = createMockEcharts();
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          ariaLabel="Traffic flow by product"
+          ariaDescription="Shows requests flowing from sources to targets."
+        />,
+      );
+
+      const chart = screen.getByRole("img", {
+        name: "Traffic flow by product",
+      });
+      const descriptionId = chart.getAttribute("aria-describedby");
+      expect(descriptionId).toBeTruthy();
+      expect(document.getElementById(descriptionId ?? "")?.textContent).toBe(
+        "Shows requests flowing from sources to targets.",
+      );
+    });
+
     it("handles empty nodes array", () => {
       const mockEcharts = createMockEcharts();
       const { container } = render(
@@ -102,6 +125,7 @@ describe("SankeyChart", () => {
       expect(mockChart.setOption).toHaveBeenCalled();
       const options = mockChart.setOption.mock.calls[0][0];
       expect(options.series[0].type).toBe("sankey");
+      expect(options.aria.enabled).toBe(true);
     });
 
     it("maps node indices to names in links", () => {
@@ -388,6 +412,77 @@ describe("SankeyChart", () => {
           value: 60,
         });
       }).not.toThrow();
+    });
+
+    it("renders keyboard node actions when onNodeClick is provided", () => {
+      const mockEcharts = createMockEcharts();
+      const onNodeClick = vi.fn();
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          onNodeClick={onNodeClick}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Select Source A" }));
+      expect(onNodeClick).toHaveBeenCalledWith(baseNodes[0]);
+    });
+
+    it("renders keyboard link actions when onLinkClick is provided", () => {
+      const mockEcharts = createMockEcharts();
+      const onLinkClick = vi.fn();
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          onLinkClick={onLinkClick}
+        />,
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Select link from Source A to Target X, value 60",
+        }),
+      );
+      expect(onLinkClick).toHaveBeenCalledWith(baseLinks[0]);
+    });
+
+    it("uses localized keyboard action labels", () => {
+      const mockEcharts = createMockEcharts();
+      const onNodeClick = vi.fn();
+      const onLinkClick = vi.fn();
+
+      render(
+        <SankeyChart
+          echarts={mockEcharts as any}
+          nodes={baseNodes}
+          links={baseLinks}
+          onNodeClick={onNodeClick}
+          onLinkClick={onLinkClick}
+          keyboardActionsLabel="Ações do diagrama"
+          getNodeActionLabel={(node) => `Escolher ${node.name}`}
+          getLinkActionLabel={(_link, { sourceName, targetName }) =>
+            `Escolher conexão de ${sourceName} para ${targetName}`
+          }
+        />,
+      );
+
+      expect(
+        screen.getByRole("group", { name: "Ações do diagrama" }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole("button", { name: "Escolher Source A" }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole("button", {
+          name: "Escolher conexão de Source A para Target X",
+        }),
+      ).toBeTruthy();
     });
   });
 

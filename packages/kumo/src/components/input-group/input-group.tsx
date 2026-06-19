@@ -1,9 +1,12 @@
 import {
   forwardRef,
+  useCallback,
   useId,
   useMemo,
   type ComponentPropsWithoutRef,
+  type MouseEvent,
   type PropsWithChildren,
+  type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
 import { inputVariants } from "../input/input";
@@ -101,7 +104,40 @@ const Root = forwardRef<
     forwardedRef,
   ) => {
     const inputId = useId();
+    const descriptionId = useId();
+    const errorId = useId();
     const focusMode = detectFocusMode(children);
+    const describedBy = !label
+      ? error
+        ? errorId
+        : description
+          ? descriptionId
+          : undefined
+      : undefined;
+    const { onMouseDown: userOnMouseDown, ...clickableContainerRest } = rest;
+
+    const handleContainerMouseDown = useCallback(
+      (event: MouseEvent<HTMLElement>) => {
+        userOnMouseDown?.(event);
+        if (event.defaultPrevented || disabled) return;
+
+        const target = event.target as HTMLElement;
+        if (
+          target.closest(
+            "button,input,textarea,select,a,[role='button'],[tabindex]:not([tabindex='-1'])",
+          )
+        ) {
+          return;
+        }
+
+        const input = document.getElementById(inputId) as HTMLInputElement | null;
+        if (input && event.currentTarget.contains(input)) {
+          event.preventDefault();
+          input.focus();
+        }
+      },
+      [disabled, inputId, userOnMouseDown],
+    );
 
     const contextValue = useMemo(
       () => ({
@@ -109,10 +145,31 @@ const Root = forwardRef<
         focusMode,
         disabled,
         error,
+        describedBy,
         inputId,
       }),
-      [size, focusMode, disabled, error, inputId],
+      [size, focusMode, disabled, error, describedBy, inputId],
     );
+
+    const fieldFeedback = error ? (
+      <span id={errorId} className="text-sm leading-snug text-kumo-danger">
+        {error.message}
+      </span>
+    ) : (
+      description && (
+        <span
+          id={descriptionId}
+          className="text-sm leading-snug text-kumo-subtle"
+        >
+          {description}
+        </span>
+      )
+    );
+
+    const renderWithoutVisibleLabel = (content: ReactNode) => {
+      if (!fieldFeedback) return content;
+      return <div className="grid gap-2">{content}{fieldFeedback}</div>;
+    };
 
     // When label is provided, Field already renders a <label> with htmlFor
     // that handles click-to-focus. Using <div> avoids nested <label> elements
@@ -263,12 +320,12 @@ const Root = forwardRef<
         );
       }
 
-      return hybridContainer;
+      return renderWithoutVisibleLabel(hybridContainer);
     }
 
     // Container / Individual mode (non-hybrid)
     // Use <label> only when there's exactly one labelable descendant; otherwise <label> would propagate :hover to its first labelable descendant.
-    const useLabelContainer = !label && focusMode === "container";
+    const useClickableContainer = !label && focusMode === "container";
     const container = (
       <InputGroupContext.Provider value={contextValue}>
         {/* When label is set, use <div> to avoid nested <label> (Field provides one). An invisible <label> overlay handles click-to-focus on empty space. */}
@@ -288,16 +345,20 @@ const Root = forwardRef<
             />
             {children}
           </div>
-        ) : useLabelContainer ? (
-          // Standalone container mode: <label> enables click-to-focus on empty space.
-          <label
-            ref={forwardedRef as React.Ref<HTMLLabelElement>}
+        ) : useClickableContainer ? (
+          // Standalone container mode: a div plus a targeted mouse handler keeps
+          // click-to-focus without rendering an empty label when consumers name
+          // the input with aria-label/aria-labelledby.
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- Mirrors native label click-to-focus without creating an empty label.
+          <div
+            ref={forwardedRef as React.Ref<HTMLDivElement>}
             {...dataProps}
+            onMouseDown={handleContainerMouseDown}
             className={cn(containerClassName, "mb-0!")}
-            {...rest}
+            {...clickableContainerRest}
           >
             {children}
-          </label>
+          </div>
         ) : (
           // Individual mode: <div> avoids :hover propagating to the first labelable sibling.
           <div
@@ -326,7 +387,7 @@ const Root = forwardRef<
       );
     }
 
-    return container;
+    return renderWithoutVisibleLabel(container);
   },
 );
 Root.displayName = "InputGroup";

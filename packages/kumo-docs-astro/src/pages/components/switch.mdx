@@ -66,7 +66,11 @@ export default function Example() {
   const [checked, setChecked] = useState(false);
 
   return (
-    <Switch checked={checked} onCheckedChange={(val) => setChecked(val)} />
+    <Switch
+      label="Email notifications"
+      checked={checked}
+      onCheckedChange={(val) => setChecked(val)}
+    />
   );
 }
 ```
@@ -172,6 +176,29 @@ export default function Example() {
 <ComponentExample demo="SwitchLegendCustomDemo">
   <SwitchLegendCustomDemo client:visible />
 </ComponentExample>
+
+</ComponentSection>
+
+{/* Accessibility */}
+
+<ComponentSection>
+
+## Accessibility
+
+<p>
+  Every standalone Switch must have a specific accessible name. Prefer a visible
+  <code>label</code>. If the design cannot show a label, provide
+  <code>aria-label</code> or <code>aria-labelledby</code>. Switch does not add a
+  generic English fallback name, so missing labels warn in development.
+</p>
+
+```tsx
+<Switch label="Email notifications" />
+<Switch aria-label="Email notifications" />
+
+<span id="advanced-mode-label">Advanced mode</span>
+<Switch aria-labelledby="advanced-mode-label" />
+```
 
 </ComponentSection>
 

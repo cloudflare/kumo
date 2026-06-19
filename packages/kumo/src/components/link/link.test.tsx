@@ -249,9 +249,7 @@ describe("Link with render prop", () => {
 
     render(
       <LinkProvider component={SpyLink}>
-        {/* oxlint-disable anchor-has-content, control-has-associated-label */}
-        <Link render={<a href="/direct" />}>Direct</Link>
-        {/* oxlint-enable anchor-has-content, control-has-associated-label */}
+        <Link render={<a href="/direct" aria-label="Direct" />}>Direct</Link>
       </LinkProvider>,
     );
 

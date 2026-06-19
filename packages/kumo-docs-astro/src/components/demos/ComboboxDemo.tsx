@@ -146,7 +146,12 @@ export function ComboboxDemo() {
       onValueChange={(v) => setValue(v as string | null)}
       items={fruits}
     >
-      <Combobox.TriggerInput placeholder="Please select" />
+      <Combobox.TriggerInput
+        aria-label="Select fruit"
+        clearLabel="Clear selected fruit"
+        placeholder="Please select"
+        showOptionsLabel="Show fruit options"
+      />
       <Combobox.Content>
         <Combobox.Empty />
         <Combobox.List>
@@ -171,9 +176,15 @@ export function ComboboxSearchableInsideDemo() {
       onValueChange={(v) => setValue(v as Language)}
       items={languages}
     >
-      <Combobox.TriggerValue className="w-[200px]" />
+      <Combobox.TriggerValue
+        aria-label="Select language"
+        className="w-[200px]"
+      />
       <Combobox.Content>
-        <Combobox.Input placeholder="Search languages" />
+        <Combobox.Input
+          aria-label="Search languages"
+          placeholder="Search languages"
+        />
         <Combobox.Empty />
         <Combobox.List>
           {(item: Language) => (
@@ -199,11 +210,15 @@ export function ComboboxSearchableSelectDemo() {
       items={languages}
     >
       <Combobox.TriggerValue
+        aria-label="Select language"
         className="w-[200px]"
         placeholder="Select a language"
       />
       <Combobox.Content>
-        <Combobox.Input placeholder="Search languages" />
+        <Combobox.Input
+          aria-label="Search languages"
+          placeholder="Search languages"
+        />
         <Combobox.Empty />
         <Combobox.List>
           {(item: Language) => (
@@ -228,8 +243,11 @@ export function ComboboxGroupedDemo() {
       items={servers}
     >
       <Combobox.TriggerInput
+        aria-label="Select server"
+        clearLabel="Clear server location"
         className="w-[200px]"
         placeholder="Select server"
+        showOptionsLabel="Show server location options"
       />
       <Combobox.Content>
         <Combobox.Empty />
@@ -296,10 +314,16 @@ export function ComboboxMultipleDemo() {
         multiple
       >
         <Combobox.TriggerMultipleWithInput
+          aria-label="Select bots"
           className="w-[400px]"
           placeholder="Select bots"
           renderItem={(selected: BotItem) => (
-            <Combobox.Chip key={selected.value}>{selected.label}</Combobox.Chip>
+            <Combobox.Chip
+              key={selected.value}
+              removeLabel={`Remove ${selected.label}`}
+            >
+              {selected.label}
+            </Combobox.Chip>
           )}
           inputSide="right"
         />
@@ -334,7 +358,11 @@ export function ComboboxWithFieldDemo() {
         label="Database"
         description="Select your preferred database"
       >
-        <Combobox.TriggerInput placeholder="Select database" />
+        <Combobox.TriggerInput
+          clearLabel="Clear database selection"
+          placeholder="Select database"
+          showOptionsLabel="Show database options"
+        />
         <Combobox.Content>
           <Combobox.Empty />
           <Combobox.List>
@@ -355,8 +383,11 @@ export function ComboboxDisabledDemo() {
     <div className="flex flex-wrap gap-4 items-start">
       <Combobox value="Apple" items={fruits} disabled>
         <Combobox.TriggerInput
+          aria-label="Select fruit"
+          clearLabel="Clear selected fruit"
           className="w-[200px]"
           placeholder="Select fruit"
+          showOptionsLabel="Show fruit options"
         />
         <Combobox.Content>
           <Combobox.Empty />
@@ -371,9 +402,12 @@ export function ComboboxDisabledDemo() {
       </Combobox>
 
       <Combobox value={languages[0]} items={languages} disabled>
-        <Combobox.TriggerValue className="w-[200px]" />
+        <Combobox.TriggerValue
+          aria-label="Select language"
+          className="w-[200px]"
+        />
         <Combobox.Content>
-          <Combobox.Input placeholder="Search" />
+          <Combobox.Input aria-label="Search languages" placeholder="Search" />
           <Combobox.Empty />
           <Combobox.List>
             {(item: Language) => (
@@ -419,7 +453,12 @@ export function ComboboxDisabledItemsDemo() {
   return (
     <div className="w-80">
       <Combobox value={value} onValueChange={setValue} items={items}>
-        <Combobox.TriggerInput placeholder="Select database" />
+        <Combobox.TriggerInput
+          aria-label="Select database"
+          clearLabel="Clear database selection"
+          placeholder="Select database"
+          showOptionsLabel="Show database options"
+        />
         <Combobox.Content>
           <Combobox.Empty />
           <Combobox.List>
@@ -459,7 +498,11 @@ export function ComboboxErrorDemo() {
         label="Database"
         error={{ message: "Please select a database", match: true }}
       >
-        <Combobox.TriggerInput placeholder="Select database" />
+        <Combobox.TriggerInput
+          clearLabel="Clear database selection"
+          placeholder="Select database"
+          showOptionsLabel="Show database options"
+        />
         <Combobox.Content>
           <Combobox.Empty />
           <Combobox.List>
@@ -488,7 +531,12 @@ export function ComboboxSizesDemo() {
         onValueChange={(v) => setSmValue(v as string | null)}
         items={fruits.slice(0, 8)}
       >
-        <Combobox.TriggerInput placeholder="Small (sm)" />
+        <Combobox.TriggerInput
+          aria-label="Select fruit, small"
+          clearLabel="Clear small fruit selection"
+          placeholder="Small (sm)"
+          showOptionsLabel="Show small fruit options"
+        />
         <Combobox.Content>
           <Combobox.Empty />
           <Combobox.List>
@@ -506,7 +554,12 @@ export function ComboboxSizesDemo() {
         onValueChange={(v) => setBaseValue(v as string | null)}
         items={fruits.slice(0, 8)}
       >
-        <Combobox.TriggerInput placeholder="Base (default)" />
+        <Combobox.TriggerInput
+          aria-label="Select fruit, default"
+          clearLabel="Clear default fruit selection"
+          placeholder="Base (default)"
+          showOptionsLabel="Show default fruit options"
+        />
         <Combobox.Content>
           <Combobox.Empty />
           <Combobox.List>
@@ -535,9 +588,12 @@ export function ComboboxSizesSearchableInsideDemo() {
         onValueChange={(v) => setSmValue(v as Language)}
         items={languages}
       >
-        <Combobox.TriggerValue className="w-[160px]" />
+        <Combobox.TriggerValue
+          aria-label="Select language, small"
+          className="w-[160px]"
+        />
         <Combobox.Content>
-          <Combobox.Input placeholder="Search" />
+          <Combobox.Input aria-label="Search languages" placeholder="Search" />
           <Combobox.Empty />
           <Combobox.List>
             {(item: Language) => (
@@ -554,9 +610,12 @@ export function ComboboxSizesSearchableInsideDemo() {
         onValueChange={(v) => setBaseValue(v as Language)}
         items={languages}
       >
-        <Combobox.TriggerValue className="w-[180px]" />
+        <Combobox.TriggerValue
+          aria-label="Select language, default"
+          className="w-[180px]"
+        />
         <Combobox.Content>
-          <Combobox.Input placeholder="Search" />
+          <Combobox.Input aria-label="Search languages" placeholder="Search" />
           <Combobox.Empty />
           <Combobox.List>
             {(item: Language) => (
@@ -581,6 +640,7 @@ export function ComboboxCustomTriggerDemo() {
       items={languages}
     >
       <Combobox.Trigger
+        aria-label="Select language"
         render={
           <Button variant="ghost" size="sm" />
         }
@@ -593,7 +653,10 @@ export function ComboboxCustomTriggerDemo() {
         <CaretUpDownIcon size={14} className="text-kumo-subtle shrink-0" />
       </Combobox.Trigger>
       <Combobox.Content>
-        <Combobox.Input placeholder="Search languages" />
+        <Combobox.Input
+          aria-label="Search languages"
+          placeholder="Search languages"
+        />
         <Combobox.Empty />
         <Combobox.List>
           {(item: Language) => (

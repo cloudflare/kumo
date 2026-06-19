@@ -160,7 +160,7 @@ export function TableOfContents({
             handleClick(slug);
             document
               .getElementById(slug)
-              ?.scrollIntoView({ behavior: "smooth" });
+              ?.scrollIntoView({ behavior: getMotionSafeScrollBehavior() });
           }}
           className="w-full appearance-none rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
         >
@@ -227,4 +227,13 @@ export function TableOfContents({
       </TOC.List>
     </TOC>
   );
+}
+
+function getMotionSafeScrollBehavior(): ScrollBehavior {
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  return prefersReducedMotion ? "auto" : "smooth";
 }

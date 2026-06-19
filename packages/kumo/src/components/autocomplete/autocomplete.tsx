@@ -1,14 +1,30 @@
 import { Autocomplete as AutocompleteBase } from "@base-ui/react/autocomplete";
 import { CheckIcon } from "@phosphor-icons/react";
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useId, type ReactNode } from "react";
 import { inputVariants, KUMO_INPUT_VARIANTS } from "../input/input";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-import { Field, type FieldErrorMatch } from "../field/field";
+import {
+  Field,
+  normalizeFieldError,
+  type FieldErrorMatch,
+} from "../field/field";
 
-const AutocompleteContext = createContext<{ hasError: boolean }>({
+const AutocompleteContext = createContext<{
+  hasError: boolean;
+  hasLabel: boolean;
+  describedBy?: string;
+}>({
   hasError: false,
+  hasLabel: false,
 });
+
+type AccessibleNameProps = {
+  /** Accessible name for the input when no visible `label` is provided. */
+  "aria-label"?: string;
+  /** ID of an element that labels the input when no visible `label` is provided. */
+  "aria-labelledby"?: string;
+};
 
 /** Autocomplete variant definitions. */
 export const KUMO_AUTOCOMPLETE_VARIANTS = {
@@ -44,6 +60,13 @@ export function autocompleteVariants({
       KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS.size,
     ).classes,
   );
+}
+
+function composeAriaDescribedBy(
+  ...ids: Array<string | undefined>
+): string | undefined {
+  const describedBy = ids.filter(Boolean).join(" ");
+  return describedBy || undefined;
 }
 
 /**
@@ -94,6 +117,27 @@ export interface AutocompleteProps {
   error?: string | { message: ReactNode; match: FieldErrorMatch };
 }
 
+function warnIfMissingAccessibleName({
+  hasLabel,
+  ariaLabel,
+  ariaLabelledBy,
+}: {
+  hasLabel: boolean;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+}) {
+  if (process.env.NODE_ENV === "production") return;
+
+  if (!hasLabel && !ariaLabel && !ariaLabelledBy) {
+    console.warn(
+      "[Kumo Autocomplete]: Autocomplete.InputGroup must have an accessible name. Provide either:\n" +
+        "  - label prop: <Autocomplete label='Country' ... />\n" +
+        "  - aria-label: <Autocomplete.InputGroup aria-label='Search countries' />\n" +
+        "  - aria-labelledby for custom label association",
+    );
+  }
+}
+
 function Root<ItemValue>({
   label,
   required,
@@ -109,6 +153,16 @@ function Root<ItemValue>({
   description?: ReactNode;
   error?: string | { message: ReactNode; match: FieldErrorMatch };
 }) {
+  const descriptionId = useId();
+  const errorId = useId();
+  const normalizedError = normalizeFieldError(error);
+  const describedBy = !label
+    ? normalizedError
+      ? errorId
+      : description
+        ? descriptionId
+        : undefined
+    : undefined;
   const rootProps = props as Omit<
     AutocompleteBase.Root.Props<ItemValue>,
     "items"
@@ -116,7 +170,13 @@ function Root<ItemValue>({
     items?: readonly ItemValue[];
   };
   const control = (
-    <AutocompleteContext.Provider value={{ hasError: Boolean(error) }}>
+    <AutocompleteContext.Provider
+      value={{
+        hasError: Boolean(normalizedError),
+        hasLabel: Boolean(label),
+        describedBy,
+      }}
+    >
       <AutocompleteBase.Root {...rootProps}>{children}</AutocompleteBase.Root>
     </AutocompleteContext.Provider>
   );
@@ -128,16 +188,32 @@ function Root<ItemValue>({
         required={required}
         labelTooltip={labelTooltip}
         description={description}
-        error={
-          error
-            ? typeof error === "string"
-              ? { message: error, match: true }
-              : error
-            : undefined
-        }
+        error={normalizedError}
       >
         {control}
       </Field>
+    );
+  }
+
+  if (normalizedError || description) {
+    return (
+      <div className="grid gap-2">
+        {control}
+        {normalizedError ? (
+          <span id={errorId} className="text-sm leading-snug text-kumo-danger">
+            {normalizedError.message}
+          </span>
+        ) : (
+          description && (
+            <span
+              id={descriptionId}
+              className="text-sm leading-snug text-kumo-subtle"
+            >
+              {description}
+            </span>
+          )
+        )}
+      </div>
     );
   }
 
@@ -147,15 +223,29 @@ function Root<ItemValue>({
 function InputGroup({
   className,
   size = KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS.size,
-  placeholder,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  ...props
 }: {
   className?: string;
   size?: KumoAutocompleteSize;
   placeholder?: string;
-}) {
-  const { hasError } = useContext(AutocompleteContext);
+} & AccessibleNameProps & {
+    "aria-describedby"?: string;
+    "aria-invalid"?: boolean | "false" | "true" | "grammar" | "spelling";
+  }) {
+  const { hasError, hasLabel, describedBy } = useContext(AutocompleteContext);
+  warnIfMissingAccessibleName({ hasLabel, ariaLabel, ariaLabelledBy });
+
   return (
     <AutocompleteBase.Input
+      {...props}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={composeAriaDescribedBy(ariaDescribedBy, describedBy)}
+      aria-invalid={hasError ? true : ariaInvalid}
       className={cn(
         inputVariants({
           size,
@@ -165,7 +255,6 @@ function InputGroup({
         "w-full",
         className,
       )}
-      placeholder={placeholder}
     />
   );
 }
@@ -293,6 +382,9 @@ Separator.displayName = "Autocomplete.Separator";
  *
  * `InputGroup` renders the text input with Input component styling.
  * Pass a `size` prop to `InputGroup` to match the Input component sizes.
+ * Provide an accessible name with `label` on the root, or with
+ * `aria-label`/`aria-labelledby` on `InputGroup`; placeholder text is not a
+ * substitute for an accessible name.
  *
  * @example
  * ```tsx

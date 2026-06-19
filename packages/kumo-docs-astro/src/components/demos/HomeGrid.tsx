@@ -16,6 +16,7 @@ import {
   GridItem,
   Input,
   InputArea,
+  InputGroup,
   Label,
   LayerCard,
   Link,
@@ -39,8 +40,8 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
-import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
+  CheckCircleIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   TextBolderIcon,
@@ -142,8 +143,12 @@ export function HomeGrid() {
       id: "input",
       Component: (
         <div className="grid gap-3">
-          <Input placeholder="Type something..." />
-          <Input variant="error" value="Invalid!" />
+          <Input aria-label="Worker name" placeholder="Type something..." />
+          <Input
+            aria-label="Invalid worker name"
+            variant="error"
+            value="Invalid!"
+          />
         </div>
       ),
     },
@@ -178,7 +183,10 @@ export function HomeGrid() {
         <Autocomplete
           items={["Apple", "Banana", "Cherry", "Grape", "Mango", "Orange"]}
         >
-          <Autocomplete.InputGroup placeholder="Search fruits…" />
+          <Autocomplete.InputGroup
+            aria-label="Search fruits"
+            placeholder="Search fruits…"
+          />
           <Autocomplete.Content>
             <Autocomplete.List>
               {(item: string) => (
@@ -206,7 +214,12 @@ export function HomeGrid() {
           onValueChange={setValue}
           value={value}
         >
-          <Combobox.TriggerInput placeholder="Select an issue..." />
+          <Combobox.TriggerInput
+            aria-label="Select an issue label"
+            clearLabel="Clear issue label"
+            placeholder="Select an issue..."
+            showOptionsLabel="Show issue label options"
+          />
           <Combobox.Content>
             <Combobox.List>
               {(item: { id: string; value: string }) => (
@@ -224,6 +237,7 @@ export function HomeGrid() {
       id: "switch",
       Component: (
         <Switch
+          aria-label="Toggle featured setting"
           checked={switchToggled}
           onClick={() => {
             setSwitchToggled(!switchToggled);
@@ -441,12 +455,26 @@ export function HomeGrid() {
     {
       name: "InputArea",
       id: "input-area",
-      Component: <InputArea placeholder="Enter your name" />,
+      Component: (
+        <InputArea aria-label="Profile name" placeholder="Enter your name" />
+      ),
     },
     {
       name: "InputGroup",
       id: "input-group",
-      Component: <InputGroupDemo />,
+      Component: (
+        <InputGroup className="w-full max-w-2xs">
+          <InputGroup.Input
+            aria-label="Worker subdomain"
+            defaultValue="kumo"
+            maxLength={20}
+          />
+          <InputGroup.Suffix>.workers.dev</InputGroup.Suffix>
+          <InputGroup.Addon align="end">
+            <CheckCircleIcon weight="duotone" className="text-kumo-success" />
+          </InputGroup.Addon>
+        </InputGroup>
+      ),
     },
     {
       name: "Meter",
@@ -606,7 +634,24 @@ export function HomeGrid() {
     {
       name: "SensitiveInput",
       id: "sensitive-input",
-      Component: <SensitiveInput value="super-secret-api-key" readOnly />,
+      Component: (
+        <SensitiveInput
+          aria-label="API key preview"
+          labels={{
+            clickToReveal: "Click to reveal API key",
+            copied: "Copied API key",
+            copiedToClipboard: "API key copied to clipboard",
+            copyToClipboard: "Copy API key",
+            hideValue: "Hide API key",
+            revealInstruction: "Press Enter or Space to reveal the API key.",
+            revealValue: "Reveal API key",
+            valueHidden: "API key hidden",
+            valueRevealed: "API key revealed",
+          }}
+          value="super-secret-api-key"
+          readOnly
+        />
+      ),
     },
     {
       name: "Table",

@@ -1,15 +1,8 @@
-import type {
-  KeyboardEventHandler,
-  MouseEventHandler,
-  PointerEventHandler,
-} from "react";
+import type { MouseEventHandler, PointerEventHandler } from "react";
 import { cn } from "../../utils";
 
-const onInteractiveKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
-  if (event.key !== "Enter" && event.key !== " ") return;
-  event.preventDefault();
-  event.currentTarget.click();
-};
+const interactiveLegendItemClasses =
+  "m-0 appearance-none border-0 bg-transparent p-0 text-left text-inherit [font:inherit] focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand";
 
 /** Shared props for both legend item variants */
 interface LegendItemProps {
@@ -24,11 +17,11 @@ interface LegendItemProps {
   /** When `true`, renders the item at 50% opacity to indicate a deselected state */
   inactive?: boolean;
   /** Fired when a pointer enters the legend item — useful for highlighting the corresponding chart series */
-  onPointerEnter?: PointerEventHandler<HTMLDivElement>;
+  onPointerEnter?: PointerEventHandler<HTMLElement>;
   /** Fired when a pointer leaves the legend item — useful for resetting chart series emphasis */
-  onPointerLeave?: PointerEventHandler<HTMLDivElement>;
+  onPointerLeave?: PointerEventHandler<HTMLElement>;
   /** Fired when the legend item is clicked — useful for toggling series visibility */
-  onClick?: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLElement>;
   /** Optional className to customize legend item presentation */
   className?: string;
 }
@@ -49,21 +42,8 @@ function LargeItem({
   onClick,
   className,
 }: LegendItemProps) {
-  return (
-    <div
-      // oxlint-disable-next-line prefer-tag-over-role
-      role="button"
-      tabIndex={onClick ? 0 : -1}
-      className={cn(
-        "inline-flex flex-col gap-2 min-w-42 py-2",
-        { "cursor-pointer": !!onClick },
-        className,
-      )}
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
-      onClick={onClick}
-      onKeyDown={onClick ? onInteractiveKeyDown : undefined}
-    >
+  const content = (
+    <>
       <div className="flex items-center gap-2">
         <span
           className={cn("size-2 rounded-full inline-block", {
@@ -93,6 +73,35 @@ function LargeItem({
           </span>
         )}
       </div>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        aria-pressed={!inactive}
+        className={cn(
+          interactiveLegendItemClasses,
+          "inline-flex flex-col gap-2 min-w-42 py-2 cursor-pointer",
+          className,
+        )}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onClick={onClick}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className={cn("inline-flex flex-col gap-2 min-w-42 py-2", className)}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
+      {content}
     </div>
   );
 }
@@ -111,31 +120,49 @@ function SmallItem({
   onClick,
   className,
 }: LegendItemProps) {
-  return (
-    <div
-      // oxlint-disable-next-line prefer-tag-over-role
-      role="button"
-      tabIndex={onClick ? 0 : -1}
-      className={cn(
-        "inline-flex items-center gap-2",
-        { "cursor-pointer": !!onClick },
-        className,
-      )}
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
-      onClick={onClick}
-      onKeyDown={onClick ? onInteractiveKeyDown : undefined}
-    >
+  const content = (
+    <>
       <span
         className={cn("size-2 rounded-full inline-block", {
           "opacity-50": inactive,
         })}
         style={{ backgroundColor: color }}
       />
-      <span className={cn("text-xs", { "opacity-50": inactive })}>{name}</span>
+      <span className={cn("text-xs", { "opacity-50": inactive })}>
+        {name}
+      </span>
       <span className={cn("text-xs font-medium", { "opacity-50": inactive })}>
         {value}
       </span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        aria-pressed={!inactive}
+        className={cn(
+          interactiveLegendItemClasses,
+          "relative inline-flex items-center gap-2 cursor-pointer before:absolute before:left-1/2 before:top-1/2 before:min-h-6 before:min-w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+          className,
+        )}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onClick={onClick}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className={cn("inline-flex items-center gap-2", className)}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
+      {content}
     </div>
   );
 }

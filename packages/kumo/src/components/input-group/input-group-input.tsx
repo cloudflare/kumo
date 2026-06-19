@@ -3,6 +3,13 @@ import { cn } from "../../utils/cn";
 import { Input as InputExternal, type InputProps } from "../input/input";
 import { useInputGroupContext, INPUT_GROUP_SIZE } from "./context";
 
+function composeAriaDescribedBy(
+  ...ids: Array<string | undefined>
+): string | undefined {
+  const describedBy = ids.filter(Boolean).join(" ");
+  return describedBy || undefined;
+}
+
 /** Props for InputGroup.Input — omits Field props since InputGroup handles them. */
 export type InputGroupInputProps = Omit<
   InputProps,
@@ -16,25 +23,30 @@ export type InputGroupInputProps = Omit<
 export const Input = forwardRef<HTMLInputElement, InputGroupInputProps>(
   (props, ref) => {
     const context = useInputGroupContext("Input");
+    const {
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
+      ...inputProps
+    } = props;
 
     // Warn when props that belong on <InputGroup> are passed directly
     if (process.env.NODE_ENV !== "production" && context) {
-      if ((props as any).size !== undefined) {
+      if ((inputProps as any).size !== undefined) {
         console.warn(
           "InputGroup.Input: Set `size` on <InputGroup> instead of <InputGroup.Input>.",
         );
       }
-      if ((props as any).disabled !== undefined) {
+      if ((inputProps as any).disabled !== undefined) {
         console.warn(
           "InputGroup.Input: Set `disabled` on <InputGroup> instead of <InputGroup.Input>.",
         );
       }
-      if ((props as any).label !== undefined) {
+      if ((inputProps as any).label !== undefined) {
         console.warn(
           "InputGroup.Input: Use the `label` prop on <InputGroup> instead of <InputGroup.Input>.",
         );
       }
-      if ((props as any).description !== undefined) {
+      if ((inputProps as any).description !== undefined) {
         console.warn(
           "InputGroup.Input: Use <InputGroup.Suffix> instead of passing `description` to <InputGroup.Input>.",
         );
@@ -50,15 +62,19 @@ export const Input = forwardRef<HTMLInputElement, InputGroupInputProps>(
 
     // Use explicit id if provided, otherwise fall back to context id
     // (links the input to the invisible label overlay for click-to-focus).
-    const inputId = props.id ?? context?.inputId;
+    const inputId = inputProps.id ?? context?.inputId;
 
     return (
       <InputExternal
         ref={ref}
         size={context?.size}
-        disabled={context?.disabled || (props as any).disabled}
-        aria-invalid={hasError || props["aria-invalid"]}
-        {...props}
+        disabled={context?.disabled || (inputProps as any).disabled}
+        aria-invalid={hasError ? true : ariaInvalid}
+        aria-describedby={composeAriaDescribedBy(
+          ariaDescribedBy,
+          context?.describedBy,
+        )}
+        {...inputProps}
         id={inputId}
         className={cn(
           // Base input layout: fill height, allow shrinking, strip native border/radius
@@ -81,7 +97,7 @@ export const Input = forwardRef<HTMLInputElement, InputGroupInputProps>(
               ].join(" ")
             : // Container mode: kill all focus indicators — the container handles them z-1 lifts the input above the invisible label overlay so cursor/selection work
               "relative z-1 ring-0! shadow-none outline-none focus:ring-0! focus:outline-none",
-          props.className,
+          inputProps.className,
         )}
       />
     );

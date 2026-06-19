@@ -307,6 +307,7 @@ export function DialogWithComboboxDemo() {
         </Dialog.Description>
         <Combobox value={value} onValueChange={setValue} items={regions}>
           <Combobox.TriggerInput
+            aria-label="Search regions"
             className="w-full"
             placeholder="Search regions..."
           />

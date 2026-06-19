@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogRoot,
   DialogTitle,
+  DialogDescription,
   DialogClose,
 } from "../../components/dialog";
 import { Input } from "../../components/input";
@@ -107,7 +108,7 @@ export function DeleteResource({
   }, [resourceName]);
 
   return (
-    <DialogRoot open={open} onOpenChange={onOpenChange}>
+    <DialogRoot role="alertdialog" open={open} onOpenChange={onOpenChange}>
       <Dialog size={size} className={cn("p-0", className)}>
         <div className="flex items-center justify-between border-b border-kumo-line px-6 py-4">
           <DialogTitle className="text-lg font-semibold">
@@ -132,17 +133,23 @@ export function DeleteResource({
         <div className="flex flex-col p-6 gap-4">
           <div className="flex flex-col gap-2">
             {errorMessage && (
-              <Banner icon={<WarningCircleIcon />} variant="error">
+              <Banner
+                icon={<WarningCircleIcon />}
+                variant="error"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+              >
                 {errorMessage}
               </Banner>
             )}
-            <p className="text-base text-kumo-subtle max-w-prose text-pretty">
+            <DialogDescription className="text-base text-kumo-subtle max-w-prose text-pretty">
               This action cannot be undone. This will permanently delete the{" "}
               <span className="font-medium text-kumo-default">
                 {resourceName}
               </span>{" "}
               {resourceType.toLowerCase()}.
-            </p>
+            </DialogDescription>
           </div>
 
           <div className="flex flex-col gap-2">

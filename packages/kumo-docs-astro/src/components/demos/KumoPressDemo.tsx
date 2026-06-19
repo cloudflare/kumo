@@ -239,7 +239,13 @@ function statusLabel(status: Post["status"]) {
 // ---------------------------------------------------------------------------
 // WP Admin Sidebar Component
 // ---------------------------------------------------------------------------
-function WPSidebar({ collapsed }: { collapsed: boolean }) {
+function WPSidebar({
+  collapsed,
+  onToggleCollapse,
+}: {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}) {
   return (
     <div
       className={cn(
@@ -281,9 +287,14 @@ function WPSidebar({ collapsed }: { collapsed: boolean }) {
 
       {/* Collapse toggle */}
       <div className="border-t border-white/10 p-2">
-        <div className="flex items-center justify-center text-xs text-white/40">
+        <button
+          type="button"
+          aria-label={collapsed ? "Expand menu" : "Collapse menu"}
+          onClick={onToggleCollapse}
+          className="flex w-full items-center justify-center rounded-sm text-xs text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kumo-focus/50"
+        >
           {!collapsed && "Collapse menu"}
-        </div>
+        </button>
       </div>
     </div>
   );
@@ -421,11 +432,11 @@ export function KumoPressDemo() {
         className="flex h-[720px] overflow-hidden rounded-xl border border-kumo-hairline bg-kumo-elevated font-sans shadow-lg"
       >
         {/* Sidebar */}
-        <div
-          className="flex-none cursor-pointer"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        >
-          <WPSidebar collapsed={sidebarCollapsed} />
+        <div className="flex-none">
+          <WPSidebar
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
         </div>
 
         {/* Main content */}

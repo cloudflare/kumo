@@ -5,6 +5,8 @@ export {
 } from "./command-palette";
 export type {
   HighlightRange,
+  CommandPaletteDialogProps,
+  CommandPaletteDialogTitleProps,
   CommandPaletteRootProps,
   CommandPaletteInputProps,
   CommandPaletteItemProps,

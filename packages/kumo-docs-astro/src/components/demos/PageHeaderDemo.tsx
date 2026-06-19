@@ -15,7 +15,7 @@ export function PageHeaderHeroDemo() {
       className="w-full"
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link icon={<HouseIcon size={16} />} href="#">
+          <Breadcrumbs.Link icon={<HouseIcon size={16} />} href="/workers-and-pages">
             Workers & Pages
           </Breadcrumbs.Link>
           <Breadcrumbs.Separator />
@@ -49,7 +49,7 @@ export function PageHeaderBasicDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>Dashboard</Breadcrumbs.Current>
         </Breadcrumbs>
@@ -64,7 +64,7 @@ export function PageHeaderWithIconsDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link icon={<HouseIcon size={16} />} href="#">
+          <Breadcrumbs.Link icon={<HouseIcon size={16} />} href="/">
             Home
           </Breadcrumbs.Link>
           <Breadcrumbs.Separator />
@@ -83,7 +83,7 @@ export function PageHeaderWithTabsDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>Settings</Breadcrumbs.Current>
         </Breadcrumbs>
@@ -104,9 +104,9 @@ export function PageHeaderWithActionsDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
-          <Breadcrumbs.Link href="#">Projects</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/projects">Projects</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>My Project</Breadcrumbs.Current>
         </Breadcrumbs>
@@ -130,9 +130,9 @@ export function PageHeaderWithTitleDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
-          <Breadcrumbs.Link href="#">Products</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/products">Products</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>Page title</Breadcrumbs.Current>
         </Breadcrumbs>
@@ -148,9 +148,9 @@ export function PageHeaderWithTitleDescriptionDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
-          <Breadcrumbs.Link href="#">Products</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/products">Products</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>Page title</Breadcrumbs.Current>
         </Breadcrumbs>
@@ -167,9 +167,9 @@ export function PageHeaderCompleteDemo() {
     <PageHeader
       breadcrumbs={
         <Breadcrumbs>
-          <Breadcrumbs.Link href="#">Home</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/">Home</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
-          <Breadcrumbs.Link href="#">Products</Breadcrumbs.Link>
+          <Breadcrumbs.Link href="/products">Products</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
           <Breadcrumbs.Current>Page title</Breadcrumbs.Current>
         </Breadcrumbs>

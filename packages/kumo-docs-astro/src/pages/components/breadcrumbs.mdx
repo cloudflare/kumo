@@ -13,6 +13,7 @@ import {
   BreadcrumbsDemo,
   BreadcrumbsWithIconsDemo,
   BreadcrumbsWithClipboardDemo,
+  BreadcrumbsLocalizedDemo,
   BreadcrumbsLoadingDemo,
   BreadcrumbsRootDemo,
 } from "~/components/demos/BreadcrumbsDemo";
@@ -77,6 +78,19 @@ import {
 
   <ComponentExample demo="BreadcrumbsWithClipboardDemo">
     <BreadcrumbsWithClipboardDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Localized labels
+
+Breadcrumbs renders a navigation landmark. Use the `labels` prop to localize
+the landmark name and clipboard copy text; don't replace it with `role="banner"`.
+For one-off copy actions, pass `labels` directly to `Breadcrumbs.Clipboard`.
+
+  <ComponentExample demo="BreadcrumbsLocalizedDemo">
+    <BreadcrumbsLocalizedDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

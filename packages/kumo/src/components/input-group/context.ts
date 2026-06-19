@@ -139,6 +139,8 @@ export interface InputGroupContextValue {
   focusMode: "container" | "individual" | "hybrid";
   disabled: boolean;
   error?: FieldProps["error"];
+  /** ID of helper or error text rendered by InputGroup when no visible label is provided. */
+  describedBy?: string;
   /** Auto-generated id for the input element; used by the invisible label overlay. */
   inputId: string;
 }
