@@ -50,7 +50,6 @@ const componentItems: NavItem[] = [
   { label: "Collapsible", href: "/components/collapsible" },
   { label: "Combobox", href: "/components/combobox" },
   { label: "Command Palette", href: "/components/command-palette" },
-  { label: "ControlGroup", href: "/components/control-group" },
   { label: "Date Picker", href: "/components/date-picker" },
   { label: "Dialog", href: "/components/dialog" },
   { label: "Dropdown", href: "/components/dropdown" },
@@ -78,6 +77,7 @@ const componentItems: NavItem[] = [
   { label: "Table of Contents", href: "/components/table-of-contents" },
   { label: "Tabs", href: "/components/tabs" },
   { label: "Text", href: "/components/text" },
+  { label: "Toolbar", href: "/components/toolbar" },
   { label: "Toast", href: "/components/toast" },
   { label: "Tooltip", href: "/components/tooltip" },
 ];

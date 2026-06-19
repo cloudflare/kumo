@@ -72,9 +72,9 @@
       "types": "./dist/src/components/combobox/index.d.ts",
       "import": "./dist/components/combobox.js"
     },
-    "./components/control-group": {
-      "types": "./dist/src/components/control-group/index.d.ts",
-      "import": "./dist/components/control-group.js"
+    "./components/toolbar": {
+      "types": "./dist/src/components/toolbar/index.d.ts",
+      "import": "./dist/components/toolbar.js"
     },
     "./components/dialog": {
       "types": "./dist/src/components/dialog/index.d.ts",

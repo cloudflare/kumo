@@ -8,7 +8,6 @@ import {
   ClipboardText,
   Collapsible,
   Combobox,
-  ControlGroup,
   DatePicker,
   Dialog,
   DropdownMenu,
@@ -34,6 +33,7 @@ import {
   TableOfContents,
   Tabs,
   Text,
+  Toolbar,
   Toasty,
   Tooltip,
   TooltipProvider,
@@ -63,7 +63,6 @@ const componentRoutes: Record<string, string> = {
   autocomplete: "/components/autocomplete",
   combobox: "/components/combobox",
   "command-palette": "/components/command-palette",
-  "control-group": "/components/control-group",
   "date-picker": "/components/date-picker",
   dialog: "/components/dialog",
   dropdown: "/components/dropdown",
@@ -90,6 +89,7 @@ const componentRoutes: Record<string, string> = {
   "table-of-contents": "/components/table-of-contents",
   tabs: "/components/tabs",
   text: "/components/text",
+  toolbar: "/components/toolbar",
   toast: "/components/toast",
   tooltip: "/components/tooltip",
 };
@@ -174,14 +174,24 @@ export function HomeGrid() {
       ),
     },
     {
-      name: "ControlGroup",
-      id: "control-group",
+      name: "Toolbar",
+      id: "toolbar",
       Component: (
-        <ControlGroup className="w-[260px]">
-          <Input aria-label="Search DNS records" placeholder="Search..." />
-          <Button shape="square" icon={MagnifyingGlassIcon} aria-label="Search" />
-          <Button shape="square" icon={PlusIcon} aria-label="Add" />
-        </ControlGroup>
+        <Toolbar className="w-[260px]">
+          <Toolbar.Control
+            render={
+              <Input aria-label="Search DNS records" placeholder="Search..." />
+            }
+          />
+          <Toolbar.Control
+            render={
+              <Button shape="square" icon={MagnifyingGlassIcon} aria-label="Search" />
+            }
+          />
+          <Toolbar.Control
+            render={<Button shape="square" icon={PlusIcon} aria-label="Add" />}
+          />
+        </Toolbar>
       ),
     },
     {

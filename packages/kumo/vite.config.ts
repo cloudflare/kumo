@@ -86,9 +86,9 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/combobox/index.ts",
           ),
-          "components/control-group": resolve(
+          "components/toolbar": resolve(
             __dirname,
-            "src/components/control-group/index.ts",
+            "src/components/toolbar/index.ts",
           ),
           "components/dialog": resolve(
             __dirname,

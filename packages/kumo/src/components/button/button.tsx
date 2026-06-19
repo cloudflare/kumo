@@ -6,9 +6,9 @@ import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
 import {
-  controlGroupItemClassName,
-  useControlGroupContext,
-} from "../control-group";
+  toolbarControlClassName,
+  useToolbarControlContext,
+} from "../toolbar";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
 export const KUMO_BUTTON_VARIANTS = {
@@ -262,7 +262,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
-    const controlGroup = useControlGroupContext();
+    const toolbarControl = useToolbarControlContext();
     const { type, ...restProps } = props;
     const button = (
       <button
@@ -270,12 +270,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         data-kumo-component="Button"
         className={cn(
           buttonVariants({
-            variant: controlGroup ? "ghost" : variant,
-            size: controlGroup?.size ?? size,
+            variant: toolbarControl ? "ghost" : variant,
+            size: toolbarControl?.size ?? size,
             shape,
           }),
           disabled && "cursor-not-allowed opacity-50",
-          controlGroup ? controlGroupItemClassName(className) : className,
+          toolbarControl ? toolbarControlClassName(className) : className,
         )}
         disabled={loading || disabled}
         type={type ?? "button"}
@@ -349,7 +349,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     },
     ref,
   ) => {
-    const controlGroup = useControlGroupContext();
+    const toolbarControl = useToolbarControlContext();
     const LinkComponent = useLinkComponent();
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
@@ -361,12 +361,12 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({
-            variant: controlGroup ? "ghost" : variant,
-            size: controlGroup?.size ?? size,
+            variant: toolbarControl ? "ghost" : variant,
+            size: toolbarControl?.size ?? size,
             shape,
           }),
           "flex items-center no-underline!",
-          controlGroup ? controlGroupItemClassName(className) : className,
+          toolbarControl ? toolbarControlClassName(className) : className,
         )}
         href={href}
         to={typeof href === "string" ? href : undefined}
