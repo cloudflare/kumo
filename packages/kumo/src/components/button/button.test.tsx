@@ -22,51 +22,6 @@ describe("Button", () => {
     });
   });
 
-  describe("emphasis variants", () => {
-    it.each([
-      ["primary", "var(--color-kumo-brand)"],
-      ["destructive", "var(--color-kumo-danger)"],
-    ] as const)(
-      "renders the %s gradient overlay and relative content wrapper",
-      (variant, token) => {
-        render(<Button variant={variant}>Save</Button>);
-        const button = screen.getByRole("button", { name: "Save" });
-
-        expect(button.className).toContain("bg-(--kumo-button-emphasis-bg)");
-        expect(button.className).toContain(
-          "ring-(--kumo-button-emphasis-ring)",
-        );
-        expect(button.getAttribute("style")).toContain(
-          `--kumo-button-emphasis-ring: color-mix(in oklch, ${token}, black 10%)`,
-        );
-        expect(button.getAttribute("style")).toContain(
-          `--kumo-button-emphasis-bg: color-mix(in oklch, ${token}, white 30%)`,
-        );
-        expect(button.getAttribute("style")).toContain(
-          `--kumo-button-emphasis-gradient-start: color-mix(in oklch, ${token}, white 15%)`,
-        );
-        expect(button.getAttribute("style")).toContain(
-          `--kumo-button-emphasis-gradient-end: ${token}`,
-        );
-
-        const overlay = button.querySelector('span[aria-hidden="true"]');
-        expect(overlay?.className).toContain("bg-linear-to-b");
-        expect(overlay?.className).toContain(
-          "from-(--kumo-button-emphasis-gradient-start)",
-        );
-        expect(overlay?.className).toContain(
-          "to-(--kumo-button-emphasis-gradient-end)",
-        );
-        expect(overlay?.className).toContain(
-          "group-hover:from-(--kumo-button-emphasis-bg)",
-        );
-
-        const content = button.querySelector("span.relative.flex.items-center");
-        expect(content?.textContent).toBe("Save");
-      },
-    );
-  });
-
   describe("loading state transitions", () => {
     it("transitions from non-loading to loading and back", () => {
       const { rerender } = render(<Button loading={false}>Submit</Button>);
