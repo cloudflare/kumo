@@ -238,6 +238,13 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
   string,
   Record<string, PropSchema>
 > = {
+  MetricCard: {
+    onClick: {
+      type: "(event: React.MouseEvent<HTMLElement>) => void",
+      description:
+        "Click handler. Renders the card as a button when no `href` is provided.",
+    },
+  },
   Meter: {
     value: {
       type: "number",
@@ -575,6 +582,9 @@ export const PROP_TYPE_OVERRIDES: Record<string, Record<string, string>> = {
   Combobox: {
     items: "T[]",
     value: "T | T[]",
+  },
+  MetricCard: {
+    value: "string | ReactNode",
   },
   Select: {
     value: "T",

@@ -22,6 +22,8 @@ import {
   Loader,
   MenuBar,
   Meter,
+  MetricCard,
+  MetricCardGroup,
   Pagination,
   Popover,
   Radio,
@@ -77,6 +79,7 @@ const componentRoutes: Record<string, string> = {
   loader: "/components/loader",
   "menu-bar": "/components/menu-bar",
   meter: "/components/meter",
+  "metric-card": "/components/metric-card",
   pagination: "/components/pagination",
   popover: "/components/popover",
   radio: "/components/radio",
@@ -453,6 +456,32 @@ export function HomeGrid() {
       id: "meter",
       Component: (
         <Meter value={75} label="My meter" customValue="100 / 5,000" />
+      ),
+    },
+    {
+      name: "MetricCard",
+      id: "metric-card",
+      Component: (
+        <MetricCardGroup>
+          <MetricCard
+            label="Requests"
+            value="1.2"
+            unit="M"
+            trend={{ direction: "up", label: "12%" }}
+          />
+          <MetricCard
+            label="CPU Time (P90)"
+            value="3.2"
+            unit="ms"
+            trend={{ direction: "down", label: "8%", lessIsBetter: true }}
+            sparkline={{
+              data: [
+                4.1, 3.9, 4.2, 3.8, 3.5, 3.9, 3.6, 3.4, 3.7, 3.3, 3.5, 3.1, 3.4,
+                3.0, 3.3, 3.2,
+              ],
+            }}
+          />
+        </MetricCardGroup>
       ),
     },
     {

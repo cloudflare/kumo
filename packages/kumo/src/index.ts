@@ -307,6 +307,16 @@ export {
   KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
   type KumoTableOfContentsState,
 } from "./components/table-of-contents";
+export {
+  MetricCard,
+  type MetricCardProps,
+  type MetricCardTrend,
+  type MetricCardSparkline,
+} from "./components/metric-card";
+export {
+  MetricCardGroup,
+  type MetricCardGroupProps,
+} from "./components/metric-card-group";
 // PLOP_INJECT_EXPORT
 
 // Utils

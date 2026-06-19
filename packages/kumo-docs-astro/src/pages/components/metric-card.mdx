@@ -1,0 +1,358 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "MetricCard"
+description: "Displays a single metric value with optional trend indicator, sparkline, and loading/error states."
+sourceFile: "components/metric-card"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  MetricCardGroupDemo,
+  MetricCardHorizontalGroupDemo,
+  MetricCardGroupVerticalDemo,
+  MetricCardGroupWithoutTitleDemo,
+  MetricCardStatesDemo,
+  MetricCardSparklineDemo,
+  MetricCardInteractiveDemo,
+  MetricCardBadgeValueDemo,
+} from "~/components/demos/MetricCardDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample code={`import { MetricCard, MetricCardGroup } from "@cloudflare/kumo";
+
+export function MetricCardGroupDemo() {
+  return (
+    <MetricCardGroup title="Activity">
+      <MetricCard
+        label="Web traffic"
+        value="2.4M"
+        trend={{ direction: "up", label: "12%" }}
+        sparkline={{
+          data: [
+            1.69, 1.62, 1.79, 1.98, 1.99, 1.89, 1.9, 2.07, 2.16, 2.04, 1.87,
+            1.91, 2.14, 2.3, 2.23, 2.13, 2.19, 2.34, 2.36, 2.21, 2.11, 2.26,
+            2.5, 2.58,
+          ],
+        }}
+      />
+      <MetricCard
+        label="Total bandwidth"
+        value="1.8"
+        unit="TB"
+        trend={{ direction: "up", label: "9%" }}
+        sparkline={{
+          data: [
+            1.25, 1.29, 1.24, 1.24, 1.34, 1.42, 1.38, 1.28, 1.3, 1.44, 1.55,
+            1.54, 1.48, 1.51, 1.61, 1.65, 1.58, 1.53, 1.6, 1.76, 1.83, 1.78,
+            1.72, 1.77,
+          ],
+        }}
+      />
+      <MetricCard
+        label="Cache rate"
+        value="92.1"
+        unit="%"
+        trend={{ direction: "up", label: "3.2%" }}
+      />
+      <MetricCard
+        label="Client errors"
+        value="4.8k"
+        trend={{ direction: "down", label: "8%", lessIsBetter: true }}
+      />
+    </MetricCardGroup>
+  );
+}`}>
+    <MetricCardGroupDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { MetricCard, MetricCardGroup } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { MetricCard } from "@cloudflare/kumo/components/metric-card";
+import { MetricCardGroup } from "@cloudflare/kumo/components/metric-card-group";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+```tsx
+import { MetricCard, MetricCardGroup } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <MetricCardGroup title="Overview">
+      <MetricCard label="Requests" value="1.2M" />
+      <MetricCard label="Error Rate" value="0.3" unit="%" />
+    </MetricCardGroup>
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+
+## Examples
+
+### Horizontal Group
+
+<p>
+  The default layout arranges metric cards in a horizontal row with vertical
+  dividers.
+</p>
+<ComponentExample code={`import { MetricCard, MetricCardGroup } from "@cloudflare/kumo";
+
+export function MetricCardHorizontalGroupDemo() {
+  return (
+    <MetricCardGroup title="Performance">
+      <MetricCard
+        label="CPU time P90"
+        value="3.2"
+        unit="ms"
+        trend={{ direction: "down", label: "8%", lessIsBetter: true }}
+        sparkline={{
+          data: [
+            3.91, 4.36, 4.41, 4.02, 3.74, 3.88, 4.08, 3.87, 3.44, 3.36,
+            3.77, 4.12, 3.94, 3.47, 3.3, 3.52, 3.64, 3.36, 3.04, 3.16,
+            3.61, 3.76, 3.37, 2.9,
+          ],
+        }}
+      />
+      <MetricCard
+        label="Workers errors"
+        value="0"
+        trend={{ direction: "neutral", label: "0.0%", isNeutral: true }}
+        sparkline={{
+          data: [0, 0],
+          theme: "danger",
+        }}
+      />
+      <MetricCard
+        label="Workers invocations"
+        value="1.2M"
+        trend={{ direction: "up", label: "12%" }}
+      />
+    </MetricCardGroup>
+  );
+}`}>
+  <MetricCardHorizontalGroupDemo client:visible />
+</ComponentExample>
+
+### Vertical Group
+
+<p>Use `orientation="vertical"` for sidebar or narrow container layouts.</p>
+<ComponentExample demo="MetricCardGroupVerticalDemo">
+  <MetricCardGroupVerticalDemo client:visible />
+</ComponentExample>
+
+### Without Title
+
+<p>Omit the `title` prop for a minimal layout without a header.</p>
+<ComponentExample code={`import { MetricCard, MetricCardGroup } from "@cloudflare/kumo";
+
+export function MetricCardGroupWithoutTitleDemo() {
+  return (
+    <MetricCardGroup>
+      <MetricCard
+        label="Web traffic"
+        value="2.4M"
+        sparkline={{
+          data: [
+            1.86, 1.88, 1.75, 1.7, 1.88, 2.11, 2.14, 1.97, 1.88, 1.98,
+            2.13, 2.11, 1.99, 2.02, 2.24, 2.41, 2.33, 2.14, 2.11, 2.27,
+            2.4, 2.35, 2.26, 2.36,
+          ],
+        }}
+      />
+      <MetricCard
+        label="Total bandwidth"
+        value="842"
+        unit="GB"
+        sparkline={{
+          data: [
+            682.96, 643.68, 599.64, 616.3, 668.98, 685.79, 657.11, 649.29,
+            702.63, 765.45, 763.99, 708.53, 681.15, 721.75, 776.34, 780.2,
+            752.18, 762.21, 821.91, 861.85, 831.43, 775.95, 776.53, 838.01,
+          ],
+        }}
+      />
+      <MetricCard
+        label="Workers invocations"
+        value="1.2M"
+      />
+    </MetricCardGroup>
+  );
+}`}>
+  <MetricCardGroupWithoutTitleDemo client:visible />
+</ComponentExample>
+
+### Sparklines
+
+<p>Add sparkline visualizations with themed or custom colors.</p>
+<ComponentExample code={`import { MetricCard, MetricCardGroup } from "@cloudflare/kumo";
+
+export function MetricCardSparklineDemo() {
+  return (
+    <MetricCardGroup title="Performance">
+      <MetricCard
+        label="Cache rate"
+        value="92.1"
+        unit="%"
+        trend={{ direction: "up", label: "3.2%" }}
+        sparkline={{
+          data: [
+            83.96, 88.56, 90.5, 87.29, 84.93, 88.62, 94.47, 94.59, 88.45,
+            83.97, 86.51, 91.74, 92.37, 88.79, 88, 92.65, 96.59, 93.67,
+            87.08, 85.28, 90.31, 95.21, 94.12, 90.4,
+          ],
+          theme: "success",
+        }}
+      />
+      <MetricCard
+        label="Client errors"
+        value="4.8k"
+        trend={{ direction: "down", label: "8%", lessIsBetter: true }}
+        sparkline={{
+          data: [
+            6138.54, 5544.96, 5909.1, 6819.45, 6923.97, 5877.53, 4895.88,
+            5081.88, 5925.52, 6120.88, 5470.26, 5090.26, 5657.14, 6317.94,
+            5908.69, 4709.82, 4143.49, 4805.35, 5660.03, 5546.95, 4795.58,
+            4623.79, 5256.64, 5567.25,
+          ],
+          theme: "danger",
+        }}
+      />
+      <MetricCard
+        label="CPU time P90"
+        value="3.2"
+        unit="ms"
+        trend={{ direction: "down", label: "8%", lessIsBetter: true }}
+        sparkline={{
+          data: [
+            4.4, 4.5, 4.08, 3.59, 3.58, 3.95, 4.1, 3.84, 3.6, 3.77, 4.07,
+            3.96, 3.44, 3.1, 3.33, 3.73, 3.75, 3.41, 3.24, 3.47, 3.64,
+            3.35, 2.86, 2.76,
+          ],
+          theme: "neutral",
+        }}
+      />
+      <MetricCard
+        label="Uptime"
+        value="99.99"
+        unit="%"
+        trend={{ direction: "neutral", label: "0.0%", isNeutral: true }}
+        sparkline={{
+          data: [
+            99.98, 99.98, 99.99, 99.99, 99.98, 99.99, 99.99, 99.99, 99.98,
+            99.99, 99.99, 99.99, 99.99, 99.98, 99.99, 99.99, 99.99, 99.99,
+            99.98, 99.99, 99.99, 99.99, 99.99, 99.99,
+          ],
+          yMin: 99.9,
+        }}
+      />
+    </MetricCardGroup>
+  );
+}`}>
+  <MetricCardSparklineDemo client:visible />
+</ComponentExample>
+
+### Interactive Cards
+
+<p>
+  Cards become clickable when given an `href` or `onClick` prop. Use `tooltip`
+  to add contextual information.
+</p>
+<ComponentExample demo="MetricCardInteractiveDemo">
+  <MetricCardInteractiveDemo client:only="react" />
+</ComponentExample>
+
+### Loading and Error States
+
+<p>MetricCard supports `loading` and `error` states for async data.</p>
+<ComponentExample demo="MetricCardStatesDemo">
+  <MetricCardStatesDemo client:visible />
+</ComponentExample>
+
+### Badge Values
+
+<p>
+  Pass a <code>ReactNode</code> like <code>Badge</code> as the <code>value</code> prop for
+  status indicators. ReactNode values render with their own styling. String values
+  automatically receive metric typography.
+</p>
+<ComponentExample demo="MetricCardBadgeValueDemo">
+  <MetricCardBadgeValueDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+### MetricCard
+
+<p>
+  Compact card displaying a single metric value with optional trend, sparkline,
+  and loading/error states.
+</p>
+<PropsTable component="MetricCard" />
+
+<p>The <a href="#trend-options"><code>trend</code></a> and <a href="#sparkline-options"><code>sparkline</code></a> props accept configuration objects described below.</p>
+
+### Trend Options
+
+<p>Options for the <code>trend</code> prop.</p>
+<PropsTable props={{
+  direction: { type: '"up" | "down" | "neutral"', description: 'Arrow direction: up (↑), down (↓), or neutral (→).', required: true },
+  label: { type: "string", description: 'Pre-formatted trend label, e.g. "13.8%", "2.3pp", "5.1ms".', required: true },
+  lessIsBetter: { type: "boolean", default: "false", description: "Inverts color semantics: down becomes green (good), up becomes red (bad). Use for metrics like latency or error count." },
+  isNeutral: { type: "boolean", default: "false", description: "Forces neutral (gray) styling regardless of direction. Use for metrics where change has no good/bad meaning." },
+}} />
+
+### Sparkline Options
+
+<p>Options for the <code>sparkline</code> prop.</p>
+<PropsTable props={{
+  data: { type: "number[]", description: "Array of numeric data points to plot.", required: true },
+  theme: { type: '"success" | "danger" | "neutral"', default: "Brand color", description: 'Preset color theme for the sparkline. For custom colors beyond these presets, use the <code>color</code> prop instead.' },
+  color: { type: "string", description: 'Custom color that overrides <code>theme</code>. Accepts any CSS color value including kumo tokens, e.g. <code>"var(--color-kumo-brand)"</code> or <code>"#E87B35"</code>.' },
+  yMin: { type: "number", default: "Auto from data", description: "Override the auto-scaled minimum y value." },
+  yMax: { type: "number", default: "Auto from data", description: "Override the auto-scaled maximum y value." },
+}} />
+
+### MetricCardGroup
+
+<p>
+  Groups MetricCard children inside a card with an optional header and
+  configurable orientation.
+</p>
+<PropsTable component="MetricCardGroup" />
+
+</ComponentSection>

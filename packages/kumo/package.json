@@ -203,6 +203,14 @@
       "types": "./dist/src/components/table-of-contents/index.d.ts",
       "import": "./dist/components/table-of-contents.js"
     },
+    "./components/metric-card": {
+      "types": "./dist/src/components/metric-card/index.d.ts",
+      "import": "./dist/components/metric-card.js"
+    },
+    "./components/metric-card-group": {
+      "types": "./dist/src/components/metric-card-group/index.d.ts",
+      "import": "./dist/components/metric-card-group.js"
+    },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
       "import": "./dist/utils.js"

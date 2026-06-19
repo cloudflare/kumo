@@ -1,10 +1,11 @@
 ---
 /**
- * PropsTable - Renders a props table from the component registry.
+ * PropsTable - Renders a props table from the component registry or manual definitions.
  *
  * Usage:
  *   <PropsTable component="Button" />
  *   <PropsTable component="Dialog.Root" />
+ *   <PropsTable props={{ name: { type: "string", description: "...", required: true } }} />
  */
 
 import {
@@ -14,33 +15,76 @@ import {
   type PropSchema,
 } from "~/lib/component-registry";
 
+interface ManualPropDef {
+  /** Type as a display string, e.g. "string", "boolean", '"up" | "down"' */
+  type: string;
+  /** Description text (HTML is supported) */
+  description?: string;
+  /** Whether this prop is required */
+  required?: boolean;
+  /** Default value as a display string */
+  default?: string;
+}
+
 interface Props {
-  /** Component name, e.g., "Button" or "Dialog.Root" for sub-components */
-  component: string;
+  /** Component name for registry lookup (e.g., "Button" or "Dialog.Root") */
+  component?: string;
+  /** Manual prop definitions — bypasses registry lookup when provided */
+  props?: Record<string, ManualPropDef>;
   /** Whether to hide the description column (default: false) */
   hideDescription?: boolean;
 }
 
-const { component, hideDescription = false } = Astro.props;
-const data = getComponentData(component);
+const { component, props: manualProps, hideDescription = false } = Astro.props;
 
 // Filter out props that are typically inherited and not useful to document
 const HIDDEN_PROPS = new Set(["ref", "key"]);
 
-const props = data
-  ? Object.entries(data.props).filter(([name]) => !HIDDEN_PROPS.has(name))
-  : [];
+// Registry lookup (only when component is specified and no manual props)
+const data = !manualProps && component ? getComponentData(component) : null;
+
+// Normalize into a flat display-ready shape
+interface DisplayProp {
+  name: string;
+  type: string;
+  defaultValue: string;
+  description: string;
+  isRequired: boolean;
+}
+
+let displayProps: DisplayProp[];
+
+if (manualProps) {
+  displayProps = Object.entries(manualProps).map(([name, def]) => ({
+    name,
+    type: def.type,
+    defaultValue: def.default ?? "-",
+    description: def.description ?? "",
+    isRequired: def.required === true,
+  }));
+} else if (data) {
+  displayProps = Object.entries(data.props)
+    .filter(([name]) => !HIDDEN_PROPS.has(name))
+    .map(([name, prop]) => ({
+      name,
+      type: formatPropType(prop),
+      defaultValue: formatDefault(prop),
+      description: prop.description ?? "",
+      isRequired: prop.required === true || prop.optional === false,
+    }));
+} else {
+  displayProps = [];
+}
+
+const hasData = !!(manualProps || data);
 
 // Check if any props have descriptions to show the column
 const hasDescriptions =
-  !hideDescription &&
-  props.some(
-    ([_, prop]) => prop.description || (prop.type === "enum" && prop.descriptions)
-  );
+  !hideDescription && displayProps.some((p) => p.description);
 ---
 
 {
-  data ? (
+  hasData ? (
     <div class="not-prose overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
@@ -54,46 +98,37 @@ const hasDescriptions =
           </tr>
         </thead>
         <tbody class="text-kumo-strong">
-          {props.map(([propName, prop]) => {
-            const isRequired = prop.required === true || prop.optional === false;
-            const typeDisplay = formatPropType(prop);
-            const defaultDisplay = formatDefault(prop);
-
-            // Build description: use prop.description, or for enums show variant descriptions
-            let description = prop.description || "";
-
-            return (
-              <tr class="border-b border-kumo-hairline">
-                <td class="px-4 py-3 font-mono text-xs">
-                  {propName}
-                  {isRequired && <span class="text-kumo-danger ml-0.5">*</span>}
-                </td>
-                <td class="px-4 py-3 font-mono text-xs max-w-xs">
-                  <code class="text-wrap break-words">{typeDisplay}</code>
-                </td>
-                <td class="px-4 py-3 font-mono text-xs">
-                  {defaultDisplay !== "-" ? <code>{defaultDisplay}</code> : "-"}
-                </td>
-                {hasDescriptions && (
-                  <td class="px-4 py-3 text-xs max-w-md">{description || "-"}</td>
-                )}
-              </tr>
-            );
-          })}
+          {displayProps.map((prop) => (
+            <tr class="border-b border-kumo-hairline">
+              <td class="px-4 py-3 font-mono text-xs">
+                {prop.name}
+                {prop.isRequired && <span class="text-kumo-danger ml-0.5">*</span>}
+              </td>
+              <td class="px-4 py-3 font-mono text-xs max-w-xs">
+                <code class="text-wrap break-words">{prop.type}</code>
+              </td>
+              <td class="px-4 py-3 font-mono text-xs">
+                {prop.defaultValue !== "-" ? <code>{prop.defaultValue}</code> : "-"}
+              </td>
+              {hasDescriptions && (
+                <td class="px-4 py-3 text-xs max-w-md" set:html={prop.description || "-"} />
+              )}
+            </tr>
+          ))}
         </tbody>
       </table>
-      {props.length === 0 && (
+      {displayProps.length === 0 && (
         <p class="px-4 py-3 text-sm text-kumo-subtle">
           No component-specific props. Accepts standard HTML attributes.
         </p>
       )}
     </div>
-  ) : (
+  ) : component ? (
     <div class="rounded-lg border border-kumo-danger/20 bg-kumo-danger/5 p-4">
       <p class="text-sm text-kumo-danger">
         Component "{component}" not found in registry. Run{" "}
         <code>pnpm build:ai-metadata</code> to regenerate.
       </p>
     </div>
-  )
+  ) : null
 }
