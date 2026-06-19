@@ -7,10 +7,6 @@ import {
 } from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
 import { Field, normalizeFieldError, type FieldErrorMatch } from "../field/field";
-import {
-  toolbarControlClassName,
-  useToolbarControlContext,
-} from "../toolbar";
 
 /** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {
@@ -151,12 +147,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     passwordManagerIgnore = false,
     ...inputProps
   } = props;
-  const toolbarControl = useToolbarControlContext();
-  const toolbarControlSize = toolbarControl?.size;
-  const resolvedSize = toolbarControlSize ?? size;
-  const resolvedDescription = toolbarControl ? undefined : description;
-  const shouldHideLabel = hideLabel || Boolean(toolbarControl);
-  const classNameString = typeof className === "string" ? className : undefined;
+  const resolvedSize = size;
+  const resolvedDescription = description;
+  const shouldHideLabel = hideLabel;
 
   // Deprecation warning for variant="error"
   if (process.env.NODE_ENV !== "production" && variantProp === "error") {
@@ -196,13 +189,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
       className={cn(
         inputVariants({ size: resolvedSize, variant, focusIndicator: true }),
         passwordManagerIgnore && "keeper-ignore",
-        toolbarControl ? toolbarControlClassName(classNameString) : className,
+        className,
       )}
-      aria-label={
-        toolbarControl && label && typeof label === "string"
-          ? (inputProps["aria-label"] ?? label)
-          : inputProps["aria-label"]
-      }
+      aria-label={inputProps["aria-label"]}
       {...(passwordManagerIgnore
         ? {
             "data-1p-ignore": "true",
@@ -216,10 +205,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   );
 
   // Render with Field wrapper if label, error, or description is provided
-  if (toolbarControl) {
-    return input;
-  }
-
   if (label || error || resolvedDescription) {
     return (
       <Field

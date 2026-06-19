@@ -6,11 +6,6 @@ import {
   type PropsWithChildren,
 } from "react";
 import { cn } from "../../utils/cn";
-import {
-  ToolbarControlContext,
-  toolbarControlClassName,
-  useToolbarControlContext,
-} from "../toolbar/toolbar";
 import { inputVariants } from "../input/input";
 import { Field } from "../field/field";
 import {
@@ -105,20 +100,9 @@ const Root = forwardRef<
     },
     forwardedRef,
   ) => {
-    const toolbarControl = useToolbarControlContext();
-    const resolvedSize = toolbarControl?.size ?? size;
+    const resolvedSize = size;
     const inputId = useId();
     const focusMode = detectFocusMode(children);
-    // InputGroup is itself one Toolbar.Control item. Null the context for its
-    // internals so InputGroup.Input/Button don't style themselves as siblings.
-    const renderInsideToolbarControlBoundary = (node: React.ReactNode) =>
-      toolbarControl ? (
-        <ToolbarControlContext.Provider value={null}>
-          {node}
-        </ToolbarControlContext.Provider>
-      ) : (
-        node
-      );
 
     const contextValue = useMemo(
       () => ({
@@ -170,7 +154,7 @@ const Root = forwardRef<
       INPUT_GROUP_HAS_CLASSES[resolvedSize],
       // Reset bottom margin to avoid inherited spacing from parent <label> styles
       "!mb-0",
-      toolbarControl ? toolbarControlClassName(className) : className,
+      className,
     );
 
     // Data attributes drive CSS selectors in kumo-binding.css (focus outline)
@@ -244,16 +228,11 @@ const Root = forwardRef<
                   aria-hidden="true"
                 />
               )}
-              {label && toolbarControl && typeof label === "string" && (
-                <label htmlFor={inputId} className="sr-only">
-                  {label}
-                </label>
-              )}
-              {renderInsideToolbarControlBoundary(containerZone)}
+              {containerZone}
             </div>
           </InputGroupContext.Provider>
           {/* Individual zone — buttons with their own borders */}
-          {renderInsideToolbarControlBoundary(individualZone)}
+          {individualZone}
         </>
       );
 
@@ -271,7 +250,7 @@ const Root = forwardRef<
         </InputGroupContext.Provider>
       );
 
-      if (label && !toolbarControl) {
+      if (label) {
         return (
           <Field
             label={label}
@@ -308,12 +287,7 @@ const Root = forwardRef<
               className="absolute inset-0 z-0 mb-0!"
               aria-hidden="true"
             />
-            {label && toolbarControl && typeof label === "string" && (
-              <label htmlFor={inputId} className="sr-only">
-                {label}
-              </label>
-            )}
-            {renderInsideToolbarControlBoundary(children)}
+            {children}
           </div>
         ) : useLabelContainer ? (
           // Standalone container mode: <label> enables click-to-focus on empty space.
@@ -323,7 +297,7 @@ const Root = forwardRef<
             className={cn(containerClassName, "mb-0!")}
             {...rest}
           >
-            {renderInsideToolbarControlBoundary(children)}
+            {children}
           </label>
         ) : (
           // Individual mode: <div> avoids :hover propagating to the first labelable sibling.
@@ -333,13 +307,13 @@ const Root = forwardRef<
             className={containerClassName}
             {...rest}
           >
-            {renderInsideToolbarControlBoundary(children)}
+            {children}
           </div>
         )}
       </InputGroupContext.Provider>
     );
 
-    if (label && !toolbarControl) {
+    if (label) {
       return (
         <Field
           label={label}

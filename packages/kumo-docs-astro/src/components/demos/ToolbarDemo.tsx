@@ -1,50 +1,29 @@
-import {
-  Button,
-  Combobox,
-  Input,
-  InputGroup,
-  Select,
-  Toolbar,
-} from "@cloudflare/kumo";
+import { InputGroup, Toolbar } from "@cloudflare/kumo";
 import {
   DownloadSimpleIcon,
   FunnelSimpleIcon,
   GearSixIcon,
   MagnifyingGlassIcon,
-  PlusIcon,
   UploadSimpleIcon,
 } from "@phosphor-icons/react";
 
-const zones = ["example.com", "kumo-ui.com", "workers.dev", "pages.dev"];
-
-/** Basic Toolbar with explicitly rendered controls. */
+/** Basic Toolbar with an InputGroup and adjacent action buttons. */
 export function ToolbarDemo() {
   return (
     <Toolbar className="w-full max-w-md">
-      <Toolbar.Control
-        render={
-          <Input
-            aria-label="Search DNS records"
-            className="flex-1"
-            placeholder="Search DNS Records"
-          />
-        }
-      />
-      <Toolbar.Control
-        render={
-          <Button shape="square" icon={FunnelSimpleIcon} aria-label="Filter" />
-        }
-      />
-      <Toolbar.Control
-        render={
-          <Button shape="square" icon={GearSixIcon} aria-label="Settings" />
-        }
-      />
+      <Toolbar.InputGroup aria-label="Search DNS records" className="flex-1">
+        <InputGroup.Addon>
+          <MagnifyingGlassIcon />
+        </InputGroup.Addon>
+        <InputGroup.Input placeholder="Search DNS records" />
+      </Toolbar.InputGroup>
+      <Toolbar.Button icon={FunnelSimpleIcon} aria-label="Filter" />
+      <Toolbar.Button icon={GearSixIcon} aria-label="Settings" />
     </Toolbar>
   );
 }
 
-/** Toolbar locks Toolbar.Control sizes to the toolbar size. */
+/** Toolbar locks supported item sizes to the toolbar size. */
 export function ToolbarSizesDemo() {
   return (
     <div className="grid gap-3">
@@ -52,12 +31,8 @@ export function ToolbarSizesDemo() {
         <div key={size} className="flex items-center gap-3">
           <span className="w-10 text-sm text-kumo-subtle">{size}</span>
           <Toolbar size={size} className="w-fit">
-            <Toolbar.Control
-              render={
-                <Input aria-label={`${size} search`} placeholder="Search..." />
-              }
-            />
-            <Toolbar.Control render={<Button>Apply</Button>} />
+            <Toolbar.Input aria-label={`${size} search`} placeholder="Search..." />
+            <Toolbar.Button>Apply</Toolbar.Button>
           </Toolbar>
         </div>
       ))}
@@ -65,26 +40,17 @@ export function ToolbarSizesDemo() {
   );
 }
 
-/** Toolbar can mix Input, Select, and Button controls. */
+/** Toolbar can use the simpler Input shorthand. */
 export function ToolbarMixedControlsDemo() {
   return (
-    <Toolbar className="w-full max-w-xl">
-      <Toolbar.Control
-        render={
-          <Select
-            label="Record type"
-            className="w-32"
-            value="all"
-            items={{ all: "All", a: "A", aaaa: "AAAA", cname: "CNAME" }}
-          />
-        }
+    <Toolbar className="w-full max-w-md">
+      <Toolbar.Input
+        aria-label="Search DNS records"
+        placeholder="Search DNS records"
+        className="flex-1"
       />
-      <Toolbar.Control
-        render={
-          <Input label="Record name" className="flex-1" placeholder="Name" />
-        }
-      />
-      <Toolbar.Control render={<Button icon={PlusIcon}>Add</Button>} />
+      <Toolbar.Button icon={FunnelSimpleIcon} aria-label="Filter" />
+      <Toolbar.Button icon={GearSixIcon} aria-label="Settings" />
     </Toolbar>
   );
 }
@@ -93,88 +59,31 @@ export function ToolbarMixedControlsDemo() {
 export function ToolbarInputGroupDemo() {
   return (
     <Toolbar className="w-full max-w-lg">
-      <Toolbar.Control
-        render={
-          <InputGroup label="Worker subdomain" className="flex-1">
-            <InputGroup.Input
-              placeholder="my-worker"
-              aria-label="Worker subdomain"
-            />
-            <InputGroup.Suffix>.workers.dev</InputGroup.Suffix>
-          </InputGroup>
-        }
-      />
-      <Toolbar.Control render={<Button>Visit</Button>} />
+      <Toolbar.InputGroup aria-label="Worker subdomain" className="flex-1">
+        <InputGroup.Input placeholder="my-worker" />
+        <InputGroup.Suffix>.workers.dev</InputGroup.Suffix>
+      </Toolbar.InputGroup>
+      <Toolbar.Button>Visit</Toolbar.Button>
     </Toolbar>
   );
 }
 
-/** Toolbar forces Toolbar.Control Button children to ghost styling. */
+/** Toolbar buttons always use quiet toolbar styling. */
 export function ToolbarActionsDemo() {
   return (
-    <Toolbar size="base">
-      <Toolbar.Control
-        render={
-          <Button icon={UploadSimpleIcon} variant="primary">
-            Upload
-          </Button>
-        }
-      />
-      <Toolbar.Control
-        render={
-          <Button icon={DownloadSimpleIcon} variant="destructive">
-            Download
-          </Button>
-        }
-      />
+    <Toolbar>
+      <Toolbar.Button icon={UploadSimpleIcon}>Upload</Toolbar.Button>
+      <Toolbar.Button icon={DownloadSimpleIcon}>Download</Toolbar.Button>
     </Toolbar>
   );
 }
 
-/** Labels inside Toolbar.Control stay accessible but are visually hidden. */
+/** Toolbar items use aria-label for compact accessible names. */
 export function ToolbarLabelsDemo() {
   return (
     <Toolbar className="w-full max-w-lg">
-      <Toolbar.Control
-        render={
-          <Combobox items={zones} label="Zone" value="kumo-ui.com">
-            <Combobox.TriggerInput placeholder="Select zone" />
-            <Combobox.Content>
-              <Combobox.List>
-                {(zone: string) => (
-                  <Combobox.Item key={zone} value={zone}>
-                    {zone}
-                  </Combobox.Item>
-                )}
-              </Combobox.List>
-            </Combobox.Content>
-          </Combobox>
-        }
-      />
-      <Toolbar.Control
-        render={
-          <Input label="Search records" className="flex-1" placeholder="Search" />
-        }
-      />
-      <Toolbar.Control
-        render={
-          <Button shape="square" icon={MagnifyingGlassIcon} aria-label="Search" />
-        }
-      />
-    </Toolbar>
-  );
-}
-
-/** Direct children do not receive Toolbar.Control styling or sizing. */
-export function ToolbarExplicitControlsDemo() {
-  return (
-    <Toolbar size="sm" className="w-full max-w-xl">
-      <Toolbar.Control
-        render={
-          <Input aria-label="Toolbar search" placeholder="Toolbar controlled" />
-        }
-      />
-      <Input aria-label="Standalone search" placeholder="Standalone input" />
+      <Toolbar.Input aria-label="Search records" className="flex-1" placeholder="Search" />
+      <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
     </Toolbar>
   );
 }

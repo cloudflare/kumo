@@ -8,7 +8,6 @@ sourceFile: "components/toolbar"
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
-import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   ToolbarDemo,
   ToolbarSizesDemo,
@@ -16,7 +15,6 @@ import {
   ToolbarInputGroupDemo,
   ToolbarActionsDemo,
   ToolbarLabelsDemo,
-  ToolbarExplicitControlsDemo,
 } from "~/components/demos/ToolbarDemo";
 
 <ComponentSection>
@@ -46,20 +44,23 @@ import {
 ## Usage
 
 Use `Toolbar` when multiple controls should read as one compact toolbar or
-filter card. Render controls through `Toolbar.Control` to opt them into toolbar
-sizing, variants, borders, radii, labels, and descriptions.
+filter card. Use `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup` to
+opt supported controls into toolbar sizing, button styling, borders, and radii.
 
 ```tsx
-import { Button, Input, Toolbar } from "@cloudflare/kumo";
+import { InputGroup, Toolbar } from "@cloudflare/kumo";
+import { FunnelSimpleIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 export default function Example() {
   return (
-    <Toolbar size="sm">
-      <Toolbar.Control
-        render={<Input type="text" placeholder="Search..." aria-label="Search" />}
-      />
-      <Toolbar.Control render={<Button>Edit</Button>} />
-      <Toolbar.Control render={<Button>Add</Button>} />
+    <Toolbar>
+      <Toolbar.InputGroup aria-label="Search DNS records">
+        <InputGroup.Addon>
+          <MagnifyingGlassIcon />
+        </InputGroup.Addon>
+        <InputGroup.Input placeholder="Search DNS records" />
+      </Toolbar.InputGroup>
+      <Toolbar.Button icon={FunnelSimpleIcon} aria-label="Filter" />
     </Toolbar>
   );
 }
@@ -71,14 +72,13 @@ export default function Example() {
 
 ## Behavior
 
-`Toolbar.Control` intentionally owns grouped control presentation:
+Toolbar item components intentionally own grouped control presentation:
 
-- Control `size` props are ignored and replaced by the toolbar `size`.
-- `Button` and `LinkButton` controls render as ghost buttons.
-- Labels on controls like `Input`, `Select`, and `Combobox` stay accessible but are visually hidden.
-- Descriptions on toolbar controls are ignored to keep the row compact.
-- Adjacent `Toolbar.Control` controls share borders and only the outer corners are rounded.
-- Direct `Toolbar` children that are not rendered by `Toolbar.Control` do not receive toolbar overrides.
+- `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup` inherit the toolbar `size`.
+- `Toolbar.Button` always renders with quiet toolbar button styling.
+- `Toolbar.InputGroup` passes props directly to `InputGroup` with the toolbar `size`.
+- Adjacent toolbar items share borders and only the outer corners are rounded.
+- Direct `Toolbar` children that are not one of the supported toolbar item components do not receive toolbar overrides.
 
 </ComponentSection>
 
@@ -86,26 +86,17 @@ export default function Example() {
 
 ## Examples
 
-### Mixed Controls
+### Input Shorthand
 
-Use different control types together for filter bars and table actions.
+Use `Toolbar.Input` for simple text inputs that do not need addons.
 
 <ComponentExample demo="ToolbarMixedControlsDemo">
   <ToolbarMixedControlsDemo client:visible />
 </ComponentExample>
 
-### Explicit Controls
-
-Only elements rendered through `Toolbar.Control` receive toolbar sizing,
-variant, label, and border overrides. Direct children render normally.
-
-<ComponentExample demo="ToolbarExplicitControlsDemo">
-  <ToolbarExplicitControlsDemo client:visible />
-</ComponentExample>
-
 ### Input Group
 
-Use `InputGroup` inside `Toolbar.Control` when one toolbar item needs its own
+Use `Toolbar.InputGroup` when one toolbar item needs its own
 inline addon or suffix.
 
 <ComponentExample demo="ToolbarInputGroupDemo">
@@ -114,8 +105,8 @@ inline addon or suffix.
 
 ### Sizes
 
-The `size` prop supports `xs`, `sm`, `base`, and `lg`. Every supported child
-control rendered by `Toolbar.Control` is locked to the same size.
+The `size` prop supports `xs`, `sm`, `base`, and `lg`. Every supported toolbar
+item is locked to the same size.
 
 <ComponentExample demo="ToolbarSizesDemo">
   <ToolbarSizesDemo client:visible />
@@ -123,7 +114,7 @@ control rendered by `Toolbar.Control` is locked to the same size.
 
 ### Button Actions
 
-Button variants are ignored inside `Toolbar.Control`, so grouped actions remain
+Toolbar buttons use quiet styling so grouped actions remain
 visually quiet and consistent.
 
 <ComponentExample demo="ToolbarActionsDemo">
@@ -132,8 +123,7 @@ visually quiet and consistent.
 
 ### Accessible Labels
 
-Controls can still receive `label` props for accessibility. The group hides
-those labels visually and ignores descriptions.
+Use `aria-label` for compact toolbar controls that do not have visible labels.
 
 <ComponentExample demo="ToolbarLabelsDemo">
   <ToolbarLabelsDemo client:visible />
@@ -145,5 +135,34 @@ those labels visually and ignores descriptions.
 
 ## API Reference
 
-<PropsTable component="Toolbar" hiddenProps={["id", "lang", "title"]} />
+<table>
+  <thead>
+    <tr>
+      <th>Prop</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>children</code></td>
+      <td><code>ReactNode</code></td>
+      <td>-</td>
+      <td>Toolbar controls rendered as one grouped card.</td>
+    </tr>
+    <tr>
+      <td><code>size</code></td>
+      <td><code>&quot;xs&quot; | &quot;sm&quot; | &quot;base&quot; | &quot;lg&quot;</code></td>
+      <td><code>&quot;base&quot;</code></td>
+      <td>Locks every supported toolbar item to this size.</td>
+    </tr>
+    <tr>
+      <td><code>className</code></td>
+      <td><code>string</code></td>
+      <td>-</td>
+      <td>Additional CSS classes merged onto the toolbar root.</td>
+    </tr>
+  </tbody>
+</table>
 </ComponentSection>

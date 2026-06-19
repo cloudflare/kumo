@@ -19,10 +19,6 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
-import {
-  toolbarControlClassName,
-  useToolbarControlContext,
-} from "../toolbar";
 
 /** Combobox variant definitions. */
 export const KUMO_COMBOBOX_VARIANTS = {
@@ -48,9 +44,8 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
 const ComboboxContext = createContext<{
   size: KumoInputSize;
   hasError: boolean;
-  isToolbarControl: boolean;
   hiddenLabel?: ReactNode;
-}>({ size: "base", hasError: false, isToolbarControl: false });
+}>({ size: "base", hasError: false });
 
 // Derived types from KUMO_COMBOBOX_VARIANTS
 export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
@@ -166,7 +161,6 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   children,
   size = "base",
   hideLabel = false,
-  className,
   ...props
 }: ComboboxBase.Root.Props<Value, Multiple> & {
   label?: ReactNode;
@@ -178,30 +172,19 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   hideLabel?: boolean;
   className?: string;
 }) {
-  const toolbarControl = useToolbarControlContext();
-  const resolvedSize = toolbarControl?.size ?? size;
-  const shouldHideLabel = hideLabel || Boolean(toolbarControl);
-  const classNameString = typeof className === "string" ? className : undefined;
+  const resolvedSize = size;
+  const shouldHideLabel = hideLabel;
   const comboboxControl = (
     <ComboboxContext.Provider
       value={{
         size: resolvedSize,
         hasError: Boolean(error),
-        isToolbarControl: Boolean(toolbarControl),
-        hiddenLabel: toolbarControl ? label : undefined,
+        hiddenLabel: undefined,
       }}
     >
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
     </ComboboxContext.Provider>
   );
-
-  if (toolbarControl) {
-    return (
-      <div className={toolbarControlClassName(classNameString)}>
-        {comboboxControl}
-      </div>
-    );
-  }
 
   // Render with Field wrapper if label, description, or error are provided
   if (label) {
@@ -210,7 +193,7 @@ function Root<Value, Multiple extends boolean | undefined = false>({
         label={label}
         required={required}
         labelTooltip={shouldHideLabel ? undefined : labelTooltip}
-        description={toolbarControl ? undefined : description}
+        description={description}
         error={
           error
             ? typeof error === "string"
@@ -293,7 +276,7 @@ function TriggerValue({
   className,
   ...props
 }: ComboboxBase.Value.Props & { className?: string }) {
-  const { size, hasError, isToolbarControl, hiddenLabel } =
+  const { size, hasError, hiddenLabel } =
     useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
@@ -307,8 +290,6 @@ function TriggerValue({
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
         "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
-        isToolbarControl &&
-          "rounded-[inherit] bg-transparent shadow-none ring-0 focus:z-2 focus-visible:z-2",
         className,
       )}
     >
@@ -375,7 +356,7 @@ function TriggerInput({
    */
   showOptionsLabel?: string;
 }) {
-  const { size, hasError, isToolbarControl, hiddenLabel } =
+  const { size, hasError, hiddenLabel } =
     useContext(ComboboxContext);
   const iconStyles = triggerInputIconStyles[size];
   return (
@@ -383,7 +364,6 @@ function TriggerInput({
       className={cn(
         "relative inline-block w-full max-w-xs",
         "has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed",
-        isToolbarControl && "max-w-none rounded-[inherit] focus-within:z-2",
         props.className,
       )}
     >
@@ -395,8 +375,6 @@ function TriggerInput({
           "w-full",
           iconStyles.padding,
           "disabled:cursor-not-allowed",
-          isToolbarControl &&
-            "relative rounded-[inherit] bg-transparent shadow-none ring-0 focus:z-2 focus-visible:z-2",
         )}
       />
 
@@ -578,7 +556,7 @@ function TriggerMultipleWithInput<ValueType>({
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
 }) {
-  const { size, hasError, isToolbarControl, hiddenLabel } =
+  const { size, hasError, hiddenLabel } =
     useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
@@ -592,8 +570,6 @@ function TriggerMultipleWithInput<ValueType>({
         sizeToMinHeight[size],
         "h-auto",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
-        isToolbarControl &&
-          "rounded-[inherit] bg-transparent shadow-none ring-0 focus:z-2 focus-visible:z-2",
         className,
       )}
     >

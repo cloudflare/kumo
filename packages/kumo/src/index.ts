@@ -58,7 +58,9 @@ export {
   KUMO_TOOLBAR_DEFAULT_VARIANTS,
   type ToolbarProps,
   type ToolbarSize,
-  type ToolbarControlProps,
+  type ToolbarButtonProps,
+  type ToolbarInputProps,
+  type ToolbarInputGroupProps,
 } from "./components/toolbar";
 export {
   Dialog,

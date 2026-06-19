@@ -2,7 +2,6 @@ import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Toolbar } from "../toolbar/toolbar";
 import { InputGroup } from "./input-group";
 import { INPUT_GROUP_SIZE, detectFocusMode } from "./context";
 import type { KumoInputSize } from "../input/input";
@@ -75,34 +74,6 @@ describe("InputGroup", () => {
       expect(screen.getByText(".json")).toBeTruthy();
     });
 
-    it("inherits Toolbar.Control size and styles only on the outer group", () => {
-      const { container } = render(
-        <Toolbar size="sm">
-          <Toolbar.Control
-            render={
-              <InputGroup label="Hostname">
-                <InputGroup.Input placeholder="example" aria-label="Hostname" />
-                <InputGroup.Suffix>.workers.dev</InputGroup.Suffix>
-              </InputGroup>
-            }
-          />
-          <InputGroup>
-            <InputGroup.Input placeholder="plain" aria-label="Plain" />
-          </InputGroup>
-        </Toolbar>,
-      );
-
-      const groups = container.querySelectorAll('[data-slot="input-group"]');
-      const toolbarGroup = groups[0] as HTMLElement;
-      const plainGroup = groups[1] as HTMLElement;
-      const input = screen.getByRole("textbox", { name: "Hostname" });
-
-      expect(toolbarGroup.className).toContain("h-6.5");
-      expect(toolbarGroup.className).toContain("rounded-none");
-      expect(plainGroup.className).not.toContain("rounded-none");
-      expect(input.className).not.toContain("not-first:border-l");
-      expect(screen.getByText("Hostname").className).toContain("sr-only");
-    });
   });
 
   describe("addon positioning", () => {

@@ -77,12 +77,10 @@ describe("Input", () => {
     expect(screen.getByRole("textbox").className).toContain("h-10");
   });
 
-  it("only applies Toolbar overrides through Toolbar.Control", () => {
+  it("only applies Toolbar overrides through Toolbar.Input", () => {
     render(
       <Toolbar size="sm">
-        <Toolbar.Control
-          render={<Input aria-label="Toolbar input" size="lg" />}
-        />
+        <Toolbar.Input aria-label="Toolbar input" />
         <Input aria-label="Direct input" size="lg" />
       </Toolbar>,
     );

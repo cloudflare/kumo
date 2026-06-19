@@ -12,10 +12,6 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
-import {
-  toolbarControlClassName,
-  useToolbarControlContext,
-} from "../toolbar";
 
 /** Select variant definitions. */
 export const KUMO_SELECT_VARIANTS = {
@@ -365,7 +361,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
-  const toolbarControl = useToolbarControlContext();
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
   const propLookup = props as Record<string, unknown>;
@@ -375,11 +370,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   const fallbackLabel = typeof label === "string" ? label : placeholder;
 
   // Deprecation warning for hideLabel
-  if (
-    process.env.NODE_ENV !== "production" &&
-    hideLabel !== undefined &&
-    !toolbarControl
-  ) {
+  if (process.env.NODE_ENV !== "production" && hideLabel !== undefined) {
     console.warn(
       "[Kumo Select]: `hideLabel` is deprecated. For hidden labels, use `aria-label` instead of `label` + `hideLabel={true}`.\n" +
         "  Migration:\n" +
@@ -390,7 +381,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
 
   // New behavior: label presence determines Field wrapper visibility (like Input)
   // hideLabel is only respected for backward compatibility when explicitly set to true
-  const resolvedHideLabel = hideLabel === true || Boolean(toolbarControl);
+  const resolvedHideLabel = hideLabel === true;
   const useFieldWrapper = label && !resolvedHideLabel;
   const triggerLabelledBy = useFieldWrapper
     ? undefined
@@ -441,7 +432,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // Use Base UI's Select.Label for accessible naming — avoids the
   // hover/focus coupling that a native <label> (from Field) would cause.
   const showOptional = required === false;
-  const selectLabelNode = label && !toolbarControl ? (
+  const selectLabelNode = label ? (
     <SelectBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
       <Label
         showOptional={showOptional}
@@ -464,20 +455,15 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         data-kumo-component="Select"
         data-kumo-part="trigger"
         className={cn(
-          selectVariants({ size: toolbarControl?.size ?? size }),
+          selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
           error &&
             "!ring-kumo-danger focus:ring-kumo-danger/50 focus:ring-[1.5px]",
-          toolbarControl ? toolbarControlClassName(className) : className,
+          className,
         )}
         aria-label={triggerAriaLabel}
         aria-labelledby={triggerLabelledBy}
       >
-        {label && toolbarControl && (
-          <span id={labelId} className="sr-only">
-            {label}
-          </span>
-        )}
         {loading ? (
           <SkeletonLine className="w-32" />
         ) : (
@@ -491,11 +477,11 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         <SelectBase.Icon
           className={cn(
             "flex shrink-0 items-center",
-            triggerIconStyles[toolbarControl?.size ?? size].className,
+            triggerIconStyles[size].className,
           )}
         >
           <CaretUpDownIcon
-            size={triggerIconStyles[toolbarControl?.size ?? size].iconSize}
+            size={triggerIconStyles[size].iconSize}
             className="fill-current"
           />
         </SelectBase.Icon>
@@ -524,7 +510,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   );
 
   // Use Field wrapper when label is provided and not hidden
-  if (useFieldWrapper && !toolbarControl) {
+  if (useFieldWrapper) {
     return (
       <Field
         label={label}
@@ -543,10 +529,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         {selectControl}
       </Field>
     );
-  }
-
-  if (toolbarControl) {
-    return selectControl;
   }
 
   // Render with standalone label when label is hidden (sr-only)
@@ -570,7 +552,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           {normalizedError.message}
         </span>
       ) : (
-        !toolbarControl &&
         description && (
           <span className="text-sm leading-snug text-kumo-subtle">
             {description}

@@ -1,5 +1,10 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext } from "react";
+import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
+import type { Input as BaseInput } from "@base-ui/react/input";
 import { cn } from "../../utils/cn";
+import { Button as KumoButton, type ButtonProps } from "../button/button";
+import { Input as KumoInput, type InputProps } from "../input/input";
+import { InputGroup } from "../input-group/input-group";
 
 export const KUMO_TOOLBAR_VARIANTS = {
   size: {
@@ -28,36 +33,42 @@ export const KUMO_TOOLBAR_DEFAULT_VARIANTS = {
 
 export type ToolbarSize = keyof typeof KUMO_TOOLBAR_VARIANTS.size;
 
-export interface ToolbarControlContextValue {
-  size: ToolbarSize;
-}
-
-export interface ToolbarProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  /** Toolbar controls and non-control content rendered as one grouped card. */
+export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
+  /** Toolbar controls rendered as one grouped card. */
   children: React.ReactNode;
-  /** Locks every toolbar control to this size. */
+  /** Locks every toolbar item to this size. */
   size?: ToolbarSize;
 }
 
-export interface ToolbarControlProps {
-  /** Control element that should receive toolbar sizing and grouped styling. */
-  render: React.ReactElement;
-}
+export type ToolbarButtonProps = Omit<ButtonProps, "size" | "variant"> &
+  Pick<ToolbarBase.Button.Props, "focusableWhenDisabled">;
 
-export const ToolbarControlContext = createContext<ToolbarControlContextValue | null>(
-  null,
-);
+export type ToolbarInputProps = Omit<
+  InputProps,
+  | "size"
+  | "variant"
+  | "label"
+  | "labelTooltip"
+  | "description"
+  | "hideLabel"
+  | "error"
+  | "passwordManagerIgnore"
+  | "render"
+> & {
+  /** When `true`, the item remains focusable when disabled. */
+  focusableWhenDisabled?: ToolbarBase.Input.Props["focusableWhenDisabled"];
+};
+
+export type ToolbarInputGroupProps = Omit<
+  React.ComponentPropsWithoutRef<typeof InputGroup>,
+  "size"
+>;
 
 const ToolbarSizeContext = createContext<{ size: ToolbarSize }>({
   size: KUMO_TOOLBAR_DEFAULT_VARIANTS.size,
 });
 
-export function useToolbarControlContext() {
-  return useContext(ToolbarControlContext);
-}
-
-export function toolbarControlClassName(className?: string) {
+function toolbarControlClassName(className?: string) {
   return cn(
     "relative min-w-0 border-0 bg-transparent shadow-none ring-0 focus:z-2 focus-within:z-2 focus-visible:z-2",
     "rounded-none first:rounded-l-lg last:rounded-r-lg only:rounded-lg",
@@ -68,9 +79,8 @@ export function toolbarControlClassName(className?: string) {
 }
 
 /**
- * Groups explicit toolbar controls into one compact card with shared sizing and
- * internal separators. Only controls rendered through `Toolbar.Control` receive
- * toolbar overrides.
+ * Groups toolbar controls into one compact card with shared sizing and internal
+ * separators.
  */
 const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
   (
@@ -83,7 +93,7 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
     ref,
   ) => {
     return (
-      <div
+      <ToolbarBase.Root
         ref={ref}
         data-kumo-component="Toolbar"
         className={cn(
@@ -93,49 +103,126 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
         )}
         {...props}
       >
-        <ToolbarControlContext.Provider value={null}>
+        <ToolbarSizeContext.Provider value={{ size }}>
           {children}
-        </ToolbarControlContext.Provider>
-      </div>
+        </ToolbarSizeContext.Provider>
+      </ToolbarBase.Root>
     );
   },
 );
 
 Root.displayName = "Toolbar";
 
-const Control = ({ render }: ToolbarControlProps) => {
-  const toolbar = useContext(ToolbarSizeContext);
-
-  return (
-    <ToolbarControlContext.Provider value={{ size: toolbar.size }}>
-      {render}
-    </ToolbarControlContext.Provider>
-  );
-};
-
-Control.displayName = "Toolbar.Control";
-
-export const Toolbar = Object.assign(
-  React.forwardRef<HTMLDivElement, ToolbarProps>(
-    (
-      {
-        children,
-        className,
-        size = KUMO_TOOLBAR_DEFAULT_VARIANTS.size,
-        ...props
-      },
-      ref,
-    ) => {
-      return (
-        <ToolbarSizeContext.Provider value={{ size }}>
-          <Root ref={ref} className={className} size={size} {...props}>
-            {children}
-          </Root>
-        </ToolbarSizeContext.Provider>
-      );
+const Button = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
+  (
+    {
+      children,
+      className,
+      disabled,
+      loading,
+      shape,
+      icon: IconComponent,
+      type,
+      ...props
     },
-  ),
-  { Control },
+    ref,
+  ) => {
+    const toolbar = React.useContext(ToolbarSizeContext);
+    const resolvedShape =
+      shape ?? (children == null && IconComponent ? "square" : "base");
+    const ariaLabel = props["aria-label"] as string | undefined;
+    const button =
+      resolvedShape === "base" ? (
+        <KumoButton
+          className={toolbarControlClassName(className)}
+          disabled={disabled}
+          icon={IconComponent}
+          loading={loading}
+          shape="base"
+          size={toolbar.size}
+          type={type ?? "button"}
+          variant="ghost"
+        >
+          {children}
+        </KumoButton>
+      ) : (
+        <KumoButton
+          aria-label={ariaLabel as string}
+          className={toolbarControlClassName(className)}
+          disabled={disabled}
+          icon={IconComponent}
+          loading={loading}
+          shape={resolvedShape}
+          size={toolbar.size}
+          type={type ?? "button"}
+          variant="ghost"
+        >
+          {children}
+        </KumoButton>
+      );
+
+    return (
+      <ToolbarBase.Button
+        ref={ref}
+        data-kumo-component="Toolbar.Button"
+        disabled={loading || disabled}
+        render={button}
+        {...props}
+      />
+    );
+  },
 );
+
+Button.displayName = "Toolbar.Button";
+
+const Input = React.forwardRef<HTMLInputElement, ToolbarInputProps>(
+  ({ className, style, ...props }, ref) => {
+    const toolbar = React.useContext(ToolbarSizeContext);
+    const inputClassName =
+      typeof className === "function"
+        ? (state: BaseInput.State) => toolbarControlClassName(className(state))
+        : toolbarControlClassName(className);
+
+    return (
+      <ToolbarBase.Input
+        ref={ref}
+        data-kumo-component="Toolbar.Input"
+        render={
+          <KumoInput
+            className={inputClassName}
+            size={toolbar.size}
+            style={style}
+          />
+        }
+        {...props}
+      />
+    );
+  },
+);
+
+Input.displayName = "Toolbar.Input";
+
+const InputGroupRoot = React.forwardRef<HTMLElement, ToolbarInputGroupProps>(
+  ({ className, ...props }, ref) => {
+    const toolbar = React.useContext(ToolbarSizeContext);
+
+    return (
+      <InputGroup
+        ref={ref}
+        className={toolbarControlClassName(className)}
+        size={toolbar.size}
+        {...props}
+      />
+    );
+  },
+);
+
+InputGroupRoot.displayName = "Toolbar.InputGroup";
+
+export const Toolbar = Object.assign(Root, {
+  Button,
+  Input,
+  InputGroup: InputGroupRoot,
+});
 
 Toolbar.displayName = "Toolbar";
