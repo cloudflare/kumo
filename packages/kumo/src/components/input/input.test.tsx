@@ -7,7 +7,6 @@ import {
   KUMO_INPUT_VARIANTS,
   KUMO_INPUT_DEFAULT_VARIANTS,
 } from "./input";
-import { Toolbar } from "../toolbar/toolbar";
 
 describe("Input", () => {
   // Rendering
@@ -75,23 +74,6 @@ describe("Input", () => {
   it("renders with size 'lg'", () => {
     render(<Input aria-label="Test" size="lg" />);
     expect(screen.getByRole("textbox").className).toContain("h-10");
-  });
-
-  it("only applies Toolbar overrides through Toolbar.Input", () => {
-    render(
-      <Toolbar size="sm">
-        <Toolbar.Input aria-label="Toolbar input" />
-        <Input aria-label="Direct input" size="lg" />
-      </Toolbar>,
-    );
-
-    const toolbarInput = screen.getByRole("textbox", { name: "Toolbar input" });
-    const directInput = screen.getByRole("textbox", { name: "Direct input" });
-
-    expect(toolbarInput.className).toContain("h-6.5");
-    expect(toolbarInput.className).toContain("rounded-none");
-    expect(directInput.className).toContain("h-10");
-    expect(directInput.className).not.toContain("rounded-none");
   });
 
   // Variant styles

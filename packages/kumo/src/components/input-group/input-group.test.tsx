@@ -73,7 +73,6 @@ describe("InputGroup", () => {
       expect(screen.getByPlaceholderText("endpoint")).toBeTruthy();
       expect(screen.getByText(".json")).toBeTruthy();
     });
-
   });
 
   describe("addon positioning", () => {

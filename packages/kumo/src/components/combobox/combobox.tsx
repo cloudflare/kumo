@@ -44,7 +44,6 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
 const ComboboxContext = createContext<{
   size: KumoInputSize;
   hasError: boolean;
-  hiddenLabel?: ReactNode;
 }>({ size: "base", hasError: false });
 
 // Derived types from KUMO_COMBOBOX_VARIANTS
@@ -148,8 +147,6 @@ export interface ComboboxProps extends KumoComboboxVariantsProps {
   description?: ReactNode;
   /** Error message or validation error object */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
-  /** Visually hide the label while keeping it available to screen readers. */
-  hideLabel?: boolean;
 }
 
 function Root<Value, Multiple extends boolean | undefined = false>({
@@ -160,7 +157,6 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   error,
   children,
   size = "base",
-  hideLabel = false,
   ...props
 }: ComboboxBase.Root.Props<Value, Multiple> & {
   label?: ReactNode;
@@ -169,19 +165,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   description?: ReactNode;
   error?: string | { message: ReactNode; match: FieldErrorMatch };
   size?: KumoComboboxSize;
-  hideLabel?: boolean;
-  className?: string;
 }) {
-  const resolvedSize = size;
-  const shouldHideLabel = hideLabel;
   const comboboxControl = (
-    <ComboboxContext.Provider
-      value={{
-        size: resolvedSize,
-        hasError: Boolean(error),
-        hiddenLabel: undefined,
-      }}
-    >
+    <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
     </ComboboxContext.Provider>
   );
@@ -192,7 +178,7 @@ function Root<Value, Multiple extends boolean | undefined = false>({
       <Field
         label={label}
         required={required}
-        labelTooltip={shouldHideLabel ? undefined : labelTooltip}
+        labelTooltip={labelTooltip}
         description={description}
         error={
           error
@@ -201,7 +187,6 @@ function Root<Value, Multiple extends boolean | undefined = false>({
               : error
             : undefined
         }
-        labelClassName={shouldHideLabel ? "sr-only" : undefined}
       >
         {comboboxControl}
       </Field>
@@ -276,8 +261,7 @@ function TriggerValue({
   className,
   ...props
 }: ComboboxBase.Value.Props & { className?: string }) {
-  const { size, hasError, hiddenLabel } =
-    useContext(ComboboxContext);
+  const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
   return (
@@ -293,11 +277,6 @@ function TriggerValue({
         className,
       )}
     >
-      {hiddenLabel && (
-        <span className="sr-only">
-          {hiddenLabel}
-        </span>
-      )}
       <ComboboxBase.Value {...props} />
       <ComboboxBase.Icon
         className={cn(
@@ -356,9 +335,9 @@ function TriggerInput({
    */
   showOptionsLabel?: string;
 }) {
-  const { size, hasError, hiddenLabel } =
-    useContext(ComboboxContext);
+  const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerInputIconStyles[size];
+
   return (
     <div
       className={cn(
@@ -367,7 +346,6 @@ function TriggerInput({
         props.className,
       )}
     >
-      {hiddenLabel && <span className="sr-only">{hiddenLabel}</span>}
       <ComboboxBase.Input
         {...props}
         className={cn(
@@ -556,8 +534,7 @@ function TriggerMultipleWithInput<ValueType>({
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
 }) {
-  const { size, hasError, hiddenLabel } =
-    useContext(ComboboxContext);
+  const { size, hasError } = useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
 
@@ -573,7 +550,6 @@ function TriggerMultipleWithInput<ValueType>({
         className,
       )}
     >
-      {hiddenLabel && <span className="sr-only">{hiddenLabel}</span>}
       {inputSide === "top" && (
         <ComboboxBase.Input
           placeholder={placeholder}

@@ -100,19 +100,18 @@ const Root = forwardRef<
     },
     forwardedRef,
   ) => {
-    const resolvedSize = size;
     const inputId = useId();
     const focusMode = detectFocusMode(children);
 
     const contextValue = useMemo(
       () => ({
-        size: resolvedSize,
+        size,
         focusMode,
         disabled,
         error,
         inputId,
       }),
-      [resolvedSize, focusMode, disabled, error, inputId],
+      [size, focusMode, disabled, error, inputId],
     );
 
     // When label is provided, Field already renders a <label> with htmlFor
@@ -123,7 +122,7 @@ const Root = forwardRef<
       // Establish positioning context and make the whole area a click target
       "relative w-full cursor-text",
       // inputVariants provides base ring-kumo-line; must come before state overrides
-      inputVariants({ size: resolvedSize }),
+      inputVariants({ size }),
       // Subtle drop shadow to separate the group from the page surface
       "shadow-xs",
       // Disabled state: prevent interaction and dim the entire group
@@ -151,7 +150,7 @@ const Root = forwardRef<
       "has-[[data-slot=input-group-suffix]]:[&_input]:grow-0",
       "has-[[data-slot=input-group-suffix]]:[&_input]:pr-0",
       // Size-specific padding adjustments when addons or suffixes are present
-      INPUT_GROUP_HAS_CLASSES[resolvedSize],
+      INPUT_GROUP_HAS_CLASSES[size],
       // Reset bottom margin to avoid inherited spacing from parent <label> styles
       "!mb-0",
       className,
@@ -188,7 +187,7 @@ const Root = forwardRef<
               data-slot="input-group-container-zone"
               className={cn(
                 // Base input sizing/shape from shared variant function
-                inputVariants({ size: resolvedSize }),
+                inputVariants({ size }),
                 // Clip children to rounded corners within the zone
                 "overflow-hidden",
                 // Show red ring on validation error
@@ -209,7 +208,7 @@ const Root = forwardRef<
                 // Outer edges inherit radius; inner edges are flat against sibling buttons
                 "first:rounded-l-[inherit] last:rounded-r-[inherit] rounded-none",
                 // Size-specific padding adjustments when addons or suffixes are present
-                INPUT_GROUP_HAS_CLASSES[resolvedSize],
+                INPUT_GROUP_HAS_CLASSES[size],
                 // When a suffix is present, let the input shrink to its content width
                 "has-data-[slot=input-group-suffix]:[&_input]:field-sizing-content",
                 "has-data-[slot=input-group-suffix]:[&_input]:max-w-full",

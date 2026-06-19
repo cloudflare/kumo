@@ -143,13 +143,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     labelTooltip,
     description,
     error,
-    hideLabel = false,
     passwordManagerIgnore = false,
     ...inputProps
   } = props;
-  const resolvedSize = size;
-  const resolvedDescription = description;
-  const shouldHideLabel = hideLabel;
 
   // Deprecation warning for variant="error"
   if (process.env.NODE_ENV !== "production" && variantProp === "error") {
@@ -187,11 +183,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     <BaseInput
       ref={ref}
       className={cn(
-        inputVariants({ size: resolvedSize, variant, focusIndicator: true }),
+        inputVariants({ size, variant, focusIndicator: true }),
         passwordManagerIgnore && "keeper-ignore",
         className,
       )}
-      aria-label={inputProps["aria-label"]}
       {...(passwordManagerIgnore
         ? {
             "data-1p-ignore": "true",
@@ -205,15 +200,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   );
 
   // Render with Field wrapper if label, error, or description is provided
-  if (label || error || resolvedDescription) {
+  if (label || error || description) {
     return (
       <Field
         label={label}
         required={required}
-        labelTooltip={shouldHideLabel ? undefined : labelTooltip}
-        description={resolvedDescription}
+        labelTooltip={labelTooltip}
+        description={description}
         error={normalizeFieldError(error)}
-        labelClassName={shouldHideLabel ? "sr-only" : undefined}
       >
         {input}
       </Field>
@@ -265,8 +259,6 @@ export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
     labelTooltip?: ReactNode;
     /** Helper text displayed below the input */
     description?: ReactNode;
-    /** Visually hide the label while keeping it available to screen readers. */
-    hideLabel?: boolean;
     /** Error message or validation error object */
     error?: string | { message: ReactNode; match: FieldErrorMatch };
     /** Suppress browser extension password manager overlays on non-credential inputs. */

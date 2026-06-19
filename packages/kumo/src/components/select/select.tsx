@@ -381,8 +381,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
 
   // New behavior: label presence determines Field wrapper visibility (like Input)
   // hideLabel is only respected for backward compatibility when explicitly set to true
-  const resolvedHideLabel = hideLabel === true;
-  const useFieldWrapper = label && !resolvedHideLabel;
+  const useFieldWrapper = label && hideLabel !== true;
   const triggerLabelledBy = useFieldWrapper
     ? undefined
     : (ariaLabelledby ?? (label ? labelId : undefined));
@@ -436,7 +435,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     <SelectBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
       <Label
         showOptional={showOptional}
-        tooltip={resolvedHideLabel ? undefined : labelTooltip}
+        tooltip={hideLabel ? undefined : labelTooltip}
         asContent
       >
         {label}
