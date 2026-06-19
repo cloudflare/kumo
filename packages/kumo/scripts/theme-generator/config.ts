@@ -295,7 +295,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(0.5772 0.2324 260)",
-          dark: "oklch(0.5772 0.2324 260)",
+          dark: "color-mix(in oklch, oklch(0.5772 0.2324 260), black 10%)",
         },
       },
     },
@@ -431,7 +431,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
-          dark: "var(--color-red-400, oklch(70.4% 0.191 22.216))",
+          dark: "var(--color-red-600, oklch(57.7% 0.245 27.325))",
         },
       },
     },
