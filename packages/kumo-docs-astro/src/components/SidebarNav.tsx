@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { cn, Button } from "@cloudflare/kumo";
+import { useState, useEffect, useRef } from 'react';
+import { cn, Button } from '@cloudflare/kumo';
 import {
   CaretDownIcon,
   MagnifyingGlassIcon,
-  XIcon,
-} from "@phosphor-icons/react";
-import { KumoMenuIcon } from "./KumoMenuIcon";
-import { SearchDialog } from "./SearchDialog";
-import { ThemeToggle } from "./ThemeToggle";
+  XIcon
+} from '@phosphor-icons/react';
+import { KumoMenuIcon } from './KumoMenuIcon';
+import { SearchDialog } from './SearchDialog';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavItem {
   label: string;
@@ -15,87 +15,88 @@ interface NavItem {
 }
 
 function normalizePathname(pathname: string) {
-  if (!pathname) return "/";
-  if (pathname === "/") return "/";
-  return pathname.replace(/\/+$/, "");
+  if (!pathname) return '/';
+  if (pathname === '/') return '/';
+  return pathname.replace(/\/+$/, '');
 }
 
 function isActivePath(activePath: string, href: string) {
   const normalized = normalizePathname(href);
-  return activePath === normalized || activePath.startsWith(normalized + "/");
+  return activePath === normalized || activePath.startsWith(normalized + '/');
 }
 
 const staticPages: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Installation", href: "/installation" },
-  { label: "Contributing", href: "/contributing" },
-  { label: "Colors", href: "/colors" },
-  { label: "Accessibility", href: "/accessibility" },
-  { label: "Figma Resources", href: "/figma" },
-  { label: "CLI", href: "/cli" },
-  { label: "Registry", href: "/registry" },
-  { label: "Changelog", href: "/changelog" },
+  { label: 'Home', href: '/' },
+  { label: 'Installation', href: '/installation' },
+  { label: 'Contributing', href: '/contributing' },
+  { label: 'Colors', href: '/colors' },
+  { label: 'Accessibility', href: '/accessibility' },
+  { label: 'Figma Resources', href: '/figma' },
+  { label: 'CLI', href: '/cli' },
+  { label: 'Registry', href: '/registry' },
+  { label: 'Changelog', href: '/changelog' }
 ];
 
 const componentItems: NavItem[] = [
-  { label: "Autocomplete", href: "/components/autocomplete" },
-  { label: "Badge", href: "/components/badge" },
-  { label: "Banner", href: "/components/banner" },
-  { label: "Breadcrumbs", href: "/components/breadcrumbs" },
-  { label: "Button", href: "/components/button" },
-  { label: "Checkbox", href: "/components/checkbox" },
-  { label: "Clipboard Text", href: "/components/clipboard-text" },
-  { label: "Cloudflare Logo", href: "/components/cloudflare-logo" },
-  { label: "CodeHighlighted", href: "/components/code-highlighted" },
-  { label: "Collapsible", href: "/components/collapsible" },
-  { label: "Combobox", href: "/components/combobox" },
-  { label: "Command Palette", href: "/components/command-palette" },
-  { label: "Date Picker", href: "/components/date-picker" },
-  { label: "Dialog", href: "/components/dialog" },
-  { label: "Dropdown", href: "/components/dropdown" },
-  { label: "Empty", href: "/components/empty" },
-  { label: "Flow", href: "/components/flow" },
-  { label: "Grid", href: "/components/grid" },
-  { label: "Input", href: "/components/input" },
-  { label: "InputArea", href: "/components/input-area" },
-  { label: "InputGroup", href: "/components/input-group" },
-  { label: "Label", href: "/components/label" },
-  { label: "Layer Card", href: "/components/layer-card" },
-  { label: "Link", href: "/components/link" },
-  { label: "Loader", href: "/components/loader" },
-  { label: "MenuBar", href: "/components/menu-bar" },
-  { label: "Meter", href: "/components/meter" },
-  { label: "Pagination", href: "/components/pagination" },
-  { label: "Popover", href: "/components/popover" },
-  { label: "Radio", href: "/components/radio" },
-  { label: "Select", href: "/components/select" },
-  { label: "Sensitive Input", href: "/components/sensitive-input" },
-  { label: "Sidebar", href: "/components/sidebar" },
-  { label: "Skeleton Line", href: "/components/skeleton-line" },
-  { label: "Switch", href: "/components/switch" },
-  { label: "Table", href: "/components/table" },
-  { label: "Table of Contents", href: "/components/table-of-contents" },
-  { label: "Tabs", href: "/components/tabs" },
-  { label: "Text", href: "/components/text" },
-  { label: "Toast", href: "/components/toast" },
-  { label: "Tooltip", href: "/components/tooltip" },
+  { label: 'Autocomplete', href: '/components/autocomplete' },
+  { label: 'Badge', href: '/components/badge' },
+  { label: 'Banner', href: '/components/banner' },
+  { label: 'Breadcrumbs', href: '/components/breadcrumbs' },
+  { label: 'Button', href: '/components/button' },
+  { label: 'Checkbox', href: '/components/checkbox' },
+  { label: 'Clipboard Text', href: '/components/clipboard-text' },
+  { label: 'Cloudflare Logo', href: '/components/cloudflare-logo' },
+  { label: 'CodeHighlighted', href: '/components/code-highlighted' },
+  { label: 'Collapsible', href: '/components/collapsible' },
+  { label: 'Combobox', href: '/components/combobox' },
+  { label: 'Command Palette', href: '/components/command-palette' },
+  { label: 'Date Picker', href: '/components/date-picker' },
+  { label: 'Dialog', href: '/components/dialog' },
+  { label: 'Dropdown', href: '/components/dropdown' },
+  { label: 'Empty', href: '/components/empty' },
+  { label: 'Flow', href: '/components/flow' },
+  { label: 'Grid', href: '/components/grid' },
+  { label: 'Input', href: '/components/input' },
+  { label: 'InputArea', href: '/components/input-area' },
+  { label: 'InputGroup', href: '/components/input-group' },
+  { label: 'Label', href: '/components/label' },
+  { label: 'Layer Card', href: '/components/layer-card' },
+  { label: 'Link', href: '/components/link' },
+  { label: 'Loader', href: '/components/loader' },
+  { label: 'MenuBar', href: '/components/menu-bar' },
+  { label: 'Meter', href: '/components/meter' },
+  { label: 'Pagination', href: '/components/pagination' },
+  { label: 'Popover', href: '/components/popover' },
+  { label: 'Radio', href: '/components/radio' },
+  { label: 'Select', href: '/components/select' },
+  { label: 'Sensitive Input', href: '/components/sensitive-input' },
+  { label: 'Sidebar', href: '/components/sidebar' },
+  { label: 'Skeleton Line', href: '/components/skeleton-line' },
+  { label: 'Switch', href: '/components/switch' },
+  { label: 'Table', href: '/components/table' },
+  { label: 'Table of Contents', href: '/components/table-of-contents' },
+  { label: 'Tabs', href: '/components/tabs' },
+  { label: 'Text', href: '/components/text' },
+  { label: 'Toast', href: '/components/toast' },
+  { label: 'Tooltip', href: '/components/tooltip' },
+  { label: 'Wizard', href: '/components/wizard' }
 ];
 
 const chartItems: NavItem[] = [
-  { label: "Charts", href: "/charts" },
-  { label: "Colors", href: "/charts/colors" },
-  { label: "Timeseries", href: "/charts/timeseries" },
-  { label: "Sankey", href: "/charts/sankey" },
-  { label: "Custom Chart", href: "/charts/custom" },
+  { label: 'Charts', href: '/charts' },
+  { label: 'Colors', href: '/charts/colors' },
+  { label: 'Timeseries', href: '/charts/timeseries' },
+  { label: 'Sankey', href: '/charts/sankey' },
+  { label: 'Custom Chart', href: '/charts/custom' }
 ];
 
 // Blocks are CLI-installed components that you own and can customize
 // Use `npx @cloudflare/kumo blocks` to see available blocks
 // Use `npx @cloudflare/kumo add <block>` to install
 const blockItems: NavItem[] = [
-  { label: "Page Header", href: "/blocks/page-header" },
-  { label: "Resource List", href: "/blocks/resource-list" },
-  { label: "Delete Resource", href: "/blocks/delete-resource" },
+  { label: 'Page Header', href: '/blocks/page-header' },
+  { label: 'Resource List', href: '/blocks/resource-list' },
+  { label: 'Delete Resource', href: '/blocks/delete-resource' }
 ];
 
 // Build info injected via Vite define in astro.config.mjs
@@ -104,8 +105,8 @@ declare const __BUILD_COMMIT__: string;
 declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
-  "block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
-const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
+  'block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand';
+const LI_ACTIVE_STYLE = 'font-semibold text-kumo-default bg-kumo-tint';
 
 interface SidebarNavProps {
   currentPath: string;
@@ -126,8 +127,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const desktopScrollRef = useRef<HTMLDivElement>(null);
 
-  const toggleSidebar = () => setSidebarOpen((v) => !v);
-  const toggleMobileMenu = () => setMobileMenuOpen((v) => !v);
+  const toggleSidebar = () => setSidebarOpen(v => !v);
+  const toggleMobileMenu = () => setMobileMenuOpen(v => !v);
   const preventPointerFocus = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
   };
@@ -135,24 +136,24 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   // Keyboard shortcut: Cmd+K / Ctrl+K + custom event from headers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setSearchOpen(true);
       }
     };
     const handleOpenSearch = () => setSearchOpen(true);
 
-    document.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("kumo:open-search", handleOpenSearch);
+    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('kumo:open-search', handleOpenSearch);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("kumo:open-search", handleOpenSearch);
+      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('kumo:open-search', handleOpenSearch);
     };
   }, []);
 
   // Save scroll position on scroll and navigation
   useEffect(() => {
-    const STORAGE_KEY = "kumo-sidebar-scroll";
+    const STORAGE_KEY = 'kumo-sidebar-scroll';
 
     // Save scroll position before navigation
     const handleBeforeUnload = () => {
@@ -170,26 +171,26 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     };
 
     // Listen for navigation events
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     // Attach scroll listeners to both containers
     const mobileContainer = mobileScrollRef.current;
     const desktopContainer = desktopScrollRef.current;
 
     if (mobileContainer) {
-      mobileContainer.addEventListener("scroll", handleScroll);
+      mobileContainer.addEventListener('scroll', handleScroll);
     }
     if (desktopContainer) {
-      desktopContainer.addEventListener("scroll", handleScroll);
+      desktopContainer.addEventListener('scroll', handleScroll);
     }
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       if (mobileContainer) {
-        mobileContainer.removeEventListener("scroll", handleScroll);
+        mobileContainer.removeEventListener('scroll', handleScroll);
       }
       if (desktopContainer) {
-        desktopContainer.removeEventListener("scroll", handleScroll);
+        desktopContainer.removeEventListener('scroll', handleScroll);
       }
     };
   }, []);
@@ -206,14 +207,14 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       </button>
 
       <ul className="flex flex-col gap-px">
-        {staticPages.map((item) => (
+        {staticPages.map(item => (
           <li key={item.href}>
             <a
               href={item.href}
               onMouseDown={preventPointerFocus}
               className={cn(
                 LI_STYLE,
-                isActivePath(activePath, item.href) && LI_ACTIVE_STYLE,
+                isActivePath(activePath, item.href) && LI_ACTIVE_STYLE
               )}
             >
               {item.label}
@@ -235,27 +236,26 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <CaretDownIcon
             size={12}
             className={cn(
-              "text-kumo-subtle transition-transform duration-200",
-              !componentsOpen && "-rotate-90",
+              'text-kumo-subtle transition-transform duration-200',
+              !componentsOpen && '-rotate-90'
             )}
           />
         </button>
         <ul
           className={cn(
-            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
-            componentsOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
+            'mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out',
+            componentsOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
           )}
         >
-          {componentItems.map((item) => (
+          {componentItems.map(item => (
             <li key={item.href}>
               <a
                 href={item.href}
                 onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
-                  "pl-4",
-                  activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
+                  'pl-4',
+                  activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE
                 )}
               >
                 {item.label}
@@ -275,26 +275,26 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <CaretDownIcon
             size={12}
             className={cn(
-              "text-kumo-subtle transition-transform duration-200",
-              !chartsOpen && "-rotate-90",
+              'text-kumo-subtle transition-transform duration-200',
+              !chartsOpen && '-rotate-90'
             )}
           />
         </button>
         <ul
           className={cn(
-            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
-            chartsOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+            'mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out',
+            chartsOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           )}
         >
-          {chartItems.map((item) => (
+          {chartItems.map(item => (
             <li key={item.href}>
               <a
                 href={item.href}
                 onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
-                  "pl-4",
-                  currentPath === item.href && LI_ACTIVE_STYLE,
+                  'pl-4',
+                  currentPath === item.href && LI_ACTIVE_STYLE
                 )}
               >
                 {item.label}
@@ -315,27 +315,26 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <CaretDownIcon
             size={12}
             className={cn(
-              "text-kumo-subtle transition-transform duration-200",
-              !blocksOpen && "-rotate-90",
+              'text-kumo-subtle transition-transform duration-200',
+              !blocksOpen && '-rotate-90'
             )}
           />
         </button>
         <ul
           className={cn(
-            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
-            blocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+            'mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out',
+            blocksOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           )}
         >
-          {blockItems.map((item) => (
+          {blockItems.map(item => (
             <li key={item.href}>
               <a
                 href={item.href}
                 onMouseDown={preventPointerFocus}
                 className={cn(
                   LI_STYLE,
-                  "pl-4",
-                  activePath === normalizePathname(item.href) &&
-                    LI_ACTIVE_STYLE,
+                  'pl-4',
+                  activePath === normalizePathname(item.href) && LI_ACTIVE_STYLE
                 )}
               >
                 {item.label}
@@ -352,7 +351,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:hidden",
+          'fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:hidden'
         )}
       >
         <Button
@@ -370,9 +369,9 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas md:hidden",
-          "transition-transform duration-300 will-change-transform",
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+          'fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas md:hidden',
+          'transition-transform duration-300 will-change-transform',
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-hairline px-3">
@@ -390,7 +389,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           ref={mobileScrollRef}
           data-sidebar-scroll="mobile"
           className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
-          style={{ scrollBehavior: "auto" }}
+          style={{ scrollBehavior: 'auto' }}
         >
           {navContent}
         </div>
@@ -399,8 +398,8 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Desktop: Left rail that always stays put */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block",
-          "border-r border-kumo-hairline",
+          'fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block',
+          'border-r border-kumo-hairline'
         )}
       >
         <div className="relative h-12 border-b border-kumo-hairline">
@@ -427,11 +426,11 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <aside
         data-sidebar-open={sidebarOpen}
         className={cn(
-          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
-          "transition-transform duration-300 ease-out will-change-transform",
+          'fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex',
+          'transition-transform duration-300 ease-out will-change-transform',
           sidebarOpen
-            ? "translate-x-0 border-r border-kumo-hairline"
-            : "-translate-x-full",
+            ? 'translate-x-0 border-r border-kumo-hairline'
+            : '-translate-x-full'
         )}
       >
         <div className="h-12 flex-none border-b border-kumo-hairline" />

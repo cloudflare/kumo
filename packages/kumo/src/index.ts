@@ -307,6 +307,35 @@ export {
   KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
   type KumoTableOfContentsState,
 } from "./components/table-of-contents";
+export {
+  Wizard,
+  WizardRoot,
+  WizardStep,
+  WizardSteps,
+  WizardPage,
+  WizardFullscreen,
+  WizardCloseButton,
+  WizardSidebar,
+  WizardGrid,
+  useWizard,
+  useWizardGrid,
+  KUMO_WIZARD_VARIANTS,
+  KUMO_WIZARD_DEFAULT_VARIANTS,
+  type WizardProps,
+  type WizardVariant,
+  type WizardPreviousStepNavigation,
+  type UseWizardReturn,
+  type WizardStepProps,
+  type WizardStepItem,
+  type WizardStepsProps,
+  type WizardPageProps,
+  type WizardFullscreenProps,
+  type WizardCloseButtonProps,
+  type WizardSidebarProps,
+  type WizardGridProps,
+  type WizardWidth,
+  type UseWizardGridReturn,
+} from "./components/wizard";
 // PLOP_INJECT_EXPORT
 
 // Utils

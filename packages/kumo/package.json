@@ -203,6 +203,10 @@
       "types": "./dist/src/components/table-of-contents/index.d.ts",
       "import": "./dist/components/table-of-contents.js"
     },
+    "./components/wizard": {
+      "types": "./dist/src/components/wizard/index.d.ts",
+      "import": "./dist/components/wizard.js"
+    },
     "./utils": {
       "types": "./dist/src/utils/index.d.ts",
       "import": "./dist/utils.js"

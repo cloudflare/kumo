@@ -570,6 +570,14 @@ async function processComponent(
         if (propSchema.description) {
           props[propName].description = propSchema.description;
         }
+        // Preserve override defaults for props that the generator extracted
+        // without a default (e.g. @default JSDoc tags that ts-json-schema-generator ignores).
+        if (
+          propSchema.default !== undefined &&
+          props[propName].default === undefined
+        ) {
+          props[propName].default = propSchema.default;
+        }
       }
     }
   }

@@ -223,6 +223,63 @@ export const SUB_COMPONENT_OVERRIDES: Record<string, SubComponentConfig[]> = {
       baseComponent: "TooltipBase.Provider",
     },
   ],
+  WizardRoot: [
+    {
+      name: "CloseButton",
+      valueName: "WizardCloseButton",
+      propsType: "WizardCloseButtonProps",
+      description:
+        "Close button for Wizard.Fullscreen. Place inside header content for custom close placement.",
+      isPassThrough: false,
+    },
+    {
+      name: "Fullscreen",
+      valueName: "WizardFullscreen",
+      propsType: "WizardFullscreenProps",
+      description:
+        "Fullscreen modal container with portal, scroll lock, Escape-to-close, and a floating close button.",
+      isPassThrough: false,
+    },
+    {
+      name: "Grid",
+      valueName: "WizardGrid",
+      propsType: "WizardGridProps",
+      description:
+        "Decorative animated wireframe with dashed borders, corner crosses, and an optional left-side title.",
+      isPassThrough: false,
+    },
+    {
+      name: "Sidebar",
+      valueName: "WizardSidebar",
+      propsType: "WizardSidebarProps",
+      description: "Responsive step indicator showing registered step labels.",
+      isPassThrough: false,
+    },
+    {
+      name: "Steps",
+      valueName: "WizardSteps",
+      propsType: "WizardStepsProps",
+      description:
+        "Container for wizard steps. Provides the stacking context where steps are absolutely positioned and animated.",
+      isPassThrough: false,
+    },
+    {
+      name: "Step",
+      valueName: "WizardStep",
+      propsType: "WizardStepProps",
+      description:
+        "Individual step definition. Registers metadata with the Wizard context and wraps children in a card-stack animation.",
+      isPassThrough: false,
+    },
+    {
+      name: "Page",
+      valueName: "WizardPage",
+      propsType: "WizardPageProps",
+      description:
+        "Card layout inside a wizard step with optional title, description, scrollable body, and footer.",
+      isPassThrough: false,
+    },
+  ],
 };
 
 // =============================================================================
@@ -302,9 +359,9 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
         "A function that returns a ReactNode to format the selected value in the trigger. Required when using object values. Use `placeholder` for the empty state.",
     },
     items: {
-      type: 'Record<string, string> | Array<{ label: ReactNode; value: T }>',
+      type: "Record<string, string> | Array<{ label: ReactNode; value: T }>",
       description:
-        "Data structure of items rendered in the popup. Accepts a plain object map (`{ key: \"Label\" }`) or an array of `{ label, value }` for object/complex values.",
+        'Data structure of items rendered in the popup. Accepts a plain object map (`{ key: "Label" }`) or an array of `{ label, value }` for object/complex values.',
     },
     isItemEqualToValue: {
       type: "(item: T, value: T) => boolean",
@@ -473,8 +530,7 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
   "DropdownMenu.RadioGroup": {
     value: {
       type: "any",
-      description:
-        "The controlled value of the currently selected radio item.",
+      description: "The controlled value of the currently selected radio item.",
     },
     defaultValue: {
       type: "any",
@@ -517,6 +573,171 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
     inset: {
       type: "boolean",
       description: "Adds left padding to align with items that have icons.",
+    },
+  },
+  // Wizard — root component props that are filtered by the `on*` prefix
+  // and `step` (collides with the HTML `<input step>` attribute).
+  // Also supplies defaults for props whose @default JSDoc tags are not
+  // extracted by ts-json-schema-generator.
+  WizardRoot: {
+    defaultStep: {
+      type: "number | string",
+      default: "0",
+    },
+    previousStepNavigation: {
+      type: '"enabled" | "disabled"',
+      default: '"enabled"',
+      description:
+        "Controls implicit previous-step affordances. Explicit back() calls still work when disabled.",
+    },
+    step: {
+      type: "number | string",
+      description:
+        "Current active step (0-based index or stepKey string). Controlled mode.",
+    },
+    onStepChange: {
+      type: "(index: number, key: string) => void",
+      description:
+        "Callback when step changes. Receives both the numeric index and the step key.",
+    },
+    onBeforeStepChange: {
+      type: "(from: number, to: number) => boolean | Promise<boolean>",
+      description:
+        "Async validation guard fired before every step transition. Return false to block.",
+    },
+    onComplete: {
+      type: "() => void",
+      description:
+        "Fired when the user advances past the last step (e.g. clicks Done).",
+    },
+    onActiveStepElementChange: {
+      type: "(element: HTMLDivElement | null) => void",
+      description:
+        "Callback invoked when the active step DOM element changes. Used by useWizardGrid().",
+    },
+  },
+  // Wizard sub-component props — each lives in a separate source file
+  // that the regex-based sub-component extractor cannot reach.
+  "WizardRoot.Fullscreen": {
+    className: {
+      type: "string",
+      description: "Override content wrapper classes.",
+    },
+    open: {
+      type: "boolean",
+      description: "Controls visibility. Returns null when false.",
+    },
+    onClose: {
+      type: "() => void",
+      description: "Called on Escape or close button click.",
+    },
+    container: {
+      type: "PortalContainer",
+      description:
+        "Portal target element. Overrides KumoPortalProvider context.",
+      default: "document.body",
+    },
+    labels: {
+      type: "WizardFullscreenLabels",
+      description:
+        "Labels for i18n of aria-labels. close: aria-label for the close button (default: Close).",
+    },
+    header: {
+      type: "ReactNode",
+      description:
+        "Optional header above wizard content. Use Wizard.CloseButton inside for close affordance. Height is measured for layout.",
+    },
+    width: {
+      type: '"narrow" | "wide"',
+      description:
+        "Card width preset. Applies with or without Wizard.Grid. narrow = 38rem, wide = 48rem.",
+      default: '"narrow"',
+    },
+  },
+  "WizardRoot.Grid": {
+    className: {
+      type: "string",
+      description: "Additional CSS classes.",
+    },
+    activeCardHeight: {
+      type: "number",
+      required: true,
+      description:
+        "Measured card height for border animation. Use useWizardGrid().",
+    },
+    isTransitioning: {
+      type: "boolean",
+      required: true,
+      description:
+        "Whether a step transition is in progress. Use useWizardGrid().",
+    },
+    title: {
+      type: "string",
+      description: "Left-side title, visible at @5xl/wizard (64rem).",
+    },
+    topOffset: {
+      type: "number",
+      description: "Distance from viewport top to the grid.",
+      default: "147",
+    },
+  },
+  "WizardRoot.Sidebar": {
+    className: {
+      type: "string",
+      description: "Additional CSS classes.",
+    },
+  },
+  "WizardRoot.Steps": {
+    className: {
+      type: "string",
+      description: "Additional CSS classes for the step container.",
+    },
+  },
+  "WizardRoot.Step": {
+    stepKey: {
+      type: "string",
+      required: true,
+      description: "Unique identifier for this step.",
+    },
+    label: {
+      type: "string",
+      description: "Label shown in the sidebar navigation.",
+    },
+    hideFromSidebar: {
+      type: "boolean",
+      description: "Hides this step from the sidebar list.",
+      default: "false",
+    },
+    when: {
+      type: "boolean",
+      description:
+        "Whether this step is active in the current flow. When false, the step is excluded from rendering, indexing, sidebar, and navigation.",
+      default: "true",
+    },
+  },
+  "WizardRoot.Page": {
+    className: {
+      type: "string",
+      description: "Additional CSS classes for the card.",
+    },
+    title: {
+      type: "string",
+      description: "Card heading text.",
+    },
+    description: {
+      type: "string | ReactNode",
+      description: "Description shown below the title.",
+    },
+    footer: {
+      type: "ReactNode",
+      description:
+        "Footer content (e.g., navigation buttons). Rendered outside the primary card surface.",
+    },
+    maxHeight: {
+      type: "string",
+      description:
+        'Max height of the card. Override with any CSS value (e.g. "600px", "80dvh").',
+      default: "~100vh − 400px",
     },
   },
   "InputGroup.Addon": {

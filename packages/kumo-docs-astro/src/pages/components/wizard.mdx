@@ -1,0 +1,449 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Wizard"
+description: "A fullscreen, multi-step flow for complex creation and onboarding tasks."
+sourceFile: "components/wizard"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import Anatomy from "~/components/docs/Anatomy.astro";
+import { WizardInteractivePreview } from "~/components/demos/Wizard/WizardDemo";
+
+import { wizardHeroCode } from "~/components/demos/Wizard/wizard-hero-code";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample
+    code={wizardHeroCode}
+    vrSection="wizard-full"
+    vrTitle="Wizard Full"
+  >
+    <WizardInteractivePreview client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock
+  code={`import { Wizard, useWizard, useWizardGrid } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
+
+### Granular
+
+<CodeBlock
+  code={`import { Wizard, useWizard, useWizardGrid } from "@cloudflare/kumo/components/wizard";`}
+  lang="tsx"
+/>
+</ComponentSection>
+
+{/* Anatomy */}
+
+<ComponentSection>
+
+## Anatomy
+
+The Wizard is a compound component. Compose only the pieces you need:
+
+<Anatomy
+  nodes={[
+    {
+      name: "Wizard.Fullscreen",
+      href: "#wizardfullscreen",
+      description: "Portal overlay",
+    },
+    {
+      name: "Wizard.Grid",
+      href: "#wizardgrid",
+      depth: 1,
+      optional: true,
+      description: "Decorative wireframe",
+    },
+    {
+      name: "Wizard",
+      href: "#wizard",
+      depth: 2,
+      description: "Step state, context, and navigation",
+    },
+    {
+      name: "Wizard.Steps",
+      href: "#wizardsteps",
+      depth: 3,
+      description: "Filters and indexes active steps",
+    },
+    {
+      name: "Wizard.Sidebar",
+      href: "#wizardsidebar",
+      depth: 3,
+      optional: true,
+      description: "Responsive step indicator",
+    },
+    {
+      name: "Wizard.Step",
+      href: "#wizardstep",
+      depth: 4,
+      description: "Individual step with card-stack animation",
+    },
+    {
+      name: "Wizard.Page",
+      href: "#wizardpage",
+      depth: 5,
+      description: "Card surface with title, description, body, and footer",
+    },
+  ]}
+/>
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+Compose the parts inside `Wizard.Fullscreen`. `useWizardGrid()` links `Wizard` and `Wizard.Grid` so the wireframe tracks the active step.
+
+```tsx
+import { Button, Wizard, useWizard, useWizardGrid } from "@cloudflare/kumo";
+
+function CreateWorker({ open, onClose }) {
+  const { gridProps, onActiveStepElementChange } = useWizardGrid();
+
+  return (
+    <Wizard.Fullscreen open={open} onClose={onClose}>
+      <Wizard.Grid title="Create a Worker" {...gridProps}>
+        <Wizard onActiveStepElementChange={onActiveStepElementChange}>
+          <Wizard.Sidebar />
+          <Wizard.Steps>
+            <Wizard.Step stepKey="method" label="Select a method">
+              <Wizard.Page
+                title="Ship something new"
+                description="Choose how you want to start."
+                footer={<Footer />}
+              >
+                {/* ... */}
+              </Wizard.Page>
+            </Wizard.Step>
+            {/* ...more steps */}
+          </Wizard.Steps>
+        </Wizard>
+      </Wizard.Grid>
+    </Wizard.Fullscreen>
+  );
+}
+
+function Footer() {
+  const { back, next, isFirstStep } = useWizard();
+
+  return (
+    <>
+      <Button variant="ghost" onClick={back} disabled={isFirstStep}>
+        Back
+      </Button>
+      <Button onClick={next}>Continue</Button>
+    </>
+  );
+}
+```
+
+</ComponentSection>
+
+{/* Hooks */}
+
+<ComponentSection>
+
+## Hooks
+
+### `useWizard()`
+
+<p>
+  Access wizard state from any descendant component. Must be used within a
+  `Wizard`.
+</p>
+
+<CodeBlock
+  code={`const { step, stepKey, goToStep, next, back, close, isLastStep, isFirstStep } = useWizard();`}
+  lang="tsx"
+/>
+
+<div class="not-prose mt-4 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-hairline">
+        <th class="px-4 py-3 text-left font-semibold">Property</th>
+        <th class="px-4 py-3 text-left font-semibold">Type</th>
+        <th class="px-4 py-3 text-left font-semibold">Description</th>
+      </tr>
+    </thead>
+    <tbody class="text-kumo-strong">
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">back</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">() =&gt; void</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Go back to the previous step. No-op on the first step.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">close</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">() =&gt; void</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Programmatically close the wizard. Calls `Wizard.Fullscreen`'s
+          `onClose`. No-op if no `onClose` is set.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">complete</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">() =&gt; void</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Fires the `onComplete` callback. Not gated by `isLastStep` — the
+          consumer decides when to call it.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">goToStep</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">(key: string) =&gt; void</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Navigate to a step by its `stepKey`. No-op if the key is not mounted.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">isChangingStep</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">boolean</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Whether an `onBeforeStepChange` guard is pending. Use to show a
+          loading state on navigation buttons.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">isFirstStep</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">boolean</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Whether the wizard is on its first step.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">isLastStep</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">boolean</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Whether the wizard is on its last registered step.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">items</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">WizardStepItem[]</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Array of registered step metadata (key, label, hideFromSidebar).
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">previousStepNavigation</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">"enabled" | "disabled"</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Whether implicit previous-step affordances are enabled. Explicit
+          `back()` calls still work when disabled.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">next</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">() =&gt; void</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Advance to the next mounted step. No-op on the last step.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">onStepChange</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">(step: number) =&gt; void</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Navigate to a step by numeric index. Prefer `goToStep`, `next`, or
+          `back`.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">step</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">number</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Current active step index (0-based).
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">stepKey</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">string | undefined</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Key of the current active step (`Wizard.Step`'s `stepKey`).
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">totalSteps</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">number</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Total number of registered steps.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### `useWizardGrid()`
+
+<p>
+  Bridges `Wizard` and `Wizard.Grid` by tracking the active card's height and
+  managing transition state. Returns `gridProps` to spread onto `Wizard.Grid`.
+</p>
+
+```tsx
+import { Wizard, useWizardGrid } from "@cloudflare/kumo";
+
+function CreateWizard({ step, setStep }) {
+  const { gridProps, onActiveStepElementChange } = useWizardGrid();
+
+  return (
+    <Wizard.Grid {...gridProps}>
+      <Wizard
+        step={step}
+        onStepChange={setStep}
+        onActiveStepElementChange={onActiveStepElementChange}
+      >
+        <Wizard.Steps>{/* ... */}</Wizard.Steps>
+      </Wizard>
+    </Wizard.Grid>
+  );
+}
+```
+
+<div class="not-prose mt-4 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-kumo-hairline">
+        <th class="px-4 py-3 text-left font-semibold">Return</th>
+        <th class="px-4 py-3 text-left font-semibold">Type</th>
+        <th class="px-4 py-3 text-left font-semibold">Description</th>
+      </tr>
+    </thead>
+    <tbody class="text-kumo-strong">
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">gridProps</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">{`{ activeCardHeight: number; isTransitioning: boolean }`}</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          The active card's height and transition state. Spread onto
+          `Wizard.Grid`.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">onActiveStepElementChange</td>
+        <td class="px-4 py-3 font-mono text-xs max-w-xs">
+          <code class="text-wrap break-words">{`(el: HTMLDivElement | null) => void`}</code>
+        </td>
+        <td class="px-4 py-3 text-xs max-w-md">
+          Pass to `Wizard` so the grid can measure the active step.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+### Wizard
+
+<p>
+  Manages step state, navigation, and the card-stack animation. Render it inside
+  `Wizard.Fullscreen`.
+</p>
+<PropsTable component="WizardRoot" />
+
+### Wizard.Fullscreen
+
+<p>
+  Fullscreen modal container with a floating close button, Escape-to-close,
+  scroll lock, and `role="dialog"`. Content fills the entire viewport. The
+  `width` prop controls the card's max-width. Pass `header` to render arbitrary
+  top chrome — include `Wizard.CloseButton` inside the header where you want the
+  close affordance. Header height is measured for layout.
+</p>
+<PropsTable component="WizardRoot.Fullscreen" />
+
+### Wizard.Grid
+
+<p>
+  Decorative animated wireframe with dashed borders, corner crosses, and an
+  optional left-side title. The bottom border and crosses animate with the
+  active card's measured height.
+</p>
+<PropsTable component="WizardRoot.Grid" />
+
+### Wizard.Sidebar
+
+<p>
+  Responsive step indicator. Compose it inside `Wizard` when you want the
+  sidebar treatment.
+</p>
+<PropsTable component="WizardRoot.Sidebar" />
+
+### Wizard.Steps
+
+<p>Wraps the steps. Drops any step with `when={false}` and indexes the rest.</p>
+<PropsTable component="WizardRoot.Steps" />
+
+### Wizard.Step
+
+<p>
+  Defines a single step with a `stepKey` and `label`. Its children animate in
+  the card stack.
+</p>
+<PropsTable component="WizardRoot.Step" />
+
+### Wizard.Page
+
+<p>
+  Card layout inside a wizard step. Wraps content in a `LayerCard` with optional
+  title, description, scrollable body, and footer.
+</p>
+<PropsTable component="WizardRoot.Page" />
+
+</ComponentSection>

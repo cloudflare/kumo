@@ -1,0 +1,101 @@
+---
+/**
+ * Anatomy - Renders a compound component hierarchy as a connected tree.
+ *
+ * Draws dots at each nesting level joined by elbow connectors (vertical
+ * line from the parent dot's column, then horizontal to the child dot).
+ *
+ * Usage:
+ *   <Anatomy
+ *     nodes={[
+ *       { name: "Dialog", href: "#dialog", description: "Root state provider" },
+ *       { name: "Dialog.Trigger", href: "#dialogtrigger", depth: 1, description: "Opens the dialog" },
+ *     ]}
+ *   />
+ */
+
+interface AnatomyNode {
+  /** Component name displayed as a code chip (e.g. "Wizard.Fullscreen"). */
+  name: string;
+  /** On-page anchor link (e.g. "#wizardfullscreen"). */
+  href: string;
+  /** Nesting depth (0-based). @default 0 */
+  depth?: number;
+  /** Whether this node is optional in the composition. */
+  optional?: boolean;
+  /** Short description of the node's role. */
+  description: string;
+}
+
+interface Props {
+  nodes: AnatomyNode[];
+}
+
+const { nodes } = Astro.props;
+
+// Layout constants (px)
+const INDENT = 20; // horizontal indent per depth level
+const DOT = 6; // dot diameter
+const ROW_H = 36; // row height
+---
+
+<div class="not-prose overflow-x-auto">
+  {nodes.map((node, i) => {
+    const depth = node.depth ?? 0;
+    const prevDepth = i > 0 ? (nodes[i - 1].depth ?? 0) : 0;
+    const dotCenter = depth * INDENT + DOT / 2; // x-center of this dot
+    const parentCenter = prevDepth * INDENT + DOT / 2; // x-center of parent dot
+
+    return (
+      <div
+        class="relative flex items-center gap-2.5"
+        style={`height: ${ROW_H}px; padding-left: ${depth * INDENT + DOT + 10}px`}
+      >
+        {/* Dot — z-10 so it paints above the connector lines */}
+        <div
+          class="absolute top-1/2 z-10 size-1.5 rounded-full bg-kumo-interact"
+          style={`left: ${depth * INDENT}px; transform: translateY(-50%)`}
+        />
+
+        {i > 0 && (
+          <>
+            {/* Vertical segment: runs from the parent dot's center (in the
+                previous row) down to this row's center. Starts at negative
+                top to bridge the row boundary. */}
+            <div
+              class="absolute w-px bg-kumo-hairline"
+              style={`left: ${parentCenter - 0.5}px; top: -${ROW_H / 2}px; height: ${ROW_H}px`}
+            />
+
+            {/* Horizontal segment: runs from the parent column to the
+                child dot's center. The line tucks under the dot (z-10). */}
+            {depth > prevDepth && (
+              <div
+                class="absolute h-px bg-kumo-hairline"
+                style={`top: ${ROW_H / 2}px; left: ${parentCenter}px; width: ${dotCenter - parentCenter + 1}px`}
+              />
+            )}
+          </>
+        )}
+
+        {/* Node name as linked code chip */}
+        <a
+          href={node.href}
+          class="inline-flex shrink-0 items-center rounded-md bg-kumo-base px-2 py-0.5 font-mono text-xs text-kumo-default ring-1 ring-kumo-line transition-colors hover:bg-kumo-elevated hover:text-kumo-strong"
+        >
+          {node.name}
+        </a>
+
+        {/* Optional badge */}
+        {node.optional && (
+          <span class="inline-flex shrink-0 items-center rounded-full bg-kumo-tint px-1.5 py-0.5 text-[10px] font-medium text-kumo-subtle">
+            Optional
+          </span>
+        )}
+
+        {/* Description */}
+        <span class="text-xs text-kumo-subtle">{node.description}</span>
+      </div>
+    );
+  })}
+</div>
