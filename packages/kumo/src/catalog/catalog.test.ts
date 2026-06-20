@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest";
+import { createKumoCatalog, initCatalog } from "./catalog";
 import {
   getByPath,
   setByPath,
@@ -11,6 +12,30 @@ import {
   resolveProps,
 } from "./data";
 import { evaluateVisibility, createVisibilityContext } from "./visibility";
+
+describe("catalog initialization", () => {
+  it("loads schemas before synchronous validation", async () => {
+    const catalog = createKumoCatalog();
+
+    await initCatalog(catalog);
+
+    expect(catalog.componentNames).toContain("Button");
+    expect(catalog.hasComponent("Button")).toBe(true);
+    expect(catalog.validateTree({})).toEqual({
+      success: false,
+      error: [
+        {
+          message: "Invalid input: expected string, received undefined",
+          path: ["root"],
+        },
+        {
+          message: "Invalid input: expected record, received undefined",
+          path: ["elements"],
+        },
+      ],
+    });
+  });
+});
 
 describe("data utilities", () => {
   describe("getByPath", () => {

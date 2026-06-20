@@ -276,7 +276,6 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
  * Initialize the catalog by loading schemas.
  * Call this before using synchronous validation methods.
  */
-export async function initCatalog(catalog: KumoCatalog): Promise<void> {
-  // Trigger a validation to load schemas
-  catalog.validateTree({});
+export async function initCatalog(_catalog: KumoCatalog): Promise<void> {
+  await loadSchemas();
 }

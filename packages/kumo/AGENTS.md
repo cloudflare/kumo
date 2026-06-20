@@ -120,7 +120,6 @@ Output: ai/component-registry.{json,md} + ai/schemas.ts
 - **Compound components**: CommandPalette (14 sub-components), Dialog, Select use two-level contexts
 - **13 components use createContext**: SwitchGroup, PaginationContext, RadioGroup, FlowNodeAnchor, Diagram, Descendants, InputGroup, DialogRole, ComboboxSize, Grid, CheckboxGroup, CommandPalette (2)
 - **DateRangePicker**: Contains 150 lines of duplicated ternary logic (refactoring target)
-- **Catalog `initCatalog`**: Appears to have race condition with async schema loading
 - **CLI path inconsistency**: `ls`/`doc` read from `catalog/`, `blocks` from `ai/` directory
 - **`PLOP_INJECT_EXPORT`** in `src/index.ts` and `PLOP_INJECT_COMPONENT_ENTRY` in `vite.config.ts` are scaffolding markers
 - **5th lint rule** (`no-deprecated-props`): Only in `packages/kumo/lint/`, reads deprecation data from registry
