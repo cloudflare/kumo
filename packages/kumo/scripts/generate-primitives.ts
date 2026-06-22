@@ -33,6 +33,12 @@ const EXCLUDED_EXPORTS = new Set([
   "./use-render", // Internal hook
 ]);
 
+const COMPATIBILITY_EXPORTS: Record<string, string[]> = {
+  "otp-field": [
+    'export { OTPField as OTPFieldPreview } from "@base-ui/react/otp-field";',
+  ],
+};
+
 function main() {
   // Read base-ui package.json
   if (!existsSync(BASE_UI_PACKAGE)) {
@@ -97,6 +103,7 @@ function generateBarrelExport(subpaths: string[]) {
   for (const subpath of subpaths) {
     const modulePath = `@base-ui/react/${subpath.replace("./", "")}`;
     lines.push(`export * from "${modulePath}";`);
+    lines.push(...(COMPATIBILITY_EXPORTS[subpath.replace("./", "")] ?? []));
   }
   lines.push("");
 
@@ -109,6 +116,7 @@ function generateIndividualPrimitives(subpaths: string[]) {
     const primitiveFile = join(PRIMITIVES_DIR, `${primitiveName}.ts`);
     const modulePath = `@base-ui/react/${primitiveName}`;
 
+    const compatibilityExports = COMPATIBILITY_EXPORTS[primitiveName] ?? [];
     const content = [
       "/**",
       ` * ${primitiveName} primitive`,
@@ -123,6 +131,7 @@ function generateIndividualPrimitives(subpaths: string[]) {
       " */",
       "",
       `export * from "${modulePath}";`,
+      ...compatibilityExports,
       "",
     ].join("\n");
 

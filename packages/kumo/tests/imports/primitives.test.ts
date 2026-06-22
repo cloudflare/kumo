@@ -123,6 +123,14 @@ describe("Primitives Export", () => {
       expect(missingExports).toEqual([]);
     });
 
+    it("should keep OTPFieldPreview as a compatibility alias", async () => {
+      const barrelPrimitives = await import("../../src/primitives/index.ts");
+      const otpFieldPrimitives = await import("../../src/primitives/otp-field.ts");
+
+      expect(barrelPrimitives.OTPFieldPreview).toBe(barrelPrimitives.OTPField);
+      expect(otpFieldPrimitives.OTPFieldPreview).toBe(otpFieldPrimitives.OTPField);
+    });
+
     it("should re-export all non-excluded base-ui exports", () => {
       const baseUiPackage = JSON.parse(
         readFileSync(baseUiPackagePath, "utf-8"),
