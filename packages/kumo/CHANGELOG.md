@@ -1,5 +1,29 @@
 # @cloudflare/kumo
 
+## 2.6.0
+
+### Minor Changes
+
+- 1b04ee9: Add Toolbar for composing explicit toolbar controls into a shared grouped card.
+- 116e0de: feat(chart): add `enableLegendSelection` prop to `TimeseriesChart`
+
+  Opt-in (default `false`) hidden ECharts legend that lets consumers drive series
+  visibility imperatively via the `legendSelect` / `legendUnSelect` /
+  `legendToggleSelect` actions — useful for building a custom interactive legend
+  with `ChartLegend`. Series toggled off via the legend are also excluded from the
+  tooltip. Requires registering ECharts' `LegendComponent`
+  (`echarts.use([LegendComponent])`). When disabled, behaviour is unchanged.
+
+- 815628f: Extend LegendItems to take pointer events & timeseries merges forwardref to support those events
+
+### Patch Changes
+
+- 430689b: Update the Button primary and destructive variants with token-derived gradient treatments.
+- 539e5bf: Fix horizontal scroll in `Sidebar.Content`: always apply `overflow-x: hidden` on the scroll viewport, not just when collapsed. Base UI's `ScrollArea.Viewport` sets `overflow: scroll` as an inline style, which allowed ~14px of horizontal overflow when consumer content (e.g. search buttons with keyboard shortcuts) exceeded the sidebar width.
+- 4378067: feat(radio): add generic value type support to Radio.Group and Radio.Item
+- fb5fed1: Fix the green Badge variant missing its background color token.
+- bdd890c: Keep generated component registry descriptions to JSDoc summaries before markdown sections or code examples.
+
 ## 2.5.2
 
 ### Patch Changes
