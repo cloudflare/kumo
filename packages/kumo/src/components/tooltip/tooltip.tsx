@@ -169,7 +169,7 @@ export function Tooltip({
         className={cn(
           // Defensive resets when rendering as button wrapper (not render/asChild)
           // These prevent global button styles from polluting the trigger
-          // Consumer styles passed via className will override these (tailwind-merge)
+          // Consumer styles passed via className will override these.
           !shouldUseRender &&
             "inline-flex items-center bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0]",
           // Tooltip triggers are disclosure elements, not actions — override

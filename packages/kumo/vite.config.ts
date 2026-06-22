@@ -301,8 +301,8 @@ export default defineConfig(({ mode }) => {
           manualChunks: (id) => {
             // Vendor chunks for large dependencies
             if (id.includes("node_modules")) {
-              // clsx + tailwind-merge utilities
-              if (id.includes("clsx") || id.includes("tailwind-merge")) {
+              // Class merging utilities
+              if (id.includes("cnfast")) {
                 return "vendor-styling";
               }
               // Floating UI positioning libraries
