@@ -27,7 +27,7 @@ try {
 const EXPORT_NAME_OVERRIDES: Record<string, string> = {
   "csp-provider": "CSPProvider", // All caps CSP
   drawer: "Drawer", // Stable in base-ui 1.4.0
-  "otp-field": "OTPFieldPreview", // Preview component with all caps OTP
+  "otp-field": "OTPField", // Stable component with all caps OTP
 };
 
 // Exports excluded by generate-primitives.ts
