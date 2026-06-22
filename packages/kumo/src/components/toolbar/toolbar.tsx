@@ -1,4 +1,9 @@
-import React, { createContext } from "react";
+import React, {
+  Children,
+  cloneElement,
+  createContext,
+  isValidElement,
+} from "react";
 import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import type { Input as BaseInput } from "@base-ui/react/input";
 import { cn } from "../../utils/cn";
@@ -62,6 +67,10 @@ export type ToolbarInputProps = Omit<
 export type ToolbarInputGroupProps = Omit<
   React.ComponentPropsWithoutRef<typeof InputGroup>,
   "size"
+>;
+
+type ToolbarInputGroupChildProps = React.ComponentPropsWithoutRef<
+  typeof InputGroup.Input
 >;
 
 const ToolbarSizeContext = createContext<{ size: ToolbarSize }>({
@@ -203,8 +212,28 @@ const Input = React.forwardRef<HTMLInputElement, ToolbarInputProps>(
 Input.displayName = "Toolbar.Input";
 
 const InputGroupRoot = React.forwardRef<HTMLElement, ToolbarInputGroupProps>(
-  ({ className, ...props }, ref) => {
+  ({ children, className, ...props }, ref) => {
     const toolbar = React.useContext(ToolbarSizeContext);
+    const ariaLabel = props["aria-label"];
+    const ariaLabelledBy = props["aria-labelledby"];
+
+    const toolbarChildren = Children.map(children, (child) => {
+      if (
+        !isValidElement<ToolbarInputGroupChildProps>(child) ||
+        (child.type as { displayName?: string })?.displayName !==
+          "InputGroup.Input"
+      ) {
+        return child;
+      }
+
+      return (
+        <ToolbarBase.Input
+          aria-label={child.props["aria-label"] ?? ariaLabel}
+          aria-labelledby={child.props["aria-labelledby"] ?? ariaLabelledBy}
+          render={cloneElement(child)}
+        />
+      );
+    });
 
     return (
       <InputGroup
@@ -212,7 +241,9 @@ const InputGroupRoot = React.forwardRef<HTMLElement, ToolbarInputGroupProps>(
         className={toolbarControlClassName(className)}
         size={toolbar.size}
         {...props}
-      />
+      >
+        {toolbarChildren}
+      </InputGroup>
     );
   },
 );

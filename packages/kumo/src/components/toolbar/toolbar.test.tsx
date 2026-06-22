@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Input } from "../input/input";
 import { InputGroup } from "../input-group/input-group";
 import { Toolbar } from "./toolbar";
@@ -44,5 +45,53 @@ describe("Toolbar", () => {
     expect(toolbarGroup.className).toContain("rounded-none");
     expect(plainGroup.className).not.toContain("rounded-none");
     expect(input.className).not.toContain("not-first:border-l");
+  });
+
+  it("moves focus from Toolbar.InputGroup input to the next toolbar button", async () => {
+    const user = userEvent.setup();
+    render(
+      <Toolbar>
+        <Toolbar.InputGroup aria-label="Search DNS records">
+          <InputGroup.Input placeholder="Search DNS records" />
+        </Toolbar.InputGroup>
+        <Toolbar.Button aria-label="Filter">Filter</Toolbar.Button>
+        <Toolbar.Button aria-label="Settings">Settings</Toolbar.Button>
+      </Toolbar>,
+    );
+
+    const input = screen.getByRole("textbox", { name: "Search DNS records" });
+    const filter = screen.getByRole("button", { name: "Filter" });
+    const settings = screen.getByRole("button", { name: "Settings" });
+
+    await user.click(input);
+    expect(document.activeElement).toBe(input);
+
+    await user.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(filter);
+
+    await user.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(settings);
+  });
+
+  it("moves focus from Toolbar.InputGroup input with suffix to the next toolbar button", async () => {
+    const user = userEvent.setup();
+    render(
+      <Toolbar>
+        <Toolbar.InputGroup aria-label="Worker subdomain">
+          <InputGroup.Input placeholder="my-worker" />
+          <InputGroup.Suffix>.workers.dev</InputGroup.Suffix>
+        </Toolbar.InputGroup>
+        <Toolbar.Button>Visit</Toolbar.Button>
+      </Toolbar>,
+    );
+
+    const input = screen.getByRole("textbox", { name: "Worker subdomain" });
+    const visit = screen.getByRole("button", { name: "Visit" });
+
+    await user.click(input);
+    expect(document.activeElement).toBe(input);
+
+    await user.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(visit);
   });
 });
