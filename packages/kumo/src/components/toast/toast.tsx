@@ -39,8 +39,8 @@ export const KUMO_TOAST_VARIANTS = {
   },
   close: {
     classes:
-      "absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded bg-transparent text-kumo-subtle hover:bg-kumo-fill-hover hover:text-kumo-default",
-    description: "Close button with X icon",
+      "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+    description: "Button-based close control with variant-aware hover tint",
   },
   variant: {
     default: {
