@@ -6,6 +6,7 @@ import {
   Combobox,
   DropdownMenu,
 } from "@cloudflare/kumo";
+import type { DialogProps } from "@cloudflare/kumo";
 import { Warning, X } from "@phosphor-icons/react";
 
 export function DialogBasicDemo() {
@@ -381,5 +382,99 @@ export function DialogWithDropdownDemo() {
         </div>
       </Dialog>
     </Dialog.Root>
+  );
+}
+
+/**
+ * Demonstrates that each dialog size holds its fixed width regardless of
+ * content. Each dialog contains a wide table that would previously cause the
+ * dialog to stretch beyond its intended size.
+ */
+export function DialogSizesDemo() {
+  const sizes: { size: NonNullable<DialogProps["size"]>; label: string; width: string }[] = [
+    { size: "sm", label: "Small", width: "288px" },
+    { size: "base", label: "Base", width: "384px" },
+    { size: "lg", label: "Large", width: "512px" },
+    { size: "xl", label: "Extra Large", width: "768px" },
+  ];
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {sizes.map(({ size, label, width }) => (
+        <Dialog.Root key={size}>
+          <Dialog.Trigger
+            render={(p) => (
+              <Button variant="secondary" {...p}>
+                {label} ({width})
+              </Button>
+            )}
+          />
+          <Dialog size={size} className="p-8">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <Dialog.Title className="text-2xl font-semibold">
+                {label} Dialog
+              </Dialog.Title>
+              <Dialog.Close
+                aria-label="Close"
+                render={(props) => (
+                  <Button
+                    {...props}
+                    variant="secondary"
+                    shape="square"
+                    icon={<X />}
+                    aria-label="Close"
+                  />
+                )}
+              />
+            </div>
+            <Dialog.Description className="text-kumo-subtle">
+              This <code>size="{size}"</code> dialog should stay at {width} wide
+              regardless of the content below.
+            </Dialog.Description>
+            <div className="mt-4 overflow-auto rounded-md border border-kumo-line">
+              <table className="w-max text-sm">
+                <thead className="bg-kumo-elevated text-left">
+                  <tr>
+                    <th className="px-3 py-2">Resource</th>
+                    <th className="px-3 py-2">Region</th>
+                    <th className="px-3 py-2">Status</th>
+                    <th className="px-3 py-2">Latency</th>
+                    <th className="px-3 py-2">Requests</th>
+                    <th className="px-3 py-2">Last Deployed</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-kumo-hairline">
+                  <tr>
+                    <td className="px-3 py-2">api-gateway-prod</td>
+                    <td className="px-3 py-2">us-east-1</td>
+                    <td className="px-3 py-2 text-kumo-success">Healthy</td>
+                    <td className="px-3 py-2">12ms</td>
+                    <td className="px-3 py-2">1,234,567</td>
+                    <td className="px-3 py-2">2026-06-23</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2">worker-analytics</td>
+                    <td className="px-3 py-2">eu-west-1</td>
+                    <td className="px-3 py-2 text-kumo-warning">Degraded</td>
+                    <td className="px-3 py-2">89ms</td>
+                    <td className="px-3 py-2">456,789</td>
+                    <td className="px-3 py-2">2026-06-22</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <Dialog.Close
+                render={(props) => (
+                  <Button variant="secondary" {...props}>
+                    Close
+                  </Button>
+                )}
+              />
+            </div>
+          </Dialog>
+        </Dialog.Root>
+      ))}
+    </div>
   );
 }
