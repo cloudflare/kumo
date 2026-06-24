@@ -11,3 +11,4 @@
  */
 
 export * from "@base-ui/react/otp-field";
+export { OTPField as OTPFieldPreview } from "@base-ui/react/otp-field";
