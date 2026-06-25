@@ -56,8 +56,20 @@ export interface TimeseriesChartProps {
    * values, not y-axis tick labels. It will be removed in a future major version.
    */
   yAxisTickLabelFormat?: (value: number) => string;
+  /**
+   * When `true`, hides the x-axis tick labels (timestamps).
+   * The axis line and grid are unaffected.
+   * @default false
+   */
+  hideXAxisLabels?: boolean;
   /** Label for the y-axis (value axis) */
   yAxisName?: string;
+  /**
+   * When `true`, hides the y-axis tick labels (values).
+   * The axis line and grid are unaffected.
+   * @default false
+   */
+  hideYAxisLabels?: boolean;
   /** Number of ticks to display on the y-axis */
   yAxisTickCount?: number;
   /**
@@ -212,9 +224,11 @@ export const TimeseriesChart = forwardRef<
     xAxisName,
     xAxisTickCount,
     xAxisTickFormat,
+    hideXAxisLabels,
     yAxisTickFormat,
     yAxisTickLabelFormat,
     yAxisName,
+    hideYAxisLabels,
     yAxisTickCount,
     tooltipValueFormat,
     onTimeRangeChange,
@@ -396,11 +410,12 @@ export const TimeseriesChart = forwardRef<
         },
         axisLine: { show: false },
         splitNumber: xAxisTickCount ?? 5,
-        ...(xAxisTickFormat && {
-          axisLabel: {
+        axisLabel: {
+          show: !hideXAxisLabels,
+          ...(xAxisTickFormat && {
             formatter: (value: number) => xAxisTickFormat(value),
-          },
-        }),
+          }),
+        },
       },
       yAxis: {
         name: yAxisName,
@@ -409,6 +424,7 @@ export const TimeseriesChart = forwardRef<
         type: "value" as const,
         axisTick: { show: true },
         axisLabel: {
+          show: !hideYAxisLabels,
           margin: 15,
           ...(yAxisTickFormat && {
             formatter: (value: number) => yAxisTickFormat(value),
@@ -433,8 +449,10 @@ export const TimeseriesChart = forwardRef<
     xAxisName,
     xAxisTickCount,
     xAxisTickFormat,
+    hideXAxisLabels,
     yAxisTickFormat,
     yAxisName,
+    hideYAxisLabels,
     yAxisTickCount,
     incompleteBefore,
     incompleteAfter,
