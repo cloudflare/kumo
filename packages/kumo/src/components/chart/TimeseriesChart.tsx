@@ -409,6 +409,7 @@ export const TimeseriesChart = forwardRef<
           show: false,
         },
         axisLine: { show: false },
+        axisTick: { show: !hideXAxisLabels },
         splitNumber: xAxisTickCount ?? 5,
         axisLabel: {
           show: !hideXAxisLabels,
@@ -422,7 +423,7 @@ export const TimeseriesChart = forwardRef<
         nameLocation: "middle" as const,
         nameGap: 40,
         type: "value" as const,
-        axisTick: { show: true },
+        axisTick: { show: !hideYAxisLabels },
         axisLabel: {
           show: !hideYAxisLabels,
           margin: 15,

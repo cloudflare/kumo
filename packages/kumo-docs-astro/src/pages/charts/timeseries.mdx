@@ -19,6 +19,7 @@ import {
   TimeRangeSelectionChartDemo,
   TooltipFollowCursorDemo,
   TooltipBoundaryDemo,
+  HiddenAxisLabelsDemo,
 } from "~/components/demos/Chart/ChartDemo";
 
 <p>
@@ -49,6 +50,20 @@ import {
 
   <ComponentExample demo="CustomAxisLabelFormatDemo">
     <CustomAxisLabelFormatDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Hidden Axis Labels
+
+<p>
+  Use <code>hideXAxisLabels</code> and <code>hideYAxisLabels</code> to hide
+  the tick labels on either axis. The axis lines and grid are unaffected.
+</p>
+
+  <ComponentExample demo="HiddenAxisLabelsDemo">
+    <HiddenAxisLabelsDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

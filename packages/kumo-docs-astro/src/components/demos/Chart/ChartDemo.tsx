@@ -420,6 +420,39 @@ export function LegendCompactDemo() {
 }
 
 /**
+ * Timeseries chart with axis labels hidden using `hideXAxisLabels` and `hideYAxisLabels`.
+ */
+export function HiddenAxisLabelsDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      hideXAxisLabels
+      hideYAxisLabels
+    />
+  );
+}
+
+/**
  * Timeseries chart rendered as a stacked bar chart.
  */
 export function BarChartDemo() {
