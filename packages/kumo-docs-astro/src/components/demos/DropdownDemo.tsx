@@ -239,6 +239,24 @@ export function DropdownAvatarTriggerDemo() {
 }
 
 /**
+ * A dropdown with a very long list of items to demonstrate the max-height
+ * behavior — the content scrolls when it exceeds available viewport space.
+ */
+export function DropdownLongListDemo() {
+  const items = Array.from({ length: 30 }, (_, i) => `Option ${i + 1}`);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger render={<Button>Open long list</Button>} />
+      <DropdownMenu.Content>
+        {items.map((item) => (
+          <DropdownMenu.Item key={item}>{item}</DropdownMenu.Item>
+        ))}
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+/**
  * Demonstrates the new LinkItem component for navigation links.
  * Use LinkItem instead of Item with href for cleaner, more semantic links.
  */
