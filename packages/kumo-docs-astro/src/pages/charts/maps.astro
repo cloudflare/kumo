@@ -1,0 +1,153 @@
+---
+import DocLayout from "../../layouts/DocLayout.astro";
+import Heading from "../../components/docs/Heading.astro";
+import ComponentSection from "../../components/docs/ComponentSection.astro";
+import ComponentExample from "../../components/docs/ComponentExample.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import { BubbleMapBasicDemo } from "~/components/demos/Chart/BubbleMapDemo";
+import type { MapGeoJson } from "@cloudflare/kumo";
+
+const WORLD_GEO_JSON_URL =
+  "https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json";
+
+let geoJson: MapGeoJson | null = null;
+
+try {
+  const response = await fetch(WORLD_GEO_JSON_URL);
+  if (response.ok) {
+    geoJson = (await response.json()) as MapGeoJson;
+  } else {
+    console.warn(
+      `Failed to fetch BubbleMap GeoJSON: ${response.status} ${response.statusText}`,
+    );
+  }
+} catch (error) {
+  console.warn("Failed to fetch BubbleMap GeoJSON", error);
+  geoJson = null;
+}
+---
+
+<DocLayout
+  title="Maps"
+  description="Map chart components for visualizing geographic data with GeoJSON."
+  sourceFile="components/chart"
+>
+  <ComponentSection>
+    <ComponentExample code={`<BubbleMap
+  echarts={echarts}
+  geoJson={geoJson}
+  data={colos}
+  lng="lon"
+  lat="lat"
+  name="city"
+  value="requests"
+/>`}>
+      <BubbleMapBasicDemo geoJson={geoJson} client:visible />
+    </ComponentExample>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Installation</Heading>
+    <p class="mb-4 text-kumo-subtle">
+      <code class="text-kumo-default">BubbleMap</code> requires <code class="text-kumo-default">echarts</code> as a peer dependency. Consumers provide the GeoJSON feature collection; the component does not fetch map data or use map tiles.
+    </p>
+    <CodeBlock code={`npm install echarts`} lang="bash" />
+
+    <Heading level={3} class="mb-2 mt-6 text-lg">Barrel</Heading>
+    <CodeBlock code={`import { BubbleMap } from "@cloudflare/kumo";`} lang="tsx" />
+    <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
+    <CodeBlock
+      code={`import { BubbleMap } from "@cloudflare/kumo/components/chart";`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>Usage</Heading>
+    <CodeBlock
+      code={`import { BubbleMap, type MapGeoJson } from "@cloudflare/kumo";
+import * as echarts from "echarts/core";
+import { MapChart, ScatterChart } from "echarts/charts";
+import { TooltipComponent } from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+
+echarts.use([MapChart, ScatterChart, TooltipComponent, CanvasRenderer]);
+
+// Load GeoJSON in your app and pass it to BubbleMap.
+const geoJson = world as MapGeoJson;
+
+const colos = [
+  { iata: "SFO", city: "San Francisco", lat: 37.77, lon: -122.42, requests: 1200 },
+  { iata: "LHR", city: "London", lat: 51.5, lon: -0.12, requests: 1500 },
+];
+
+export default function Example() {
+  return (
+    <BubbleMap
+      echarts={echarts}
+      geoJson={geoJson}
+      data={colos}
+      lng="lon"
+      lat="lat"
+      name="city"
+      value="requests"
+    />
+  );
+}`}
+      lang="tsx"
+    />
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2} class="mb-6">Examples</Heading>
+
+    <div class="space-y-8">
+      <div>
+        <Heading level={3}>Bubble Map</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Plot raw rows by longitude and latitude. The <code class="text-kumo-default">value</code> accessor controls proportional bubble size.
+        </p>
+        <ComponentExample code={`<BubbleMap
+  echarts={echarts}
+  geoJson={geoJson}
+  data={colos}
+  lng="lon"
+  lat="lat"
+  name="city"
+  value="requests"
+  minRadius={8}
+/>`}>
+          <BubbleMapBasicDemo geoJson={geoJson} client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Custom Tooltips</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Provide <code class="text-kumo-default">tooltipFormatter</code> when the default name/value tooltip is not enough. The formatter returns HTML rendered by ECharts, so escape user-provided values.
+        </p>
+        <CodeBlock
+          code={`<BubbleMap
+  echarts={echarts}
+  geoJson={geoJson}
+  data={colos}
+  lng="lon"
+  lat="lat"
+  name="city"
+  value="requests"
+  tooltipFormatter={(row) =>
+    "<strong>" + row.city + "</strong><br />" + row.requests.toLocaleString()
+  }
+/>`}
+          lang="tsx"
+        />
+      </div>
+    </div>
+  </ComponentSection>
+
+  <ComponentSection>
+    <Heading level={2}>API Reference</Heading>
+    <PropsTable component="BubbleMap" />
+  </ComponentSection>
+</DocLayout>

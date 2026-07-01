@@ -70,6 +70,20 @@ const sequentialDark = {
   blues: ["#03254F", "#0E58B4", "#4290F0", "#A6BFDD", "#E1EAF4"],
 };
 
+/** Colours for GeoJSON-based map charts. */
+export interface MapColors {
+  /** Fill for land regions. */
+  area: string;
+  /** Default bubble fill (the chart palette blue). */
+  bubble: string;
+}
+
+/** Neutral land fill per mode; bubbles use the shared categorical palette. */
+const mapAreaByMode = {
+  light: "#E5E7EB",
+  dark: "#2B2C31",
+} as const;
+
 /**
  * Ordered list of categorical colors for light mode, indexed by series position.
  * Used as the default ECharts color palette when `isDarkMode` is `false`.
@@ -170,5 +184,15 @@ export namespace ChartPalette {
       dark: { primary: "#9CA3AF", secondary: "#6B7280" },
     };
     return isDarkMode ? colors.dark[variant] : colors.light[variant];
+  }
+
+  /** Returns colors for GeoJSON-based map charts. */
+  export function mapColors(isDarkMode = false): MapColors {
+    const mode = isDarkMode ? "dark" : "light";
+
+    return {
+      area: mapAreaByMode[mode],
+      bubble: categorical(0, isDarkMode),
+    };
   }
 }

@@ -249,11 +249,16 @@ export {
   SankeyChart,
   TimeseriesChart,
   ChartLegend,
+  BubbleMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
   type SankeyLinkData,
   type SankeyTooltipParams,
+  type MapGeoJson,
+  type MapAccessor,
+  type MapStyle,
+  type BubbleMapProps,
 } from "./components/chart";
 export {
   Autocomplete,

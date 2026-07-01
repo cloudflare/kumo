@@ -16,6 +16,7 @@ import {
   DialogConfirmationDemo,
   DialogAlertDemo,
   DialogMaxWidthDemo,
+  DialogSizesDemo,
   DialogWithSelectDemo,
   DialogWithComboboxDemo,
   DialogWithDropdownDemo,
@@ -133,6 +134,17 @@ export default function Example() {
 
 <ComponentExample demo="DialogBasicDemo">
   <DialogBasicDemo client:load />
+</ComponentExample>
+
+### Sizes
+
+<p>
+  The `size` prop controls the fixed width of the dialog on desktop. Content
+  that overflows the dialog width will scroll horizontally within the dialog
+  rather than stretching it.
+</p>
+<ComponentExample demo="DialogSizesDemo">
+  <DialogSizesDemo client:load />
 </ComponentExample>
 
 ### Alert Dialog (`role="alertdialog"`)

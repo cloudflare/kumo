@@ -86,6 +86,7 @@ const chartItems: NavItem[] = [
   { label: "Charts", href: "/charts" },
   { label: "Colors", href: "/charts/colors" },
   { label: "Timeseries", href: "/charts/timeseries" },
+  { label: "Maps", href: "/charts/maps" },
   { label: "Sankey", href: "/charts/sankey" },
   { label: "Custom Chart", href: "/charts/custom" },
 ];
