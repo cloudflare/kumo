@@ -49,7 +49,13 @@ export interface KumoDropdownVariantsProps {
 export function dropdownVariants({
   variant = KUMO_DROPDOWN_DEFAULT_VARIANTS.variant,
 }: KumoDropdownVariantsProps = {}) {
-  return cn(resolveVariant(KUMO_DROPDOWN_VARIANTS.variant, variant, KUMO_DROPDOWN_DEFAULT_VARIANTS.variant).classes);
+  return cn(
+    resolveVariant(
+      KUMO_DROPDOWN_VARIANTS.variant,
+      variant,
+      KUMO_DROPDOWN_DEFAULT_VARIANTS.variant,
+    ).classes,
+  );
 }
 
 const DropdownMenuSubTrigger = React.forwardRef<
@@ -112,6 +118,7 @@ const DropdownMenuContent = React.forwardRef<
           <DropdownMenuPrimitive.Popup
             className={cn(
               "overflow-hidden bg-kumo-control text-kumo-default", // background
+              "max-h-[var(--available-height)] overflow-y-auto", // limit height when list is too long and might go off screen
               "rounded-lg shadow-lg ring ring-kumo-line", // border part
               "min-w-36 p-1.5", // spacing
               "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation

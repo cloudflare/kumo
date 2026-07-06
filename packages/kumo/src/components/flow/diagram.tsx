@@ -40,7 +40,6 @@ function isEventFromNode(target: EventTarget | null): boolean {
 /** Minimum scrollbar thumb size in percentage to ensure visibility */
 const MIN_SCROLLBAR_THUMB_SIZE = 10;
 
-// Vertical orientation is currently a no-op
 type Orientation = "horizontal" | "vertical";
 type Align = "start" | "center";
 
@@ -66,9 +65,11 @@ export function useDiagramContext(): DiagramContextValue {
 interface FlowDiagramProps {
   orientation?: Orientation;
   /**
-   * Controls vertical alignment of nodes in horizontal orientation.
-   * - `start`: Nodes align to the top (default)
-   * - `center`: Nodes are vertically centered
+   * Controls cross-axis alignment of nodes.
+   * In horizontal orientation this is vertical alignment; in vertical
+   * orientation it is horizontal alignment.
+   * - `start`: Nodes align to the start of the cross axis (default)
+   * - `center`: Nodes are centered on the cross axis
    */
   align?: Align;
   /**
@@ -428,11 +429,26 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
       if (currentRect && nextRect) {
         const isDisabled =
           currentNode.props.disabled || nextNode.props.disabled;
+        // Horizontal flows left-to-right: connect the right edge of the
+        // current node to the left edge of the next. Vertical flows
+        // top-to-bottom: connect the bottom edge of the current node to the
+        // top edge of the next, using horizontal centers.
+        const edge =
+          orientation === "vertical"
+            ? {
+                x1: currentRect.left - offsetX + currentRect.width / 2,
+                y1: currentRect.top - offsetY + currentRect.height,
+                x2: nextRect.left - offsetX + nextRect.width / 2,
+                y2: nextRect.top - offsetY,
+              }
+            : {
+                x1: currentRect.left - offsetX + currentRect.width,
+                y1: currentRect.top - offsetY + currentRect.height / 2,
+                x2: nextRect.left - offsetX,
+                y2: nextRect.top - offsetY + nextRect.height / 2,
+              };
         edges.push({
-          x1: currentRect.left - offsetX + currentRect.width,
-          y1: currentRect.top - offsetY + currentRect.height / 2,
-          x2: nextRect.left - offsetX,
-          y2: nextRect.top - offsetY + nextRect.height / 2,
+          ...edge,
           disabled: isDisabled,
           single: true,
           fromId: currentNode.id,
@@ -442,7 +458,7 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
     }
 
     setConnectors(edges);
-  }, [descendants.descendants]);
+  }, [descendants.descendants, orientation]);
 
   /**
    * Recompute connectors after layout so that containerRect and node rects are
@@ -497,12 +513,13 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
       <div className="relative" ref={containerRef}>
         <ul
           className={cn(
-            "ml-0 list-none",
+            "ml-0 list-none gap-16",
             orientation === "vertical"
-              ? "grid auto-rows-min gap-16"
-              : "flex gap-16",
-            orientation === "horizontal" &&
-              (align === "center" ? "items-center" : "items-start"),
+              ? cn(
+                  "flex flex-col w-fit",
+                  align === "center" ? "items-center" : "items-start",
+                )
+              : cn("flex", align === "center" ? "items-center" : "items-start"),
           )}
         >
           {children}
