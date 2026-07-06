@@ -9,6 +9,8 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import {
   FlowBasicDemo,
+  FlowVerticalDemo,
+  FlowVerticalParallelDemo,
   FlowParallelDemo,
   FlowCustomContentDemo,
   FlowComplexDemo,
@@ -98,6 +100,25 @@ export default function Example() {
 <p>Use `Flow.Parallel` to create branching paths that run in parallel.</p>
 <ComponentExample demo="FlowParallelDemo">
   <FlowParallelDemo client:visible />
+</ComponentExample>
+
+### Vertical Orientation
+
+<p>
+  Set `orientation="vertical"` to lay nodes out top-to-bottom instead of the
+  default left-to-right. Connectors, parallel branches, and `align` all adapt
+  to the vertical axis.
+</p>
+<ComponentExample demo="FlowVerticalDemo">
+  <FlowVerticalDemo client:visible />
+</ComponentExample>
+
+<p>
+  Parallel branches work the same way in vertical flows. In this orientation
+  `align` controls horizontal alignment of nodes.
+</p>
+<ComponentExample demo="FlowVerticalParallelDemo">
+  <FlowVerticalParallelDemo client:visible />
 </ComponentExample>
 
 ### Custom Node Styling
@@ -239,11 +260,21 @@ export default function Example() {
     </thead>
     <tbody>
       <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono">orientation</td>
+        <td class="px-4 py-3 font-mono">"horizontal" | "vertical"</td>
+        <td class="px-4 py-3">
+          Layout direction of the flow. `"horizontal"` (default) lays nodes out
+          left-to-right, `"vertical"` lays them out top-to-bottom.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono">align</td>
         <td class="px-4 py-3 font-mono">"start" | "center"</td>
         <td class="px-4 py-3">
-          Vertical alignment of nodes. `"start"` (default) aligns to top,
-          `"center"` vertically centers nodes.
+          Cross-axis alignment of nodes. In horizontal orientation this is
+          vertical alignment; in vertical orientation it is horizontal
+          alignment. `"start"` (default) aligns to the start of the cross axis,
+          `"center"` centers nodes.
         </td>
       </tr>
       <tr class="border-b border-kumo-hairline">

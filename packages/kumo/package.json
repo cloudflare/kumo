@@ -472,11 +472,10 @@
     "@base-ui/react": "^1.6.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
-    "clsx": "^2.1.1",
+    "cnfast": "^0.0.8",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",
-    "shiki": "^4.0.0",
-    "tailwind-merge": "^3.4.0"
+    "shiki": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/cli": "catalog:",
