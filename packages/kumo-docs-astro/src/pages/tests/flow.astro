@@ -2,6 +2,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   FlowBasicDemo,
+  FlowVerticalDemo,
+  FlowVerticalParallelDemo,
   FlowParallelDemo,
   FlowCustomContentDemo,
   FlowComplexDemo,
@@ -25,6 +27,28 @@ import {
       <p class="text-kumo-subtle">Basic flow diagram with sequential nodes</p>
       <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
         <FlowBasicDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-kumo-default">FlowVerticalDemo</h2>
+      <p class="text-kumo-subtle">
+        Vertical flow diagram with sequential nodes
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <FlowVerticalDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        FlowVerticalParallelDemo
+      </h2>
+      <p class="text-kumo-subtle">
+        Vertical flow diagram with parallel branching
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <FlowVerticalParallelDemo client:visible />
       </div>
     </section>
 

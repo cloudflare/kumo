@@ -19,6 +19,31 @@ describe("Flow", () => {
       expect(path).toBe("M 0 17 L 32 17 L 32 63 Q 32 71 40 71 L 48 71");
       expect(path).not.toContain(",");
     });
+
+    it("routes vertical paths through a horizontal mid-segment", () => {
+      const path = createRoundedPath(
+        { x1: 17, y1: 0, x2: 71, y2: 56 },
+        { orientation: "vertical", single: false },
+      );
+
+      expect(path).toContain("M 17 0");
+      expect(path).not.toContain(",");
+    });
+  });
+
+  describe("Vertical orientation", () => {
+    it("renders sequential nodes top-to-bottom in a column", () => {
+      render(
+        <Flow orientation="vertical">
+          <Flow.Node>Step 1</Flow.Node>
+          <Flow.Node>Step 2</Flow.Node>
+          <Flow.Node>Step 3</Flow.Node>
+        </Flow>,
+      );
+
+      const list = screen.getByText("Step 1").closest("ul");
+      expect(list?.className).toContain("flex-col");
+    });
   });
 
   describe("Compound component API", () => {
