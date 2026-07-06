@@ -1,0 +1,197 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Stepper"
+description: "A layered, accordion-style wizard for multi-step forms and flows, with first-class support for async transitions."
+sourceFile: "components/stepper"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  StepperHeroDemo,
+  StepperHorizontalDemo,
+  StepperAsyncDemo,
+} from "~/components/demos/StepperDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="StepperHeroDemo">
+    <StepperHeroDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { Stepper } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { Stepper } from "@cloudflare/kumo/components/stepper";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+Stepper favors composition over configuration. Assemble `Header`, `Panel`, and
+`Footer` parts inside each `Step` rather than driving the component through a
+wall of props. The Root owns wizard state — active step, completion, and async
+transitions — and lays the steps out as a layered card where every header stays
+visible and the active step expands.
+
+```tsx
+<Stepper.Root onComplete={submit}>
+  <Stepper.Step>
+    <Stepper.Header icon={<BuildingsIcon />}>Details</Stepper.Header>
+    <Stepper.Panel>
+      {/* …content… */}
+      <Stepper.Footer>
+        <Stepper.Back hideOnFirst />
+        <Stepper.Next>Continue</Stepper.Next>
+      </Stepper.Footer>
+    </Stepper.Panel>
+  </Stepper.Step>
+</Stepper.Root>
+```
+
+</ComponentSection>
+
+{/* Orientation */}
+
+<ComponentSection>
+
+## Orientation
+
+Set `orientation="horizontal"` for a compact, overflow-proof header: a Select
+that lists every step (jump to any you've already visited) flanked by prev/next
+arrows, iOS-picker style, with the active panel below. This stays clean no
+matter how many steps you have or how long the labels are. The state machine,
+async support, and error states are identical — only the layout changes.
+
+<ComponentExample demo="StepperHorizontalDemo">
+  <StepperHorizontalDemo client:load />
+</ComponentExample>
+
+```tsx
+<Stepper.Root orientation="horizontal">{/* …steps… */}</Stepper.Root>
+```
+
+</ComponentSection>
+
+{/* Async */}
+
+<ComponentSection>
+
+## Async transitions &amp; error states
+
+Mark a step with `error` to surface failed validation — the badge, icon, and
+title turn red. Combine it with `beforeNext` so a rejected check both stops the
+transition and flags the step.
+
+Pass `beforeNext` to `Stepper.Next` to run validation or a save before
+advancing. The button shows a loading state while the promise is in flight, and
+the stepper stays on the current step if it rejects. Use the Root's
+`onComplete` for the final submit.
+
+<ComponentExample demo="StepperAsyncDemo">
+  <StepperAsyncDemo client:load />
+</ComponentExample>
+
+```tsx
+const validate = async () => {
+  const ok = await checkAvailability(name);
+  if (!ok) throw new Error("unavailable"); // stay on this step
+};
+
+<Stepper.Next beforeNext={validate}>Check &amp; continue</Stepper.Next>;
+```
+
+</ComponentSection>
+
+{/* Controlled */}
+
+<ComponentSection>
+
+## Controlled
+
+Drive the active step yourself with `activeStep` + `onStepChange`, or read
+state anywhere inside the Root with the `useStepper()` hook.
+
+```tsx
+const { activeStep, totalSteps, isLastStep } = useStepper();
+```
+
+</ComponentSection>
+
+{/* Props */}
+
+<ComponentSection>
+
+## Props
+
+### Stepper.Root
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `orientation` | `"vertical" \| "horizontal"` | `"vertical"` | Layout direction. |
+| `activeStep` | `number` | — | Controlled active step index. |
+| `defaultActiveStep` | `number` | `0` | Initial step for uncontrolled usage. |
+| `onStepChange` | `(index: number) => void` | — | Called when the active step changes. |
+| `onComplete` | `() => void \| Promise<void>` | — | Called when `Next` is pressed on the final step. |
+| `className` | `string` | — | Additional CSS classes. |
+
+### Stepper.Step
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `error` | `boolean` | `false` | Mark the step as errored (renders red badge/icon/title). |
+| `className` | `string` | — | Additional CSS classes. |
+
+### Stepper.Header
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `icon` | `ReactNode` | — | Leading icon slot. |
+| `clickable` | `boolean` | `false` | Allow clicking the header to jump to this step. |
+| `indicator` | `ReactNode` | — | Override the default numbered/check status badge. |
+| `className` | `string` | — | Additional CSS classes. |
+
+### Stepper.Panel
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `className` | `string` | — | Additional CSS classes. |
+
+### Stepper.Next
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `beforeNext` | `() => void \| Promise<void>` | — | Work to run before advancing; rejecting keeps the current step. |
+| `finishLabel` | `ReactNode` | `"Finish"` | Label shown on the final step. |
+
+Accepts all `Button` props except `onClick`.
+
+### Stepper.Back
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `hideOnFirst` | `boolean` | `false` | Hide (instead of disable) on the first step. |
+
+Accepts all `Button` props except `onClick`.
+
+</ComponentSection>

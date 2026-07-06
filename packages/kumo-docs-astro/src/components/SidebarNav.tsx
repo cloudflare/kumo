@@ -75,6 +75,7 @@ const componentItems: NavItem[] = [
   { label: "Sensitive Input", href: "/components/sensitive-input" },
   { label: "Sidebar", href: "/components/sidebar" },
   { label: "Skeleton Line", href: "/components/skeleton-line" },
+  { label: "Stepper", href: "/components/stepper" },
   { label: "Switch", href: "/components/switch" },
   { label: "Table", href: "/components/table" },
   { label: "Table of Contents", href: "/components/table-of-contents" },
