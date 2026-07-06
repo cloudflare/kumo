@@ -2,6 +2,7 @@ import {
   Children,
   createContext,
   forwardRef,
+  Fragment,
   isValidElement,
   useCallback,
   useContext,
@@ -351,21 +352,24 @@ function StepperRail({
   return (
     <div
       data-kumo-part="rail"
-      className={cn("items-center gap-2 border-b border-kumo-line px-2", className)}
+      className={cn(
+        "items-center gap-2 border-b border-kumo-line px-2 py-1.5",
+        className,
+      )}
     >
       {headers.map((header, i) => {
         const status = statusFor(i, activeStep);
         const navigable = i <= maxStepReached && i !== activeStep;
         const isLast = i === headers.length - 1;
         return (
-          <div key={i} className="flex min-w-0 flex-1 items-center gap-2">
+          <Fragment key={i}>
             <button
               type="button"
               disabled={!navigable}
               aria-current={status === "active" ? "step" : undefined}
               onClick={() => navigable && goToStep(i)}
               className={cn(
-                "flex min-w-0 items-center gap-2 rounded-md px-2 py-2.5 transition-colors",
+                "flex min-w-0 shrink-0 items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
                 "m-0 border-none bg-transparent",
                 navigable
                   ? "cursor-pointer hover:bg-kumo-tint"
@@ -378,7 +382,7 @@ function StepperRail({
                 <span
                   aria-hidden
                   className={cn(
-                    "grid size-5 shrink-0 place-items-center [&_svg]:size-5",
+                    "grid size-4 shrink-0 place-items-center [&_svg]:size-4",
                     status === "upcoming" ? "text-kumo-subtle" : "text-kumo-info",
                   )}
                 >
@@ -405,7 +409,7 @@ function StepperRail({
                 )}
               />
             ) : null}
-          </div>
+          </Fragment>
         );
       })}
     </div>
@@ -417,8 +421,9 @@ function StepperRail({
 // =============================================================================
 
 /**
- * Compact navigation for narrow viewports: prev/next buttons flanking a Select
- * that lists every step (jump to any already-visited one).
+ * Compact navigation for narrow viewports: ghost prev/next buttons flush left
+ * and right flanking a full-width Select that lists every step (jump to any
+ * already-visited one).
  */
 function StepperNav({
   headers,
@@ -453,24 +458,26 @@ function StepperNav({
     >
       <Button
         shape="square"
-        variant="secondary"
+        variant="ghost"
         icon={CaretLeftIcon}
         aria-label="Previous step"
         disabled={!canPrev}
         onClick={previousStep}
       />
-      <Select
-        aria-label="Go to step"
-        className="min-w-0 flex-1"
-        value={String(activeStep)}
-        onValueChange={(v) => {
-          if (v != null) goToStep(Number(v));
-        }}
-        items={items}
-      />
+      <div className="min-w-0 flex-1">
+        <Select
+          aria-label="Go to step"
+          className="w-full"
+          value={String(activeStep)}
+          onValueChange={(v) => {
+            if (v != null) goToStep(Number(v));
+          }}
+          items={items}
+        />
+      </div>
       <Button
         shape="square"
-        variant="secondary"
+        variant="ghost"
         icon={CaretRightIcon}
         aria-label="Next step"
         disabled={!canNext}
@@ -650,7 +657,7 @@ function StepIndicator({ index, status, className }: StepIndicatorProps) {
       aria-hidden
       data-kumo-part="indicator"
       className={cn(
-        "grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold transition-colors",
+        "grid size-5 shrink-0 place-items-center rounded-full text-[0.6875rem] font-semibold transition-colors",
         status === "active" &&
           "bg-kumo-info text-kumo-inverse ring-2 ring-kumo-info-tint",
         status === "complete" && "bg-kumo-info text-kumo-inverse",
@@ -660,9 +667,9 @@ function StepIndicator({ index, status, className }: StepIndicatorProps) {
       )}
     >
       {status === "complete" ? (
-        <CheckIcon weight="bold" className="size-3.5" />
+        <CheckIcon weight="bold" className="size-3" />
       ) : status === "error" ? (
-        <WarningIcon weight="fill" className="size-3.5" />
+        <WarningIcon weight="fill" className="size-3" />
       ) : (
         index + 1
       )}

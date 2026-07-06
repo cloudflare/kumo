@@ -35,6 +35,7 @@ export function StepperHeroDemo() {
               <Select
                 label="Environment"
                 placeholder="Choose…"
+                className="w-full"
                 items={{
                   production: "Production",
                   staging: "Staging",
@@ -85,7 +86,7 @@ export function StepperHeroDemo() {
         <Stepper.Step>
           <Stepper.Header icon={<GearIcon />}>Configuration</Stepper.Header>
           <Stepper.Panel>
-            <div className="space-y-3">
+            <div className="flex flex-col items-start gap-3">
               <Checkbox label="Enable automatic deployments from main" />
               <Checkbox label="Require pull-request reviews" />
               <Checkbox label="Enable preview environments" />
@@ -135,6 +136,7 @@ export function StepperHorizontalDemo() {
               <Select
                 label="Environment"
                 placeholder="Choose…"
+                className="w-full"
                 items={{ production: "Production", staging: "Staging" }}
               />
             </div>
