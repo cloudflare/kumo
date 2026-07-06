@@ -1,5 +1,39 @@
 # @cloudflare/kumo
 
+## 2.7.0
+
+### Minor Changes
+
+- 8f8f898: Add `ChoroplethMap`, a GeoJSON region choropleth chart component that joins data rows to features by `name`/`nameProperty` and shades regions with a continuous `visualMap` scale. Includes Kumo light/dark map colours, tooltip formatting, optional legend, hover/click callbacks, roam controls, docs, and demos.
+
+  Both `BubbleMap` and `ChoroplethMap` now apply a d3-geo `projection` (latitude-clamped Mercator by default; pass another d3-geo projection or `null` for raw plotting) and size by `aspectRatio` so the map fills its container without letterboxing. The container height now derives from the projected window's aspect ratio by default; pass an explicit `height` to opt back into a fixed pixel height.
+
+  Update `BubbleMap` viewport behavior to avoid resetting user pan and zoom while refreshing bubble data.
+
+  `BubbleMap` now defaults `roam` to `false` to avoid accidental pan and zoom interactions. Consumers that want drag-to-pan or scroll-to-zoom can pass `roam={true}`.
+
+- 6d366d9: Add `orientation="vertical"` support to `Flow` for laying out nodes top-to-bottom. The `align` prop now controls cross-axis alignment in both orientations.
+- ebc5cf8: feat(chart): add `BubbleMap` chart component
+
+  New `BubbleMap` component renders proportional bubbles over a registered
+  geographic map using ECharts' scatter series. Includes value-based radius
+  scaling, a `mapColors` palette addition to `ChartPalette`, and supporting
+  types. Also extracts `escapeHtml` / `defaultValueFormat` tooltip helpers into a
+  shared `tooltip-utils` module reused by `SankeyChart`.
+
+### Patch Changes
+
+- dd1a0b5: Keep primary and destructive button active/focus rings matched to their variant color.
+- 8463c38: Use the Button component for Toast close controls and match the hover tint to the toast variant.
+- 3aa0d9a: Limit Dropdown content height to available viewport space to prevent overflow.
+- 25b2ab1: Replace the internal class merging implementation with cnfast.
+- 6232d34: fix(button): resolve Firefox rendering artifact when Turnstile is present
+
+  Replace `translate-y-px` with `box-shadow: inset 0 1px 0 0 var(--kumo-button-emphasis-bg)` on the primary/destructive button emphasis overlay span. The transform triggered a rendering bug in Firefox on pages with Turnstile's `contain: strict` CSS. The box-shadow achieves the same visual depth effect without the rendering issue.
+
+- a74bd9c: Fix Dialog `size` prop to set a fixed width instead of only a minimum width. Previously, dialog content could stretch the dialog beyond its intended size.
+- 4dd1398: Update Base UI to 1.6.0.
+
 ## 2.6.0
 
 ### Minor Changes
