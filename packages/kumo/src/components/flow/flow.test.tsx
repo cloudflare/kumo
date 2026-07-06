@@ -31,6 +31,18 @@ describe("Flow", () => {
       expect(path).toContain("M 17 0");
       expect(path).not.toContain(",");
     });
+
+    it("rounds both corners for single vertical connector paths", () => {
+      const path = createRoundedPath(
+        { x1: 0, y1: 0, x2: 56, y2: 71 },
+        { orientation: "vertical", single: true },
+      );
+
+      expect(path).toBe(
+        "M 0 0 L 0 31 Q 0 39 8 39 L 48 39 Q 56 39 56 47 L 56 63",
+      );
+      expect(path).not.toContain(",");
+    });
   });
 
   describe("Vertical orientation", () => {

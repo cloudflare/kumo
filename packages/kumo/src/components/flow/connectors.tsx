@@ -139,11 +139,15 @@ export function createRoundedPath(
   const bottomCurveCommands = [
     `L ${x1} ${firstVerticalEnd}`,
     `Q ${x1} ${horizontalY} ${horizontalStart} ${horizontalY}`,
-    `L ${x2} ${horizontalY}`,
+    single
+      ? `L ${horizontalEnd} ${horizontalY} Q ${x2} ${horizontalY} ${x2} ${secondVerticalStart}`
+      : `L ${x2} ${horizontalY}`,
   ];
 
   const topCurveCommands = [
-    `L ${x1} ${horizontalY}`,
+    single
+      ? `L ${x1} ${firstVerticalEnd} Q ${x1} ${horizontalY} ${horizontalStart} ${horizontalY}`
+      : `L ${x1} ${horizontalY}`,
     `L ${horizontalEnd} ${horizontalY}`,
     `Q ${x2} ${horizontalY} ${x2} ${secondVerticalStart}`,
   ];
@@ -233,7 +237,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
         height="100%"
         overflow="visible"
         aria-hidden="true"
-        className="text-kumo-inactive overflow-visible"
+        className="text-kumo-placeholder overflow-visible"
         ref={svgRef}
       >
         <defs>
