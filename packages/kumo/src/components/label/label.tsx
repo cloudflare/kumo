@@ -96,7 +96,7 @@ export function Label({
     <>
       {children}
       {showOptional && (
-        <span className="font-normal text-kumo-strong">(optional)</span>
+        <span className="font-normal text-kumo-subtle">(optional)</span>
       )}
       {tooltip && (
         <Tooltip

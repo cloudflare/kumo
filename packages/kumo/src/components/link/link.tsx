@@ -1,7 +1,8 @@
-import { forwardRef, type SVGProps } from "react";
+import { forwardRef, useEffect, type SVGProps } from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   useLinkComponent,
   type LinkComponentProps,
@@ -80,18 +81,29 @@ export interface KumoLinkVariantsProps {
 export function linkVariants({
   variant = KUMO_LINK_DEFAULT_VARIANTS.variant,
 }: KumoLinkVariantsProps = {}) {
-  return cn(KUMO_LINK_VARIANTS.variant[variant].classes);
+  return cn(resolveVariant(KUMO_LINK_VARIANTS.variant, variant, KUMO_LINK_DEFAULT_VARIANTS.variant).classes);
 }
 
 /**
  * Link component props.
  *
- * @example
+ * Use `href` for the link destination. For framework-specific routing, use the
+ * `render` prop or configure a `LinkProvider` at the app root.
+ *
+ * @example Internal link
  * ```tsx
  * <Link href="/docs">Learn more</Link>
+ * ```
+ *
+ * @example External link
+ * ```tsx
  * <Link href="https://cloudflare.com" target="_blank" rel="noopener noreferrer">
  *   Visit Cloudflare <Link.ExternalIcon />
  * </Link>
+ * ```
+ *
+ * @example Composition with render prop
+ * ```tsx
  * <Link render={<RouterLink to="/dashboard" />}>Dashboard</Link>
  * ```
  */
@@ -102,9 +114,12 @@ export type LinkProps = useRender.ComponentProps<"a"> &
 /**
  * Link component for consistent inline text links.
  *
- * Supports composition via `render` prop for framework-specific routing:
- * - Without render: renders via LinkProvider (default anchor or configured component)
- * - With render: merges props onto the provided element with proper ref/event handling
+ * Link is a **presentational component** — it handles visual styling and
+ * accessibility. Routing behavior belongs in the application layer, via
+ * either the `render` prop or a `LinkProvider`.
+ *
+ * - Without `render`: renders via LinkProvider (default `<a>` or configured component)
+ * - With `render`: merges props onto the provided element with proper ref/event handling
  *
  * @example Basic usage
  * ```tsx
@@ -118,11 +133,23 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  * </Link>
  * ```
  *
- * @example Composition with React Router
+ * @example Composition with React Router via render prop
  * ```tsx
  * <Link render={<RouterLink to="/dashboard" />} variant="inline">
  *   Dashboard
  * </Link>
+ * ```
+ *
+ * @example Composition via LinkProvider (recommended for app-wide routing)
+ * ```tsx
+ * // App root:
+ * <LinkProvider component={AppLink}>
+ *   <App />
+ * </LinkProvider>
+ *
+ * // Then use href everywhere:
+ * <Link href="/dashboard">Dashboard</Link>
+ * <Link href="https://example.com" target="_blank">External</Link>
  * ```
  */
 const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
@@ -131,12 +158,30 @@ const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 ) {
   const LinkComponent = useLinkComponent();
 
-  const defaultProps: useRender.ElementProps<"a"> = {
+  if (process.env.NODE_ENV !== "production") {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- dev-only, conditional is stable
+    useEffect(() => {
+      if ("to" in props && props.to !== undefined) {
+        console.warn(
+          '[kumo] Link: The `to` prop is deprecated. Use `href` instead.\n\n' +
+            'If your app uses a client-side router, configure a LinkProvider that\n' +
+            'maps `href` to your router\'s navigation prop. See:\n' +
+            'https://kumo.cfops.it/utilities/link-provider\n\n' +
+            'Migration example:\n' +
+            '  Before: <Link to="/page">…</Link>\n' +
+            '  After:  <Link href="/page">…</Link>',
+        );
+      }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps -- one-time warning
+  }
+
+  const defaultProps = {
+    "data-kumo-component": "Link",
     className: cn(
       linkVariants({ variant }),
       "group/link inline-flex items-center gap-[0.1875em]",
     ),
-  };
+  } as useRender.ElementProps<"a">;
 
   const element = useRender({
     render: render ?? <LinkComponent />,

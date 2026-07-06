@@ -15,6 +15,7 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Select } from "../select";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [25, 50, 100, 250] as const;
@@ -93,7 +94,7 @@ export function paginationVariants({
 }: KumoPaginationVariantsProps = {}) {
   return cn(
     "flex items-center justify-between gap-2",
-    KUMO_PAGINATION_VARIANTS.controls[controls].classes,
+    resolveVariant(KUMO_PAGINATION_VARIANTS.controls, controls, KUMO_PAGINATION_DEFAULT_VARIANTS.controls).classes,
   );
 }
 
@@ -157,7 +158,7 @@ function PaginationInfo({ children, className }: PaginationInfoProps) {
   return (
     <div
       data-slot="pagination-info"
-      className={cn("text-sm text-kumo-strong", className)}
+      className={cn("text-sm text-kumo-subtle", className)}
     >
       {content}
     </div>
@@ -200,7 +201,7 @@ function PaginationPageSize({
       data-slot="pagination-page-size"
       className={cn("flex items-center gap-2", className)}
     >
-      {label && <span className="text-sm text-kumo-strong">{label}</span>}
+      {label && <span className="text-sm text-kumo-subtle">{label}</span>}
       <Select
         aria-label={labels.pageSize}
         value={value}
@@ -602,7 +603,7 @@ function PaginationRoot(props: PaginationProps) {
           aria-live="polite"
           aria-atomic="true"
           data-slot="pagination-info"
-          className="grow text-sm text-kumo-strong"
+          className="grow text-sm text-kumo-subtle"
         >
           {getPaginationText()}
         </div>

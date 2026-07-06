@@ -8,6 +8,7 @@ export type TreeNode =
   | { kind: "node"; id: string };
 
 export type FlowAlign = "start" | "center";
+export type FlowOrientation = "horizontal" | "vertical";
 
 export type FlowState = {
   nodes: {
@@ -23,6 +24,7 @@ export type FlowState = {
   };
   tree: TreeNode;
   align: FlowAlign;
+  orientation: FlowOrientation;
 };
 
 export type Edges = [string, string][];
@@ -119,9 +121,9 @@ function collectEdges(node: TreeNode, edges: Edges) {
 /**
  * Computes pixel positions for every node in the flow.
  *
- * - List children are laid out horizontally, separated by `columnGap`.
- * - Parallel children are laid out vertically, separated by `rowGap`.
- * - A parallel group occupies the width of its widest child branch.
+ * - Horizontal flows lay lists left-to-right and parallel branches top-to-bottom.
+ * - Vertical flows lay lists top-to-bottom and parallel branches left-to-right.
+ * - `columnGap` controls primary-axis list spacing; `rowGap` controls branch spacing.
  *
  * Returns a map of node ID → `{ x, y }` (top-left corner, relative to the
  * flow container origin).
@@ -134,6 +136,7 @@ export function computePositions(
 ): NodePositions {
   const positions: NodePositions = {};
   const align = flowState.align;
+  const orientation = flowState.orientation;
 
   /**
    * Recursively lay out a subtree, writing absolute positions into `out`.
@@ -155,6 +158,43 @@ export function computePositions(
     }
 
     if (node.kind === "list") {
+      if (orientation === "vertical") {
+        if (align === "center") {
+          const sizes = node.children.map((child) => layout(child, 0, 0, {}));
+          const columnWidth = sizes.reduce(
+            (max, s) => Math.max(max, s.width),
+            0,
+          );
+
+          let cursorY = originY;
+          for (let i = 0; i < node.children.length; i++) {
+            const childX = originX + (columnWidth - sizes[i].width) / 2;
+            layout(node.children[i], childX, cursorY, out);
+            cursorY += sizes[i].height;
+            if (i < node.children.length - 1) cursorY += columnGap;
+          }
+
+          return { width: columnWidth, height: cursorY - originY };
+        }
+
+        let cursorY = originY;
+        let totalWidth = 0;
+
+        for (let i = 0; i < node.children.length; i++) {
+          const { width, height } = layout(
+            node.children[i],
+            originX,
+            cursorY,
+            out,
+          );
+          cursorY += height;
+          if (i < node.children.length - 1) cursorY += columnGap;
+          totalWidth = Math.max(totalWidth, width);
+        }
+
+        return { width: totalWidth, height: cursorY - originY };
+      }
+
       if (align === "center") {
         // Two-pass: measure each child into a scratch map to get heights,
         // then position with vertical centering into `out`.
@@ -192,6 +232,40 @@ export function computePositions(
     }
 
     // node.kind === "parallel": place children top-to-bottom
+    if (orientation === "vertical") {
+      if (node.align === "end") {
+        const sizes = node.children.map((child) => layout(child, 0, 0, {}));
+        const maxHeight = sizes.reduce((max, s) => Math.max(max, s.height), 0);
+
+        let cursorX = originX;
+        for (let i = 0; i < node.children.length; i++) {
+          const childY = originY + maxHeight - sizes[i].height;
+          layout(node.children[i], cursorX, childY, out);
+          cursorX += sizes[i].width;
+          if (i < node.children.length - 1) cursorX += rowGap;
+        }
+
+        return { width: cursorX - originX, height: maxHeight };
+      }
+
+      let cursorX = originX;
+      let maxHeight = 0;
+
+      for (let i = 0; i < node.children.length; i++) {
+        const { width, height } = layout(
+          node.children[i],
+          cursorX,
+          originY,
+          out,
+        );
+        maxHeight = Math.max(maxHeight, height);
+        cursorX += width;
+        if (i < node.children.length - 1) cursorX += rowGap;
+      }
+
+      return { width: cursorX - originX, height: maxHeight };
+    }
+
     if (node.align === "end") {
       // Two-pass: measure widths first, then position right-aligned.
       const sizes = node.children.map((child) => layout(child, 0, 0, {}));

@@ -13,6 +13,7 @@ import {
   type KumoInputSize,
 } from "../input/input";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Field, type FieldErrorMatch } from "../field/field";
 import {
   usePortalContainer,
@@ -39,8 +40,11 @@ export const KUMO_COMBOBOX_DEFAULT_VARIANTS = {
   inputSide: "right",
 } as const;
 
-// Context to pass size down to sub-components
-const ComboboxSizeContext = createContext<KumoInputSize>("base");
+// Context to pass size and error state down to sub-components
+const ComboboxContext = createContext<{
+  size: KumoInputSize;
+  hasError: boolean;
+}>({ size: "base", hasError: false });
 
 // Derived types from KUMO_COMBOBOX_VARIANTS
 export type KumoComboboxSize = keyof typeof KUMO_COMBOBOX_VARIANTS.size;
@@ -69,7 +73,13 @@ export interface KumoComboboxVariantsProps {
 export function comboboxVariants({
   inputSide = KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide,
 }: KumoComboboxVariantsProps = {}) {
-  return cn(KUMO_COMBOBOX_VARIANTS.inputSide[inputSide].classes);
+  return cn(
+    resolveVariant(
+      KUMO_COMBOBOX_VARIANTS.inputSide,
+      inputSide,
+      KUMO_COMBOBOX_DEFAULT_VARIANTS.inputSide,
+    ).classes,
+  );
 }
 
 // Legacy type alias for backwards compatibility
@@ -157,9 +167,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   size?: KumoComboboxSize;
 }) {
   const comboboxControl = (
-    <ComboboxSizeContext.Provider value={size}>
+    <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
-    </ComboboxSizeContext.Provider>
+    </ComboboxContext.Provider>
   );
 
   // Render with Field wrapper if label, description, or error are provided
@@ -251,20 +261,23 @@ function TriggerValue({
   className,
   ...props
 }: ComboboxBase.Value.Props & { className?: string }) {
-  const size = useContext(ComboboxSizeContext);
+  const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
   return (
     <ComboboxBase.Trigger
+      data-kumo-component="Combobox"
+      data-kumo-part="trigger"
       className={cn(
-        inputVariants({ size }),
+        inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+        "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
         className,
       )}
     >
-      <ComboboxBase.Value>{props.children}</ComboboxBase.Value>
+      <ComboboxBase.Value {...props} />
       <ComboboxBase.Icon
         className={cn(
           "absolute top-1/2 -translate-y-1/2 flex items-center text-kumo-subtle",
@@ -322,7 +335,7 @@ function TriggerInput({
    */
   showOptionsLabel?: string;
 }) {
-  const size = useContext(ComboboxSizeContext);
+  const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerInputIconStyles[size];
 
   return (
@@ -336,7 +349,7 @@ function TriggerInput({
       <ComboboxBase.Input
         {...props}
         className={cn(
-          inputVariants({ size }),
+          inputVariants({ size, variant: hasError ? "error" : "default" }),
           "w-full",
           iconStyles.padding,
           "disabled:cursor-not-allowed",
@@ -344,6 +357,8 @@ function TriggerInput({
       />
 
       <ComboboxBase.Clear
+        data-kumo-component="Combobox"
+        data-kumo-part="clear"
         aria-label={clearLabel}
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
@@ -355,6 +370,8 @@ function TriggerInput({
       </ComboboxBase.Clear>
 
       <ComboboxBase.Trigger
+        data-kumo-component="Combobox"
+        data-kumo-part="trigger"
         aria-label={showOptionsLabel}
         className={cn(
           "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
@@ -362,7 +379,7 @@ function TriggerInput({
           iconStyles.caretRight,
         )}
       >
-        <ComboboxBase.Icon>
+        <ComboboxBase.Icon className="flex items-center">
           <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
@@ -370,11 +387,25 @@ function TriggerInput({
   );
 }
 
-function Item({ children, ...props }: ComboboxBase.Item.Props) {
+function Item({
+  children,
+  className,
+  ...props
+}: ComboboxBase.Item.Props & { className?: string }) {
   return (
     <ComboboxBase.Item
+      data-kumo-component="Combobox"
+      data-kumo-part="item"
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-tint"
+      className={cn(
+        "group mx-1.5 grid grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base",
+        "cursor-pointer data-highlighted:bg-kumo-tint",
+        // Disabled rows: muted text, no pointer, suppress highlight bg even
+        // when keyboard nav lands on them. Base UI sets `data-disabled` on
+        // the element when the `disabled` prop is true.
+        "data-[disabled]:cursor-not-allowed data-[disabled]:text-kumo-subtle data-[disabled]:opacity-60 data-[disabled]:data-highlighted:bg-transparent",
+        className,
+      )}
     >
       <div className="col-start-1">{children}</div>
       <ComboboxBase.ItemIndicator className="col-start-2 flex items-center">
@@ -429,7 +460,7 @@ function GroupLabel(props: ComboboxBase.GroupLabel.Props) {
     <ComboboxBase.GroupLabel
       {...props}
       className={cn(
-        "mx-1.5 px-2 py-1.5 text-sm text-kumo-strong",
+        "mx-1.5 px-2 py-1.5 text-sm text-kumo-subtle",
         props.className,
       )}
     />
@@ -467,6 +498,8 @@ function Chip({
     >
       {props.children}
       <ComboboxBase.ChipRemove
+        data-kumo-component="Combobox"
+        data-kumo-part="chip-remove"
         aria-label={removeLabel}
         className={cn(
           "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
@@ -501,14 +534,14 @@ function TriggerMultipleWithInput<ValueType>({
   /** Optional controlled value for rendering chips (use when pre-selecting values) */
   value?: ValueType[];
 }) {
-  const size = useContext(ComboboxSizeContext);
+  const { size, hasError } = useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
 
   return (
     <ComboboxBase.Chips
       className={cn(
-        inputVariants({ size }),
+        inputVariants({ size, variant: hasError ? "error" : "default" }),
         "flex flex-col",
         "gap-1 py-1 px-1.5",
         sizeToMinHeight[size],
@@ -603,4 +636,11 @@ export const Combobox = Object.assign(Root, {
 
   // BaseUI
   Collection: ComboboxBase.Collection,
+
+  Trigger: ComboboxBase.Trigger,
+  Value: ComboboxBase.Value,
+  Icon: ComboboxBase.Icon,
+
+  // Filtering
+  useFilter: ComboboxBase.useFilter,
 });

@@ -27,7 +27,7 @@ try {
 const EXPORT_NAME_OVERRIDES: Record<string, string> = {
   "csp-provider": "CSPProvider", // All caps CSP
   drawer: "Drawer", // Stable in base-ui 1.4.0
-  "otp-field": "OTPFieldPreview", // Preview component with all caps OTP
+  "otp-field": "OTPField", // Stable component with all caps OTP
 };
 
 // Exports excluded by generate-primitives.ts
@@ -40,6 +40,14 @@ const EXCLUDED_EXPORTS = new Set([
   "./merge-props",
   "./use-render",
 ]);
+
+function isIncludedBaseUiExport(key: string) {
+  return (
+    key.startsWith("./") &&
+    !key.startsWith("./internals/") &&
+    !EXCLUDED_EXPORTS.has(key)
+  );
+}
 
 describe("Primitives Export", () => {
   describe("Package.json configuration", () => {
@@ -78,7 +86,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       // Import kumo primitives
@@ -115,12 +123,20 @@ describe("Primitives Export", () => {
       expect(missingExports).toEqual([]);
     });
 
+    it("should keep OTPFieldPreview as a compatibility alias", async () => {
+      const barrelPrimitives = await import("../../src/primitives/index.ts");
+      const otpFieldPrimitives = await import("../../src/primitives/otp-field.ts");
+
+      expect(barrelPrimitives.OTPFieldPreview).toBe(barrelPrimitives.OTPField);
+      expect(otpFieldPrimitives.OTPFieldPreview).toBe(otpFieldPrimitives.OTPField);
+    });
+
     it("should re-export all non-excluded base-ui exports", () => {
       const baseUiPackage = JSON.parse(
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const primitivesSource = readFileSync(primitivesSourcePath, "utf-8");
@@ -206,7 +222,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const missingFiles: string[] = [];
@@ -236,7 +252,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const missingExports: string[] = [];
@@ -263,7 +279,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const invalidExports: string[] = [];
@@ -319,7 +335,7 @@ describe("Primitives Export", () => {
         readFileSync(baseUiPackagePath, "utf-8"),
       );
       const baseUiExports = Object.keys(baseUiPackage.exports || {})
-        .filter((key) => key.startsWith("./") && !EXCLUDED_EXPORTS.has(key))
+        .filter(isIncludedBaseUiExport)
         .map((key) => key.replace("./", ""));
 
       const invalidFiles: string[] = [];

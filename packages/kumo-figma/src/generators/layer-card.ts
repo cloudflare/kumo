@@ -127,7 +127,7 @@ const LAYER_CARD_CONFIG = getConfigFromRegistry();
  *
  * Structure:
  * - Root frame (bg-surface-2, ring-kumo-line)
- *   - Secondary frame (header with text-kumo-strong)
+* - Secondary frame (header with text-kumo-strong)
  *   - Primary frame (bg-surface, ring-kumo-fill)
  *
  * @returns ComponentNode for the LayerCard

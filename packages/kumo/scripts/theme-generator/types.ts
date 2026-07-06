@@ -32,7 +32,13 @@ export type TextTokens = {
   [tokenName: string]: TokenDefinition;
 };
 
-/** Color tokens (used with bg-*, border-*, ring-*, etc.) */
+/**
+ * Color tokens (used with bg-*, border-*, ring-*, fill-*, stroke-*, etc.)
+ *
+ * Tailwind v4 resolves all of these utility families against the shared
+ * `--color-*` palette, so a single entry here drives every CSS property
+ * that paints a color — including SVG `fill` / `stroke` for icons.
+ */
 export type ColorTokens = {
   [tokenName: string]: TokenDefinition;
 };
@@ -63,7 +69,7 @@ export type TypographyTokens = {
 export type ThemeConfig = {
   /** Text color tokens */
   text: TextTokens;
-  /** General color tokens (bg, border, ring, etc.) */
+  /** General color tokens (bg, border, ring, fill, stroke, etc.) */
   color: ColorTokens;
   /** Typography tokens (font sizes and line heights) */
   typography?: TypographyTokens;

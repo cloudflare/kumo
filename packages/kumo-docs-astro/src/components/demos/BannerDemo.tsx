@@ -22,6 +22,12 @@ export function BannerVariantsDemo() {
         title="Save failed"
         description="We couldn't save your changes. Please try again."
       />
+      <Banner
+        icon={<Info weight="fill" />}
+        variant="secondary"
+        title="Maintenance scheduled"
+        description="This service will be unavailable for 10 minutes."
+      />
     </div>
   );
 }
@@ -57,6 +63,18 @@ export function BannerErrorDemo() {
       variant="error"
       title="Save failed"
       description="We couldn't save your changes. Please try again."
+    />
+  );
+}
+
+/** Neutral secondary banner for contextual messages. */
+export function BannerSecondaryDemo() {
+  return (
+    <Banner
+      icon={<Info weight="fill" />}
+      variant="secondary"
+      title="Maintenance scheduled"
+      description="This service will be unavailable for 10 minutes."
     />
   );
 }

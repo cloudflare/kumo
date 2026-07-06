@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { cn } from "../../utils";
-import { Checkbox } from "../checkbox";
+import { resolveVariant } from "../../utils/resolve-variant";
+import { Checkbox, type CheckboxChangeEventDetails } from "../checkbox";
 
 /** Table layout and row variant definitions mapping names to their Tailwind classes. */
 export const KUMO_TABLE_VARIANTS = {
@@ -57,7 +58,7 @@ const stickyColumnClasses = (
   /** "head" renders at z-2, "cell" at z-1 */
   element: "head" | "cell",
 ) => {
-  const base = KUMO_TABLE_VARIANTS.sticky[side].classes;
+  const base = resolveVariant(KUMO_TABLE_VARIANTS.sticky, side, "left").classes;
   const z = element === "head" ? "z-2" : "z-1";
 
   const fadePosition = side === "right" ? "before:-left-6" : "before:-right-6";
@@ -127,12 +128,12 @@ const TableRoot = forwardRef<
 >(({ layout = "auto", ...props }, ref) => {
   const className = cn(
     "isolate w-full", // isolate creates a stacking context so z-0/z-1/z-2 never leak out
-    KUMO_TABLE_VARIANTS.layout[layout].classes,
+    resolveVariant(KUMO_TABLE_VARIANTS.layout, layout, KUMO_TABLE_DEFAULT_VARIANTS.layout).classes,
     "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
     "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:font-semibold [&_th]:text-base", // Header styles
     "[&_th]:bg-kumo-base", // Header background color
-    "text-left text-kumo-default",
+    "text-base text-left text-kumo-default",
     props.className,
   );
 
@@ -196,7 +197,7 @@ const TableRow = forwardRef<
   }
 >(({ variant = KUMO_TABLE_DEFAULT_VARIANTS.variant, ...props }, ref) => {
   const className = cn(
-    KUMO_TABLE_VARIANTS.variant[variant].classes,
+    resolveVariant(KUMO_TABLE_VARIANTS.variant, variant, KUMO_TABLE_DEFAULT_VARIANTS.variant).classes,
     props.className,
   );
 
@@ -252,6 +253,7 @@ const TableResizeHandle = forwardRef<
         "cursor-col-resize touch-none select-none", // Prevent selection and touch events
         "absolute top-0 right-0", // Position the handle
         "m-0 bg-kumo-base p-0", // Override the stratus button styles
+        "focus-visible:ring-2 focus-visible:ring-kumo-brand", // Consistent keyboard focus styling
       )}
     >
       <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
@@ -268,13 +270,31 @@ const TableCheckCell = forwardRef<
   React.TdHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
     indeterminate?: boolean;
+    /**
+     * Called when the checkbox's checked state changes. The optional second
+     * argument exposes event details from the underlying Checkbox, matching
+     * the Checkbox component's signature.
+     */
+    onCheckedChange?: (
+      checked: boolean,
+      eventDetails?: CheckboxChangeEventDetails,
+    ) => void;
+    /** @deprecated Use `onCheckedChange` instead. Will be removed in a future major version. */
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
 >(
   (
-    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    {
+      checked,
+      indeterminate,
+      onCheckedChange,
+      onValueChange,
+      label,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -286,7 +306,8 @@ const TableCheckCell = forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
+          onCheckedChange={(newChecked, eventDetails) => {
+            onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
           aria-label={label ?? "Select row"}
@@ -303,13 +324,31 @@ const TableCheckHead = forwardRef<
   React.ThHTMLAttributes<HTMLTableCellElement> & {
     checked?: boolean;
     indeterminate?: boolean;
+    /**
+     * Called when the checkbox's checked state changes. The optional second
+     * argument exposes event details from the underlying Checkbox, matching
+     * the Checkbox component's signature.
+     */
+    onCheckedChange?: (
+      checked: boolean,
+      eventDetails?: CheckboxChangeEventDetails,
+    ) => void;
+    /** @deprecated Use `onCheckedChange` instead. Will be removed in a future major version. */
     onValueChange?: (checked: boolean) => void;
     label?: string;
     disabled?: boolean;
   }
 >(
   (
-    { checked, indeterminate, onValueChange, label, disabled, ...props },
+    {
+      checked,
+      indeterminate,
+      onCheckedChange,
+      onValueChange,
+      label,
+      disabled,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -321,7 +360,8 @@ const TableCheckHead = forwardRef<
         <Checkbox
           checked={checked}
           indeterminate={indeterminate}
-          onCheckedChange={(newChecked) => {
+          onCheckedChange={(newChecked, eventDetails) => {
+            onCheckedChange?.(newChecked, eventDetails);
             onValueChange?.(newChecked);
           }}
           aria-label={label ?? "Select all rows"}
@@ -355,14 +395,14 @@ TableCheckHead.displayName = "Table.CheckHead";
  * <Table>
  *   <Table.Header>
  *     <Table.Row>
- *       <Table.CheckHead checked={allSelected} onValueChange={toggleAll} />
+ *       <Table.CheckHead checked={allSelected} onCheckedChange={toggleAll} />
  *       <Table.Head>Name</Table.Head>
  *     </Table.Row>
  *   </Table.Header>
  *   <Table.Body>
  *     {rows.map((row) => (
  *       <Table.Row key={row.id} variant={selected.has(row.id) ? "selected" : "default"}>
- *         <Table.CheckCell checked={selected.has(row.id)} onValueChange={() => toggle(row.id)} />
+ *         <Table.CheckCell checked={selected.has(row.id)} onCheckedChange={() => toggle(row.id)} />
  *         <Table.Cell>{row.name}</Table.Cell>
  *       </Table.Row>
  *     ))}

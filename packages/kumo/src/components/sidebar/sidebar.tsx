@@ -8,17 +8,13 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useId,
   useRef,
   useState,
 } from "react";
-import { Collapsible as CollapsibleBase } from "@base-ui/react/collapsible";
-import { Dialog as DialogBase } from "@base-ui/react/dialog";
+import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
-import {
-  CaretRightIcon,
-  MagnifyingGlassIcon,
-  SidebarSimpleIcon,
-} from "@phosphor-icons/react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -77,8 +73,8 @@ export const KUMO_SIDEBAR_DEFAULT_VARIANTS = {
 
 export const KUMO_SIDEBAR_STYLING = {
   width: {
-    expanded: "16rem",
-    icon: "3rem",
+    expanded: "16.25rem",
+    icon: "57px",
   },
   mobile: {
     breakpoint: 768,
@@ -93,24 +89,31 @@ export type SidebarCollapsible = "icon" | "offcanvas" | "none";
 // Constants
 // ============================================================================
 
-const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_ICON = "3rem";
+const SIDEBAR_WIDTH = "16.25rem";
+const SIDEBAR_WIDTH_ICON = "57px";
+const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
+const SIDEBAR_ANIMATION_DURATION_MS = 250;
 const MOBILE_BREAKPOINT = 768;
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 // ============================================================================
 // Mobile detection hook
 // ============================================================================
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
+function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches;
+  });
 
   useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
     const onChange = () => setIsMobile(mql.matches);
     mql.addEventListener("change", onChange);
     setIsMobile(mql.matches);
     return () => mql.removeEventListener("change", onChange);
-  }, []);
+  }, [breakpoint]);
 
   return isMobile;
 }
@@ -119,8 +122,10 @@ function useIsMobile() {
 // Context
 // ============================================================================
 
+export type SidebarState = "expanded" | "collapsed" | "peeking";
+
 export interface SidebarContextValue {
-  state: "expanded" | "collapsed";
+  state: SidebarState;
   open: boolean;
   setOpen: (open: boolean) => void;
   openMobile: boolean;
@@ -137,6 +142,12 @@ export interface SidebarContextValue {
   isResizing: boolean;
   setIsResizing: (resizing: boolean) => void;
   setWidth: (width: number) => void;
+  isPeeking: boolean;
+  peekable: boolean;
+  startPeek: () => void;
+  stopPeek: () => void;
+  contained: boolean;
+  animationDuration: number;
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
@@ -185,6 +196,29 @@ export interface SidebarProviderProps {
   maxWidth?: number;
   /** Callback when width changes during resize. */
   onWidthChange?: (width: number) => void;
+  /**
+   * When true, the collapsed sidebar uses absolute positioning instead of fixed,
+   * keeping it scoped inside a bounded parent. Useful for demos and embedded sidebars.
+   * @default false
+   */
+  contained?: boolean;
+  /**
+   * When true, hovering or focusing the collapsed sidebar temporarily expands it.
+   * The `state` will be `"peeking"` during the peek. Moving away collapses it back.
+   * @default false
+   */
+  peekable?: boolean;
+  /**
+   * Duration of sidebar expand/collapse animation in milliseconds.
+   * @default 250
+   */
+  animationDuration?: number;
+  /**
+   * Viewport width (in px) below which the sidebar renders as a mobile dialog
+   * sheet instead of the desktop aside rail.
+   * @default 768
+   */
+  mobileBreakpoint?: number;
   /** Content — typically `<Sidebar>` + main content. */
   children: ReactNode;
   /** Additional CSS classes for the wrapper div. */
@@ -221,14 +255,35 @@ function SidebarProvider({
   minWidth = MIN_WIDTH_PX,
   maxWidth = MAX_WIDTH_PX,
   onWidthChange,
+  contained = false,
+  peekable = false,
+  animationDuration = SIDEBAR_ANIMATION_DURATION_MS,
+  mobileBreakpoint,
   children,
   className,
   style,
 }: SidebarProviderProps) {
-  const isMobile = useIsMobile();
-  const [openMobile, setOpenMobile] = useState(false);
+  const isMobile = useIsMobile(mobileBreakpoint);
+  const [_openMobile, _setOpenMobile] = useState(false);
   const [width, setWidthState] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
+  const [isPeeking, setIsPeeking] = useState(false);
+
+  // When controlled (`openProp` provided), use it directly for mobile too.
+  // When uncontrolled, use internal `_openMobile` state.
+  const openMobile =
+    isMobile && openProp !== undefined ? openProp : _openMobile;
+
+  const setOpenMobile = useCallback(
+    (next: boolean) => {
+      _setOpenMobile(next);
+      // In controlled mode on mobile, notify the consumer
+      if (isMobile && openProp !== undefined) {
+        setOpenProp?.(next);
+      }
+    },
+    [isMobile, openProp, setOpenProp],
+  );
 
   const setWidth = useCallback(
     (newWidth: number) => {
@@ -252,16 +307,33 @@ function SidebarProvider({
 
   const toggleSidebar = useCallback(() => {
     if (isMobile) {
-      setOpenMobile((prev) => !prev);
+      setOpenMobile(!openMobile);
     } else {
+      setIsPeeking(false);
       setOpen((prev: boolean) => !prev);
     }
-  }, [isMobile, setOpen]);
+  }, [isMobile, openMobile, setOpenMobile, setOpen]);
 
-  const state = open ? "expanded" : "collapsed";
+  const startPeek = useCallback(() => {
+    if (peekable && !open && !isMobile) {
+      setIsPeeking(true);
+    }
+  }, [peekable, open, isMobile]);
+
+  const stopPeek = useCallback(() => {
+    setIsPeeking(false);
+  }, []);
+
+  const state: SidebarState = isPeeking
+    ? "peeking"
+    : open
+      ? "expanded"
+      : "collapsed";
 
   const sidebarWidthValue = resizable ? `${width}px` : SIDEBAR_WIDTH;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
+  // either stable (props, setters) or derived from state that triggers re-render
   const contextValue = useMemo<SidebarContextValue>(
     () => ({
       state,
@@ -281,26 +353,14 @@ function SidebarProvider({
       isResizing,
       setIsResizing,
       setWidth,
+      isPeeking,
+      peekable,
+      startPeek,
+      stopPeek,
+      contained,
+      animationDuration,
     }),
-    [
-      state,
-      open,
-      setOpen,
-      openMobile,
-      setOpenMobile,
-      isMobile,
-      toggleSidebar,
-      variant,
-      side,
-      collapsible,
-      width,
-      resizable,
-      minWidth,
-      maxWidth,
-      isResizing,
-      setIsResizing,
-      setWidth,
-    ],
+    [state, open, openMobile, isMobile, width, isResizing, isPeeking],
   );
 
   return (
@@ -313,11 +373,14 @@ function SidebarProvider({
           {
             "--sidebar-width": sidebarWidthValue,
             "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+            "--sidebar-animation-duration": `${animationDuration}ms`,
+            "--sidebar-easing": SIDEBAR_EASING,
             ...style,
           } as CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full",
+          "group/sidebar-wrapper relative isolate flex w-full [--sidebar-bg:var(--color-kumo-base)] [--sidebar-active-bg:var(--color-kumo-tint)]",
+          !contained && !isMobile && "min-h-svh",
           "has-data-[variant=inset]:bg-kumo-recessed",
           isResizing && "select-none",
           className,
@@ -338,12 +401,14 @@ SidebarProvider.displayName = "Sidebar.Provider";
 export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
   /** Additional CSS classes for the sidebar element. */
   className?: string;
+  /** Additional CSS classes for the inner content container. */
+  contentClassName?: string;
   /** Sidebar content — Header, Content, Footer, etc. */
   children: ReactNode;
 }
 
 /**
- * Main sidebar container. Renders as `<aside>` on desktop, Dialog sheet on mobile.
+ * Main sidebar container. Renders as `<aside>` on desktop, modal sidebar sheet on mobile.
  * Must be used inside `Sidebar.Provider`.
  *
  * @example
@@ -358,9 +423,10 @@ export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
  * ```
  */
 const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, contentClassName, children, ...props }, ref) => {
     const {
       state,
+      open,
       isMobile,
       openMobile,
       setOpenMobile,
@@ -370,7 +436,103 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       isResizing,
       resizable,
       width,
+      isPeeking,
+      startPeek,
+      stopPeek,
+      contained,
     } = useSidebar();
+
+    // --- Mobile a11y hooks (must be before early returns) ---
+
+    // Imperatively set inert on the mobile sidebar — React 18 doesn't
+    // reliably forward the inert attribute as a JSX prop on initial mount.
+    const mobileAsideRef = useCallback(
+      (node: HTMLElement | null) => {
+        if (node) {
+          if (!openMobile) {
+            node.setAttribute("inert", "");
+          } else {
+            node.removeAttribute("inert");
+          }
+        }
+      },
+      [openMobile],
+    );
+
+    // Merge forwarded ref with inert ref for the mobile aside
+    const mergedMobileRef = useCallback(
+      (node: HTMLElement | null) => {
+        mobileAsideRef(node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+        }
+      },
+      [ref, mobileAsideRef],
+    );
+
+    // Refs for mobile focus management (declared before effects that use them)
+    const triggerRef = useRef<Element | null>(null);
+    const mobileNodeRef = useRef<HTMLElement | null>(null);
+    const shouldRestoreFocusRef = useRef(false);
+
+    // Escape key and focus-leave close the mobile sidebar
+    useEffect(() => {
+      if (!isMobile || !openMobile) return;
+      const node = mobileNodeRef.current;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          shouldRestoreFocusRef.current = true;
+          setOpenMobile(false);
+        }
+      };
+      const handleFocusOut = (e: FocusEvent) => {
+        if (node && !node.contains(e.relatedTarget as Node)) {
+          shouldRestoreFocusRef.current = false;
+          setOpenMobile(false);
+        }
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      node?.addEventListener("focusout", handleFocusOut);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+        node?.removeEventListener("focusout", handleFocusOut);
+      };
+    }, [isMobile, openMobile, setOpenMobile]);
+
+    // When the mobile sidebar opens, move focus into it;
+    // when it closes, return focus to the element that opened it.
+    useEffect(() => {
+      if (!isMobile) return;
+      if (openMobile) {
+        triggerRef.current = document.activeElement;
+        shouldRestoreFocusRef.current = false;
+        // Wait a frame so the aside is no longer inert before focusing
+        requestAnimationFrame(() => {
+          const firstFocusable = mobileNodeRef.current?.querySelector<HTMLElement>(
+            FOCUSABLE_SELECTOR,
+          );
+          (firstFocusable ?? mobileNodeRef.current)?.focus();
+        });
+      } else if (
+        shouldRestoreFocusRef.current &&
+        triggerRef.current instanceof HTMLElement
+      ) {
+        triggerRef.current.focus();
+        shouldRestoreFocusRef.current = false;
+        triggerRef.current = null;
+      }
+    }, [isMobile, openMobile]);
+
+    const handlePeekBlur = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          stopPeek();
+        }
+      },
+      [stopPeek],
+    );
 
     if (collapsible === "none") {
       return (
@@ -386,13 +548,13 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             maxWidth: "var(--sidebar-width)",
           }}
           className={cn(
-            "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-kumo-base text-kumo-default",
+            "relative flex h-full shrink-0 grow-0 flex-col overflow-hidden bg-(--sidebar-bg) text-kumo-default",
             variant === "sidebar" &&
               (side === "left"
-                ? "border-r border-kumo-hairline"
-                : "border-l border-kumo-hairline"),
+                ? "border-r border-kumo-line"
+                : "border-l border-kumo-line"),
             variant === "floating" &&
-              "m-2 rounded-lg border border-kumo-hairline shadow-lg",
+              "m-2 rounded-lg border border-kumo-line shadow-lg",
             className,
           )}
           {...props}
@@ -404,48 +566,83 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
 
     if (isMobile) {
       return (
-        <DialogBase.Root open={openMobile} onOpenChange={setOpenMobile}>
-          <DialogBase.Portal>
-            <DialogBase.Backdrop className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-            <DialogBase.Popup
-              className={cn(
-                "fixed inset-y-0 z-50 flex w-[--sidebar-width] flex-col bg-kumo-base p-0",
-                "duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
-                side === "left" &&
-                  "left-0 data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full",
-                side === "right" &&
-                  "right-0 data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full",
-              )}
-              style={
-                {
-                  "--sidebar-width": SIDEBAR_WIDTH,
-                  transitionProperty: "transform, opacity",
-                  transitionTimingFunction:
-                    "var(--default-transition-timing-function)",
-                } as CSSProperties
-              }
-            >
-              <div
-                data-sidebar="sidebar"
-                data-mobile="true"
-                className={cn(
-                  "flex h-full w-full flex-col bg-kumo-base text-kumo-default",
-                  className,
-                )}
-              >
-                {children}
-              </div>
-            </DialogBase.Popup>
-          </DialogBase.Portal>
-        </DialogBase.Root>
+        <>
+          {/* Backdrop — click to close */}
+          <div
+            data-sidebar-backdrop=""
+            className={cn(
+              contained ? "absolute inset-0 z-40 bg-kumo-recessed" : "fixed inset-0 z-40 bg-kumo-recessed",
+              "transition-opacity duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+              "motion-reduce:transition-none",
+              openMobile ? "opacity-80" : "opacity-0 pointer-events-none",
+            )}
+            onClick={() => {
+              shouldRestoreFocusRef.current = true;
+              setOpenMobile(false);
+            }}
+            aria-hidden="true"
+          />
+
+          {/* Mobile sidebar — navigation landmark with focus management */}
+          <nav
+            ref={(node) => {
+              mergedMobileRef(node);
+              mobileNodeRef.current = node;
+            }}
+            tabIndex={-1}
+            aria-label="Navigation"
+            aria-hidden={!openMobile}
+            data-state={openMobile ? "expanded" : "collapsed"}
+            data-side={side}
+            data-variant={variant}
+            data-collapsible={collapsible}
+            data-sidebar="sidebar"
+            data-mobile="true"
+            className={cn(
+              contained
+                ? "group/sidebar absolute inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden"
+                : "group/sidebar fixed inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden",
+              "border-r border-kumo-line bg-(--sidebar-bg) text-kumo-default",
+              "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+              "motion-reduce:transition-none",
+              side === "left" && "left-0",
+              side === "right" && "right-0",
+              side === "left" &&
+                (openMobile ? "translate-x-0" : "-translate-x-full"),
+              side === "right" &&
+                (openMobile ? "translate-x-0" : "translate-x-full"),
+              className,
+            )}
+            {...props}
+          >
+            {children}
+          </nav>
+        </>
       );
     }
 
-    // Resolve the target width from CSS variables or literal values
+    // --- Desktop two-layer architecture ---
+    // Rail: the <aside> whose width drives layout (stays collapsed during peek).
+    // Content container: holds actual sidebar content, can overlay when peeking.
+
+    // Rail width: based on open state only (not peeking)
     const collapsedWidth =
       collapsible === "icon" ? "var(--sidebar-width-icon)" : "0px";
     const expandedWidth = resizable ? `${width}px` : "var(--sidebar-width)";
-    const targetWidth = state === "expanded" ? expandedWidth : collapsedWidth;
+    const railWidth = open ? expandedWidth : collapsedWidth;
+
+    // Content container width: expanded during peek
+    const contentExpanded = open || isPeeking;
+    const contentWidth = contentExpanded ? expandedWidth : collapsedWidth;
+
+    const borderClasses =
+      variant === "sidebar"
+        ? side === "left"
+          ? "border-r border-kumo-line"
+          : "border-l border-kumo-line"
+        : variant === "floating"
+          ? "border border-kumo-line"
+          : "";
 
     return (
       <aside
@@ -455,31 +652,76 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         data-variant={variant}
         data-collapsible={collapsible}
         data-sidebar="sidebar"
-        style={{ width: targetWidth }}
+        style={{ width: railWidth }}
         className={cn(
-          "group/sidebar relative flex h-full shrink-0 grow-0 flex-col",
-          // overflow-hidden makes flex min-width resolve to 0 (per spec),
-          // preventing children from pushing the sidebar wider than its width
-          "min-w-0 overflow-hidden whitespace-nowrap",
-          "bg-kumo-base text-kumo-default",
-          // Transition width — matches production SidebarNav curve exactly
-          "transition-[width] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)] will-change-[width]",
+          "group/sidebar relative h-full shrink-0 grow-0",
+          "overflow-visible", // allow content container to overlay when peeking
+          "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
           "motion-reduce:transition-none",
-          // Disable transition during resize drag
           isResizing && "transition-none!",
-          variant === "sidebar" &&
-            (side === "left"
-              ? "border-r border-kumo-hairline"
-              : "border-l border-kumo-hairline"),
-          variant === "floating" &&
-            "m-2 rounded-lg border border-kumo-hairline shadow-lg",
+          variant === "floating" && "m-2 rounded-lg shadow-lg",
           className,
         )}
         {...props}
       >
-        {/* TooltipProvider groups all collapsed-state tooltips so hovering
-            between icons shows tooltips instantly (no repeated delay). */}
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          {(() => {
+            // Separate footer children from the rest so hovering the footer
+            // doesn't trigger peeking. Footer is rendered outside the peek zone.
+            const childArray = React.Children.toArray(children);
+            const footerChildren = childArray.filter(
+              (child) =>
+                React.isValidElement(child) &&
+                (child.type as { displayName?: string })?.displayName ===
+                  "Sidebar.Footer",
+            );
+            const nonFooterChildren = childArray.filter(
+              (child) =>
+                !React.isValidElement(child) ||
+                (child.type as { displayName?: string })?.displayName !==
+                  "Sidebar.Footer",
+            );
+
+            return (
+              <div
+                data-sidebar="content-container"
+                style={{ width: contentWidth }}
+                className={cn(
+                  "flex h-full flex-col",
+                  "min-w-0 overflow-hidden whitespace-nowrap",
+                  "bg-(--sidebar-bg) text-kumo-default",
+                  borderClasses,
+                  "transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+                  "motion-reduce:transition-none",
+                  isResizing && "transition-none!",
+                  !open &&
+                    cn(
+                      contained ? "absolute" : "fixed",
+                      "inset-y-0 z-40",
+                      side === "left" && "left-0",
+                      side === "right" && "right-0",
+                    ),
+                  open && "relative",
+                  contentClassName,
+                )}
+              >
+                {/* Peek zone — header + content (not footer) */}
+                <div
+                  data-sidebar="peek-zone"
+                  className="flex flex-1 flex-col min-h-0"
+                  onMouseEnter={startPeek}
+                  onMouseLeave={stopPeek}
+                  onFocus={startPeek}
+                  onBlur={handlePeekBlur}
+                >
+                  {nonFooterChildren}
+                </div>
+                {/* Footer — outside peek zone */}
+                {footerChildren}
+              </div>
+            );
+          })()}
+        </TooltipProvider>
       </aside>
     );
   },
@@ -511,10 +753,8 @@ const SidebarHeader = forwardRef<
     ref={ref}
     data-sidebar="header"
     className={cn(
-      "flex items-center gap-2 border-b border-kumo-hairline px-2 py-3",
-      "overflow-hidden",
-      // Collapsed: just remove border, keep same height
-      "group-data-[state=collapsed]/sidebar:border-b-0",
+      "flex h-[58px] shrink-0 items-center gap-1 border-b border-kumo-line",
+      "px-3 overflow-hidden",
       className,
     )}
     {...props}
@@ -540,19 +780,38 @@ SidebarHeader.displayName = "Sidebar.Header";
 const SidebarContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, ...props }, ref) => (
-  <div
+>(({ className, children, ...props }, ref) => (
+  <ScrollAreaBase.Root
     ref={ref}
     data-sidebar="content"
-    className={cn(
-      "flex min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 py-2",
-      // Collapsed: flatten spacing so icons are evenly spaced
-      "group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:py-0",
-      "group-data-[state=collapsed]/sidebar:overflow-x-hidden",
-      className,
-    )}
+    className={cn("relative min-w-0 flex-1 overflow-hidden", className)}
     {...props}
-  />
+  >
+    <ScrollAreaBase.Viewport
+      tabIndex={-1}
+      className={cn(
+        "h-full px-[11px] py-3 group-not-data-[state=collapsed]/sidebar:px-3.5",
+        "transition-[padding] duration-(--sidebar-animation-duration)",
+        "overflow-x-hidden!",
+        // Scroll fade via CSS mask driven by Base UI overflow CSS variables
+        "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
+      )}
+    >
+      <ScrollAreaBase.Content className="flex min-w-0! flex-col">
+        {children}
+      </ScrollAreaBase.Content>
+    </ScrollAreaBase.Viewport>
+    <ScrollAreaBase.Scrollbar
+      orientation="vertical"
+      className={cn(
+        "flex w-1.5 touch-none select-none p-px",
+        "opacity-0 transition-opacity duration-150",
+        "data-[scrolling]:opacity-100 data-[hovering]:opacity-100",
+      )}
+    >
+      <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
+    </ScrollAreaBase.Scrollbar>
+  </ScrollAreaBase.Root>
 ));
 
 SidebarContent.displayName = "Sidebar.Content";
@@ -562,13 +821,14 @@ SidebarContent.displayName = "Sidebar.Content";
 // ============================================================================
 
 /**
- * Bottom-pinned section of the sidebar. Typically contains toggle button and help actions.
+ * Bottom-pinned section of the sidebar. Rendered outside the peek zone
+ * so hovering the footer doesn't trigger a peek. Tracks sidebar width
+ * to stay aligned with the content container.
  *
  * @example
  * ```tsx
  * <Sidebar.Footer>
  *   <Sidebar.Trigger />
- *   <Button shape="square" icon={InfoIcon} aria-label="Help" />
  * </Sidebar.Footer>
  * ```
  */
@@ -580,9 +840,15 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex min-w-0 flex-col gap-2 border-t border-kumo-hairline px-2 py-2",
-      // Collapsed: remove border, tighten padding
-      "group-data-[state=collapsed]/sidebar:border-t-0 group-data-[state=collapsed]/sidebar:py-1",
+      "flex h-12 shrink-0 items-center gap-4 overflow-hidden whitespace-nowrap border-t border-kumo-line",
+      "px-[11px] group-not-data-[state=collapsed]/sidebar:px-4",
+      "bg-(--sidebar-bg)",
+      "w-(--sidebar-width)",
+      "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      "motion-reduce:transition-none",
+      "sticky bottom-0",
+      "group-data-[state=collapsed]/sidebar:w-(--sidebar-width-icon) bg-clip-padding",
+      "group-data-[state=collapsed]/sidebar:border-r group-data-[state=collapsed]/sidebar:border-kumo-line",
       className,
     )}
     {...props}
@@ -595,119 +861,30 @@ SidebarFooter.displayName = "Sidebar.Footer";
 // Sidebar Group
 // ============================================================================
 
-/** Context to signal children they're inside a collapsible group and provide open state. */
-interface SidebarGroupCollapsibleContextValue {
-  isCollapsible: boolean;
-  isOpen: boolean;
-}
-const SidebarGroupCollapsibleContext =
-  createContext<SidebarGroupCollapsibleContextValue>({
-    isCollapsible: false,
-    isOpen: true,
-  });
-
-export interface SidebarGroupProps extends ComponentPropsWithoutRef<"div"> {
-  /** When true, the group can be expanded/collapsed via its label. @default false */
-  collapsible?: boolean;
-  /** Initial open state when collapsible and uncontrolled. @default true */
-  defaultOpen?: boolean;
-  /** Controlled open state (collapsible mode only). */
-  open?: boolean;
-  /** Callback when open state changes (collapsible mode only). */
-  onOpenChange?: (open: boolean) => void;
-}
-
 /**
  * Groups related menu items with an optional label.
- * When `collapsible` is set, wraps content with Base UI Collapsible for
- * animated expand/collapse via the group label.
  *
- * @example Non-collapsible group
+ * @example
  * ```tsx
  * <Sidebar.Group>
  *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
  *   <Sidebar.Menu>...</Sidebar.Menu>
  * </Sidebar.Group>
  * ```
- *
- * @example Collapsible group (requires GroupContent for animation)
- * ```tsx
- * <Sidebar.Group collapsible defaultOpen>
- *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
- *   <Sidebar.GroupContent>
- *     <Sidebar.Menu>...</Sidebar.Menu>
- *   </Sidebar.GroupContent>
- * </Sidebar.Group>
- * ```
  */
-const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(
-  (
-    {
-      className,
-      collapsible = false,
-      defaultOpen = true,
-      open: openProp,
-      onOpenChange,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
-    // Track internal open state for uncontrolled mode
-    const [internalOpen, setInternalOpen] = useState(defaultOpen);
-    const isOpen = openProp ?? internalOpen;
-
-    const handleOpenChange = useCallback(
-      (newOpen: boolean) => {
-        setInternalOpen(newOpen);
-        onOpenChange?.(newOpen);
-      },
-      [onOpenChange],
-    );
-
-    const contextValue = useMemo(
-      () => ({ isCollapsible: collapsible, isOpen }),
-      [collapsible, isOpen],
-    );
-
-    const content = (
-      <div
-        ref={ref}
-        data-sidebar="group"
-        className={cn(
-          "flex min-w-0 flex-col gap-0.5",
-          // Collapsed: remove internal gap so icons stack uniformly
-          "group-data-[state=collapsed]/sidebar:gap-0",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-
-    if (!collapsible) {
-      return (
-        <SidebarGroupCollapsibleContext.Provider value={contextValue}>
-          {content}
-        </SidebarGroupCollapsibleContext.Provider>
-      );
-    }
-
-    return (
-      <SidebarGroupCollapsibleContext.Provider value={contextValue}>
-        <CollapsibleBase.Root
-          defaultOpen={defaultOpen}
-          open={openProp}
-          onOpenChange={handleOpenChange}
-          className="min-w-0"
-        >
-          {content}
-        </CollapsibleBase.Root>
-      </SidebarGroupCollapsibleContext.Provider>
-    );
-  },
-);
+const SidebarGroup = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-sidebar="group"
+    className={cn("flex min-w-0 flex-col gap-y-px", className)}
+    {...props}
+  >
+    {children}
+  </div>
+));
 
 SidebarGroup.displayName = "Sidebar.Group";
 
@@ -717,10 +894,8 @@ SidebarGroup.displayName = "Sidebar.Group";
 
 /**
  * Section label for a sidebar group (e.g., "Build", "Protect & Connect").
- * Hidden when the sidebar is collapsed to icon-only mode.
- *
- * When used inside a collapsible `Sidebar.Group`, renders as a
- * `Collapsible.Trigger` with an auto-rotating chevron.
+ * When the sidebar is collapsed, renders as a thin horizontal divider.
+ * When it's the first group, the divider is hidden (nothing above to separate from).
  *
  * @example
  * ```tsx
@@ -730,123 +905,43 @@ SidebarGroup.displayName = "Sidebar.Group";
 const SidebarGroupLabel = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { isCollapsible } = useContext(SidebarGroupCollapsibleContext);
-
-  if (isCollapsible) {
-    return (
-      <CollapsibleBase.Trigger
-        ref={ref as React.Ref<HTMLButtonElement>}
-        data-sidebar="group-label"
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-sidebar="group-label"
+    className={cn(
+      // Grid-rows for smooth collapse animation
+      "grid overflow-hidden",
+      "transition-[grid-template-rows,margin,border-color] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+      // Mobile: no collapse animation — sidebar is always expanded
+      "group-data-[mobile=true]/sidebar:transition-none",
+      // Collapsed: spacer with divider line between icon groups
+      "grid-rows-[0fr] my-3 border-b border-kumo-line",
+      // First group: no spacer or divider needed
+      "[[data-sidebar=group]:first-child_&]:my-0 [[data-sidebar=group]:first-child_&]:border-transparent",
+      // Expanded: reveal the label text
+      "group-not-data-[state=collapsed]/sidebar:grid-rows-[1fr] group-not-data-[state=collapsed]/sidebar:my-0 group-not-data-[state=collapsed]/sidebar:border-transparent",
+      // Mobile: always show labels (sidebar content is always expanded on mobile)
+      "group-data-[mobile=true]/sidebar:grid-rows-[1fr] group-data-[mobile=true]/sidebar:my-0 group-data-[mobile=true]/sidebar:border-transparent",
+      className,
+    )}
+    {...props}
+  >
+    <div className="min-h-0 min-w-0">
+      <div
         className={cn(
-          "group/group-label flex w-full cursor-pointer items-center px-3 py-1 text-xs font-medium text-kumo-subtle",
-          "group-data-[state=collapsed]/sidebar:hidden",
-          className,
+          "truncate px-3 mt-4 mb-2 text-sm font-medium text-kumo-subtle",
+          // First group: less top margin
+          "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
-        {...(props as ComponentPropsWithoutRef<"button">)}
       >
-        <span className="flex-1 truncate text-left">{children}</span>
-        <CaretRightIcon
-          className={cn(
-            "ml-auto size-3 shrink-0 text-kumo-subtle transition-transform duration-200",
-            "group-data-[panel-open]/group-label:rotate-90",
-          )}
-        />
-      </CollapsibleBase.Trigger>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="group-label"
-      className={cn(
-        "truncate px-3 py-1 text-xs font-medium text-kumo-subtle",
-        "group-data-[state=collapsed]/sidebar:hidden",
-        className,
-      )}
-      {...props}
-    >
-      {children}
+        {children}
+      </div>
     </div>
-  );
-});
+  </div>
+));
 
 SidebarGroupLabel.displayName = "Sidebar.GroupLabel";
-
-// ============================================================================
-// Sidebar GroupContent
-// ============================================================================
-
-/**
- * Animation wrapper for collapsible group content. Uses CSS grid-rows
- * for smooth height transitions when the group is expanded/collapsed.
- *
- * **Only needed for collapsible groups.** For non-collapsible groups,
- * place `Menu` directly inside `Group` — no wrapper required.
- *
- * @example Collapsible group (GroupContent required)
- * ```tsx
- * <Sidebar.Group collapsible defaultOpen>
- *   <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
- *   <Sidebar.GroupContent>
- *     <Sidebar.Menu>...</Sidebar.Menu>
- *   </Sidebar.GroupContent>
- * </Sidebar.Group>
- * ```
- *
- * @example Non-collapsible group (no GroupContent needed)
- * ```tsx
- * <Sidebar.Group>
- *   <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
- *   <Sidebar.Menu>...</Sidebar.Menu>
- * </Sidebar.Group>
- * ```
- */
-const SidebarGroupContent = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { isCollapsible, isOpen } = useContext(SidebarGroupCollapsibleContext);
-
-  if (isCollapsible) {
-    return (
-      <div
-        ref={ref}
-        data-sidebar="group-content"
-        className={cn(
-          "grid",
-          // Animate height via grid-rows — matches production NavGroup pattern
-          "transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
-          "motion-reduce:transition-none",
-          // Default: collapsed
-          "grid-rows-[0fr]",
-          // When sidebar is expanded, respect group open/close state
-          isOpen
-            ? "group-data-[state=expanded]/sidebar:grid-rows-[1fr]"
-            : "group-data-[state=expanded]/sidebar:grid-rows-[0fr]",
-          className,
-        )}
-        {...props}
-      >
-        <div className="overflow-hidden">{children}</div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="group-content"
-      className={cn("flex flex-col", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-});
-
-SidebarGroupContent.displayName = "Sidebar.GroupContent";
 
 // ============================================================================
 // MenuItem / MenuSubItem auto-wrap contexts
@@ -881,12 +976,11 @@ const MenuSubItemContext = createContext(false);
  * </Sidebar.Menu>
  * ```
  *
- * @example With explicit MenuItem (needed for MenuAction sibling)
+ * @example With explicit MenuItem (needed for Collapsible wrapper)
  * ```tsx
  * <Sidebar.Menu>
  *   <Sidebar.MenuItem>
- *     <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
- *     <Sidebar.MenuAction><PencilIcon /></Sidebar.MenuAction>
+ *     <Sidebar.Collapsible>...</Sidebar.Collapsible>
  *   </Sidebar.MenuItem>
  * </Sidebar.Menu>
  * ```
@@ -899,8 +993,7 @@ const SidebarMenu = forwardRef<
     ref={ref}
     data-sidebar="menu"
     className={cn(
-      "m-0 flex min-w-0 list-none flex-col gap-0.5 p-0",
-      "group-data-[state=collapsed]/sidebar:gap-0",
+      "m-0 flex min-w-0 list-none flex-col items-stretch gap-y-px p-0",
       className,
     )}
     {...props}
@@ -918,14 +1011,12 @@ SidebarMenu.displayName = "Sidebar.Menu";
  *
  * **Optional when using `MenuButton` directly** — `MenuButton` auto-wraps
  * itself in a `<li>` when not already inside a `MenuItem`. Use `MenuItem`
- * explicitly when you need to place siblings (e.g., `MenuAction`) alongside
- * a `MenuButton`.
+ * explicitly when wrapping a `Collapsible`.
  *
- * @example Explicit usage (needed for MenuAction sibling)
+ * @example Explicit usage (wrapping a Collapsible)
  * ```tsx
  * <Sidebar.MenuItem>
- *   <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
- *   <Sidebar.MenuAction><PencilIcon /></Sidebar.MenuAction>
+ *   <Sidebar.Collapsible>...</Sidebar.Collapsible>
  * </Sidebar.MenuItem>
  * ```
  */
@@ -937,7 +1028,10 @@ const SidebarMenuItem = forwardRef<
     <li
       ref={ref}
       data-sidebar="menu-item"
-      className={cn("relative", className)}
+      className={cn(
+        "relative group-data-[state=collapsed]/sidebar:overflow-hidden",
+        className,
+      )}
       {...props}
     >
       {children}
@@ -953,10 +1047,11 @@ SidebarMenuItem.displayName = "Sidebar.MenuItem";
 
 export type SidebarMenuButtonSize = "base" | "sm";
 
-export interface SidebarMenuButtonProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "className" | "children"
-> {
+export interface SidebarMenuButtonProps
+  extends Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    "className" | "children"
+  > {
   icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   active?: boolean;
   /**
@@ -967,6 +1062,8 @@ export interface SidebarMenuButtonProps extends Omit<
    */
   size?: SidebarMenuButtonSize;
   href?: string;
+  /** Link target — only meaningful when `href` is provided. */
+  target?: React.HTMLAttributeAnchorTarget;
   tooltip?: string;
   className?: string;
   children?: ReactNode;
@@ -977,11 +1074,7 @@ export interface SidebarMenuButtonProps extends Omit<
  * Supports icons, active state, and auto-tooltip when the sidebar is collapsed.
  *
  * **Auto-wraps in `<li>`** when not already inside a `Sidebar.MenuItem`.
- * Use `MenuItem` explicitly only when you need siblings (e.g., `MenuAction`).
- *
- * When used as a `Collapsible.Trigger` via `render` prop, the expand/collapse chevron
- * auto-rotates thanks to Base UI's `data-panel-open` attribute combined with
- * `group/menu-button` CSS grouping.
+ * Use `MenuItem` explicitly only when wrapping a `Collapsible`.
  *
  * @example Simple usage (auto-wrapped in `<li>`)
  * ```tsx
@@ -991,11 +1084,13 @@ export interface SidebarMenuButtonProps extends Omit<
  * </Sidebar.Menu>
  * ```
  *
- * @example With MenuAction sibling (explicit MenuItem needed)
+ * @example With Collapsible (explicit MenuItem needed)
  * ```tsx
  * <Sidebar.MenuItem>
- *   <Sidebar.MenuButton icon={GearIcon}>Settings</Sidebar.MenuButton>
- *   <Sidebar.MenuAction><PencilIcon /></Sidebar.MenuAction>
+ *   <Sidebar.Collapsible>
+ *     <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton icon={CodeIcon}>Compute<Sidebar.MenuChevron /></Sidebar.MenuButton>} />
+ *     <Sidebar.CollapsibleContent>...</Sidebar.CollapsibleContent>
+ *   </Sidebar.Collapsible>
  * </Sidebar.MenuItem>
  * ```
  */
@@ -1007,13 +1102,14 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       active = false,
       size = "base",
       href,
+      target,
       tooltip,
       children,
       ...props
     },
     ref,
   ) => {
-    const { state } = useSidebar();
+    const { state, peekable } = useSidebar();
     const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
 
@@ -1024,46 +1120,55 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       const Comp = IconProp as React.ComponentType<{ className?: string }>;
       return (
         <Comp
-          className={cn("shrink-0", size === "base" ? "size-4" : "size-3.5")}
+          className={cn(
+            "shrink-0 opacity-40",
+            size === "base" ? "size-4" : "size-3.5",
+          )}
         />
       );
     })();
 
     const content = (
-      <>
+      <div
+        className={cn(
+          "flex flex-1 items-center min-w-0 gap-3",
+          "translate-x-[-3px] group-not-data-[state=collapsed]/sidebar:translate-x-0",
+          "transition-transform duration-(--sidebar-animation-duration)",
+        )}
+      >
         {iconNode}
         <span
           className={cn(
-            "flex flex-1 items-center min-w-0 text-left overflow-hidden",
-            "group-data-[state=collapsed]/sidebar:hidden",
+            "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
           )}
         >
-          {children}
+          {React.Children.map(children, (child) =>
+            typeof child === "string" || typeof child === "number" ? (
+              <span className="truncate">{child}</span>
+            ) : (
+              child
+            ),
+          )}
         </span>
-      </>
+      </div>
     );
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button flex w-full min-w-0 items-center gap-2 rounded-lg outline-none cursor-pointer",
+      "group/menu-button relative flex w-full min-w-0 items-center gap-2.5 rounded-lg outline-none cursor-pointer",
+      "before:absolute before:inset-x-0 before:-inset-y-px",
       // Sizing
-      size === "base" && "min-h-[34px] px-3 py-1.5 text-sm font-medium",
-      size === "sm" && "min-h-[28px] px-2 py-1 text-sm",
-      // Default state — transition includes padding so collapsed centering animates smoothly
+      size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
+      size === "sm" && "min-h-7 px-2 py-0 text-sm",
       "text-kumo-default",
-      "transition-[color,background-color,padding] duration-0 ease-[cubic-bezier(0.77,0,0.175,1)]",
-      // Icon color
-      "[&>svg]:text-kumo-subtle",
-      !active && "hover:bg-kumo-tint",
+      "transition-[color,box-shadow,outline] duration-(--sidebar-animation-duration)",
+      !active && "hover:bg-(--sidebar-active-bg)",
       // Active state
-      active && "bg-kumo-tint",
+      active && "bg-(--sidebar-active-bg)",
       // When a child sub-button is active, don't show active styling on the parent trigger
-      "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-kumo-tint",
+      "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-(--sidebar-active-bg)",
       // Focus
-      "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
-      // Collapsed: px-2 centers the icon (48px sidebar − 16px content padding = 32px;
-      // 32px − 2×8px padding = 16px = icon size). Padding transition keeps it smooth.
-      "group-data-[state=collapsed]/sidebar:px-2",
+      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-(--sidebar-active-bg)",
       className,
     );
 
@@ -1076,8 +1181,11 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           className={cn(buttonClasses, "no-underline!")}
           href={href}
           to={href}
+          target={target}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-button-link"
           data-size={size}
           onClick={
             props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
@@ -1094,6 +1202,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           className={buttonClasses}
           data-active={active || undefined}
           data-sidebar="menu-button"
+          data-kumo-component="Sidebar"
+          data-kumo-part="menu-button"
           data-size={size}
           {...props}
         >
@@ -1102,17 +1212,29 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       );
     }
 
-    // Wrap in Tooltip when collapsed and tooltip text is provided.
-    // Use render prop so Tooltip merges onto the button/link
-    // instead of wrapping it in another <button> (which would cause invalid nesting).
-    if (state === "collapsed" && tooltip) {
-      button = <Tooltip content={tooltip} side="right" render={button} />;
+    // Always wrap in Tooltip when tooltip text is provided so the DOM
+    // structure stays stable across expand/collapse — preventing React from
+    // remounting the button (which would kill CSS transitions).
+    // The tooltip popup only shows when collapsed and peeking is disabled —
+    // when peekable, hovering reveals the full sidebar so tooltips are redundant.
+    const showTooltip = state === "collapsed" && !peekable;
+    if (tooltip) {
+      button = (
+        <Tooltip
+          content={showTooltip ? tooltip : null}
+          side="right"
+          render={button}
+        />
+      );
     }
 
     // Auto-wrap in <li> when not already inside a MenuItem
     if (!isInsideMenuItem) {
       return (
-        <li data-sidebar="menu-item" className="relative">
+        <li
+          data-sidebar="menu-item"
+          className="relative group-data-[state=collapsed]/sidebar:overflow-hidden"
+        >
           {button}
         </li>
       );
@@ -1123,36 +1245,6 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 );
 
 SidebarMenuButton.displayName = "Sidebar.MenuButton";
-
-// ============================================================================
-// Sidebar MenuAction
-// ============================================================================
-
-/**
- * Right-aligned action button inside a menu item (e.g., settings gear, plus icon).
- * Positioned absolutely so it overlays the menu button.
- * Hidden when the sidebar is collapsed.
- */
-const SidebarMenuAction = forwardRef<
-  HTMLButtonElement,
-  ComponentPropsWithoutRef<"button">
->(({ className, ...props }, ref) => (
-  <button
-    ref={ref}
-    type="button"
-    data-sidebar="menu-action"
-    className={cn(
-      "absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1",
-      "text-kumo-strong hover:bg-kumo-overlay",
-      "transition-colors duration-150",
-      "group-data-[state=collapsed]/sidebar:hidden",
-      className,
-    )}
-    {...props}
-  />
-));
-
-SidebarMenuAction.displayName = "Sidebar.MenuAction";
 
 // ============================================================================
 // Sidebar MenuBadge
@@ -1178,7 +1270,7 @@ const SidebarMenuBadge = forwardRef<
     ref={ref}
     data-sidebar="menu-badge"
     className={cn(
-      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-hairline",
+      "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
       "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
@@ -1211,18 +1303,19 @@ SidebarMenuBadge.displayName = "Sidebar.MenuBadge";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   ComponentPropsWithoutRef<"ul">
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <ul
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "m-0 ml-3.5 flex min-w-0 list-none flex-col gap-0.5 border-l border-kumo-hairline p-0 pl-2.5",
-      // Hidden when collapsed
-      "group-data-[state=collapsed]/sidebar:hidden",
+      "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0 overflow-hidden",
       className,
     )}
     {...props}
-  />
+  >
+    <div className="absolute left-[19px] inset-y-px w-px bg-kumo-line z-10" />
+    {children}
+  </ul>
 ));
 
 SidebarMenuSub.displayName = "Sidebar.MenuSub";
@@ -1259,7 +1352,8 @@ SidebarMenuSubItem.displayName = "Sidebar.MenuSubItem";
 // Sidebar MenuSubButton
 // ============================================================================
 
-export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"button"> {
+export interface SidebarMenuSubButtonProps
+  extends ComponentPropsWithoutRef<"button"> {
   /** Marks this sub-item as currently active/selected. @default false */
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
@@ -1288,15 +1382,26 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "flex w-full min-w-0 items-center gap-2 rounded-lg min-h-[34px] px-3 py-1 text-sm font-medium outline-none",
-    "text-kumo-default transition-colors duration-150",
-    !active && "hover:bg-kumo-tint",
-    active && "bg-kumo-tint",
-    "focus-visible:ring-1 focus-visible:ring-kumo-hairline",
+    "group/menu-button relative flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium outline-none cursor-pointer",
+    "before:absolute before:inset-x-0 before:-inset-y-px",
+    "text-kumo-default transition-[color] duration-150",
+    !active && "hover:bg-(--sidebar-active-bg)",
+    active && "bg-(--sidebar-active-bg)",
+    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-(--sidebar-active-bg)",
     className,
   );
 
-  const content = <span className="flex-1 truncate text-left">{children}</span>;
+  const content = (
+    <span className="flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden">
+      {React.Children.map(children, (child) =>
+        typeof child === "string" || typeof child === "number" ? (
+          <span className="truncate">{child}</span>
+        ) : (
+          child
+        ),
+      )}
+    </span>
+  );
 
   let button: React.ReactNode;
 
@@ -1309,6 +1414,8 @@ const SidebarMenuSubButton = forwardRef<
         to={href}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
+        data-kumo-component="Sidebar"
+        data-kumo-part="menu-sub-button-link"
         onClick={
           props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
         }
@@ -1324,6 +1431,8 @@ const SidebarMenuSubButton = forwardRef<
         className={buttonClasses}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
+        data-kumo-component="Sidebar"
+        data-kumo-part="menu-sub-button"
         {...props}
       >
         {content}
@@ -1353,103 +1462,91 @@ SidebarMenuSubButton.displayName = "Sidebar.MenuSubButton";
  * Horizontal divider line between sidebar sections.
  */
 const SidebarSeparator = forwardRef<
-  HTMLHRElement,
-  ComponentPropsWithoutRef<"hr">
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => (
-  <hr
+  <div
     ref={ref}
     data-sidebar="separator"
-    className={cn("mx-2 min-h-px h-px border-0 bg-kumo-hairline", className)}
+    className={cn("my-3 px-2", className)}
     {...props}
-  />
+  >
+    <div className="border-b border-kumo-line" />
+  </div>
 ));
 
 SidebarSeparator.displayName = "Sidebar.Separator";
 
 // ============================================================================
-// Sidebar Input
-// ============================================================================
-
-export interface SidebarInputProps extends ComponentPropsWithoutRef<"button"> {
-  /** Placeholder text displayed inside the search trigger. @default "Search..." */
-  placeholder?: string;
-  /** Keyboard shortcut hint (e.g., "⌘K"). */
-  shortcut?: string;
-}
-
-/**
- * Search trigger button styled as an input. Typically opens a command palette.
- *
- * @example
- * ```tsx
- * <Sidebar.Input placeholder="Quick search..." shortcut="⌘K" onClick={openSearch} />
- * ```
- */
-const SidebarInput = forwardRef<HTMLButtonElement, SidebarInputProps>(
-  (
-    { className, placeholder = "Search...", shortcut, children, ...props },
-    ref,
-  ) => (
-    <button
-      ref={ref}
-      type="button"
-      data-sidebar="input"
-      className={cn(
-        "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm",
-        "bg-kumo-base text-kumo-subtle ring ring-kumo-hairline",
-        "transition-[color,background-color,padding,box-shadow] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
-        "hover:bg-kumo-overlay",
-        // Collapsed: icon-only, padding centers icon, ring fades via box-shadow transition
-        "group-data-[state=collapsed]/sidebar:px-2 group-data-[state=collapsed]/sidebar:ring-0",
-        className,
-      )}
-      {...props}
-    >
-      <MagnifyingGlassIcon className="size-4 shrink-0 text-kumo-subtle" />
-      <span className="flex-1 truncate text-left group-data-[state=collapsed]/sidebar:hidden">
-        {children ?? placeholder}
-      </span>
-      {shortcut && (
-        <kbd className="ml-auto font-sans text-xs text-kumo-subtle group-data-[state=collapsed]/sidebar:hidden">
-          {shortcut}
-        </kbd>
-      )}
-    </button>
-  ),
-);
-
-SidebarInput.displayName = "Sidebar.Input";
-
-// ============================================================================
 // Sidebar Trigger
 // ============================================================================
 
+// ============================================================================
+// Sidebar PanelIcon
+// ============================================================================
+
+/**
+ * Animated sidebar panel icon. The vertical divider line slides based
+ * on the sidebar's open/closed state.
+ */
+function SidebarPanelIcon({ className }: { className?: string }) {
+  const { open } = useSidebar();
+
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      className={cn("shrink-0", className)}
+    >
+      <path d="M21.25 6.72v10.56a2.97 2.97 0 0 1-2.97 2.97H5.72a2.97 2.97 0 0 1-2.97-2.97V6.72a2.97 2.97 0 0 1 2.97-2.97h12.56a2.97 2.97 0 0 1 2.97 2.97" />
+      <path
+        d="M6.25 7.25v9.5"
+        className={cn(
+          "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+          open ? "translate-x-px" : "translate-x-[10.5px]",
+        )}
+      />
+    </svg>
+  );
+}
+
+SidebarPanelIcon.displayName = "Sidebar.PanelIcon";
+
 /**
  * Button that toggles the sidebar open/collapsed. Uses `toggleSidebar()` from context.
- * Defaults to a `SidebarSimpleIcon`, left-aligned.
+ * Defaults to an animated `SidebarPanelIcon`.
  *
  * @example
  * ```tsx
  * <Sidebar.Trigger />
- * <Sidebar.Trigger><PanelLeftIcon className="size-5" /></Sidebar.Trigger>
  * ```
  */
 const SidebarTrigger = forwardRef<
   HTMLButtonElement,
   ComponentPropsWithoutRef<"button">
 >(({ className, children, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
 
   return (
     <button
       ref={ref}
       type="button"
       data-sidebar="trigger"
-      aria-label="Toggle sidebar"
+      data-kumo-component="Sidebar"
+      data-kumo-part="trigger"
+      aria-expanded={open}
+      aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
-        "flex items-center rounded-md p-1.5",
-        "text-kumo-subtle hover:text-kumo-strong hover:bg-kumo-overlay",
-        "transition-colors duration-150",
+        "flex shrink-0 size-8.5 justify-center items-center rounded-lg cursor-pointer",
+        "text-kumo-subtle hover:text-kumo-default hover:bg-(--sidebar-active-bg)",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
         className,
       )}
       onClick={(e) => {
@@ -1458,7 +1555,7 @@ const SidebarTrigger = forwardRef<
       }}
       {...props}
     >
-      {children ?? <SidebarSimpleIcon className="size-5" />}
+      {children ?? <SidebarPanelIcon />}
     </button>
   );
 });
@@ -1484,10 +1581,12 @@ const SidebarRail = forwardRef<
       ref={ref}
       type="button"
       data-sidebar="rail"
+      data-kumo-component="Sidebar"
+      data-kumo-part="rail"
       aria-label="Toggle sidebar"
       tabIndex={-1}
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 cursor-pointer transition-all",
+        "absolute inset-y-0 z-1 hidden w-4 -translate-x-1/2 cursor-pointer transition-all",
         "after:absolute after:inset-y-0 after:left-1/2 after:w-0.5",
         "hover:after:bg-kumo-brand/20",
         "group-data-[side=left]/sidebar-wrapper:right-0",
@@ -1516,18 +1615,29 @@ SidebarRail.displayName = "Sidebar.Rail";
  *   tracking width from `minWidth`.
  */
 const SidebarResizeHandle = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<"button">
 >(({ className, ...props }, ref) => {
-  const { side, resizable, setIsResizing, setWidth, setOpen, open, minWidth } =
-    useSidebar();
+  const {
+    side,
+    resizable,
+    setIsResizing,
+    setWidth,
+    setOpen,
+    open,
+    minWidth,
+    width: currentWidth,
+    maxWidth,
+  } = useSidebar();
   const startX = useRef(0);
   const startWidth = useRef(0);
   const wasCollapsed = useRef(false);
 
   if (!resizable) return null;
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const KEYBOARD_STEP = 10;
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsResizing(true);
     startX.current = e.clientX;
@@ -1580,18 +1690,56 @@ const SidebarResizeHandle = forwardRef<
     document.addEventListener("pointerup", handlePointerUp);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const grow = side === "left" ? "ArrowRight" : "ArrowLeft";
+    const shrink = side === "left" ? "ArrowLeft" : "ArrowRight";
+
+    if (e.key === grow) {
+      e.preventDefault();
+      if (!open) {
+        setOpen(true);
+        setWidth(minWidth);
+      } else {
+        setWidth(Math.min(currentWidth + KEYBOARD_STEP, maxWidth));
+      }
+    } else if (e.key === shrink) {
+      e.preventDefault();
+      const next = currentWidth - KEYBOARD_STEP;
+      if (next < minWidth) {
+        setOpen(false);
+      } else {
+        setWidth(next);
+      }
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setOpen(false);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setOpen(true);
+      setWidth(maxWidth);
+    }
+  };
+
   return (
-    <div
+    <button
       ref={ref}
+      type="button"
+      aria-label="Resize sidebar"
+      tabIndex={0}
       data-sidebar="resize-handle"
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-1 cursor-col-resize transition-colors sm:block",
-        "hover:bg-kumo-brand/30 active:bg-kumo-brand/50",
-        side === "left" && "right-0",
-        side === "right" && "left-0",
+        // Hit area inside the sidebar edge; thin visual line pinned to the edge via ::after
+        "absolute inset-y-0 z-2 hidden w-3 cursor-col-resize sm:block",
+        "after:absolute after:inset-y-0 after:w-0.5",
+        "after:bg-transparent after:transition-colors",
+        "hover:after:bg-kumo-hairline active:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline",
+        "focus:outline-none",
+        side === "left" && "right-0 after:right-0",
+        side === "right" && "left-0 after:left-0",
         className,
       )}
       onPointerDown={handlePointerDown}
+      onKeyDown={handleKeyDown}
       {...props}
     />
   );
@@ -1600,30 +1748,296 @@ const SidebarResizeHandle = forwardRef<
 SidebarResizeHandle.displayName = "Sidebar.ResizeHandle";
 
 // ============================================================================
+// Collapsible context + components (custom implementation, no Base UI dep)
+// ============================================================================
+
+interface SidebarCollapseContextValue {
+  contentId: string;
+  isOpen: boolean;
+  isCollapsible: boolean;
+  autoScrollOnOpen: boolean;
+  toggle: () => void;
+}
+
+const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
+  contentId: "",
+  isOpen: true,
+  isCollapsible: false,
+  autoScrollOnOpen: false,
+  toggle: () => {},
+});
+
+export interface SidebarCollapsibleProps
+  extends ComponentPropsWithoutRef<"div"> {
+  /** Initial open state (uncontrolled). @default false */
+  defaultOpen?: boolean;
+  /** Controlled open state. */
+  open?: boolean;
+  /** Callback when open state changes. */
+  onOpenChange?: (open: boolean) => void;
+  /** Scroll the expanded content into view after opening. @default false */
+  autoScrollOnOpen?: boolean;
+}
+
+/**
+ * Collapsible wrapper for sidebar sub-menu expand/collapse.
+ * Manages open/close state and provides context to Trigger and Content children.
+ *
+ * Keyboard behaviour: when a child receives keyboard focus (`focus-visible`)
+ * while collapsed, the section auto-expands. It collapses again on blur
+ * unless it was explicitly opened via click or a child has `data-active`.
+ *
+ * @example
+ * ```tsx
+ * <Sidebar.MenuItem>
+ *   <Sidebar.Collapsible defaultOpen>
+ *     <Sidebar.CollapsibleTrigger
+ *       render={<Sidebar.MenuButton icon={CodeIcon}>Compute<Sidebar.MenuChevron /></Sidebar.MenuButton>}
+ *     />
+ *     <Sidebar.CollapsibleContent>
+ *       <Sidebar.MenuSub>...</Sidebar.MenuSub>
+ *     </Sidebar.CollapsibleContent>
+ *   </Sidebar.Collapsible>
+ * </Sidebar.MenuItem>
+ * ```
+ */
+const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
+  (
+    {
+      defaultOpen = false,
+      open: openProp,
+      onOpenChange,
+      autoScrollOnOpen = false,
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const [internalOpen, setInternalOpen] = useState(defaultOpen);
+    const isOpen = openProp ?? internalOpen;
+    const contentId = useId();
+    const keyboardExpandedRef = useRef(false);
+
+    const toggle = useCallback(() => {
+      const next = !isOpen;
+      setInternalOpen(next);
+      onOpenChange?.(next);
+      // If user explicitly clicks, clear the keyboard-expanded flag
+      keyboardExpandedRef.current = false;
+    }, [isOpen, onOpenChange]);
+
+    const contextValue = useMemo<SidebarCollapseContextValue>(
+      () => ({
+        contentId,
+        isOpen,
+        isCollapsible: true,
+        autoScrollOnOpen,
+        toggle,
+      }),
+      [contentId, isOpen, autoScrollOnOpen, toggle],
+    );
+
+    const handleFocusIn = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        // Auto-expand on keyboard focus (focus-visible) when collapsed
+        if (!isOpen && (e.target as HTMLElement).matches(":focus-visible")) {
+          keyboardExpandedRef.current = true;
+          setInternalOpen(true);
+          onOpenChange?.(true);
+        }
+      },
+      [isOpen, onOpenChange],
+    );
+
+    const handleFocusOut = useCallback(
+      (e: React.FocusEvent<HTMLDivElement>) => {
+        // Auto-collapse on blur if it was keyboard-expanded (not click-expanded)
+        // and no child has data-active
+        if (
+          keyboardExpandedRef.current &&
+          !e.currentTarget.contains(e.relatedTarget as Node) &&
+          !e.currentTarget.querySelector("[data-active]")
+        ) {
+          keyboardExpandedRef.current = false;
+          setInternalOpen(false);
+          onOpenChange?.(false);
+        }
+      },
+      [onOpenChange],
+    );
+
+    return (
+      <SidebarCollapseContext.Provider value={contextValue}>
+        <div
+          ref={ref}
+          data-open={isOpen || undefined}
+          className={cn("min-w-0", className)}
+          onFocus={handleFocusIn}
+          onBlur={handleFocusOut}
+          {...props}
+        >
+          {children}
+        </div>
+      </SidebarCollapseContext.Provider>
+    );
+  },
+);
+
+SidebarCollapsible.displayName = "Sidebar.Collapsible";
+
+export interface SidebarCollapsibleTriggerProps {
+  /** Element to render as the trigger. Gets aria-expanded, aria-controls, and onClick merged. */
+  render: React.ReactElement;
+}
+
+/**
+ * Trigger for a sidebar collapsible section. Uses `render` prop to compose
+ * with `Sidebar.MenuButton` or `Sidebar.MenuSubButton`.
+ *
+ * @example
+ * ```tsx
+ * <Sidebar.CollapsibleTrigger
+ *   render={
+ *     <Sidebar.MenuButton icon={CodeIcon}>
+ *       Compute
+ *       <Sidebar.MenuChevron />
+ *     </Sidebar.MenuButton>
+ *   }
+ * />
+ * ```
+ */
+function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
+  const { contentId, isOpen, toggle } = useContext(SidebarCollapseContext);
+
+  return React.cloneElement(render, {
+    "aria-expanded": isOpen,
+    "aria-controls": contentId,
+    "data-open": isOpen || undefined,
+    onClick: (e: React.MouseEvent) => {
+      // Call any existing onClick on the render element
+      const existingOnClick = (
+        render.props as { onClick?: (e: React.MouseEvent) => void }
+      ).onClick;
+      existingOnClick?.(e);
+      toggle();
+    },
+  } as Record<string, unknown>);
+}
+
+SidebarCollapsibleTrigger.displayName = "Sidebar.CollapsibleTrigger";
+
+/**
+ * Animated collapsible content panel. Uses CSS grid-rows for smooth
+ * height transitions without measuring DOM height.
+ *
+ * Always mounted (no unmount on close) so exit animations play.
+ */
+const SidebarCollapsibleContent = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div">
+>(({ className, children, ...props }, ref) => {
+  const { contentId, isOpen: isCollapsibleOpen } = useContext(
+    SidebarCollapseContext,
+  );
+  const { state, animationDuration } = useSidebar();
+  const { autoScrollOnOpen } = useContext(SidebarCollapseContext);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const isOpen = isCollapsibleOpen && state !== "collapsed";
+
+  useEffect(() => {
+    if (!isOpen || !autoScrollOnOpen) return;
+
+    const timeout = window.setTimeout(() => {
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      contentRef.current?.scrollIntoView({
+        block: "nearest",
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
+    }, animationDuration);
+
+    return () => window.clearTimeout(timeout);
+  }, [isOpen, autoScrollOnOpen, animationDuration]);
+
+  // Imperatively set inert — React 18 doesn't reliably forward
+  // the inert attribute as a JSX prop on initial mount.
+  const inertRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node) {
+        if (!isOpen) {
+          node.setAttribute("inert", "");
+        } else {
+          node.removeAttribute("inert");
+        }
+      }
+    },
+    [isOpen],
+  );
+
+  const mergedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      contentRef.current = node;
+      inertRef(node);
+      if (typeof ref === "function") {
+        ref(node);
+      } else if (ref) {
+        (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    },
+    [ref, inertRef],
+  );
+
+  return (
+    <div
+      ref={mergedRef}
+      id={contentId}
+      role="region"
+      aria-hidden={!isOpen}
+      className={cn(
+        "grid",
+        "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
+        "motion-reduce:transition-none",
+        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        className,
+      )}
+      {...props}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
+  );
+});
+
+SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
+
+// ============================================================================
 // Sidebar MenuChevron
 // ============================================================================
 
 /**
- * Auto-rotating chevron for collapsible menu items. When the parent
- * `MenuButton` is used as a `Collapsible.Trigger`, Base UI sets
- * `data-panel-open` on the trigger — the chevron rotates automatically via CSS.
+ * Auto-rotating chevron for collapsible menu items. Reads open state from
+ * the nearest `SidebarCollapseContext` and rotates accordingly.
  *
  * @example
  * ```tsx
- * <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton icon={ComputeIcon} />}>
- *   Compute
- *   <Sidebar.MenuChevron />
- * </Sidebar.CollapsibleTrigger>
+ * <Sidebar.CollapsibleTrigger
+ *   render={<Sidebar.MenuButton icon={CodeIcon}>Compute<Sidebar.MenuChevron /></Sidebar.MenuButton>}
+ * />
  * ```
  */
 function SidebarMenuChevron({ className }: { className?: string }) {
+  const { isOpen, isCollapsible } = useContext(SidebarCollapseContext);
+
   return (
     <CaretRightIcon
+      size={12}
+      weight="bold"
       className={cn(
-        "ml-auto size-4 shrink-0 text-kumo-subtle transition-transform duration-200",
-        // Auto-rotate when inside an open Collapsible trigger
-        "group-data-[panel-open]/menu-button:rotate-90",
-        // Hidden when collapsed
+        "ml-auto shrink-0 opacity-40 group-hover/menu-button:opacity-100 transition-[transform,rotate,opacity] duration-200",
+        isCollapsible && isOpen && "rotate-90",
+        // Hidden when sidebar is collapsed
         "group-data-[state=collapsed]/sidebar:hidden",
         className,
       )}
@@ -1634,68 +2048,161 @@ function SidebarMenuChevron({ className }: { className?: string }) {
 SidebarMenuChevron.displayName = "Sidebar.MenuChevron";
 
 // ============================================================================
-// Collapsible re-exports
+// SlidingViews — animated horizontal transitions between navigation surfaces
 // ============================================================================
 
-/**
- * Base UI Collapsible.Root for sidebar sub-menu expand/collapse.
- * @see https://base-ui.com/react/components/collapsible
- */
-const SidebarCollapsible = CollapsibleBase.Root;
+const SlidingViewActiveContext = createContext<string>("");
+
+export interface SidebarSlidingViewsProps
+  extends ComponentPropsWithoutRef<"div"> {
+  /** Key of the currently active view. Must match a child `SlidingView` value. */
+  activeKey: string;
+  /**
+   * Slide direction for the transition.
+   * - `"left"`: new view slides in from the right
+   * - `"right"`: new view slides in from the left
+   * @default "left"
+   */
+  direction?: "left" | "right";
+}
 
 /**
- * Base UI Collapsible.Trigger for sidebar sub-menu toggle.
- * Use `render` prop to compose with `Sidebar.MenuButton`.
+ * Container for animated horizontal transitions between navigation surfaces
+ * (e.g., account ↔ zone). Inactive views are marked `aria-hidden` and `inert`.
+ *
+ * Animation respects `prefers-reduced-motion`.
  *
  * @example
  * ```tsx
- * <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton icon={DiamondIcon} />}>
- *   Compute
- *   <Sidebar.MenuChevron />
- * </Sidebar.CollapsibleTrigger>
+ * <Sidebar.SlidingViews activeKey={surface} direction="left">
+ *   <Sidebar.SlidingView value="account">
+ *     <Sidebar.Content>...account nav...</Sidebar.Content>
+ *   </Sidebar.SlidingView>
+ *   <Sidebar.SlidingView value="zone">
+ *     <Sidebar.Content>...zone nav...</Sidebar.Content>
+ *   </Sidebar.SlidingView>
+ * </Sidebar.SlidingViews>
  * ```
  */
-const SidebarCollapsibleTrigger = CollapsibleBase.Trigger;
+const SidebarSlidingViews = forwardRef<
+  HTMLDivElement,
+  SidebarSlidingViewsProps
+>(
+  (
+    {
+      activeKey,
+      direction: _direction = "left",
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const childArray = React.Children.toArray(children);
+    const activeIndex = childArray.findIndex(
+      (child) =>
+        React.isValidElement(child) &&
+        (child.props as { value?: string }).value === activeKey,
+    );
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const translateX = activeIndex > 0 ? `-${activeIndex * 100}%` : "0%";
+
+    return (
+      <SlidingViewActiveContext.Provider value={activeKey}>
+        <div
+          ref={ref}
+          data-sidebar="sliding-views"
+          className={cn(
+            "flex flex-1 min-h-0 max-w-(--sidebar-width) overflow-hidden",
+            className,
+          )}
+          {...props}
+        >
+          <div
+            className="flex min-h-0 w-full shrink-0"
+            style={{
+              transform: `translateX(${translateX})`,
+              transition: prefersReducedMotion
+                ? "none"
+                : `transform var(--sidebar-animation-duration) var(--sidebar-easing)`,
+            }}
+          >
+            {children}
+          </div>
+        </div>
+      </SlidingViewActiveContext.Provider>
+    );
+  },
+);
+
+SidebarSlidingViews.displayName = "Sidebar.SlidingViews";
+
+export interface SidebarSlidingViewProps
+  extends ComponentPropsWithoutRef<"div"> {
+  /** Unique key matching this view. Must correspond to `activeKey` on `SlidingViews`. */
+  value: string;
+}
 
 /**
- * Animated collapsible panel for sidebar sub-menu content.
- * Wraps Base UI `Collapsible.Panel` with a height transition driven by the
- * `--collapsible-panel-height` CSS variable that Base UI measures automatically.
- *
- * Uses `keepMounted` by default so the exit animation plays before removal.
- *
- * Animation flow:
- * - **Opening**: `data-starting-style` (h=0) → `data-open` (h=measured) — transition up
- * - **Closing**: `data-open` removed, measured height retained until `data-ending-style` (h=0) — transition down
- * - **Closed**: `data-closed` while hidden/mounted; no extra height override needed
+ * Individual panel inside `SlidingViews`. Inactive views are automatically
+ * marked `aria-hidden` and `inert` so they're unreachable by keyboard/screen readers.
  */
-const SidebarCollapsibleContent = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<typeof CollapsibleBase.Panel>
->(({ className, keepMounted = true, ...props }, ref) => (
-  <CollapsibleBase.Panel
-    ref={ref}
-    keepMounted={keepMounted}
-    className={cn(
-      "overflow-hidden",
-      // Default: keep the measured height that Base UI writes to --collapsible-panel-height.
-      // This must also remain true during the initial close frame so the exit transition has
-      // a real starting height before data-ending-style flips it to 0.
-      "h-[var(--collapsible-panel-height)]",
-      // Transition height — matches production NavGroup easing
-      "transition-[height] duration-250 ease-[cubic-bezier(0.77,0,0.175,1)]",
-      "motion-reduce:transition-none",
-      // Only force height 0 during the active enter/exit transition phases.
-      // Applying h-0 for data-closed snaps the panel shut before Base UI adds
-      // data-ending-style, skipping the collapse animation.
-      "data-[starting-style]:h-0 data-[ending-style]:h-0",
-      className,
-    )}
-    {...props}
-  />
-));
+const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
+  ({ value, className, children, ...props }, ref) => {
+    const activeKey = useContext(SlidingViewActiveContext);
+    const isActive = activeKey === value;
 
-SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
+    // Imperatively set inert — React 18.2 doesn't reliably forward the inert
+    // attribute to the DOM when set as a JSX prop on initial mount.
+    const inertRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        if (node) {
+          if (!isActive) {
+            node.setAttribute("inert", "");
+          } else {
+            node.removeAttribute("inert");
+          }
+        }
+      },
+      [isActive],
+    );
+
+    // Merge forwarded ref with inert ref
+    const mergedRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        inertRef(node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
+      },
+      [ref, inertRef],
+    );
+
+    return (
+      <div
+        ref={mergedRef}
+        data-sidebar="sliding-view"
+        data-value={value}
+        aria-hidden={!isActive}
+        className={cn(
+          "flex w-full shrink-0 flex-col min-h-0",
+          !isActive && "pointer-events-none",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+SidebarSlidingView.displayName = "Sidebar.SlidingView";
 
 // ============================================================================
 // Compound Component Export
@@ -1705,13 +2212,11 @@ SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
  * Sidebar — responsive navigation panel with expand/collapse support.
  *
  * Compound component: `Sidebar` (root `<aside>`), `.Provider`, `.Header`,
- * `.Content`, `.Footer`, `.Group`, `.GroupLabel`, `.GroupContent`,
- * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuAction`, `.MenuBadge`,
+ * `.Content`, `.Footer`, `.Group`, `.GroupLabel`,
+ * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuBadge`,
  * `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`,
- * `.Input`, `.Trigger`, `.Rail`, `.MenuChevron`,
+ * `.Trigger`, `.Rail`, `.MenuChevron`,
  * `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`.
- *
- * Built on `@base-ui/react/collapsible` + `@base-ui/react/dialog`.
  *
  * @example
  * ```tsx
@@ -1740,17 +2245,14 @@ export const Sidebar = Object.assign(SidebarRoot, {
   Footer: SidebarFooter,
   Group: SidebarGroup,
   GroupLabel: SidebarGroupLabel,
-  GroupContent: SidebarGroupContent,
   Menu: SidebarMenu,
   MenuItem: SidebarMenuItem,
   MenuButton: SidebarMenuButton,
-  MenuAction: SidebarMenuAction,
   MenuBadge: SidebarMenuBadge,
   MenuSub: SidebarMenuSub,
   MenuSubItem: SidebarMenuSubItem,
   MenuSubButton: SidebarMenuSubButton,
   Separator: SidebarSeparator,
-  Input: SidebarInput,
   Trigger: SidebarTrigger,
   Rail: SidebarRail,
   ResizeHandle: SidebarResizeHandle,
@@ -1758,6 +2260,8 @@ export const Sidebar = Object.assign(SidebarRoot, {
   Collapsible: SidebarCollapsible,
   CollapsibleTrigger: SidebarCollapsibleTrigger,
   CollapsibleContent: SidebarCollapsibleContent,
+  SlidingViews: SidebarSlidingViews,
+  SlidingView: SidebarSlidingView,
 });
 
 export {
@@ -1768,17 +2272,14 @@ export {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarSeparator,
-  SidebarInput,
   SidebarTrigger,
   SidebarRail,
   SidebarResizeHandle,
@@ -1786,4 +2287,6 @@ export {
   SidebarCollapsible,
   SidebarCollapsibleTrigger,
   SidebarCollapsibleContent,
+  SidebarSlidingViews,
+  SidebarSlidingView,
 };

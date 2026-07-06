@@ -79,18 +79,34 @@ export function SelectWithoutLabelDemo() {
   );
 }
 
-/** Select with label, description, and error handling. */
-export function SelectWithFieldDemo() {
+/** Select with label and description text. */
+export function SelectWithDescriptionDemo() {
   const [value, setValue] = useState<string | null>(null);
 
   return (
     <Select
       label="Issue Type"
       description="Choose the category that best describes your issue"
-      error={!value ? "Please select an issue type" : undefined}
       className="w-[280px]"
       value={value}
       onValueChange={(v) => setValue(v as string | null)}
+      items={{
+        bug: "Bug",
+        documentation: "Documentation",
+        feature: "Feature",
+      }}
+    />
+  );
+}
+
+/** Select with label and validation error. */
+export function SelectWithErrorDemo() {
+  return (
+    <Select
+      label="Issue Type"
+      error="Please select an issue type"
+      className="w-[280px]"
+      value={null}
       items={{
         bug: "Bug",
         documentation: "Documentation",

@@ -33,6 +33,7 @@ import {
   TableOfContents,
   Tabs,
   Text,
+  Toolbar,
   Toasty,
   Tooltip,
   TooltipProvider,
@@ -88,6 +89,7 @@ const componentRoutes: Record<string, string> = {
   "table-of-contents": "/components/table-of-contents",
   tabs: "/components/tabs",
   text: "/components/text",
+  toolbar: "/components/toolbar",
   toast: "/components/toast",
   tooltip: "/components/tooltip",
 };
@@ -154,6 +156,7 @@ export function HomeGrid() {
         <Select
           aria-label="Select version"
           className="w-[200px]"
+          placeholder="Select version"
           renderValue={(v) => {
             const labels: Record<string, string> = {
               all: "All deployed versions",
@@ -168,6 +171,17 @@ export function HomeGrid() {
           <Select.Option value="active">Active versions</Select.Option>
           <Select.Option value="specific">Specific versions</Select.Option>
         </Select>
+      ),
+    },
+    {
+      name: "Toolbar",
+      id: "toolbar",
+      Component: (
+        <Toolbar className="w-[260px]">
+          <Toolbar.Input aria-label="Search DNS records" placeholder="Search..." />
+          <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
+          <Toolbar.Button icon={PlusIcon} aria-label="Add" />
+        </Toolbar>
       ),
     },
     {
@@ -304,13 +318,15 @@ export function HomeGrid() {
       name: "Collapsible",
       id: "collapsible",
       Component: (
-        <Collapsible
-          label="What is Kumo?"
+        <Collapsible.Root
           open={collapsibleOpen}
           onOpenChange={setCollapsibleOpen}
         >
-          Kumo is Cloudflare's component library.
-        </Collapsible>
+          <Collapsible.DefaultTrigger>What is Kumo?</Collapsible.DefaultTrigger>
+          <Collapsible.DefaultPanel>
+            Kumo is Cloudflare's component library.
+          </Collapsible.DefaultPanel>
+        </Collapsible.Root>
       ),
     },
     {
@@ -371,15 +387,15 @@ export function HomeGrid() {
       id: "banner",
       Component: (
         <div className="flex flex-col gap-2">
-          <Banner text="This is a default banner." />
+          <Banner description="This is a default banner." />
           <Banner
             icon={<WarningIcon weight="fill" />}
-            text="This is an alert banner."
+            title="This is an alert banner."
             variant="alert"
           />
           <Banner
             icon={<WarningOctagonIcon weight="fill" />}
-            text="This is an error banner."
+            title="This is an error banner."
             variant="error"
           />
         </div>

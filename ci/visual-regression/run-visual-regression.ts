@@ -36,7 +36,9 @@ const API_KEY = process.env.SCREENSHOT_API_KEY ?? "";
 interface ScreenshotResult {
   url: string;
   /** Base64-encoded PNG image */
-  image: string;
+  image?: string;
+  /** Worker-served URL for the stored PNG */
+  imageUrl?: string;
   error?: string;
   /** Unique identifier for this demo section, from data-vr-section attribute */
   sectionId?: string;
@@ -92,113 +94,60 @@ function ensureDir(dir: string): void {
   }
 }
 
-async function uploadImageToGitHub(
-  imageBuffer: Buffer,
-  filename: string,
-): Promise<string> {
-  const token = process.env.GITHUB_TOKEN;
-  const repo = process.env.GITHUB_REPOSITORY ?? "cloudflare/kumo";
-  const prNumber = process.env.GITHUB_PR_NUMBER ?? process.env.PR_NUMBER;
+function sanitizeKeyPart(value: string): string {
+  const sanitized = value
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return sanitized || "visual-regression";
+}
+
+function encodeScreenshotKey(key: string): string {
+  return key.split("/").map(encodeURIComponent).join("/");
+}
+
+function getRunStoragePrefix(): string {
+  const prNumber =
+    process.env.GITHUB_PR_NUMBER ?? process.env.PR_NUMBER ?? "local";
   const runId = process.env.GITHUB_RUN_ID ?? Date.now().toString();
+  const headSha = process.env.PR_HEAD_SHA ?? process.env.GITHUB_SHA ?? "unknown";
 
-  if (!token) {
-    throw new Error("GITHUB_TOKEN required for image upload");
+  return [
+    "runs",
+    `pr-${sanitizeKeyPart(prNumber)}`,
+    `run-${sanitizeKeyPart(runId)}`,
+    sanitizeKeyPart(headSha.substring(0, 12)),
+  ].join("/");
+}
+
+async function uploadScreenshotToWorker(
+  imageBuffer: Buffer,
+  key: string,
+): Promise<string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "image/png",
+  };
+  if (API_KEY) {
+    headers["X-API-Key"] = API_KEY;
   }
 
-  const [owner, repoName] = repo.split("/");
-  const branch = `vr-screenshots-${prNumber}-${runId}`;
-  const path = `screenshots/${filename}`;
-
-  const mainRef = await fetch(
-    `https://api.github.com/repos/${owner}/${repoName}/git/ref/heads/main`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-    },
-  );
-  if (!mainRef.ok) {
-    throw new Error(
-      `Failed to get main ref: ${mainRef.status} ${await mainRef.text()}`,
-    );
-  }
-  const mainData = (await mainRef.json()) as { object: { sha: string } };
-  const baseSha = mainData.object.sha;
-
-  const refCheck = await fetch(
-    `https://api.github.com/repos/${owner}/${repoName}/git/ref/heads/${branch}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-    },
-  );
-
-  if (refCheck.status === 404) {
-    const createRef = await fetch(
-      `https://api.github.com/repos/${owner}/${repoName}/git/refs`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/vnd.github.v3+json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ref: `refs/heads/${branch}`,
-          sha: baseSha,
-        }),
-      },
-    );
-    if (!createRef.ok) {
-      throw new Error(
-        `Failed to create branch ${branch}: ${createRef.status} ${await createRef.text()}`,
-      );
-    }
-  }
-
-  const content = imageBuffer.toString("base64");
-
-  const existingFile = await fetch(
-    `https://api.github.com/repos/${owner}/${repoName}/contents/${path}?ref=${branch}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-    },
-  );
-
-  const existingData = existingFile.ok
-    ? ((await existingFile.json()) as { sha?: string })
-    : null;
-
-  const upload = await fetch(
-    `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`,
+  const response = await fetch(
+    `${WORKER_URL}/screenshots/${encodeScreenshotKey(key)}`,
     {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: `Visual regression: ${filename}`,
-        content,
-        branch,
-        ...(existingData?.sha ? { sha: existingData.sha } : {}),
-      }),
+      headers,
+      body: imageBuffer,
     },
   );
-  if (!upload.ok) {
+
+  if (!response.ok) {
     throw new Error(
-      `Failed to upload ${filename}: ${upload.status} ${await upload.text()}`,
+      `Worker upload failed: ${response.status} - ${await response.text()}`,
     );
   }
 
-  return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${path}`;
+  return `${WORKER_URL}/screenshots/${encodeScreenshotKey(key)}`;
 }
 
 /**
@@ -229,6 +178,7 @@ async function captureScreenshots(
   components: DiscoveredComponent[],
   outputDir: string,
   prefix: string,
+  storagePrefix: string,
 ): Promise<CapturedScreenshot[]> {
   ensureDir(outputDir);
   const screenshots: CapturedScreenshot[] = [];
@@ -271,6 +221,10 @@ async function captureScreenshots(
       pages: requests,
       viewport: { width: 1440, height: 900 },
       hideSidebar: true,
+      storage: {
+        prefix: storagePrefix,
+        includeImage: true,
+      },
     }),
   });
 
@@ -322,18 +276,12 @@ async function captureScreenshots(
     const imageBuffer = Buffer.from(result.image, "base64");
     writeFileSync(filepath, imageBuffer);
 
-    let imageUrl: string | null = null;
-    try {
-      imageUrl = await uploadImageToGitHub(imageBuffer, filename);
-      console.log(`  OK: ${screenshotName} -> ${imageUrl}`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("GITHUB_TOKEN required")) {
-        console.log(`  OK: ${screenshotName} (local only, no GITHUB_TOKEN)`);
-      } else {
-        console.error(`  Upload failed for ${screenshotName}: ${msg}`);
-      }
-    }
+    const imageUrl = result.imageUrl ?? null;
+    console.log(
+      imageUrl
+        ? `  OK: ${screenshotName} -> ${imageUrl}`
+        : `  OK: ${screenshotName} (local only, no worker URL)`,
+    );
 
     screenshots.push({
       id: screenshotId,
@@ -606,6 +554,7 @@ async function main(): Promise<void> {
 
   const beforeDir = join(SCREENSHOTS_DIR, "before");
   const afterDir = join(SCREENSHOTS_DIR, "after");
+  const storagePrefix = getRunStoragePrefix();
 
   console.log("=== Capturing BEFORE screenshots ===");
   const beforeScreenshots = await captureScreenshots(
@@ -613,6 +562,7 @@ async function main(): Promise<void> {
     components,
     beforeDir,
     "before",
+    `${storagePrefix}/before`,
   );
 
   console.log("\n=== Capturing AFTER screenshots ===");
@@ -621,6 +571,7 @@ async function main(): Promise<void> {
     components,
     afterDir,
     "after",
+    `${storagePrefix}/after`,
   );
 
   console.log("\n=== Comparing screenshots ===");
@@ -655,7 +606,10 @@ async function main(): Promise<void> {
       writeFileSync(diffPath, diff.diffImage);
 
       try {
-        diffUrl = await uploadImageToGitHub(diff.diffImage, diffFilename);
+        diffUrl = await uploadScreenshotToWorker(
+          diff.diffImage,
+          `${storagePrefix}/diff/${diffFilename}`,
+        );
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         console.error(`  Diff upload failed for ${before.name}: ${msg}`);

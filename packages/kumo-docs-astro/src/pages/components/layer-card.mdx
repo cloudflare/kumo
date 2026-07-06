@@ -13,7 +13,11 @@ import {
   LayerCardBasicDemo,
   LayerCardSurfaceDemo,
   LayerCardMultipleDemo,
+  LayerCardTestIdDemo,
 } from "~/components/demos/LayerCardDemo";
+import {
+  LayerCardFilterSubrequestsDemo,
+} from "~/components/demos/LayerCardFilterMockupDemo";
 
 {/* Hero Demo */}
 
@@ -109,6 +113,28 @@ export default function Example() {
 
 <ComponentExample demo="LayerCardMultipleDemo">
   <LayerCardMultipleDemo client:visible />
+</ComponentExample>
+
+### Filter Toolbar with Small Tabs
+
+<p>
+  Combine <code>Tabs size="sm"</code> with <code>Input size="sm"</code> inside a
+  LayerCard for compact filter toolbars. Both share the same <code>h-6.5</code> (26px) height.
+</p>
+
+<ComponentExample demo="LayerCardFilterSubrequestsDemo">
+  <LayerCardFilterSubrequestsDemo client:visible />
+</ComponentExample>
+
+### Test IDs
+
+<p>
+  <code>LayerCard.Primary</code> and <code>LayerCard.Secondary</code> accept all
+  standard HTML attributes, including <code>data-testid</code> for testing.
+</p>
+
+<ComponentExample demo="LayerCardTestIdDemo">
+  <LayerCardTestIdDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>

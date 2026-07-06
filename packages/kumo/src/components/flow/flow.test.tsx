@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import { useState, useEffect } from "react";
+import { createRoundedPath } from "./connectors";
 import { Flow } from "./index";
 import { computeEdges } from "./flow-layout";
 import type { FlowState, TreeNode } from "./flow-layout";
@@ -10,6 +11,43 @@ function shouldHaveIndex(element: Element, index: number) {
 }
 
 describe("Flow", () => {
+  describe("connector paths", () => {
+    it("serializes SVG path commands without array commas for Firefox", () => {
+      const path = createRoundedPath(
+        { x1: 0, y1: 17, x2: 56, y2: 71 },
+        { orientation: "horizontal", single: false },
+      );
+
+      expect(path).toBe("M 0 17 L 32 17 L 32 63 Q 32 71 40 71 L 48 71");
+      expect(path).not.toContain(",");
+    });
+
+    it("routes vertical paths through a horizontal mid-segment", () => {
+      const path = createRoundedPath(
+        { x1: 17, y1: 0, x2: 71, y2: 56 },
+        { orientation: "vertical", single: false },
+      );
+
+      expect(path).toContain("M 17 0");
+      expect(path).not.toContain(",");
+    });
+  });
+
+  describe("Vertical orientation", () => {
+    it("renders sequential nodes top-to-bottom in a column", () => {
+      render(
+        <Flow orientation="vertical">
+          <Flow.Node>Step 1</Flow.Node>
+          <Flow.Node>Step 2</Flow.Node>
+          <Flow.Node>Step 3</Flow.Node>
+        </Flow>,
+      );
+
+      const list = screen.getByText("Step 1").closest("ul");
+      expect(list?.className).toContain("flex-col");
+    });
+  });
+
   describe("Compound component API", () => {
     it("exposes Node sub-component", () => {
       expect(Flow.Node).toBeDefined();
@@ -360,7 +398,7 @@ describe("Flow", () => {
 // ============================================================================
 
 function makeState(tree: TreeNode): FlowState {
-  return { nodes: {}, tree };
+  return { nodes: {}, tree, align: "start", orientation: "horizontal" };
 }
 
 function node(id: string): TreeNode {

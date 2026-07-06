@@ -8,6 +8,7 @@ import {
   useContext,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Field } from "../field/field";
 import { Fieldset } from "@base-ui/react/fieldset";
 
@@ -70,12 +71,8 @@ export function switchVariants({
   size = KUMO_SWITCH_DEFAULT_VARIANTS.size,
   variant = KUMO_SWITCH_DEFAULT_VARIANTS.variant,
 }: KumoSwitchVariantsProps = {}) {
-  // Fallback to defaults if invalid size/variant passed
-  const sizeConfig =
-    KUMO_SWITCH_VARIANTS.size[size] ?? KUMO_SWITCH_VARIANTS.size.base;
-  const variantConfig =
-    KUMO_SWITCH_VARIANTS.variant[variant] ??
-    KUMO_SWITCH_VARIANTS.variant.default;
+  const sizeConfig = resolveVariant(KUMO_SWITCH_VARIANTS.size, size, KUMO_SWITCH_DEFAULT_VARIANTS.size);
+  const variantConfig = resolveVariant(KUMO_SWITCH_VARIANTS.variant, variant, KUMO_SWITCH_DEFAULT_VARIANTS.variant);
   return cn(sizeConfig.classes, variantConfig.classes);
 }
 
@@ -287,7 +284,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
 
           const trackClassName = cn(
             "relative inline-flex items-center ring cursor-pointer border-none p-0",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "transition-colors duration-150 ease-out motion-reduce:transition-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
             s.track,
@@ -318,6 +315,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
               {...restRootProps}
               {...props}
               ref={rootRef}
+              data-kumo-component="Switch"
               type="button"
               role={role}
               {...checkedA11yProps}
@@ -372,6 +370,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
     return (
       <label
+        data-kumo-component="Switch"
+        data-kumo-part="item-label"
         className={cn(
           "m-0 relative inline-flex items-center gap-2",
           // Control first (default): switch before label
@@ -437,7 +437,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
 
             const trackClassName = cn(
               "relative inline-flex items-center ring cursor-pointer border-none p-0",
-              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500",
+              "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
               "transition-colors duration-150 ease-out motion-reduce:transition-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
               s.track,
@@ -465,6 +465,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
               <button
                 {...restRootProps}
                 ref={rootRef}
+                data-kumo-component="Switch"
+                data-kumo-part="item"
                 type="button"
                 role={role}
                 {...checkedA11yProps}

@@ -90,7 +90,33 @@ export default function Example() {
 
 ### With Checkboxes
 
-<p>Add row selection with `Table.CheckHead` and `Table.CheckCell`.</p>
+<p>
+  Add row selection with `Table.CheckHead` and `Table.CheckCell`. Both accept
+  `onCheckedChange`, which matches the underlying `Checkbox` component's
+  signature and exposes optional event details as a second argument.
+</p>
+<p>
+  The older `onValueChange` prop still works but is deprecated — the lint
+  rule will flag it and it will be removed in a future major version. Migrate
+  by renaming the prop:
+</p>
+
+```tsx
+// Before (deprecated)
+<Table.CheckCell onValueChange={(checked) => toggleRow(id)} />
+
+// After
+<Table.CheckCell onCheckedChange={(checked) => toggleRow(id)} />
+
+// With event details
+<Table.CheckCell
+  onCheckedChange={(checked, eventDetails) => {
+    toggleRow(id);
+    eventDetails?.event.stopPropagation();
+  }}
+/>
+```
+
 <ComponentExample demo="TableWithCheckboxDemo">
   <TableWithCheckboxDemo client:visible />
 </ComponentExample>

@@ -137,7 +137,7 @@ export function getPaginationColorBindings() {
     inputBackground: VAR_NAMES.color.control, // bg-kumo-control
     inputBorder: VAR_NAMES.color.line, // ring-kumo-line
     inputText: VAR_NAMES.text.default,
-    showingTextLabel: VAR_NAMES.text.strong, // From registry.colors: text-kumo-strong
+    showingTextLabel: VAR_NAMES.text.strong, // From registry.colors: text-kumo-subtle
   };
 }
 

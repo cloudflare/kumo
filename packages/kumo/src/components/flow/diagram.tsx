@@ -30,19 +30,19 @@ import {
   computePositions,
   computeDiagramRect,
   type FlowAlign,
+  type FlowOrientation,
   type FlowState,
   type TreeNode,
 } from "./flow-layout";
 
-export type { FlowAlign, FlowState, TreeNode };
+export type { FlowAlign, FlowOrientation, FlowState, TreeNode };
 
 const DEFAULT_PADDING = {
   y: 64,
   x: 16,
 };
 
-// Vertical orientation remains a no-op and is kept for backwards compatibility.
-type Orientation = "horizontal" | "vertical";
+type Orientation = FlowOrientation;
 
 function isEventFromNode(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest("[data-node-id]") !== null;
@@ -52,6 +52,11 @@ function isEventFromNode(target: EventTarget | null): boolean {
 const MIN_SCROLLBAR_THUMB_SIZE = 10;
 
 interface FlowDiagramProps {
+  /**
+   * Flow direction.
+   * - `"horizontal"`: Nodes progress left-to-right (default)
+   * - `"vertical"`: Nodes progress top-to-bottom
+   */
   orientation?: Orientation;
   /**
    * Whether to render the pannable canvas wrapper.
@@ -60,9 +65,9 @@ interface FlowDiagramProps {
    */
   canvas?: boolean;
   /**
-   * Vertical alignment of nodes within each row.
-   * - `"start"`: Nodes align to the top of the row (default)
-   * - `"center"`: Nodes are vertically centered within the row
+   * Cross-axis alignment of nodes.
+   * - `"start"`: Nodes align to the top/left edge (default)
+   * - `"center"`: Nodes are centered across the inactive axis
    */
   align?: FlowAlign;
   /**
@@ -89,8 +94,6 @@ export function FlowDiagram({
   className,
   children,
 }: FlowDiagramProps) {
-  void orientation;
-
   const wrapperRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -182,7 +185,7 @@ export function FlowDiagram({
 
   // Derive the tree from root descendants synchronously — never stored in state.
   const tree = descendantsToTree(rootDescendants, childrenByParent);
-  const flowState: FlowState = { nodes, tree, align };
+  const flowState: FlowState = { nodes, tree, align, orientation };
 
   // Derive edges, positions, and diagram size synchronously — never stored in state.
   const edges = computeEdges(flowState);
@@ -194,6 +197,7 @@ export function FlowDiagram({
       reportNode,
       removeNode,
       reportDescendants,
+      orientation,
       nodePositions,
       edges,
     }),
@@ -202,6 +206,7 @@ export function FlowDiagram({
       reportNode,
       removeNode,
       reportDescendants,
+      orientation,
       // eslint-disable-next-line react-hooks/exhaustive-deps
       JSON.stringify(nodePositions),
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -393,6 +398,7 @@ export function FlowDiagram({
               edges={edges}
               nodePositions={nodePositions}
               nodes={flowState.nodes}
+              orientation={orientation}
             />
           </div>
         </motion.div>
@@ -456,6 +462,7 @@ type FlowStateContextValue = {
     id: string | null,
     descendants: DescendantInfo<NodeData>[],
   ) => void;
+  orientation: Orientation;
   /** Derived node positions (computed synchronously from FlowState). */
   nodePositions: Record<string, { x: number; y: number }>;
   /** Derived edges (computed synchronously from FlowState). */
@@ -559,7 +566,7 @@ function descendantToTreeNode(
 
 export function FlowNodeList({ children }: { children: ReactNode }) {
   const descendants = useNodeGroup();
-  const { reportDescendants } = useFlowStateContext();
+  const { reportDescendants, orientation } = useFlowStateContext();
 
   // Only structural info (kind, id, children) is keyed — not DOM rects —
   // to avoid re-computing on every measurement update.
@@ -594,7 +601,14 @@ export function FlowNodeList({ children }: { children: ReactNode }) {
 
   return (
     <DescendantsProvider value={descendants}>
-      <ul className="ml-0 list-none">{children}</ul>
+      <ul
+        className={cn(
+          "ml-0 list-none",
+          orientation === "vertical" && "flex flex-col",
+        )}
+      >
+        {children}
+      </ul>
     </DescendantsProvider>
   );
 }

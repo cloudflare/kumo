@@ -7,6 +7,7 @@ import {
   useMemo,
 } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Text variant and size definitions mapping names to their Tailwind classes. */
 export const KUMO_TEXT_VARIANTS = {
@@ -127,8 +128,8 @@ export function textVariants({
   size = KUMO_TEXT_DEFAULT_VARIANTS.size,
 }: KumoTextVariantsProps = {}) {
   return cn(
-    KUMO_TEXT_VARIANTS.variant[variant].classes,
-    KUMO_TEXT_VARIANTS.size[size].classes,
+    resolveVariant(KUMO_TEXT_VARIANTS.variant, variant, KUMO_TEXT_DEFAULT_VARIANTS.variant).classes,
+    resolveVariant(KUMO_TEXT_VARIANTS.size, size, KUMO_TEXT_DEFAULT_VARIANTS.size).classes,
   );
 }
 
@@ -148,7 +149,20 @@ export type TextElement =
   | "h5"
   | "h6"
   | "p"
-  | "span";
+  | "span"
+  | "label"
+  | "dt"
+  | "dd"
+  | "li"
+  | "figcaption"
+  | "legend"
+  | "pre"
+  | "code"
+  | "em"
+  | "strong"
+  | "small"
+  | "abbr"
+  | "time";
 
 type BaseTextProps = Omit<
   ComponentPropsWithoutRef<"span">,
@@ -156,7 +170,6 @@ type BaseTextProps = Omit<
 > & {
   DANGEROUS_className?: string;
   DANGEROUS_style?: CSSProperties;
-  as?: TextElement;
 };
 
 type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
@@ -166,6 +179,8 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
         bold?: boolean;
         size?: TextSize;
         truncate?: boolean;
+        /** Optional element override. Defaults to `<p>`. */
+        as?: TextElement;
       }
     : Variant extends Monospace
       ? {
@@ -173,13 +188,26 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
           bold?: never;
           size?: "lg";
           truncate?: boolean;
+          /** Optional element override. Defaults to `<span>`. */
+          as?: TextElement;
         }
       : Variant extends Heading
         ? {
-            variant?: Variant;
+            variant: Variant;
             bold?: never;
             size?: never;
             truncate?: boolean;
+            /**
+             * Required for heading variants. Pick the element that reflects
+             * this text's place in the document outline (`"h1"` for a page
+             * title, `"h2"` for a section title, etc.) or `"span"` for
+             * decorative heading-styled text that is NOT a section heading.
+             *
+             * Previously optional (defaulted to `<span>`), which silently
+             * excluded real section headings from the document outline.
+             * Making it required surfaces the decision at the type level.
+             */
+            as: TextElement;
           }
         : never);
 
@@ -188,7 +216,7 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
  *
  * @example
  * ```tsx
- * <Text variant="heading1">Page Title</Text>
+ * <Text variant="heading1" as="h1">Page Title</Text>
  * <Text variant="body">Default paragraph text.</Text>
  * <Text variant="secondary" size="sm">Muted helper text</Text>
  * <Text variant="error">Something went wrong</Text>
@@ -223,7 +251,19 @@ export interface TextProps {
   bold?: boolean;
   /** Whether to truncate overflowing text with an ellipsis. Adds `truncate min-w-0` classes. */
   truncate?: boolean;
-  /** The HTML element to render (`"h1"`-`"h6"`, `"p"`, or `"span"`). Defaults to `"p"` for body variants and `"span"` for headings/mono. Use this to set semantic heading levels. */
+  /**
+   * The HTML element to render. Accepts headings (`"h1"`–`"h6"`), block text
+   * (`"p"`, `"pre"`), inline text (`"span"`, `"code"`, `"em"`, `"strong"`,
+   * `"small"`, `"abbr"`, `"time"`), form-related (`"label"`, `"legend"`),
+   * list/definition (`"dt"`, `"dd"`, `"li"`), and `"figcaption"`.
+   *
+   * - **Required** for heading variants (`"heading1"`, `"heading2"`,
+   *   `"heading3"`) — pick the element that reflects this text's place in
+   *   the document outline, or `"span"` for decorative heading-styled text
+   *   that is not a section heading.
+   * - **Optional** for body variants (defaults to `"p"`) and monospace
+   *   variants (defaults to `"span"`).
+   */
   as?: TextElement;
   /** Text content. */
   children?: React.ReactNode;
@@ -253,7 +293,7 @@ function _Text<Variant extends TextVariant = "body">(
     as,
     ...props
   }: TextPropsInternal<Variant>,
-  ref: ForwardedRef<HTMLHeadingElement>,
+  ref: ForwardedRef<HTMLElement>,
 ) {
   const isCopy = ["body", "secondary", "success", "error"].includes(variant);
   const isMono = ["mono", "mono-secondary"].includes(variant);
@@ -271,11 +311,14 @@ function _Text<Variant extends TextVariant = "body">(
 
   return (
     <Component
-      ref={ref}
+      // The dynamic `Component` tag creates an impossible intersection of ref
+      // types across all TextElement members. We widen to the common base
+      // (HTMLElement) which is safe — all text elements extend HTMLElement.
+      ref={ref as React.RefCallback<HTMLElement>}
       className={cn(
         "text-kumo-default",
-        KUMO_TEXT_VARIANTS.variant[variant].classes,
-        isCopy ? KUMO_TEXT_VARIANTS.size[size].classes : "",
+        resolveVariant(KUMO_TEXT_VARIANTS.variant, variant, KUMO_TEXT_DEFAULT_VARIANTS.variant).classes,
+        isCopy ? resolveVariant(KUMO_TEXT_VARIANTS.size, size, KUMO_TEXT_DEFAULT_VARIANTS.size).classes : "",
         isCopy && bold ? "font-medium" : "",
         // Monospace fonts need to be 1pt smaller than body text to optically match
         isMono &&

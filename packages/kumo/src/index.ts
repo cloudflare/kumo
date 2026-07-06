@@ -53,6 +53,16 @@ export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
 export {
+  Toolbar,
+  KUMO_TOOLBAR_VARIANTS,
+  KUMO_TOOLBAR_DEFAULT_VARIANTS,
+  type ToolbarProps,
+  type ToolbarSize,
+  type ToolbarButtonProps,
+  type ToolbarInputProps,
+  type ToolbarInputGroupProps,
+} from "./components/toolbar";
+export {
   Dialog,
   DialogRoot,
   DialogTrigger,
@@ -67,7 +77,15 @@ export {
   type DialogCloseProps,
 } from "./components/dialog";
 export { DropdownMenu } from "./components/dropdown";
-export { Collapsible } from "./components/collapsible";
+export {
+  Collapsible,
+  type CollapsibleProps,
+  type CollapsibleRootProps,
+  type CollapsibleTriggerProps,
+  type CollapsiblePanelProps,
+  type CollapsibleDefaultTriggerProps,
+  type CollapsibleDefaultPanelProps,
+} from "./components/collapsible";
 export {
   Field,
   type FieldProps,
@@ -125,6 +143,7 @@ export {
   ToastProvider,
   Toast,
   useKumoToastManager,
+  createKumoToastManager,
 } from "./components/toast";
 export { Tooltip, TooltipProvider } from "./components/tooltip";
 export {
@@ -151,6 +170,7 @@ export {
   KUMO_RADIO_DEFAULT_VARIANTS,
   radioVariants,
   type RadioGroupProps,
+  type RadioGroupChangeEventDetails,
   type RadioLegendProps,
   type RadioItemProps,
   type RadioControlPosition,
@@ -164,6 +184,7 @@ export {
   KUMO_COMMAND_PALETTE_VARIANTS,
   KUMO_COMMAND_PALETTE_DEFAULT_VARIANTS,
   type CommandPaletteRootProps,
+  type CommandPaletteInputProps,
   type CommandPaletteItemProps,
   type CommandPaletteResultItemProps,
   type CommandPaletteFooterProps,
@@ -213,7 +234,6 @@ export {
   type CloudflareLogoSvgVariant,
   type CloudflareLogoSvgColor,
 } from "./components/cloudflare-logo";
-
 // DatePicker
 export {
   DatePicker,
@@ -226,9 +246,19 @@ export { Flow } from "./components/flow";
 export {
   Chart,
   ChartPalette,
+  SankeyChart,
   TimeseriesChart,
   ChartLegend,
+  BubbleMap,
   type KumoChartOption,
+  type SankeyChartProps,
+  type SankeyNodeData,
+  type SankeyLinkData,
+  type SankeyTooltipParams,
+  type MapGeoJson,
+  type MapAccessor,
+  type MapStyle,
+  type BubbleMapProps,
 } from "./components/chart";
 export {
   Autocomplete,
@@ -249,17 +279,14 @@ export {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarSeparator,
-  SidebarInput,
   SidebarTrigger,
   SidebarRail,
   SidebarResizeHandle,
@@ -267,10 +294,13 @@ export {
   SidebarCollapsible,
   SidebarCollapsibleTrigger,
   SidebarCollapsibleContent,
+  SidebarSlidingViews,
+  SidebarSlidingView,
   useSidebar,
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
+  type SidebarState,
   type SidebarSide,
   type SidebarVariant,
   type SidebarCollapsible as SidebarCollapsibleType,
@@ -280,7 +310,6 @@ export {
   type SidebarMenuButtonSize,
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
-  type SidebarInputProps,
 } from "./components/sidebar";
 export {
   TableOfContents,

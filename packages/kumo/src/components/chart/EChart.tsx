@@ -71,14 +71,22 @@ export interface ChartEvents {
   contextmenu: (params: any) => void;
 
   // Legend events
-  /** Fired when any legend item's selected state changes */
+  /** Map of series name → selected state for all legend items */
+  /** Fired on legend toggle (`legendToggleSelect` action or a legend UI click) */
   legendselectchanged: (params: {
     name: string;
-    /** Map of series name → selected state for all legend items */
     selected: Record<string, boolean>;
   }) => void;
-  legendselected: (params: any) => void;
-  legendunselected: (params: any) => void;
+  /** Fired by the `legendSelect` action. Carries the full `selected` map. */
+  legendselected: (params: {
+    name: string;
+    selected: Record<string, boolean>;
+  }) => void;
+  /** Fired by the `legendUnSelect` action. Carries the full `selected` map. */
+  legendunselected: (params: {
+    name: string;
+    selected: Record<string, boolean>;
+  }) => void;
   legendscroll: (params: any) => void;
 
   // Data zoom / timeline events
@@ -158,14 +166,26 @@ const transformTooltip = (tooltipObj: SafeTooltipOption) => {
   };
 };
 
-const prepareChartOptions = (options: KumoChartOption): EChartsOption => {
-  if (!options.tooltip) return options;
+const prepareChartOptions = ({
+  options,
+  isDarkMode,
+}: {
+  options: KumoChartOption;
+  isDarkMode?: boolean;
+}): EChartsOption => {
+  const withDefaults: EChartsOption = {
+    backgroundColor: "transparent",
+    color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
+    ...options,
+  };
+
+  if (!withDefaults.tooltip) return withDefaults;
 
   return {
-    ...options,
-    tooltip: Array.isArray(options.tooltip)
-      ? options.tooltip.map(transformTooltip)
-      : transformTooltip(options.tooltip),
+    ...withDefaults,
+    tooltip: Array.isArray(withDefaults.tooltip)
+      ? withDefaults.tooltip.map(transformTooltip)
+      : transformTooltip(withDefaults.tooltip as SafeTooltipOption),
   };
 };
 
@@ -221,14 +241,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   useEffect(() => {
     if (!elRef.current) return;
 
-    const chart = echarts.init(
-      elRef.current,
-      isDarkMode
-        ? "dark"
-        : {
-            color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
-          },
-    );
+    const chart = echarts.init(elRef.current, isDarkMode ? "dark" : undefined);
     chartRef.current = chart;
 
     if (typeof ref === "function") ref(chart);
@@ -252,7 +265,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const chart = chartRef.current;
     if (!chart) return;
 
-    chart.setOption(prepareChartOptions(options), {
+    chart.setOption(prepareChartOptions({ options, isDarkMode }), {
       notMerge: false,
       lazyUpdate: true,
       ...optionUpdateBehavior,

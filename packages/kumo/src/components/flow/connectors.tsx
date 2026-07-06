@@ -1,5 +1,10 @@
 import { forwardRef, useId, type ReactNode } from "react";
-import type { Edges, NodePositions, FlowState } from "./flow-layout";
+import type {
+  Edges,
+  FlowOrientation,
+  FlowState,
+  NodePositions,
+} from "./flow-layout";
 
 export interface Connector {
   x1: number;
@@ -99,7 +104,7 @@ export function createRoundedPath(
 
     const commands = [
       `M ${x1} ${y1}`,
-      isBottom ? [...bottomCurveCommands] : [...topCurveCommands],
+      ...(isBottom ? bottomCurveCommands : topCurveCommands),
       `L ${pathEndX} ${y2}`,
     ];
 
@@ -145,7 +150,7 @@ export function createRoundedPath(
 
   const commands = [
     `M ${x1} ${y1}`, // Move the cursor to the starting point
-    isBottom ? [...bottomCurveCommands] : [...topCurveCommands],
+    ...(isBottom ? bottomCurveCommands : topCurveCommands),
     `L ${x2} ${pathEndY}`, // Draw the final line to the end point
   ];
 
@@ -160,14 +165,15 @@ type FlowConnectorsProps = {
   edges: Edges;
   nodePositions: NodePositions;
   nodes: FlowState["nodes"];
+  orientation: FlowOrientation;
 };
 
 /**
  * Draws every edge in the flow using only computed positions and measured
  * node sizes — no DOM rect lookups needed.
  *
- * Each edge connects the right-center of the source node to the left-center
- * of the target node.
+ * Horizontal edges connect source right-center to target left-center.
+ * Vertical edges connect source bottom-center to target top-center.
  *
  * Intended to be rendered once at the top-level Flow component, absolutely
  * positioned to overlay the entire diagram.
@@ -176,6 +182,7 @@ export function FlowConnectors({
   edges,
   nodePositions,
   nodes,
+  orientation,
 }: FlowConnectorsProps) {
   const connectors: Connector[] = [];
 
@@ -187,20 +194,34 @@ export function FlowConnectors({
 
     if (!fromPos || !toPos || !fromNode || !toNode) continue;
 
+    const connector =
+      orientation === "vertical"
+        ? {
+            // bottom edge of the source node to top edge of target node.
+            x1: fromPos.x + fromNode.width / 2,
+            y1: fromPos.y + fromNode.height,
+            x2: toPos.x + toNode.width / 2,
+            y2: toPos.y,
+          }
+        : {
+            // right edge of the source node; Y uses anchor midpoint when available.
+            x1: fromPos.x + fromNode.width,
+            y1: fromPos.y + (fromNode.startAnchorOffset ?? fromNode.height / 2),
+            // left edge of the target node; Y uses anchor midpoint when available.
+            x2: toPos.x,
+            y2: toPos.y + (toNode.endAnchorOffset ?? toNode.height / 2),
+          };
+
     connectors.push({
-      // right edge of the source node; Y uses anchor midpoint when available
-      x1: fromPos.x + fromNode.width,
-      y1: fromPos.y + (fromNode.startAnchorOffset ?? fromNode.height / 2),
-      // left edge of the target node; Y uses anchor midpoint when available
-      x2: toPos.x,
-      y2: toPos.y + (toNode.endAnchorOffset ?? toNode.height / 2),
+      ...connector,
+      disabled: fromNode.disabled || toNode.disabled,
       fromId,
       toId,
       single: true,
     });
   }
 
-  return <Connectors connectors={connectors} orientation="horizontal" />;
+  return <Connectors connectors={connectors} orientation={orientation} />;
 }
 
 export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
@@ -210,6 +231,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
       <svg
         width="100%"
         height="100%"
+        overflow="visible"
         aria-hidden="true"
         className="text-kumo-inactive overflow-visible"
         ref={svgRef}

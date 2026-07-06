@@ -1,6 +1,7 @@
 import { Tooltip as TooltipBase } from "@base-ui/react/tooltip";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -54,12 +55,16 @@ export function tooltipVariants({
     // Base styles
     "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-2.5 py-1.5 text-sm text-kumo-default",
     "shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill",
-    "transition-[transform,opacity] duration-150",
+    "transition-[transform,scale,opacity] duration-150",
     "data-[starting-style]:scale-90 data-[starting-style]:opacity-0",
     "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
     "data-[instant]:duration-0",
     // Apply side-specific styles (currently none, but extensible)
-    KUMO_TOOLTIP_VARIANTS.side[side].classes,
+    resolveVariant(
+      KUMO_TOOLTIP_VARIANTS.side,
+      side,
+      KUMO_TOOLTIP_DEFAULT_VARIANTS.side,
+    ).classes,
   );
 }
 
@@ -167,6 +172,10 @@ export function Tooltip({
           // Consumer styles passed via className will override these (tailwind-merge)
           !shouldUseRender &&
             "inline-flex items-center bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0]",
+          // Tooltip triggers are disclosure elements, not actions — override
+          // cursor: pointer (e.g. from Button used via render prop) so the
+          // trigger doesn't appear clickable
+          "cursor-default",
           className,
         )}
         render={resolvedRender}
@@ -174,12 +183,12 @@ export function Tooltip({
         {asChild ? undefined : (children as ReactNode)}
       </TooltipBase.Trigger>
       <TooltipBase.Portal container={container}>
-        <TooltipBase.Positioner align={align} side={side} sideOffset={10}>
+        <TooltipBase.Positioner align={align} side={side} sideOffset={10} className="max-w-[var(--available-width)]">
           <TooltipBase.Popup
             className={cn(
               "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-2.5 py-1.5 text-sm text-kumo-default",
               "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
-              "transition-[transform,opacity] duration-150",
+              "transition-[transform,scale,opacity] duration-150",
               "data-[starting-style]:scale-90 data-[starting-style]:opacity-0",
               "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
               "data-[instant]:duration-0",

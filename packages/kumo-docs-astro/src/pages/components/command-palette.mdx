@@ -13,6 +13,7 @@ import {
   CommandPaletteBasicDemo,
   CommandPaletteSimpleDemo,
   CommandPaletteLoadingDemo,
+  CommandPaletteNoAutocompleteDemo,
   CommandPaletteResultItemDemo,
 } from "~/components/demos/CommandPaletteDemo";
 
@@ -151,6 +152,13 @@ export default function Example() {
 <p>Show a loading spinner while fetching results.</p>
 <ComponentExample demo="CommandPaletteLoadingDemo">
   <CommandPaletteLoadingDemo client:visible />
+</ComponentExample>
+
+### Disabling Browser Autocomplete
+
+<p>Pass standard HTML input attributes like `autoComplete`, `autoCorrect`, `spellCheck`, and `data-*` to suppress browser and password manager autocomplete overlays.</p>
+<ComponentExample demo="CommandPaletteNoAutocompleteDemo">
+  <CommandPaletteNoAutocompleteDemo client:visible />
 </ComponentExample>
 
 ### ResultItem with Breadcrumbs

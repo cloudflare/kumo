@@ -1,9 +1,14 @@
 import { Autocomplete as AutocompleteBase } from "@base-ui/react/autocomplete";
 import { CheckIcon } from "@phosphor-icons/react";
-import { type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { inputVariants, KUMO_INPUT_VARIANTS } from "../input/input";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import { Field, type FieldErrorMatch } from "../field/field";
+
+const AutocompleteContext = createContext<{ hasError: boolean }>({
+  hasError: false,
+});
 
 /** Autocomplete variant definitions. */
 export const KUMO_AUTOCOMPLETE_VARIANTS = {
@@ -32,7 +37,13 @@ export interface KumoAutocompleteVariantsProps {
 export function autocompleteVariants({
   size = KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS.size,
 }: KumoAutocompleteVariantsProps = {}) {
-  return cn(KUMO_INPUT_VARIANTS.size[size].classes);
+  return cn(
+    resolveVariant(
+      KUMO_INPUT_VARIANTS.size,
+      size,
+      KUMO_AUTOCOMPLETE_DEFAULT_VARIANTS.size,
+    ).classes,
+  );
 }
 
 /**
@@ -105,7 +116,9 @@ function Root<ItemValue>({
     items?: readonly ItemValue[];
   };
   const control = (
-    <AutocompleteBase.Root {...rootProps}>{children}</AutocompleteBase.Root>
+    <AutocompleteContext.Provider value={{ hasError: Boolean(error) }}>
+      <AutocompleteBase.Root {...rootProps}>{children}</AutocompleteBase.Root>
+    </AutocompleteContext.Provider>
   );
 
   if (label) {
@@ -140,10 +153,15 @@ function InputGroup({
   size?: KumoAutocompleteSize;
   placeholder?: string;
 }) {
+  const { hasError } = useContext(AutocompleteContext);
   return (
     <AutocompleteBase.Input
       className={cn(
-        inputVariants({ size, focusIndicator: true }),
+        inputVariants({
+          size,
+          variant: hasError ? "error" : "default",
+          focusIndicator: true,
+        }),
         "w-full",
         className,
       )}
@@ -213,6 +231,8 @@ function List({
 function Item({ children, ...props }: AutocompleteBase.Item.Props) {
   return (
     <AutocompleteBase.Item
+      data-kumo-component="Autocomplete"
+      data-kumo-part="item"
       {...props}
       className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay data-selected:font-medium"
     >
@@ -301,4 +321,7 @@ export const Autocomplete = Object.assign(Root, {
   // Pass-through Base UI sub-components
   Empty: AutocompleteBase.Empty,
   Collection: AutocompleteBase.Collection,
+
+  // Filtering
+  useFilter: AutocompleteBase.useFilter,
 });

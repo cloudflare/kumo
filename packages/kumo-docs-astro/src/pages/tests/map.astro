@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  BubbleMapBasicDemo,
+  BubbleMapManyPointsDemo,
+} from "../../components/demos/Chart/BubbleMapDemo";
+import type { MapGeoJson } from "@cloudflare/kumo";
+
+const WORLD_GEO_JSON_URL =
+  "https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json";
+
+let geoJson: MapGeoJson | null = null;
+
+try {
+  const response = await fetch(WORLD_GEO_JSON_URL);
+  if (response.ok) {
+    geoJson = (await response.json()) as MapGeoJson;
+  } else {
+    console.warn(
+      `Failed to fetch BubbleMap GeoJSON: ${response.status} ${response.statusText}`,
+    );
+  }
+} catch (error) {
+  console.warn("Failed to fetch BubbleMap GeoJSON", error);
+  geoJson = null;
+}
+---
+
+<BaseLayout title="Geo Map Test Page">
+  <div class="p-16 space-y-12 max-w-[1000px] mx-auto mb-64">
+    <div>
+      <h1 class="text-2xl font-bold text-kumo-strong">Geo Map Demo Components</h1>
+      <p class="mt-2 text-kumo-subtle">
+        Test page for validating BubbleMap rendering, point scaling, tooltips,
+        and hover styles across light and dark modes.
+      </p>
+    </div>
+
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">BubbleMapBasicDemo</h2>
+        <p class="text-kumo-subtle">
+          Bubble map using raw colo rows, dimension accessors, radius scaling,
+          and formatted request values.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <BubbleMapBasicDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-xl font-semibold text-kumo-default">BubbleMapManyPointsDemo</h2>
+        <p class="text-kumo-subtle">
+          Larger point dataset with request values across global locations.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <BubbleMapManyPointsDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+  </div>
+</BaseLayout>

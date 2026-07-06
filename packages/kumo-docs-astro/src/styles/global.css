@@ -279,7 +279,7 @@ pre.astro-code {
    ========================================================================== */
 
 .code-block-copy-btn {
-  @apply absolute top-3 right-3 z-10 flex items-center justify-center size-[1.625rem] rounded-md cursor-pointer border-none shadow-none select-none focus-visible:ring-1;
+  @apply absolute top-3 right-3 flex items-center justify-center size-6.5 rounded-md cursor-pointer border-none shadow-none select-none focus-visible:ring-1;
   background: var(--color-kumo-base);
   color: var(--text-color-kumo-subtle);
   --tw-ring-color: var(--color-kumo-hairline);

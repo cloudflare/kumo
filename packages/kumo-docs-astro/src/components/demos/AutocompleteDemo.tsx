@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Autocomplete } from "@cloudflare/kumo";
+import { languages, type Language } from "./data/languages";
 
 const fruits = [
   "Apple",
@@ -122,22 +123,27 @@ export function AutocompleteDemo() {
 
 /** Autocomplete with label, description, and Field wrapper. */
 export function AutocompleteWithFieldDemo() {
+  const { contains } = Autocomplete.useFilter();
+
+  const filter = useCallback(
+    (item: Language, query: string) => contains(item.label, query),
+    [contains],
+  );
+
   return (
     <div className="w-80">
       <Autocomplete
-        items={countries}
-        label="Country"
-        description="Start typing to filter countries"
-        filter={(item: Country, query: string) =>
-          item.label.toLowerCase().includes(query.toLowerCase())
-        }
+        items={languages}
+        label="Language"
+        description="Start typing to filter languages"
+        filter={filter}
       >
-        <Autocomplete.InputGroup placeholder="Search countries…" />
+        <Autocomplete.InputGroup placeholder="Search a language…" />
         <Autocomplete.Content>
           <Autocomplete.List>
-            {(item: Country) => (
-              <Autocomplete.Item key={item.code} value={item}>
-                {item.label}
+            {(item: Language) => (
+              <Autocomplete.Item key={item.value} value={item}>
+                {item.emoji} {item.label}
               </Autocomplete.Item>
             )}
           </Autocomplete.List>
@@ -149,15 +155,20 @@ export function AutocompleteWithFieldDemo() {
 
 /** Autocomplete with error state via the Field wrapper. */
 export function AutocompleteErrorDemo() {
+  const { contains } = Autocomplete.useFilter();
+
+  const filter = useCallback(
+    (item: Country, query: string) => contains(item.label, query),
+    [contains],
+  );
+
   return (
     <div className="w-80">
       <Autocomplete
         items={countries}
         label="Country"
         error={{ message: "Please enter a valid country", match: true }}
-        filter={(item: Country, query: string) =>
-          item.label.toLowerCase().includes(query.toLowerCase())
-        }
+        filter={filter}
       >
         <Autocomplete.InputGroup placeholder="Search countries…" />
         <Autocomplete.Content>

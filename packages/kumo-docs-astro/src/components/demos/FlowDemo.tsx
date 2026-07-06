@@ -43,6 +43,32 @@ export function FlowBasicDemo() {
   );
 }
 
+/** Vertical flow diagram with sequential nodes */
+export function FlowVerticalDemo() {
+  return (
+    <Flow orientation="vertical">
+      <Flow.Node>Step 1</Flow.Node>
+      <Flow.Node>Step 2</Flow.Node>
+      <Flow.Node>Step 3</Flow.Node>
+    </Flow>
+  );
+}
+
+/** Vertical flow diagram with parallel branching */
+export function FlowVerticalParallelDemo() {
+  return (
+    <Flow orientation="vertical" align="center">
+      <Flow.Node>Start</Flow.Node>
+      <Flow.Parallel>
+        <Flow.Node>Branch A</Flow.Node>
+        <Flow.Node>Branch B</Flow.Node>
+        <Flow.Node>Branch C</Flow.Node>
+      </Flow.Parallel>
+      <Flow.Node>End</Flow.Node>
+    </Flow>
+  );
+}
+
 /** Flow diagram with parallel branching */
 export function FlowParallelDemo() {
   return (

@@ -90,11 +90,52 @@ export default function Example() {
 }
 ```
 
-### Framework Integration (render prop)
+### Framework Integration (LinkProvider)
 
 <p>
-  Use the `render` prop to compose Link styles onto framework-specific routing
-  components like React Router's Link or Next.js Link.
+  For app-wide router integration, configure a `LinkProvider` at your app root.
+  Your wrapper component receives `href` and is responsible for bridging to your
+  router's API. This lets engineers use `<Link href="...">` everywhere without
+  thinking about routing internals.
+</p>
+
+```tsx
+import { forwardRef } from "react";
+import { LinkProvider } from "@cloudflare/kumo";
+import { Link as RouterLink } from "react-router-dom";
+
+// Your app's wrapper maps href to the router's navigation prop
+// and handles external URLs with a plain <a>
+const AppLink = forwardRef(({ href, to, ...rest }, ref) => {
+  const destination = href ?? to;
+  const isExternal =
+    destination?.startsWith("http") &&
+    new URL(destination).origin !== window.location.origin;
+
+  if (isExternal) {
+    return <a ref={ref} href={destination} {...rest} />;
+  }
+  return <RouterLink ref={ref} to={destination} {...rest} />;
+});
+
+// Wrap your app once
+export function App() {
+  return (
+    <LinkProvider component={AppLink}>
+      {/* All <Link href="..."> calls go through AppLink */}
+      <YourApp />
+    </LinkProvider>
+  );
+}
+```
+
+### Composition with render prop
+
+<p>
+  For exceptional cases where you need direct control over the rendered element,
+  use the `render` prop. This bypasses the `LinkProvider` entirely — all other
+  props (`href`, `target`, `className`, etc.) are merged onto the provided element
+  automatically.
 </p>
 
 ```tsx
@@ -103,9 +144,17 @@ import { Link as RouterLink } from "react-router-dom";
 
 export default function Example() {
   return (
-    <Link render={<RouterLink to="/dashboard" />} variant="inline">
-      Dashboard
-    </Link>
+    <>
+      {/* Force a specific router link (bypasses LinkProvider) */}
+      <Link render={<RouterLink to="/dashboard" />} variant="inline">
+        Dashboard
+      </Link>
+
+      {/* Force a plain anchor (bypasses LinkProvider) */}
+      <Link render={<a />} href="https://example.com" target="_blank" rel="noopener noreferrer">
+        External Site <Link.ExternalIcon />
+      </Link>
+    </>
   );
 }
 ```
@@ -197,7 +246,20 @@ export default function Example() {
         <td class="px-4 py-3 font-mono text-xs">href</td>
         <td class="px-4 py-3 font-mono text-xs">string</td>
         <td class="px-4 py-3 font-mono text-xs">-</td>
-        <td class="px-4 py-3 text-xs">Link destination URL</td>
+        <td class="px-4 py-3 text-xs">
+          Link destination URL. Use this for all links — both internal and
+          external. Configure a `LinkProvider` to bridge `href` to your
+          router.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">to</td>
+        <td class="px-4 py-3 font-mono text-xs">string</td>
+        <td class="px-4 py-3 font-mono text-xs">-</td>
+        <td class="px-4 py-3 text-xs">
+          <strong>Deprecated.</strong> Use `href` instead. This prop will
+          be removed in a future major version.
+        </td>
       </tr>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono text-xs">className</td>
@@ -310,16 +372,23 @@ export default function Example() {
 
       <ul class="ml-4 list-disc space-y-1">
         <li>
-          Use the `render` prop with React Router, Next.js, or other framework
-          links
-        </li>
-        <li>Pass your framework's Link component as the render prop value</li>
-        <li>
-          This preserves client-side navigation while applying Kumo styling
+          Configure a `LinkProvider` at your app root to integrate with your
+          client-side router
         </li>
         <li>
-          Alternatively, configure a global LinkProvider for automatic
-          integration
+          Your wrapper receives `href` and maps it to your router's
+          navigation prop (e.g. React Router's `to`)
+        </li>
+        <li>
+          The wrapper should handle external URLs by rendering a plain
+          `&lt;a&gt;` instead of routing them
+        </li>
+        <li>
+          Use the `render` prop as an escape hatch for exceptional cases
+          that need direct control over the rendered element
+        </li>
+        <li>
+          The `to` prop is deprecated — use `href` for all link destinations
         </li>
       </ul>
     </div>

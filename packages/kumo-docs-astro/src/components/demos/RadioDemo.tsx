@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Radio } from "@cloudflare/kumo";
+import { Badge, Radio } from "@cloudflare/kumo";
 
 /** Shows a basic controlled radio group */
 export function RadioBasicDemo() {
@@ -213,6 +213,99 @@ export function RadioLegendCustomDemo() {
       <Radio.Item label="Email" value="email" />
       <Radio.Item label="SMS" value="sms" />
       <Radio.Item label="Push notification" value="push" />
+    </Radio.Group>
+  );
+}
+
+/** Shows radio card appearance with the control positioned on the left via controlPosition="start" */
+export function RadioCardControlStartDemo() {
+  const [value, setValue] = useState("free");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      controlPosition="start"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label="Free"
+        description="For personal or hobby projects that aren't business-critical."
+        value="free"
+      />
+      <Radio.Item
+        label="Pro"
+        description="For professional websites that aren't business-critical."
+        value="pro"
+      />
+    </Radio.Group>
+  );
+}
+
+enum ThemeType {
+  dark = "dark",
+  light = "light",
+  system = "system",
+}
+
+/** Shows Radio.Group with typed values: a numeric union and a TypeScript enum. */
+export function RadioTypedValueDemo() {
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [theme, setTheme] = useState<ThemeType>(ThemeType.system);
+  return (
+    <div className="grid grid-cols-2 gap-6">
+      <Radio.Group<number>
+        legend="Items per page"
+        value={pageSize}
+        onValueChange={setPageSize}
+      >
+        <Radio.Item<number> label="10" value={10} />
+        <Radio.Item<number> label="25" value={25} />
+        <Radio.Item<number> label="50" value={50} />
+      </Radio.Group>
+      <Radio.Group<ThemeType>
+        legend="Theme"
+        value={theme}
+        onValueChange={setTheme}
+      >
+        <Radio.Item<ThemeType> label="Light" value={ThemeType.light} />
+        <Radio.Item<ThemeType> label="Dark" value={ThemeType.dark} />
+        <Radio.Item<ThemeType> label="System" value={ThemeType.system} />
+      </Radio.Group>
+    </div>
+  );
+}
+
+/** Shows Radio.Item labels with rich ReactNode content (icons, badges, or additional markup) */
+export function RadioRichLabelDemo() {
+  const [value, setValue] = useState("pro");
+  return (
+    <Radio.Group
+      legend="Choose a plan"
+      appearance="card"
+      value={value}
+      onValueChange={setValue}
+    >
+      <Radio.Item
+        label={
+          <span className="flex items-center gap-2">
+            Free
+            <Badge variant="neutral">$0</Badge>
+          </span>
+        }
+        description="For personal or hobby projects."
+        value="free"
+      />
+      <Radio.Item
+        label={
+          <span className="flex items-center gap-2">
+            Pro
+            <Badge variant="primary">Popular</Badge>
+          </span>
+        }
+        description="For professional websites."
+        value="pro"
+      />
     </Radio.Group>
   );
 }

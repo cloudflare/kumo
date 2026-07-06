@@ -1,0 +1,168 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Toolbar"
+description: "Compose explicit toolbar controls into one clean grouped card."
+sourceFile: "components/toolbar"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import {
+  ToolbarDemo,
+  ToolbarSizesDemo,
+  ToolbarMixedControlsDemo,
+  ToolbarInputGroupDemo,
+  ToolbarActionsDemo,
+  ToolbarLabelsDemo,
+} from "~/components/demos/ToolbarDemo";
+
+<ComponentSection>
+  <ComponentExample demo="ToolbarDemo">
+    <ToolbarDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock code={`import { Toolbar } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+<CodeBlock
+  code={`import { Toolbar } from "@cloudflare/kumo/components/toolbar";`}
+  lang="tsx"
+/>
+</ComponentSection>
+
+<ComponentSection>
+
+## Usage
+
+Use `Toolbar` when multiple controls should read as one compact toolbar or
+filter card. Use `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup` to
+opt supported controls into toolbar sizing, button styling, borders, and radii.
+
+```tsx
+import { InputGroup, Toolbar } from "@cloudflare/kumo";
+import { FunnelSimpleIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
+
+export default function Example() {
+  return (
+    <Toolbar>
+      <Toolbar.InputGroup aria-label="Search DNS records">
+        <InputGroup.Addon>
+          <MagnifyingGlassIcon />
+        </InputGroup.Addon>
+        <InputGroup.Input placeholder="Search DNS records" />
+      </Toolbar.InputGroup>
+      <Toolbar.Button icon={FunnelSimpleIcon} aria-label="Filter" />
+    </Toolbar>
+  );
+}
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Behavior
+
+Toolbar item components intentionally own grouped control presentation:
+
+- `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup` inherit the toolbar `size`.
+- `Toolbar.Button` always renders with quiet toolbar button styling.
+- `Toolbar.InputGroup` passes props directly to `InputGroup` with the toolbar `size`.
+- Adjacent toolbar items share borders and only the outer corners are rounded.
+- Direct `Toolbar` children that are not one of the supported toolbar item components do not receive toolbar overrides.
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Examples
+
+### Input Shorthand
+
+Use `Toolbar.Input` for simple text inputs that do not need addons.
+
+<ComponentExample demo="ToolbarMixedControlsDemo">
+  <ToolbarMixedControlsDemo client:visible />
+</ComponentExample>
+
+### Input Group
+
+Use `Toolbar.InputGroup` when one toolbar item needs its own
+inline addon or suffix.
+
+<ComponentExample demo="ToolbarInputGroupDemo">
+  <ToolbarInputGroupDemo client:visible />
+</ComponentExample>
+
+### Sizes
+
+The `size` prop supports `xs`, `sm`, `base`, and `lg`. Every supported toolbar
+item is locked to the same size.
+
+<ComponentExample demo="ToolbarSizesDemo">
+  <ToolbarSizesDemo client:visible />
+</ComponentExample>
+
+### Button Actions
+
+Toolbar buttons use quiet styling so grouped actions remain
+visually quiet and consistent.
+
+<ComponentExample demo="ToolbarActionsDemo">
+  <ToolbarActionsDemo client:visible />
+</ComponentExample>
+
+### Accessible Labels
+
+Use `aria-label` for compact toolbar controls that do not have visible labels.
+
+<ComponentExample demo="ToolbarLabelsDemo">
+  <ToolbarLabelsDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+<ComponentSection>
+
+## API Reference
+
+<table>
+  <thead>
+    <tr>
+      <th>Prop</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>children</code></td>
+      <td><code>ReactNode</code></td>
+      <td>-</td>
+      <td>Toolbar controls rendered as one grouped card.</td>
+    </tr>
+    <tr>
+      <td><code>size</code></td>
+      <td><code>&quot;xs&quot; | &quot;sm&quot; | &quot;base&quot; | &quot;lg&quot;</code></td>
+      <td><code>&quot;base&quot;</code></td>
+      <td>Locks every supported toolbar item to this size.</td>
+    </tr>
+    <tr>
+      <td><code>className</code></td>
+      <td><code>string</code></td>
+      <td>-</td>
+      <td>Additional CSS classes merged onto the toolbar root.</td>
+    </tr>
+  </tbody>
+</table>
+</ComponentSection>

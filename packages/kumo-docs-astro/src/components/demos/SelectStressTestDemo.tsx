@@ -345,7 +345,10 @@ export function SelectGroupedOptionsDemo() {
 // ============================================================================
 
 /**
- * Tests: Field integration with error and description.
+ * Tests: Field integration with error and description together.
+ * The Field component treats description and error as mutually exclusive —
+ * when an error is present, it replaces the description in the UI.
+ * This stress test verifies that toggling between the two states works correctly.
  */
 export function SelectFieldIntegrationDemo() {
   const [value, setValue] = useState<string | null>(null);

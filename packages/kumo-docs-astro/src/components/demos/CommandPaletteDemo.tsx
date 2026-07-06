@@ -292,6 +292,78 @@ export function CommandPaletteLoadingDemo() {
   );
 }
 
+/** Demonstrates disabling browser autocomplete and spellcheck on the command palette input. */
+export function CommandPaletteNoAutocompleteDemo() {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredGroups = filterGroupsWithItems(sampleGroups, search);
+
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <Button onClick={() => setOpen(true)}>
+        Open Palette (No Autocomplete)
+      </Button>
+
+      <CommandPalette.Root
+        open={open}
+        onOpenChange={setOpen}
+        items={filteredGroups}
+        value={search}
+        onValueChange={setSearch}
+        itemToStringValue={(group) => group.label}
+        onSelect={(item) => {
+          console.log("Selected:", item.title);
+          setOpen(false);
+          setSearch("");
+        }}
+        getSelectableItems={getSelectableItems}
+      >
+        <CommandPalette.Input
+          placeholder="Search commands..."
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
+          data-1p-ignore="true"
+          data-lpignore="true"
+        />
+        <CommandPalette.List>
+          <CommandPalette.Results>
+            {(group: CommandGroup) => (
+              <CommandPalette.Group key={group.id} items={group.items}>
+                <CommandPalette.GroupLabel>
+                  {group.label}
+                </CommandPalette.GroupLabel>
+                <CommandPalette.Items>
+                  {(item: CommandItem) => (
+                    <CommandPalette.Item
+                      key={item.id}
+                      value={item}
+                      onClick={() => {
+                        setOpen(false);
+                        setSearch("");
+                      }}
+                    >
+                      <span className="flex items-center gap-3">
+                        {item.icon && (
+                          <span className="text-kumo-subtle">{item.icon}</span>
+                        )}
+                        <span>{item.title}</span>
+                      </span>
+                    </CommandPalette.Item>
+                  )}
+                </CommandPalette.Items>
+              </CommandPalette.Group>
+            )}
+          </CommandPalette.Results>
+          <CommandPalette.Empty>No commands found</CommandPalette.Empty>
+        </CommandPalette.List>
+      </CommandPalette.Root>
+    </div>
+  );
+}
+
 // ResultItem with breadcrumbs and highlights
 interface SearchResult {
   id: string;

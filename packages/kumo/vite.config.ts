@@ -86,6 +86,10 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/combobox/index.ts",
           ),
+          "components/toolbar": resolve(
+            __dirname,
+            "src/components/toolbar/index.ts",
+          ),
           "components/dialog": resolve(
             __dirname,
             "src/components/dialog/index.ts",

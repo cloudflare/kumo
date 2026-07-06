@@ -14,6 +14,7 @@ import {
   TooltipBasicDemo,
   TooltipMultipleDemo,
   TooltipDelayDemo,
+  TooltipOverflowDemo,
 } from "~/components/demos/TooltipDemo";
 
 {/* Hero Demo */}
@@ -84,6 +85,17 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
   <TooltipMultipleDemo client:load />
 </ComponentExample>
 
+### Long Content / Overflow
+
+<p>
+  Tooltips with long content automatically constrain their width to the available
+  viewport space using `--available-width` from Base UI's Positioner. Hover over
+  the edge buttons to see the tooltip wrap instead of overflowing the viewport.
+</p>
+<ComponentExample demo="TooltipOverflowDemo">
+  <TooltipOverflowDemo client:load />
+</ComponentExample>
+
 ### Delay Control
 
 <p>
@@ -125,5 +137,12 @@ For delay grouping across multiple tooltips, see [TooltipProvider](#tooltipprovi
 
 ## API Reference
 
-  <PropsTable component="Tooltip" />
+### Tooltip
+
+<PropsTable component="Tooltip" />
+
+### TooltipProvider
+
+<PropsTable component="Tooltip.Provider" />
+
 </ComponentSection>

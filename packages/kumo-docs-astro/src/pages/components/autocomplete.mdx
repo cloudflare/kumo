@@ -132,30 +132,46 @@ import {
 </ComponentExample>
 </ComponentSection>
 
-{/* Custom Filtering */}
+{/* Filtering */}
 
 <ComponentSection>
 
-## Custom Filtering
+## Filtering
 
 <p>
-  By default, Base UI filters items using a built-in string match. Pass a custom
-  `filter` function for advanced logic such as fuzzy matching or object
-  properties.
+  Filtering is case- and accent-insensitive by default, powered by
+  `Intl.Collator` under the hood. For string items, no custom `filter` is
+  needed.
+</p>
+<p>
+  When filtering on a property of object items, use
+  `Autocomplete.useFilter()` to preserve the built-in accent-insensitive
+  matching:
 </p>
 
 ```tsx
-// Filter on a property of object items
-<Autocomplete
-  items={countries}
-  filter={(item, query) =>
-    item.label.toLowerCase().includes(query.toLowerCase())
-  }
->
-  ...
-</Autocomplete>
+function LanguagePicker() {
+  const { contains } = Autocomplete.useFilter();
 
-// Disable filtering entirely (e.g. async search)
+  const filter = useCallback(
+    (item: Language, query: string) => contains(item.label, query),
+    [contains],
+  );
+
+  return (
+    <Autocomplete items={languages} filter={filter}>
+      {/* ... */}
+    </Autocomplete>
+  );
+}
+```
+
+<p>
+  To disable filtering entirely (e.g. when results come from a server), pass
+  `filter={null}`:
+</p>
+
+```tsx
 <Autocomplete items={results} filter={null}>
   ...
 </Autocomplete>

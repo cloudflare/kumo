@@ -528,7 +528,7 @@ function DateRangeDayCell({
     switch (mode) {
       case DateRangeCellMode.OUT_OF_RANGE:
       case DateRangeCellMode.SELECTED_OUT_OF_RANGE:
-        return "!text-kumo-strong";
+        return "!text-kumo-subtle";
       case DateRangeCellMode.SELECTED_START_NODE:
       case DateRangeCellMode.SELECTED_END_NODE:
         return "!text-kumo-inverse";
@@ -604,7 +604,7 @@ function DateRangeMonthHeader({
           aria-label="Edit month and year"
           defaultValue={`${month} ${year}`}
           className={cn(
-            "w-full rounded-md border-none bg-transparent py-1.5 text-center font-semibold text-kumo-default transition-all duration-200 focus:outline-none",
+            "w-full rounded-md border-none bg-transparent py-1.5 text-center font-semibold text-kumo-default transition-all duration-200 focus:outline-none focus:ring-kumo-focus/50 focus:ring-[1.5px]",
             sizeConfig.textSize,
           )}
           onBlur={(e) => {
@@ -645,7 +645,7 @@ function DateRangeFooter({
 
   return (
     <div
-      className={cn("flex items-center gap-2 text-kumo-strong", sizeConfig.textSize)}
+      className={cn("flex items-center gap-2 text-kumo-subtle", sizeConfig.textSize)}
     >
       <GlobeHemisphereWestIcon size={sizeConfig.iconSize} />
       <span className="flex-1">Timezone: {timezone}</span>

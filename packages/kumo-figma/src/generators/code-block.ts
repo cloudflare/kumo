@@ -196,12 +196,12 @@ async function createCodeBlockComponent(lang: string): Promise<ComponentNode> {
   await figma.loadFontAsync({ family: "Roboto Mono", style: "Regular" });
   textNode.fontName = { family: "Roboto Mono", style: "Regular" };
 
-  // Apply text color - text-kumo-strong with fallback to text-kumo-default
+  // Apply text color - text-kumo-subtle with fallback to text-kumo-default
   const labelVar = getVariableByName(VAR_NAMES.text.label);
   if (labelVar) {
     bindTextColorToVariable(textNode, labelVar.id);
   } else {
-    // Fallback to text-kumo-default if text-kumo-strong doesn't exist
+    // Fallback to text-kumo-default if text-kumo-subtle doesn't exist
     const surfaceVar = getVariableByName(VAR_NAMES.text.default);
     if (surfaceVar) {
       bindTextColorToVariable(textNode, surfaceVar.id);

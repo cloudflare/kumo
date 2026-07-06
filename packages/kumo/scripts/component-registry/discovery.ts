@@ -237,7 +237,7 @@ export function detectPropsTypeFromFile(
 
 /**
  * Extract description text from JSDoc content.
- * Stops at first @tag (like @example, @see, @param, etc.)
+ * Stops at first @tag, markdown heading, or fenced code block.
  */
 function extractDescriptionFromJSDoc(jsdocContent: string): string | null {
   const lines: string[] = [];
@@ -245,24 +245,29 @@ function extractDescriptionFromJSDoc(jsdocContent: string): string | null {
   for (const rawLine of jsdocContent.split("\n")) {
     const line = rawLine.replace(/^\s*\*\s?/, "").trim();
 
-    // Stop at any @tag
-    if (line.startsWith("@")) {
+    // Stop before structured documentation that should not become the summary.
+    if (
+      line.startsWith("@") ||
+      /^#{1,6}\s/.test(line) ||
+      line.startsWith("```") ||
+      line.startsWith("~~~")
+    ) {
       break;
     }
 
-    // Skip empty lines at the start, but allow them in the middle
-    if (line.length > 0 || lines.length > 0) {
-      lines.push(line);
+    // Keep the summary to the first paragraph.
+    if (line.length === 0) {
+      if (lines.length > 0) {
+        break;
+      }
+      continue;
     }
-  }
 
-  // Trim trailing empty lines and join
-  while (lines.length > 0 && lines[lines.length - 1] === "") {
-    lines.pop();
+    lines.push(line);
   }
 
   if (lines.length > 0) {
-    return lines.join(" ").trim();
+    return lines.join(" ").replace(/\s+/g, " ").trim();
   }
 
   return null;
