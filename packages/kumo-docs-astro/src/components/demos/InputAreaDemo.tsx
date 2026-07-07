@@ -1,4 +1,4 @@
-import { InputArea } from "@cloudflare/kumo";
+import { InputArea, RichTextInputArea } from "@cloudflare/kumo";
 
 export function InputAreaBasicDemo() {
   return (
@@ -76,6 +76,18 @@ export function InputAreaRowsDemo() {
       <InputArea label="2 rows" placeholder="Small area" rows={2} />
       <InputArea label="4 rows (default)" placeholder="Medium area" rows={4} />
       <InputArea label="8 rows" placeholder="Large area" rows={8} />
+    </div>
+  );
+}
+
+export function InputAreaToolbarDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <RichTextInputArea
+        editorClassName="min-h-[180px]"
+        label="Reply"
+        placeholder="Write a reply..."
+      />
     </div>
   );
 }

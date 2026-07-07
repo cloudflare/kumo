@@ -1,12 +1,22 @@
 import { describe, expect, it, vi } from "vitest";
 import { createRef } from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   Input,
   inputVariants,
   KUMO_INPUT_VARIANTS,
   KUMO_INPUT_DEFAULT_VARIANTS,
 } from "./input";
+import { InputArea, RichTextInputArea } from "./input-area";
+
+function selectEditorContents(editor: HTMLElement) {
+  const range = document.createRange();
+  range.selectNodeContents(editor);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
 
 describe("Input", () => {
   // Rendering
@@ -226,5 +236,279 @@ describe("Input", () => {
   it("exports KUMO_INPUT_DEFAULT_VARIANTS with correct defaults", () => {
     expect(KUMO_INPUT_DEFAULT_VARIANTS.size).toBe("base");
     expect(KUMO_INPUT_DEFAULT_VARIANTS.variant).toBe("default");
+  });
+});
+
+describe("InputArea", () => {
+  it("renders toolbar controls inside the textarea shell", () => {
+    const { container } = render(
+      <InputArea
+        aria-label="Comment"
+        toolbar={<button type="button">Bold</button>}
+      />,
+    );
+
+    expect(screen.getByRole("textbox")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Bold" })).toBeTruthy();
+    expect(
+      container.querySelector('[data-kumo-component="InputArea.Control"]'),
+    ).toBeTruthy();
+  });
+
+  it("renders toolbar controls above the textarea by default", () => {
+    const { container } = render(
+      <InputArea
+        aria-label="Comment"
+        toolbar={<button type="button">Bold</button>}
+      />,
+    );
+
+    const control = container.querySelector(
+      '[data-kumo-component="InputArea.Control"]',
+    );
+    expect(
+      control?.firstElementChild?.getAttribute("data-kumo-component"),
+    ).toBe("InputArea.Toolbar");
+    expect(control?.firstElementChild?.className).toContain("border-b");
+  });
+
+  it("supports rendering toolbar controls below the textarea", () => {
+    const { container } = render(
+      <InputArea
+        aria-label="Comment"
+        toolbar={<button type="button">Bold</button>}
+        toolbarPlacement="bottom"
+      />,
+    );
+
+    const control = container.querySelector(
+      '[data-kumo-component="InputArea.Control"]',
+    );
+    expect(
+      control?.lastElementChild?.getAttribute("data-kumo-component"),
+    ).toBe("InputArea.Toolbar");
+    expect(control?.lastElementChild?.className).toContain("border-t");
+  });
+});
+
+describe("RichTextInputArea", () => {
+  it("renders a hard formatting toolbar above the editable box", () => {
+    render(<RichTextInputArea aria-label="Reply" />);
+
+    expect(screen.getByRole("textbox")).toHaveProperty(
+      "contentEditable",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Bold" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Italic" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Bulleted list" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Inline code" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Code block" })).toBeTruthy();
+  });
+
+  it("applies formatting commands from toolbar buttons", () => {
+    document.execCommand = vi.fn(() => true);
+    const execCommand = vi
+      .spyOn(document, "execCommand")
+      .mockImplementation(() => true);
+    render(<RichTextInputArea aria-label="Reply" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Bold" }));
+
+    expect(execCommand).toHaveBeenCalledWith("bold", false, undefined);
+    execCommand.mockRestore();
+  });
+
+  it("applies inline code formatting", () => {
+    document.execCommand = vi.fn(() => true);
+    const execCommand = vi
+      .spyOn(document, "execCommand")
+      .mockImplementation(() => true);
+    render(<RichTextInputArea aria-label="Reply" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Inline code" }));
+
+    expect(execCommand).toHaveBeenCalledWith(
+      "insertHTML",
+      false,
+      "<code>code</code>",
+    );
+    execCommand.mockRestore();
+  });
+
+  it("applies code block formatting", () => {
+    document.execCommand = vi.fn(() => true);
+    const execCommand = vi
+      .spyOn(document, "execCommand")
+      .mockImplementation(() => true);
+    render(<RichTextInputArea aria-label="Reply" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Code block" }));
+
+    expect(execCommand).toHaveBeenCalledWith(
+      "insertHTML",
+      false,
+      "<pre><code>code</code></pre><div><br></div>",
+    );
+    execCommand.mockRestore();
+  });
+
+  it("inserts bulleted list markup from selected lines", () => {
+    render(<RichTextInputArea aria-label="Reply" defaultValue={"One\nTwo"} />);
+
+    const editor = screen.getByRole("textbox");
+    selectEditorContents(editor);
+    const button = screen.getByRole("button", { name: "Bulleted list" });
+    fireEvent.mouseDown(button);
+    fireEvent.click(button);
+
+    expect(editor.innerHTML).toContain("<ul>");
+    expect(editor.innerHTML).toContain("<li>One</li>");
+    expect(editor.innerHTML).toContain("<li>Two</li>");
+  });
+
+  it("inserts numbered list markup from selected lines", () => {
+    render(<RichTextInputArea aria-label="Reply" defaultValue={"One\nTwo"} />);
+
+    const editor = screen.getByRole("textbox");
+    selectEditorContents(editor);
+    const button = screen.getByRole("button", { name: "Numbered list" });
+    fireEvent.mouseDown(button);
+    fireEvent.click(button);
+
+    expect(editor.innerHTML).toContain("<ol>");
+    expect(editor.innerHTML).toContain("<li>One</li>");
+    expect(editor.innerHTML).toContain("<li>Two</li>");
+  });
+
+  it("converts selected bulleted lists to numbered lists", () => {
+    render(
+      <RichTextInputArea
+        aria-label="Reply"
+        defaultValue="<ul><li>One</li><li>Two</li></ul>"
+      />,
+    );
+
+    const editor = screen.getByRole("textbox");
+    selectEditorContents(editor);
+    const button = screen.getByRole("button", { name: "Numbered list" });
+    fireEvent.mouseDown(button);
+    fireEvent.click(button);
+
+    expect(editor.querySelector("ul")).toBeNull();
+    expect(editor.querySelector("ol")?.innerHTML).toBe(
+      "<li>One</li><li>Two</li>",
+    );
+  });
+
+  it("converts selected numbered lists to bulleted lists", () => {
+    render(
+      <RichTextInputArea
+        aria-label="Reply"
+        defaultValue="<ol><li>One</li><li>Two</li></ol>"
+      />,
+    );
+
+    const editor = screen.getByRole("textbox");
+    selectEditorContents(editor);
+    const button = screen.getByRole("button", { name: "Bulleted list" });
+    fireEvent.mouseDown(button);
+    fireEvent.click(button);
+
+    expect(editor.querySelector("ol")).toBeNull();
+    expect(editor.querySelector("ul")?.innerHTML).toBe(
+      "<li>One</li><li>Two</li>",
+    );
+  });
+
+  it("inserts quote markup from selected text", () => {
+    render(<RichTextInputArea aria-label="Reply" defaultValue="Quoted text" />);
+
+    const editor = screen.getByRole("textbox");
+    selectEditorContents(editor);
+    const button = screen.getByRole("button", { name: "Quote" });
+    fireEvent.mouseDown(button);
+    fireEvent.click(button);
+
+    expect(editor.innerHTML).toContain("<blockquote>Quoted text</blockquote>");
+  });
+
+  it("inserts inline links from the link toolbar button", () => {
+    document.execCommand = vi.fn(() => true);
+    const execCommand = vi
+      .spyOn(document, "execCommand")
+      .mockImplementation(() => true);
+    render(<RichTextInputArea aria-label="Reply" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Insert link" }));
+    fireEvent.change(screen.getByLabelText("URL"), {
+      target: { value: "https://example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Insert" }));
+
+    expect(execCommand).toHaveBeenCalledWith(
+      "insertHTML",
+      false,
+      '<a class="text-kumo-link underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors" href="https://example.com">https://example.com</a>',
+    );
+    execCommand.mockRestore();
+  });
+
+  it("inserts inline links with display text and normalizes bare domains", () => {
+    document.execCommand = vi.fn(() => true);
+    const execCommand = vi
+      .spyOn(document, "execCommand")
+      .mockImplementation(() => true);
+    render(<RichTextInputArea aria-label="Reply" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Insert link" }));
+    fireEvent.change(screen.getByLabelText("URL"), {
+      target: { value: "www.google.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Display text"), {
+      target: { value: "Google" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Insert" }));
+
+    expect(execCommand).toHaveBeenCalledWith(
+      "insertHTML",
+      false,
+      '<a class="text-kumo-link underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors" href="https://www.google.com">Google</a>',
+    );
+    execCommand.mockRestore();
+  });
+
+  it("opens editor links on modifier click", () => {
+    const open = vi.spyOn(window, "open").mockImplementation(() => null);
+    render(
+      <RichTextInputArea
+        aria-label="Reply"
+        defaultValue={'<a href="https://example.com">Example</a>'}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "Example" }), {
+      metaKey: true,
+    });
+
+    expect(open).toHaveBeenCalledWith(
+      "https://example.com/",
+      "_blank",
+      "noopener,noreferrer",
+    );
+    open.mockRestore();
+  });
+
+  it("reports edited HTML through onValueChange", () => {
+    const onValueChange = vi.fn();
+    render(
+      <RichTextInputArea aria-label="Reply" onValueChange={onValueChange} />,
+    );
+
+    const editor = screen.getByRole("textbox");
+    editor.innerHTML = "<strong>Hello</strong>";
+    fireEvent.input(editor);
+
+    expect(onValueChange).toHaveBeenCalledWith("<strong>Hello</strong>");
   });
 });

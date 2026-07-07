@@ -1,5 +1,13 @@
 export { Input, inputVariants, type InputProps } from "./input";
-export { InputArea, Textarea, type InputAreaProps } from "./input-area";
+export {
+  InputArea,
+  RichTextInputArea,
+  Textarea,
+  type InputAreaProps,
+  type InputAreaToolbarPlacement,
+  type RichTextInputAreaControl,
+  type RichTextInputAreaProps,
+} from "./input-area";
 
 // Re-export InputGroup from its new dedicated directory so that the subpath
 // `@cloudflare/kumo/components/input` continues to resolve InputGroup.

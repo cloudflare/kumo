@@ -17,6 +17,7 @@ import {
   InputAreaDisabledDemo,
   InputAreaBareDemo,
   InputAreaRowsDemo,
+  InputAreaToolbarDemo,
   InputAreaOptionalFieldDemo,
   InputAreaLabelTooltipDemo,
   InputAreaReactNodeLabelDemo,
@@ -113,6 +114,16 @@ export default function Example() {
 <p>Use the `rows` prop to control the initial height.</p>
 <ComponentExample demo="InputAreaRowsDemo">
   <InputAreaRowsDemo client:visible />
+</ComponentExample>
+
+### Rich Text Formatting
+
+<p>
+  Use `RichTextInputArea` when formatting controls should apply live rich text
+  inside the editable box. `InputArea` remains a native textarea for plain text.
+</p>
+<ComponentExample demo="InputAreaToolbarDemo">
+  <InputAreaToolbarDemo client:visible />
 </ComponentExample>
 
 ### Error State (String)

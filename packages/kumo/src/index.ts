@@ -107,8 +107,12 @@ export {
   inputVariants,
   type InputProps,
   InputArea,
+  RichTextInputArea,
   Textarea,
   type InputAreaProps,
+  type InputAreaToolbarPlacement,
+  type RichTextInputAreaControl,
+  type RichTextInputAreaProps,
 } from "./components/input";
 export {
   InputGroup,
