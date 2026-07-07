@@ -2,6 +2,7 @@ import { noTailwindDarkVariantRule } from "./no-tailwind-dark-variant.js";
 import { noPrimitiveColorsRule } from "./no-primitive-colors.js";
 import { enforceVariantStandardRule } from "./enforce-variant-standard.js";
 import { noCrossPackageImportsRule } from "./no-cross-package-imports.js";
+import { noFlowNodeCustomRenderRule } from "./no-flow-node-custom-render.js";
 
 const plugin = {
   meta: {
@@ -12,6 +13,7 @@ const plugin = {
     "no-primitive-colors": noPrimitiveColorsRule,
     "enforce-variant-standard": enforceVariantStandardRule,
     "no-cross-package-imports": noCrossPackageImportsRule,
+    "no-flow-node-custom-render": noFlowNodeCustomRenderRule,
   },
 };
 

@@ -3,6 +3,7 @@ import { noPrimitiveColorsRule } from "./no-primitive-colors.js";
 import { enforceVariantStandardRule } from "./enforce-variant-standard.js";
 import { noDeprecatedPropsRule } from "./no-deprecated-props.js";
 import { noCrossPackageImportsRule } from "./no-cross-package-imports.js";
+import { noFlowNodeCustomRenderRule } from "./no-flow-node-custom-render.js";
 
 const plugin = {
   meta: {
@@ -14,6 +15,7 @@ const plugin = {
     "enforce-variant-standard": enforceVariantStandardRule,
     "no-deprecated-props": noDeprecatedPropsRule,
     "no-cross-package-imports": noCrossPackageImportsRule,
+    "no-flow-node-custom-render": noFlowNodeCustomRenderRule,
   },
 };
 

@@ -9,6 +9,7 @@
     "kumo/no-tailwind-dark-variant": "error",
     "kumo/no-primitive-colors": "error",
     "kumo/no-cross-package-imports": "error",
+    "kumo/no-flow-node-custom-render": "error",
     "typescript/no-unsafe-type-assertion": "off",
     "typescript/no-unnecessary-template-expression": "off",
     "typescript/no-unnecessary-type-assertion": "off"
