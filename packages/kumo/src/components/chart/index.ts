@@ -2,6 +2,7 @@ export {
   TimeseriesChart,
   type TimeseriesChartProps,
   type TimeseriesData,
+  type TimeseriesMarker,
 } from "./TimeseriesChart";
 
 export {

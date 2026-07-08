@@ -10,6 +10,7 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
   BarChartDemo,
+  DeploymentMarkersChartDemo,
   CustomAxisLabelFormatDemo,
   GradientLineChartDemo,
   IncompleteDataChartDemo,
@@ -34,6 +35,21 @@ import {
 
   <ComponentExample demo="BasicLineChartDemo">
     <BasicLineChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Reference Markers
+
+<p>
+  Use the <code>markers</code> prop to render vertical reference lines at specific
+  timestamps, such as deployments, releases, or configuration changes. Markers
+  can include short labels, descriptions for tooltips, colors, and line styles.
+</p>
+
+  <ComponentExample demo="DeploymentMarkersChartDemo">
+    <DeploymentMarkersChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

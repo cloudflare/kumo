@@ -12,6 +12,7 @@ import {
 } from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
+import { ChartPalette } from "./Color";
 
 /** A single data series rendered on a `TimeseriesChart` */
 export interface TimeseriesData {
@@ -21,6 +22,19 @@ export interface TimeseriesData {
   data: [number, number][];
   /** Hex color string used for this series' line, bars, and legend dot */
   color: string;
+}
+
+export interface TimeseriesMarker {
+  /** Unix timestamp in milliseconds. */
+  timestamp: number;
+  /** Short label shown on/near the marker. */
+  label?: string;
+  /** Optional longer tooltip/body text. */
+  description?: string;
+  /** Optional marker color. Defaults to a neutral/subtle chart color. */
+  color?: string;
+  /** Optional line style. Defaults to dashed. */
+  lineStyle?: "solid" | "dashed" | "dotted";
 }
 
 /** Props for `TimeseriesChart` */
@@ -35,6 +49,8 @@ export interface TimeseriesChartProps {
   type?: "line" | "bar";
   /** Array of time series data to display on the chart */
   data: TimeseriesData[];
+  /** Vertical reference markers rendered on the time axis. */
+  markers?: TimeseriesMarker[];
   /** Label for the x-axis (time axis) */
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
@@ -165,11 +181,24 @@ interface TooltipRow {
   color: string;
 }
 
-interface TooltipState {
+interface SeriesTooltipState {
+  type: "series";
   ts: number;
   rows: TooltipRow[];
   hiddenCount: number;
 }
+
+interface MarkerTooltipState {
+  type: "marker";
+  ts: number;
+  label?: string;
+  description?: string;
+  color: string;
+  rows: TooltipRow[];
+  hiddenCount: number;
+}
+
+type TooltipState = SeriesTooltipState | MarkerTooltipState;
 
 /**
  * TimeseriesChart — a time-series line or bar chart.
@@ -209,6 +238,7 @@ export const TimeseriesChart = forwardRef<
     echarts,
     type = "line",
     data,
+    markers,
     xAxisName,
     xAxisTickCount,
     xAxisTickFormat,
@@ -262,6 +292,10 @@ export const TimeseriesChart = forwardRef<
     legendSelectedRef.current = null;
   }, [enableLegendSelection, isDarkMode]);
 
+  const markerHoverRef = useRef(false);
+  const markersRef = useRef(markers);
+  markersRef.current = markers;
+
   const tooltipModeRef = useRef(tooltipMode);
   tooltipModeRef.current = tooltipMode;
   const tooltipMaxItemsRef = useRef(tooltipMaxItems);
@@ -288,6 +322,11 @@ export const TimeseriesChart = forwardRef<
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
 
+  const markerColor = ChartPalette.text("primary", isDarkMode);
+  const markerLabelBackgroundColor = isDarkMode
+    ? "rgba(0, 0, 0, 0.5)"
+    : "rgba(255, 255, 255, 0.5)";
+
   const options = useMemo(() => {
     const transformSeries: Array<LineSeriesOption | BarSeriesOption> = [];
 
@@ -295,6 +334,49 @@ export const TimeseriesChart = forwardRef<
       type === "bar"
         ? ({ type: "bar", stack: "total" } as const)
         : ({ type: "line", showSymbol: false } as const);
+
+    const markerMarkLine = markers?.length
+      ? {
+          symbol: "none" as const,
+          silent: false,
+          z: 10,
+          lineStyle: {
+            type: "dashed" as const,
+            color: markerColor,
+            width: 1,
+          },
+          label: {
+            show: true,
+            formatter: (params: { name?: string }) => params.name ?? "",
+            position: "insideEndTop" as const,
+            color: markerColor,
+            backgroundColor: markerLabelBackgroundColor,
+            padding: [2, 4],
+            borderRadius: 6,
+            shadowBlur: 8,
+            shadowColor: markerLabelBackgroundColor,
+          },
+          data: markers.map((marker) => ({
+            name: marker.label,
+            xAxis: marker.timestamp,
+            lineStyle: {
+              type: marker.lineStyle ?? "dashed",
+              color: marker.color ?? markerColor,
+              width: 1,
+            },
+            label: {
+              show: Boolean(marker.label),
+              color: marker.color ?? markerColor,
+              backgroundColor: markerLabelBackgroundColor,
+              padding: [2, 4],
+              borderRadius: 6,
+              shadowBlur: 8,
+              shadowColor: markerLabelBackgroundColor,
+            },
+            tooltip: { marker },
+          })),
+        }
+      : undefined;
 
     for (const s of data) {
       const incompleteBeforePoints =
@@ -332,6 +414,9 @@ export const TimeseriesChart = forwardRef<
         name: s.name,
         emphasis: { focus: "series" },
         ...(areaStyle ? { areaStyle } : {}),
+        ...(transformSeries.length === 0 && markerMarkLine
+          ? { markLine: markerMarkLine }
+          : {}),
         ...seriesType,
       });
 
@@ -358,6 +443,15 @@ export const TimeseriesChart = forwardRef<
           data: incompleteAfterPoints,
         });
       }
+    }
+
+    if (transformSeries.length === 0 && markerMarkLine) {
+      transformSeries.push({
+        data: [],
+        name: "Markers",
+        type: type === "bar" ? "bar" : "line",
+        markLine: markerMarkLine,
+      });
     }
 
     return {
@@ -443,34 +537,24 @@ export const TimeseriesChart = forwardRef<
     enableLegendSelection,
     echarts,
     ariaDescription,
+    markers,
+    markerColor,
+    markerLabelBackgroundColor,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
     return {
       updateaxispointer: (params: any) => {
+        if (markerHoverRef.current) return;
+
         const ts: number | undefined = params?.axesInfo?.[0]?.value;
         if (ts == null) return;
 
-        const seenNames = new Set<string>();
-        const allRows: TooltipRow[] = [];
-
-        // Respect legend selection: series toggled off via the legend
-        // (legendUnSelect / legendToggleSelect) should not appear in the tooltip.
-        // Read from a ref kept in sync by `legendselectchanged` — avoids the
-        // expensive `getOption()` deep-clone on every pointer move.
-        const legendSelected = legendSelectedRef.current;
-
-        for (const s of dataRef.current) {
-          if (seenNames.has(s.name)) continue;
-          if (legendSelected && legendSelected[s.name] === false) continue;
-          seenNames.add(s.name);
-          const value = findNearest(s.data, ts);
-          if (value != null)
-            allRows.push({ name: s.name, value, color: s.color });
-        }
-
-        // Sort by value descending so highest series appears first
-        allRows.sort((a, b) => b.value - a.value);
+        const allRows = getAllTooltipRowsAtTimestamp(
+          dataRef.current,
+          ts,
+          legendSelectedRef.current,
+        );
 
         let rows: TooltipRow[];
         let hiddenCount = 0;
@@ -498,18 +582,54 @@ export const TimeseriesChart = forwardRef<
             rows = allRows.slice(0, 1);
           }
         } else {
-          const max = tooltipMaxItemsRef.current;
-          rows = allRows.slice(0, max);
-          hiddenCount = Math.max(0, allRows.length - max);
+          ({ rows, hiddenCount } = limitTooltipRows(
+            allRows,
+            tooltipMaxItemsRef.current,
+          ));
         }
 
-        const nextState: TooltipState = { ts, rows, hiddenCount };
+        const nextState: TooltipState = {
+          type: "series",
+          ts,
+          rows,
+          hiddenCount,
+        };
         setTooltipState((prev) => {
           if (isSameTooltipState(prev, nextState)) return prev;
           return nextState;
         });
       },
+      mouseover: (params) => {
+        if (params.componentType !== "markLine") return;
+        markerHoverRef.current = true;
+
+        const marker = findMarkerForEvent(params, markersRef.current);
+        if (!marker) return;
+
+        const { rows, hiddenCount } = getTooltipRowsAtTimestamp(
+          dataRef.current,
+          marker.timestamp,
+          legendSelectedRef.current,
+          tooltipMaxItemsRef.current,
+        );
+
+        setTooltipState({
+          type: "marker",
+          ts: marker.timestamp,
+          label: marker.label,
+          description: marker.description,
+          color: marker.color ?? markerColor,
+          rows,
+          hiddenCount,
+        });
+      },
+      mouseout: (params) => {
+        if (params.componentType !== "markLine") return;
+        markerHoverRef.current = false;
+        setTooltipState(null);
+      },
       globalout: () => {
+        markerHoverRef.current = false;
         setTooltipState(null);
       },
       // Keep the tooltip in sync with legend selection. Each action fires a
@@ -534,7 +654,7 @@ export const TimeseriesChart = forwardRef<
         },
       }),
     };
-  }, [onTimeRangeChange]);
+  }, [onTimeRangeChange, markerColor]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
@@ -637,6 +757,37 @@ const TooltipContent = memo(function TooltipContent({
   state,
   formatValue,
 }: TooltipContentProps) {
+  if (state.type === "marker") {
+    return (
+      <>
+        <div className="text-xs font-semibold text-kumo-default mb-1">
+          {state.label ?? "Reference marker"}
+        </div>
+        <div className="flex items-center gap-2 text-xs text-kumo-subtle">
+          <span
+            className="w-3 h-3 rounded-full shrink-0"
+            style={{ backgroundColor: state.color }}
+          />
+          <span>{formatTimestamp(state.ts)}</span>
+        </div>
+        {state.description && (
+          <div className="text-xs text-kumo-default mt-1">
+            {state.description}
+          </div>
+        )}
+        {state.rows.length > 0 && (
+          <div className="border-t border-kumo-line mt-2 pt-2">
+            <SeriesTooltipRows
+              rows={state.rows}
+              hiddenCount={state.hiddenCount}
+              formatValue={formatValue}
+            />
+          </div>
+        )}
+      </>
+    );
+  }
+
   const { ts, rows, hiddenCount } = state;
 
   return (
@@ -644,6 +795,26 @@ const TooltipContent = memo(function TooltipContent({
       <div className="text-xs font-semibold text-kumo-default mb-1">
         {formatTimestamp(ts)}
       </div>
+      <SeriesTooltipRows
+        rows={rows}
+        hiddenCount={hiddenCount}
+        formatValue={formatValue}
+      />
+    </>
+  );
+});
+
+function SeriesTooltipRows({
+  rows,
+  hiddenCount,
+  formatValue,
+}: {
+  rows: TooltipRow[];
+  hiddenCount: number;
+  formatValue?: (v: number) => string;
+}) {
+  return (
+    <>
       {rows.map((row) => (
         <div
           key={row.name}
@@ -673,7 +844,7 @@ const TooltipContent = memo(function TooltipContent({
       )}
     </>
   );
-});
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -693,10 +864,79 @@ function findNearest(data: [number, number][], ts: number): number | null {
   return data[lo][1];
 }
 
+function getAllTooltipRowsAtTimestamp(
+  data: TimeseriesData[],
+  ts: number,
+  legendSelected: Record<string, boolean> | null,
+): TooltipRow[] {
+  const seenNames = new Set<string>();
+  const rows: TooltipRow[] = [];
+
+  for (const s of data) {
+    if (seenNames.has(s.name)) continue;
+    if (legendSelected && legendSelected[s.name] === false) continue;
+    seenNames.add(s.name);
+    const value = findNearest(s.data, ts);
+    if (value != null) rows.push({ name: s.name, value, color: s.color });
+  }
+
+  return rows.sort((a, b) => b.value - a.value);
+}
+
+function limitTooltipRows(
+  rows: TooltipRow[],
+  max: number,
+): { rows: TooltipRow[]; hiddenCount: number } {
+  return {
+    rows: rows.slice(0, max),
+    hiddenCount: Math.max(0, rows.length - max),
+  };
+}
+
+function getTooltipRowsAtTimestamp(
+  data: TimeseriesData[],
+  ts: number,
+  legendSelected: Record<string, boolean> | null,
+  max: number,
+): { rows: TooltipRow[]; hiddenCount: number } {
+  return limitTooltipRows(
+    getAllTooltipRowsAtTimestamp(data, ts, legendSelected),
+    max,
+  );
+}
+
+function findMarkerForEvent(
+  params: {
+    name?: string;
+    data?: { xAxis?: number; tooltip?: { marker?: TimeseriesMarker } };
+  },
+  markers: TimeseriesMarker[] | undefined,
+): TimeseriesMarker | undefined {
+  const markerFromData = params.data?.tooltip?.marker;
+  if (markerFromData) return markerFromData;
+
+  return markers?.find(
+    (marker) =>
+      (params.name && marker.label === params.name) ||
+      (params.data?.xAxis != null && marker.timestamp === params.data.xAxis),
+  );
+}
+
 /** Shallow-compare two tooltip states so React can skip renders when nothing changed. */
 function isSameTooltipState(a: TooltipState | null, b: TooltipState): boolean {
+  if (!a || a.type !== b.type) return false;
+
+  if (a.type === "marker" && b.type === "marker") {
+    return (
+      a.ts === b.ts &&
+      a.label === b.label &&
+      a.description === b.description &&
+      a.color === b.color
+    );
+  }
+  if (a.type !== "series" || b.type !== "series") return false;
+
   if (
-    !a ||
     a.ts !== b.ts ||
     a.hiddenCount !== b.hiddenCount ||
     a.rows.length !== b.rows.length
