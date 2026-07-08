@@ -1221,7 +1221,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     if (tooltip) {
       button = (
         <Tooltip
-          content={showTooltip ? tooltip : null}
+          content={tooltip}
+          disabled={!showTooltip}
           side="right"
           render={button}
         />
