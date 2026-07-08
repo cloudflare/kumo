@@ -53,7 +53,11 @@ function attr(name: string, value: any) {
 }
 
 function refAttr(name = "ref") {
-  return attr("ref", expression(id(name)));
+  return refAttrExpression(id(name));
+}
+
+function refAttrExpression(value: any) {
+  return attr("ref", expression(value));
 }
 
 function propsSpread(name = "props") {
@@ -132,6 +136,31 @@ function forwardRefCall(fn: any, callee: any = id("forwardRef")) {
   };
 }
 
+function callExpression(callee: any, args: any[]) {
+  return {
+    type: "CallExpression",
+    callee,
+    arguments: args,
+  };
+}
+
+function reactForwardRefImport(localName = "forwardRef") {
+  return {
+    type: "ImportDeclaration",
+    source: {
+      type: "Literal",
+      value: "react",
+    },
+    specifiers: [
+      {
+        type: "ImportSpecifier",
+        imported: id("forwardRef"),
+        local: id(localName),
+      },
+    ],
+  };
+}
+
 function variableDeclarator(name: string, init: any) {
   return {
     type: "VariableDeclarator",
@@ -154,6 +183,17 @@ function objectPatternWithRest(restName: string) {
         argument: id(restName),
       },
     ],
+  };
+}
+
+function assignmentPattern(left: any) {
+  return {
+    type: "AssignmentPattern",
+    left,
+    right: {
+      type: "ObjectExpression",
+      properties: [],
+    },
   };
 }
 
@@ -210,6 +250,55 @@ describe("no-flow-node-custom-render", () => {
     );
   });
 
+  it("allows default destructured props rest", () => {
+    const component = variableDeclarator(
+      "CustomNode",
+      forwardRefCall(
+        functionExpression({
+          propsParam: assignmentPattern(objectPatternWithRest("restProps")),
+          attributes: [refAttr(), propsSpread("restProps")],
+        }),
+      ),
+    );
+
+    expect(runRule([component, flowNodeWithRender("CustomNode")])).toHaveLength(
+      0,
+    );
+  });
+
+  it("allows HOC-wrapped forwardRef components", () => {
+    const component = variableDeclarator(
+      "CustomNode",
+      callExpression(id("memo"), [
+        forwardRefCall(
+          functionExpression({ attributes: [refAttr(), propsSpread()] }),
+        ),
+      ]),
+    );
+
+    expect(runRule([component, flowNodeWithRender("CustomNode")])).toHaveLength(
+      0,
+    );
+  });
+
+  it("allows aliased forwardRef imports", () => {
+    const component = variableDeclarator(
+      "CustomNode",
+      forwardRefCall(
+        functionExpression({ attributes: [refAttr(), propsSpread()] }),
+        id("fr"),
+      ),
+    );
+
+    expect(
+      runRule([
+        reactForwardRefImport("fr"),
+        component,
+        flowNodeWithRender("CustomNode"),
+      ]),
+    ).toHaveLength(0);
+  });
+
   it("ignores intrinsic render elements", () => {
     const reports = runRule([
       {
@@ -255,6 +344,24 @@ describe("no-flow-node-custom-render", () => {
 
     expect(reports).toHaveLength(1);
     expect(reports[0].messageId).toBe("missingProps");
+  });
+
+  it("does not count member property names as forwarded refs", () => {
+    const component = variableDeclarator(
+      "CustomNode",
+      forwardRefCall(
+        functionExpression({
+          attributes: [
+            refAttrExpression(member("callbacks", "ref")),
+            propsSpread(),
+          ],
+        }),
+      ),
+    );
+    const reports = runRule([component, flowNodeWithRender("CustomNode")]);
+
+    expect(reports).toHaveLength(1);
+    expect(reports[0].messageId).toBe("missingRef");
   });
 
   it("checks components declared after Flow.Node usage", () => {

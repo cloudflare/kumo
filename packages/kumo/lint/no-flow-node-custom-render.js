@@ -1,6 +1,12 @@
 import { defineRule } from "oxlint";
 
-function traverse(node, visitors, seen = new WeakSet()) {
+function traverse(
+  node,
+  visitors,
+  seen = new WeakSet(),
+  parent = null,
+  parentKey = null,
+) {
   if (!node || typeof node !== "object" || seen.has(node)) {
     return;
   }
@@ -9,7 +15,7 @@ function traverse(node, visitors, seen = new WeakSet()) {
 
   const visitor = visitors[node.type];
   if (visitor) {
-    visitor(node);
+    visitor(node, parent, parentKey);
   }
 
   for (const [key, value] of Object.entries(node)) {
@@ -25,10 +31,10 @@ function traverse(node, visitors, seen = new WeakSet()) {
 
     if (Array.isArray(value)) {
       for (const child of value) {
-        traverse(child, visitors, seen);
+        traverse(child, visitors, seen, node, key);
       }
     } else if (value && typeof value === "object") {
-      traverse(value, visitors, seen);
+      traverse(value, visitors, seen, node, key);
     }
   }
 }
@@ -209,11 +215,23 @@ function getRefParamNames(param) {
   return names;
 }
 
+function isNonComputedMemberProperty(identifier, parent, parentKey) {
+  return (
+    parent?.type === "MemberExpression" &&
+    parentKey === "property" &&
+    parent.property === identifier &&
+    !parent.computed
+  );
+}
+
 function expressionContainsIdentifier(node, names) {
   let found = false;
   traverse(node, {
-    Identifier(identifier) {
-      if (names.has(identifier.name)) {
+    Identifier(identifier, parent, parentKey) {
+      if (
+        names.has(identifier.name) &&
+        !isNonComputedMemberProperty(identifier, parent, parentKey)
+      ) {
         found = true;
       }
     },
