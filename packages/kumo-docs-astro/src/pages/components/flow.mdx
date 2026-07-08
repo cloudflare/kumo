@@ -20,7 +20,6 @@ import {
   FlowDisabledDemo,
   FlowParallelAlignEndDemo,
   FlowParallelNestedListDemo,
-  FlowSidebarBugDemo,
 } from "~/components/demos/FlowDemo";
 
 {/* Hero Demo */}
@@ -195,24 +194,6 @@ export default function Example() {
   </p>
   <ComponentExample demo="FlowParallelAlignEndDemo">
     <FlowParallelAlignEndDemo client:visible />
-  </ComponentExample>
-</ComponentSection>
-
-{/* Known Issue */}
-
-<ComponentSection>
-
-## Known Issue: Sidebar / Layout Shift
-
-  <p>
-    Toggling the sidebar shifts the Flow container's viewport position. Because
-    connector coordinates are computed from stale `getBoundingClientRect` values
-    stored in state (captured before the layout shift), the connector lines jump
-    out of alignment until the next remeasure is triggered. Scroll the page
-    while the sidebar is open to hit the same bug via the scroll path.
-  </p>
-  <ComponentExample demo="FlowSidebarBugDemo">
-    <FlowSidebarBugDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

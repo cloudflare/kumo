@@ -35,7 +35,7 @@ const EXCLUDED_EXPORTS = new Set([
 
 const COMPATIBILITY_EXPORTS: Record<string, string[]> = {
   "otp-field": [
-    'export { OTPField as OTPFieldPreview } from "@base-ui/react/otp-field";',
+    'export { OTPField, OTPField as OTPFieldPreview } from "@base-ui/react/otp-field";',
   ],
 };
 

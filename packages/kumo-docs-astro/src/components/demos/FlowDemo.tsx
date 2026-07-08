@@ -1,6 +1,6 @@
 import { forwardRef, useState } from "react";
 import { Flow } from "@cloudflare/kumo";
-import { CaretDownIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 const ExpandableNode = forwardRef<
   HTMLLIElement,
@@ -75,7 +75,10 @@ export function FlowParallelDemo() {
     <Flow>
       <Flow.Node>Start</Flow.Node>
       <Flow.Parallel>
-        <Flow.Node>Branch A</Flow.Node>
+        <Flow.List>
+          <Flow.Node>Branch A1</Flow.Node>
+          <Flow.Node>Branch A2</Flow.Node>
+        </Flow.List>
         <Flow.Node>Branch B</Flow.Node>
         <Flow.Node>Branch C</Flow.Node>
       </Flow.Parallel>
@@ -88,7 +91,9 @@ export function FlowParallelDemo() {
 export function FlowCustomContentDemo() {
   return (
     <Flow>
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-hairline" />} />
+      <Flow.Node
+        render={<li className="rounded-full size-4 bg-kumo-hairline" />}
+      />
       <Flow.Node
         render={
           <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
@@ -159,7 +164,9 @@ export function FlowAnchorDemo() {
 export function FlowCenteredDemo() {
   return (
     <Flow align="center">
-      <Flow.Node render={<li className="rounded-full size-4 bg-kumo-hairline" />} />
+      <Flow.Node
+        render={<li className="rounded-full size-4 bg-kumo-hairline" />}
+      />
       <Flow.Node>my-worker</Flow.Node>
       <Flow.Node
         render={
@@ -242,75 +249,6 @@ export function FlowParallelNestedListDemo() {
   );
 }
 
-/**
- * Repro: connector lines misalign when a sidebar shifts the layout.
- * Toggle the sidebar to see connectors jump out of place (the bug) or
- * stay aligned (after the fix). Scroll the page while the sidebar is
- * open to trigger the same stale-rect issue.
- */
-export function FlowSidebarBugDemo() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  return (
-    <div className="relative overflow-hidden rounded-lg ring ring-kumo-hairline bg-kumo-base min-h-64 flex flex-col">
-      {/* Toolbar */}
-      <div className="flex items-center gap-2 border-b border-kumo-hairline px-3 py-2 shrink-0">
-        <button
-          type="button"
-          onClick={() => setSidebarOpen((v) => !v)}
-          className="flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium text-kumo-default hover:bg-kumo-elevated transition-colors"
-        >
-          <SidebarSimpleIcon className="size-4" />
-          {sidebarOpen ? "Close sidebar" : "Open sidebar"}
-        </button>
-        <span className="text-xs text-kumo-subtle">
-          Toggle the sidebar — connectors should stay aligned
-        </span>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 min-h-0">
-        {/* Sidebar */}
-        <div
-          className="shrink-0 overflow-hidden transition-[width] duration-300 border-r border-kumo-hairline bg-kumo-elevated"
-          style={{ width: sidebarOpen ? 160 : 0 }}
-        >
-          <div className="w-40 p-3 space-y-1">
-            <p className="text-xs font-semibold text-kumo-subtle uppercase tracking-wide mb-2">
-              Sidebar
-            </p>
-            {["Overview", "Settings", "Logs", "Analytics"].map((item) => (
-              <div
-                key={item}
-                className="rounded px-2 py-1 text-sm text-kumo-default hover:bg-kumo-base cursor-default"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Main content with Flow — fixed height forces inner scroll */}
-        <div className="flex-1 overflow-auto p-4 h-48">
-          <Flow>
-            <Flow.Node>HTTP Request</Flow.Node>
-            <Flow.Parallel>
-              <Flow.Node>Auth Check</Flow.Node>
-              <Flow.Node>Rate Limit</Flow.Node>
-              <Flow.Node>Cache Lookup</Flow.Node>
-            </Flow.Parallel>
-            <Flow.Node>Route Handler</Flow.Node>
-            <Flow.Parallel>
-              <Flow.Node>Log</Flow.Node>
-              <Flow.Node>Respond</Flow.Node>
-            </Flow.Parallel>
-          </Flow>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /** Flow diagram with two sequential parallel groups back-to-back */
 export function FlowSequentialParallelDemo() {
   return (
@@ -326,6 +264,28 @@ export function FlowSequentialParallelDemo() {
       </Flow.Parallel>
       <Flow.Node>Return Response</Flow.Node>
     </Flow>
+  );
+}
+
+/** Flow diagram where a node can be dynamically added and removed */
+export function FlowDynamicNodeDemo() {
+  const [showMiddle, setShowMiddle] = useState(false);
+
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <button
+        type="button"
+        onClick={() => setShowMiddle((v) => !v)}
+        className="rounded-md px-3 py-1.5 text-sm font-medium ring ring-kumo-line bg-kumo-elevated hover:bg-kumo-base text-kumo-default transition-colors"
+      >
+        {showMiddle ? "Remove middle node" : "Add middle node"}
+      </button>
+      <Flow>
+        <Flow.Node>Start</Flow.Node>
+        {showMiddle && <Flow.Node>Middle</Flow.Node>}
+        <Flow.Node>End</Flow.Node>
+      </Flow>
+    </div>
   );
 }
 

@@ -37,7 +37,7 @@ export * from "@base-ui/react/meter";
 export * from "@base-ui/react/navigation-menu";
 export * from "@base-ui/react/number-field";
 export * from "@base-ui/react/otp-field";
-export { OTPField as OTPFieldPreview } from "@base-ui/react/otp-field";
+export { OTPField, OTPField as OTPFieldPreview } from "@base-ui/react/otp-field";
 export * from "@base-ui/react/popover";
 export * from "@base-ui/react/preview-card";
 export * from "@base-ui/react/progress";

@@ -27,17 +27,6 @@ type DescendantsContextType<DescendantType = Record<string, unknown>> = {
   ) => { unregister: () => void };
   descendants: DescendantInfo<DescendantType>[];
   claimRenderOrder: (id: string) => number;
-  /**
-   * Counter that increments whenever any descendant registers, unregisters, or
-   * reports a size change. Nodes can depend on this value to know when they
-   * should remeasure their `getBoundingClientRect`.
-   */
-  measurementEpoch: number;
-  /**
-   * Call this when a node's own size changes (e.g. from a ResizeObserver) so
-   * that sibling nodes know to remeasure their positions.
-   */
-  notifySizeChange: () => void;
 };
 
 // ============================================================================
@@ -50,12 +39,6 @@ const DescendantsContext = createContext<DescendantsContextType | null>(null);
 // Hook
 // ============================================================================
 
-/**
- * Hook that manages descendant registration and provides access to all registered descendants.
- * This hook contains all the logic for tracking and managing descendants.
- *
- * @returns The descendants context value with register function and descendants array
- */
 export function useDescendants<
   DescendantType extends Record<string, unknown>,
 >(): DescendantsContextType<DescendantType> {
@@ -66,27 +49,19 @@ export function useDescendants<
     new Map(),
   );
 
-  const [measurementEpoch, setMeasurementEpoch] = useState(0);
-
-  // Track render order - resets each render cycle
+  // Track render order — resets each render cycle
   const renderOrderCounterRef = useRef(0);
   const renderOrderMapRef = useRef<Map<string, number>>(new Map());
 
   // Reset counter at the start of each render cycle
-  // This runs synchronously during render, before any children claim their order
   renderOrderCounterRef.current = 0;
   renderOrderMapRef.current.clear();
 
-  // Called during render to claim a slot in the render order
   const claimRenderOrder = useCallback((id: string): number => {
     if (!renderOrderMapRef.current.has(id)) {
       renderOrderMapRef.current.set(id, renderOrderCounterRef.current++);
     }
     return renderOrderMapRef.current.get(id) as number;
-  }, []);
-
-  const notifySizeChange = useCallback(() => {
-    setMeasurementEpoch((prev) => prev + 1);
   }, []);
 
   const register = useCallback(
@@ -95,9 +70,10 @@ export function useDescendants<
       renderOrder: number,
       props: DescendantType = {} as DescendantType,
     ) => {
-      const isNewDescendant = !descendantsRef.current.has(id);
+      const existing = descendantsRef.current.get(id);
+      const isNew = existing === undefined;
+      const orderChanged = !isNew && existing.renderOrder !== renderOrder;
 
-      // Add descendant to the map with render order
       const descendantInfo: DescendantInfo<DescendantType> = {
         id,
         props,
@@ -105,28 +81,25 @@ export function useDescendants<
       };
       descendantsRef.current.set(id, descendantInfo);
 
-      // Update state with all descendants sorted by render order
-      const sortedDescendants = Array.from(
-        descendantsRef.current.values(),
-      ).sort((a, b) => a.renderOrder - b.renderOrder);
-      setRegisteredDescendants(sortedDescendants);
-
-      // Bump the epoch when a new node enters so siblings remeasure their
-      // positions. We intentionally skip this for prop-only updates to
-      // avoid infinite remeasure loops.
-      if (isNewDescendant) {
-        setMeasurementEpoch((prev) => prev + 1);
+      // Only re-sort and notify React when the list structure changed (new
+      // entry or render-order shift). Prop-only updates on an already-registered
+      // descendant must NOT trigger setRegisteredDescendants — that would cause
+      // every consumer of the descendants array to re-render, which fans out
+      // into reportTree → setFlowState → context change → children re-render
+      // → register again → infinite loop.
+      if (isNew || orderChanged) {
+        const sorted = Array.from(descendantsRef.current.values()).sort(
+          (a, b) => a.renderOrder - b.renderOrder,
+        );
+        setRegisteredDescendants(sorted);
       }
 
-      // Return unregister function
       const unregister = () => {
         descendantsRef.current.delete(id);
         const remainingDescendants = Array.from(
           descendantsRef.current.values(),
         ).sort((a, b) => a.renderOrder - b.renderOrder);
         setRegisteredDescendants(remainingDescendants);
-        // Bump the epoch so siblings remeasure after a node exits.
-        setMeasurementEpoch((prev) => prev + 1);
       };
 
       return { unregister };
@@ -139,16 +112,8 @@ export function useDescendants<
       register,
       descendants: registeredDescendants,
       claimRenderOrder,
-      measurementEpoch,
-      notifySizeChange,
     }),
-    [
-      register,
-      registeredDescendants,
-      claimRenderOrder,
-      measurementEpoch,
-      notifySizeChange,
-    ],
+    [register, registeredDescendants, claimRenderOrder],
   );
 
   return contextValue;
@@ -177,16 +142,9 @@ export function DescendantsProvider<T extends Record<string, unknown>>({
 }
 
 // ============================================================================
-// Context Hook
+// Context Hooks
 // ============================================================================
 
-/**
- * Hook to access the descendants context from within a DescendantsProvider.
- * This allows callers to access the descendants data and register function.
- *
- * @returns The descendants context value
- * @throws Error if used outside of DescendantsProvider
- */
 export function useDescendantsContext<
   T extends Record<string, unknown>,
 >(): DescendantsContextType<T> {
@@ -201,12 +159,6 @@ export function useDescendantsContext<
   return context as DescendantsContextType<T>;
 }
 
-/**
- * Hook to optionally access the descendants context.
- * Returns null if not within a DescendantsProvider (does not throw).
- *
- * @returns The descendants context value or null
- */
 export function useOptionalDescendantsContext<
   T extends Record<string, unknown>,
 >(): DescendantsContextType<T> | null {
@@ -214,38 +166,6 @@ export function useOptionalDescendantsContext<
   return context as DescendantsContextType<T> | null;
 }
 
-// ============================================================================
-// Hook
-// ============================================================================
-
-/**
- * Hook that allows a descendant component to register itself with a parent
- * and returns the index of the descendant in the parent's list.
- *
- * @example
- * ```tsx
- * function Parent() {
- *   return (
- *     <DescendantsProvider>
- *       <Descendant />
- *       <Descendant />
- *       <Descendant />
- *     </DescendantsProvider>
- *   );
- * }
- *
- * function Descendant() {
- *   const index = useDescendantIndex();
- *   return <div>I am descendant {index}</div>;
- * }
- *
- * // With props
- * function Descendant() {
- *   const index = useDescendantIndex({ name: "Descendant 1", type: "primary" });
- *   return <div>I am descendant {index}</div>;
- * }
- * ```
- */
 // ============================================================================
 // Descendant Index Hook
 // ============================================================================
@@ -258,48 +178,48 @@ export function useDescendantIndex<T extends Record<string, unknown>>(
   const generatedId = useId();
   const id = customId ?? generatedId;
 
-  // Claim render order during render (synchronously, not in useEffect)
-  // This captures the order in which descendants render
   const renderOrder = context.claimRenderOrder(id);
 
-  const unregisterRef = useRef<(() => void) | null>(null);
+  // Keep mutable refs so the mount/unmount effect always has current values
+  // without needing to re-run (which would cause the unregister/re-register
+  // cycle that triggers infinite parent re-renders).
   const registerRef = useRef(context.register);
-
-  // Keep refs in sync with context
   registerRef.current = context.register;
+  const propsRef = useRef(props);
+  propsRef.current = props;
+  const renderOrderRef = useRef(renderOrder);
+  renderOrderRef.current = renderOrder;
 
+  // Mount: register. Unmount: unregister. Never runs again for the same id.
   useEffect(() => {
-    // Register or update this descendant with its render order
-    const { unregister } = registerRef.current(id, renderOrder, props);
+    const { unregister } = registerRef.current(
+      id,
+      renderOrderRef.current,
+      propsRef.current,
+    );
+    return unregister;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
-    // Store unregister function if not already stored
-    if (!unregisterRef.current) {
-      unregisterRef.current = unregister;
-    }
+  // Prop / order updates: keep the stored entry fresh without removing it
+  // first. register() skips setRegisteredDescendants when the entry already
+  // exists at the same order, so this never triggers a parent re-render for
+  // pure prop changes.
+  //
+  // `props` is intentionally excluded from the dependency array: it is an
+  // object recreated on every render, so including it would cause this effect
+  // to fire every render → register() → setRegisteredDescendants() → parent
+  // re-render → new props object → infinite loop. propsRef.current is kept
+  // up-to-date synchronously (line above), so the effect always reads the
+  // latest props without needing it as a dep.
+  useEffect(() => {
+    registerRef.current(id, renderOrder, propsRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, renderOrder]);
 
-    // Cleanup: unregister when component unmounts
-    return () => {
-      if (unregisterRef.current) {
-        unregisterRef.current();
-        unregisterRef.current = null;
-      }
-    };
-  }, [id, renderOrder, props]);
-
-  // Derive index from sorted descendants array
   const index = useMemo(() => {
     return context.descendants.findIndex((descendant) => descendant.id === id);
   }, [context.descendants, id]);
 
-  const getPrevious = useCallback((): DescendantInfo<T> | undefined => {
-    if (index <= 0) return undefined;
-    return context.descendants[index - 1];
-  }, [context.descendants, index]);
-
-  const getNext = useCallback((): DescendantInfo<T> | undefined => {
-    if (index < 0 || index >= context.descendants.length - 1) return undefined;
-    return context.descendants[index + 1];
-  }, [context.descendants, index]);
-
-  return { index, id, getPrevious, getNext };
+  return { index, id };
 }

@@ -3,7 +3,6 @@ import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption, SeriesOption, SetOptionOpts } from "echarts";
 import {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -13,6 +12,21 @@ import {
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
 import { ChartPalette } from "./Color";
+import {
+  buildTimeseriesMarkerAnnotations,
+  clusterTimeseriesMarkers,
+  getApproximateMarkerClusterInterval,
+  getTimeseriesMarkerFromEvent,
+  type TimeseriesMarker,
+} from "./timeseries-markers";
+import {
+  TooltipContent,
+  type MarkerTooltipState,
+  type TooltipRow,
+  type TooltipState,
+} from "./timeseries-tooltip";
+
+export type { TimeseriesMarker } from "./timeseries-markers";
 
 /** A single data series rendered on a `TimeseriesChart` */
 export interface TimeseriesData {
@@ -22,19 +36,6 @@ export interface TimeseriesData {
   data: [number, number][];
   /** Hex color string used for this series' line, bars, and legend dot */
   color: string;
-}
-
-export interface TimeseriesMarker {
-  /** Unix timestamp in milliseconds. */
-  timestamp: number;
-  /** Short label shown on/near the marker. */
-  label?: string;
-  /** Optional longer tooltip/body text. */
-  description?: string;
-  /** Optional marker color. Defaults to a neutral/subtle chart color. */
-  color?: string;
-  /** Optional line style. Defaults to dashed. */
-  lineStyle?: "solid" | "dashed" | "dotted";
 }
 
 /** Props for `TimeseriesChart` */
@@ -175,30 +176,7 @@ export interface TimeseriesChartProps {
   optionUpdateBehavior?: SetOptionOpts;
 }
 
-interface TooltipRow {
-  name: string;
-  value: number;
-  color: string;
-}
-
-interface SeriesTooltipState {
-  type: "series";
-  ts: number;
-  rows: TooltipRow[];
-  hiddenCount: number;
-}
-
-interface MarkerTooltipState {
-  type: "marker";
-  ts: number;
-  label?: string;
-  description?: string;
-  color: string;
-  rows: TooltipRow[];
-  hiddenCount: number;
-}
-
-type TooltipState = SeriesTooltipState | MarkerTooltipState;
+const DEFAULT_X_AXIS_TICK_COUNT = 5;
 
 /**
  * TimeseriesChart — a time-series line or bar chart.
@@ -293,8 +271,7 @@ export const TimeseriesChart = forwardRef<
   }, [enableLegendSelection, isDarkMode]);
 
   const markerHoverRef = useRef(false);
-  const markersRef = useRef(markers);
-  markersRef.current = markers;
+  const activeMarkerKeyRef = useRef<string | null>(null);
 
   const tooltipModeRef = useRef(tooltipMode);
   tooltipModeRef.current = tooltipMode;
@@ -335,48 +312,17 @@ export const TimeseriesChart = forwardRef<
         ? ({ type: "bar", stack: "total" } as const)
         : ({ type: "line", showSymbol: false } as const);
 
-    const markerMarkLine = markers?.length
-      ? {
-          symbol: "none" as const,
-          silent: false,
-          z: 10,
-          lineStyle: {
-            type: "dashed" as const,
-            color: markerColor,
-            width: 1,
-          },
-          label: {
-            show: true,
-            formatter: (params: { name?: string }) => params.name ?? "",
-            position: "insideEndTop" as const,
-            color: markerColor,
-            backgroundColor: markerLabelBackgroundColor,
-            padding: [2, 4],
-            borderRadius: 6,
-            shadowBlur: 8,
-            shadowColor: markerLabelBackgroundColor,
-          },
-          data: markers.map((marker) => ({
-            name: marker.label,
-            xAxis: marker.timestamp,
-            lineStyle: {
-              type: marker.lineStyle ?? "dashed",
-              color: marker.color ?? markerColor,
-              width: 1,
-            },
-            label: {
-              show: Boolean(marker.label),
-              color: marker.color ?? markerColor,
-              backgroundColor: markerLabelBackgroundColor,
-              padding: [2, 4],
-              borderRadius: 6,
-              shadowBlur: 8,
-              shadowColor: markerLabelBackgroundColor,
-            },
-            tooltip: { marker },
-          })),
-        }
-      : undefined;
+    const markerClusters = clusterTimeseriesMarkers(
+      markers,
+      getApproximateMarkerClusterInterval(
+        getTimestamps(data, markers),
+        xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
+      ),
+    );
+    const markerAnnotations = buildTimeseriesMarkerAnnotations(markerClusters, {
+      color: markerColor,
+      labelBackgroundColor: markerLabelBackgroundColor,
+    });
 
     for (const s of data) {
       const incompleteBeforePoints =
@@ -414,9 +360,6 @@ export const TimeseriesChart = forwardRef<
         name: s.name,
         emphasis: { focus: "series" },
         ...(areaStyle ? { areaStyle } : {}),
-        ...(transformSeries.length === 0 && markerMarkLine
-          ? { markLine: markerMarkLine }
-          : {}),
         ...seriesType,
       });
 
@@ -445,12 +388,13 @@ export const TimeseriesChart = forwardRef<
       }
     }
 
-    if (transformSeries.length === 0 && markerMarkLine) {
+    if (markerAnnotations) {
       transformSeries.push({
         data: [],
         name: "Markers",
         type: type === "bar" ? "bar" : "line",
-        markLine: markerMarkLine,
+        animation: false,
+        markLine: markerAnnotations.markLine,
       });
     }
 
@@ -489,7 +433,7 @@ export const TimeseriesChart = forwardRef<
           show: false,
         },
         axisLine: { show: false },
-        splitNumber: xAxisTickCount ?? 5,
+        splitNumber: xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
         ...(xAxisTickFormat && {
           axisLabel: {
             formatter: (value: number) => xAxisTickFormat(value),
@@ -600,11 +544,19 @@ export const TimeseriesChart = forwardRef<
         });
       },
       mouseover: (params) => {
-        if (params.componentType !== "markLine") return;
-        markerHoverRef.current = true;
-
-        const marker = findMarkerForEvent(params, markersRef.current);
+        const marker = getTimeseriesMarkerFromEvent(params);
         if (!marker) return;
+
+        const markerKey = `${marker.timestamp}-${marker.label ?? ""}`;
+        if (activeMarkerKeyRef.current === markerKey) return;
+
+        activeMarkerKeyRef.current = markerKey;
+        markerHoverRef.current = true;
+        chartRef.current?.dispatchAction({ type: "hideTip" });
+        chartRef.current?.dispatchAction({
+          type: "updateAxisPointer",
+          currTrigger: "leave",
+        });
 
         const { rows, hiddenCount } = getTooltipRowsAtTimestamp(
           dataRef.current,
@@ -616,19 +568,20 @@ export const TimeseriesChart = forwardRef<
         setTooltipState({
           type: "marker",
           ts: marker.timestamp,
-          label: marker.label,
-          description: marker.description,
           color: marker.color ?? markerColor,
+          markers: marker.markers,
           rows,
           hiddenCount,
         });
       },
       mouseout: (params) => {
-        if (params.componentType !== "markLine") return;
+        if (!getTimeseriesMarkerFromEvent(params)) return;
+        activeMarkerKeyRef.current = null;
         markerHoverRef.current = false;
         setTooltipState(null);
       },
       globalout: () => {
+        activeMarkerKeyRef.current = null;
         markerHoverRef.current = false;
         setTooltipState(null);
       },
@@ -730,7 +683,11 @@ export const TimeseriesChart = forwardRef<
               data-mode={isDarkMode ? "dark" : "light"}
               className="bg-kumo-base rounded-lg shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill p-2 min-w-[150px] max-w-xs"
             >
-              <TooltipContent state={tooltipState} formatValue={formatFn} />
+              <TooltipContent
+                state={tooltipState}
+                formatValue={formatFn}
+                formatTimestamp={formatTimestamp}
+              />
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>
         </TooltipPrimitive.Portal>
@@ -740,111 +697,6 @@ export const TimeseriesChart = forwardRef<
 });
 
 TimeseriesChart.displayName = "TimeseriesChart";
-
-// ─── Tooltip content ──────────────────────────────────────────────────────────
-//
-// Memoized so React skips reconciliation when the cursor moves within the same
-// data point. The timestamp dedup in updateAxisPointer already prevents most
-// unnecessary state updates; this is a safety net for when the parent re-renders
-// for unrelated reasons (e.g. a prop change on TimeseriesChart).
-
-interface TooltipContentProps {
-  state: TooltipState;
-  formatValue?: (v: number) => string;
-}
-
-const TooltipContent = memo(function TooltipContent({
-  state,
-  formatValue,
-}: TooltipContentProps) {
-  if (state.type === "marker") {
-    return (
-      <>
-        <div className="text-xs font-semibold text-kumo-default mb-1">
-          {state.label ?? "Reference marker"}
-        </div>
-        <div className="flex items-center gap-2 text-xs text-kumo-subtle">
-          <span
-            className="w-3 h-3 rounded-full shrink-0"
-            style={{ backgroundColor: state.color }}
-          />
-          <span>{formatTimestamp(state.ts)}</span>
-        </div>
-        {state.description && (
-          <div className="text-xs text-kumo-default mt-1">
-            {state.description}
-          </div>
-        )}
-        {state.rows.length > 0 && (
-          <div className="border-t border-kumo-line mt-2 pt-2">
-            <SeriesTooltipRows
-              rows={state.rows}
-              hiddenCount={state.hiddenCount}
-              formatValue={formatValue}
-            />
-          </div>
-        )}
-      </>
-    );
-  }
-
-  const { ts, rows, hiddenCount } = state;
-
-  return (
-    <>
-      <div className="text-xs font-semibold text-kumo-default mb-1">
-        {formatTimestamp(ts)}
-      </div>
-      <SeriesTooltipRows
-        rows={rows}
-        hiddenCount={hiddenCount}
-        formatValue={formatValue}
-      />
-    </>
-  );
-});
-
-function SeriesTooltipRows({
-  rows,
-  hiddenCount,
-  formatValue,
-}: {
-  rows: TooltipRow[];
-  hiddenCount: number;
-  formatValue?: (v: number) => string;
-}) {
-  return (
-    <>
-      {rows.map((row) => (
-        <div
-          key={row.name}
-          className="flex items-center justify-between gap-4 py-0.5"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <span
-              className="w-3 h-3 rounded-full shrink-0"
-              style={{ backgroundColor: row.color }}
-            />
-            <span
-              className="text-xs font-medium text-kumo-default truncate"
-              title={row.name}
-            >
-              {row.name}
-            </span>
-          </div>
-          <span className="text-xs font-semibold text-kumo-default shrink-0">
-            {formatValue
-              ? formatValue(row.value)
-              : formatDefaultValue(row.value)}
-          </span>
-        </div>
-      ))}
-      {hiddenCount > 0 && (
-        <div className="text-xs text-kumo-subtle mt-1">+{hiddenCount} more</div>
-      )}
-    </>
-  );
-}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -862,6 +714,16 @@ function findNearest(data: [number, number][], ts: number): number | null {
   if (lo > 0 && Math.abs(data[lo - 1][0] - ts) < Math.abs(data[lo][0] - ts))
     lo--;
   return data[lo][1];
+}
+
+function getTimestamps(
+  data: TimeseriesData[],
+  markers: TimeseriesMarker[] | undefined,
+): number[] {
+  return [
+    ...data.flatMap((series) => series.data.map(([timestamp]) => timestamp)),
+    ...(markers?.map((marker) => marker.timestamp) ?? []),
+  ];
 }
 
 function getAllTooltipRowsAtTimestamp(
@@ -905,20 +767,27 @@ function getTooltipRowsAtTimestamp(
   );
 }
 
-function findMarkerForEvent(
-  params: {
-    name?: string;
-    data?: { xAxis?: number; tooltip?: { marker?: TimeseriesMarker } };
-  },
-  markers: TimeseriesMarker[] | undefined,
-): TimeseriesMarker | undefined {
-  const markerFromData = params.data?.tooltip?.marker;
-  if (markerFromData) return markerFromData;
-
-  return markers?.find(
-    (marker) =>
-      (params.name && marker.label === params.name) ||
-      (params.data?.xAxis != null && marker.timestamp === params.data.xAxis),
+function isSameMarkerTooltipState(
+  a: MarkerTooltipState,
+  b: MarkerTooltipState,
+): boolean {
+  return (
+    a.ts === b.ts &&
+    a.color === b.color &&
+    a.hiddenCount === b.hiddenCount &&
+    a.rows.length === b.rows.length &&
+    isSameTooltipRows(a.rows, b.rows) &&
+    a.markers.length === b.markers.length &&
+    a.markers.every((marker, i) => {
+      const next = b.markers[i];
+      return (
+        marker.timestamp === next.timestamp &&
+        marker.label === next.label &&
+        marker.description === next.description &&
+        marker.color === next.color &&
+        marker.lineStyle === next.lineStyle
+      );
+    })
   );
 }
 
@@ -927,12 +796,7 @@ function isSameTooltipState(a: TooltipState | null, b: TooltipState): boolean {
   if (!a || a.type !== b.type) return false;
 
   if (a.type === "marker" && b.type === "marker") {
-    return (
-      a.ts === b.ts &&
-      a.label === b.label &&
-      a.description === b.description &&
-      a.color === b.color
-    );
+    return isSameMarkerTooltipState(a, b);
   }
   if (a.type !== "series" || b.type !== "series") return false;
 
@@ -943,24 +807,18 @@ function isSameTooltipState(a: TooltipState | null, b: TooltipState): boolean {
   ) {
     return false;
   }
-  return a.rows.every((row, i) => {
-    const next = b.rows[i];
+  return isSameTooltipRows(a.rows, b.rows);
+}
+
+function isSameTooltipRows(a: TooltipRow[], b: TooltipRow[]): boolean {
+  return a.every((row, i) => {
+    const next = b[i];
     return (
       row.name === next.name &&
       row.value === next.value &&
       row.color === next.color
     );
   });
-}
-
-const defaultNumberFormat = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 3,
-});
-
-/** Fallback value formatter — avoids floating point noise without scientific notation. */
-function formatDefaultValue(value: number): string {
-  if (Number.isInteger(value)) return String(value);
-  return defaultNumberFormat.format(value);
 }
 
 /**

@@ -110,7 +110,7 @@ export function BasicLineChartDemo() {
   );
 }
 
-export function DeploymentMarkersChartDemo() {
+export function ReferenceMarkersChartDemo() {
   const isDarkMode = useIsDarkMode();
 
   const data = useMemo(
@@ -135,6 +135,16 @@ export function DeploymentMarkersChartDemo() {
         timestamp: data[0].data[15][0],
         label: "change a1b2c3d4",
         description: "Configuration change applied",
+      },
+      {
+        timestamp: data[0].data[16][0],
+        label: "change b2c3d4e5",
+        description: "Routing rule updated",
+      },
+      {
+        timestamp: data[0].data[17][0],
+        label: "change c3d4e5f6",
+        description: "Limit adjusted",
       },
       {
         timestamp: data[0].data[34][0],
