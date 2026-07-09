@@ -683,7 +683,7 @@ describe("Sidebar mobile behavior", () => {
     await waitFor(() => expect(document.activeElement).toBe(toggle));
   });
 
-  it("should close on focus leave without stealing focus back", async () => {
+  it("should NOT close when focus moves outside the sidebar (e.g. to portaled content)", async () => {
     setMobileMatchMedia(true);
     const user = userEvent.setup();
     render(<MobileTest />);
@@ -700,7 +700,7 @@ describe("Sidebar mobile behavior", () => {
     afterSidebar.focus();
     fireEvent.focusOut(nav, { relatedTarget: afterSidebar });
 
-    await waitFor(() => expect(nav.getAttribute("aria-hidden")).toBe("true"));
-    expect(document.activeElement).toBe(afterSidebar);
+    expect(nav.getAttribute("aria-hidden")).toBe("false");
+    expect(nav.hasAttribute("inert")).toBe(false);
   });
 });

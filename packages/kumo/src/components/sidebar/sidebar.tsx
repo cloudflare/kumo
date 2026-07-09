@@ -477,27 +477,18 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const mobileNodeRef = useRef<HTMLElement | null>(null);
     const shouldRestoreFocusRef = useRef(false);
 
-    // Escape key and focus-leave close the mobile sidebar
+    // Escape key closes the mobile sidebar
     useEffect(() => {
       if (!isMobile || !openMobile) return;
-      const node = mobileNodeRef.current;
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           shouldRestoreFocusRef.current = true;
           setOpenMobile(false);
         }
       };
-      const handleFocusOut = (e: FocusEvent) => {
-        if (node && !node.contains(e.relatedTarget as Node)) {
-          shouldRestoreFocusRef.current = false;
-          setOpenMobile(false);
-        }
-      };
       document.addEventListener("keydown", handleKeyDown);
-      node?.addEventListener("focusout", handleFocusOut);
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
-        node?.removeEventListener("focusout", handleFocusOut);
       };
     }, [isMobile, openMobile, setOpenMobile]);
 
