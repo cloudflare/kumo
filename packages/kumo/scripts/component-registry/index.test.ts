@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from "vitest";
+import { detectComponentExportsFromIndex } from "./discovery.js";
 
 // =============================================================================
 // Tests for string transformation utilities
@@ -580,6 +581,40 @@ describe("getComponentNameFromPath", () => {
   });
 });
 
+describe("detectComponentExportsFromIndex", () => {
+  it("detects multiple components with matching props from a barrel", () => {
+    const dir = mkdtempSync(join(tmpdir(), "kumo-barrel-test-"));
+    try {
+      writeFileSync(
+        join(dir, "index.ts"),
+        `export {
+        BubbleMap,
+        ChoroplethMap,
+        type MapGeoJson,
+        type BubbleMapProps,
+        type ChoroplethMapProps,
+      } from "./Maps";`,
+      );
+      writeFileSync(join(dir, "Maps.tsx"), "export const placeholder = true;");
+
+      expect(detectComponentExportsFromIndex(dir)).toEqual([
+        {
+          componentName: "BubbleMap",
+          propsType: "BubbleMapProps",
+          sourceFile: "Maps.tsx",
+        },
+        {
+          componentName: "ChoroplethMap",
+          propsType: "ChoroplethMapProps",
+          sourceFile: "Maps.tsx",
+        },
+      ]);
+    } finally {
+      rmSync(dir, { recursive: true });
+    }
+  });
+});
+
 // =============================================================================
 // Tests for JSON Schema type conversion
 // =============================================================================
@@ -681,7 +716,7 @@ describe("jsonSchemaTypeToString", () => {
 
 // Tests for sub-component detection utilities
 
-import { writeFileSync, unlinkSync, mkdtempSync } from "node:fs";
+import { writeFileSync, unlinkSync, mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
@@ -941,6 +976,37 @@ interface GroupProps extends BaseProps {
     const content = "interface OtherProps { foo: string; }";
     const props = extractPropsFromInterface(content, "MyProps", cliFlags);
     expect(props).toEqual({});
+  });
+
+  it("extracts documented props from a generic interface", () => {
+    const content = `
+interface MapProps<T> {
+  /** Raw data rows. */
+  data: T[];
+  /** Value accessor. */
+  value: MapAccessor<T, number>;
+  /** Show the tooltip. Default: true. */
+  showTooltip?: boolean;
+}
+`;
+    const props = extractPropsFromInterface(content, "MapProps", cliFlags);
+    expect(props).toEqual({
+      data: {
+        type: "T[]",
+        required: true,
+        description: "Raw data rows.",
+      },
+      value: {
+        type: "MapAccessor<T, number>",
+        required: true,
+        description: "Value accessor.",
+      },
+      showTooltip: {
+        type: "boolean",
+        optional: true,
+        description: "Show the tooltip. Default: true.",
+      },
+    });
   });
 });
 

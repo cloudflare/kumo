@@ -349,19 +349,43 @@ export function extractPropsFromInterface(
 ): Record<string, PropSchema> {
   const props: Record<string, PropSchema> = {};
 
-  // Match interface definition
+  // Match interface definitions, including generic interfaces such as FooProps<T>.
   const interfacePattern = new RegExp(
-    `interface\\s+${interfaceName}\\s*(?:extends[^{]*)?\\{([^}]+)\\}`,
+    `interface\\s+${interfaceName}(?:<[^>{}]+>)?\\s*(?:extends[^{]*)?\\{([^}]+)\\}`,
   );
   const match = content.match(interfacePattern);
 
   if (match) {
     const propsBlock = match[1];
-    const propPattern = /(\w+)(\?)?:\s*([^;,\n}]+)/g;
+    const undocumentedPropsBlock = propsBlock.replace(
+      /\/\*\*[\s\S]*?\*\//g,
+      "",
+    );
+    const documentedPropPattern =
+      /\/\*\*([\s\S]*?)\*\/\s*(\w+)(\?)?:\s*([^;\n}]+)/g;
+    const propPattern = /(\w+)(\?)?:\s*([^;\n}]+)/g;
+    const documentedProps = new Set<string>();
     let propMatch: RegExpExecArray | null;
 
-    while ((propMatch = propPattern.exec(propsBlock)) !== null) {
+    while ((propMatch = documentedPropPattern.exec(propsBlock)) !== null) {
+      const propName = propMatch[2];
+      if (shouldSkipProp(propName, cliFlags)) continue;
+
+      documentedProps.add(propName);
+      props[propName] = {
+        type: propMatch[4].trim(),
+        ...(propMatch[3] ? { optional: true } : { required: true }),
+        description: propMatch[1]
+          .split("\n")
+          .map((line) => line.replace(/^\s*\*\s?/, "").trim())
+          .filter(Boolean)
+          .join(" "),
+      };
+    }
+
+    while ((propMatch = propPattern.exec(undocumentedPropsBlock)) !== null) {
       const propName = propMatch[1];
+      if (documentedProps.has(propName)) continue;
       const isOptional = propMatch[2] === "?";
       let propType = propMatch[3].trim();
 
