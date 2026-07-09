@@ -134,9 +134,7 @@ export function getTimeseriesMarkerFromEvent(params: {
   componentType?: string;
   data?: { tooltip?: { marker?: TimeseriesMarkerCluster } };
 }): TimeseriesMarkerCluster | undefined {
-  if (
-    params.componentType !== "markLine"
-  ) {
+  if (params.componentType !== "markLine") {
     return undefined;
   }
   return params.data?.tooltip?.marker;

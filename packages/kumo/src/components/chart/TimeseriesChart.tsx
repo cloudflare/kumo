@@ -25,8 +25,14 @@ import {
   type TooltipRow,
   type TooltipState,
 } from "./timeseries-tooltip";
+import {
+  buildTimeseriesThresholdAnnotations,
+  getThresholdValueExtent,
+  type TimeseriesThreshold,
+} from "./timeseries-thresholds";
 
 export type { TimeseriesMarker } from "./timeseries-markers";
+export type { TimeseriesThreshold } from "./timeseries-thresholds";
 
 /** A single data series rendered on a `TimeseriesChart` */
 export interface TimeseriesData {
@@ -52,6 +58,8 @@ export interface TimeseriesChartProps {
   data: TimeseriesData[];
   /** Vertical reference markers rendered on the time axis. */
   markers?: TimeseriesMarker[];
+  /** Horizontal threshold lines rendered on the value axis. */
+  thresholds?: TimeseriesThreshold[];
   /** Label for the x-axis (time axis) */
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
@@ -217,6 +225,7 @@ export const TimeseriesChart = forwardRef<
     type = "line",
     data,
     markers,
+    thresholds,
     xAxisName,
     xAxisTickCount,
     xAxisTickFormat,
@@ -312,6 +321,9 @@ export const TimeseriesChart = forwardRef<
         ? ({ type: "bar", stack: "total" } as const)
         : ({ type: "line", showSymbol: false } as const);
 
+    const thresholdAnnotations = buildTimeseriesThresholdAnnotations(thresholds);
+    const thresholdExtent = getThresholdValueExtent(thresholds);
+
     const markerClusters = clusterTimeseriesMarkers(
       markers,
       getApproximateMarkerClusterInterval(
@@ -398,6 +410,16 @@ export const TimeseriesChart = forwardRef<
       });
     }
 
+    if (thresholdAnnotations) {
+      transformSeries.push({
+        data: [],
+        name: "Thresholds",
+        type: type === "bar" ? "bar" : "line",
+        animation: false,
+        markLine: thresholdAnnotations.markLine,
+      });
+    }
+
     return {
       aria: {
         enabled: true,
@@ -457,6 +479,12 @@ export const TimeseriesChart = forwardRef<
           lineStyle: { type: "dashed" as const, width: 1 },
         },
         splitNumber: yAxisTickCount,
+        ...(thresholdExtent && {
+          min: (value: { min: number }) =>
+            Math.min(value.min, thresholdExtent.min),
+          max: (value: { max: number }) =>
+            Math.max(value.max, thresholdExtent.max),
+        }),
       },
       grid: {
         left: yAxisName ? 30 : 24,
@@ -482,6 +510,7 @@ export const TimeseriesChart = forwardRef<
     echarts,
     ariaDescription,
     markers,
+    thresholds,
     markerColor,
     markerLabelBackgroundColor,
   ]);

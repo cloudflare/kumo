@@ -168,6 +168,38 @@ export function ReferenceMarkersChartDemo() {
   );
 }
 
+export function ThresholdsChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Memory used",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      thresholds={[
+        {
+          value: 55,
+          label: "Memory limit",
+          color: ChartPalette.semantic("Attention", isDarkMode),
+        },
+      ]}
+      xAxisName="Time (UTC)"
+      yAxisName="Memory (MB)"
+    />
+  );
+}
+
 /**
  * Timeseries chart with custom axis tick label formats for both x-axis (HH:MM) and y-axis (compact numbers).
  */

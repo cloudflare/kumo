@@ -3,6 +3,7 @@ export {
   type TimeseriesChartProps,
   type TimeseriesData,
   type TimeseriesMarker,
+  type TimeseriesThreshold,
 } from "./TimeseriesChart";
 
 export {
