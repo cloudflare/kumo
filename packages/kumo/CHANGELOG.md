@@ -1,5 +1,24 @@
 # @cloudflare/kumo
 
+## 2.8.0
+
+### Minor Changes
+
+- 8f2c40b: Rewrite `Flow` to use computed layout over relying on DOM layout.
+
+  `Flow` now measures node sizes, reconstructs the flow tree, and computes node positions and connector paths from that derived state instead of chaining DOM rect reads. This keeps connectors aligned through resize and scroll changes, supports nested flow structures more predictably, and makes anchor-based connector placement follow the anchor midpoint.
+
+- fdeeb74: Add `target` prop to `Sidebar.MenuSubButton` for parity with `Sidebar.MenuButton` — forwarded to the link when `href` is set, so link sub-items can control where they open (e.g. same-tab cross-origin navigation).
+- b05ea3f: Add auto-resize support to InputArea and Textarea.
+- 33cb988: Add vertical reference markers to TimeseriesChart.
+- 0562dd1: Add horizontal threshold lines to TimeseriesChart.
+
+### Patch Changes
+
+- a90dc83: Include chart components exported from multi-component barrel directories in the generated component registry, with complete props metadata for generic interfaces.
+- 0e440d4: Keep the mobile Sidebar open when focus moves to portaled interactive content.
+- 67061e1: Disable Sidebar.MenuButton tooltips while the sidebar is expanded or peeking.
+
 ## 2.7.0
 
 ### Minor Changes
