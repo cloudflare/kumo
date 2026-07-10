@@ -241,6 +241,7 @@ describe("InputArea", () => {
     const textarea = screen.getByRole("textbox");
     expect(textarea.style.height).toBe("80px");
     expect(textarea.className).toContain("resize-none");
+    expect(textarea.className).toContain("field-sizing-content");
     expect(textarea.style.overflowY).toBe("hidden");
 
     scrollHeight.mockRestore();
@@ -261,6 +262,8 @@ describe("InputArea", () => {
     fireEvent.change(textarea, { target: { value: "one two three" } });
 
     expect(textarea.style.height).toBe("240px");
+    expect(textarea.className).not.toContain("field-sizing-content");
+    expect(textarea.className).not.toContain("[scrollbar-width:thin]");
   });
 
   it("clamps to maxRows and becomes scrollable past the clamp", () => {
@@ -281,6 +284,28 @@ describe("InputArea", () => {
     const textarea = screen.getByRole("textbox");
     expect(textarea.style.height).toBe("100px");
     expect(textarea.style.overflowY).toBe("auto");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("clamps to minRows when content is shorter", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(20);
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        minRows={3}
+        style={{ lineHeight: "20px" }}
+      />,
+    );
+
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.getAttribute("rows")).toBe("3");
+    expect(textarea.style.height).toBe("60px");
+    expect(textarea.style.overflowY).toBe("hidden");
 
     scrollHeight.mockRestore();
   });

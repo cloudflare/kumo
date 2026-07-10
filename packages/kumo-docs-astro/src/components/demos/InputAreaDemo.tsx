@@ -88,9 +88,9 @@ export function InputAreaAutoResizeDemo() {
         "Review the configuration changes.\n\nAdd follow-up notes here.\n\n"
       }
       autoResize
+      minRows={2}
       maxRows={8}
       description="Resizes vertically with content size, up to 8 rows"
-      rows={2}
     />
   );
 }

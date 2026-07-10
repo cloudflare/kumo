@@ -32,14 +32,18 @@ function parsePx(value: string): number {
  */
 function useTextareaAutoResize({
   enabled,
+  minRows,
   maxRows,
 }: {
   enabled: boolean;
+  minRows: number;
   maxRows?: number;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const enabledRef = useRef(enabled);
   enabledRef.current = enabled;
+  const minRowsRef = useRef(minRows);
+  minRowsRef.current = minRows;
   const maxRowsRef = useRef(maxRows);
   maxRowsRef.current = maxRows;
 
@@ -66,8 +70,9 @@ function useTextareaAutoResize({
       ? textarea.scrollHeight + borders
       : textarea.scrollHeight - padding;
 
+    const currentMinRows = minRowsRef.current;
     const currentMaxRows = maxRowsRef.current;
-    if (currentMaxRows && currentMaxRows > 0) {
+    if (currentMinRows > 0 || (currentMaxRows && currentMaxRows > 0)) {
       // Computed line-height is normally a px value, but some environments
       // (e.g. jsdom) can return "normal" or a unitless multiplier like "1.5".
       const fontSize = parsePx(style.fontSize);
@@ -78,13 +83,19 @@ function useTextareaAutoResize({
           : rawLineHeight.endsWith("px")
             ? parsePx(rawLineHeight)
             : parsePx(rawLineHeight) * fontSize;
-      let maxHeight = lineHeight * currentMaxRows;
-      if (isBorderBox) maxHeight += padding + borders;
+      const boxSpacing = isBorderBox ? padding + borders : 0;
+      const minHeight = lineHeight * currentMinRows + boxSpacing;
+      height = Math.max(height, minHeight);
 
-      if (height > maxHeight) {
-        height = maxHeight;
-        // Content exceeds the clamp — it must stay scrollable.
-        textarea.style.overflowY = "auto";
+      if (currentMaxRows && currentMaxRows > 0) {
+        const maxHeight = lineHeight * currentMaxRows + boxSpacing;
+        if (height > maxHeight) {
+          height = maxHeight;
+          // Content exceeds the clamp — it must stay scrollable.
+          textarea.style.overflowY = "auto";
+        } else {
+          textarea.style.overflowY = "hidden";
+        }
       } else {
         textarea.style.overflowY = "hidden";
       }
@@ -149,7 +160,9 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       description,
       error,
       autoResize = false,
+      minRows = 1,
       maxRows,
+      rows,
       ...inputProps
     } = props;
 
@@ -170,6 +183,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
     const { required } = inputProps;
     const { textareaRef, resize } = useTextareaAutoResize({
       enabled: autoResize,
+      minRows,
       maxRows,
     });
 
@@ -213,7 +227,8 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
     const textareaClassName = cn(
       inputVariants({ size, variant, focusIndicator: true }),
       "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
-      autoResize && "resize-none",
+      autoResize &&
+        "w-full field-sizing-content resize-none scroll-pb-2 [scrollbar-color:var(--color-kumo-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-track]:my-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-kumo-line [&::-webkit-scrollbar-corner]:bg-transparent",
       className,
     );
 
@@ -236,6 +251,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
                 ref={setTextareaRef}
                 className={textareaClassName}
                 onChange={handleChange}
+                rows={autoResize ? minRows : rows}
                 {...inputProps}
               />
             )}
@@ -250,6 +266,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
         ref={setTextareaRef}
         className={textareaClassName}
         onChange={handleChange}
+        rows={autoResize ? minRows : rows}
         {...inputProps}
       />
     );
@@ -282,8 +299,10 @@ export type InputAreaProps = {
   description?: ReactNode;
   /** Error message or validation error object */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
-  /** Automatically resize the textarea based on its content. The `rows` prop acts as the minimum height. */
+  /** Automatically resize the textarea based on its content. */
   autoResize?: boolean;
+  /** Minimum number of rows to display when `autoResize` is enabled. @default 1 */
+  minRows?: number;
   /** Maximum number of rows to grow to when `autoResize` is enabled; content beyond this scrolls. */
   maxRows?: number;
 
