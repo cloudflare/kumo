@@ -241,7 +241,64 @@ describe("InputArea", () => {
     const textarea = screen.getByRole("textbox");
     expect(textarea.style.height).toBe("80px");
     expect(textarea.className).toContain("resize-none");
-    expect(textarea.className).toContain("overflow-hidden");
+    expect(textarea.style.overflowY).toBe("hidden");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("does not touch inline height when autoResize is false", () => {
+    const { rerender } = render(
+      <InputArea aria-label="Notes" value="one" onChange={() => {}} />,
+    );
+
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    // Simulate the user dragging the native resize handle
+    textarea.style.height = "240px";
+
+    rerender(
+      <InputArea aria-label="Notes" value="one two" onChange={() => {}} />,
+    );
+    fireEvent.change(textarea, { target: { value: "one two three" } });
+
+    expect(textarea.style.height).toBe("240px");
+  });
+
+  it("clamps to maxRows and becomes scrollable past the clamp", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(200);
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        maxRows={5}
+        style={{ lineHeight: "20px" }}
+        defaultValue="Lots of content"
+      />,
+    );
+
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("100px");
+    expect(textarea.style.overflowY).toBe("auto");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("restores inline styles when autoResize is turned off", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(80);
+
+    const { rerender } = render(
+      <InputArea aria-label="Notes" autoResize defaultValue="Initial" />,
+    );
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("80px");
+
+    rerender(<InputArea aria-label="Notes" defaultValue="Initial" />);
+    expect(textarea.style.height).toBe("");
+    expect(textarea.style.overflowY).toBe("");
 
     scrollHeight.mockRestore();
   });

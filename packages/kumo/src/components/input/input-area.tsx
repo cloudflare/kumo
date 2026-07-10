@@ -1,6 +1,12 @@
 import { inputVariants } from "./input";
 import { cn } from "../../utils/cn";
-import { useCallback, useLayoutEffect, useRef, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import * as React from "react";
 import { Field as FieldBase } from "@base-ui/react/field";
 import {
@@ -8,6 +14,121 @@ import {
   normalizeFieldError,
   type FieldErrorMatch,
 } from "../field/field";
+
+// useLayoutEffect warns when rendered with react-dom/server (React 18);
+// fall back to useEffect on the server where neither runs anyway.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+function parsePx(value: string): number {
+  const parsed = Number.parseFloat(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/**
+ * Measures the content height of a textarea and applies it as an explicit
+ * height, optionally clamped to `maxRows`. Handles box-sizing/borders and
+ * container width changes (rewrapping).
+ */
+function useTextareaAutoResize({
+  enabled,
+  maxRows,
+}: {
+  enabled: boolean;
+  maxRows?: number;
+}) {
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const enabledRef = useRef(enabled);
+  enabledRef.current = enabled;
+  const maxRowsRef = useRef(maxRows);
+  maxRowsRef.current = maxRows;
+
+  const resize = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!enabledRef.current || !textarea || typeof window === "undefined")
+      return;
+
+    const style = window.getComputedStyle(textarea);
+    const borders =
+      parsePx(style.borderTopWidth) + parsePx(style.borderBottomWidth);
+    const padding =
+      parsePx(style.paddingTop) + parsePx(style.paddingBottom);
+    const isBorderBox = style.boxSizing === "border-box";
+
+    // Collapsing to `auto` lets scrollHeight report the true content height
+    // (needed to shrink); measure-then-write happens within a single layout
+    // pass, before paint.
+    textarea.style.height = "auto";
+    // scrollHeight = content + padding. Convert to the height the current
+    // box-sizing expects: border-box needs borders added, content-box needs
+    // padding removed.
+    let height = isBorderBox
+      ? textarea.scrollHeight + borders
+      : textarea.scrollHeight - padding;
+
+    const currentMaxRows = maxRowsRef.current;
+    if (currentMaxRows && currentMaxRows > 0) {
+      const lineHeight =
+        style.lineHeight === "normal"
+          ? parsePx(style.fontSize) * 1.2
+          : parsePx(style.lineHeight);
+      let maxHeight = lineHeight * currentMaxRows;
+      if (isBorderBox) maxHeight += padding + borders;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        // Content exceeds the clamp — it must stay scrollable.
+        textarea.style.overflowY = "auto";
+      } else {
+        textarea.style.overflowY = "hidden";
+      }
+    } else {
+      textarea.style.overflowY = "hidden";
+    }
+
+    textarea.style.height = `${height}px`;
+  }, []);
+
+  // Re-measure after every commit while enabled: covers controlled value
+  // changes, size/variant/className changes, and anything else that reflows.
+  // Two extra synchronous layouts per render is cheap for a textarea and
+  // immune to stale-dependency bugs.
+  useIsomorphicLayoutEffect(() => {
+    if (enabled) resize();
+  });
+
+  // Setup/teardown per node while enabled. Restores inline styles when
+  // autoResize turns off or on unmount so the manual resize handle behavior
+  // returns untouched.
+  useIsomorphicLayoutEffect(() => {
+    if (!enabled) return;
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Width changes rewrap content and change the required height. Only
+    // react to inline-size changes — our own height writes also fire the
+    // observer and would otherwise cause redundant resize passes.
+    let lastWidth = textarea.clientWidth;
+    const observer =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            if (textarea.clientWidth !== lastWidth) {
+              lastWidth = textarea.clientWidth;
+              resize();
+            }
+          })
+        : null;
+    observer?.observe(textarea);
+
+    return () => {
+      observer?.disconnect();
+      textarea.style.height = "";
+      textarea.style.overflowY = "";
+    };
+  }, [enabled, resize]);
+
+  return { textareaRef, resize };
+}
 
 export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
   (props, ref) => {
@@ -22,6 +143,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       description,
       error,
       autoResize = false,
+      maxRows,
       ...inputProps
     } = props;
 
@@ -40,55 +162,47 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
 
     // Extract required from inputProps to pass to Field for label decoration
     const { required } = inputProps;
-    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+    const { textareaRef, resize } = useTextareaAutoResize({
+      enabled: autoResize,
+      maxRows,
+    });
 
-    const resizeTextarea = useCallback(
-      (textarea = textareaRef.current) => {
-        if (!textarea) return;
-
-        if (!autoResize) {
-          textarea.style.height = "";
-          return;
-        }
-
-        textarea.style.height = "auto";
-        textarea.style.height = `${textarea.scrollHeight}px`;
-      },
-      [autoResize],
-    );
-
+    // Forwarded ref may be a React 19 callback ref returning a cleanup
+    // function — honor it instead of calling ref(null) on detach.
+    const refCleanup = useRef<(() => void) | void>(undefined);
     const setTextareaRef = useCallback(
       (node: HTMLTextAreaElement | null) => {
         textareaRef.current = node;
 
         if (typeof ref === "function") {
-          ref(node);
+          if (node) {
+            refCleanup.current = ref(node) as (() => void) | void;
+          } else if (refCleanup.current) {
+            refCleanup.current();
+            refCleanup.current = undefined;
+          } else {
+            ref(null);
+          }
         } else if (ref) {
           ref.current = node;
         }
-
-        resizeTextarea(node);
       },
-      [ref, resizeTextarea],
+      [ref, textareaRef],
     );
-
-    useLayoutEffect(() => {
-      resizeTextarea();
-    }, [resizeTextarea, inputProps.value, inputProps.defaultValue]);
 
     const handleChange = useCallback(
       (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange?.(event);
         onValueChange?.(event.target.value);
-        resizeTextarea(event.currentTarget);
+        resize();
       },
-      [onChange, onValueChange, resizeTextarea],
+      [onChange, onValueChange, resize],
     );
 
     const textareaClassName = cn(
       inputVariants({ size, variant, focusIndicator: true }),
       "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
-      autoResize && "resize-none overflow-hidden",
+      autoResize && "resize-none",
       className,
     );
 
@@ -157,8 +271,10 @@ export type InputAreaProps = {
   description?: ReactNode;
   /** Error message or validation error object */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
-  /** Automatically resize the textarea based on its content. */
+  /** Automatically resize the textarea based on its content. The `rows` prop acts as the minimum height. */
   autoResize?: boolean;
+  /** Maximum number of rows to grow to when `autoResize` is enabled; content beyond this scrolls. */
+  maxRows?: number;
 
   // Finally, spread the native input props (least important)
 } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size">;

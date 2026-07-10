@@ -147,7 +147,8 @@ export default function Example() {
 
 <p>
   Use `autoResize` to let the textarea grow vertically as users type or paste
-  multi-line content.
+  multi-line content. `rows` sets the minimum height, and the optional
+  `maxRows` caps growth — content beyond the cap scrolls.
 </p>
 <ComponentExample demo="InputAreaAutoResizeDemo">
   <InputAreaAutoResizeDemo client:visible />
