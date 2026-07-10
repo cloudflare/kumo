@@ -68,10 +68,16 @@ function useTextareaAutoResize({
 
     const currentMaxRows = maxRowsRef.current;
     if (currentMaxRows && currentMaxRows > 0) {
+      // Computed line-height is normally a px value, but some environments
+      // (e.g. jsdom) can return "normal" or a unitless multiplier like "1.5".
+      const fontSize = parsePx(style.fontSize);
+      const rawLineHeight = style.lineHeight;
       const lineHeight =
-        style.lineHeight === "normal"
-          ? parsePx(style.fontSize) * 1.2
-          : parsePx(style.lineHeight);
+        rawLineHeight === "normal" || rawLineHeight === ""
+          ? fontSize * 1.2
+          : rawLineHeight.endsWith("px")
+            ? parsePx(rawLineHeight)
+            : parsePx(rawLineHeight) * fontSize;
       let maxHeight = lineHeight * currentMaxRows;
       if (isBorderBox) maxHeight += padding + borders;
 
@@ -190,13 +196,18 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       [ref, textareaRef],
     );
 
+    // Controlled inputs re-render on every keystroke, so the post-render
+    // layout effect already re-measures; resizing here too would force a
+    // second synchronous layout. Uncontrolled inputs don't re-render, so the
+    // change handler is their only resize trigger.
+    const isControlled = inputProps.value !== undefined;
     const handleChange = useCallback(
       (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange?.(event);
         onValueChange?.(event.target.value);
-        resize();
+        if (!isControlled) resize();
       },
-      [onChange, onValueChange, resize],
+      [onChange, onValueChange, resize, isControlled],
     );
 
     const textareaClassName = cn(

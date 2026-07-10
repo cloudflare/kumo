@@ -285,6 +285,47 @@ describe("InputArea", () => {
     scrollHeight.mockRestore();
   });
 
+  it("treats a unitless line-height as a font-size multiplier for maxRows", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(500);
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        maxRows={4}
+        style={{ lineHeight: "1.5", fontSize: "16px" }}
+        defaultValue="Lots of content"
+      />,
+    );
+
+    // 1.5 * 16px * 4 rows = 96px, not 1.5px * 4 rows
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("96px");
+    expect(textarea.style.overflowY).toBe("auto");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("clears inline styles on unmount", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(80);
+
+    const { unmount } = render(
+      <InputArea aria-label="Notes" autoResize defaultValue="Initial" />,
+    );
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    expect(textarea.style.height).toBe("80px");
+
+    unmount();
+    expect(textarea.style.height).toBe("");
+    expect(textarea.style.overflowY).toBe("");
+
+    scrollHeight.mockRestore();
+  });
+
   it("restores inline styles when autoResize is turned off", () => {
     const scrollHeight = vi
       .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
