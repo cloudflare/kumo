@@ -587,15 +587,25 @@ describe("detectComponentExportsFromIndex", () => {
     try {
       writeFileSync(
         join(dir, "index.ts"),
-        `export {
-        BubbleMap,
-        ChoroplethMap,
-        type MapGeoJson,
-        type BubbleMapProps,
-        type ChoroplethMapProps,
-      } from "./Maps";`,
+        `
+        export {
+          BubbleMap,
+          ChoroplethMap,
+          type MapGeoJson,
+          type BubbleMapProps,
+          type ChoroplethMapProps,
+        } from "./Maps";
+        export {
+          ServerChart,
+          type ServerChartProps,
+        } from "./ServerChart";
+        `,
       );
       writeFileSync(join(dir, "Maps.tsx"), "export const placeholder = true;");
+      writeFileSync(
+        join(dir, "ServerChart.ts"),
+        "export const placeholder = true;",
+      );
 
       expect(detectComponentExportsFromIndex(dir)).toEqual([
         {
@@ -607,6 +617,11 @@ describe("detectComponentExportsFromIndex", () => {
           componentName: "ChoroplethMap",
           propsType: "ChoroplethMapProps",
           sourceFile: "Maps.tsx",
+        },
+        {
+          componentName: "ServerChart",
+          propsType: "ServerChartProps",
+          sourceFile: "ServerChart.ts",
         },
       ]);
     } finally {
@@ -980,13 +995,15 @@ interface GroupProps extends BaseProps {
 
   it("extracts documented props from a generic interface", () => {
     const content = `
-interface MapProps<T> {
+interface MapProps<T extends { id: string }> {
   /** Raw data rows. */
   data: T[];
   /** Value accessor. */
   value: MapAccessor<T, number>;
   /** Show the tooltip. Default: true. */
   showTooltip?: boolean;
+  /** Nested configuration. */
+  config?: { item: { id: string }; enabled: boolean };
 }
 `;
     const props = extractPropsFromInterface(content, "MapProps", cliFlags);
@@ -1005,6 +1022,11 @@ interface MapProps<T> {
         type: "boolean",
         optional: true,
         description: "Show the tooltip. Default: true.",
+      },
+      config: {
+        type: "{ item: { id: string }; enabled: boolean }",
+        optional: true,
+        description: "Nested configuration.",
       },
     });
   });

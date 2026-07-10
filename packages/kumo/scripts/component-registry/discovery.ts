@@ -205,8 +205,11 @@ export function detectComponentExportsFromIndex(
   let match: RegExpExecArray | null;
 
   while ((match = exportPattern.exec(content)) !== null) {
-    const sourceFile = `${match[2].replace(/^\.\//, "")}.tsx`;
-    if (!existsSync(join(dirPath, sourceFile))) continue;
+    const sourceName = match[2].replace(/^\.\//, "");
+    const sourceFile = [`${sourceName}.tsx`, `${sourceName}.ts`].find((file) =>
+      existsSync(join(dirPath, file)),
+    );
+    if (!sourceFile) continue;
 
     const namedExports: string[] = [];
     const typeExports: string[] = [];

@@ -434,12 +434,21 @@ function generatePropsFromType(
       `Warning: Could not generate schema for ${getPropsType(config)}:`,
       error,
     );
-    const interfaceProps = extractPropsFromInterface(
-      readFileSync(sourcePath, "utf-8"),
-      propsType,
-      CLI_FLAGS,
-    );
     const fallbackProps = generatePropsFromVariantsOnly(config);
+    let interfaceProps: Record<string, PropSchema> = {};
+
+    try {
+      interfaceProps = extractPropsFromInterface(
+        readFileSync(sourcePath, "utf-8"),
+        propsType,
+        CLI_FLAGS,
+      );
+    } catch (readError) {
+      console.warn(
+        `Warning: Could not read ${sourcePath} for interface fallback:`,
+        readError,
+      );
+    }
 
     if (Object.keys(interfaceProps).length > 0) {
       delete fallbackProps.className;
