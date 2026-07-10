@@ -17,6 +17,7 @@ import {
   InputAreaDisabledDemo,
   InputAreaBareDemo,
   InputAreaRowsDemo,
+  InputAreaAutoResizeDemo,
   InputAreaOptionalFieldDemo,
   InputAreaLabelTooltipDemo,
   InputAreaReactNodeLabelDemo,
@@ -140,6 +141,16 @@ export default function Example() {
 
 <ComponentExample demo="InputAreaDisabledDemo">
   <InputAreaDisabledDemo client:visible />
+</ComponentExample>
+
+### Auto Resize
+
+<p>
+  Use `autoResize` to let the textarea grow vertically as users type or paste
+  multi-line content.
+</p>
+<ComponentExample demo="InputAreaAutoResizeDemo">
+  <InputAreaAutoResizeDemo client:visible />
 </ComponentExample>
 
 ### Bare InputArea

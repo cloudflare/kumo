@@ -1,9 +1,13 @@
 import { inputVariants } from "./input";
 import { cn } from "../../utils/cn";
-import { useCallback, type ReactNode } from "react";
+import { useCallback, useLayoutEffect, useRef, type ReactNode } from "react";
 import * as React from "react";
 import { Field as FieldBase } from "@base-ui/react/field";
-import { Field as KumoField, normalizeFieldError, type FieldErrorMatch } from "../field/field";
+import {
+  Field as KumoField,
+  normalizeFieldError,
+  type FieldErrorMatch,
+} from "../field/field";
 
 export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
   (props, ref) => {
@@ -17,6 +21,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       labelTooltip,
       description,
       error,
+      autoResize = false,
       ...inputProps
     } = props;
 
@@ -35,17 +40,55 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
 
     // Extract required from inputProps to pass to Field for label decoration
     const { required } = inputProps;
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+    const resizeTextarea = useCallback(
+      (textarea = textareaRef.current) => {
+        if (!textarea) return;
+
+        if (!autoResize) {
+          textarea.style.height = "";
+          return;
+        }
+
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      },
+      [autoResize],
+    );
+
+    const setTextareaRef = useCallback(
+      (node: HTMLTextAreaElement | null) => {
+        textareaRef.current = node;
+
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+
+        resizeTextarea(node);
+      },
+      [ref, resizeTextarea],
+    );
+
+    useLayoutEffect(() => {
+      resizeTextarea();
+    }, [resizeTextarea, inputProps.value, inputProps.defaultValue]);
+
     const handleChange = useCallback(
       (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange?.(event);
         onValueChange?.(event.target.value);
+        resizeTextarea(event.currentTarget);
       },
-      [onChange, onValueChange],
+      [onChange, onValueChange, resizeTextarea],
     );
 
     const textareaClassName = cn(
       inputVariants({ size, variant, focusIndicator: true }),
       "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
+      autoResize && "resize-none overflow-hidden",
       className,
     );
 
@@ -65,7 +108,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
             render={(controlProps) => (
               <textarea
                 {...controlProps}
-                ref={ref}
+                ref={setTextareaRef}
                 className={textareaClassName}
                 onChange={handleChange}
                 {...inputProps}
@@ -79,7 +122,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
     // Render bare textarea without Field wrapper
     return (
       <textarea
-        ref={ref}
+        ref={setTextareaRef}
         className={textareaClassName}
         onChange={handleChange}
         {...inputProps}
@@ -114,6 +157,8 @@ export type InputAreaProps = {
   description?: ReactNode;
   /** Error message or validation error object */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
+  /** Automatically resize the textarea based on its content. */
+  autoResize?: boolean;
 
   // Finally, spread the native input props (least important)
 } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size">;
