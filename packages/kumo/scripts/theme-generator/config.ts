@@ -124,8 +124,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-yellow-800, oklch(47.6% 0.114 61.907))",
-          dark: "var(--color-yellow-400, oklch(85.2% 0.199 91.936))",
+          light: "oklch(59.7% 0.144 57.5)",
+          dark: "var(--color-orange-400, oklch(75% 0.183 55.934))",
         },
       },
     },
@@ -382,18 +382,17 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-blue-100, oklch(93.2% 0.032 255.585))",
-          dark: "var(--color-blue-900, oklch(37.9% 0.146 265.522))",
+          light: "oklch(93.2% 0.032 255.6 / 0.45)",
+          dark: "oklch(38.0% 0.145 265.5 / 0.22)",
         },
       },
     },
     "kumo-info": {
       newName: "",
-      // Aligned with fill.kumo-info so `bg-kumo-info` matches `fill-kumo-info`.
       theme: {
         kumo: {
           light: "var(--color-blue-500, oklch(68.5% 0.169 237.323))",
-          dark: "var(--color-blue-400, oklch(70.7% 0.165 254.624))",
+          dark: "var(--color-blue-500, oklch(68.5% 0.169 237.323))",
         },
       },
     },
@@ -401,18 +400,17 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-yellow-100, oklch(97.3% 0.071 103.193))",
-          dark: "var(--color-yellow-700, oklch(55.4% 0.135 66.442))",
+          light: "oklch(93.1% 0.107 94.6 / 0.20)",
+          dark: "oklch(35.3% 0.079 65.0 / 0.37)",
         },
       },
     },
     "kumo-warning": {
       newName: "",
-      // Aligned with fill.kumo-warning so `bg-kumo-warning` matches `fill-kumo-warning`.
       theme: {
         kumo: {
-          light: "var(--color-yellow-500, oklch(79.5% 0.184 86.047))",
-          dark: "var(--color-yellow-400, oklch(85.2% 0.199 91.936))",
+          light: "oklch(73.9% 0.177 58.2)",
+          dark: "oklch(64.5% 0.168 50.0)",
         },
       },
     },
@@ -420,8 +418,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-red-100, oklch(93.6% 0.032 17.717))",
-          dark: "var(--color-red-900, oklch(39.6% 0.141 25.723))",
+          light: "oklch(93.6% 0.032 17.7 / 0.42)",
+          dark: "oklch(42.9% 0.176 28.7 / 0.17)",
         },
       },
     },
@@ -439,8 +437,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "var(--color-emerald-100, oklch(95% 0.052 163.051))",
-          dark: "var(--color-emerald-900, oklch(37.8% 0.077 168.94))",
+          light: "oklch(96.2% 0.043 156.7 / 0.57)",
+          dark: "oklch(39.3% 0.096 152.3 / 0.20)",
         },
       },
     },

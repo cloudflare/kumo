@@ -7,7 +7,7 @@ describe("Banner", () => {
     const className = bannerVariants({ variant: "secondary" });
 
     expect(className).toContain("bg-kumo-contrast/5");
-    expect(className).toContain("text-kumo-subtle");
+    expect(className).toContain("text-kumo-default/70");
   });
 
   it("forwards root div props", () => {
@@ -26,4 +26,204 @@ describe("Banner", () => {
     expect(banner.textContent).toBe("System status");
   });
 
+  it("styles a solid Banner.Action from the banner variant accent", () => {
+    render(
+      <Banner
+        variant="error"
+        title="Save failed"
+        action={
+          <Banner.Actions>
+            <Banner.Action data-testid="cta">Retry</Banner.Action>
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    expect(cta.tagName).toBe("BUTTON");
+    expect(cta.className).toContain("text-white");
+    // Reuses the same "white 30%" emphasis gradient as banner.tsx, keyed to the
+    // error accent (rendered at 80% opacity) and injected via the compound's own
+    // CSS vars.
+    expect(cta.className).toContain("from-(--kumo-banner-cta-start)");
+    expect(cta.style.getPropertyValue("--kumo-banner-cta-end")).toBe(
+      "var(--color-kumo-danger)",
+    );
+    expect(cta.style.getPropertyValue("--kumo-banner-cta-bg")).toBe(
+      "color-mix(in oklch, var(--color-kumo-danger), white 30%)",
+    );
+    // Legacy Button-emphasis tinting must NOT touch the compound.
+    expect(
+      cta.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("");
+  });
+
+  it("styles a ghost Banner.Action with accent text and a tinted hover", () => {
+    render(
+      <Banner
+        variant="alert"
+        title="Session expiring"
+        action={
+          <Banner.Actions>
+            <Banner.Action variant="ghost" data-testid="cta">
+              Dismiss
+            </Banner.Action>
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    expect(cta.className).toContain("fill-kumo-warning");
+    expect(cta.className).toContain("hover:bg-kumo-warning/10");
+  });
+
+  it("styles a secondary Banner.Action as an accent-hued outline", () => {
+    render(
+      <Banner
+        variant="error"
+        title="Save failed"
+        action={
+          <Banner.Actions>
+            <Banner.Action variant="secondary" data-testid="cta">
+              Retry
+            </Banner.Action>
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    // Transparent bg + accent-hued ring in the same hue as the error banner accent.
+    expect(cta.className).toContain("ring-kumo-danger/50");
+    expect(cta.className).toContain("hover:bg-kumo-danger/10");
+    // Not the filled primary CTA.
+    expect(cta.className).not.toContain("from-(--kumo-banner-cta-start)");
+    expect(cta.className).not.toContain("text-white");
+    expect(cta.style.getPropertyValue("--kumo-banner-cta-end")).toBe("");
+  });
+
+  it("renders an icon-only Banner.Action as a square button", () => {
+    render(
+      <Banner
+        variant="default"
+        title="Heads up"
+        action={
+          <Banner.Actions>
+            <Banner.Action
+              variant="ghost"
+              icon={<svg data-testid="icon" />}
+              aria-label="Dismiss"
+              data-testid="cta"
+            />
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    // Icon-only + default "sm" size => square button (size === height).
+    expect(cta.className).toContain("size-6.5");
+    expect(cta.getAttribute("aria-label")).toBe("Dismiss");
+    expect(screen.getByTestId("icon")).toBeTruthy();
+  });
+
+  it("applies the xs size to a Banner.Action", () => {
+    render(
+      <Banner
+        variant="default"
+        title="Heads up"
+        action={
+          <Banner.Actions>
+            <Banner.Action size="xs" data-testid="cta">
+              Details
+            </Banner.Action>
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    expect(cta.className).toContain("h-5");
+    expect(cta.className).toContain("px-1.5");
+    expect(cta.className).toContain("text-xs");
+  });
+
+  it("applies compact spacing for the sm banner size", () => {
+    const className = bannerVariants({ size: "sm" });
+
+    expect(className).toContain("px-3");
+    expect(className).toContain("py-2");
+    expect(className).toContain("text-sm");
+    // Compact banners align everything on one centered row.
+    expect(className).toContain("items-center");
+    // Base-size spacing/alignment must not leak in.
+    expect(className).not.toContain("px-4");
+    expect(className).not.toContain("items-start");
+  });
+
+  it("defaults Banner.Action children to xs in an sm banner", () => {
+    render(
+      <Banner
+        size="sm"
+        variant="default"
+        title="Heads up"
+        action={
+          <Banner.Actions>
+            <Banner.Action data-testid="cta">Details</Banner.Action>
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    // Inherits the banner's size => xs (h-5), not the standalone sm default (h-6.5).
+    expect(cta.className).toContain("h-5");
+    expect(cta.className).toContain("px-1.5");
+  });
+
+  it("lets a Banner.Action size prop override the inherited banner size", () => {
+    render(
+      <Banner
+        size="sm"
+        variant="default"
+        title="Heads up"
+        action={
+          <Banner.Actions>
+            <Banner.Action size="sm" data-testid="cta">
+              Details
+            </Banner.Action>
+          </Banner.Actions>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    // Explicit size="sm" wins over the sm banner's inherited xs default.
+    expect(cta.className).toContain("h-7");
+  });
+
+  it("renders title and description inline in an sm banner", () => {
+    render(
+      <Banner size="sm" title="Heads up" description="More details here" />,
+    );
+
+    const title = screen.getByText("Heads up");
+    const description = screen.getByText("More details here");
+    // Inline: both are spans sharing one baseline-aligned flex row.
+    expect(title.tagName).toBe("SPAN");
+    expect(description.tagName).toBe("SPAN");
+    expect(title.parentElement).toBe(description.parentElement);
+    expect(title.parentElement?.className).toContain("items-baseline");
+  });
+
+  it("stacks title and description in a base banner", () => {
+    render(<Banner title="Heads up" description="More details here" />);
+
+    const title = screen.getByText("Heads up");
+    const description = screen.getByText("More details here");
+    // Stacked: title is a <p>, and they do not share the same parent.
+    expect(title.tagName).toBe("P");
+    expect(title.parentElement).not.toBe(description.parentElement);
+  });
 });

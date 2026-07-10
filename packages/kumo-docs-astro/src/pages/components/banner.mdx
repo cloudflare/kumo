@@ -18,6 +18,8 @@ import {
   BannerWithIconDemo,
   BannerWithActionDemo,
   BannerWithActionsDemo,
+  BannerActionVariantsDemo,
+  BannerCompactDemo,
   BannerCustomContentDemo,
 } from "~/components/demos/BannerDemo";
 
@@ -37,7 +39,7 @@ import {
 
 ### Barrel
 
-  <CodeBlock code={`import { Banner } from "@cloudflare/kumo";`} lang="tsx" />
+<CodeBlock code={`import { Banner } from "@cloudflare/kumo";`} lang="tsx" />
 
 ### Granular
 
@@ -110,15 +112,24 @@ export default function Example() {
 
 ### With action
 
-  <ComponentExample demo="BannerWithActionDemo">
-    <BannerWithActionDemo client:visible />
-  </ComponentExample>
+<ComponentExample demo="BannerWithActionDemo">
+  <BannerWithActionDemo client:visible />
+</ComponentExample>
 
 ### With multiple actions
 
-  <ComponentExample demo="BannerWithActionsDemo">
-    <BannerWithActionsDemo client:visible />
-  </ComponentExample>
+<ComponentExample demo="BannerWithActionsDemo">
+  <BannerWithActionsDemo client:visible />
+</ComponentExample>
+
+### Compact size
+
+Use `size="sm"` for dialogs and other tight spaces. Its `Banner.Action` children
+inherit the banner size and default to the `xs` button size.
+
+<ComponentExample demo="BannerCompactDemo">
+  <BannerCompactDemo client:visible />
+</ComponentExample>
 
 ### Custom content
 

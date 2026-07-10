@@ -1,4 +1,4 @@
-import { Banner, Button, Text } from "@cloudflare/kumo";
+import { Banner, Text } from "@cloudflare/kumo";
 import { Info, WarningCircle, Warning, X } from "@phosphor-icons/react";
 
 /** Shows all banner variants with structured title and description. */
@@ -124,20 +124,47 @@ export function BannerWithActionDemo() {
         icon={<Info weight="fill" />}
         title="Update available"
         description="A new version is ready to install."
-        action={<Button size="sm">Update now</Button>}
+        action={
+          <Banner.Actions>
+            <Banner.Action>Update</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
       />
       <Banner
-        icon={<Info weight="fill" />}
-        title="Update available"
-        description="A new version is ready to install."
+        variant="error"
+        icon={<WarningCircle weight="fill" />}
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
         action={
-          <Button
-            size="sm"
-            variant="ghost"
-            shape="square"
-            icon={X}
-            aria-label="Dismiss"
-          />
+          <Banner.Actions>
+            <Banner.Action>Retry</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
+      />
+      <Banner
+        variant="alert"
+        icon={<WarningCircle weight="fill" />}
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
+        action={
+          <Banner.Actions>
+            <Banner.Action>Retry</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
+      />
+      <Banner
+        variant="secondary"
+        icon={<WarningCircle weight="fill" />}
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
+        action={
+          <Banner.Actions>
+            <Banner.Action>Retry</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
         }
       />
     </div>
@@ -147,18 +174,135 @@ export function BannerWithActionDemo() {
 /** Banner with multiple action buttons. */
 export function BannerWithActionsDemo() {
   return (
+    <div className="space-y-3 w-full">
     <Banner
       icon={<Warning weight="fill" />}
       variant="alert"
       title="Session expiring"
       description="Your session will expire in 5 minutes."
       action={
-        <>
-          <Button size="sm" variant="secondary">
-            Dismiss
-          </Button>
-          <Button size="sm">Extend session</Button>
-        </>
+        <Banner.Actions>
+          <Banner.Action>Dismiss</Banner.Action>
+          <Banner.Action variant="secondary">Extend session</Banner.Action>
+        </Banner.Actions>
+      }
+    /> 
+    <Banner
+      icon={<Warning weight="fill" />}
+      variant="default"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+      action={
+        <Banner.Actions>
+          <Banner.Action>Dismiss</Banner.Action>
+          <Banner.Action variant="secondary">Extend session</Banner.Action>
+        </Banner.Actions>
+      }
+    />
+    <Banner
+      icon={<Warning weight="fill" />}
+      variant="error"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+      action={
+        <Banner.Actions>
+          <Banner.Action>Dismiss</Banner.Action>
+          <Banner.Action variant="secondary">Extend session</Banner.Action>
+        </Banner.Actions>
+      }
+    />
+    <Banner
+      icon={<Warning weight="fill" />}
+      variant="secondary"
+      title="Session expiring"
+      description="Your session will expire in 5 minutes."
+      action={
+        <Banner.Actions>
+          <Banner.Action>Dismiss</Banner.Action>
+          <Banner.Action variant="secondary">Extend session</Banner.Action>
+        </Banner.Actions>
+      }
+    />
+    </div>
+  );
+}
+
+/**
+ * Accent-aware CTAs via the `Banner.Actions` / `Banner.Action` compound. Each
+ * `Banner.Action` reads the banner variant and self-styles to the matching accent,
+ * so the solid CTA stays legible on every variant in light and dark mode.
+ */
+export function BannerActionCompoundDemo() {
+  return (
+    <div className="w-full space-y-3">
+      <Banner
+        icon={<Info weight="fill" />}
+        title="Update available"
+        description="A new version is ready to install."
+        action={
+          <Banner.Actions>
+            <Banner.Action>Update</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
+      />
+      <Banner
+        variant="alert"
+        icon={<Warning weight="fill" />}
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+        action={
+          <Banner.Actions>
+            <Banner.Action>Extend</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
+      />
+      <Banner
+        variant="error"
+        icon={<WarningCircle weight="fill" />}
+        title="Save failed"
+        description="We couldn't save your changes. Please try again."
+        action={
+          <Banner.Actions>
+            <Banner.Action>Retry</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
+      />
+      <Banner
+        variant="secondary"
+        icon={<Info weight="fill" />}
+        title="Heads up"
+        description="This is a secondary informational banner."
+        action={
+          <Banner.Actions>
+            <Banner.Action>Got it</Banner.Action>
+            <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          </Banner.Actions>
+        }
+      />
+    </div>
+  );
+}
+
+/**
+ * Compact `size="sm"` banner for dialogs and other tight spaces. The tighter
+ * spacing and smaller text carry through to the CTAs: `Banner.Action` children
+ * inherit the banner size and default to the `xs` button size.
+ */
+export function BannerCompactDemo() {
+  return (
+    <Banner
+      size="sm"
+      icon={<Info weight="fill" />}
+      title="Update available"
+      description="A new version is ready to install."
+      action={
+        <Banner.Actions>
+          <Banner.Action>Update</Banner.Action>
+          <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+        </Banner.Actions>
       }
     />
   );
