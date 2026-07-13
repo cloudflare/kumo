@@ -53,6 +53,16 @@ export { ClipboardText } from "./components/clipboard-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
 export {
+  Toolbar,
+  KUMO_TOOLBAR_VARIANTS,
+  KUMO_TOOLBAR_DEFAULT_VARIANTS,
+  type ToolbarProps,
+  type ToolbarSize,
+  type ToolbarButtonProps,
+  type ToolbarInputProps,
+  type ToolbarInputGroupProps,
+} from "./components/toolbar";
+export {
   Dialog,
   DialogRoot,
   DialogTrigger,
@@ -161,6 +171,7 @@ export {
   KUMO_RADIO_DEFAULT_VARIANTS,
   radioVariants,
   type RadioGroupProps,
+  type RadioGroupChangeEventDetails,
   type RadioLegendProps,
   type RadioItemProps,
   type RadioControlPosition,
@@ -239,11 +250,19 @@ export {
   SankeyChart,
   TimeseriesChart,
   ChartLegend,
+  BubbleMap,
+  ChoroplethMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
   type SankeyLinkData,
   type SankeyTooltipParams,
+  type MapGeoJson,
+  type MapProjection,
+  type MapAccessor,
+  type MapStyle,
+  type BubbleMapProps,
+  type ChoroplethMapProps,
 } from "./components/chart";
 export {
   Autocomplete,

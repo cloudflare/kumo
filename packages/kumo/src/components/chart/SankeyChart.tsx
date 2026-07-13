@@ -3,6 +3,7 @@ import type { EChartsOption } from "echarts";
 import { useMemo, useCallback } from "react";
 import { Chart, type ChartEvents } from "./EChart";
 import { ChartPalette } from "./Color";
+import { defaultValueFormat, escapeHtml } from "./tooltip-utils";
 
 export interface SankeyNodeData {
   id?: string;
@@ -95,8 +96,6 @@ export interface SankeyChartProps {
   onLinkClick?: (link: SankeyLinkData) => void;
 }
 
-const defaultFormatValue = (value: number) => value.toLocaleString();
-
 /** Type guard for ECharts tooltip params */
 interface TooltipParams {
   dataType?: string;
@@ -109,15 +108,6 @@ interface TooltipParams {
 function isTooltipParams(params: unknown): params is TooltipParams {
   return typeof params === "object" && params !== null;
 }
-
-/** Escape HTML special characters to prevent XSS in tooltips */
-const escapeHtml = (str: string): string =>
-  str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
 /**
  * Escape ECharts rich text metacharacters to prevent formatting issues.
@@ -175,7 +165,7 @@ export function SankeyChart({
   showTooltip: enableTooltip = true,
   showNodeValues,
   nodeLabelLayout = "stacked",
-  formatValue = defaultFormatValue,
+  formatValue = defaultValueFormat,
   tooltipFormatter,
   defaultNodeColor,
   left,

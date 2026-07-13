@@ -1,9 +1,38 @@
 import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption, SeriesOption, SetOptionOpts } from "echarts";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
+import { ChartPalette } from "./Color";
+import {
+  buildTimeseriesMarkerAnnotations,
+  clusterTimeseriesMarkers,
+  getApproximateMarkerClusterInterval,
+  getTimeseriesMarkerFromEvent,
+  type TimeseriesMarker,
+} from "./timeseries-markers";
+import {
+  TooltipContent,
+  type MarkerTooltipState,
+  type TooltipRow,
+  type TooltipState,
+} from "./timeseries-tooltip";
+import {
+  buildTimeseriesThresholdAnnotations,
+  getThresholdValueExtent,
+  type TimeseriesThreshold,
+} from "./timeseries-thresholds";
+
+export type { TimeseriesMarker } from "./timeseries-markers";
+export type { TimeseriesThreshold } from "./timeseries-thresholds";
 
 /** A single data series rendered on a `TimeseriesChart` */
 export interface TimeseriesData {
@@ -27,6 +56,10 @@ export interface TimeseriesChartProps {
   type?: "line" | "bar";
   /** Array of time series data to display on the chart */
   data: TimeseriesData[];
+  /** Vertical reference markers rendered on the time axis. */
+  markers?: TimeseriesMarker[];
+  /** Horizontal threshold lines rendered on the value axis. */
+  thresholds?: TimeseriesThreshold[];
   /** Label for the x-axis (time axis) */
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
@@ -103,6 +136,20 @@ export interface TimeseriesChartProps {
   tooltipFollowCursor?: "both" | "x";
   /** Indicates incomplete data periods with optional before/after timestamps in ms */
   incomplete?: { before?: number; after?: number };
+  /**
+   * When `true`, adds a hidden ECharts legend so consumers can drive series
+   * visibility imperatively via the `legendSelect` / `legendUnSelect` /
+   * `legendToggleSelect` actions (e.g. to build a custom interactive legend).
+   * Toggled-off series are also excluded from the tooltip.
+   *
+   * Requires the consumer to register ECharts' `LegendComponent`
+   * (`echarts.use([LegendComponent])`); otherwise the legend actions no-op and,
+   * in development, ECharts logs a "component legend is used but not imported"
+   * warning.
+   *
+   * @default false
+   */
+  enableLegendSelection?: boolean;
   /** Height of the chart in pixels. Defaults to `350`. */
   height?: number;
   /** Callback fired when user selects a time range via brush selection */
@@ -137,17 +184,7 @@ export interface TimeseriesChartProps {
   optionUpdateBehavior?: SetOptionOpts;
 }
 
-interface TooltipRow {
-  name: string;
-  value: number;
-  color: string;
-}
-
-interface TooltipState {
-  ts: number;
-  rows: TooltipRow[];
-  hiddenCount: number;
-}
+const DEFAULT_X_AXIS_TICK_COUNT = 5;
 
 /**
  * TimeseriesChart — a time-series line or bar chart.
@@ -179,37 +216,72 @@ interface TooltipState {
  * />
  * ```
  */
-export function TimeseriesChart({
-  echarts,
-  type = "line",
-  data,
-  xAxisName,
-  xAxisTickCount,
-  xAxisTickFormat,
-  yAxisTickFormat,
-  yAxisTickLabelFormat,
-  yAxisName,
-  yAxisTickCount,
-  tooltipValueFormat,
-  onTimeRangeChange,
-  height = 350,
-  incomplete,
-  isDarkMode,
-  gradient,
-  loading,
-  ariaDescription,
-  optionUpdateBehavior,
-  tooltipMode = "all",
-  tooltipMaxItems = 10,
-  tooltipFollowCursor = "both",
-  tooltipBoundary,
-}: TimeseriesChartProps) {
+export const TimeseriesChart = forwardRef<
+  echarts.ECharts | null,
+  TimeseriesChartProps
+>(function TimeseriesChart(
+  {
+    echarts,
+    type = "line",
+    data,
+    markers,
+    thresholds,
+    xAxisName,
+    xAxisTickCount,
+    xAxisTickFormat,
+    yAxisTickFormat,
+    yAxisTickLabelFormat,
+    yAxisName,
+    yAxisTickCount,
+    tooltipValueFormat,
+    onTimeRangeChange,
+    height = 350,
+    incomplete,
+    enableLegendSelection = false,
+    isDarkMode,
+    gradient,
+    loading,
+    ariaDescription,
+    optionUpdateBehavior,
+    tooltipMode = "all",
+    tooltipMaxItems = 10,
+    tooltipFollowCursor = "both",
+    tooltipBoundary,
+  },
+  ref,
+) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const mergedRef = useCallback(
+    (instance: echarts.ECharts | null) => {
+      chartRef.current = instance;
+      if (typeof ref === "function") {
+        ref(instance);
+      } else if (ref) {
+        ref.current = instance;
+      }
+    },
+    [ref],
+  );
 
   // Keep latest props accessible inside event handlers without stale closures
   const dataRef = useRef(data);
   dataRef.current = data;
+  // Tracks legend selection (series name → visible) so the tooltip can skip toggled-off series
+  const legendSelectedRef = useRef<Record<string, boolean> | null>(null);
+  // Clear stale selection so it can't keep filtering the tooltip when:
+  // - legend selection is disabled (hidden legend removed), or
+  // - the theme toggles (`isDarkMode` change re-inits the ECharts instance,
+  //   which resets legend selection to all-visible).
+  // Done in an effect (not during render) to stay safe under concurrent rendering.
+  useEffect(() => {
+    legendSelectedRef.current = null;
+  }, [enableLegendSelection, isDarkMode]);
+
+  const markerHoverRef = useRef(false);
+  const activeMarkerKeyRef = useRef<string | null>(null);
+
   const tooltipModeRef = useRef(tooltipMode);
   tooltipModeRef.current = tooltipMode;
   const tooltipMaxItemsRef = useRef(tooltipMaxItems);
@@ -224,7 +296,10 @@ export function TimeseriesChart({
     if (!container) return;
     const onMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
-      mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      mousePosRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
     };
     container.addEventListener("mousemove", onMove);
     return () => container.removeEventListener("mousemove", onMove);
@@ -233,6 +308,11 @@ export function TimeseriesChart({
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
 
+  const markerColor = ChartPalette.text("primary", isDarkMode);
+  const markerLabelBackgroundColor = isDarkMode
+    ? "rgba(0, 0, 0, 0.5)"
+    : "rgba(255, 255, 255, 0.5)";
+
   const options = useMemo(() => {
     const transformSeries: Array<LineSeriesOption | BarSeriesOption> = [];
 
@@ -240,6 +320,21 @@ export function TimeseriesChart({
       type === "bar"
         ? ({ type: "bar", stack: "total" } as const)
         : ({ type: "line", showSymbol: false } as const);
+
+    const thresholdAnnotations = buildTimeseriesThresholdAnnotations(thresholds);
+    const thresholdExtent = getThresholdValueExtent(thresholds);
+
+    const markerClusters = clusterTimeseriesMarkers(
+      markers,
+      getApproximateMarkerClusterInterval(
+        getTimestamps(data, markers),
+        xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
+      ),
+    );
+    const markerAnnotations = buildTimeseriesMarkerAnnotations(markerClusters, {
+      color: markerColor,
+      labelBackgroundColor: markerLabelBackgroundColor,
+    });
 
     for (const s of data) {
       const incompleteBeforePoints =
@@ -305,6 +400,26 @@ export function TimeseriesChart({
       }
     }
 
+    if (markerAnnotations) {
+      transformSeries.push({
+        data: [],
+        name: "Markers",
+        type: type === "bar" ? "bar" : "line",
+        animation: false,
+        markLine: markerAnnotations.markLine,
+      });
+    }
+
+    if (thresholdAnnotations) {
+      transformSeries.push({
+        data: [],
+        name: "Thresholds",
+        type: type === "bar" ? "bar" : "line",
+        animation: false,
+        markLine: thresholdAnnotations.markLine,
+      });
+    }
+
     return {
       aria: {
         enabled: true,
@@ -330,6 +445,7 @@ export function TimeseriesChart({
       },
       backgroundColor: "transparent",
       toolbox: { show: false },
+      ...(enableLegendSelection ? { legend: { show: false } } : {}),
       xAxis: {
         name: xAxisName,
         nameLocation: "middle" as const,
@@ -339,7 +455,7 @@ export function TimeseriesChart({
           show: false,
         },
         axisLine: { show: false },
-        splitNumber: xAxisTickCount ?? 5,
+        splitNumber: xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
         ...(xAxisTickFormat && {
           axisLabel: {
             formatter: (value: number) => xAxisTickFormat(value),
@@ -363,6 +479,12 @@ export function TimeseriesChart({
           lineStyle: { type: "dashed" as const, width: 1 },
         },
         splitNumber: yAxisTickCount,
+        ...(thresholdExtent && {
+          min: (value: { min: number }) =>
+            Math.min(value.min, thresholdExtent.min),
+          max: (value: { max: number }) =>
+            Math.max(value.max, thresholdExtent.max),
+        }),
       },
       grid: {
         left: yAxisName ? 30 : 24,
@@ -384,28 +506,28 @@ export function TimeseriesChart({
     incompleteAfter,
     type,
     gradient,
+    enableLegendSelection,
     echarts,
     ariaDescription,
+    markers,
+    thresholds,
+    markerColor,
+    markerLabelBackgroundColor,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
     return {
       updateaxispointer: (params: any) => {
+        if (markerHoverRef.current) return;
+
         const ts: number | undefined = params?.axesInfo?.[0]?.value;
         if (ts == null) return;
 
-        const seenNames = new Set<string>();
-        const allRows: TooltipRow[] = [];
-
-        for (const s of dataRef.current) {
-          if (seenNames.has(s.name)) continue;
-          seenNames.add(s.name);
-          const value = findNearest(s.data, ts);
-          if (value != null) allRows.push({ name: s.name, value, color: s.color });
-        }
-
-        // Sort by value descending so highest series appears first
-        allRows.sort((a, b) => b.value - a.value);
+        const allRows = getAllTooltipRowsAtTimestamp(
+          dataRef.current,
+          ts,
+          legendSelectedRef.current,
+        );
 
         let rows: TooltipRow[];
         let hiddenCount = 0;
@@ -414,30 +536,97 @@ export function TimeseriesChart({
           // Find the series whose value is closest to the cursor's y position
           const chart = chartRef.current;
           const cursorValue = chart
-            ? (chart.convertFromPixel("grid", [0, mousePosRef.current.y]) as [number, number])?.[1]
+            ? (
+                chart.convertFromPixel("grid", [0, mousePosRef.current.y]) as [
+                  number,
+                  number,
+                ]
+              )?.[1]
             : null;
           if (cursorValue != null && allRows.length > 0) {
             const nearest = allRows.reduce((best, row) =>
-              Math.abs(row.value - cursorValue) < Math.abs(best.value - cursorValue) ? row : best,
+              Math.abs(row.value - cursorValue) <
+              Math.abs(best.value - cursorValue)
+                ? row
+                : best,
             );
             rows = [nearest];
           } else {
             rows = allRows.slice(0, 1);
           }
         } else {
-          const max = tooltipMaxItemsRef.current;
-          rows = allRows.slice(0, max);
-          hiddenCount = Math.max(0, allRows.length - max);
+          ({ rows, hiddenCount } = limitTooltipRows(
+            allRows,
+            tooltipMaxItemsRef.current,
+          ));
         }
 
-        const nextState: TooltipState = { ts, rows, hiddenCount };
+        const nextState: TooltipState = {
+          type: "series",
+          ts,
+          rows,
+          hiddenCount,
+        };
         setTooltipState((prev) => {
           if (isSameTooltipState(prev, nextState)) return prev;
           return nextState;
         });
       },
-      globalout: () => {
+      mouseover: (params) => {
+        const marker = getTimeseriesMarkerFromEvent(params);
+        if (!marker) return;
+
+        const markerKey = `${marker.timestamp}-${marker.label ?? ""}`;
+        if (activeMarkerKeyRef.current === markerKey) return;
+
+        activeMarkerKeyRef.current = markerKey;
+        markerHoverRef.current = true;
+        chartRef.current?.dispatchAction({ type: "hideTip" });
+        chartRef.current?.dispatchAction({
+          type: "updateAxisPointer",
+          currTrigger: "leave",
+        });
+
+        const { rows, hiddenCount } = getTooltipRowsAtTimestamp(
+          dataRef.current,
+          marker.timestamp,
+          legendSelectedRef.current,
+          tooltipMaxItemsRef.current,
+        );
+
+        setTooltipState({
+          type: "marker",
+          ts: marker.timestamp,
+          color: marker.color ?? markerColor,
+          markers: marker.markers,
+          rows,
+          hiddenCount,
+        });
+      },
+      mouseout: (params) => {
+        if (!getTimeseriesMarkerFromEvent(params)) return;
+        activeMarkerKeyRef.current = null;
+        markerHoverRef.current = false;
         setTooltipState(null);
+      },
+      globalout: () => {
+        activeMarkerKeyRef.current = null;
+        markerHoverRef.current = false;
+        setTooltipState(null);
+      },
+      // Keep the tooltip in sync with legend selection. Each action fires a
+      // different event — `legendToggleSelect` → `legendselectchanged`,
+      // `legendSelect` → `legendselected`, `legendUnSelect` → `legendunselected`
+      // — and all three carry the full `selected` map, so we listen to all of
+      // them (params type inferred from `ChartEvents`).
+      legendselectchanged: (params) => {
+        legendSelectedRef.current = params.selected;
+      },
+      legendselected: (params) => {
+        legendSelectedRef.current = params.selected;
+      },
+      legendunselected: (params) => {
+        legendSelectedRef.current = params.selected;
       },
       ...(onTimeRangeChange && {
         brushend: (params: any) => {
@@ -447,7 +636,7 @@ export function TimeseriesChart({
         },
       }),
     };
-  }, [onTimeRangeChange]);
+  }, [onTimeRangeChange, markerColor]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
@@ -482,17 +671,25 @@ export function TimeseriesChart({
   const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
   const tooltipOpen = tooltipState !== null;
 
-
   return (
-    <TooltipPrimitive.Root open={tooltipOpen} trackCursorAxis={tooltipFollowCursor}>
+    <TooltipPrimitive.Root
+      open={tooltipOpen}
+      trackCursorAxis={tooltipFollowCursor}
+    >
       <TooltipPrimitive.Trigger
-        render={<div ref={containerRef} className="relative w-full" style={{ height }} />}
+        render={
+          <div
+            ref={containerRef}
+            className="relative w-full"
+            style={{ height }}
+          />
+        }
       >
         {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
         {!loading && (
           <Chart
             echarts={echarts}
-            ref={chartRef}
+            ref={mergedRef}
             options={options as EChartsOption}
             height={height}
             isDarkMode={isDarkMode}
@@ -515,95 +712,142 @@ export function TimeseriesChart({
               data-mode={isDarkMode ? "dark" : "light"}
               className="bg-kumo-base rounded-lg shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill p-2 min-w-[150px] max-w-xs"
             >
-              <TooltipContent state={tooltipState} formatValue={formatFn} />
+              <TooltipContent
+                state={tooltipState}
+                formatValue={formatFn}
+                formatTimestamp={formatTimestamp}
+              />
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>
         </TooltipPrimitive.Portal>
       )}
     </TooltipPrimitive.Root>
   );
-}
-
-// ─── Tooltip content ──────────────────────────────────────────────────────────
-//
-// Memoized so React skips reconciliation when the cursor moves within the same
-// data point. The timestamp dedup in updateAxisPointer already prevents most
-// unnecessary state updates; this is a safety net for when the parent re-renders
-// for unrelated reasons (e.g. a prop change on TimeseriesChart).
-
-interface TooltipContentProps {
-  state: TooltipState;
-  formatValue?: (v: number) => string;
-}
-
-const TooltipContent = memo(function TooltipContent({ state, formatValue }: TooltipContentProps) {
-  const { ts, rows, hiddenCount } = state;
-
-  return (
-    <>
-      <div className="text-xs font-semibold text-kumo-default mb-1">
-        {formatTimestamp(ts)}
-      </div>
-      {rows.map((row) => (
-        <div key={row.name} className="flex items-center justify-between gap-4 py-0.5">
-          <div className="flex items-center gap-2 min-w-0">
-            <span
-              className="w-3 h-3 rounded-full shrink-0"
-              style={{ backgroundColor: row.color }}
-            />
-            <span className="text-xs font-medium text-kumo-default truncate" title={row.name}>
-              {row.name}
-            </span>
-          </div>
-          <span className="text-xs font-semibold text-kumo-default shrink-0">
-            {formatValue ? formatValue(row.value) : formatDefaultValue(row.value)}
-          </span>
-        </div>
-      ))}
-      {hiddenCount > 0 && (
-        <div className="text-xs text-kumo-subtle mt-1">
-          +{hiddenCount} more
-        </div>
-      )}
-    </>
-  );
 });
+
+TimeseriesChart.displayName = "TimeseriesChart";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Binary search for the value in `data` whose timestamp is closest to `ts`. */
 function findNearest(data: [number, number][], ts: number): number | null {
   if (data.length === 0) return null;
-  let lo = 0, hi = data.length - 1;
+  let lo = 0,
+    hi = data.length - 1;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
     if (data[mid][0] < ts) lo = mid + 1;
     else hi = mid;
   }
   // Check both neighbours and return the closer one
-  if (lo > 0 && Math.abs(data[lo - 1][0] - ts) < Math.abs(data[lo][0] - ts)) lo--;
+  if (lo > 0 && Math.abs(data[lo - 1][0] - ts) < Math.abs(data[lo][0] - ts))
+    lo--;
   return data[lo][1];
+}
+
+function getTimestamps(
+  data: TimeseriesData[],
+  markers: TimeseriesMarker[] | undefined,
+): number[] {
+  return [
+    ...data.flatMap((series) => series.data.map(([timestamp]) => timestamp)),
+    ...(markers?.map((marker) => marker.timestamp) ?? []),
+  ];
+}
+
+function getAllTooltipRowsAtTimestamp(
+  data: TimeseriesData[],
+  ts: number,
+  legendSelected: Record<string, boolean> | null,
+): TooltipRow[] {
+  const seenNames = new Set<string>();
+  const rows: TooltipRow[] = [];
+
+  for (const s of data) {
+    if (seenNames.has(s.name)) continue;
+    if (legendSelected && legendSelected[s.name] === false) continue;
+    seenNames.add(s.name);
+    const value = findNearest(s.data, ts);
+    if (value != null) rows.push({ name: s.name, value, color: s.color });
+  }
+
+  return rows.sort((a, b) => b.value - a.value);
+}
+
+function limitTooltipRows(
+  rows: TooltipRow[],
+  max: number,
+): { rows: TooltipRow[]; hiddenCount: number } {
+  return {
+    rows: rows.slice(0, max),
+    hiddenCount: Math.max(0, rows.length - max),
+  };
+}
+
+function getTooltipRowsAtTimestamp(
+  data: TimeseriesData[],
+  ts: number,
+  legendSelected: Record<string, boolean> | null,
+  max: number,
+): { rows: TooltipRow[]; hiddenCount: number } {
+  return limitTooltipRows(
+    getAllTooltipRowsAtTimestamp(data, ts, legendSelected),
+    max,
+  );
+}
+
+function isSameMarkerTooltipState(
+  a: MarkerTooltipState,
+  b: MarkerTooltipState,
+): boolean {
+  return (
+    a.ts === b.ts &&
+    a.color === b.color &&
+    a.hiddenCount === b.hiddenCount &&
+    a.rows.length === b.rows.length &&
+    isSameTooltipRows(a.rows, b.rows) &&
+    a.markers.length === b.markers.length &&
+    a.markers.every((marker, i) => {
+      const next = b.markers[i];
+      return (
+        marker.timestamp === next.timestamp &&
+        marker.label === next.label &&
+        marker.description === next.description &&
+        marker.color === next.color &&
+        marker.lineStyle === next.lineStyle
+      );
+    })
+  );
 }
 
 /** Shallow-compare two tooltip states so React can skip renders when nothing changed. */
 function isSameTooltipState(a: TooltipState | null, b: TooltipState): boolean {
-  if (!a || a.ts !== b.ts || a.hiddenCount !== b.hiddenCount || a.rows.length !== b.rows.length) {
+  if (!a || a.type !== b.type) return false;
+
+  if (a.type === "marker" && b.type === "marker") {
+    return isSameMarkerTooltipState(a, b);
+  }
+  if (a.type !== "series" || b.type !== "series") return false;
+
+  if (
+    a.ts !== b.ts ||
+    a.hiddenCount !== b.hiddenCount ||
+    a.rows.length !== b.rows.length
+  ) {
     return false;
   }
-  return a.rows.every((row, i) => {
-    const next = b.rows[i];
-    return row.name === next.name && row.value === next.value && row.color === next.color;
-  });
+  return isSameTooltipRows(a.rows, b.rows);
 }
 
-const defaultNumberFormat = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 3,
-});
-
-/** Fallback value formatter — avoids floating point noise without scientific notation. */
-function formatDefaultValue(value: number): string {
-  if (Number.isInteger(value)) return String(value);
-  return defaultNumberFormat.format(value);
+function isSameTooltipRows(a: TooltipRow[], b: TooltipRow[]): boolean {
+  return a.every((row, i) => {
+    const next = b[i];
+    return (
+      row.name === next.name &&
+      row.value === next.value &&
+      row.color === next.color
+    );
+  });
 }
 
 /**

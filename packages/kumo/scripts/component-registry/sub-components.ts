@@ -6,6 +6,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import * as ts from "typescript";
 import type { SubComponentConfig, PropSchema } from "./types.js";
 import { extractBalancedBraces } from "./utils.js";
 import { shouldSkipProp } from "./props-filter.js";
@@ -348,32 +349,44 @@ export function extractPropsFromInterface(
   cliFlags: CLIFlags,
 ): Record<string, PropSchema> {
   const props: Record<string, PropSchema> = {};
-
-  // Match interface definition
-  const interfacePattern = new RegExp(
-    `interface\\s+${interfaceName}\\s*(?:extends[^{]*)?\\{([^}]+)\\}`,
+  const sourceFile = ts.createSourceFile(
+    "component.tsx",
+    content,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
   );
-  const match = content.match(interfacePattern);
+  const declaration = sourceFile.statements.find(
+    (statement): statement is ts.InterfaceDeclaration =>
+      ts.isInterfaceDeclaration(statement) &&
+      statement.name.text === interfaceName,
+  );
+  if (!declaration) return props;
 
-  if (match) {
-    const propsBlock = match[1];
-    const propPattern = /(\w+)(\?)?:\s*([^;,\n}]+)/g;
-    let propMatch: RegExpExecArray | null;
-
-    while ((propMatch = propPattern.exec(propsBlock)) !== null) {
-      const propName = propMatch[1];
-      const isOptional = propMatch[2] === "?";
-      let propType = propMatch[3].trim();
-
-      propType = propType.replace(/[,;]$/, "").trim();
-
-      if (shouldSkipProp(propName, cliFlags)) continue;
-
-      props[propName] = {
-        type: propType,
-        ...(isOptional ? { optional: true } : { required: true }),
-      };
+  for (const member of declaration.members) {
+    if (!ts.isPropertySignature(member) || !member.type) continue;
+    if (!ts.isIdentifier(member.name) && !ts.isStringLiteral(member.name)) {
+      continue;
     }
+
+    const propName = member.name.text;
+    if (shouldSkipProp(propName, cliFlags)) continue;
+
+    const descriptions = ts
+      .getJSDocCommentsAndTags(member)
+      .filter(ts.isJSDoc)
+      .flatMap((doc) => {
+        if (typeof doc.comment === "string") return [doc.comment];
+        return doc.comment?.map((part) => part.text).filter(Boolean) ?? [];
+      });
+
+    props[propName] = {
+      type: member.type.getText(sourceFile),
+      ...(member.questionToken ? { optional: true } : { required: true }),
+      ...(descriptions.length > 0 && {
+        description: descriptions.join(" ").replace(/\s+/g, " ").trim(),
+      }),
+    };
   }
 
   return props;

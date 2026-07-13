@@ -1,4 +1,10 @@
 import { forwardRef, useId, type ReactNode } from "react";
+import type {
+  Edges,
+  FlowOrientation,
+  FlowState,
+  NodePositions,
+} from "./flow-layout";
 
 export interface Connector {
   x1: number;
@@ -133,11 +139,15 @@ export function createRoundedPath(
   const bottomCurveCommands = [
     `L ${x1} ${firstVerticalEnd}`,
     `Q ${x1} ${horizontalY} ${horizontalStart} ${horizontalY}`,
-    `L ${x2} ${horizontalY}`,
+    single
+      ? `L ${horizontalEnd} ${horizontalY} Q ${x2} ${horizontalY} ${x2} ${secondVerticalStart}`
+      : `L ${x2} ${horizontalY}`,
   ];
 
   const topCurveCommands = [
-    `L ${x1} ${horizontalY}`,
+    single
+      ? `L ${x1} ${firstVerticalEnd} Q ${x1} ${horizontalY} ${horizontalStart} ${horizontalY}`
+      : `L ${x1} ${horizontalY}`,
     `L ${horizontalEnd} ${horizontalY}`,
     `Q ${x2} ${horizontalY} ${x2} ${secondVerticalStart}`,
   ];
@@ -151,6 +161,73 @@ export function createRoundedPath(
   return commands.join(" ");
 }
 
+// =============================================================================
+// FlowConnectors
+// =============================================================================
+
+type FlowConnectorsProps = {
+  edges: Edges;
+  nodePositions: NodePositions;
+  nodes: FlowState["nodes"];
+  orientation: FlowOrientation;
+};
+
+/**
+ * Draws every edge in the flow using only computed positions and measured
+ * node sizes — no DOM rect lookups needed.
+ *
+ * Horizontal edges connect source right-center to target left-center.
+ * Vertical edges connect source bottom-center to target top-center.
+ *
+ * Intended to be rendered once at the top-level Flow component, absolutely
+ * positioned to overlay the entire diagram.
+ */
+export function FlowConnectors({
+  edges,
+  nodePositions,
+  nodes,
+  orientation,
+}: FlowConnectorsProps) {
+  const connectors: Connector[] = [];
+
+  for (const [fromId, toId] of edges) {
+    const fromPos = nodePositions[fromId];
+    const toPos = nodePositions[toId];
+    const fromNode = nodes[fromId];
+    const toNode = nodes[toId];
+
+    if (!fromPos || !toPos || !fromNode || !toNode) continue;
+
+    const connector =
+      orientation === "vertical"
+        ? {
+            // bottom edge of the source node to top edge of target node.
+            x1: fromPos.x + fromNode.width / 2,
+            y1: fromPos.y + fromNode.height,
+            x2: toPos.x + toNode.width / 2,
+            y2: toPos.y,
+          }
+        : {
+            // right edge of the source node; Y uses anchor midpoint when available.
+            x1: fromPos.x + fromNode.width,
+            y1: fromPos.y + (fromNode.startAnchorOffset ?? fromNode.height / 2),
+            // left edge of the target node; Y uses anchor midpoint when available.
+            x2: toPos.x,
+            y2: toPos.y + (toNode.endAnchorOffset ?? toNode.height / 2),
+          };
+
+    connectors.push({
+      ...connector,
+      disabled: fromNode.disabled || toNode.disabled,
+      fromId,
+      toId,
+      single: true,
+    });
+  }
+
+  return <Connectors connectors={connectors} orientation={orientation} />;
+}
+
 export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
   function Connectors({ connectors, children, ...pathProps }, svgRef) {
     const id = useId();
@@ -160,7 +237,7 @@ export const Connectors = forwardRef<SVGSVGElement, ConnectorsProps>(
         height="100%"
         overflow="visible"
         aria-hidden="true"
-        className="text-kumo-inactive overflow-visible"
+        className="text-kumo-placeholder overflow-visible"
         ref={svgRef}
       >
         <defs>

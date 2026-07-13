@@ -477,27 +477,18 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const mobileNodeRef = useRef<HTMLElement | null>(null);
     const shouldRestoreFocusRef = useRef(false);
 
-    // Escape key and focus-leave close the mobile sidebar
+    // Escape key closes the mobile sidebar
     useEffect(() => {
       if (!isMobile || !openMobile) return;
-      const node = mobileNodeRef.current;
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           shouldRestoreFocusRef.current = true;
           setOpenMobile(false);
         }
       };
-      const handleFocusOut = (e: FocusEvent) => {
-        if (node && !node.contains(e.relatedTarget as Node)) {
-          shouldRestoreFocusRef.current = false;
-          setOpenMobile(false);
-        }
-      };
       document.addEventListener("keydown", handleKeyDown);
-      node?.addEventListener("focusout", handleFocusOut);
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
-        node?.removeEventListener("focusout", handleFocusOut);
       };
     }, [isMobile, openMobile, setOpenMobile]);
 
@@ -792,12 +783,12 @@ const SidebarContent = forwardRef<
       className={cn(
         "h-full px-[11px] py-3 group-not-data-[state=collapsed]/sidebar:px-3.5",
         "transition-[padding] duration-(--sidebar-animation-duration)",
-        "group-data-[state=collapsed]/sidebar:overflow-x-hidden!",
+        "overflow-x-hidden!",
         // Scroll fade via CSS mask driven by Base UI overflow CSS variables
         "[mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]",
       )}
     >
-      <ScrollAreaBase.Content className="flex min-w-0 flex-col group-data-[state=collapsed]/sidebar:min-w-0!">
+      <ScrollAreaBase.Content className="flex min-w-0! flex-col">
         {children}
       </ScrollAreaBase.Content>
     </ScrollAreaBase.Viewport>
@@ -927,10 +918,10 @@ const SidebarGroupLabel = forwardRef<
     )}
     {...props}
   >
-    <div className="min-h-0">
+    <div className="min-h-0 min-w-0">
       <div
         className={cn(
-          "truncate px-3 mt-6 mb-2 text-sm font-medium text-kumo-subtle",
+          "truncate px-3 mt-4 mb-2 text-sm font-medium text-kumo-subtle",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
@@ -1142,7 +1133,13 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
             "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
           )}
         >
-          {children}
+          {React.Children.map(children, (child) =>
+            typeof child === "string" || typeof child === "number" ? (
+              <span className="truncate">{child}</span>
+            ) : (
+              child
+            ),
+          )}
         </span>
       </div>
     );
@@ -1215,7 +1212,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     if (tooltip) {
       button = (
         <Tooltip
-          content={showTooltip ? tooltip : null}
+          content={tooltip}
+          disabled={!showTooltip}
           side="right"
           render={button}
         />
@@ -1352,6 +1350,8 @@ export interface SidebarMenuSubButtonProps
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
   href?: string;
+  /** Link target — only meaningful when `href` is provided. */
+  target?: React.HTMLAttributeAnchorTarget;
 }
 
 /**
@@ -1371,7 +1371,7 @@ export interface SidebarMenuSubButtonProps
 const SidebarMenuSubButton = forwardRef<
   HTMLButtonElement,
   SidebarMenuSubButtonProps
->(({ className, active = false, href, children, ...props }, ref) => {
+>(({ className, active = false, href, target, children, ...props }, ref) => {
   const LinkComponent = useLinkComponent();
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
@@ -1386,8 +1386,14 @@ const SidebarMenuSubButton = forwardRef<
   );
 
   const content = (
-    <span className="flex flex-1 items-center gap-2 truncate text-left">
-      {children}
+    <span className="flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden">
+      {React.Children.map(children, (child) =>
+        typeof child === "string" || typeof child === "number" ? (
+          <span className="truncate">{child}</span>
+        ) : (
+          child
+        ),
+      )}
     </span>
   );
 
@@ -1400,6 +1406,7 @@ const SidebarMenuSubButton = forwardRef<
         className={cn(buttonClasses, "no-underline!")}
         href={href}
         to={href}
+        target={target}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
         data-kumo-component="Sidebar"

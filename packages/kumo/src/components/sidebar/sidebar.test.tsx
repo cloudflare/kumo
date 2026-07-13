@@ -579,6 +579,41 @@ describe("Sidebar.MenuButton", () => {
   });
 });
 
+describe("Sidebar.MenuSubButton", () => {
+  it("should render as link when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuSubButton href="/observability">
+              Observability
+            </SidebarMenuSubButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const link = screen.getByText("Observability").closest("a");
+    expect(link).toBeTruthy();
+    expect(link!.getAttribute("href")).toBe("/observability");
+  });
+
+  it("should forward target to the link when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuSubButton href="https://example.com" target="_self">
+              External
+            </SidebarMenuSubButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const link = screen.getByText("External").closest("a");
+    expect(link!.getAttribute("target")).toBe("_self");
+  });
+});
+
 // ============================================================================
 // Contained mode
 // ============================================================================
@@ -683,7 +718,7 @@ describe("Sidebar mobile behavior", () => {
     await waitFor(() => expect(document.activeElement).toBe(toggle));
   });
 
-  it("should close on focus leave without stealing focus back", async () => {
+  it("should NOT close when focus moves outside the sidebar (e.g. to portaled content)", async () => {
     setMobileMatchMedia(true);
     const user = userEvent.setup();
     render(<MobileTest />);
@@ -700,7 +735,7 @@ describe("Sidebar mobile behavior", () => {
     afterSidebar.focus();
     fireEvent.focusOut(nav, { relatedTarget: afterSidebar });
 
-    await waitFor(() => expect(nav.getAttribute("aria-hidden")).toBe("true"));
-    expect(document.activeElement).toBe(afterSidebar);
+    expect(nav.getAttribute("aria-hidden")).toBe("false");
+    expect(nav.hasAttribute("inert")).toBe(false);
   });
 });

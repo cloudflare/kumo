@@ -70,6 +70,38 @@ const sequentialDark = {
   blues: ["#03254F", "#0E58B4", "#4290F0", "#A6BFDD", "#E1EAF4"],
 };
 
+/** Colours for GeoJSON-based map charts. */
+export interface MapColors {
+  /** Fill for land / no-data regions. */
+  area: string;
+  /** Default bubble fill (the chart palette blue). */
+  bubble: string;
+  /**
+   * Sequential ramp (low → high) for shading choropleth regions. Tuned so the
+   * lowest band stays clearly distinct from the neutral no-data fill in both
+   * modes (light: low = light blue → high = deep blue; dark: low = deep blue →
+   * high = bright blue, so higher values read brighter against the dark base).
+   */
+  scale: string[];
+}
+
+/** Neutral land fill per mode; bubbles use the shared categorical palette. */
+const mapAreaByMode = {
+  light: "#E5E7EB",
+  dark: "#2B2C31",
+} as const;
+
+/**
+ * Choropleth shading ramp per mode (ordered low → high), anchored on the shared
+ * chart blue `#4290F0` (same as BubbleMap and `categorical(0)`) so the maps read
+ * as one family. Every step stays clearly blue, and the low ends are kept
+ * distinct from the neutral no-data fill in both modes.
+ */
+const mapScaleByMode = {
+  light: ["#C8DEFB", "#8FBDF6", "#4290F0", "#1E60BE", "#0A3A7A"],
+  dark: ["#26456C", "#2C68BE", "#4290F0", "#79AEF4", "#BBD6FA"],
+} as const;
+
 /**
  * Ordered list of categorical colors for light mode, indexed by series position.
  * Used as the default ECharts color palette when `isDarkMode` is `false`.
@@ -170,5 +202,16 @@ export namespace ChartPalette {
       dark: { primary: "#9CA3AF", secondary: "#6B7280" },
     };
     return isDarkMode ? colors.dark[variant] : colors.light[variant];
+  }
+
+  /** Returns colors for GeoJSON-based map charts. */
+  export function mapColors(isDarkMode = false): MapColors {
+    const mode = isDarkMode ? "dark" : "light";
+
+    return {
+      area: mapAreaByMode[mode],
+      bubble: categorical(0, isDarkMode),
+      scale: [...mapScaleByMode[mode]],
+    };
   }
 }

@@ -49,12 +49,12 @@ export const KUMO_BUTTON_VARIANTS = {
   variant: {
     primary: {
       classes:
-        "bg-kumo-brand !text-white hover:bg-kumo-brand-hover disabled:bg-kumo-brand/50",
+        "relative overflow-hidden bg-(--kumo-button-emphasis-bg) !text-white ring ring-(--kumo-button-emphasis-ring) focus:ring-(--kumo-button-emphasis-ring) focus-visible:ring-(--kumo-button-emphasis-ring) active:ring-(--kumo-button-emphasis-ring) disabled:opacity-50",
       description: "High-emphasis button for primary actions",
     },
     secondary: {
       classes:
-        "bg-kumo-base !text-kumo-default ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-default ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description: "Default button style for most actions",
     },
     ghost: {
@@ -62,17 +62,19 @@ export const KUMO_BUTTON_VARIANTS = {
       description: "Minimal button with no background",
     },
     destructive: {
-      classes: "bg-kumo-danger !text-white hover:bg-kumo-danger/70",
+      classes:
+        "relative overflow-hidden bg-(--kumo-button-emphasis-bg) !text-white ring ring-(--kumo-button-emphasis-ring) focus:ring-(--kumo-button-emphasis-ring) focus-visible:ring-(--kumo-button-emphasis-ring) active:ring-(--kumo-button-emphasis-ring) disabled:opacity-50",
       description: "Danger button for destructive actions like delete",
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:bg-kumo-base disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-hairline data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:!text-kumo-danger not-disabled:hover:ring-kumo-danger/30 disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
-      classes: "bg-transparent text-kumo-default ring ring-kumo-hairline",
+      classes:
+        "bg-transparent text-kumo-default ring ring-kumo-line transition-colors not-disabled:hover:text-kumo-strong not-disabled:hover:ring-kumo-focus/25",
       description: "Bordered button with transparent background",
     },
   },
@@ -135,12 +137,6 @@ export function buttonVariants({
     "cursor-pointer",
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
-    // Apply variant, size, shape styles from KUMO_BUTTON_VARIANTS
-    resolveVariant(
-      KUMO_BUTTON_VARIANTS.variant,
-      variant,
-      KUMO_BUTTON_DEFAULT_VARIANTS.variant,
-    ).classes,
     resolveVariant(
       KUMO_BUTTON_VARIANTS.size,
       size,
@@ -157,6 +153,11 @@ export function buttonVariants({
         size,
         KUMO_BUTTON_DEFAULT_VARIANTS.size,
       ).classes,
+    resolveVariant(
+      KUMO_BUTTON_VARIANTS.variant,
+      variant,
+      KUMO_BUTTON_DEFAULT_VARIANTS.variant,
+    ).classes,
   );
 }
 
@@ -166,6 +167,55 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (React.isValidElement(IconComponent)) return IconComponent;
   const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
   return <Comp />;
+};
+
+const getEmphasisToken = (variant: KumoButtonVariant) => {
+  if (variant === "primary") return "var(--color-kumo-brand)";
+  if (variant === "destructive") return "var(--color-kumo-danger)";
+  return undefined;
+};
+
+const getEmphasisStyle = (variant: KumoButtonVariant) => {
+  const token = getEmphasisToken(variant);
+  if (!token) return undefined;
+
+  return {
+    "--kumo-button-emphasis-ring": `color-mix(in oklch, ${token}, black 10%)`,
+    "--kumo-button-emphasis-bg": `color-mix(in oklch, ${token}, white 30%)`,
+    "--kumo-button-emphasis-gradient-start": `color-mix(in oklch, ${token}, white 15%)`,
+    "--kumo-button-emphasis-gradient-end": token,
+  } satisfies React.CSSProperties & Record<`--${string}`, string>;
+};
+
+const renderButtonContent = (
+  variant: KumoButtonVariant,
+  iconNode: React.ReactNode,
+  children: React.ReactNode,
+) => {
+  const childNode =
+    children != null ? <span className="contents">{children}</span> : null;
+
+  if (!getEmphasisToken(variant)) {
+    return (
+      <>
+        {iconNode}
+        {childNode}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 rounded-[inherit] bg-linear-to-b from-(--kumo-button-emphasis-gradient-start) to-(--kumo-button-emphasis-gradient-end) shadow-[inset_0_1px_0_0_var(--kumo-button-emphasis-bg)] group-hover:from-(--kumo-button-emphasis-bg)"
+      />
+      <span className="relative flex items-center gap-1.5">
+        {iconNode}
+        {childNode}
+      </span>
+    </>
+  );
 };
 
 /**
@@ -252,12 +302,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "base",
       variant = "secondary",
       icon: IconComponent,
+      style,
       title,
       ...props
     },
     ref,
   ) => {
     const { type, ...restProps } = props;
+    const emphasisStyle = getEmphasisStyle(variant);
+    const iconNode = loading ? (
+      <Loader size={size === "lg" ? 16 : 14} />
+    ) : (
+      renderIconNode(IconComponent)
+    );
+
     const button = (
       <button
         ref={ref}
@@ -268,15 +326,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className,
         )}
         disabled={loading || disabled}
+        style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         type={type ?? "button"}
         {...restProps}
       >
-        {loading ? (
-          <Loader size={size === "lg" ? 16 : 14} />
-        ) : (
-          renderIconNode(IconComponent)
-        )}
-        {children != null && <span className="contents">{children}</span>}
+        {renderButtonContent(variant, iconNode, children)}
       </button>
     );
 
@@ -334,12 +388,14 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       size = "base",
       variant = "ghost",
       icon: IconComponent,
+      style,
       // linksExternal = false,
       ...props
     },
     ref,
   ) => {
     const LinkComponent = useLinkComponent();
+    const emphasisStyle = getEmphasisStyle(variant);
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
       : {};
@@ -354,12 +410,12 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
           className,
         )}
         href={href}
+        style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         to={typeof href === "string" ? href : undefined}
         {...externalProps}
         {...props}
       >
-        {renderIconNode(IconComponent)}
-        {children}
+        {renderButtonContent(variant, renderIconNode(IconComponent), children)}
       </LinkComponent>
     );
   },

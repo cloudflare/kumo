@@ -1,12 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { createRef } from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   Input,
   inputVariants,
   KUMO_INPUT_VARIANTS,
   KUMO_INPUT_DEFAULT_VARIANTS,
 } from "./input";
+import { InputArea } from "./input-area";
 
 describe("Input", () => {
   // Rendering
@@ -148,9 +149,7 @@ describe("Input", () => {
   });
 
   it("renders description without label", () => {
-    render(
-      <Input aria-label="Email" description="Enter your work email" />,
-    );
+    render(<Input aria-label="Email" description="Enter your work email" />);
     expect(screen.getByText("Enter your work email")).toBeTruthy();
   });
 
@@ -226,5 +225,179 @@ describe("Input", () => {
   it("exports KUMO_INPUT_DEFAULT_VARIANTS with correct defaults", () => {
     expect(KUMO_INPUT_DEFAULT_VARIANTS.size).toBe("base");
     expect(KUMO_INPUT_DEFAULT_VARIANTS.variant).toBe("default");
+  });
+});
+
+describe("InputArea", () => {
+  it("auto-resizes to its scrollHeight when autoResize is true", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(80);
+
+    render(
+      <InputArea aria-label="Notes" autoResize defaultValue="Initial value" />,
+    );
+
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("80px");
+    expect(textarea.className).toContain("resize-none");
+    expect(textarea.className).toContain("field-sizing-content");
+    expect(textarea.style.overflowY).toBe("hidden");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("does not touch inline height when autoResize is false", () => {
+    const { rerender } = render(
+      <InputArea aria-label="Notes" value="one" onChange={() => {}} />,
+    );
+
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    // Simulate the user dragging the native resize handle
+    textarea.style.height = "240px";
+
+    rerender(
+      <InputArea aria-label="Notes" value="one two" onChange={() => {}} />,
+    );
+    fireEvent.change(textarea, { target: { value: "one two three" } });
+
+    expect(textarea.style.height).toBe("240px");
+    expect(textarea.className).not.toContain("field-sizing-content");
+    expect(textarea.className).not.toContain("[scrollbar-width:thin]");
+  });
+
+  it("clamps to maxRows and becomes scrollable past the clamp", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(200);
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        maxRows={5}
+        style={{ lineHeight: "20px" }}
+        defaultValue="Lots of content"
+      />,
+    );
+
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("100px");
+    expect(textarea.style.overflowY).toBe("auto");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("clamps to minRows when content is shorter", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(20);
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        minRows={3}
+        style={{ lineHeight: "20px" }}
+      />,
+    );
+
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.getAttribute("rows")).toBe("3");
+    expect(textarea.style.height).toBe("60px");
+    expect(textarea.style.overflowY).toBe("hidden");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("treats a unitless line-height as a font-size multiplier for maxRows", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(500);
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        maxRows={4}
+        style={{ lineHeight: "1.5", fontSize: "16px" }}
+        defaultValue="Lots of content"
+      />,
+    );
+
+    // 1.5 * 16px * 4 rows = 96px, not 1.5px * 4 rows
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("96px");
+    expect(textarea.style.overflowY).toBe("auto");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("clears inline styles on unmount", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(80);
+
+    const { unmount } = render(
+      <InputArea aria-label="Notes" autoResize defaultValue="Initial" />,
+    );
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    expect(textarea.style.height).toBe("80px");
+
+    unmount();
+    expect(textarea.style.height).toBe("");
+    expect(textarea.style.overflowY).toBe("");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("restores inline styles when autoResize is turned off", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(80);
+
+    const { rerender } = render(
+      <InputArea aria-label="Notes" autoResize defaultValue="Initial" />,
+    );
+    const textarea = screen.getByRole("textbox");
+    expect(textarea.style.height).toBe("80px");
+
+    rerender(<InputArea aria-label="Notes" defaultValue="Initial" />);
+    expect(textarea.style.height).toBe("");
+    expect(textarea.style.overflowY).toBe("");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("auto-resizes on change and preserves value callbacks", () => {
+    const scrollHeight = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(96);
+    const onChange = vi.fn();
+    const onValueChange = vi.fn();
+
+    render(
+      <InputArea
+        aria-label="Notes"
+        autoResize
+        onChange={onChange}
+        onValueChange={onValueChange}
+      />,
+    );
+
+    const textarea = screen.getByRole("textbox");
+    fireEvent.change(textarea, { target: { value: "Longer value" } });
+
+    expect(textarea.style.height).toBe("96px");
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(onValueChange).toHaveBeenCalledWith("Longer value");
+
+    scrollHeight.mockRestore();
+  });
+
+  it("forwards ref to the underlying textarea with autoResize", () => {
+    const ref = createRef<HTMLTextAreaElement>();
+    render(<InputArea ref={ref} aria-label="Notes" autoResize />);
+    expect(ref.current).toBeInstanceOf(HTMLTextAreaElement);
   });
 });

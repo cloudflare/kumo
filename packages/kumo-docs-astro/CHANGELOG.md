@@ -1,5 +1,79 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.12
+
+### Patch Changes
+
+- Updated dependencies [a90dc83]
+- Updated dependencies [8f2c40b]
+- Updated dependencies [fdeeb74]
+- Updated dependencies [0e440d4]
+- Updated dependencies [67061e1]
+- Updated dependencies [b05ea3f]
+- Updated dependencies [33cb988]
+- Updated dependencies [0562dd1]
+  - @cloudflare/kumo@2.8.0
+
+## 1.5.11
+
+### Patch Changes
+
+- Updated dependencies [dd1a0b5]
+- Updated dependencies [8463c38]
+- Updated dependencies [8f8f898]
+- Updated dependencies [3aa0d9a]
+- Updated dependencies [25b2ab1]
+- Updated dependencies [6232d34]
+- Updated dependencies [a74bd9c]
+- Updated dependencies [6d366d9]
+- Updated dependencies [4dd1398]
+- Updated dependencies [ebc5cf8]
+  - @cloudflare/kumo@2.7.0
+
+## 1.5.10
+
+### Patch Changes
+
+- 4378067: feat(radio): add generic value type support to Radio.Group and Radio.Item
+- Updated dependencies [430689b]
+- Updated dependencies [1b04ee9]
+- Updated dependencies [539e5bf]
+- Updated dependencies [4378067]
+- Updated dependencies [fb5fed1]
+- Updated dependencies [116e0de]
+- Updated dependencies [bdd890c]
+- Updated dependencies [815628f]
+  - @cloudflare/kumo@2.6.0
+
+## 1.5.9
+
+### Patch Changes
+
+- Updated dependencies [9a13576]
+- Updated dependencies [b18837c]
+- Updated dependencies [595d10e]
+  - @cloudflare/kumo@2.5.2
+
+## 1.5.8
+
+### Patch Changes
+
+- Updated dependencies [b06e35b]
+  - @cloudflare/kumo@2.5.1
+
+## 1.5.7
+
+### Patch Changes
+
+- Updated dependencies [f957dbc]
+- Updated dependencies [7401701]
+- Updated dependencies [ac46184]
+- Updated dependencies [e25a3d6]
+- Updated dependencies [d3feec0]
+- Updated dependencies [f831482]
+- Updated dependencies [4a8b992]
+  - @cloudflare/kumo@2.5.0
+
 ## 1.5.6
 
 ### Patch Changes
