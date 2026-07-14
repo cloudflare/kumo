@@ -317,7 +317,7 @@
       0 0 0 1000px
         color-mix(
           in srgb,
-          var(--color-kumo-info-tint) 30%,
+          var(--color-kumo-info-tint) 35%,
           var(--color-kumo-control)
         )
         inset !important;
@@ -330,7 +330,7 @@
       0 0 0 1000px
         color-mix(
           in srgb,
-          var(--color-kumo-info-tint) 30%,
+          var(--color-kumo-info-tint) 35%,
           var(--color-kumo-control)
         )
         inset !important;
@@ -347,7 +347,7 @@
   [data-slot="input-group-container-zone"]:has(input:-webkit-autofill) {
     background-color: color-mix(
       in srgb,
-      var(--color-kumo-info-tint) 30%,
+      var(--color-kumo-info-tint) 35%,
       var(--color-kumo-control)
     ) !important;
   }
