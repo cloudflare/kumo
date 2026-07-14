@@ -142,6 +142,7 @@ describe("Button", () => {
     expect(button.hasAttribute("disabled")).toBe(true);
     expect(trigger?.tagName).toBe("SPAN");
     expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(trigger?.hasAttribute("disabled")).toBe(false);
   });
 
   it("keeps emphasized variant rings color-matched when pressed or focused", () => {
