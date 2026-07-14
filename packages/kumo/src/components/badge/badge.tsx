@@ -19,15 +19,15 @@ export const KUMO_BADGE_VARIANTS = {
       description: "Secondary badge",
     },
     error: {
-      classes: "bg-kumo-danger-tint/60 text-kumo-danger",
+      classes: "bg-kumo-danger-tint text-kumo-danger",
       description: "Error badge",
     },
     warning: {
-      classes: "bg-kumo-warning-tint/70 text-kumo-warning",
+      classes: "bg-kumo-warning-tint text-kumo-warning",
       description: "Warning badge",
     },
     success: {
-      classes: "bg-kumo-success-tint/70 text-kumo-success",
+      classes: "bg-kumo-success-tint text-kumo-success",
       description: "Success badge",
     },
     destructive: {
@@ -35,7 +35,7 @@ export const KUMO_BADGE_VARIANTS = {
       description: "Deprecated. Use red instead.",
     },
     info: {
-      classes: "bg-kumo-info-tint/70 text-kumo-info",
+      classes: "bg-kumo-info-tint text-kumo-info",
       description: "Info badge",
     },
     beta: {

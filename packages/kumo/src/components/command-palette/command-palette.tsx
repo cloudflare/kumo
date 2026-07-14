@@ -452,7 +452,7 @@ function HighlightedText({
     parts.push(
       <mark
         key={`highlight-${i}`}
-        className="rounded-sm bg-kumo-warning/50 text-kumo-default"
+        className="rounded-sm fill-kumo-warning/15 text-kumo-default"
       >
         {text.slice(start, end + 1)}
       </mark>,

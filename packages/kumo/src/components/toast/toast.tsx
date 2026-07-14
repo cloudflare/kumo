@@ -413,9 +413,9 @@ const TOAST_CLOSE_CLASSES: Record<string, string> = {
 
 const TOAST_BACKGROUND_CLASSES: Record<string, string> = {
   success: "bg-kumo-success-tint/20",
-  error: "bg-kumo-danger-tint/30",
-  warning: "bg-kumo-warning-tint/20",
-  info: "bg-kumo-info-tint/30",
+  error: "bg-kumo-danger-tint/50",
+  warning: "bg-kumo-warning-tint/50",
+  info: "bg-kumo-info-tint/50",
 };
 
 function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
