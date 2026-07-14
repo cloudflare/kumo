@@ -39,8 +39,8 @@ export const KUMO_TOAST_VARIANTS = {
   },
   close: {
     classes:
-      "absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded bg-transparent text-kumo-subtle hover:bg-kumo-fill-hover hover:text-kumo-default",
-    description: "Close button with X icon",
+      "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+    description: "Button-based close control with variant-aware hover tint",
   },
   variant: {
     default: {
@@ -369,7 +369,7 @@ function ToastList() {
                   data-toast-title
                   className="text-[0.975rem] leading-5 font-medium text-kumo-default"
                 />
-                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-subtle" />
+                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
 
                 {!!toast.actions && (
                   <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
@@ -383,21 +383,39 @@ function ToastList() {
           </>
         )}
         <Toast.Close
-          className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded border-none bg-transparent text-current/50 hover:bg-kumo-contrast/10 hover:text-current"
+          data-kumo-part="close"
           aria-label="Close"
-        >
-          <XIcon className="h-3 w-3" />
-        </Toast.Close>
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              shape="square"
+              aria-label="Close"
+              className={cn(
+                "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+                toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
+              )}
+              icon={<XIcon className="h-3 w-3" />}
+            />
+          }
+        />
       </Toast.Content>
     </Toast.Root>
   ));
 }
 
+const TOAST_CLOSE_CLASSES: Record<string, string> = {
+  success: "text-kumo-success",
+  error: "text-kumo-danger",
+  warning: "text-kumo-warning",
+  info: "text-kumo-info",
+};
+
 const TOAST_BACKGROUND_CLASSES: Record<string, string> = {
-  success: "bg-kumo-success/5",
-  error: "bg-kumo-danger/5",
-  warning: "bg-kumo-warning/5",
-  info: "bg-kumo-info/5",
+  success: "bg-kumo-success-tint/20",
+  error: "bg-kumo-danger-tint/30",
+  warning: "bg-kumo-warning-tint/20",
+  info: "bg-kumo-info-tint/30",
 };
 
 function ToastBackground({ variant }: { variant?: KumoToastVariant }) {

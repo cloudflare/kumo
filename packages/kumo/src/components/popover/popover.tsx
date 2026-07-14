@@ -92,6 +92,8 @@ function PopoverTrigger({
 
   return (
     <PopoverBase.Trigger
+      data-kumo-component="Popover"
+      data-kumo-part="trigger"
       className={className}
       render={resolvedRender}
       {...props}

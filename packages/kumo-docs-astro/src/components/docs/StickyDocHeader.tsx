@@ -111,9 +111,9 @@ export function StickyDocHeader({
       {/* Sticky header bar */}
       <header
         ref={headerRef}
-        className="sticky flex h-12 top-12 md:top-0 z-10 border-b border-kumo-hairline bg-kumo-elevated"
+        className="sticky flex h-12 top-12 lg:top-0 z-10 border-b border-kumo-hairline bg-kumo-elevated"
       >
-        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:border-r md:border-kumo-hairline">
+        <div className="flex min-w-0 flex-1 items-center justify-between px-3 md:px-6 lg:px-4 lg:border-r lg:border-kumo-hairline">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
@@ -161,7 +161,7 @@ export function StickyDocHeader({
             @cloudflare/kumo
           </a>
         </div>
-        <div className="hidden w-12 shrink-0 items-center justify-center md:flex">
+        <div className="hidden w-12 shrink-0 items-center justify-center lg:flex">
           <ThemeToggle />
         </div>
       </header>

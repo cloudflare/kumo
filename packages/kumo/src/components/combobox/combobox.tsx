@@ -167,9 +167,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   size?: KumoComboboxSize;
 }) {
   const comboboxControl = (
-    <ComboboxContext value={{ size, hasError: Boolean(error) }}>
+    <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
-    </ComboboxContext>
+    </ComboboxContext.Provider>
   );
 
   // Render with Field wrapper if label, description, or error are provided
@@ -266,6 +266,8 @@ function TriggerValue({
 
   return (
     <ComboboxBase.Trigger
+      data-kumo-component="Combobox"
+      data-kumo-part="trigger"
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
@@ -355,6 +357,8 @@ function TriggerInput({
       />
 
       <ComboboxBase.Clear
+        data-kumo-component="Combobox"
+        data-kumo-part="clear"
         aria-label={clearLabel}
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 cursor-pointer bg-transparent p-0",
@@ -366,6 +370,8 @@ function TriggerInput({
       </ComboboxBase.Clear>
 
       <ComboboxBase.Trigger
+        data-kumo-component="Combobox"
+        data-kumo-part="trigger"
         aria-label={showOptionsLabel}
         className={cn(
           "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
@@ -373,7 +379,7 @@ function TriggerInput({
           iconStyles.caretRight,
         )}
       >
-        <ComboboxBase.Icon>
+        <ComboboxBase.Icon className="flex items-center">
           <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
@@ -388,6 +394,8 @@ function Item({
 }: ComboboxBase.Item.Props & { className?: string }) {
   return (
     <ComboboxBase.Item
+      data-kumo-component="Combobox"
+      data-kumo-part="item"
       {...props}
       className={cn(
         "group mx-1.5 grid grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base",
@@ -490,6 +498,8 @@ function Chip({
     >
       {props.children}
       <ComboboxBase.ChipRemove
+        data-kumo-component="Combobox"
+        data-kumo-part="chip-remove"
         aria-label={removeLabel}
         className={cn(
           "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
@@ -630,4 +640,7 @@ export const Combobox = Object.assign(Root, {
   Trigger: ComboboxBase.Trigger,
   Value: ComboboxBase.Value,
   Icon: ComboboxBase.Icon,
+
+  // Filtering
+  useFilter: ComboboxBase.useFilter,
 });

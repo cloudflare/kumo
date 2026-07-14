@@ -1,8 +1,38 @@
 import type * as echarts from "echarts/core";
 import type { LineSeriesOption, BarSeriesOption } from "echarts/charts";
 import type { EChartsOption, SeriesOption, SetOptionOpts } from "echarts";
-import { useEffect, useMemo, useRef } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
+import { ChartPalette } from "./Color";
+import {
+  buildTimeseriesMarkerAnnotations,
+  clusterTimeseriesMarkers,
+  getApproximateMarkerClusterInterval,
+  getTimeseriesMarkerFromEvent,
+  type TimeseriesMarker,
+} from "./timeseries-markers";
+import {
+  TooltipContent,
+  type MarkerTooltipState,
+  type TooltipRow,
+  type TooltipState,
+} from "./timeseries-tooltip";
+import {
+  buildTimeseriesThresholdAnnotations,
+  getThresholdValueExtent,
+  type TimeseriesThreshold,
+} from "./timeseries-thresholds";
+
+export type { TimeseriesMarker } from "./timeseries-markers";
+export type { TimeseriesThreshold } from "./timeseries-thresholds";
 
 /** A single data series rendered on a `TimeseriesChart` */
 export interface TimeseriesData {
@@ -26,6 +56,10 @@ export interface TimeseriesChartProps {
   type?: "line" | "bar";
   /** Array of time series data to display on the chart */
   data: TimeseriesData[];
+  /** Vertical reference markers rendered on the time axis. */
+  markers?: TimeseriesMarker[];
+  /** Horizontal threshold lines rendered on the value axis. */
+  thresholds?: TimeseriesThreshold[];
   /** Label for the x-axis (time axis) */
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
@@ -58,8 +92,64 @@ export interface TimeseriesChartProps {
    * deprecated `yAxisTickLabelFormat` prop.
    */
   tooltipValueFormat?: (value: number) => string;
+  /**
+   * Controls which series are shown in the tooltip.
+   * - `"all"` — show all series at the hovered timestamp (default)
+   * - `"single"` — show only the series whose value is closest to the cursor
+   */
+  tooltipMode?: "all" | "single";
+  /**
+   * Maximum number of series rows shown in the tooltip when `tooltipMode` is `"all"`.
+   * Additional series are hidden with a `+N more` footer. Defaults to `10`.
+   */
+  tooltipMaxItems?: number;
+  /**
+   * Constrains the tooltip to stay within a specific element or region.
+   * By default the tooltip avoids overflowing any clipping ancestor
+   * (scroll containers, viewports, etc.).
+   *
+   * Pass an `Element` or array of elements to restrict the tooltip to a
+   * specific container.
+   *
+   * @default "clipping-ancestors"
+   */
+  tooltipBoundary?: "clipping-ancestors" | Element | Element[];
+  /**
+   * Which axis the tooltip follows the cursor on.
+   *
+   * - `"both"` — tooltip tracks the cursor on both axes, staying near the
+   *   pointer at all times. This is the default and matches the behaviour of
+   *   ECharts' built-in tooltip.
+   * - `"x"` — tooltip follows the cursor horizontally but is locked to a
+   *   fixed vertical position relative to the chart. This keeps the tooltip
+   *   out of the way of the data and avoids vertical jitter as series values
+   *   change — the same approach used by Recharts and many dashboard UIs.
+   *
+   * Only these two modes are offered because the x-axis is always time in a
+   * `TimeseriesChart`: y-only tracking and fully-fixed positioning don't
+   * produce useful tooltip behaviour for time-series data.
+   *
+   * Powered by Base UI Tooltip's `trackCursorAxis` under the hood.
+   *
+   * @default "both"
+   */
+  tooltipFollowCursor?: "both" | "x";
   /** Indicates incomplete data periods with optional before/after timestamps in ms */
   incomplete?: { before?: number; after?: number };
+  /**
+   * When `true`, adds a hidden ECharts legend so consumers can drive series
+   * visibility imperatively via the `legendSelect` / `legendUnSelect` /
+   * `legendToggleSelect` actions (e.g. to build a custom interactive legend).
+   * Toggled-off series are also excluded from the tooltip.
+   *
+   * Requires the consumer to register ECharts' `LegendComponent`
+   * (`echarts.use([LegendComponent])`); otherwise the legend actions no-op and,
+   * in development, ECharts logs a "component legend is used but not imported"
+   * warning.
+   *
+   * @default false
+   */
+  enableLegendSelection?: boolean;
   /** Height of the chart in pixels. Defaults to `350`. */
   height?: number;
   /** Callback fired when user selects a time range via brush selection */
@@ -94,6 +184,8 @@ export interface TimeseriesChartProps {
   optionUpdateBehavior?: SetOptionOpts;
 }
 
+const DEFAULT_X_AXIS_TICK_COUNT = 5;
+
 /**
  * TimeseriesChart — a time-series line or bar chart.
  *
@@ -124,30 +216,102 @@ export interface TimeseriesChartProps {
  * />
  * ```
  */
-export function TimeseriesChart({
-  echarts,
-  type = "line",
-  data,
-  xAxisName,
-  xAxisTickCount,
-  xAxisTickFormat,
-  yAxisTickFormat,
-  yAxisTickLabelFormat,
-  yAxisName,
-  yAxisTickCount,
-  tooltipValueFormat,
-  onTimeRangeChange,
-  height = 350,
-  incomplete,
-  isDarkMode,
-  gradient,
-  loading,
-  ariaDescription,
-  optionUpdateBehavior,
-}: TimeseriesChartProps) {
+export const TimeseriesChart = forwardRef<
+  echarts.ECharts | null,
+  TimeseriesChartProps
+>(function TimeseriesChart(
+  {
+    echarts,
+    type = "line",
+    data,
+    markers,
+    thresholds,
+    xAxisName,
+    xAxisTickCount,
+    xAxisTickFormat,
+    yAxisTickFormat,
+    yAxisTickLabelFormat,
+    yAxisName,
+    yAxisTickCount,
+    tooltipValueFormat,
+    onTimeRangeChange,
+    height = 350,
+    incomplete,
+    enableLegendSelection = false,
+    isDarkMode,
+    gradient,
+    loading,
+    ariaDescription,
+    optionUpdateBehavior,
+    tooltipMode = "all",
+    tooltipMaxItems = 10,
+    tooltipFollowCursor = "both",
+    tooltipBoundary,
+  },
+  ref,
+) {
   const chartRef = useRef<echarts.ECharts | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const mergedRef = useCallback(
+    (instance: echarts.ECharts | null) => {
+      chartRef.current = instance;
+      if (typeof ref === "function") {
+        ref(instance);
+      } else if (ref) {
+        ref.current = instance;
+      }
+    },
+    [ref],
+  );
+
+  // Keep latest props accessible inside event handlers without stale closures
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  // Tracks legend selection (series name → visible) so the tooltip can skip toggled-off series
+  const legendSelectedRef = useRef<Record<string, boolean> | null>(null);
+  // Clear stale selection so it can't keep filtering the tooltip when:
+  // - legend selection is disabled (hidden legend removed), or
+  // - the theme toggles (`isDarkMode` change re-inits the ECharts instance,
+  //   which resets legend selection to all-visible).
+  // Done in an effect (not during render) to stay safe under concurrent rendering.
+  useEffect(() => {
+    legendSelectedRef.current = null;
+  }, [enableLegendSelection, isDarkMode]);
+
+  const markerHoverRef = useRef(false);
+  const activeMarkerKeyRef = useRef<string | null>(null);
+
+  const tooltipModeRef = useRef(tooltipMode);
+  tooltipModeRef.current = tooltipMode;
+  const tooltipMaxItemsRef = useRef(tooltipMaxItems);
+  tooltipMaxItemsRef.current = tooltipMaxItems;
+
+  const [tooltipState, setTooltipState] = useState<TooltipState | null>(null);
+
+  // Track cursor position for single-mode y lookup (convertFromPixel needs relative coords)
+  const mousePosRef = useRef({ x: 0, y: 0 });
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const onMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      mousePosRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    };
+    container.addEventListener("mousemove", onMove);
+    return () => container.removeEventListener("mousemove", onMove);
+  }, []);
+
   const incompleteBefore = incomplete?.before;
   const incompleteAfter = incomplete?.after;
+
+  const markerColor = ChartPalette.text("primary", isDarkMode);
+  const markerLabelBackgroundColor = isDarkMode
+    ? "rgba(0, 0, 0, 0.5)"
+    : "rgba(255, 255, 255, 0.5)";
 
   const options = useMemo(() => {
     const transformSeries: Array<LineSeriesOption | BarSeriesOption> = [];
@@ -156,6 +320,21 @@ export function TimeseriesChart({
       type === "bar"
         ? ({ type: "bar", stack: "total" } as const)
         : ({ type: "line", showSymbol: false } as const);
+
+    const thresholdAnnotations = buildTimeseriesThresholdAnnotations(thresholds);
+    const thresholdExtent = getThresholdValueExtent(thresholds);
+
+    const markerClusters = clusterTimeseriesMarkers(
+      markers,
+      getApproximateMarkerClusterInterval(
+        getTimestamps(data, markers),
+        xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
+      ),
+    );
+    const markerAnnotations = buildTimeseriesMarkerAnnotations(markerClusters, {
+      color: markerColor,
+      labelBackgroundColor: markerLabelBackgroundColor,
+    });
 
     for (const s of data) {
       const incompleteBeforePoints =
@@ -221,6 +400,26 @@ export function TimeseriesChart({
       }
     }
 
+    if (markerAnnotations) {
+      transformSeries.push({
+        data: [],
+        name: "Markers",
+        type: type === "bar" ? "bar" : "line",
+        animation: false,
+        markLine: markerAnnotations.markLine,
+      });
+    }
+
+    if (thresholdAnnotations) {
+      transformSeries.push({
+        data: [],
+        name: "Thresholds",
+        type: type === "bar" ? "bar" : "line",
+        animation: false,
+        markLine: thresholdAnnotations.markLine,
+      });
+    }
+
     return {
       aria: {
         enabled: true,
@@ -241,50 +440,12 @@ export function TimeseriesChart({
       },
       tooltip: {
         trigger: "axis" as const,
-        appendTo: "body",
+        showContent: false,
         axisPointer: { type: "shadow" as const },
-        dangerousHtmlFormatter: (params) => {
-          const items = Array.isArray(params) ? params : [params];
-
-          // Track seen series names to avoid duplicates in tooltip
-          // This is needed because incomplete data series (dashed lines) and complete data series
-          // can overlap at the same timestamp, causing duplicate entries in the tooltip
-          const seenNames = new Set<string>();
-          const filteredParams = items.filter((param: any) => {
-            if (seenNames.has(param.seriesName)) return false;
-            seenNames.add(param.seriesName);
-            return true;
-          });
-
-          const first = filteredParams[0] as {
-            value?: [number, number];
-            axisValue?: number;
-          };
-
-          const ts = first?.value?.[0] ?? first?.axisValue;
-
-          const header =
-            ts != null
-              ? `<div style="font-weight:600;margin-bottom:4px;">${echarts.format.encodeHTML(formatTimestamp(ts))}</div>`
-              : "";
-
-          const rows = filteredParams
-            .map((param: any) => {
-              const value = param?.value?.[1];
-              const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
-              const formattedValue = formatFn
-                ? echarts.format.encodeHTML(String(formatFn(value)))
-                : echarts.format.encodeHTML(String(value));
-
-              return `${param.marker} ${echarts.format.encodeHTML(param.seriesName)}: <strong>${formattedValue}</strong>`;
-            })
-            .join("<br/>");
-
-          return `${header}${rows}`;
-        },
       },
       backgroundColor: "transparent",
       toolbox: { show: false },
+      ...(enableLegendSelection ? { legend: { show: false } } : {}),
       xAxis: {
         name: xAxisName,
         nameLocation: "middle" as const,
@@ -294,7 +455,7 @@ export function TimeseriesChart({
           show: false,
         },
         axisLine: { show: false },
-        splitNumber: xAxisTickCount ?? 5,
+        splitNumber: xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
         ...(xAxisTickFormat && {
           axisLabel: {
             formatter: (value: number) => xAxisTickFormat(value),
@@ -318,6 +479,12 @@ export function TimeseriesChart({
           lineStyle: { type: "dashed" as const, width: 1 },
         },
         splitNumber: yAxisTickCount,
+        ...(thresholdExtent && {
+          min: (value: { min: number }) =>
+            Math.min(value.min, thresholdExtent.min),
+          max: (value: { max: number }) =>
+            Math.max(value.max, thresholdExtent.max),
+        }),
       },
       grid: {
         left: yAxisName ? 30 : 24,
@@ -333,29 +500,143 @@ export function TimeseriesChart({
     xAxisTickCount,
     xAxisTickFormat,
     yAxisTickFormat,
-    yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
-    tooltipValueFormat,
     incompleteBefore,
     incompleteAfter,
     type,
     gradient,
+    enableLegendSelection,
     echarts,
     ariaDescription,
+    markers,
+    thresholds,
+    markerColor,
+    markerLabelBackgroundColor,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
-    if (!onTimeRangeChange) return {};
-
     return {
-      brushend: (params) => {
-        const range = params.areas[0].coordRange;
-        onTimeRangeChange(range[0], range[1]);
-        chartRef.current?.dispatchAction({ type: "brush", areas: [] });
+      updateaxispointer: (params: any) => {
+        if (markerHoverRef.current) return;
+
+        const ts: number | undefined = params?.axesInfo?.[0]?.value;
+        if (ts == null) return;
+
+        const allRows = getAllTooltipRowsAtTimestamp(
+          dataRef.current,
+          ts,
+          legendSelectedRef.current,
+        );
+
+        let rows: TooltipRow[];
+        let hiddenCount = 0;
+
+        if (tooltipModeRef.current === "single") {
+          // Find the series whose value is closest to the cursor's y position
+          const chart = chartRef.current;
+          const cursorValue = chart
+            ? (
+                chart.convertFromPixel("grid", [0, mousePosRef.current.y]) as [
+                  number,
+                  number,
+                ]
+              )?.[1]
+            : null;
+          if (cursorValue != null && allRows.length > 0) {
+            const nearest = allRows.reduce((best, row) =>
+              Math.abs(row.value - cursorValue) <
+              Math.abs(best.value - cursorValue)
+                ? row
+                : best,
+            );
+            rows = [nearest];
+          } else {
+            rows = allRows.slice(0, 1);
+          }
+        } else {
+          ({ rows, hiddenCount } = limitTooltipRows(
+            allRows,
+            tooltipMaxItemsRef.current,
+          ));
+        }
+
+        const nextState: TooltipState = {
+          type: "series",
+          ts,
+          rows,
+          hiddenCount,
+        };
+        setTooltipState((prev) => {
+          if (isSameTooltipState(prev, nextState)) return prev;
+          return nextState;
+        });
       },
+      mouseover: (params) => {
+        const marker = getTimeseriesMarkerFromEvent(params);
+        if (!marker) return;
+
+        const markerKey = `${marker.timestamp}-${marker.label ?? ""}`;
+        if (activeMarkerKeyRef.current === markerKey) return;
+
+        activeMarkerKeyRef.current = markerKey;
+        markerHoverRef.current = true;
+        chartRef.current?.dispatchAction({ type: "hideTip" });
+        chartRef.current?.dispatchAction({
+          type: "updateAxisPointer",
+          currTrigger: "leave",
+        });
+
+        const { rows, hiddenCount } = getTooltipRowsAtTimestamp(
+          dataRef.current,
+          marker.timestamp,
+          legendSelectedRef.current,
+          tooltipMaxItemsRef.current,
+        );
+
+        setTooltipState({
+          type: "marker",
+          ts: marker.timestamp,
+          color: marker.color ?? markerColor,
+          markers: marker.markers,
+          rows,
+          hiddenCount,
+        });
+      },
+      mouseout: (params) => {
+        if (!getTimeseriesMarkerFromEvent(params)) return;
+        activeMarkerKeyRef.current = null;
+        markerHoverRef.current = false;
+        setTooltipState(null);
+      },
+      globalout: () => {
+        activeMarkerKeyRef.current = null;
+        markerHoverRef.current = false;
+        setTooltipState(null);
+      },
+      // Keep the tooltip in sync with legend selection. Each action fires a
+      // different event — `legendToggleSelect` → `legendselectchanged`,
+      // `legendSelect` → `legendselected`, `legendUnSelect` → `legendunselected`
+      // — and all three carry the full `selected` map, so we listen to all of
+      // them (params type inferred from `ChartEvents`).
+      legendselectchanged: (params) => {
+        legendSelectedRef.current = params.selected;
+      },
+      legendselected: (params) => {
+        legendSelectedRef.current = params.selected;
+      },
+      legendunselected: (params) => {
+        legendSelectedRef.current = params.selected;
+      },
+      ...(onTimeRangeChange && {
+        brushend: (params: any) => {
+          const range = params.areas[0].coordRange;
+          onTimeRangeChange(range[0], range[1]);
+          chartRef.current?.dispatchAction({ type: "brush", areas: [] });
+        },
+      }),
     };
-  }, [onTimeRangeChange]);
+  }, [onTimeRangeChange, markerColor]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
   // and deactivate it on cleanup so the cursor resets when the prop is removed.
@@ -387,22 +668,186 @@ export function TimeseriesChart({
     // Without this dep, the effect won't re-run after Chart mounts.
   }, [chartRef, hasTimeRangeCallback, loading]);
 
+  const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
+  const tooltipOpen = tooltipState !== null;
+
   return (
-    <div className="relative w-full" style={{ height }}>
-      {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
-      {!loading && (
-        <Chart
-          echarts={echarts}
-          ref={chartRef}
-          options={options as EChartsOption}
-          height={height}
-          isDarkMode={isDarkMode}
-          onEvents={events}
-          optionUpdateBehavior={optionUpdateBehavior}
-        />
+    <TooltipPrimitive.Root
+      open={tooltipOpen}
+      trackCursorAxis={tooltipFollowCursor}
+    >
+      <TooltipPrimitive.Trigger
+        render={
+          <div
+            ref={containerRef}
+            className="relative w-full"
+            style={{ height }}
+          />
+        }
+      >
+        {loading && <ChartWaveLoader height={height} isDarkMode={isDarkMode} />}
+        {!loading && (
+          <Chart
+            echarts={echarts}
+            ref={mergedRef}
+            options={options as EChartsOption}
+            height={height}
+            isDarkMode={isDarkMode}
+            onEvents={events}
+            optionUpdateBehavior={optionUpdateBehavior}
+          />
+        )}
+      </TooltipPrimitive.Trigger>
+      {tooltipOpen && (
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Positioner
+            side="right"
+            align="start"
+            sideOffset={12}
+            collisionAvoidance={{ side: "flip", align: "shift" }}
+            collisionBoundary={tooltipBoundary}
+            collisionPadding={8}
+          >
+            <TooltipPrimitive.Popup
+              data-mode={isDarkMode ? "dark" : "light"}
+              className="bg-kumo-base rounded-lg shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill p-2 min-w-[150px] max-w-xs"
+            >
+              <TooltipContent
+                state={tooltipState}
+                formatValue={formatFn}
+                formatTimestamp={formatTimestamp}
+              />
+            </TooltipPrimitive.Popup>
+          </TooltipPrimitive.Positioner>
+        </TooltipPrimitive.Portal>
       )}
-    </div>
+    </TooltipPrimitive.Root>
   );
+});
+
+TimeseriesChart.displayName = "TimeseriesChart";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Binary search for the value in `data` whose timestamp is closest to `ts`. */
+function findNearest(data: [number, number][], ts: number): number | null {
+  if (data.length === 0) return null;
+  let lo = 0,
+    hi = data.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (data[mid][0] < ts) lo = mid + 1;
+    else hi = mid;
+  }
+  // Check both neighbours and return the closer one
+  if (lo > 0 && Math.abs(data[lo - 1][0] - ts) < Math.abs(data[lo][0] - ts))
+    lo--;
+  return data[lo][1];
+}
+
+function getTimestamps(
+  data: TimeseriesData[],
+  markers: TimeseriesMarker[] | undefined,
+): number[] {
+  return [
+    ...data.flatMap((series) => series.data.map(([timestamp]) => timestamp)),
+    ...(markers?.map((marker) => marker.timestamp) ?? []),
+  ];
+}
+
+function getAllTooltipRowsAtTimestamp(
+  data: TimeseriesData[],
+  ts: number,
+  legendSelected: Record<string, boolean> | null,
+): TooltipRow[] {
+  const seenNames = new Set<string>();
+  const rows: TooltipRow[] = [];
+
+  for (const s of data) {
+    if (seenNames.has(s.name)) continue;
+    if (legendSelected && legendSelected[s.name] === false) continue;
+    seenNames.add(s.name);
+    const value = findNearest(s.data, ts);
+    if (value != null) rows.push({ name: s.name, value, color: s.color });
+  }
+
+  return rows.sort((a, b) => b.value - a.value);
+}
+
+function limitTooltipRows(
+  rows: TooltipRow[],
+  max: number,
+): { rows: TooltipRow[]; hiddenCount: number } {
+  return {
+    rows: rows.slice(0, max),
+    hiddenCount: Math.max(0, rows.length - max),
+  };
+}
+
+function getTooltipRowsAtTimestamp(
+  data: TimeseriesData[],
+  ts: number,
+  legendSelected: Record<string, boolean> | null,
+  max: number,
+): { rows: TooltipRow[]; hiddenCount: number } {
+  return limitTooltipRows(
+    getAllTooltipRowsAtTimestamp(data, ts, legendSelected),
+    max,
+  );
+}
+
+function isSameMarkerTooltipState(
+  a: MarkerTooltipState,
+  b: MarkerTooltipState,
+): boolean {
+  return (
+    a.ts === b.ts &&
+    a.color === b.color &&
+    a.hiddenCount === b.hiddenCount &&
+    a.rows.length === b.rows.length &&
+    isSameTooltipRows(a.rows, b.rows) &&
+    a.markers.length === b.markers.length &&
+    a.markers.every((marker, i) => {
+      const next = b.markers[i];
+      return (
+        marker.timestamp === next.timestamp &&
+        marker.label === next.label &&
+        marker.description === next.description &&
+        marker.color === next.color &&
+        marker.lineStyle === next.lineStyle
+      );
+    })
+  );
+}
+
+/** Shallow-compare two tooltip states so React can skip renders when nothing changed. */
+function isSameTooltipState(a: TooltipState | null, b: TooltipState): boolean {
+  if (!a || a.type !== b.type) return false;
+
+  if (a.type === "marker" && b.type === "marker") {
+    return isSameMarkerTooltipState(a, b);
+  }
+  if (a.type !== "series" || b.type !== "series") return false;
+
+  if (
+    a.ts !== b.ts ||
+    a.hiddenCount !== b.hiddenCount ||
+    a.rows.length !== b.rows.length
+  ) {
+    return false;
+  }
+  return isSameTooltipRows(a.rows, b.rows);
+}
+
+function isSameTooltipRows(a: TooltipRow[], b: TooltipRow[]): boolean {
+  return a.every((row, i) => {
+    const next = b[i];
+    return (
+      row.name === next.name &&
+      row.value === next.value &&
+      row.color === next.color
+    );
+  });
 }
 
 /**
@@ -502,16 +947,19 @@ function colorWithOpacity(color: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-/** Zero-pads a number to two digits (e.g. `5` → `"05"`) */
-function pad(n: number) {
-  return n.toString().padStart(2, "0");
-}
+const tooltipDateFormat = new Intl.DateTimeFormat(undefined, {
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
 
 /**
- * Formats a timestamp as `"YYYY-MM-DD HH:mm:ss"` for use in chart tooltips.
+ * Formats a timestamp for use in chart tooltips using the browser's locale.
  * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
  */
 function formatTimestamp(ts: number | string | Date): string {
-  const d = new Date(ts);
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return tooltipDateFormat.format(new Date(ts));
 }

@@ -4,8 +4,13 @@ title: "Colors"
 description: "Kumo uses semantic color tokens that automatically adapt to light and dark mode. Use these classes in your Tailwind CSS instead of raw color values."
 ---
 
-import { TailwindColorTokens } from "~/components/demos/ColorsDemo";
-import { Badge } from "@cloudflare/kumo";
+import {
+  TailwindColorTokens,
+  StatusBannerDemo,
+} from "~/components/demos/ColorsDemo";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import { Badge, Banner } from "@cloudflare/kumo";
+import { InfoIcon } from "@phosphor-icons/react";
 
 ## Usage
 
@@ -216,7 +221,7 @@ Each status color comes in two variants: a solid color for icons and indicators,
     <tbody>
       <tr>
         <td><code>bg-kumo-info</code></td>
-        <td>Info indicator (icon, dot, bar)</td>
+        <td>Info indicator</td>
       </tr>
       <tr>
         <td><code>bg-kumo-success</code></td>
@@ -234,15 +239,11 @@ Each status color comes in two variants: a solid color for icons and indicators,
   </table>
 </div>
 
-Use the solid token on icons, status dots, borders and rings. Banners and badges use the `-tint` variant with varying opacity values for the different instances.
+Use the solid token `bg-kumo-*` for status dots, `fill-kumo-*` for icons, and `border-kumo-*`, `ring-kumo-*` for borders and rings. Banners and badges use the `-tint` variant with varying opacity values.
 
-```tsx
-// Banner with tinted background and solid icon
-<div className="bg-kumo-danger-tint text-kumo-danger">
-  <AlertIcon className="text-kumo-danger" />
-  <p>Something went wrong.</p>
-</div>
-```
+<ComponentExample demo="StatusBannerDemo">
+  <StatusBannerDemo client:visible />
+</ComponentExample>
 
 ### Text Colors
 
@@ -306,6 +307,8 @@ Use the solid token on icons, status dots, borders and rings. Banners and badges
     </tbody>
   </table>
 </div>
+
+> Semantic text colors (i.e. <code>text-kumo-success</code>) are darker by default to provide better contrast and readability against <code>tint-*</code> backgrounds.
 
 ### Borders & Rings
 

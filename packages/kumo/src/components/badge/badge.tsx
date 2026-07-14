@@ -100,7 +100,7 @@ export const KUMO_BADGE_VARIANTS = {
       description: "No dot indicator (used when appearance is not dot, or variant has no dot color)",
     },
     success: {
-      classes: "bg-kumo-badge-green",
+      classes: "bg-kumo-success",
       description: "Green dot for success status",
     },
     warning: {

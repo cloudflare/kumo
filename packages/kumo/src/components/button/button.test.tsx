@@ -2,7 +2,7 @@ import React from "react";
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Plus } from "@phosphor-icons/react";
-import { Button, RefreshButton, LinkButton } from "./button";
+import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
 
 describe("Button", () => {
   describe("children wrapper", () => {
@@ -111,6 +111,53 @@ describe("Button", () => {
     const button = screen.getByRole("button", { name: "Save" });
     // title is intercepted by Tooltip wrapper, not set as native attribute
     expect(button.getAttribute("title")).toBeNull();
+  });
+
+  it("uses an enabled tooltip trigger around a disabled button", () => {
+    render(
+      <Button title="Saving is unavailable" disabled>
+        Save
+      </Button>,
+    );
+
+    const button = screen.getByRole("button", { name: "Save" });
+    const trigger = button.parentElement;
+
+    expect(button.hasAttribute("disabled")).toBe(true);
+    expect(trigger?.tagName).toBe("SPAN");
+    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(trigger?.hasAttribute("disabled")).toBe(false);
+  });
+
+  it("uses an enabled tooltip trigger around a loading button", () => {
+    render(
+      <Button title="Saving changes" loading>
+        Save
+      </Button>,
+    );
+
+    const button = screen.getByRole("button");
+    const trigger = button.parentElement;
+
+    expect(button.hasAttribute("disabled")).toBe(true);
+    expect(trigger?.tagName).toBe("SPAN");
+    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(trigger?.hasAttribute("disabled")).toBe(false);
+  });
+
+  it("keeps emphasized variant rings color-matched when pressed or focused", () => {
+    for (const variant of ["primary", "destructive"] as const) {
+      const className = buttonVariants({ variant });
+
+      expect(className).toContain("ring-(--kumo-button-emphasis-ring)");
+      expect(className).toContain("focus:ring-(--kumo-button-emphasis-ring)");
+      expect(className).toContain(
+        "focus-visible:ring-(--kumo-button-emphasis-ring)",
+      );
+      expect(className).toContain("active:ring-(--kumo-button-emphasis-ring)");
+      expect(className).not.toContain("focus:ring-kumo-focus/50");
+      expect(className).not.toContain("focus-visible:ring-kumo-brand");
+    }
   });
 });
 

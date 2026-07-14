@@ -1,4 +1,15 @@
+import type {
+  KeyboardEventHandler,
+  MouseEventHandler,
+  PointerEventHandler,
+} from "react";
 import { cn } from "../../utils";
+
+const onInteractiveKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  event.preventDefault();
+  event.currentTarget.click();
+};
 
 /** Shared props for both legend item variants */
 interface LegendItemProps {
@@ -12,6 +23,14 @@ interface LegendItemProps {
   unit?: string;
   /** When `true`, renders the item at 50% opacity to indicate a deselected state */
   inactive?: boolean;
+  /** Fired when a pointer enters the legend item — useful for highlighting the corresponding chart series */
+  onPointerEnter?: PointerEventHandler<HTMLDivElement>;
+  /** Fired when a pointer leaves the legend item — useful for resetting chart series emphasis */
+  onPointerLeave?: PointerEventHandler<HTMLDivElement>;
+  /** Fired when the legend item is clicked — useful for toggling series visibility */
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  /** Optional className to customize legend item presentation */
+  className?: string;
 }
 
 /**
@@ -19,9 +38,32 @@ interface LegendItemProps {
  * and a large value with an optional small unit below. Use for prominent
  * single-metric displays such as dashboard cards.
  */
-function LargeItem({ color, value, name, unit, inactive }: LegendItemProps) {
+function LargeItem({
+  color,
+  value,
+  name,
+  unit,
+  inactive,
+  onPointerEnter,
+  onPointerLeave,
+  onClick,
+  className,
+}: LegendItemProps) {
   return (
-    <div className="inline-flex flex-col gap-2 min-w-42 py-2">
+    <div
+      // oxlint-disable-next-line prefer-tag-over-role
+      role="button"
+      tabIndex={onClick ? 0 : -1}
+      className={cn(
+        "inline-flex flex-col gap-2 min-w-42 py-2",
+        { "cursor-pointer": !!onClick },
+        className,
+      )}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      onClick={onClick}
+      onKeyDown={onClick ? onInteractiveKeyDown : undefined}
+    >
       <div className="flex items-center gap-2">
         <span
           className={cn("size-2 rounded-full inline-block", {
@@ -59,9 +101,31 @@ function LargeItem({ color, value, name, unit, inactive }: LegendItemProps) {
  * Small legend item — inline layout with a colored dot, series name, and value
  * on a single row. Use for compact legends below or beside a chart.
  */
-function SmallItem({ color, value, name, inactive }: LegendItemProps) {
+function SmallItem({
+  color,
+  value,
+  name,
+  inactive,
+  onPointerEnter,
+  onPointerLeave,
+  onClick,
+  className,
+}: LegendItemProps) {
   return (
-    <div className="inline-flex items-center gap-2">
+    <div
+      // oxlint-disable-next-line prefer-tag-over-role
+      role="button"
+      tabIndex={onClick ? 0 : -1}
+      className={cn(
+        "inline-flex items-center gap-2",
+        { "cursor-pointer": !!onClick },
+        className,
+      )}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      onClick={onClick}
+      onKeyDown={onClick ? onInteractiveKeyDown : undefined}
+    >
       <span
         className={cn("size-2 rounded-full inline-block", {
           "opacity-50": inactive,

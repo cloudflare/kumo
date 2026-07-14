@@ -27,7 +27,7 @@ try {
 const EXPORT_NAME_OVERRIDES: Record<string, string> = {
   "csp-provider": "CSPProvider", // All caps CSP
   drawer: "Drawer", // Stable in base-ui 1.4.0
-  "otp-field": "OTPFieldPreview", // Preview component with all caps OTP
+  "otp-field": "OTPField", // Stable component with all caps OTP
 };
 
 // Exports excluded by generate-primitives.ts
@@ -121,6 +121,14 @@ describe("Primitives Export", () => {
       }
 
       expect(missingExports).toEqual([]);
+    });
+
+    it("should keep OTPFieldPreview as a compatibility alias", async () => {
+      const barrelPrimitives = await import("../../src/primitives/index.ts");
+      const otpFieldPrimitives = await import("../../src/primitives/otp-field.ts");
+
+      expect(barrelPrimitives.OTPFieldPreview).toBe(barrelPrimitives.OTPField);
+      expect(otpFieldPrimitives.OTPFieldPreview).toBe(otpFieldPrimitives.OTPField);
     });
 
     it("should re-export all non-excluded base-ui exports", () => {

@@ -48,7 +48,7 @@ describe("Badge", () => {
       const badge = screen.getByText("Healthy").closest("span")!;
       const dot = badge.querySelector("[aria-hidden='true']");
       expect(dot).toBeTruthy();
-      expect(dot!.className).toContain("bg-kumo-badge-green");
+      expect(dot!.className).toContain("bg-kumo-success");
     });
 
     it("applies dot appearance classes instead of variant classes", () => {
@@ -67,7 +67,7 @@ describe("Badge", () => {
 
     it("renders correct dot color per variant", () => {
       const cases = [
-        { variant: "success" as const, expected: "bg-kumo-badge-green" },
+        { variant: "success" as const, expected: "bg-kumo-success" },
         { variant: "warning" as const, expected: "bg-kumo-badge-orange" },
         { variant: "error" as const, expected: "bg-kumo-badge-red" },
         { variant: "neutral" as const, expected: "bg-kumo-badge-neutral" },

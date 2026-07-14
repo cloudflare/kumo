@@ -108,6 +108,7 @@ describe("variant functions survive invalid variant values", () => {
   it("dialogVariants", () => {
     expect(() => dialogVariants({ size: BOGUS })).not.toThrow();
     expect(typeof dialogVariants({ size: BOGUS })).toBe("string");
+    expect(dialogVariants()).not.toContain("sm:max-w");
   });
 
   it("emptyVariants", () => {

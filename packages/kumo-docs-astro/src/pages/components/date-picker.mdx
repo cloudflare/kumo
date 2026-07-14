@@ -56,11 +56,9 @@ import {
 
 ## Usage
 
-  <p>
-    DatePicker supports three selection modes: `single`,
-    `multiple`, and
-    `range`.
-  </p>
+<p>
+  DatePicker supports three selection modes: `single`, `multiple`, and `range`.
+</p>
 
 ```tsx
 import { useState } from "react";
@@ -155,9 +153,7 @@ export default function Example() {
 
 ## Full Popover Example
 
-  <p>
-    Here's a complete example showing how to compose DatePicker with Popover:
-  </p>
+<p>Here's a complete example showing how to compose DatePicker with Popover:</p>
 
 ```tsx
 import { useState } from "react";
@@ -194,24 +190,41 @@ export function DatePickerDropdown() {
 
 ## API Reference
 
-  <p>
-    DatePicker forwards all props to <a href="https://daypicker.dev/api/interfaces/PropsBase" target="_blank" rel="noopener noreferrer">react-day-picker</a>. 
-    Key props include:
-  </p>
-  <ul class="mt-4 list-disc list-inside space-y-2">
-    <li>`mode` — <code class="text-xs">"single" | "multiple" | "range"</code> — Selection mode (required)</li>
-    <li>`selected` — Currently selected date(s)</li>
-    <li>`onChange` — Callback when selection changes</li>
-    <li>`numberOfMonths` — Number of months to display</li>
-    <li>`disabled` — Dates that cannot be selected</li>
-    <li>`min` / `max` — Min/max selection constraints</li>
-    <li>`footer` — Content rendered below the calendar</li>
-    <li>`locale` — date-fns locale for internationalization</li>
-    <li>`className` — Additional CSS classes</li>
-  </ul>
-  <p class="mt-4 text-kumo-subtle text-sm">
-    See the <a href="https://daypicker.dev/docs" target="_blank" rel="noopener noreferrer">react-day-picker documentation</a> for the full API.
-  </p>
+<p>
+  DatePicker forwards all props to
+  <a
+    href="https://daypicker.dev/api/interfaces/PropsBase"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    react-day-picker
+  </a>
+  . Key props include:
+</p>
+<ul class="mt-4 list-disc list-inside space-y-2">
+  <li>
+    `mode` — `"single" | "multiple" | "range"` — Selection mode (required)
+  </li>
+  <li>`selected` — Currently selected date(s)</li>
+  <li>`onChange` — Callback when selection changes</li>
+  <li>`numberOfMonths` — Number of months to display</li>
+  <li>`disabled` — Dates that cannot be selected</li>
+  <li>`min` / `max` — Min/max selection constraints</li>
+  <li>`footer` — Content rendered below the calendar</li>
+  <li>`locale` — date-fns locale for internationalization</li>
+  <li>`className` — Additional CSS classes</li>
+</ul>
+<p class="mt-4 text-kumo-subtle text-sm">
+  See the
+  <a
+    href="https://daypicker.dev/docs"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    react-day-picker documentation
+  </a>
+  for the full API.
+</p>
 
 ### Differences from react-day-picker
 

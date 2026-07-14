@@ -175,12 +175,13 @@ const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     }, []); // eslint-disable-line react-hooks/exhaustive-deps -- one-time warning
   }
 
-  const defaultProps: useRender.ElementProps<"a"> = {
+  const defaultProps = {
+    "data-kumo-component": "Link",
     className: cn(
       linkVariants({ variant }),
       "group/link inline-flex items-center gap-[0.1875em]",
     ),
-  };
+  } as useRender.ElementProps<"a">;
 
   const element = useRender({
     render: render ?? <LinkComponent />,

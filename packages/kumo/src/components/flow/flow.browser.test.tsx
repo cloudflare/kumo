@@ -262,6 +262,65 @@ describe("Flow Integration", () => {
       assertNoPathEndingWith(container, "branch-b");
     });
 
+    test("connector endpoints use anchor midpoint instead of node center", async () => {
+      const { container, getByTestId } = await render(
+        <Flow>
+          <Flow.Node
+            id="anchored"
+            render={
+              <li data-testid="anchored">
+                <Flow.Anchor>
+                  <div data-testid="anchor-el" style={{ height: "20px" }}>
+                    Header
+                  </div>
+                </Flow.Anchor>
+                <div style={{ height: "80px" }}>Body content</div>
+              </li>
+            }
+          />
+          <Flow.Node id="next">Next</Flow.Node>
+        </Flow>,
+      );
+
+      await Promise.all([
+        expect.element(getByTestId("anchored")).toBeVisible(),
+        expect.element(getByTestId("next")).toBeVisible(),
+      ]);
+
+      const anchorEl = getByTestId("anchor-el").element();
+      const svgContainer = container
+        .querySelector(`path[data-testid="anchored-next"]`)!
+        .closest("svg")!
+        .closest("[class*='relative']")!;
+      const containerRect = svgContainer.getBoundingClientRect();
+
+      const anchorRect = anchorEl.getBoundingClientRect();
+      const anchorMidY =
+        anchorRect.top - containerRect.top + anchorRect.height / 2;
+
+      const { start } = getPathEndpoints(
+        container
+          .querySelector(`path[data-testid="anchored-next"]`)!
+          .getAttribute("d")!,
+      );
+
+      expect(
+        Math.abs(start.y - anchorMidY) <= 10,
+        `connector start Y (${start.y}) should be close to anchor midpoint Y (${anchorMidY})`,
+      ).toBe(true);
+
+      // Also verify it does NOT match the full node's vertical center
+      const nodeRect = getByTestId("anchored")
+        .element()
+        .getBoundingClientRect();
+      const nodeCenterY =
+        (nodeRect.top + nodeRect.bottom) / 2 - containerRect.top;
+      expect(
+        Math.abs(start.y - nodeCenterY) > 10,
+        `connector start Y (${start.y}) should NOT be the node's center (${nodeCenterY}) when an anchor is present`,
+      ).toBe(true);
+    });
+
     test("does not render outgoing connectors when there is no node after a parallel group", async () => {
       const { container, getByText } = await render(
         <Flow>

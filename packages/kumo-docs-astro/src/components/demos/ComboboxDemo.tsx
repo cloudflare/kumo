@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CaretUpDownIcon } from "@phosphor-icons/react";
 import { Combobox, Text, Button } from "@cloudflare/kumo";
+import { languages, type Language } from "./data/languages";
 
 // Basic fruits list for simple demos (expanded to test scrolling)
 const fruits = [
@@ -41,46 +42,6 @@ const fruits = [
   "Strawberry",
   "Tangerine",
   "Watermelon",
-];
-
-// Languages with emoji for searchable inside popup demo
-type Language = {
-  value: string;
-  label: string;
-  emoji: string;
-};
-
-const languages: Language[] = [
-  { value: "en", label: "English", emoji: "🇬🇧" },
-  { value: "fr", label: "French", emoji: "🇫🇷" },
-  { value: "de", label: "German", emoji: "🇩🇪" },
-  { value: "es", label: "Spanish", emoji: "🇪🇸" },
-  { value: "it", label: "Italian", emoji: "🇮🇹" },
-  { value: "pt", label: "Portuguese", emoji: "🇵🇹" },
-  { value: "nl", label: "Dutch", emoji: "🇳🇱" },
-  { value: "pl", label: "Polish", emoji: "🇵🇱" },
-  { value: "ru", label: "Russian", emoji: "🇷🇺" },
-  { value: "ja", label: "Japanese", emoji: "🇯🇵" },
-  { value: "zh", label: "Chinese", emoji: "🇨🇳" },
-  { value: "ko", label: "Korean", emoji: "🇰🇷" },
-  { value: "ar", label: "Arabic", emoji: "🇸🇦" },
-  { value: "hi", label: "Hindi", emoji: "🇮🇳" },
-  { value: "tr", label: "Turkish", emoji: "🇹🇷" },
-  { value: "vi", label: "Vietnamese", emoji: "🇻🇳" },
-  { value: "th", label: "Thai", emoji: "🇹🇭" },
-  { value: "sv", label: "Swedish", emoji: "🇸🇪" },
-  { value: "no", label: "Norwegian", emoji: "🇳🇴" },
-  { value: "da", label: "Danish", emoji: "🇩🇰" },
-  { value: "fi", label: "Finnish", emoji: "🇫🇮" },
-  { value: "el", label: "Greek", emoji: "🇬🇷" },
-  { value: "cs", label: "Czech", emoji: "🇨🇿" },
-  { value: "ro", label: "Romanian", emoji: "🇷🇴" },
-  { value: "hu", label: "Hungarian", emoji: "🇭🇺" },
-  { value: "uk", label: "Ukrainian", emoji: "🇺🇦" },
-  { value: "id", label: "Indonesian", emoji: "🇮🇩" },
-  { value: "ms", label: "Malay", emoji: "🇲🇾" },
-  { value: "he", label: "Hebrew", emoji: "🇮🇱" },
-  { value: "fa", label: "Persian", emoji: "🇮🇷" },
 ];
 
 // Server locations for grouped demo

@@ -5,13 +5,6 @@ on:
     paths-ignore:
       - "*.md"
       - ".changeset/**"
-  # Also trigger on push to PR branches (for bots that push via API)
-  push:
-    branches:
-      - "opencode/**"
-    paths-ignore:
-      - "*.md"
-      - ".changeset/**"
 
 permissions:
   contents: read
@@ -106,4 +99,46 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
+      - run: pnpm --filter @cloudflare/kumo test
+
+  test-react-compatibility:
+    needs: build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - react-version: "18.3.1"
+            types-react-version: "18.3.12"
+            types-react-dom-version: "18.3.1"
+          - react-version: "19.2.0"
+            types-react-version: "19.2.4"
+            types-react-dom-version: "19.2.3"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - name: Install React ${{ matrix.react-version }} test dependencies
+        run: |
+          pnpm pkg set \
+            "pnpm.overrides.react=${{ matrix.react-version }}" \
+            "pnpm.overrides.react-dom=${{ matrix.react-version }}" \
+            "pnpm.overrides.@types/react=${{ matrix.types-react-version }}" \
+            "pnpm.overrides.@types/react-dom=${{ matrix.types-react-dom-version }}"
+          pnpm install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
+      - name: Verify React test versions
+        run: |
+          pnpm --filter @cloudflare/kumo exec node -e "if (require('react/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
+          pnpm --filter @cloudflare/kumo exec node -e "if (require('react-dom/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
+      - run: pnpm --filter @cloudflare/kumo typecheck
       - run: pnpm --filter @cloudflare/kumo test

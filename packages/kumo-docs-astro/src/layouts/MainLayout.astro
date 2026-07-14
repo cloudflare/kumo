@@ -41,7 +41,7 @@ const currentPath = Astro.url.pathname;
     <!-- Main content area - margin controlled by CSS :has() based on sidebar state -->
     <div
       id="main-content"
-      class="main-content mt-12 md:mt-0 md:ml-12 transition-[margin] duration-300"
+      class="main-content mt-12 lg:mt-0 lg:ml-12 transition-[margin] duration-300"
     >
       <slot />
     </div>
@@ -50,7 +50,7 @@ const currentPath = Astro.url.pathname;
 
 <style is:global>
   /* Use CSS :has() to detect sidebar state and adjust main content margin */
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     /* When sidebar is open, add full margin */
     body:has(aside[data-sidebar-open="true"]) .main-content {
       margin-left: 304px; /* 48px rail + 256px sidebar panel */

@@ -77,6 +77,7 @@ const componentItems: NavItem[] = [
   { label: "Table of Contents", href: "/components/table-of-contents" },
   { label: "Tabs", href: "/components/tabs" },
   { label: "Text", href: "/components/text" },
+  { label: "Toolbar", href: "/components/toolbar" },
   { label: "Toast", href: "/components/toast" },
   { label: "Tooltip", href: "/components/tooltip" },
 ];
@@ -85,6 +86,7 @@ const chartItems: NavItem[] = [
   { label: "Charts", href: "/charts" },
   { label: "Colors", href: "/charts/colors" },
   { label: "Timeseries", href: "/charts/timeseries" },
+  { label: "Maps", href: "/charts/maps" },
   { label: "Sankey", href: "/charts/sankey" },
   { label: "Custom Chart", href: "/charts/custom" },
 ];
@@ -352,7 +354,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:px-6 lg:hidden",
         )}
       >
         <Button
@@ -370,7 +372,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas lg:hidden",
           "transition-transform duration-300 will-change-transform",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
@@ -399,7 +401,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Desktop: Left rail that always stays put */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas ated md:block",
+          "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas lg:block",
           "border-r border-kumo-hairline",
         )}
       >
@@ -419,7 +421,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       </div>
 
       {/* Desktop: Kumo brand label - always visible, panel slides behind it */}
-      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-12 items-center px-3 font-medium select-none md:flex">
+      <div className="pointer-events-none fixed top-0 left-12 z-50 hidden h-12 items-center px-3 font-medium select-none lg:flex">
         <h1 className="text-base">Kumo</h1>
       </div>
 
@@ -427,7 +429,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <aside
         data-sidebar-open={sidebarOpen}
         className={cn(
-          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas md:flex",
+          "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas lg:flex",
           "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
             ? "translate-x-0 border-r border-kumo-hairline"

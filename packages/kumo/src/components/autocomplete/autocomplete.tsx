@@ -116,9 +116,9 @@ function Root<ItemValue>({
     items?: readonly ItemValue[];
   };
   const control = (
-    <AutocompleteContext value={{ hasError: Boolean(error) }}>
+    <AutocompleteContext.Provider value={{ hasError: Boolean(error) }}>
       <AutocompleteBase.Root {...rootProps}>{children}</AutocompleteBase.Root>
-    </AutocompleteContext>
+    </AutocompleteContext.Provider>
   );
 
   if (label) {
@@ -231,6 +231,8 @@ function List({
 function Item({ children, ...props }: AutocompleteBase.Item.Props) {
   return (
     <AutocompleteBase.Item
+      data-kumo-component="Autocomplete"
+      data-kumo-part="item"
       {...props}
       className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay data-selected:font-medium"
     >
@@ -319,4 +321,7 @@ export const Autocomplete = Object.assign(Root, {
   // Pass-through Base UI sub-components
   Empty: AutocompleteBase.Empty,
   Collection: AutocompleteBase.Collection,
+
+  // Filtering
+  useFilter: AutocompleteBase.useFilter,
 });

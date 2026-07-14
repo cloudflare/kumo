@@ -82,6 +82,8 @@ const CollapsibleTrigger = forwardRef<HTMLButtonElement, CollapsibleTriggerProps
     return (
       <CollapsibleBase.Trigger
         ref={ref}
+        data-kumo-component="Collapsible"
+        data-kumo-part="trigger"
         className={cn("cursor-pointer", className)}
         {...props}
       />
@@ -158,6 +160,8 @@ const CollapsibleDefaultTrigger = forwardRef<
   return (
     <CollapsibleBase.Trigger
       ref={ref}
+      data-kumo-component="Collapsible"
+      data-kumo-part="default-trigger"
       className={cn(
         // Defensive resets to prevent global button styles from polluting the trigger
         "bg-transparent border-none shadow-none p-0 m-0",

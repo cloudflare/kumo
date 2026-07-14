@@ -56,11 +56,11 @@ const githubSourceUrl = sourceFile
     />
 
     <!-- Page Header -->
-    <div id="page-header" class="border-b border-kumo-hairline md:pr-12">
-      <div class="mx-auto md:border-r md:border-kumo-hairline">
-        <div class="mx-auto max-w-7xl p-12">
+    <div id="page-header" class="border-b border-kumo-hairline lg:pr-12">
+      <div class="mx-auto lg:border-r lg:border-kumo-hairline">
+        <div class="mx-auto max-w-7xl px-3 py-4 md:px-6 lg:p-12">
           <!-- Mobile: Copy page button above title -->
-          <div class="mb-3 md:hidden">
+          <div class="mb-3 lg:hidden">
             <CopyPageButton align="center" client:idle />
           </div>
           <div class="mb-3 flex items-center gap-3">
@@ -94,7 +94,7 @@ const githubSourceUrl = sourceFile
               )
             }
             <!-- Desktop: Copy page button on far right -->
-            <div class="hidden md:block md:ml-auto">
+            <div class="hidden lg:block lg:ml-auto">
               <CopyPageButton client:idle />
             </div>
           </div>
@@ -106,16 +106,16 @@ const githubSourceUrl = sourceFile
     </div>
 
     <!-- Content -->
-    <main class="flex grow flex-col md:pr-12">
-      <div class="mx-auto w-full grow md:border-r md:border-kumo-hairline">
+    <main class="flex grow flex-col lg:pr-12">
+      <div class="mx-auto w-full grow lg:border-r lg:border-kumo-hairline">
         <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
-        <div class="xl:hidden sticky top-24 md:top-12 z-1 border-b border-kumo-hairline bg-kumo-canvas">
-          <div class="mx-auto max-w-7xl px-2 md:px-3 py-3">
+        <div class="xl:hidden sticky top-24 lg:top-12 z-1 border-b border-kumo-hairline bg-kumo-canvas">
+          <div class="mx-auto max-w-7xl px-3 py-3 md:px-6 lg:px-12 lg:pr-10">
             <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
           </div>
         </div>
 
-        <div class="mx-auto max-w-7xl p-12 pr-10">
+        <div class="mx-auto max-w-7xl px-3 py-4 md:px-6 lg:p-12 lg:pr-10">
           <div class="grid grid-cols-1 gap-16 xl:grid-cols-[3fr_1fr]">
             <div class="kumo-prose prose max-w-none min-w-0">
               <slot />

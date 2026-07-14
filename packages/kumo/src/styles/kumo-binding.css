@@ -218,37 +218,45 @@
    scrollable container based on scroll position. Uses scroll-driven
    animations (Chrome 115+, Edge 115+). Degrades gracefully to no fade.
    Activated by the `data-overflowing` attribute (set via JS ResizeObserver). */
+@property --fade-left-n {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --fade-right-n {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 @keyframes scroll-fade-x-left {
+  from {
+    --fade-left-n: 0;
+  }
   to {
-    mask-size:
-      var(--scroll-fade-width, 3rem) 100%,
-      100% 100%,
-      var(--scroll-fade-width, 3rem) 100%;
+    --fade-left-n: 1;
   }
 }
 
 @keyframes scroll-fade-x-right {
+  from {
+    --fade-right-n: 1;
+  }
   to {
-    mask-size:
-      var(--scroll-fade-width, 3rem) 100%,
-      100% 100%,
-      0 100%;
+    --fade-right-n: 0;
   }
 }
 
 [data-overflowing] {
   @supports (animation-timeline: scroll()) {
-    mask-image:
-      linear-gradient(to right, white, transparent),
-      linear-gradient(white, white),
-      linear-gradient(to right, transparent, white);
-    mask-size:
-      0 100%,
-      100% 100%,
-      var(--scroll-fade-width, 3rem) 100%;
-    mask-repeat: no-repeat;
-    mask-composite: exclude;
-    mask-position: left, center, right;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      white calc(var(--fade-left-n) * var(--scroll-fade-width, 3rem)),
+      white calc(100% - var(--fade-right-n) * var(--scroll-fade-width, 3rem)),
+      transparent
+    );
 
     animation-name: scroll-fade-x-left, scroll-fade-x-right;
     animation-timing-function: linear, linear;
@@ -257,7 +265,6 @@
       0 var(--scroll-fade-range, 3rem),
       calc(100% - var(--scroll-fade-range, 3rem)) 100%;
     animation-fill-mode: both;
-    animation-composition: replace;
   }
 }
 

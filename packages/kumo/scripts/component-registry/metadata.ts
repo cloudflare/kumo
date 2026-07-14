@@ -328,6 +328,36 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       description: "Callback when active tab changes",
     },
   },
+  Radio: {
+    value: {
+      type: "T",
+      description: "The controlled value of the selected radio item.",
+    },
+    defaultValue: {
+      type: "T",
+      description: "The uncontrolled initial value of the selected radio item.",
+    },
+    onValueChange: {
+      type: "(value: T, eventDetails: RadioGroupChangeEventDetails) => void",
+      description:
+        "Callback fired when the selected value changes. The second argument carries native event details about the interaction.",
+    },
+  },
+  "Radio.Group": {
+    value: {
+      type: "T",
+      description: "The controlled value of the selected radio item.",
+    },
+    defaultValue: {
+      type: "T",
+      description: "The uncontrolled initial value of the selected radio item.",
+    },
+    onValueChange: {
+      type: "(value: T, eventDetails: RadioGroupChangeEventDetails) => void",
+      description:
+        "Callback fired when the selected value changes. The second argument carries native event details about the interaction.",
+    },
+  },
   Collapsible: {
     onOpenChange: {
       type: "(open: boolean) => void",

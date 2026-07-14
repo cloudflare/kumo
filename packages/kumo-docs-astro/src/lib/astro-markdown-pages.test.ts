@@ -43,4 +43,16 @@ describe("markdown pages integration", () => {
     expect(content).toContain("1.16.0"); // Recent version
     expect(content).toContain("0.2.0"); // Last/oldest version
   });
+
+  it("generates llms.txt as a curated docs index", () => {
+    const llmsPath = join(distDir, "llms.txt");
+    expect(existsSync(llmsPath)).toBe(true);
+
+    const content = readFileSync(llmsPath, "utf-8");
+    expect(content).toContain("# Kumo");
+    expect(content).toContain("This file is a curated index for LLMs");
+    expect(content).toContain("https://kumo-ui.com/installation.md");
+    expect(content).toContain("https://kumo-ui.com/components/button.md");
+    expect(content).toContain("https://kumo-ui.com/blocks/resource-list.md");
+  });
 });

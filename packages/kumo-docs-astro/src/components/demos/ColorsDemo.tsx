@@ -1,6 +1,7 @@
 import { type FC, useMemo, useSyncExternalStore } from "react";
 import { kumoColors, type ColorToken } from "virtual:kumo-colors";
 import { kumoRegistryJson } from "virtual:kumo-registry";
+import { WarningIcon } from "@phosphor-icons/react";
 
 /**
  * Extract the actual color value from a CSS variable fallback.
@@ -325,3 +326,12 @@ export const TailwindColorTokens: FC = () => {
     </div>
   );
 };
+
+export function StatusBannerDemo() {
+  return (
+    <div className="flex items-center gap-2 p-4 rounded-lg bg-kumo-danger-tint/70">
+      <WarningIcon weight="fill" className="fill-kumo-danger" />
+      <span className="text-sm text-kumo-danger">Something went wrong.</span>
+    </div>
+  );
+}

@@ -71,14 +71,22 @@ export interface ChartEvents {
   contextmenu: (params: any) => void;
 
   // Legend events
-  /** Fired when any legend item's selected state changes */
+  /** Map of series name → selected state for all legend items */
+  /** Fired on legend toggle (`legendToggleSelect` action or a legend UI click) */
   legendselectchanged: (params: {
     name: string;
-    /** Map of series name → selected state for all legend items */
     selected: Record<string, boolean>;
   }) => void;
-  legendselected: (params: any) => void;
-  legendunselected: (params: any) => void;
+  /** Fired by the `legendSelect` action. Carries the full `selected` map. */
+  legendselected: (params: {
+    name: string;
+    selected: Record<string, boolean>;
+  }) => void;
+  /** Fired by the `legendUnSelect` action. Carries the full `selected` map. */
+  legendunselected: (params: {
+    name: string;
+    selected: Record<string, boolean>;
+  }) => void;
   legendscroll: (params: any) => void;
 
   // Data zoom / timeline events
@@ -146,6 +154,13 @@ export interface ChartProps {
   isDarkMode?: boolean;
   /** Height of the chart container in pixels. Defaults to `350`. */
   height?: number;
+  /**
+   * Container aspect ratio as `width / height` (e.g. `1.7` or `"16 / 9"`). When
+   * set, the height derives from the rendered width via CSS `aspect-ratio` and
+   * the `height` prop is ignored — useful for maps so the canvas matches the
+   * map's shape and fills the frame with no letterboxing.
+   */
+  aspectRatio?: number | string;
   /** Subset of ECharts events to listen for. Handlers are bound/unbound reactively. */
   onEvents?: Partial<ChartEvents>;
 }
@@ -158,14 +173,26 @@ const transformTooltip = (tooltipObj: SafeTooltipOption) => {
   };
 };
 
-const prepareChartOptions = (options: KumoChartOption): EChartsOption => {
-  if (!options.tooltip) return options;
+const prepareChartOptions = ({
+  options,
+  isDarkMode,
+}: {
+  options: KumoChartOption;
+  isDarkMode?: boolean;
+}): EChartsOption => {
+  const withDefaults: EChartsOption = {
+    backgroundColor: "transparent",
+    color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
+    ...options,
+  };
+
+  if (!withDefaults.tooltip) return withDefaults;
 
   return {
-    ...options,
-    tooltip: Array.isArray(options.tooltip)
-      ? options.tooltip.map(transformTooltip)
-      : transformTooltip(options.tooltip),
+    ...withDefaults,
+    tooltip: Array.isArray(withDefaults.tooltip)
+      ? withDefaults.tooltip.map(transformTooltip)
+      : transformTooltip(withDefaults.tooltip as SafeTooltipOption),
   };
 };
 
@@ -202,6 +229,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     className,
     isDarkMode,
     height = 350,
+    aspectRatio,
     onEvents,
   }: ChartProps,
   ref,
@@ -221,14 +249,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
   useEffect(() => {
     if (!elRef.current) return;
 
-    const chart = echarts.init(
-      elRef.current,
-      isDarkMode
-        ? "dark"
-        : {
-            color: isDarkMode ? CHART_DARK_COLORS : CHART_LIGHT_COLORS,
-          },
-    );
+    const chart = echarts.init(elRef.current, isDarkMode ? "dark" : undefined);
     chartRef.current = chart;
 
     if (typeof ref === "function") ref(chart);
@@ -252,7 +273,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     const chart = chartRef.current;
     if (!chart) return;
 
-    chart.setOption(prepareChartOptions(options), {
+    chart.setOption(prepareChartOptions({ options, isDarkMode }), {
       notMerge: false,
       lazyUpdate: true,
       ...optionUpdateBehavior,
@@ -330,7 +351,11 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     <div
       ref={elRef}
       className={cn("w-full", className)}
-      style={{ height }}
+      style={
+        aspectRatio !== undefined
+          ? { aspectRatio: String(aspectRatio) }
+          : { height }
+      }
       tabIndex={options.aria?.enabled ? 0 : undefined}
       role={options.aria?.enabled ? "img" : undefined}
     />
