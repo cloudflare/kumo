@@ -12,7 +12,9 @@ import {
   SidebarResizableDemo,
   SidebarRightDemo,
   SidebarPeekingDemo,
+  SidebarAutoScrollDemo,
   SidebarSlidingViewsDemo,
+  SidebarMobileDemo,
 } from "../../components/demos/SidebarDemo";
 ---
 
@@ -211,6 +213,28 @@ const { state, isPeeking } = useSidebar();
       </div>
 
       <div>
+        <Heading level={3}>Auto Scroll</Heading>
+        <p>
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">autoScrollOnOpen</code> on long collapsible sections to keep newly revealed content in view.
+          This is useful when a group near the bottom of a scrollable sidebar expands below the visible area.
+        </p>
+        <ComponentExample code={`<Sidebar.Collapsible autoScrollOnOpen>
+  <Sidebar.CollapsibleTrigger
+    render={
+      <Sidebar.MenuButton icon={CodeIcon}>
+        Workers <Sidebar.MenuChevron />
+      </Sidebar.MenuButton>
+    }
+  />
+  <Sidebar.CollapsibleContent>
+    <Sidebar.MenuSub>...</Sidebar.MenuSub>
+  </Sidebar.CollapsibleContent>
+</Sidebar.Collapsible>`}>
+          <SidebarAutoScrollDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
         <Heading level={3}>Sliding Views</Heading>
         <p>
           Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingViews</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingView</code>
@@ -279,6 +303,22 @@ const { state, isPeeking } = useSidebar();
         </ComponentExample>
       </div>
 
+      <div>
+        <Heading level={3}>Mobile</Heading>
+        <p>
+          On narrow viewports the sidebar renders as a navigation drawer. Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">mobileBreakpoint</code> to control the threshold.
+          The drawer uses <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">inert</code> and <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">aria-hidden</code> while closed, moves focus in on open, and supports Escape-to-close.
+          This demo forces mobile mode via a high breakpoint.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider mobileBreakpoint={9999}>
+  <Sidebar>
+    <Sidebar.Content>...</Sidebar.Content>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarMobileDemo client:load />
+        </ComponentExample>
+      </div>
+
     </div>
   </ComponentSection>
 
@@ -289,7 +329,7 @@ const { state, isPeeking } = useSidebar();
       <div>
         <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar</h3>
         <p>
-          The main sidebar container. Renders as <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;aside&gt;</code> on desktop, Dialog sheet on mobile.
+          The main sidebar container. Renders as <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;aside&gt;</code> on desktop and a navigation drawer on mobile.
         </p>
         <PropsTable component="Sidebar" />
       </div>

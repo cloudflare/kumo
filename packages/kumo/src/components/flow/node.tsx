@@ -5,16 +5,15 @@ import {
   isValidElement,
   useCallback,
   useContext,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
-  useState,
   type ReactElement,
   type ReactNode,
 } from "react";
-import { useNode, type NodeData, type RectLike } from "./diagram";
-import { useDescendantsContext } from "./use-children";
+import { useFlowStateContext, useNode, type NodeData } from "./diagram";
+
+type AnchorType = "start" | "end" | "both";
 
 // Utility to merge refs
 function mergeRefs<T>(
@@ -65,110 +64,87 @@ export type FlowNodeProps = {
 export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
   function FlowNode({ id: idProp, render, children, disabled = false }, ref) {
     const nodeRef = useRef<HTMLElement>(null);
-    const startAnchorRef = useRef<HTMLElement | null>(null);
-    const endAnchorRef = useRef<HTMLElement | null>(null);
-    const [measurements, setMeasurements] = useState<{
-      start: RectLike | null;
-      end: RectLike | null;
-    }>({ start: null, end: null });
 
-    const { measurementEpoch, notifySizeChange } =
-      useDescendantsContext<NodeData>();
+    const nodeProps = useMemo((): NodeData => ({ kind: "node" }), []);
+    const { index, id } = useNode(nodeProps, idProp);
+    const { reportNode, removeNode, nodePositions } = useFlowStateContext();
 
-    const remeasure = useCallback(() => {
+    // Refs that FlowAnchor children write into. Read by reportSize so that
+    // anchor offsets are always included in the same reportNode call —
+    // avoiding the state-batching race where reportAnchor fires before the
+    // node entry exists in the nodes map.
+    const startAnchorOffsetRef = useRef<number | undefined>(undefined);
+    const endAnchorOffsetRef = useRef<number | undefined>(undefined);
+
+    const reportSize = useCallback(() => {
       if (!nodeRef.current) return;
-
-      const nodeRect = nodeRef.current.getBoundingClientRect();
-      let startRect: RectLike = nodeRect;
-      let endRect: RectLike = nodeRect;
-
-      if (startAnchorRef.current) {
-        startRect = startAnchorRef.current.getBoundingClientRect();
-      }
-      if (endAnchorRef.current) {
-        endRect = endAnchorRef.current.getBoundingClientRect();
-      }
-
-      setMeasurements((m) => {
-        const newVal = { start: startRect, end: endRect };
-        if (JSON.stringify(m) === JSON.stringify(newVal)) return m;
-        return newVal;
-      });
-    }, []);
-
-    const nodeProps = useMemo(
-      () => ({
-        parallel: false,
+      const { width, height } = nodeRef.current.getBoundingClientRect();
+      reportNode(id, {
+        width,
+        height,
         disabled,
-        ...measurements,
-      }),
-      [measurements, disabled],
+        startAnchorOffset: startAnchorOffsetRef.current,
+        endAnchorOffset: endAnchorOffsetRef.current,
+      });
+    }, [reportNode, id, disabled]);
+
+    useLayoutEffect(() => {
+      if (!nodeRef.current) return;
+      const observer = new ResizeObserver(reportSize);
+      observer.observe(nodeRef.current);
+      reportSize();
+      return () => {
+        observer.disconnect();
+        removeNode(id);
+      };
+    }, [reportSize, removeNode, id]);
+
+    const registerAnchor = useCallback(
+      (type: AnchorType, el: HTMLElement | null) => {
+        const writeOffsets = (offset: number | undefined) => {
+          if (type === "start" || type === "both")
+            startAnchorOffsetRef.current = offset;
+          if (type === "end" || type === "both")
+            endAnchorOffsetRef.current = offset;
+        };
+
+        if (!el) {
+          writeOffsets(undefined);
+          reportSize();
+          return;
+        }
+
+        const measure = () => {
+          if (!nodeRef.current) return;
+          const anchorRect = el.getBoundingClientRect();
+          const nodeRect = nodeRef.current.getBoundingClientRect();
+          writeOffsets(anchorRect.top - nodeRect.top + anchorRect.height / 2);
+          reportSize();
+        };
+
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(el);
+        return () => observer.disconnect();
+      },
+      // reportSize is stable within a render cycle; it changes only when
+      // id/disabled/reportNode change, which also triggers FlowNode's own
+      // ResizeObserver to re-report. Safe to omit here.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [id],
     );
 
-    const { index, id } = useNode(nodeProps, idProp);
+    const anchorContext = useMemo(() => ({ registerAnchor }), [registerAnchor]);
 
-    /**
-     * Observe the node element for size changes so that connectors update even
-     * when FlowNode itself does not re-render (e.g. an expandable render-prop
-     * child toggling its own state).
-     *
-     * When this node resizes, we also notify siblings via `notifySizeChange`
-     * so they remeasure their (potentially shifted) positions.
-     */
-    useLayoutEffect(() => {
-      if (!nodeRef.current) return;
-
-      const onResize = () => {
-        remeasure();
-        notifySizeChange();
-      };
-
-      const observer = new ResizeObserver(onResize);
-      observer.observe(nodeRef.current);
-      return () => observer.disconnect();
-    }, [remeasure, notifySizeChange]);
-
-    /**
-     * Remeasure when siblings change (enter/exit/resize). The epoch counter
-     * increments on every registration change and every size-change
-     * notification, so this effect picks up cases (2) and (3) from the spec.
-     */
-    useLayoutEffect(() => {
-      remeasure();
-    }, [measurementEpoch, remeasure]);
-
-    /**
-     * When the page scrolls or the window resizes, the node's viewport position
-     * changes without ResizeObserver firing. Re-running remeasure here ensures
-     * the stored rect is always fresh before connectors are recomputed.
-     *
-     * This is needed at the node level (rather than relying on the epoch chain
-     * from FlowNodeList) because nodes inside FlowParallel belong to a nested
-     * DescendantsProvider — their measurementEpoch is independent of the
-     * top-level one, so they would not be reached by a single scroll listener
-     * placed only at the FlowNodeList level.
-     */
-    useEffect(() => {
-      const onLayoutShift = () => {
-        remeasure();
-        notifySizeChange();
-      };
-      window.addEventListener("scroll", onLayoutShift, {
-        capture: true,
-        passive: true,
-      });
-      window.addEventListener("resize", onLayoutShift, { passive: true });
-      return () => {
-        window.removeEventListener("scroll", onLayoutShift, { capture: true });
-        window.removeEventListener("resize", onLayoutShift);
-      };
-    }, [remeasure, notifySizeChange]);
-
+    const position = nodePositions[id];
     const mergedRef = mergeRefs(ref, nodeRef);
+
+    const positionStyle: React.CSSProperties = position
+      ? { position: "absolute", top: position.y, left: position.x }
+      : { opacity: 0 };
 
     let element: ReactElement;
     if (render && isValidElement(render)) {
-      // When render prop is provided, clone it with ref and data attributes
       const renderProps = render.props as {
         children?: ReactNode;
         style?: React.CSSProperties;
@@ -179,19 +155,24 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
         "data-node-index": index,
         "data-node-id": id,
         "data-testid": renderProps["data-testid"] ?? id,
-        style: { cursor: "default", ...renderProps.style },
+        "aria-hidden": position ? undefined : true,
+        style: {
+          ...positionStyle,
+          cursor: "default",
+          ...renderProps.style,
+        },
         children: renderProps.children ?? children,
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
     } else {
-      // Default element
       element = (
         <li
           ref={mergedRef}
-          className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line"
-          style={{ cursor: "default" }}
+          className="py-2 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-line absolute cursor-default"
+          style={positionStyle}
           data-node-index={index}
           data-node-id={id}
           data-testid={id}
+          aria-hidden={position ? undefined : "true"}
         >
           {children}
         </li>
@@ -199,19 +180,7 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
     }
 
     return (
-      <FlowNodeAnchorContext.Provider
-        value={useMemo(
-          () => ({
-            registerStartAnchor: (anchorRef) => {
-              startAnchorRef.current = anchorRef;
-            },
-            registerEndAnchor: (anchorRef) => {
-              endAnchorRef.current = anchorRef;
-            },
-          }),
-          [],
-        )}
-      >
+      <FlowNodeAnchorContext.Provider value={anchorContext}>
         {element}
       </FlowNodeAnchorContext.Provider>
     );
@@ -220,9 +189,15 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
 
 FlowNode.displayName = "Flow.Node";
 
+// =============================================================================
+// FlowAnchor
+// =============================================================================
+
 type FlowNodeAnchorContextType = {
-  registerStartAnchor: (ref: HTMLElement | null) => void;
-  registerEndAnchor: (ref: HTMLElement | null) => void;
+  registerAnchor: (
+    type: AnchorType,
+    el: HTMLElement | null,
+  ) => (() => void) | undefined;
 };
 
 const FlowNodeAnchorContext = createContext<FlowNodeAnchorContextType | null>(
@@ -260,38 +235,31 @@ export type FlowAnchorProps = {
 export const FlowAnchor = forwardRef<HTMLElement, FlowAnchorProps>(
   function FlowAnchor({ type, render, children }, ref) {
     const context = useContext(FlowNodeAnchorContext);
-    const anchorRef = useRef<HTMLElement>(null);
 
     if (!context) {
       throw new Error("Flow.Anchor must be used within Flow.Node");
     }
 
-    useEffect(() => {
-      if (!anchorRef.current) {
-        return;
-      }
-
-      if (type === "start" || type === undefined) {
-        context.registerStartAnchor(anchorRef.current);
-      }
-      if (type === "end" || type === undefined) {
-        context.registerEndAnchor(anchorRef.current);
-      }
-
-      return () => {
-        if (type === "start" || type === undefined) {
-          context.registerStartAnchor(null);
-        }
-        if (type === "end" || type === undefined) {
-          context.registerEndAnchor(null);
-        }
-      };
-    }, [type, context.registerStartAnchor, context.registerEndAnchor]);
-
+    const anchorRef = useRef<HTMLElement>(null);
     const mergedRef = mergeRefs(ref, anchorRef);
 
+    const { registerAnchor } = context;
+    const anchorType = type ?? "both";
+
+    useLayoutEffect(() => {
+      const el = anchorRef.current;
+      if (!el) return;
+      const cleanup = registerAnchor(anchorType, el);
+      return () => {
+        cleanup?.();
+        registerAnchor(anchorType, null);
+      };
+      // registerAnchor is stable (memoized in FlowNode); anchorType is
+      // unlikely to change at runtime but including it is correct.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [anchorType, registerAnchor]);
+
     if (render && isValidElement(render)) {
-      // When render prop is provided, clone it with ref
       const renderProps = render.props as { children?: ReactNode };
       return cloneElement(render, {
         ref: mergedRef,
@@ -299,8 +267,7 @@ export const FlowAnchor = forwardRef<HTMLElement, FlowAnchorProps>(
       } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
     }
 
-    // Default element
-    return <div ref={mergedRef}>{children}</div>;
+    return <div ref={mergedRef as React.Ref<HTMLDivElement>}>{children}</div>;
   },
 );
 

@@ -77,6 +77,7 @@ const componentItems: NavItem[] = [
   { label: "Table of Contents", href: "/components/table-of-contents" },
   { label: "Tabs", href: "/components/tabs" },
   { label: "Text", href: "/components/text" },
+  { label: "Toolbar", href: "/components/toolbar" },
   { label: "Toast", href: "/components/toast" },
   { label: "Tooltip", href: "/components/tooltip" },
 ];
@@ -85,6 +86,7 @@ const chartItems: NavItem[] = [
   { label: "Charts", href: "/charts" },
   { label: "Colors", href: "/charts/colors" },
   { label: "Timeseries", href: "/charts/timeseries" },
+  { label: "Maps", href: "/charts/maps" },
   { label: "Sankey", href: "/charts/sankey" },
   { label: "Custom Chart", href: "/charts/custom" },
 ];

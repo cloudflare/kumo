@@ -17,6 +17,7 @@ import {
   DropdownNestedDemo,
   DropdownAvatarTriggerDemo,
   DropdownLinkItemDemo,
+  DropdownLongListDemo,
 } from "~/components/demos/DropdownDemo";
 
 {/* Hero Demo */}
@@ -153,6 +154,16 @@ export default function Example() {
 </p>
 <ComponentExample demo="DropdownLinkItemDemo">
   <DropdownLinkItemDemo client:load />
+</ComponentExample>
+
+### Long List
+
+<p>
+  When a dropdown contains many items, the content automatically limits its height
+  to the available viewport space and becomes scrollable.
+</p>
+<ComponentExample demo="DropdownLongListDemo">
+  <DropdownLongListDemo client:load />
 </ComponentExample>
 
 </ComponentSection>

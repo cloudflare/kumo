@@ -295,7 +295,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "oklch(0.5772 0.2324 260)",
-          dark: "oklch(0.5772 0.2324 260)",
+          dark: "color-mix(in oklch, oklch(0.5772 0.2324 260), black 10%)",
         },
       },
     },
@@ -431,7 +431,7 @@ export const THEME_CONFIG: ThemeConfig = {
       theme: {
         kumo: {
           light: "var(--color-red-500, oklch(63.7% 0.237 25.331))",
-          dark: "var(--color-red-400, oklch(70.4% 0.191 22.216))",
+          dark: "var(--color-red-600, oklch(57.7% 0.245 27.325))",
         },
       },
     },
@@ -494,6 +494,18 @@ export const THEME_CONFIG: ThemeConfig = {
         kumo: {
           light: "var(--color-red-600, oklch(57.7% 0.245 27.325))",
           dark: "var(--color-red-700, oklch(50.5% 0.213 27.518))",
+        },
+      },
+    },
+
+    // Green
+    "kumo-badge-green": {
+      newName: "",
+      description: "Green badge background",
+      theme: {
+        kumo: {
+          light: "var(--color-emerald-600, oklch(59.6% 0.145 163.225))",
+          dark: "var(--color-emerald-700, oklch(50.8% 0.118 165.612))",
         },
       },
     },

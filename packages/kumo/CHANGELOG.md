@@ -1,5 +1,142 @@
 # @cloudflare/kumo
 
+## 2.8.0
+
+### Minor Changes
+
+- 8f2c40b: Rewrite `Flow` to use computed layout over relying on DOM layout.
+
+  `Flow` now measures node sizes, reconstructs the flow tree, and computes node positions and connector paths from that derived state instead of chaining DOM rect reads. This keeps connectors aligned through resize and scroll changes, supports nested flow structures more predictably, and makes anchor-based connector placement follow the anchor midpoint.
+
+- fdeeb74: Add `target` prop to `Sidebar.MenuSubButton` for parity with `Sidebar.MenuButton` — forwarded to the link when `href` is set, so link sub-items can control where they open (e.g. same-tab cross-origin navigation).
+- b05ea3f: Add auto-resize support to InputArea and Textarea.
+- 33cb988: Add vertical reference markers to TimeseriesChart.
+- 0562dd1: Add horizontal threshold lines to TimeseriesChart.
+
+### Patch Changes
+
+- a90dc83: Include chart components exported from multi-component barrel directories in the generated component registry, with complete props metadata for generic interfaces.
+- 0e440d4: Keep the mobile Sidebar open when focus moves to portaled interactive content.
+- 67061e1: Disable Sidebar.MenuButton tooltips while the sidebar is expanded or peeking.
+
+## 2.7.0
+
+### Minor Changes
+
+- 8f8f898: Add `ChoroplethMap`, a GeoJSON region choropleth chart component that joins data rows to features by `name`/`nameProperty` and shades regions with a continuous `visualMap` scale. Includes Kumo light/dark map colours, tooltip formatting, optional legend, hover/click callbacks, roam controls, docs, and demos.
+
+  Both `BubbleMap` and `ChoroplethMap` now apply a d3-geo `projection` (latitude-clamped Mercator by default; pass another d3-geo projection or `null` for raw plotting) and size by `aspectRatio` so the map fills its container without letterboxing. The container height now derives from the projected window's aspect ratio by default; pass an explicit `height` to opt back into a fixed pixel height.
+
+  Update `BubbleMap` viewport behavior to avoid resetting user pan and zoom while refreshing bubble data.
+
+  `BubbleMap` now defaults `roam` to `false` to avoid accidental pan and zoom interactions. Consumers that want drag-to-pan or scroll-to-zoom can pass `roam={true}`.
+
+- 6d366d9: Add `orientation="vertical"` support to `Flow` for laying out nodes top-to-bottom. The `align` prop now controls cross-axis alignment in both orientations.
+- ebc5cf8: feat(chart): add `BubbleMap` chart component
+
+  New `BubbleMap` component renders proportional bubbles over a registered
+  geographic map using ECharts' scatter series. Includes value-based radius
+  scaling, a `mapColors` palette addition to `ChartPalette`, and supporting
+  types. Also extracts `escapeHtml` / `defaultValueFormat` tooltip helpers into a
+  shared `tooltip-utils` module reused by `SankeyChart`.
+
+### Patch Changes
+
+- dd1a0b5: Keep primary and destructive button active/focus rings matched to their variant color.
+- 8463c38: Use the Button component for Toast close controls and match the hover tint to the toast variant.
+- 3aa0d9a: Limit Dropdown content height to available viewport space to prevent overflow.
+- 25b2ab1: Replace the internal class merging implementation with cnfast.
+- 6232d34: fix(button): resolve Firefox rendering artifact when Turnstile is present
+
+  Replace `translate-y-px` with `box-shadow: inset 0 1px 0 0 var(--kumo-button-emphasis-bg)` on the primary/destructive button emphasis overlay span. The transform triggered a rendering bug in Firefox on pages with Turnstile's `contain: strict` CSS. The box-shadow achieves the same visual depth effect without the rendering issue.
+
+- a74bd9c: Fix Dialog `size` prop to set a fixed width instead of only a minimum width. Previously, dialog content could stretch the dialog beyond its intended size.
+- 4dd1398: Update Base UI to 1.6.0.
+
+## 2.6.0
+
+### Minor Changes
+
+- 1b04ee9: Add Toolbar for composing explicit toolbar controls into a shared grouped card.
+- 116e0de: feat(chart): add `enableLegendSelection` prop to `TimeseriesChart`
+
+  Opt-in (default `false`) hidden ECharts legend that lets consumers drive series
+  visibility imperatively via the `legendSelect` / `legendUnSelect` /
+  `legendToggleSelect` actions — useful for building a custom interactive legend
+  with `ChartLegend`. Series toggled off via the legend are also excluded from the
+  tooltip. Requires registering ECharts' `LegendComponent`
+  (`echarts.use([LegendComponent])`). When disabled, behaviour is unchanged.
+
+- 815628f: Extend LegendItems to take pointer events & timeseries merges forwardref to support those events
+
+### Patch Changes
+
+- 430689b: Update the Button primary and destructive variants with token-derived gradient treatments.
+- 539e5bf: Fix horizontal scroll in `Sidebar.Content`: always apply `overflow-x: hidden` on the scroll viewport, not just when collapsed. Base UI's `ScrollArea.Viewport` sets `overflow: scroll` as an inline style, which allowed ~14px of horizontal overflow when consumer content (e.g. search buttons with keyboard shortcuts) exceeded the sidebar width.
+- 4378067: feat(radio): add generic value type support to Radio.Group and Radio.Item
+- fb5fed1: Fix the green Badge variant missing its background color token.
+- bdd890c: Keep generated component registry descriptions to JSDoc summaries before markdown sections or code examples.
+
+## 2.5.2
+
+### Patch Changes
+
+- 9a13576: fix(button): use ring-kumo-line for default secondary button ring
+- b18837c: Refine outline and secondary destructive button hover states.
+- 595d10e: fix(sidebar): correct GroupLabel top margin from mt-6 to mt-4
+
+## 2.5.1
+
+### Patch Changes
+
+- b06e35b: Allow unprefixed Dialog max-width classes to override the default viewport cap at desktop breakpoints.
+
+## 2.5.0
+
+### Minor Changes
+
+- 7401701: Sidebar: mobile rewrite, smooth collapse transitions, and new props
+
+  **New features:**
+  - `mobileBreakpoint` prop on Provider — configurable viewport width for mobile detection
+  - `contentClassName` prop on Sidebar root — pass-through class for the inner content container
+  - Controlled mobile state — `open` prop now controls the mobile sidebar too, not just desktop
+
+  **Fixes:**
+  - Replaced Base UI Dialog mobile sidebar with a plain `<nav>` + backdrop for simpler, more predictable transitions
+  - Collapsible sections now animate closed smoothly when the sidebar collapses instead of snapping shut
+  - Removed `hidden` class from `Sidebar.MenuSub` so sub-menus participate in collapse animations
+  - Removed `inertValue` React-version helper — `SidebarSlidingView` now sets `inert` imperatively for React 18 compatibility
+  - Restored `inert` on closed `SidebarCollapsibleContent` while removing its `data-open` attribute
+
+  **Styling:**
+  - `bg-kumo-tint` → `bg-(--sidebar-active-bg)` CSS variable for active/hover/focus backgrounds
+  - Icon opacity `0.5` → `0.4`; chevron gains hover opacity transition
+  - Header gains `shrink-0` and animated padding on collapse
+  - Content scroll area gains animated `gap` transition and `tabIndex={-1}` on viewport
+  - Sliding views container gains `max-w-(--sidebar-width)` to prevent overflow
+  - Mobile sidebar uses `--sidebar-animation-duration` CSS variable for slide transition
+
+### Patch Changes
+
+- f957dbc: Add React 18 and React 19 compatibility checks for Kumo tests.
+- ac46184: Fix `Chart` (and `SankeyChart`) rendering in dark mode. The chart canvas
+  now stays transparent so the surrounding `bg-kumo-*` surface shows through
+  symmetrically in both modes, and ECharts' built-in `"dark"` theme is
+  applied when `isDarkMode` is true so the tooltip card, axes, splitLines,
+  and legend text are themed correctly.
+- e25a3d6: fix(sidebar): add text truncation with ellipsis to Sidebar.MenuButton content
+
+  Previously, `Sidebar.MenuButton` used `overflow-hidden` which clipped long text without showing an ellipsis. Now uses `truncate` to match `Sidebar.MenuSubButton`'s behavior.
+
+- d3feec0: Fix segmented `Tabs` scroll fade, scroll-into-view, and ring styling:
+  - Rewrite CSS scroll-fade masking to use `@property`-animated custom properties, fixing proportional fade rendering across browsers.
+  - Scroll the selected tab into view on click so it stays visible in overflowing tab lists.
+  - Move `ring ring-kumo-hairline/70` from the inner list to the root container so the segmented variant ring wraps the entire component correctly.
+
+- f831482: Fix Flow connector rendering in Firefox by emitting valid SVG path data without array commas and setting visible overflow on the SVG element attribute.
+- 4a8b992: Restore React 18-compatible Sidebar inert attribute handling while keeping the full React compatibility CI suite.
+
 ## 2.4.1
 
 ### Patch Changes

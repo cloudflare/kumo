@@ -34,7 +34,7 @@ catalog:
   vite: ^7.1.7
   vite-plugin-dts: ^4.3.0
   vite-tsconfig-paths: ^5.1.4
-  vitest: ^4.0.18
+  vitest: ^4.1.0
   oxlint: 1.42.0
   oxlint-tsgolint: 0.11.3
   wrangler: 4.87.0

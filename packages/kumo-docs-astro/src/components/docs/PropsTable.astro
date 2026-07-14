@@ -19,13 +19,15 @@ interface Props {
   component: string;
   /** Whether to hide the description column (default: false) */
   hideDescription?: boolean;
+  /** Additional prop names to hide from this table. */
+  hiddenProps?: string[];
 }
 
-const { component, hideDescription = false } = Astro.props;
+const { component, hideDescription = false, hiddenProps = [] } = Astro.props;
 const data = getComponentData(component);
 
 // Filter out props that are typically inherited and not useful to document
-const HIDDEN_PROPS = new Set(["ref", "key"]);
+const HIDDEN_PROPS = new Set(["ref", "key", ...hiddenProps]);
 
 const props = data
   ? Object.entries(data.props).filter(([name]) => !HIDDEN_PROPS.has(name))

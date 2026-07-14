@@ -33,6 +33,7 @@ import {
   TableOfContents,
   Tabs,
   Text,
+  Toolbar,
   Toasty,
   Tooltip,
   TooltipProvider,
@@ -88,6 +89,7 @@ const componentRoutes: Record<string, string> = {
   "table-of-contents": "/components/table-of-contents",
   tabs: "/components/tabs",
   text: "/components/text",
+  toolbar: "/components/toolbar",
   toast: "/components/toast",
   tooltip: "/components/tooltip",
 };
@@ -169,6 +171,17 @@ export function HomeGrid() {
           <Select.Option value="active">Active versions</Select.Option>
           <Select.Option value="specific">Specific versions</Select.Option>
         </Select>
+      ),
+    },
+    {
+      name: "Toolbar",
+      id: "toolbar",
+      Component: (
+        <Toolbar className="w-[260px]">
+          <Toolbar.Input aria-label="Search DNS records" placeholder="Search..." />
+          <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
+          <Toolbar.Button icon={PlusIcon} aria-label="Add" />
+        </Toolbar>
       ),
     },
     {
