@@ -10,8 +10,7 @@ import {
   BannerAction,
   type BannerActionSize,
   BannerActionContext,
-  BannerActions,
-} from "./banner-actions";
+} from "./banner-action";
 
 /** Structural base styles applied to all banners; size-specific spacing/alignment lives in `KUMO_BANNER_VARIANTS.size`. */
 export const KUMO_BANNER_BASE_STYLES = "flex w-full";
@@ -65,7 +64,7 @@ export type KumoBannerSize = keyof typeof KUMO_BANNER_VARIANTS.size;
  * Per-size render-site classes not carried by `bannerVariants` (which only emits
  * the container classes). `row` is the title↔action flex gap, `icon` the icon
  * wrapper height, `description` the description text size, and `action` the size
- * that child `Banner.Action`s inherit via {@link BannerActionSizeContext}.
+ * that child `Banner.Action`s inherit via {@link BannerActionContext}.
  */
 const BANNER_SIZE_PARTS: Record<
   KumoBannerSize,
@@ -85,13 +84,13 @@ const BANNER_SIZE_PARTS: Record<
   },
 };
 
-// The `Banner.Actions` / `Banner.Action` CTA compound lives in ./banner-actions
+// The `Banner.Action` CTA compound lives in ./banner-action
 // and is attached to `Banner` via Object.assign at the bottom of this file.
 export type {
   BannerActionVariant,
   BannerActionSize,
   BannerActionProps,
-} from "./banner-actions";
+} from "./banner-action";
 
 export interface KumoBannerVariantsProps {
   /**
@@ -164,9 +163,9 @@ export interface BannerProps
   description?: ReactNode;
   /**
    * Action slot rendered at the trailing end of the banner (e.g. a CTA button or link).
-   * Use the `Banner.Actions` / `Banner.Action` compound for accent-aware CTAs that
-   * self-style to the banner variant; other nodes are rendered as-is. Only used in
-   * structured mode (with `title` or `description`).
+   * Use `Banner.Action` for accent-aware CTAs that self-style to the banner
+   * variant; other nodes are rendered as-is. Multiple actions can be passed in a
+   * Fragment. Only used in structured mode (with `title` or `description`).
    */
   action?: ReactNode;
   /** @deprecated Use `title` and `description` instead. Will be removed in a future major version. */
@@ -184,7 +183,7 @@ export interface BannerProps
   variant?: KumoBannerVariant;
   /**
    * Size of the banner. A `"sm"` banner uses tighter spacing and smaller text,
-   * and defaults its `Banner.Action` children to the `"xs"` size — suited to
+   * and sets its `Banner.Action` children to the `"xs"` size — suited to
    * dialogs and other tight spaces.
    * @default "base"
    */
@@ -290,7 +289,9 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
                 )}
               </div>
             )}
-            {action}
+            {action != null && (
+              <div className="flex shrink-0 items-center gap-2">{action}</div>
+            )}
           </div>
         </div>
       </BannerActionContext.Provider>
@@ -324,11 +325,9 @@ BannerRoot.displayName = "Banner";
 /**
  * Full-width message bar with an optional trailing CTA slot.
  *
- * Compound API:
- * - `Banner.Actions` — layout container for the `action` slot.
- * - `Banner.Action` — accent-aware CTA button (`variant="primary" | "ghost"`).
+ * `Banner.Action` is an accent-aware CTA button
+ * (`variant="primary" | "secondary" | "ghost"`).
  */
 export const Banner = Object.assign(BannerRoot, {
-  Actions: BannerActions,
   Action: BannerAction,
 });

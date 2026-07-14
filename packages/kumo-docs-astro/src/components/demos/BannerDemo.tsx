@@ -125,10 +125,10 @@ export function BannerWithActionDemo() {
         title="Update available"
         description="A new version is ready to install."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Update</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
       <Banner
@@ -137,10 +137,10 @@ export function BannerWithActionDemo() {
         title="Save failed"
         description="We couldn't save your changes. Please try again."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Retry</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
       <Banner
@@ -149,10 +149,10 @@ export function BannerWithActionDemo() {
         title="Save failed"
         description="We couldn't save your changes. Please try again."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Retry</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
       <Banner
@@ -161,10 +161,10 @@ export function BannerWithActionDemo() {
         title="Save failed"
         description="We couldn't save your changes. Please try again."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Retry</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
     </div>
@@ -175,60 +175,60 @@ export function BannerWithActionDemo() {
 export function BannerWithActionsDemo() {
   return (
     <div className="space-y-3 w-full">
-    <Banner
-      icon={<Warning weight="fill" />}
-      variant="alert"
-      title="Session expiring"
-      description="Your session will expire in 5 minutes."
-      action={
-        <Banner.Actions>
-          <Banner.Action>Dismiss</Banner.Action>
-          <Banner.Action variant="secondary">Extend session</Banner.Action>
-        </Banner.Actions>
-      }
-    /> 
-    <Banner
-      icon={<Warning weight="fill" />}
-      variant="default"
-      title="Session expiring"
-      description="Your session will expire in 5 minutes."
-      action={
-        <Banner.Actions>
-          <Banner.Action>Dismiss</Banner.Action>
-          <Banner.Action variant="secondary">Extend session</Banner.Action>
-        </Banner.Actions>
-      }
-    />
-    <Banner
-      icon={<Warning weight="fill" />}
-      variant="error"
-      title="Session expiring"
-      description="Your session will expire in 5 minutes."
-      action={
-        <Banner.Actions>
-          <Banner.Action>Dismiss</Banner.Action>
-          <Banner.Action variant="secondary">Extend session</Banner.Action>
-        </Banner.Actions>
-      }
-    />
-    <Banner
-      icon={<Warning weight="fill" />}
-      variant="secondary"
-      title="Session expiring"
-      description="Your session will expire in 5 minutes."
-      action={
-        <Banner.Actions>
-          <Banner.Action>Dismiss</Banner.Action>
-          <Banner.Action variant="secondary">Extend session</Banner.Action>
-        </Banner.Actions>
-      }
-    />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="alert"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+        action={
+          <>
+            <Banner.Action>Dismiss</Banner.Action>
+            <Banner.Action variant="secondary">Extend session</Banner.Action>
+          </>
+        }
+      />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="default"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+        action={
+          <>
+            <Banner.Action>Dismiss</Banner.Action>
+            <Banner.Action variant="secondary">Extend session</Banner.Action>
+          </>
+        }
+      />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="error"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+        action={
+          <>
+            <Banner.Action>Dismiss</Banner.Action>
+            <Banner.Action variant="secondary">Extend session</Banner.Action>
+          </>
+        }
+      />
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="secondary"
+        title="Session expiring"
+        description="Your session will expire in 5 minutes."
+        action={
+          <>
+            <Banner.Action>Dismiss</Banner.Action>
+            <Banner.Action variant="secondary">Extend session</Banner.Action>
+          </>
+        }
+      />
     </div>
   );
 }
 
 /**
- * Accent-aware CTAs via the `Banner.Actions` / `Banner.Action` compound. Each
+ * Accent-aware CTAs via the `Banner.Action` compound. Each
  * `Banner.Action` reads the banner variant and self-styles to the matching accent,
  * so the solid CTA stays legible on every variant in light and dark mode.
  */
@@ -240,10 +240,10 @@ export function BannerActionCompoundDemo() {
         title="Update available"
         description="A new version is ready to install."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Update</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
       <Banner
@@ -252,10 +252,10 @@ export function BannerActionCompoundDemo() {
         title="Session expiring"
         description="Your session will expire in 5 minutes."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Extend</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
       <Banner
@@ -264,10 +264,10 @@ export function BannerActionCompoundDemo() {
         title="Save failed"
         description="We couldn't save your changes. Please try again."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Retry</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
       <Banner
@@ -276,10 +276,10 @@ export function BannerActionCompoundDemo() {
         title="Heads up"
         description="This is a secondary informational banner."
         action={
-          <Banner.Actions>
+          <>
             <Banner.Action>Got it</Banner.Action>
             <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-          </Banner.Actions>
+          </>
         }
       />
     </div>
@@ -289,7 +289,7 @@ export function BannerActionCompoundDemo() {
 /**
  * Compact `size="sm"` banner for dialogs and other tight spaces. The tighter
  * spacing and smaller text carry through to the CTAs: `Banner.Action` children
- * inherit the banner size and default to the `xs` button size.
+ * inherit the banner size and render at the `xs` button size.
  */
 export function BannerCompactDemo() {
   return (
@@ -299,10 +299,10 @@ export function BannerCompactDemo() {
       title="Update available"
       description="A new version is ready to install."
       action={
-        <Banner.Actions>
+        <>
           <Banner.Action>Update</Banner.Action>
           <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
-        </Banner.Actions>
+        </>
       }
     />
   );

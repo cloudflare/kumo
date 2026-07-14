@@ -31,31 +31,22 @@ describe("Banner", () => {
       <Banner
         variant="error"
         title="Save failed"
-        action={
-          <Banner.Actions>
-            <Banner.Action data-testid="cta">Retry</Banner.Action>
-          </Banner.Actions>
-        }
+        action={<Banner.Action data-testid="cta">Retry</Banner.Action>}
       />,
     );
 
     const cta = screen.getByTestId("cta");
     expect(cta.tagName).toBe("BUTTON");
+    expect(cta.getAttribute("data-kumo-component")).toBe("Button");
     expect(cta.className).toContain("text-white");
-    // Reuses the same "white 30%" emphasis gradient as banner.tsx, keyed to the
-    // error accent (rendered at 80% opacity) and injected via the compound's own
-    // CSS vars.
-    expect(cta.className).toContain("from-(--kumo-banner-cta-start)");
-    expect(cta.style.getPropertyValue("--kumo-banner-cta-end")).toBe(
-      "var(--color-kumo-danger)",
-    );
-    expect(cta.style.getPropertyValue("--kumo-banner-cta-bg")).toBe(
-      "color-mix(in oklch, var(--color-kumo-danger), white 30%)",
-    );
-    // Legacy Button-emphasis tinting must NOT touch the compound.
+    expect(cta.className).toContain("bg-(--kumo-button-emphasis-bg)");
     expect(
       cta.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
-    ).toBe("");
+    ).toBe("var(--color-kumo-danger)");
+    expect(cta.style.getPropertyValue("--kumo-button-emphasis-bg")).toBe(
+      "color-mix(in oklch, var(--color-kumo-danger), white 30%)",
+    );
+    expect(cta.parentElement?.className).toContain("gap-2");
   });
 
   it("styles a ghost Banner.Action with accent text and a tinted hover", () => {
@@ -64,11 +55,9 @@ describe("Banner", () => {
         variant="alert"
         title="Session expiring"
         action={
-          <Banner.Actions>
-            <Banner.Action variant="ghost" data-testid="cta">
-              Dismiss
-            </Banner.Action>
-          </Banner.Actions>
+          <Banner.Action variant="ghost" data-testid="cta">
+            Dismiss
+          </Banner.Action>
         }
       />,
     );
@@ -84,11 +73,9 @@ describe("Banner", () => {
         variant="error"
         title="Save failed"
         action={
-          <Banner.Actions>
-            <Banner.Action variant="secondary" data-testid="cta">
-              Retry
-            </Banner.Action>
-          </Banner.Actions>
+          <Banner.Action variant="secondary" data-testid="cta">
+            Retry
+          </Banner.Action>
         }
       />,
     );
@@ -97,55 +84,51 @@ describe("Banner", () => {
     // Transparent bg + accent-hued ring in the same hue as the error banner accent.
     expect(cta.className).toContain("ring-kumo-danger/50");
     expect(cta.className).toContain("hover:bg-kumo-danger/10");
+    expect(cta.className).toContain("hover:!ring-kumo-danger/50");
+    expect(cta.className).toContain("hover:!text-inherit");
     // Not the filled primary CTA.
-    expect(cta.className).not.toContain("from-(--kumo-banner-cta-start)");
+    expect(cta.className).toContain("bg-transparent");
     expect(cta.className).not.toContain("text-white");
-    expect(cta.style.getPropertyValue("--kumo-banner-cta-end")).toBe("");
+    expect(
+      cta.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("");
   });
 
-  it("renders an icon-only Banner.Action as a square button", () => {
+  it("renders an icon-only Banner.Action with standard button sizing", () => {
     render(
       <Banner
         variant="default"
         title="Heads up"
         action={
-          <Banner.Actions>
-            <Banner.Action
-              variant="ghost"
-              icon={<svg data-testid="icon" />}
-              aria-label="Dismiss"
-              data-testid="cta"
-            />
-          </Banner.Actions>
+          <Banner.Action
+            variant="ghost"
+            icon={<svg data-testid="icon" />}
+            aria-label="Dismiss"
+            data-testid="cta"
+          />
         }
       />,
     );
 
     const cta = screen.getByTestId("cta");
-    // Icon-only + default "sm" size => square button (size === height).
-    expect(cta.className).toContain("size-6.5");
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
     expect(cta.getAttribute("aria-label")).toBe("Dismiss");
     expect(screen.getByTestId("icon")).toBeTruthy();
   });
 
-  it("applies the xs size to a Banner.Action", () => {
+  it("defaults Banner.Action children to sm in a base banner", () => {
     render(
       <Banner
         variant="default"
         title="Heads up"
-        action={
-          <Banner.Actions>
-            <Banner.Action size="xs" data-testid="cta">
-              Details
-            </Banner.Action>
-          </Banner.Actions>
-        }
+        action={<Banner.Action data-testid="cta">Details</Banner.Action>}
       />,
     );
 
     const cta = screen.getByTestId("cta");
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
     expect(cta.className).toContain("text-xs");
   });
 
@@ -168,11 +151,7 @@ describe("Banner", () => {
         size="sm"
         variant="default"
         title="Heads up"
-        action={
-          <Banner.Actions>
-            <Banner.Action data-testid="cta">Details</Banner.Action>
-          </Banner.Actions>
-        }
+        action={<Banner.Action data-testid="cta">Details</Banner.Action>}
       />,
     );
 
@@ -182,25 +161,26 @@ describe("Banner", () => {
     expect(cta.className).toContain("px-1.5");
   });
 
-  it("lets a Banner.Action size prop override the inherited banner size", () => {
+  it("matches an icon-only action to the text action height in an sm banner", () => {
     render(
       <Banner
         size="sm"
-        variant="default"
-        title="Heads up"
+        title="Update available"
         action={
-          <Banner.Actions>
-            <Banner.Action size="sm" data-testid="cta">
-              Details
-            </Banner.Action>
-          </Banner.Actions>
+          <Banner.Action
+            variant="ghost"
+            icon={<svg />}
+            aria-label="Dismiss"
+            data-testid="cta"
+          />
         }
       />,
     );
 
     const cta = screen.getByTestId("cta");
-    // Explicit size="sm" wins over the sm banner's inherited xs default.
-    expect(cta.className).toContain("h-7");
+    expect(cta.className).toContain("h-5");
+    expect(cta.className).toContain("px-1.5");
+    expect(cta.className).not.toContain("size-3.5");
   });
 
   it("renders title and description inline in an sm banner", () => {
