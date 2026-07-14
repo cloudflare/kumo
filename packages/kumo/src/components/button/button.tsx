@@ -334,6 +334,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       </button>
     );
 
+    if (title && (disabled || loading)) {
+      return (
+        <Tooltip content={title} render={<span className="inline-flex" />}>
+          {button}
+        </Tooltip>
+      );
+    }
+
     if (title) {
       return <Tooltip content={title} render={button} />;
     }
