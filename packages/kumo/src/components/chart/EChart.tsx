@@ -154,6 +154,13 @@ export interface ChartProps {
   isDarkMode?: boolean;
   /** Height of the chart container in pixels. Defaults to `350`. */
   height?: number;
+  /**
+   * Container aspect ratio as `width / height` (e.g. `1.7` or `"16 / 9"`). When
+   * set, the height derives from the rendered width via CSS `aspect-ratio` and
+   * the `height` prop is ignored — useful for maps so the canvas matches the
+   * map's shape and fills the frame with no letterboxing.
+   */
+  aspectRatio?: number | string;
   /** Subset of ECharts events to listen for. Handlers are bound/unbound reactively. */
   onEvents?: Partial<ChartEvents>;
 }
@@ -222,6 +229,7 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     className,
     isDarkMode,
     height = 350,
+    aspectRatio,
     onEvents,
   }: ChartProps,
   ref,
@@ -343,7 +351,11 @@ export const Chart = forwardRef<echarts.ECharts, ChartProps>(function Chart(
     <div
       ref={elRef}
       className={cn("w-full", className)}
-      style={{ height }}
+      style={
+        aspectRatio !== undefined
+          ? { aspectRatio: String(aspectRatio) }
+          : { height }
+      }
       tabIndex={options.aria?.enabled ? 0 : undefined}
       role={options.aria?.enabled ? "img" : undefined}
     />

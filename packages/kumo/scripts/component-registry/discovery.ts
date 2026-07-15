@@ -34,6 +34,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   // Display
   badge: "Display",
   breadcrumbs: "Display",
+  chart: "Data Visualization",
   code: "Display",
   collapsible: "Display",
   empty: "Display",
@@ -180,6 +181,59 @@ export function detectExportsFromIndex(dirPath: string): DetectedExports {
   } catch {
     return result;
   }
+}
+
+interface BarrelComponentExport extends DetectedExports {
+  componentName: string;
+  propsType: string;
+  sourceFile: string;
+}
+
+/**
+ * Detect components in a barrel directory that does not have a conventional
+ * `{directory}/{directory}.tsx` entry point.
+ */
+export function detectComponentExportsFromIndex(
+  dirPath: string,
+): BarrelComponentExport[] {
+  const indexPath = join(dirPath, "index.ts");
+  if (!existsSync(indexPath)) return [];
+
+  const content = readFileSync(indexPath, "utf-8");
+  const exports: BarrelComponentExport[] = [];
+  const exportPattern = /export\s*\{([^}]+)\}\s*from\s*["'](.+?)["']/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = exportPattern.exec(content)) !== null) {
+    const sourceName = match[2].replace(/^\.\//, "");
+    const sourceFile = [`${sourceName}.tsx`, `${sourceName}.ts`].find((file) =>
+      existsSync(join(dirPath, file)),
+    );
+    if (!sourceFile) continue;
+
+    const namedExports: string[] = [];
+    const typeExports: string[] = [];
+
+    for (const item of match[1].split(",").map((value) => value.trim())) {
+      const typeMatch = item.match(/^type\s+(\w+)(?:\s+as\s+(\w+))?/);
+      if (typeMatch) {
+        typeExports.push(typeMatch[2] || typeMatch[1]);
+        continue;
+      }
+
+      const nameMatch = item.match(/^(\w+)(?:\s+as\s+(\w+))?/);
+      if (nameMatch) namedExports.push(nameMatch[2] || nameMatch[1]);
+    }
+
+    for (const componentName of namedExports) {
+      const propsType = `${componentName}Props`;
+      if (typeExports.includes(propsType)) {
+        exports.push({ componentName, propsType, sourceFile });
+      }
+    }
+  }
+
+  return exports;
 }
 
 /**
@@ -433,6 +487,39 @@ export async function discoverFromDir(
       ...(styling && { styling }),
       // Note: subComponents are added later by processComponent in index.ts
     });
+  }
+
+  for (const entry of readdirSync(sourceDir)) {
+    const dirPath = join(sourceDir, entry);
+    if (!statSync(dirPath).isDirectory()) continue;
+    if (existsSync(join(dirPath, `${entry}.tsx`))) continue;
+
+    for (const detected of detectComponentExportsFromIndex(dirPath)) {
+      const mainFile = join(dirPath, detected.sourceFile);
+      const variantsData = extractVariantsFromFile(mainFile);
+      const styling = extractStylingFromFile(mainFile);
+
+      console.log(
+        `  ${entry}/${detected.sourceFile} → ${detected.componentName} (props: ${detected.propsType}, type: ${type})`,
+      );
+
+      configs.push({
+        name: detected.componentName,
+        propsType: detected.propsType,
+        sourceFile: `${entry}/${detected.sourceFile}`,
+        dirName: entry,
+        sourceDir,
+        type,
+        description: extractDescription(mainFile, detected.componentName),
+        category: CATEGORY_MAP[entry] || "Other",
+        variants: variantsData?.variants ?? {},
+        defaults: variantsData?.defaults ?? {},
+        ...(variantsData?.baseStyles && {
+          baseStyles: variantsData.baseStyles,
+        }),
+        ...(styling && { styling }),
+      });
+    }
   }
 
   return configs;

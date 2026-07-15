@@ -80,11 +80,43 @@ const STATIC_PAGES: Array<{
     category: "Guides",
   },
   {
+    name: "Charts",
+    description: "Charts built on ECharts.",
+    url: "/charts",
+    category: "Charts",
+  },
+  {
     name: "Chart Colors",
     description:
       "Semantic, categorical, and sequential color guidance for charts.",
     url: "/charts/colors",
-    category: "Guides",
+    category: "Charts",
+  },
+  {
+    name: "Timeseries Chart",
+    description: "A specialized chart for displaying time-based data.",
+    url: "/charts/timeseries",
+    category: "Charts",
+  },
+  {
+    name: "Maps",
+    description:
+      "Map chart components for visualizing geographic data with GeoJSON.",
+    url: "/charts/maps",
+    category: "Charts",
+  },
+  {
+    name: "Sankey Chart",
+    description:
+      "A Sankey diagram component for visualizing flow data between nodes using ECharts.",
+    url: "/charts/sankey",
+    category: "Charts",
+  },
+  {
+    name: "Custom Chart",
+    description: "Example charts using the Chart component.",
+    url: "/charts/custom",
+    category: "Charts",
   },
   {
     name: "CLI",

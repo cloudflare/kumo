@@ -10,6 +10,8 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
   BarChartDemo,
+  ReferenceMarkersChartDemo,
+  ThresholdsChartDemo,
   CustomAxisLabelFormatDemo,
   GradientLineChartDemo,
   IncompleteDataChartDemo,
@@ -34,6 +36,36 @@ import {
 
   <ComponentExample demo="BasicLineChartDemo">
     <BasicLineChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Reference Markers
+
+<p>
+  Use the <code>markers</code> prop to render vertical reference lines at specific
+  timestamps, such as deployments, releases, or configuration changes. Markers
+  can include short labels, descriptions for tooltips, colors, and line styles.
+</p>
+
+  <ComponentExample demo="ReferenceMarkersChartDemo">
+    <ReferenceMarkersChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Thresholds
+
+<p>
+  Use the <code>thresholds</code> prop to render horizontal reference lines on the
+  value axis, such as memory limits or quota boundaries. Thresholds include a
+  value and color, with an optional label.
+</p>
+
+  <ComponentExample demo="ThresholdsChartDemo">
+    <ThresholdsChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

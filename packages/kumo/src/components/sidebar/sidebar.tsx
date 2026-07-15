@@ -477,27 +477,18 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const mobileNodeRef = useRef<HTMLElement | null>(null);
     const shouldRestoreFocusRef = useRef(false);
 
-    // Escape key and focus-leave close the mobile sidebar
+    // Escape key closes the mobile sidebar
     useEffect(() => {
       if (!isMobile || !openMobile) return;
-      const node = mobileNodeRef.current;
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           shouldRestoreFocusRef.current = true;
           setOpenMobile(false);
         }
       };
-      const handleFocusOut = (e: FocusEvent) => {
-        if (node && !node.contains(e.relatedTarget as Node)) {
-          shouldRestoreFocusRef.current = false;
-          setOpenMobile(false);
-        }
-      };
       document.addEventListener("keydown", handleKeyDown);
-      node?.addEventListener("focusout", handleFocusOut);
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
-        node?.removeEventListener("focusout", handleFocusOut);
       };
     }, [isMobile, openMobile, setOpenMobile]);
 
@@ -1221,7 +1212,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     if (tooltip) {
       button = (
         <Tooltip
-          content={showTooltip ? tooltip : null}
+          content={tooltip}
+          disabled={!showTooltip}
           side="right"
           render={button}
         />
@@ -1358,6 +1350,8 @@ export interface SidebarMenuSubButtonProps
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
   href?: string;
+  /** Link target — only meaningful when `href` is provided. */
+  target?: React.HTMLAttributeAnchorTarget;
 }
 
 /**
@@ -1377,7 +1371,7 @@ export interface SidebarMenuSubButtonProps
 const SidebarMenuSubButton = forwardRef<
   HTMLButtonElement,
   SidebarMenuSubButtonProps
->(({ className, active = false, href, children, ...props }, ref) => {
+>(({ className, active = false, href, target, children, ...props }, ref) => {
   const LinkComponent = useLinkComponent();
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
@@ -1412,6 +1406,7 @@ const SidebarMenuSubButton = forwardRef<
         className={cn(buttonClasses, "no-underline!")}
         href={href}
         to={href}
+        target={target}
         data-active={active || undefined}
         data-sidebar="menu-sub-button"
         data-kumo-component="Sidebar"

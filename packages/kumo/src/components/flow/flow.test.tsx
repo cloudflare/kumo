@@ -3,6 +3,8 @@ import { act, render, screen } from "@testing-library/react";
 import { useState, useEffect } from "react";
 import { createRoundedPath } from "./connectors";
 import { Flow } from "./index";
+import { computeEdges } from "./flow-layout";
+import type { FlowState, TreeNode } from "./flow-layout";
 
 function shouldHaveIndex(element: Element, index: number) {
   expect(element.getAttribute("data-node-index")).toBe(String(index));
@@ -27,6 +29,18 @@ describe("Flow", () => {
       );
 
       expect(path).toContain("M 17 0");
+      expect(path).not.toContain(",");
+    });
+
+    it("rounds both corners for single vertical connector paths", () => {
+      const path = createRoundedPath(
+        { x1: 0, y1: 0, x2: 56, y2: 71 },
+        { orientation: "vertical", single: true },
+      );
+
+      expect(path).toBe(
+        "M 0 0 L 0 31 Q 0 39 8 39 L 48 39 Q 56 39 56 47 L 56 63",
+      );
       expect(path).not.toContain(",");
     });
   });
@@ -388,5 +402,148 @@ describe("Flow", () => {
 
     shouldHaveIndex(screen.getByText("after 100ms"), 0);
     shouldHaveIndex(screen.getByText("immediate"), 1);
+  });
+});
+
+// ============================================================================
+// Helpers for computeEdges unit tests
+// ============================================================================
+
+function makeState(tree: TreeNode): FlowState {
+  return { nodes: {}, tree, align: "start", orientation: "horizontal" };
+}
+
+function node(id: string): TreeNode {
+  return { kind: "node", id };
+}
+
+function parallel(children: TreeNode[]): TreeNode {
+  return { kind: "parallel", children };
+}
+
+function list(children: TreeNode[]): TreeNode {
+  return { kind: "list", children };
+}
+
+/** Returns edges as a Set of "from—to" strings for easy assertion. */
+function edgeSet(state: FlowState): Set<string> {
+  return new Set(computeEdges(state).map(([from, to]) => `${from}—${to}`));
+}
+
+describe("computeEdges", () => {
+  describe("Rule 1: adjacent nodes are connected", () => {
+    it("connects two sequential nodes", () => {
+      const edges = edgeSet(makeState(list([node("A"), node("B")])));
+      expect(edges).toEqual(new Set(["A—B"]));
+    });
+
+    it("connects three sequential nodes", () => {
+      const edges = edgeSet(makeState(list([node("A"), node("B"), node("C")])));
+      expect(edges).toEqual(new Set(["A—B", "B—C"]));
+    });
+
+    it("returns no edges for a single node", () => {
+      expect(edgeSet(makeState(list([node("A")])))).toEqual(new Set());
+    });
+
+    it("returns no edges for an empty list", () => {
+      expect(edgeSet(makeState(list([])))).toEqual(new Set());
+    });
+  });
+
+  describe("Rule 2: node adjacent to parallel connects to all branches", () => {
+    it("connects preceding node to all parallel children", () => {
+      const edges = edgeSet(
+        makeState(
+          list([node("A"), parallel([node("B1"), node("B2")]), node("C")]),
+        ),
+      );
+      expect(edges.has("A—B1")).toBe(true);
+      expect(edges.has("A—B2")).toBe(true);
+    });
+
+    it("connects all parallel children to the following node", () => {
+      const edges = edgeSet(
+        makeState(
+          list([node("A"), parallel([node("B1"), node("B2")]), node("C")]),
+        ),
+      );
+      expect(edges.has("B1—C")).toBe(true);
+      expect(edges.has("B2—C")).toBe(true);
+    });
+
+    it("produces exactly the right edge set for A -> [B1,B2] -> C", () => {
+      const edges = edgeSet(
+        makeState(
+          list([node("A"), parallel([node("B1"), node("B2")]), node("C")]),
+        ),
+      );
+      expect(edges).toEqual(new Set(["A—B1", "A—B2", "B1—C", "B2—C"]));
+    });
+  });
+
+  describe("Rule 3: adjacent parallel groups are not connected", () => {
+    it("skips edges between two adjacent parallel groups", () => {
+      const edges = edgeSet(
+        makeState(
+          list([
+            node("A"),
+            parallel([node("B1"), node("B2")]),
+            parallel([node("C1"), node("C2")]),
+            node("D"),
+          ]),
+        ),
+      );
+      expect(edges.has("B1—C1")).toBe(false);
+      expect(edges.has("B1—C2")).toBe(false);
+      expect(edges.has("B2—C1")).toBe(false);
+      expect(edges.has("B2—C2")).toBe(false);
+    });
+
+    it("produces exactly the right edge set for A -> [B1,B2] | [C1,C2] -> D", () => {
+      const edges = edgeSet(
+        makeState(
+          list([
+            node("A"),
+            parallel([node("B1"), node("B2")]),
+            parallel([node("C1"), node("C2")]),
+            node("D"),
+          ]),
+        ),
+      );
+      expect(edges).toEqual(new Set(["A—B1", "A—B2", "C1—D", "C2—D"]));
+    });
+  });
+
+  describe("Rule 4: list connects externally via first and last child only", () => {
+    it("connects preceding node to first list child only", () => {
+      const edges = edgeSet(
+        makeState(list([node("A"), list([node("B1"), node("B2")]), node("C")])),
+      );
+      expect(edges.has("A—B1")).toBe(true);
+      expect(edges.has("A—B2")).toBe(false);
+    });
+
+    it("connects last list child to following node only", () => {
+      const edges = edgeSet(
+        makeState(list([node("A"), list([node("B1"), node("B2")]), node("C")])),
+      );
+      expect(edges.has("B2—C")).toBe(true);
+      expect(edges.has("B1—C")).toBe(false);
+    });
+
+    it("produces exactly the right edge set for spec example 4", () => {
+      // A -> Parallel([List[B1,B2], C1]) -> D
+      const edges = edgeSet(
+        makeState(
+          list([
+            node("A"),
+            parallel([list([node("B1"), node("B2")]), node("C1")]),
+            node("D"),
+          ]),
+        ),
+      );
+      expect(edges).toEqual(new Set(["A—B1", "A—C1", "B1—B2", "B2—D", "C1—D"]));
+    });
   });
 });

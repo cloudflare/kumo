@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "2.6.0",
+  "version": "2.8.0",
   "private": false,
   "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
@@ -473,6 +473,7 @@
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "cnfast": "^0.0.8",
+    "d3-geo": "^3.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",
     "shiki": "^4.0.0"
@@ -482,6 +483,7 @@
     "@tailwindcss/vite": "catalog:",
     "@testing-library/react": "16.3.1",
     "@testing-library/user-event": "14.6.1",
+    "@types/d3-geo": "^3.1.0",
     "@types/glob": "9.0.0",
     "@types/node": "catalog:",
     "@types/react": "catalog:",

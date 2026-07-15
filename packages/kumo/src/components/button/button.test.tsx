@@ -113,6 +113,38 @@ describe("Button", () => {
     expect(button.getAttribute("title")).toBeNull();
   });
 
+  it("uses an enabled tooltip trigger around a disabled button", () => {
+    render(
+      <Button title="Saving is unavailable" disabled>
+        Save
+      </Button>,
+    );
+
+    const button = screen.getByRole("button", { name: "Save" });
+    const trigger = button.parentElement;
+
+    expect(button.hasAttribute("disabled")).toBe(true);
+    expect(trigger?.tagName).toBe("SPAN");
+    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(trigger?.hasAttribute("disabled")).toBe(false);
+  });
+
+  it("uses an enabled tooltip trigger around a loading button", () => {
+    render(
+      <Button title="Saving changes" loading>
+        Save
+      </Button>,
+    );
+
+    const button = screen.getByRole("button");
+    const trigger = button.parentElement;
+
+    expect(button.hasAttribute("disabled")).toBe(true);
+    expect(trigger?.tagName).toBe("SPAN");
+    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(trigger?.hasAttribute("disabled")).toBe(false);
+  });
+
   it("keeps emphasized variant rings color-matched when pressed or focused", () => {
     for (const variant of ["primary", "destructive"] as const) {
       const className = buttonVariants({ variant });

@@ -105,7 +105,7 @@ export function ButtonUsageDemo() {
   return <Button variant="secondary">Click me</Button>;
 }
 
-/** Demonstrates the title prop which wraps the button in a Tooltip. */
+/** Demonstrates title tooltips on enabled, icon-only, and disabled buttons. */
 export function ButtonTitleDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -119,6 +119,13 @@ export function ButtonTitleDemo() {
         aria-label="Add item"
         title="Add item"
       />
+      <Button
+        variant="secondary"
+        title="You need edit access to create a Worker"
+        disabled
+      >
+        Create Worker
+      </Button>
     </div>
   );
 }

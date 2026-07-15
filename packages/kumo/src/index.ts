@@ -250,15 +250,18 @@ export {
   TimeseriesChart,
   ChartLegend,
   BubbleMap,
+  ChoroplethMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
   type SankeyLinkData,
   type SankeyTooltipParams,
   type MapGeoJson,
+  type MapProjection,
   type MapAccessor,
   type MapStyle,
   type BubbleMapProps,
+  type ChoroplethMapProps,
 } from "./components/chart";
 export {
   Autocomplete,

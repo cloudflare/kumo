@@ -17,6 +17,7 @@ import {
   BrushComponent,
   GridComponent,
   LegendComponent,
+  MarkLineComponent,
   ToolboxComponent,
   TooltipComponent,
 } from "echarts/components";
@@ -31,6 +32,7 @@ echarts.use([
   BrushComponent,
   GridComponent,
   LegendComponent,
+  MarkLineComponent,
   ToolboxComponent,
   TooltipComponent,
   AriaComponent,
@@ -104,6 +106,96 @@ export function BasicLineChartDemo() {
       data={data}
       xAxisName="Time (UTC)"
       yAxisName="Count"
+    />
+  );
+}
+
+export function ReferenceMarkersChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  const markers = useMemo(
+    () => [
+      {
+        timestamp: data[0].data[15][0],
+        label: "change a1b2c3d4",
+        description: "Configuration change applied",
+      },
+      {
+        timestamp: data[0].data[16][0],
+        label: "change b2c3d4e5",
+        description: "Routing rule updated",
+      },
+      {
+        timestamp: data[0].data[17][0],
+        label: "change c3d4e5f6",
+        description: "Limit adjusted",
+      },
+      {
+        timestamp: data[0].data[34][0],
+        label: "change e5f6g7h8",
+        description: "New version released",
+        lineStyle: "dotted" as const,
+      },
+    ],
+    [data],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      markers={markers}
+      xAxisName="Time (UTC)"
+      yAxisName="Count"
+    />
+  );
+}
+
+export function ThresholdsChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Memory used",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      thresholds={[
+        {
+          value: 55,
+          label: "Memory limit",
+          color: ChartPalette.semantic("Attention", isDarkMode),
+        },
+      ]}
+      xAxisName="Time (UTC)"
+      yAxisName="Memory (MB)"
     />
   );
 }

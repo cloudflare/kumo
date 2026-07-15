@@ -54,6 +54,7 @@ import { discoverComponents, discoverBlocks } from "./discovery.js";
 import { shouldSkipProp } from "./props-filter.js";
 import {
   detectSubComponents,
+  extractPropsFromInterface,
   extractSubComponentProps,
 } from "./sub-components.js";
 import { generateAIContext } from "./markdown-generator.js";
@@ -433,8 +434,32 @@ function generatePropsFromType(
       `Warning: Could not generate schema for ${getPropsType(config)}:`,
       error,
     );
-    // Fallback: generate props from variants only
-    return generatePropsFromVariantsOnly(config);
+    const fallbackProps = generatePropsFromVariantsOnly(config);
+    let interfaceProps: Record<string, PropSchema> = {};
+
+    try {
+      interfaceProps = extractPropsFromInterface(
+        readFileSync(sourcePath, "utf-8"),
+        propsType,
+        CLI_FLAGS,
+      );
+    } catch (readError) {
+      console.warn(
+        `Warning: Could not read ${sourcePath} for interface fallback:`,
+        readError,
+      );
+    }
+
+    if (Object.keys(interfaceProps).length > 0) {
+      delete fallbackProps.className;
+      delete fallbackProps.children;
+      console.log(
+        `  → Fallback: extracted ${Object.keys(interfaceProps).length} props from interface`,
+      );
+      return { ...fallbackProps, ...interfaceProps };
+    }
+
+    return fallbackProps;
   }
 }
 

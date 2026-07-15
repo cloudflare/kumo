@@ -80,6 +80,21 @@ export function InputAreaRowsDemo() {
   );
 }
 
+export function InputAreaAutoResizeDemo() {
+  return (
+    <InputArea
+      label="Configuration value"
+      defaultValue={
+        "Review the configuration changes.\n\nAdd follow-up notes here.\n\n"
+      }
+      autoResize
+      minRows={2}
+      maxRows={8}
+      description="Resizes vertically with content size, up to 8 rows"
+    />
+  );
+}
+
 export function InputAreaOptionalFieldDemo() {
   return (
     <InputArea
