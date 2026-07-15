@@ -28,7 +28,7 @@ describe("Badge", () => {
     it("applies variant classes for filled badges", () => {
       render(<Badge variant="error">Error</Badge>);
       const el = screen.getByText("Error");
-      expect(el.className).toContain("bg-kumo-danger-tint/60");
+      expect(el.className).toContain("bg-kumo-danger-tint");
     });
 
     it("does not render a dot indicator", () => {
@@ -62,7 +62,7 @@ describe("Badge", () => {
       expect(badge.className).toContain("bg-transparent");
       expect(badge.className).toContain("text-kumo-default");
       // Should NOT contain the filled error classes
-      expect(badge.className).not.toContain("bg-kumo-danger-tint/60");
+      expect(badge.className).not.toContain("bg-kumo-danger-tint");
     });
 
     it("renders correct dot color per variant", () => {
@@ -129,12 +129,12 @@ describe("badgeVariants", () => {
 
   it("includes variant classes for filled appearance", () => {
     const result = badgeVariants({ variant: "success" });
-    expect(result).toContain("bg-kumo-success-tint/70");
+    expect(result).toContain("bg-kumo-success-tint");
   });
 
   it("omits variant classes for dot appearance", () => {
     const result = badgeVariants({ variant: "success", appearance: "dot" });
-    expect(result).not.toContain("bg-kumo-success-tint/70");
+    expect(result).not.toContain("bg-kumo-success-tint");
     expect(result).toContain("bg-transparent");
   });
 
