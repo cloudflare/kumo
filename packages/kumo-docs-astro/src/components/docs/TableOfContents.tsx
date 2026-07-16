@@ -198,6 +198,7 @@ export function TableOfContents({
                 href={`#${group.h2.slug}`}
                 active={activeId === group.h2.slug}
                 onClick={() => handleClick(group.h2.slug)}
+                className="overflow-visible whitespace-pre-wrap text-pretty"
               >
                 {group.h2.text}
               </TOC.Item>
@@ -217,6 +218,7 @@ export function TableOfContents({
                   href={`#${h3.slug}`}
                   active={activeId === h3.slug}
                   onClick={() => handleClick(h3.slug)}
+                  className="overflow-visible whitespace-pre-wrap text-pretty"
                 >
                   {h3.text}
                 </TOC.Item>
