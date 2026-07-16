@@ -31,7 +31,7 @@ export function DesignTip({ children, id }: DesignTipRootProps) {
 
 function DesignTipTitle({ children }: DesignTipProps) {
   return (
-    <Text as="h2" variant="heading2">
+    <Text as="h3" DANGEROUS_className="text-xl font-semibold leading-tight">
       {children}
     </Text>
   );
@@ -39,12 +39,8 @@ function DesignTipTitle({ children }: DesignTipProps) {
 
 function DesignTipDescription({ children }: DesignTipProps) {
   return (
-    <div className="mt-4">
-      <Text
-        as="span"
-        size="lg"
-        DANGEROUS_className="leading-relaxed text-pretty"
-      >
+    <div className="mt-3 md:mt-4">
+      <Text as="span" DANGEROUS_className="leading-relaxed text-pretty">
         {children}
       </Text>
     </div>
@@ -56,7 +52,7 @@ function DesignTipExamples({
   orientation = "horizontal",
 }: DesignTipExamplesProps) {
   return (
-    <div className="-mx-2 mt-6 rounded-xl bg-kumo-tint p-2 ring ring-kumo-line">
+    <div className="md:-mx-2 mt-6 rounded-xl bg-kumo-tint p-2 ring ring-kumo-line">
       <div
         className={cn(
           "divide-kumo-line overflow-hidden rounded-lg bg-kumo-base shadow-md ring ring-kumo-line",

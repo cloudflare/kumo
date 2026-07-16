@@ -36,10 +36,10 @@ export function DesignTips({ renderedTips }: DesignTipsProps) {
         return (
           <DesignTip id={tip.id} key={tip.id}>
             <DesignTip.Title>
-              <div className="flex gap-1.5">
+              <div className="flex gap-1.5 items-baseline">
                 <Text
                   variant="secondary"
-                  DANGEROUS_className="text-2xl font-semibold"
+                  DANGEROUS_className="text-xl font-semibold hidden md:block"
                   as="span"
                 >
                   {tipIndex + 1}.

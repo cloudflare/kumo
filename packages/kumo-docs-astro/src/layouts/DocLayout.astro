@@ -58,13 +58,13 @@ const githubSourceUrl = sourceFile
     <!-- Page Header -->
     <div id="page-header" class="border-b border-kumo-hairline lg:pr-12">
       <div class="mx-auto lg:border-r lg:border-kumo-hairline">
-        <div class="mx-auto max-w-7xl px-3 py-4 md:px-6 lg:p-12">
+        <div class="mx-auto max-w-6xl px-4 py-6 md:px-6 lg:p-12">
           <!-- Mobile: Copy page button above title -->
           <div class="mb-3 lg:hidden">
             <CopyPageButton align="center" client:idle />
           </div>
           <div class="mb-3 flex items-center gap-3">
-            <h1 class="text-4xl font-bold tracking-tight text-kumo-default">{title}</h1>
+            <h1 class="text-4xl font-semibold">{title}</h1>
             {
               githubSourceUrl && (
                 <a
@@ -98,7 +98,7 @@ const githubSourceUrl = sourceFile
               <CopyPageButton client:idle />
             </div>
           </div>
-          <p class="text-lg text-kumo-strong">
+          <p class="text-lg text-kumo-strong leading-normal">
             {description}
           </p>
         </div>
@@ -110,13 +110,13 @@ const githubSourceUrl = sourceFile
       <div class="mx-auto w-full grow lg:border-r lg:border-kumo-hairline">
         <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
         <div class="xl:hidden sticky top-24 lg:top-12 z-1 border-b border-kumo-hairline bg-kumo-canvas">
-          <div class="mx-auto max-w-7xl px-3 py-3 md:px-6 lg:px-12 lg:pr-10">
+          <div class="mx-auto max-w-6xl">
             <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
           </div>
         </div>
 
-        <div class="isolate mx-auto max-w-7xl px-3 py-4 md:px-6 lg:p-12 lg:pr-10 lg:pb-28">
-          <div class="grid grid-cols-1 gap-16 xl:grid-cols-[3fr_1fr]">
+        <div class="isolate mx-auto max-w-6xl px-4 py-6 md:px-6 lg:p-12 lg:pr-10 lg:pb-28">
+          <div class="grid grid-cols-1 gap-16 xl:grid-cols-[3fr_1fr] xl:gap-20">
             <div class="kumo-prose prose max-w-none min-w-0">
               <slot />
             </div>
