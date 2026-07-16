@@ -201,4 +201,63 @@ describe("LinkButton", () => {
     );
     expect(ref.current).toBe(screen.getByRole("link"));
   });
+
+  describe("disabled", () => {
+    it("renders a disabled <button> instead of an <a>", () => {
+      render(
+        <LinkButton href="/home" disabled>
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(button.tagName).toBe("BUTTON");
+      expect(button.hasAttribute("disabled")).toBe(true);
+      expect(button.getAttribute("type")).toBe("button");
+      expect(screen.queryByRole("link")).toBeNull();
+    });
+
+    it("strips anchor-only attributes from the rendered button", () => {
+      render(
+        <LinkButton
+          href="/home"
+          target="_blank"
+          rel="noopener"
+          download=""
+          disabled
+        >
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(button.hasAttribute("href")).toBe(false);
+      expect(button.hasAttribute("target")).toBe(false);
+      expect(button.hasAttribute("rel")).toBe(false);
+      expect(button.hasAttribute("download")).toBe(false);
+    });
+
+    it("preserves the LinkButton data attribute", () => {
+      render(
+        <LinkButton href="/home" disabled>
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(button.getAttribute("data-kumo-component")).toBe("LinkButton");
+    });
+
+    it("wraps a title in an enabled tooltip trigger around the disabled button", () => {
+      render(
+        <LinkButton href="/home" disabled title="You need edit access">
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      const trigger = button.parentElement;
+
+      expect(button.hasAttribute("disabled")).toBe(true);
+      expect(button.getAttribute("title")).toBeNull();
+      expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+      expect(trigger?.hasAttribute("disabled")).toBe(false);
+    });
+  });
 });

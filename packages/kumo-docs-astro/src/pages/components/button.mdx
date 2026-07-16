@@ -24,6 +24,7 @@ import {
   ButtonDisabledDemo,
   ButtonTitleDemo,
   ButtonLinkAsButtonDemo,
+  ButtonDisabledLinkDemo,
 } from "~/components/demos/ButtonDemo";
 
 {/* Demo */}
@@ -231,6 +232,20 @@ export default function Example() {
   vrTitle="Link as Button"
 >
   <ButtonLinkAsButtonDemo client:visible />
+</ComponentExample>
+
+### Disabled Link
+
+<p>
+  Set `disabled` on a `LinkButton` to render a non-interactive button styled like
+  the link. Pass `title` to explain why it's unavailable via a tooltip.
+</p>
+<ComponentExample
+  demo="ButtonDisabledLinkDemo"
+  vrSection="disabled-link"
+  vrTitle="Disabled Link"
+>
+  <ButtonDisabledLinkDemo client:visible />
 </ComponentExample>
 </ComponentSection>
 
