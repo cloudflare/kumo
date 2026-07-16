@@ -20,6 +20,7 @@ import {
   BannerWithActionsDemo,
   BannerActionVariantsDemo,
   BannerCompactDemo,
+  BannerCompactWithoutActionDemo,
   BannerCustomContentDemo,
 } from "~/components/demos/BannerDemo";
 
@@ -124,11 +125,18 @@ export default function Example() {
 
 ### Compact size
 
-Use `size="sm"` for dialogs and other tight spaces. Its `Banner.Action` children
-inherit the banner size and render at the `xs` button size.
+Use `size="sm"` when banners need to be integrated within dialogs and other tight spaces. If these banners need to have an action button, they should be render inline with the description.
+
+#### With action
 
 <ComponentExample demo="BannerCompactDemo">
   <BannerCompactDemo client:visible />
+</ComponentExample>
+
+#### Without action
+
+<ComponentExample demo="BannerCompactWithoutActionDemo">
+  <BannerCompactWithoutActionDemo client:visible />
 </ComponentExample>
 
 ### Custom content

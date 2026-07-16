@@ -79,7 +79,7 @@ const BANNER_SIZE_PARTS: Record<
   sm: {
     row: "gap-2",
     icon: "h-[1.25em]",
-    description: "text-xs",
+    description: "text-sm",
     action: "xs",
   },
 };
@@ -162,10 +162,11 @@ export interface BannerProps
   /** Secondary description text displayed below the title. Use for i18n string injection. */
   description?: ReactNode;
   /**
-   * Action slot rendered at the trailing end of the banner (e.g. a CTA button or link).
+   * Action slot for a CTA button or link. Compact banners render the action
+   * inline with the description; base banners render it at the trailing end.
    * Use `Banner.Action` for accent-aware CTAs that self-style to the banner
-   * variant; other nodes are rendered as-is. Multiple actions can be passed in a
-   * Fragment. Only used in structured mode (with `title` or `description`).
+   * variant; other nodes are rendered as-is. Multiple actions can be passed in
+   * a Fragment. Only used in structured mode (with `title` or `description`).
    */
   action?: ReactNode;
   /** @deprecated Use `title` and `description` instead. Will be removed in a future major version. */
@@ -182,9 +183,10 @@ export interface BannerProps
    */
   variant?: KumoBannerVariant;
   /**
-   * Size of the banner. A `"sm"` banner uses tighter spacing and smaller text,
-   * and sets its `Banner.Action` children to the `"xs"` size — suited to
-   * dialogs and other tight spaces.
+   * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`,
+   * renders its action inline with the description, and sets its
+   * `Banner.Action` children to the `"xs"` size — suited to dialogs and other
+   * tight spaces.
    * @default "base"
    */
   size?: KumoBannerSize;
@@ -274,6 +276,17 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
                     {description}
                   </span>
                 )}
+                {action != null && (
+                  <div
+                    className={cn(
+                      "flex min-w-0 flex-wrap items-center gap-2",
+                      sizeParts.description,
+                      "leading-snug",
+                    )}
+                  >
+                    {action}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col gap-0.5">
@@ -289,7 +302,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
                 )}
               </div>
             )}
-            {action != null && (
+            {!isCompact && action != null && (
               <div className="flex shrink-0 items-center gap-2">{action}</div>
             )}
           </div>

@@ -197,6 +197,44 @@ describe("Banner", () => {
     expect(title.parentElement?.className).toContain("items-baseline");
   });
 
+  it("renders an action inline at text-sm in an sm banner", () => {
+    render(
+      <Banner
+        size="sm"
+        description="A DNS record already exists."
+        action={
+          <a href="#manage" data-testid="action">
+            Manage DNS
+          </a>
+        }
+      />,
+    );
+
+    const description = screen.getByText("A DNS record already exists.");
+    const action = screen.getByTestId("action");
+    const actionGroup = action.parentElement;
+
+    expect(actionGroup?.parentElement).toBe(description.parentElement);
+    expect(actionGroup?.className).toContain("text-sm");
+  });
+
+  it("keeps the action trailing in a base banner", () => {
+    render(
+      <Banner
+        description="A DNS record already exists."
+        action={
+          <a href="#manage" data-testid="action">
+            Manage DNS
+          </a>
+        }
+      />,
+    );
+
+    const actionGroup = screen.getByTestId("action").parentElement;
+
+    expect(actionGroup?.className).toContain("shrink-0");
+  });
+
   it("stacks title and description in a base banner", () => {
     render(<Banner title="Heads up" description="More details here" />);
 
