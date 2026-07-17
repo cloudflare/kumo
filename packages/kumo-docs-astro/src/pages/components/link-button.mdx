@@ -1,0 +1,122 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "LinkButton"
+description: "An anchor styled as a Button. Use for navigation that should look and feel like a button."
+sourceFile: "components/button"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  LinkButtonBasicDemo,
+  LinkButtonVariantsDemo,
+  LinkButtonExternalDemo,
+  LinkButtonWithIconDemo,
+} from "~/components/demos/LinkButtonDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="LinkButtonBasicDemo" vrSection="basic" vrTitle="Basic">
+    <LinkButtonBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+  <CodeBlock code={`import { LinkButton } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+  <CodeBlock
+    code={`import { LinkButton } from "@cloudflare/kumo/components/button";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+`LinkButton` renders an `<a>` element with `Button`-style classes. Use it
+whenever the interaction is navigation but the affordance should match a
+button — for example a "Read the docs" call to action sitting next to a
+primary `Button`.
+
+```tsx
+import { LinkButton } from "@cloudflare/kumo";
+
+export default function Example() {
+  return <LinkButton href="/components/button">Read Button docs</LinkButton>;
+}
+```
+
+`LinkButton` integrates with `LinkProvider` so the underlying anchor renders
+through your framework's link component (e.g. Next.js `Link`). When no
+provider is set it falls back to a plain `<a>`.
+
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+
+## Examples
+
+### Variants
+
+`LinkButton` reuses Button's variant table. The default variant is `"ghost"`
+because in-line text-style links read most naturally that way; switch to
+`"primary"` or `"secondary"` for prominent navigation.
+
+<ComponentExample
+  demo="LinkButtonVariantsDemo"
+  vrSection="variants"
+  vrTitle="Variants"
+>
+  <LinkButtonVariantsDemo client:visible />
+</ComponentExample>
+
+### With Icon
+
+<ComponentExample
+  demo="LinkButtonWithIconDemo"
+  vrSection="with-icon"
+  vrTitle="With Icon"
+>
+  <LinkButtonWithIconDemo client:visible />
+</ComponentExample>
+
+### External Links
+
+Pass `external` to open the link in a new tab. The component sets
+`target="_blank"` and `rel="noopener noreferrer"` for you.
+
+<ComponentExample
+  demo="LinkButtonExternalDemo"
+  vrSection="external"
+  vrTitle="External"
+>
+  <LinkButtonExternalDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="LinkButton" />
+</ComponentSection>

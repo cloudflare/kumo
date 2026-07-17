@@ -1073,3 +1073,159 @@ describe("SUB_COMPONENT_OVERRIDES", () => {
     }
   });
 });
+
+// =============================================================================
+// Tests for multi-component discovery
+// =============================================================================
+
+import { rmSync } from "node:fs";
+import { detectExportsFromIndex } from "./discovery.js";
+import { extractVariantsFromFile } from "./variant-parser.js";
+
+function writeTempDir(files: Record<string, string>): {
+  dirPath: string;
+  cleanup: () => void;
+} {
+  const dirPath = mkdtempSync(join(tmpdir(), "kumo-discovery-"));
+  for (const [name, content] of Object.entries(files)) {
+    writeFileSync(join(dirPath, name), content);
+  }
+  return { dirPath, cleanup: () => rmSync(dirPath, { recursive: true }) };
+}
+
+describe("detectExportsFromIndex", () => {
+  it("returns null registryComponents for legacy single-component dirs", () => {
+    const { dirPath, cleanup } = writeTempDir({
+      "index.ts": `export { Button, type ButtonProps } from "./button";`,
+    });
+    try {
+      const result = detectExportsFromIndex(dirPath);
+      expect(result.componentName).toBe("Button");
+      expect(result.registryComponents).toBeNull();
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("parses KUMO_REGISTRY_COMPONENTS array of PascalCase names", () => {
+    const { dirPath, cleanup } = writeTempDir({
+      "index.ts": `
+        export { Button, LinkButton, RefreshButton } from "./button";
+        export const KUMO_REGISTRY_COMPONENTS = [
+          "Button",
+          "LinkButton",
+          "RefreshButton",
+        ] as const;
+      `,
+    });
+    try {
+      const result = detectExportsFromIndex(dirPath);
+      expect(result.registryComponents).toEqual([
+        "Button",
+        "LinkButton",
+        "RefreshButton",
+      ]);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("ignores non-PascalCase entries in KUMO_REGISTRY_COMPONENTS", () => {
+    const { dirPath, cleanup } = writeTempDir({
+      "index.ts": `
+        export const KUMO_REGISTRY_COMPONENTS = [
+          "Valid",
+          "lowercase",
+          "snake_case",
+          "Another",
+        ];
+      `,
+    });
+    try {
+      const result = detectExportsFromIndex(dirPath);
+      expect(result.registryComponents).toEqual(["Valid", "Another"]);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("treats an empty KUMO_REGISTRY_COMPONENTS as absent", () => {
+    const { dirPath, cleanup } = writeTempDir({
+      "index.ts": `
+        export const KUMO_REGISTRY_COMPONENTS = [];
+        export { Foo } from "./foo";
+      `,
+    });
+    try {
+      const result = detectExportsFromIndex(dirPath);
+      expect(result.registryComponents).toBeNull();
+      expect(result.componentName).toBe("Foo");
+    } finally {
+      cleanup();
+    }
+  });
+});
+
+describe("extractVariantsFromFile (multi-component)", () => {
+  it("extracts variants by exact constant name when provided", () => {
+    const { filePath, cleanup } = writeTempFile(`
+export const KUMO_OTHER_VARIANTS = {
+  variant: { wrong: { classes: "text-red-500", description: "Wrong table" } },
+} as const;
+export const KUMO_OTHER_DEFAULT_VARIANTS = { variant: "wrong" } as const;
+
+export const KUMO_TARGET_VARIANTS = {
+  variant: {
+    primary: { classes: "bg-kumo-brand", description: "Primary" },
+    secondary: { classes: "bg-kumo-base", description: "Secondary" },
+  },
+} as const;
+export const KUMO_TARGET_DEFAULT_VARIANTS = { variant: "primary" } as const;
+`);
+    try {
+      const result = extractVariantsFromFile(filePath, "KUMO_TARGET_VARIANTS");
+      expect(result).not.toBeNull();
+      expect(Object.keys(result!.variants.variant)).toEqual([
+        "primary",
+        "secondary",
+      ]);
+      expect(result!.defaults.variant).toBe("primary");
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("resolves alias chain to a concrete variant table", () => {
+    const { filePath, cleanup } = writeTempFile(`
+export const KUMO_BASE_VARIANTS = {
+  variant: {
+    ghost: { classes: "bg-transparent", description: "Ghost" },
+  },
+} as const;
+export const KUMO_BASE_DEFAULT_VARIANTS = { variant: "ghost" } as const;
+
+export const KUMO_ALIAS_VARIANTS = KUMO_BASE_VARIANTS;
+export const KUMO_ALIAS_DEFAULT_VARIANTS = KUMO_BASE_DEFAULT_VARIANTS;
+`);
+    try {
+      const result = extractVariantsFromFile(filePath, "KUMO_ALIAS_VARIANTS");
+      expect(result).not.toBeNull();
+      expect(Object.keys(result!.variants.variant)).toEqual(["ghost"]);
+      expect(result!.defaults.variant).toBe("ghost");
+    } finally {
+      cleanup();
+    }
+  });
+
+  it("returns null when neither variant nor defaults are present", () => {
+    const { filePath, cleanup } = writeTempFile(
+      `export const SOMETHING_ELSE = 1;`,
+    );
+    try {
+      const result = extractVariantsFromFile(filePath, "KUMO_MISSING_VARIANTS");
+      expect(result).toBeNull();
+    } finally {
+      cleanup();
+    }
+  });
+});
