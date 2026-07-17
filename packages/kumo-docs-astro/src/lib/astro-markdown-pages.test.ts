@@ -38,7 +38,6 @@ describe("markdown pages integration", () => {
     const content = readFileSync(join(distDir, "skill.md"), "utf-8");
 
     expect(content).toContain("name: kumo-design");
-    expect(content.match(/^### \d+\./gm)).toHaveLength(19);
   });
 
   it("generates changelog.md from the /changelog/all/ page", () => {

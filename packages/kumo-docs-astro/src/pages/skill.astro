@@ -14,7 +14,7 @@ const renderedTips = designTips.map(({ title, description }) => ({
 const headings = designTips.map(({ id, title }) => ({
   depth: 2,
   slug: id,
-  text: title.replaceAll("`", ""),
+  text: title,
 }));
 ---
 

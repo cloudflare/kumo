@@ -36,7 +36,7 @@ export function DesignTips({ renderedTips }: DesignTipsProps) {
         return (
           <DesignTip id={tip.id} key={tip.id}>
             <DesignTip.Title>
-              <div className="flex gap-1.5 items-baseline">
+              <span className="flex gap-1.5 items-baseline">
                 <Text
                   variant="secondary"
                   DANGEROUS_className="text-xl font-semibold hidden md:block"
@@ -45,7 +45,7 @@ export function DesignTips({ renderedTips }: DesignTipsProps) {
                   {tipIndex + 1}.
                 </Text>
                 <Markdown html={renderedTip.title} />
-              </div>
+              </span>
             </DesignTip.Title>
             {renderedTip.description ? (
               <DesignTip.Description>
