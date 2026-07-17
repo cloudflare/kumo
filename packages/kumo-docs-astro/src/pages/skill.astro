@@ -1,5 +1,7 @@
 ---
 import { parseInline } from "marked";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import Heading from "~/components/docs/Heading.astro";
 import { DesignTips } from "~/components/skill/DesignTips";
 import { designTips } from "~/components/skill/design-tips";
 import DocLayout from "~/layouts/DocLayout.astro";
@@ -11,11 +13,15 @@ const renderedTips = designTips.map(({ title, description }) => ({
     : {}),
 }));
 
-const headings = designTips.map(({ id, title }) => ({
-  depth: 2,
-  slug: id,
-  text: title,
-}));
+const headings = [
+  { depth: 2, slug: "installation", text: "Installation" },
+  { depth: 2, slug: "rules", text: "Rules" },
+  ...designTips.map(({ id, title }) => ({
+    depth: 3,
+    slug: id,
+    text: title,
+  })),
+];
 ---
 
 <DocLayout
@@ -23,7 +29,16 @@ const headings = designTips.map(({ id, title }) => ({
   description="Cloudflare product design guidance for building and reviewing Kumo interfaces."
   headings={headings}
 >
-  <div class="not-prose grid gap-16">
-    <DesignTips client:load renderedTips={renderedTips} />
+  <div>
+    <section>
+      <Heading level={2} class="mt-0">Installation</Heading>
+      <CodeBlock code="npx skills add cloudflare/kumo@kumo-design" lang="bash" />
+    </section>
+    <section>
+      <Heading level={2}>Rules</Heading>
+      <div class="not-prose grid gap-16">
+        <DesignTips client:load renderedTips={renderedTips} />
+      </div>
+    </section>
   </div>
 </DocLayout>
