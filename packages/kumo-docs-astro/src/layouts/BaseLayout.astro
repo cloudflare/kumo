@@ -50,6 +50,14 @@ const buildDate =
     />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <ClientRouter />
+    <style is:global>
+      /* Keep soft navigation + prefetch, but drop Astro's default cross-fade
+         so pages swap instantly instead of fading in/out. */
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+      }
+    </style>
     <script is:inline>
       // Initialize theme from localStorage or system preference.
       // Runs immediately (blocking) to prevent flash of unstyled content, and
