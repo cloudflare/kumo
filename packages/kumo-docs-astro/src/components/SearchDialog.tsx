@@ -28,6 +28,22 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
 ]);
 
 /**
+ * Chart components are auto-discovered from the @cloudflare/kumo registry, but
+ * they are documented under /charts/* rather than /components/*. Their pages are
+ * already covered by the curated STATIC_PAGES entries below, so we exclude the
+ * registry-derived items to avoid broken /components/<name> links — e.g.
+ * searching "chart" previously linked to /components/chart, which 404s.
+ */
+const COMPONENTS_DOCUMENTED_UNDER_CHARTS = new Set([
+  "Chart",
+  "ChartLegend",
+  "SankeyChart",
+  "TimeseriesChart",
+  "BubbleMap",
+  "ChoroplethMap",
+]);
+
+/**
  * Map registry component names to their doc page slugs.
  * Only needed when the name doesn't match the standard kebab-case conversion.
  */
@@ -401,7 +417,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     if (!registry?.components) return staticItems;
 
     const componentItems = Object.values(registry.components)
-      .filter((component) => !COMPONENTS_WITHOUT_DOCS.has(component.name))
+      .filter(
+        (component) =>
+          !COMPONENTS_WITHOUT_DOCS.has(component.name) &&
+          !COMPONENTS_DOCUMENTED_UNDER_CHARTS.has(component.name),
+      )
       .map((component) => ({
         name: component.name,
         type: component.type,
