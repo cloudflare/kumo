@@ -1,5 +1,5 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { relative, resolve } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
@@ -8,7 +8,10 @@ const sourcePath = resolve(
   projectRoot,
   process.argv[2] ?? "src/components/skill/design-tips.tsx",
 );
-const outputPath = resolve(projectRoot, process.argv[3] ?? "public/skill.md");
+const outputPaths = [
+  resolve(projectRoot, "public/skill.md"),
+  resolve(projectRoot, "../../skills/kumo-design/SKILL.md"),
+];
 
 function parseDesignTips(sourceText) {
   const sourceFile = ts.createSourceFile(
@@ -259,7 +262,13 @@ ${sections.join("\n\n")}\n`;
 
 const sourceText = await readFile(sourcePath, "utf8");
 const tips = parseDesignTips(sourceText);
-await writeFile(outputPath, renderDesignSkill(tips));
+const skill = renderDesignSkill(tips);
+await Promise.all(
+  outputPaths.map(async (outputPath) => {
+    await mkdir(dirname(outputPath), { recursive: true });
+    await writeFile(outputPath, skill);
+  }),
+);
 console.log(
-  `Generated ${relative(projectRoot, outputPath)} from ${tips.length} design tips.`,
+  `Generated ${outputPaths.map((outputPath) => relative(projectRoot, outputPath)).join(" and ")} from ${tips.length} design tips.`,
 );
