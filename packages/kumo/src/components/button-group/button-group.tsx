@@ -17,6 +17,11 @@ export const KUMO_BUTTON_GROUP_STYLING = {
     "relative isolate inline-flex w-max flex-row",
     // Give every child a stacking context so the lift below takes effect.
     "[&>*]:relative",
+    // Each kumo Button carries its own `shadow-xs`. Inside a group those
+    // shadows overlap at the seams and make the middle button look elevated /
+    // boxed. Drop the per-button shadows so the group reads as one flat,
+    // uniform control (the shared rings provide all the definition needed).
+    "[&>*]:shadow-none",
     // Only lift on keyboard focus, so the 2px focus ring isn't clipped by the
     // -1px overlap. We deliberately do NOT lift on hover: restacking on hover
     // would make the shared 1px seam visibly jump by a pixel depending on which
