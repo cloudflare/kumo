@@ -206,6 +206,7 @@ function parseDesignTips(sourceText) {
     );
 
     return {
+      id: readString(getProperty(tip, "id"), "tip id"),
       title: readString(getProperty(tip, "title"), "tip title"),
       description:
         descriptionProperty && ts.isPropertyAssignment(descriptionProperty)
@@ -226,7 +227,7 @@ function renderCodeFence(code) {
 }
 
 function renderDesignSkill(tips) {
-  const sections = tips.map((tip, tipIndex) => {
+  const sections = tips.map((tip) => {
     const examples = [
       ["good", "Good"],
       ["bad", "Avoid"],
@@ -241,7 +242,7 @@ function renderDesignSkill(tips) {
       .filter(Boolean)
       .join("\n\n");
 
-    return [`### ${tipIndex + 1}. ${tip.title}`, tip.description, examples]
+    return [`### \`${tip.id}\` ${tip.title}`, tip.description, examples]
       .filter(Boolean)
       .join("\n\n");
   });

@@ -9,7 +9,7 @@ Apply these rules when designing, implementing, or reviewing Cloudflare product 
 
 ## Rules
 
-### 1. Use 14px for content text
+### `content-text-size` Use 14px for content text
 
 All content text—body, buttons, data, other interactables—must be 14px in size. 16px and above are restricted to headings and subheadings.
 
@@ -25,7 +25,7 @@ All content text—body, buttons, data, other interactables—must be 14px in si
 <Text size="lg">Content text</Text>
 ```
 
-### 2. Always sentence case headings
+### `heading-case` Always sentence case headings
 
 Never capitalize or uppercase headings. Product names must be title-cased.
 
@@ -45,7 +45,23 @@ Never capitalize or uppercase headings. Product names must be title-cased.
 <Text as="h2" DANGEROUS_className="uppercase">Recent requests</Text>
 ```
 
-### 3. Never use `font-bold`
+### `font-tracking` Never change the font's tracking
+
+Do not use the `tracking-*` classes to change the spacing between characters.
+
+**Good**
+
+```tsx
+<span className="text-lg">Worker Metrics</span>
+```
+
+**Avoid**
+
+```tsx
+<span className="text-lg tracking-tight">Worker Metrics</span>
+```
+
+### `font-weight` Never use `font-bold`
 
 Use `font-semibold` for headings and `font-medium` for bold inline text.
 
@@ -63,7 +79,7 @@ Use `font-semibold` for headings and `font-medium` for bold inline text.
 <Text as="strong" DANGEROUS_className="font-bold">required</Text>
 ```
 
-### 4. Put related text closer together
+### `related-text-spacing` Put related text closer together
 
 Related text should have smaller spacing around it than the content it belongs to.
 
@@ -89,14 +105,14 @@ Related text should have smaller spacing around it than the content it belongs t
 </div>
 ```
 
-### 5. Optically align spacing around text
+### `text-spacing` Optically align spacing around text
 
 Spacing around text should take into account its line height. Typically this means vertical spacing should be slightly smaller than horizontal.
 
 **Good**
 
 ```tsx
-<LayerCard className="px-5 py-3">...</LayerCard>
+<LayerCard className="px-5 py-4">...</LayerCard>
 ```
 
 **Avoid**
@@ -105,7 +121,7 @@ Spacing around text should take into account its line height. Typically this mea
 <LayerCard className="p-5">...</LayerCard>
 ```
 
-### 6. Never transition colors for hover states
+### `hover-color-transitions` Never transition colors for hover states
 
 Color changes on hover must be immediate. Transitions on fast interactions make the UI feel sluggish.
 
@@ -121,7 +137,7 @@ Color changes on hover must be immediate. Transitions on fast interactions make 
 <button className="transition-colors duration-300 hover:bg-kumo-tint">...</button>
 ```
 
-### 7. Never use borders with drop shadows
+### `shadow-borders` Never use borders with drop shadows
 
 Use `ring ring-kumo-line` to create a transparent border that maintains sharp edges.
 
@@ -137,7 +153,7 @@ Use `ring ring-kumo-line` to create a transparent border that maintains sharp ed
 <LayerCard className="border border-kumo-line shadow-md">...</LayerCard>
 ```
 
-### 8. Use concentric border radii
+### `concentric-border-radius` Use concentric border radii
 
 When borders or rings are 8px or less apart, their corner radii must be mathematically concentric: outer radius = inner radius + padding.
 
@@ -157,7 +173,7 @@ When borders or rings are 8px or less apart, their corner radii must be mathemat
 </div>
 ```
 
-### 9. Align icons with the first line of text
+### `icon-alignment` Align icons with the first line of text
 
 Inline icons must be optically the same size as and be center-aligned with text. Use `h-lh flex items-center` for multi-line alignment.
 
@@ -173,33 +189,41 @@ Inline icons must be optically the same size as and be center-aligned with text.
 **Avoid**
 
 ```tsx
+<div className="flex items-start gap-2">
+  <span className="flex items-center"><Icon /></span>
+  <Text>Text that may wrap onto multiple lines</Text>
+</div>
+```
+
+```tsx
 <div className="flex items-center gap-2">
   <Icon />
   <Text>Text that may wrap onto multiple lines</Text>
 </div>
 ```
 
-### 10. Reduce the font size of inline monospaced text
+### `inline-monospace-size` Reduce the font size of inline monospaced text
 
 Monospaced text should have a slightly smaller font size (~0.9em) when mixed with regular text.
 
 **Good**
 
 ```tsx
-<Text>
-  Edit <Text as="code" DANGEROUS_className="text-[0.9em]">wrangler.toml</Text>
+<Text size="lg">
+  Edit <span className="font-mono text-[0.9em]">wrangler.toml</span>{" "}
+  to continue.
 </Text>
 ```
 
 **Avoid**
 
 ```tsx
-<Text>
-  Edit <Text as="code" DANGEROUS_className="text-[1em]">wrangler.toml</Text>
+<Text size="lg">
+  Edit <span className="font-mono">wrangler.toml</span> to continue.
 </Text>
 ```
 
-### 11. Use `border` to separate sticky elements from the content
+### `sticky-borders` Use `border` to separate sticky elements from the content
 
 **Good**
 
@@ -213,7 +237,7 @@ Monospaced text should have a slightly smaller font size (~0.9em) when mixed wit
 <div className="sticky top-0">...</div>
 ```
 
-### 12. Maintain content size during collapse animations
+### `collapse-content-size` Maintain content size during collapse animations
 
 Collapsible content must maintain its content size while closing to avoid its content shifting during animations.
 
@@ -233,7 +257,7 @@ Collapsible content must maintain its content size while closing to avoid its co
 </motion.div>
 ```
 
-### 13. Never stack `LayerCard` on top of one another
+### `layer-card-nesting` Never stack `LayerCard` on top of one another
 
 **Good**
 
@@ -253,7 +277,7 @@ Collapsible content must maintain its content size while closing to avoid its co
 </LayerCard>
 ```
 
-### 14. Never conditionally render dialogs
+### `dialog-rendering` Never conditionally render dialogs
 
 Conditionally rendering dialogs disables their open/close animation. Use the `open` prop to determine if a dialog should be visible or not.
 
