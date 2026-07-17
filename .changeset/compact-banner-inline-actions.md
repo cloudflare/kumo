@@ -2,4 +2,4 @@
 "@cloudflare/kumo": patch
 ---
 
-Render compact Banner actions inline with the description and inherit its `text-sm` size.
+Render Kumo Link actions inline in compact Banners while keeping CTA actions trailing.

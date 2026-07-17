@@ -259,6 +259,24 @@ export function BannerCompactDemo() {
   );
 }
 
+/** Compact banner with a trailing CTA. */
+export function BannerCompactWithCtaDemo() {
+  return (
+    <Banner
+      size="sm"
+      description="A DNS record for puppies.cloudflare.dev already exists in this zone."
+      action={
+        <>
+          <Banner.Action>Manage DNS</Banner.Action>
+          <Banner.Action variant="ghost">
+            <X />
+          </Banner.Action>
+        </>
+      }
+    />
+  );
+}
+
 /** Compact banner without an action. */
 export function BannerCompactWithoutActionDemo() {
   return (

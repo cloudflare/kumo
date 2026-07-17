@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Banner, bannerVariants } from "./banner";
+import { Link } from "../link/link";
 
 describe("Banner", () => {
   it("supports secondary variant", () => {
@@ -197,15 +198,15 @@ describe("Banner", () => {
     expect(title.parentElement?.className).toContain("items-baseline");
   });
 
-  it("renders an action inline at text-sm in an sm banner", () => {
+  it("renders a Link action inline at text-sm in an sm banner", () => {
     render(
       <Banner
         size="sm"
         description="A DNS record already exists."
         action={
-          <a href="#manage" data-testid="action">
+          <Link href="#manage" data-testid="action">
             Manage DNS
-          </a>
+          </Link>
         }
       />,
     );
@@ -214,8 +215,27 @@ describe("Banner", () => {
     const action = screen.getByTestId("action");
     const actionGroup = action.parentElement;
 
-    expect(actionGroup?.parentElement).toBe(description.parentElement);
-    expect(actionGroup?.className).toContain("text-sm");
+    expect(actionGroup?.parentElement).toBe(description);
+    expect(actionGroup?.className).toContain("ml-1.5");
+    expect(description.className).toContain("text-sm");
+  });
+
+  it("keeps a Banner.Action trailing in an sm banner", () => {
+    render(
+      <Banner
+        size="sm"
+        description="A DNS record already exists."
+        action={<Banner.Action data-testid="action">Manage DNS</Banner.Action>}
+      />,
+    );
+
+    const description = screen.getByText("A DNS record already exists.");
+    const actionGroup = screen.getByTestId("action").parentElement;
+
+    expect(actionGroup?.className).toContain("shrink-0");
+    expect(actionGroup?.parentElement).toBe(
+      description.parentElement?.parentElement,
+    );
   });
 
   it("keeps the action trailing in a base banner", () => {
