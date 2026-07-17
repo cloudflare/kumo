@@ -1,0 +1,146 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Button Group"
+description: "Visually joins a set of related buttons into a single segmented control."
+sourceFile: "components/button-group"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  ButtonGroupBasicDemo,
+  ButtonGroupSplitDemo,
+  ButtonGroupIconDemo,
+  ButtonGroupWithIconsDemo,
+  ButtonGroupVerticalDemo,
+  ButtonGroupSizesDemo,
+} from "~/components/demos/ButtonGroupDemo";
+
+{/* Demo */}
+
+<ComponentSection>
+  <ComponentExample
+    demo="ButtonGroupBasicDemo"
+    vrSection="basic"
+    vrTitle="Basic"
+  >
+    <ButtonGroupBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock
+  code={`import { ButtonGroup } from "@cloudflare/kumo";`}
+  lang="tsx"
+/>
+
+### Granular
+
+  <CodeBlock
+    code={`import { ButtonGroup } from "@cloudflare/kumo/components/button-group";`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+<p>
+  ButtonGroup is a layout wrapper. Its children keep their own `variant`,
+  `size`, and `shape` — the group only flattens the inner corners and overlaps
+  borders so adjacent buttons share a single seam. Use the same `size` and
+  `variant` on every child for a consistent segmented control.
+</p>
+
+  <CodeBlock
+    code={`import { Button, ButtonGroup } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <ButtonGroup>
+      <Button variant="secondary">Day</Button>
+      <Button variant="secondary">Week</Button>
+      <Button variant="secondary">Month</Button>
+    </ButtonGroup>
+  );
+}`}
+    lang="tsx"
+  />
+</ComponentSection>
+
+{/* Examples */}
+
+<ComponentSection>
+
+## Examples
+
+### Basic
+
+<p>A segmented row of related actions joined into a single control.</p>
+<ComponentExample demo="ButtonGroupBasicDemo">
+  <ButtonGroupBasicDemo client:visible />
+</ComponentExample>
+
+### Split button
+
+<p>
+  Pair a primary action with a `DropdownMenu` trigger for secondary actions. The
+  caret button uses `shape="square"` and an `aria-label`.
+</p>
+<ComponentExample demo="ButtonGroupSplitDemo">
+  <ButtonGroupSplitDemo client:visible />
+</ComponentExample>
+
+### Icon toolbar
+
+<p>
+  Icon-only groups make compact toolbars. Set `role="toolbar"` and an
+  `aria-label` describing the set of actions.
+</p>
+<ComponentExample demo="ButtonGroupIconDemo">
+  <ButtonGroupIconDemo client:visible />
+</ComponentExample>
+
+### With icons and labels
+
+<p>Buttons with leading icons, grouped together.</p>
+<ComponentExample demo="ButtonGroupWithIconsDemo">
+  <ButtonGroupWithIconsDemo client:visible />
+</ComponentExample>
+
+### Vertical
+
+<p>Stack buttons into a column with `orientation="vertical"`.</p>
+<ComponentExample demo="ButtonGroupVerticalDemo">
+  <ButtonGroupVerticalDemo client:visible />
+</ComponentExample>
+
+### Sizes
+
+<p>Set the same `size` on every button to keep the group aligned.</p>
+<ComponentExample demo="ButtonGroupSizesDemo">
+  <ButtonGroupSizesDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="ButtonGroup" />
+</ComponentSection>

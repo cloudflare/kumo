@@ -212,7 +212,8 @@ export default defineConfig(({ mode }) => {
             __dirname,
             "src/components/table-of-contents/index.ts",
           ),
-          // PLOP_INJECT_COMPONENT_ENTRY
+          'components/button-group': resolve(__dirname, 'src/components/button-group/index.ts'),
+        // PLOP_INJECT_COMPONENT_ENTRY
           // Utils entry point
           utils: resolve(__dirname, "src/utils/index.ts"),
           // Primitives entry point (base-ui re-exports)

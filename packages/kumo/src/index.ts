@@ -325,6 +325,14 @@ export {
   KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
   type KumoTableOfContentsState,
 } from "./components/table-of-contents";
+export {
+  ButtonGroup,
+  KUMO_BUTTON_GROUP_VARIANTS,
+  KUMO_BUTTON_GROUP_DEFAULT_VARIANTS,
+  KUMO_BUTTON_GROUP_STYLING,
+  type ButtonGroupProps,
+  type KumoButtonGroupOrientation,
+} from "./components/button-group";
 // PLOP_INJECT_EXPORT
 
 // Utils
