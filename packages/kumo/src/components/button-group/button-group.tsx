@@ -22,6 +22,12 @@ export const KUMO_BUTTON_GROUP_STYLING = {
     // boxed. Drop the per-button shadows so the group reads as one flat,
     // uniform control (the shared rings provide all the definition needed).
     "[&>*]:shadow-none",
+    // Kumo's Button draws a dark ring on *any* focus, including mouse clicks
+    // (`focus:ring-kumo-focus/50`). Inside a segmented group that reads as an
+    // ugly dark box on the clicked segment. Suppress the mouse-only focus ring
+    // (the fill/selected state is the feedback) and keep the resting line
+    // color; the keyboard `focus-visible` ring below still provides a11y focus.
+    "[&>*:focus:not(:focus-visible)]:!ring-kumo-line",
     // Only lift on keyboard focus, so the 2px focus ring isn't clipped by the
     // -1px overlap. We deliberately do NOT lift on hover: restacking on hover
     // would make the shared 1px seam visibly jump by a pixel depending on which
