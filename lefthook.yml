@@ -5,6 +5,13 @@
 # Skip specific hook: LEFTHOOK_EXCLUDE=validate-changeset git push
 # Git native skip: git push --no-verify
 
+pre-commit:
+  commands:
+    generate-design-skill:
+      glob: packages/kumo-docs-astro/src/components/skill/design-tips.tsx
+      run: pnpm --filter @cloudflare/kumo-docs-astro generate-design-skill
+      stage_fixed: true
+
 pre-push:
   skip:
     - ref: main

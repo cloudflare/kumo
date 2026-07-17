@@ -526,8 +526,8 @@ export const THEME_CONFIG: ThemeConfig = {
       description: "Purple badge background",
       theme: {
         kumo: {
-          light: "var(--color-purple-600, oklch(60% 0.118 184.704))",
-          dark: "var(--color-purple-700, oklch(50.8% 0.118 165.612))",
+          light: "var(--color-purple-600, oklch(55.8% 0.288 302.321))",
+          dark: "var(--color-purple-700, oklch(49.6% 0.265 301.924))",
         },
       },
     },

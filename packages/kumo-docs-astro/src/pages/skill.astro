@@ -1,0 +1,29 @@
+---
+import { parseInline } from "marked";
+import { DesignTips } from "~/components/skill/DesignTips";
+import { designTips } from "~/components/skill/design-tips";
+import DocLayout from "~/layouts/DocLayout.astro";
+
+const renderedTips = designTips.map(({ title, description }) => ({
+  title: parseInline(title, { async: false }),
+  ...(description
+    ? { description: parseInline(description, { async: false }) }
+    : {}),
+}));
+
+const headings = designTips.map(({ id, title }) => ({
+  depth: 2,
+  slug: id,
+  text: title,
+}));
+---
+
+<DocLayout
+  title="Design skill"
+  description="Cloudflare product design guidance for building and reviewing Kumo interfaces."
+  headings={headings}
+>
+  <div class="not-prose grid gap-16">
+    <DesignTips client:load renderedTips={renderedTips} />
+  </div>
+</DocLayout>
