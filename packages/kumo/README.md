@@ -206,45 +206,9 @@ Blocks are higher-level components that compose multiple base components. See [A
 
 ### Development Workflows
 
-#### Option 1: Storybook Development (Recommended)
+#### Watch Build Mode
 
-Kumo uses **Storybook** as a live development environment for building and testing components in isolation. Storybook provides instant feedback, interactive controls, and serves as living documentation for the component library.
-
-**Start Storybook:**
-
-```bash
-# From this directory
-pnpm storybook
-
-# Or from workspace root
-pnpm --filter @cloudflare/kumo storybook
-```
-
-Storybook runs at `http://localhost:6006` with hot module replacement enabled.
-
-**Why use Storybook:**
-
-- Full HMR with React Fast Refresh
-- Changes reflect instantly without page reload
-- Test all component variations and edge cases interactively
-- Auto-generated docs from TypeScript types
-- Best for isolated component development
-- Test keyboard navigation and screen readers
-
-**Story files** live alongside components:
-
-- Components: `src/components/{name}/{name}.stories.tsx`
-- Blocks: `src/blocks/{name}/{name}.stories.tsx`
-
-**Storybook documentation** includes:
-
-- Writing stories guide
-- Development workflow
-- Best practices
-
-#### Option 2: Watch Build Mode
-
-When you need to test components in the actual documentation site or consuming application:
+To test components in the actual documentation site or consuming application:
 
 **Start watch build:**
 
@@ -257,7 +221,7 @@ This runs Vite in watch mode with optimizations for fast rebuilds:
 - ⚡~400ms rebuild time (10x faster than production builds)
 - Skips minification in development
 - Incremental TypeScript compilation
-- Selective file watching (ignores tests and stories)
+- Selective file watching (ignores tests)
 - Validates components against production build output
 
 **Using with documentation site:**

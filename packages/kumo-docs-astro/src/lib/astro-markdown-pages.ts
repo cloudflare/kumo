@@ -4,6 +4,10 @@ import path, { join } from "path";
 import { glob } from "fs/promises";
 import { htmlToMarkdown } from "./html-to-markdown.js";
 
+interface MarkdownPagesOptions {
+  passthroughPaths?: string[];
+}
+
 /**
  * Astro integration that serves and generates Markdown versions of doc pages.
  *
@@ -16,18 +20,25 @@ import { htmlToMarkdown } from "./html-to-markdown.js";
  * These .md files are used by the "Copy page" and "View as Markdown" features,
  * as well as Claude/ChatGPT integration URLs.
  */
-export function markdownPages(): AstroIntegration {
+export function markdownPages({
+  passthroughPaths = [],
+}: MarkdownPagesOptions = {}): AstroIntegration {
+  const passthroughPathSet = new Set(passthroughPaths);
+
   return {
     name: "markdown-pages",
     hooks: {
       "astro:server:setup": ({ server }) => {
         server.middlewares.use(async (req, res, next) => {
           const url = req.url ?? "";
-          if (!url.endsWith(".md")) return next();
+          const pathname = new URL(url, "http://localhost").pathname;
+          if (!pathname.endsWith(".md") || passthroughPathSet.has(pathname)) {
+            return next();
+          }
 
           // /components/badge.md -> /components/badge/
           // /changelog.md -> /changelog/all/ (full unpaginated version)
-          let htmlPath = url.replace(/\.md$/, "/");
+          let htmlPath = pathname.replace(/\.md$/, "/");
           if (htmlPath === "/changelog/") {
             htmlPath = "/changelog/all/";
           }
@@ -108,6 +119,11 @@ export function markdownPages(): AstroIntegration {
             const mdFile = htmlFile.endsWith(changelogAllPage)
               ? join(outDir, "changelog.md")
               : htmlFile.replace(/\/index\.html$/, ".md");
+            const mdPath = `/${path.relative(outDir, mdFile).split(path.sep).join("/")}`;
+            if (passthroughPathSet.has(mdPath)) {
+              skipped++;
+              continue;
+            }
             await writeFile(mdFile, markdown, "utf-8");
             generated++;
           } catch (error) {

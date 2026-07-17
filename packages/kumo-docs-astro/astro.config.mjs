@@ -76,7 +76,7 @@ export default defineConfig({
     mdx({ remarkPlugins: [remarkHeadingComponents] }),
     react(),
     sitemap(),
-    markdownPages(),
+    markdownPages({ passthroughPaths: ["/skill.md"] }),
   ],
   site: "https://kumo-ui.com/",
   markdown: {

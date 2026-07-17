@@ -33,6 +33,7 @@ const staticPages: NavItem[] = [
   { label: "Accessibility", href: "/accessibility" },
   { label: "Figma Resources", href: "/figma" },
   { label: "CLI", href: "/cli" },
+  { label: "Design skill", href: "/skill" },
   { label: "Registry", href: "/registry" },
   { label: "Changelog", href: "/changelog" },
 ];
@@ -107,7 +108,7 @@ declare const __BUILD_DATE__: string;
 
 const LI_STYLE =
   "block rounded-lg text-kumo-subtle hover:text-kumo-default hover:bg-kumo-tint p-2 my-[.05rem] cursor-pointer transition-colors no-underline relative z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand";
-const LI_ACTIVE_STYLE = "font-semibold text-kumo-default bg-kumo-tint";
+const LI_ACTIVE_STYLE = "font-medium text-kumo-default bg-kumo-tint";
 
 interface SidebarNavProps {
   currentPath: string;
