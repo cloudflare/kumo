@@ -331,7 +331,6 @@ export {
   KUMO_BUTTON_GROUP_DEFAULT_VARIANTS,
   KUMO_BUTTON_GROUP_STYLING,
   type ButtonGroupProps,
-  type KumoButtonGroupOrientation,
 } from "./components/button-group";
 // PLOP_INJECT_EXPORT
 

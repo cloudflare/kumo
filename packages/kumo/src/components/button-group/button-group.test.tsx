@@ -42,22 +42,13 @@ describe("ButtonGroup", () => {
     expect(screen.getByRole("toolbar", { name: "Actions" })).toBeTruthy();
   });
 
-  it("applies horizontal orientation classes by default", () => {
+  it("lays buttons out horizontally", () => {
     render(
       <ButtonGroup>
         <Button>One</Button>
       </ButtonGroup>,
     );
     expect(screen.getByRole("group").className).toContain("flex-row");
-  });
-
-  it("applies vertical orientation classes when requested", () => {
-    render(
-      <ButtonGroup orientation="vertical">
-        <Button>One</Button>
-      </ButtonGroup>,
-    );
-    expect(screen.getByRole("group").className).toContain("flex-col");
   });
 
   it("merges a custom className", () => {

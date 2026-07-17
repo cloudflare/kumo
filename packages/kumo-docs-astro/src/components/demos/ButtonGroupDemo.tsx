@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, DropdownMenu } from "@cloudflare/kumo";
 import {
-  ArrowClockwiseIcon,
   CaretDownIcon,
   CopyIcon,
   PencilSimpleIcon,
@@ -87,25 +86,6 @@ export function ButtonGroupWithIconsDemo() {
       </Button>
       <Button variant="secondary-destructive" icon={TrashIcon}>
         Delete
-      </Button>
-    </ButtonGroup>
-  );
-}
-
-/**
- * Stack buttons into a column with `orientation="vertical"`.
- */
-export function ButtonGroupVerticalDemo() {
-  return (
-    <ButtonGroup orientation="vertical">
-      <Button variant="secondary" icon={PencilSimpleIcon}>
-        Edit
-      </Button>
-      <Button variant="secondary" icon={CopyIcon}>
-        Duplicate
-      </Button>
-      <Button variant="secondary" icon={ArrowClockwiseIcon}>
-        Refresh
       </Button>
     </ButtonGroup>
   );
