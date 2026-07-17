@@ -639,8 +639,11 @@ export const TimeseriesChart = forwardRef<
   }, [onTimeRangeChange, markerColor]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
-  // and deactivate it on cleanup so the cursor resets when the prop is removed.
+  // and reactivate it after options are replaced. ECharts clears the active
+  // global cursor when setOption runs with notMerge, so data updates would
+  // otherwise leave brush-to-zoom disabled.
   const hasTimeRangeCallback = !!onTimeRangeChange;
+  const brushResetKey = optionUpdateBehavior?.notMerge ? options : undefined;
   useEffect(() => {
     const chart = chartRef.current;
     if (chart && hasTimeRangeCallback) {
@@ -665,8 +668,9 @@ export const TimeseriesChart = forwardRef<
     }
     // `loading` controls whether <Chart> is mounted. When it flips to false,
     // chartRef.current becomes available and the brush cursor must be activated.
-    // Without this dep, the effect won't re-run after Chart mounts.
-  }, [chartRef, hasTimeRangeCallback, loading]);
+    // `brushResetKey` changes whenever Chart replaces its ECharts options and
+    // ensures the cursor is restored after a notMerge update.
+  }, [chartRef, hasTimeRangeCallback, loading, brushResetKey]);
 
   const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
   const tooltipOpen = tooltipState !== null;
