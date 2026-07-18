@@ -75,10 +75,13 @@ const Link = ({
       data-kumo-component="Breadcrumbs"
       data-kumo-part="link"
       to={href}
-      className="flex max-w-full min-w-0 items-center gap-1 text-kumo-subtle no-underline"
+      // Ancestors do not shrink. Letting every crumb truncate proportionally
+      // turns the whole trail into unreadable stubs ("Com… › Anal… › Acco…");
+      // the current page is the only crumb allowed to give up width.
+      className="flex shrink-0 items-center gap-1 whitespace-nowrap text-kumo-subtle no-underline"
     >
       {!!icon && <span className="flex shrink-0 items-center">{icon}</span>}
-      <span className="truncate">{children}</span>
+      <span>{children}</span>
     </LinkComponent>
   );
 };

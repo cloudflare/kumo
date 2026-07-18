@@ -406,6 +406,13 @@ export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
   contentClassName?: string;
   /** Sidebar content — Header, Content, Footer, etc. */
   children: ReactNode;
+  /**
+   * On mobile, expand the sidebar sheet to the full viewport width instead of
+   * `--sidebar-width`. The backdrop is suppressed since nothing shows behind it.
+   * Pair with breadcrumbs in the page header so the current route stays visible.
+   * @default false
+   */
+  fullScreenOnMobile?: boolean;
 }
 
 /**
@@ -424,7 +431,7 @@ export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
  * ```
  */
 const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
-  ({ className, contentClassName, children, ...props }, ref) => {
+  ({ className, contentClassName, children, fullScreenOnMobile = false, ...props }, ref) => {
     const {
       state,
       open,
@@ -569,7 +576,9 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 : "fixed inset-0 z-40 bg-kumo-recessed",
               "transition-opacity duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
-              openMobile ? "opacity-80" : "pointer-events-none opacity-0",
+              openMobile && !fullScreenOnMobile
+                ? "opacity-80"
+                : "opacity-0 pointer-events-none",
             )}
             onClick={() => {
               shouldRestoreFocusRef.current = true;
@@ -594,10 +603,12 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             data-sidebar="sidebar"
             data-mobile="true"
             className={cn(
-              contained
-                ? "group/sidebar absolute inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden"
-                : "group/sidebar fixed inset-y-0 z-50 flex w-(--sidebar-width) flex-col overflow-hidden",
-              "border-r border-kumo-line bg-(--sidebar-bg) text-kumo-default",
+              "group/sidebar z-50 flex inset-y-0 flex-col overflow-hidden",
+              contained ? "absolute" : "fixed",
+              fullScreenOnMobile ? "w-full" : "w-(--sidebar-width)",
+              "bg-(--sidebar-bg) text-kumo-default",
+              // No border when full-screen — there is no adjacent content to divide.
+              !fullScreenOnMobile && "border-r border-kumo-line",
               "transition-transform duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
               side === "left" && "left-0",
