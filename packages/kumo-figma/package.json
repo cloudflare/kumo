@@ -26,7 +26,7 @@
     "@phosphor-icons/core": "2.1.1",
     "@types/culori": "4.0.1",
     "@types/node": "catalog:",
-    "esbuild": "0.27.2",
+    "esbuild": "0.28.1",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
