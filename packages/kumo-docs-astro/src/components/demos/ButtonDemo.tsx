@@ -148,3 +148,22 @@ export function ButtonLinkAsButtonDemo() {
     </div>
   );
 }
+
+/** Demonstrates the disabled LinkButton, including a title tooltip explaining why. */
+export function ButtonDisabledLinkDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <LinkButton href="/components/link" variant="secondary" disabled>
+        Disabled link
+      </LinkButton>
+      <LinkButton
+        href="/components/link"
+        variant="secondary"
+        disabled
+        title="You need edit access to continue"
+      >
+        Disabled with tooltip
+      </LinkButton>
+    </div>
+  );
+}

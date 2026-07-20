@@ -309,6 +309,8 @@ export const TimeseriesChart = forwardRef<
   const incompleteAfter = incomplete?.after;
 
   const markerColor = ChartPalette.text("primary", isDarkMode);
+  const axisTextColor = ChartPalette.text("primary", isDarkMode);
+  const gridLineColor = colorWithOpacity(axisTextColor, 0.2);
   const markerLabelBackgroundColor = isDarkMode
     ? "rgba(0, 0, 0, 0.5)"
     : "rgba(255, 255, 255, 0.5)";
@@ -450,33 +452,41 @@ export const TimeseriesChart = forwardRef<
         name: xAxisName,
         nameLocation: "middle" as const,
         nameGap: 30,
+        nameTextStyle: { color: axisTextColor },
         type: "time" as const,
         splitLine: {
           show: false,
         },
         axisLine: { show: false },
         splitNumber: xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
-        ...(xAxisTickFormat && {
-          axisLabel: {
+        axisLabel: {
+          color: axisTextColor,
+          ...(xAxisTickFormat && {
             formatter: (value: number) => xAxisTickFormat(value),
-          },
-        }),
+          }),
+        },
       },
       yAxis: {
         name: yAxisName,
         nameLocation: "middle" as const,
         nameGap: 40,
+        nameTextStyle: { color: axisTextColor },
         type: "value" as const,
         axisTick: { show: true },
         axisLabel: {
           margin: 15,
+          color: axisTextColor,
           ...(yAxisTickFormat && {
             formatter: (value: number) => yAxisTickFormat(value),
           }),
         },
         splitLine: {
           show: true,
-          lineStyle: { type: "dashed" as const, width: 1 },
+          lineStyle: {
+            type: "dashed" as const,
+            width: 1,
+            color: gridLineColor,
+          },
         },
         splitNumber: yAxisTickCount,
         ...(thresholdExtent && {
@@ -513,6 +523,8 @@ export const TimeseriesChart = forwardRef<
     thresholds,
     markerColor,
     markerLabelBackgroundColor,
+    axisTextColor,
+    gridLineColor,
   ]);
 
   const events = useMemo<Partial<ChartEvents>>(() => {
@@ -639,8 +651,11 @@ export const TimeseriesChart = forwardRef<
   }, [onTimeRangeChange, markerColor]);
 
   // Activate the lineX brush cursor when a time-range callback is provided,
-  // and deactivate it on cleanup so the cursor resets when the prop is removed.
+  // and reactivate it after options are replaced. ECharts clears the active
+  // global cursor when setOption runs with notMerge, so data updates would
+  // otherwise leave brush-to-zoom disabled.
   const hasTimeRangeCallback = !!onTimeRangeChange;
+  const brushResetKey = optionUpdateBehavior?.notMerge ? options : undefined;
   useEffect(() => {
     const chart = chartRef.current;
     if (chart && hasTimeRangeCallback) {
@@ -665,8 +680,9 @@ export const TimeseriesChart = forwardRef<
     }
     // `loading` controls whether <Chart> is mounted. When it flips to false,
     // chartRef.current becomes available and the brush cursor must be activated.
-    // Without this dep, the effect won't re-run after Chart mounts.
-  }, [chartRef, hasTimeRangeCallback, loading]);
+    // `brushResetKey` changes whenever Chart replaces its ECharts options and
+    // ensures the cursor is restored after a notMerge update.
+  }, [chartRef, hasTimeRangeCallback, loading, brushResetKey]);
 
   const formatFn = tooltipValueFormat ?? yAxisTickLabelFormat;
   const tooltipOpen = tooltipState !== null;

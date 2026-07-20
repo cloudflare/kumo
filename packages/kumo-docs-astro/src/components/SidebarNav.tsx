@@ -121,7 +121,18 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   const [chartsOpen, setChartsOpen] = useState(true);
   const [blocksOpen, setBlocksOpen] = useState(true);
 
-  const activePath = normalizePathname(currentPath);
+  // The sidebar is persisted across view-transition navigations
+  // (`transition:persist`), so the `currentPath` prop is only correct for the
+  // first render. Track the live pathname client-side and update it on each
+  // soft navigation so the active-link highlight stays in sync.
+  const [livePath, setLivePath] = useState(currentPath);
+  useEffect(() => {
+    const sync = () => setLivePath(window.location.pathname);
+    sync();
+    document.addEventListener("astro:page-load", sync);
+    return () => document.removeEventListener("astro:page-load", sync);
+  }, []);
+  const activePath = normalizePathname(livePath);
 
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -297,7 +308,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
                 className={cn(
                   LI_STYLE,
                   "pl-4",
-                  currentPath === item.href && LI_ACTIVE_STYLE,
+                  livePath === item.href && LI_ACTIVE_STYLE,
                 )}
               >
                 {item.label}

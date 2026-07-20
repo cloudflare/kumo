@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -48,9 +49,20 @@ const buildDate =
       href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=optional"
     />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <ClientRouter />
+    <style is:global>
+      /* Keep soft navigation + prefetch, but drop Astro's default cross-fade
+         so pages swap instantly instead of fading in/out. */
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+      }
+    </style>
     <script is:inline>
-      // Initialize theme from localStorage or system preference
-      // This runs immediately (blocking) to prevent flash of unstyled content
+      // Initialize theme from localStorage or system preference.
+      // Runs immediately (blocking) to prevent flash of unstyled content, and
+      // must be re-applied after each view-transition swap because the <html>
+      // attributes are replaced during navigation.
       (function () {
         function setTheme(theme) {
           localStorage.setItem("theme", theme);
@@ -60,38 +72,54 @@ const buildDate =
           );
         }
 
-        const stored = localStorage.getItem("theme");
-        if (stored) {
-          document.documentElement.setAttribute("data-mode", stored);
-        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          document.documentElement.setAttribute("data-mode", "dark");
+        function applyStoredTheme() {
+          const stored = localStorage.getItem("theme");
+          if (stored) {
+            document.documentElement.setAttribute("data-mode", stored);
+          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.setAttribute("data-mode", "dark");
+          }
         }
 
-        document.addEventListener("keydown", function (event) {
-          if (event.defaultPrevented || event.repeat) return;
-          if (event.metaKey || event.ctrlKey || event.altKey) return;
-          if (event.key?.toLowerCase() !== "d") return;
+        // Apply on this (initial or freshly-swapped) document immediately.
+        applyStoredTheme();
 
-          const target = event.target;
-          if (
-            target instanceof HTMLElement &&
-            (target.isContentEditable ||
-              target.closest("input, textarea, select, [contenteditable]"))
-          ) {
-            return;
-          }
+        // Register global listeners exactly once across soft navigations.
+        if (!window.__kumoThemeInit) {
+          window.__kumoThemeInit = true;
 
-          event.preventDefault();
-          const current = document.documentElement.getAttribute("data-mode");
-          setTheme(current === "dark" ? "light" : "dark");
-        });
+          // Reapply theme before each swap paints, so there's no light flash.
+          document.addEventListener("astro:before-swap", applyStoredTheme);
+          document.addEventListener("astro:after-swap", applyStoredTheme);
+
+          document.addEventListener("keydown", function (event) {
+            if (event.defaultPrevented || event.repeat) return;
+            if (event.metaKey || event.ctrlKey || event.altKey) return;
+            if (event.key?.toLowerCase() !== "d") return;
+
+            const target = event.target;
+            if (
+              target instanceof HTMLElement &&
+              (target.isContentEditable ||
+                target.closest("input, textarea, select, [contenteditable]"))
+            ) {
+              return;
+            }
+
+            event.preventDefault();
+            const current = document.documentElement.getAttribute("data-mode");
+            setTheme(current === "dark" ? "light" : "dark");
+          });
+        }
       })();
     </script>
   </head>
   <body>
     <slot />
     <script>
-      function initCopyButtons() {
+      // Wraps code blocks and injects a copy button. Safe to run on every page
+      // load — the `.code-block` parent check prevents double-wrapping.
+      function wrapCodeBlocks() {
         document.querySelectorAll("pre.astro-code").forEach((pre) => {
           // Skip <pre> elements already inside a .code-block parent
           if (pre.parentElement?.classList.contains("code-block")) return;
@@ -128,49 +156,53 @@ const buildDate =
           // Append button to the wrapper, as a sibling of <pre>
           wrapper.appendChild(button);
         });
-
-        // Click handler via event delegation
-        const timers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
-        document.addEventListener("click", async (e) => {
-          const btn = (e.target as Element).closest(".code-block-copy-btn");
-
-          if (!btn) return;
-
-          const pre = btn.closest(".code-block")?.querySelector("pre");
-
-          if (!pre) return;
-
-          const code = pre.textContent || "";
-
-          const existingTimer = timers.get(btn);
-
-          if (existingTimer) clearTimeout(existingTimer);
-
-          // Set animation immediately (optimistic)
-          btn.setAttribute("data-copied", "");
-          btn.setAttribute("aria-label", "Copied!");
-
-          try {
-            await navigator.clipboard.writeText(code);
-          } catch {
-            // Roll back on failure
-            btn.removeAttribute("data-copied");
-            btn.setAttribute("aria-label", "Copy code to clipboard");
-            return;
-          }
-
-          timers.set(
-            btn,
-            setTimeout(() => {
-              btn.removeAttribute("data-copied");
-              btn.setAttribute("aria-label", "Copy code to clipboard");
-              timers.delete(btn);
-            }, 1500),
-          );
-        });
       }
 
-      initCopyButtons();
+      // Click handler via event delegation — registered ONCE for the lifetime
+      // of the document (survives soft navigations), so it must live outside
+      // wrapCodeBlocks() to avoid stacking duplicate listeners on each nav.
+      const timers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
+      document.addEventListener("click", async (e) => {
+        const btn = (e.target as Element).closest(".code-block-copy-btn");
+
+        if (!btn) return;
+
+        const pre = btn.closest(".code-block")?.querySelector("pre");
+
+        if (!pre) return;
+
+        const code = pre.textContent || "";
+
+        const existingTimer = timers.get(btn);
+
+        if (existingTimer) clearTimeout(existingTimer);
+
+        // Set animation immediately (optimistic)
+        btn.setAttribute("data-copied", "");
+        btn.setAttribute("aria-label", "Copied!");
+
+        try {
+          await navigator.clipboard.writeText(code);
+        } catch {
+          // Roll back on failure
+          btn.removeAttribute("data-copied");
+          btn.setAttribute("aria-label", "Copy code to clipboard");
+          return;
+        }
+
+        timers.set(
+          btn,
+          setTimeout(() => {
+            btn.removeAttribute("data-copied");
+            btn.setAttribute("aria-label", "Copy code to clipboard");
+            timers.delete(btn);
+          }, 1500),
+        );
+      });
+
+      // Re-wrap code blocks after every navigation. `astro:page-load` fires on
+      // the initial load and after each ClientRouter soft navigation.
+      document.addEventListener("astro:page-load", wrapCodeBlocks);
     </script>
   </body>
 </html>
