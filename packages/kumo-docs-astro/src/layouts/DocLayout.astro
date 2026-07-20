@@ -111,7 +111,7 @@ const githubSourceUrl = sourceFile
         <!-- Select TOC: visible below xl, hidden at xl+ where sidebar takes over -->
         <div class="xl:hidden sticky top-24 lg:top-12 z-1 border-b border-kumo-hairline bg-kumo-canvas">
           <div class="mx-auto max-w-6xl">
-            <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:load />
+            <TableOfContents layout="select" headings={headings.length > 0 ? headings : undefined} client:only="react" />
           </div>
         </div>
 
@@ -123,7 +123,7 @@ const githubSourceUrl = sourceFile
             <!-- Sidebar TOC: only at xl+ -->
             <aside class="hidden xl:block min-w-0">
               <div class="sticky top-24">
-                <TableOfContents headings={headings.length > 0 ? headings : undefined} client:load />
+                <TableOfContents headings={headings.length > 0 ? headings : undefined} client:only="react" />
               </div>
             </aside>
           </div>
