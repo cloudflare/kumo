@@ -13,7 +13,7 @@ const currentPath = Astro.url.pathname;
 
 <BaseLayout title={title} description={description}>
   <div class="isolate">
-    <SidebarNav currentPath={currentPath} client:load />
+    <SidebarNav currentPath={currentPath} client:load transition:persist />
 
     <script is:inline>
       (function () {

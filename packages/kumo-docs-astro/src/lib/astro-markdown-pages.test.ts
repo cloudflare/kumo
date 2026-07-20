@@ -34,6 +34,12 @@ describe("markdown pages integration", () => {
     expect(existsSync(join(distDir, "colors.md"))).toBe(true);
   });
 
+  it("preserves the generated design skill", () => {
+    const content = readFileSync(join(distDir, "skill.md"), "utf-8");
+
+    expect(content).toContain("name: kumo-design");
+  });
+
   it("generates changelog.md from the /changelog/all/ page", () => {
     const changelogPath = join(distDir, "changelog.md");
     expect(existsSync(changelogPath)).toBe(true);

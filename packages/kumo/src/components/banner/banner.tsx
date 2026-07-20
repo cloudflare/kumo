@@ -6,6 +6,7 @@ import {
 } from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+import { Link } from "../link/link";
 import {
   BannerAction,
   type BannerActionSize,
@@ -79,7 +80,7 @@ const BANNER_SIZE_PARTS: Record<
   sm: {
     row: "gap-2",
     icon: "h-[1.25em]",
-    description: "text-xs",
+    description: "text-sm",
     action: "xs",
   },
 };
@@ -162,10 +163,11 @@ export interface BannerProps
   /** Secondary description text displayed below the title. Use for i18n string injection. */
   description?: ReactNode;
   /**
-   * Action slot rendered at the trailing end of the banner (e.g. a CTA button or link).
+   * Action slot for a CTA button or link. Compact banners render a Kumo `Link`
+   * inline with the description; CTAs render at the trailing end.
    * Use `Banner.Action` for accent-aware CTAs that self-style to the banner
-   * variant; other nodes are rendered as-is. Multiple actions can be passed in a
-   * Fragment. Only used in structured mode (with `title` or `description`).
+   * variant; other nodes are rendered as-is. Multiple actions can be passed in
+   * a Fragment. Only used in structured mode (with `title` or `description`).
    */
   action?: ReactNode;
   /** @deprecated Use `title` and `description` instead. Will be removed in a future major version. */
@@ -182,9 +184,10 @@ export interface BannerProps
    */
   variant?: KumoBannerVariant;
   /**
-   * Size of the banner. A `"sm"` banner uses tighter spacing and smaller text,
-   * and sets its `Banner.Action` children to the `"xs"` size — suited to
-   * dialogs and other tight spaces.
+   * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`,
+   * renders a Kumo `Link` action inline with the description, and sets its
+   * `Banner.Action` children to the `"xs"` size — suited to dialogs and other
+   * tight spaces.
    * @default "base"
    */
   size?: KumoBannerSize;
@@ -236,6 +239,8 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
   // Compact banners keep the title and description on one line (inline spans)
   // rather than stacking them, to stay short in dialogs and other tight spaces.
   const isCompact = size === "sm";
+  const hasInlineLinkAction =
+    isCompact && isValidElement(action) && action.type === Link;
 
   // Structured mode: title and/or description provided
   if (title || description) {
@@ -267,11 +272,23 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
             {isCompact ? (
               <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
                 {title && (
-                  <span className="font-medium leading-snug">{title}</span>
+                  <span className="font-medium leading-snug">
+                    {title}
+                    {!description && hasInlineLinkAction && (
+                      <span className="ml-1.5 [&_[data-kumo-component=Link]]:inline">
+                        {action}
+                      </span>
+                    )}
+                  </span>
                 )}
                 {description && (
                   <span className={cn(sizeParts.description, "leading-snug")}>
                     {description}
+                    {hasInlineLinkAction && (
+                      <span className="ml-1.5 [&_[data-kumo-component=Link]]:inline">
+                        {action}
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
@@ -289,7 +306,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
                 )}
               </div>
             )}
-            {action != null && (
+            {!hasInlineLinkAction && action != null && (
               <div className="flex shrink-0 items-center gap-2">{action}</div>
             )}
           </div>

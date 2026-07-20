@@ -285,9 +285,15 @@ importers:
       echarts:
         specifier: ^6.0.0
         version: 6.0.0
+      marked:
+        specifier: ^18.0.6
+        version: 18.0.6
       match-sorter:
         specifier: ^8.2.0
         version: 8.2.0
+      motion:
+        specifier: ^12.34.1
+        version: 12.34.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-markdown:
         specifier: 10.1.0
         version: 10.1.0(@types/react@19.2.4)(react@19.2.0)
@@ -4454,6 +4460,11 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
+
+  marked@18.0.6:
+    resolution: {integrity: sha512-MrV5puXBfuiy6wl6DLaq3BtIJQAJToAd5zt/ZKhRfGRAuFPALE7/4Y7jnxRQoEgK/pBgurGqLyAuRgZ2xOjr6w==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   match-sorter@8.2.0:
     resolution: {integrity: sha512-qRVB7wYMJXizAWR4TKo5UYwgW7oAVzA8V9jve0wGzRvV91ou9dcqL+/2gJtD0PZ/Pm2Fq6cVT4VHXHmDFVMGRA==}
@@ -10635,6 +10646,8 @@ snapshots:
   markdown-extensions@2.0.0: {}
 
   markdown-table@3.0.4: {}
+
+  marked@18.0.6: {}
 
   match-sorter@8.2.0:
     dependencies:

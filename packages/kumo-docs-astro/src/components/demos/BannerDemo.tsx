@@ -1,4 +1,4 @@
-import { Banner, Text } from "@cloudflare/kumo";
+import { Banner, Text, Link } from "@cloudflare/kumo";
 import { Info, WarningCircle, Warning, X } from "@phosphor-icons/react";
 
 /** Shows all banner variants with structured title and description. */
@@ -177,49 +177,13 @@ export function BannerWithActionsDemo() {
     <div className="space-y-3 w-full">
       <Banner
         icon={<Warning weight="fill" />}
-        variant="alert"
-        title="Session expiring"
-        description="Your session will expire in 5 minutes."
-        action={
-          <>
-            <Banner.Action>Dismiss</Banner.Action>
-            <Banner.Action variant="secondary">Extend session</Banner.Action>
-          </>
-        }
-      />
-      <Banner
-        icon={<Warning weight="fill" />}
-        variant="default"
-        title="Session expiring"
-        description="Your session will expire in 5 minutes."
-        action={
-          <>
-            <Banner.Action>Dismiss</Banner.Action>
-            <Banner.Action variant="secondary">Extend session</Banner.Action>
-          </>
-        }
-      />
-      <Banner
-        icon={<Warning weight="fill" />}
         variant="error"
-        title="Session expiring"
-        description="Your session will expire in 5 minutes."
+        title="Your account is 90 days past due."
+        description="Pay now to avoid interruption."
         action={
           <>
-            <Banner.Action>Dismiss</Banner.Action>
-            <Banner.Action variant="secondary">Extend session</Banner.Action>
-          </>
-        }
-      />
-      <Banner
-        icon={<Warning weight="fill" />}
-        variant="secondary"
-        title="Session expiring"
-        description="Your session will expire in 5 minutes."
-        action={
-          <>
-            <Banner.Action>Dismiss</Banner.Action>
-            <Banner.Action variant="secondary">Extend session</Banner.Action>
+            <Banner.Action>Pay now</Banner.Action>
+            <Banner.Action variant="secondary">Go to billing</Banner.Action>
           </>
         }
       />
@@ -227,11 +191,7 @@ export function BannerWithActionsDemo() {
   );
 }
 
-/**
- * Accent-aware CTAs via the `Banner.Action` compound. Each
- * `Banner.Action` reads the banner variant and self-styles to the matching accent,
- * so the solid CTA stays legible on every variant in light and dark mode.
- */
+/* Accent-aware CTAs via the `Banner.Action` compound. */
 export function BannerActionCompoundDemo() {
   return (
     <div className="w-full space-y-3">
@@ -287,23 +247,42 @@ export function BannerActionCompoundDemo() {
 }
 
 /**
- * Compact `size="sm"` banner for dialogs and other tight spaces. The tighter
- * spacing and smaller text carry through to the CTAs: `Banner.Action` children
- * inherit the banner size and render at the `xs` button size.
+ * Compact `size="sm"` banner for dialogs and other tight spaces.
  */
 export function BannerCompactDemo() {
   return (
     <Banner
       size="sm"
-      icon={<Info weight="fill" />}
-      title="Update available"
-      description="A new version is ready to install."
+      description="A DNS record for puppies.cloudflare.dev already exists in this zone."
+      action={<Link href="#">Manage DNS for puppies.cloudflare.dev</Link>}
+    />
+  );
+}
+
+/** Compact banner with a trailing CTA. */
+export function BannerCompactWithCtaDemo() {
+  return (
+    <Banner
+      size="sm"
+      description="A DNS record for puppies.cloudflare.dev already exists in this zone."
       action={
         <>
-          <Banner.Action>Update</Banner.Action>
-          <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
+          <Banner.Action>Manage DNS</Banner.Action>
+          <Banner.Action variant="ghost">
+            <X />
+          </Banner.Action>
         </>
       }
+    />
+  );
+}
+
+/** Compact banner without an action. */
+export function BannerCompactWithoutActionDemo() {
+  return (
+    <Banner
+      size="sm"
+      description="A DNS record for puppies.cloudflare.dev already exists in this zone."
     />
   );
 }

@@ -187,6 +187,33 @@ const getEmphasisStyle = (variant: KumoButtonVariant) => {
   } satisfies React.CSSProperties & Record<`--${string}`, string>;
 };
 
+const ANCHOR_ONLY_PROPS = new Set([
+  "href",
+  "target",
+  "rel",
+  "download",
+  "hrefLang",
+  "media",
+  "ping",
+  "referrerPolicy",
+  "linksExternal",
+]);
+
+const toDisabledButtonProps = (
+  props: React.AnchorHTMLAttributes<HTMLAnchorElement>,
+): React.ButtonHTMLAttributes<HTMLButtonElement> => {
+  const result: Partial<React.AnchorHTMLAttributes<HTMLAnchorElement>> = {
+    ...props,
+  };
+  for (const key of Object.keys(result)) {
+    // event handlers are inert on a disabled button, and anchor-only attrs are invalid on it
+    if (key.startsWith("on") || ANCHOR_ONLY_PROPS.has(key)) {
+      delete result[key as keyof typeof result];
+    }
+  }
+  return result as React.ButtonHTMLAttributes<HTMLButtonElement>;
+};
+
 const renderButtonContent = (
   variant: KumoButtonVariant,
   iconNode: React.ReactNode,
@@ -275,6 +302,8 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
     children?: React.ReactNode;
     /** Additional CSS classes merged via `cn()`. */
     className?: string;
+    /** When `true`, the button is disabled. We render an actual html button with `disabled` attribute. */
+    disabled?: boolean;
     /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
     icon?: Icon | React.ReactNode;
     /** When `true`, opens in a new tab with `rel="noopener noreferrer"`. */
@@ -390,6 +419,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     {
       children,
       className,
+      disabled = false,
       external,
       href,
       shape = "base",
@@ -397,6 +427,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       variant = "ghost",
       icon: IconComponent,
       style,
+      title,
       // linksExternal = false,
       ...props
     },
@@ -407,6 +438,26 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
       : {};
+
+    if (disabled) {
+      // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
+      return (
+        <Button
+          {...toDisabledButtonProps(props)}
+          className={className}
+          data-kumo-component="LinkButton"
+          disabled
+          icon={IconComponent}
+          shape={shape as "base"}
+          size={size}
+          style={style}
+          title={title}
+          variant={variant}
+        >
+          {children}
+        </Button>
+      );
+    }
 
     return (
       <LinkComponent
@@ -419,6 +470,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         )}
         href={href}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
+        title={title}
         to={typeof href === "string" ? href : undefined}
         {...externalProps}
         {...props}
