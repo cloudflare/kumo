@@ -70,7 +70,7 @@ export function StickyDocHeader({
       {!sidebarOpen && (
         <div
           className={cn(
-            "pointer-events-none fixed top-0 left-12 z-50 flex h-12 items-center font-medium transition-opacity duration-200 select-none",
+            "pointer-events-none fixed top-0 left-9 z-50 flex h-12 items-center font-medium transition-opacity duration-200 select-none",
             showStickyTitle ? "opacity-100" : "opacity-0",
           )}
           style={{ paddingLeft: "4.25rem" }} // Position after "Kumo" text (px-4 + "Kumo" width)
@@ -88,7 +88,7 @@ export function StickyDocHeader({
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle ? 0 : -1}
               >
-                <GithubLogoIcon size={18} weight="fill" />
+                <GithubLogoIcon size={14} weight="fill" />
               </a>
             )}
             {baseUIUrl && (
@@ -101,7 +101,7 @@ export function StickyDocHeader({
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle ? 0 : -1}
               >
-                <BaseUIIcon size={18} />
+                <BaseUIIcon size={14} />
               </a>
             )}
           </span>
@@ -111,9 +111,9 @@ export function StickyDocHeader({
       {/* Sticky header bar */}
       <header
         ref={headerRef}
-        className="sticky flex h-12 top-12 lg:top-0 z-10 border-b border-kumo-hairline bg-kumo-elevated"
+        className="sticky flex h-12 top-12 lg:top-0 z-10 border-b border-kumo-hairline bg-kumo-canvas"
       >
-        <div className="flex min-w-0 flex-1 items-center justify-between px-3 md:px-6 lg:px-4 lg:border-r lg:border-kumo-hairline">
+        <div className="flex min-w-0 flex-1 items-center justify-between px-4 md:px-6 lg:px-4 lg:border-r lg:border-kumo-hairline">
           <div
             className={cn(
               "flex items-center gap-2 transition-opacity duration-200",
@@ -122,9 +122,7 @@ export function StickyDocHeader({
                 : "pointer-events-none opacity-0",
             )}
           >
-            <span className="text-lg font-semibold tracking-tight text-kumo-default">
-              {title}
-            </span>
+            <span className="text-base font-medium">{title}</span>
             {githubSourceUrl && (
               <a
                 href={githubSourceUrl}
@@ -135,7 +133,7 @@ export function StickyDocHeader({
                 aria-label="View source on GitHub"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
               >
-                <GithubLogoIcon size={20} weight="fill" />
+                <GithubLogoIcon size={14} weight="fill" />
               </a>
             )}
             {baseUIUrl && (
@@ -148,7 +146,7 @@ export function StickyDocHeader({
                 aria-label="View Base UI documentation"
                 tabIndex={showStickyTitle && sidebarOpen ? 0 : -1}
               >
-                <BaseUIIcon size={20} />
+                <BaseUIIcon size={14} />
               </a>
             )}
           </div>

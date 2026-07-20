@@ -20,6 +20,8 @@ import {
   BannerWithActionsDemo,
   BannerActionVariantsDemo,
   BannerCompactDemo,
+  BannerCompactWithCtaDemo,
+  BannerCompactWithoutActionDemo,
   BannerCustomContentDemo,
 } from "~/components/demos/BannerDemo";
 
@@ -124,11 +126,24 @@ export default function Example() {
 
 ### Compact size
 
-Use `size="sm"` for dialogs and other tight spaces. Its `Banner.Action` children
-inherit the banner size and render at the `xs` button size.
+Use `size="sm"` in dialogs and other space-constrained contexts. Here, a banner should support the surrounding experience without competing with its primary action, so prefer a Kumo `Link` that renders inline with the description. When greater emphasis is warranted, use `Banner.Action`, which renders at the trailing end.
+
+#### With inline link
 
 <ComponentExample demo="BannerCompactDemo">
   <BannerCompactDemo client:visible />
+</ComponentExample>
+
+#### With CTA
+
+<ComponentExample demo="BannerCompactWithCtaDemo">
+  <BannerCompactWithCtaDemo client:visible />
+</ComponentExample>
+
+#### Without action
+
+<ComponentExample demo="BannerCompactWithoutActionDemo">
+  <BannerCompactWithoutActionDemo client:visible />
 </ComponentExample>
 
 ### Custom content

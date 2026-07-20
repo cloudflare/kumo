@@ -161,7 +161,7 @@ kbd,
 
 /* Paragraphs */
 .kumo-prose :where(p):not(:where(.not-prose, .not-prose *)) {
-  @apply text-base leading-normal;
+  @apply text-base leading-relaxed;
 }
 
 /* Adjacent sibling spacing between paragraphs */
@@ -178,7 +178,7 @@ kbd,
 
 /* List items */
 .kumo-prose :where(li):not(:where(.not-prose, .not-prose *)) {
-  @apply text-base leading-normal;
+  @apply text-base leading-relaxed;
 }
 
 /* Horizontal rule */
@@ -245,9 +245,9 @@ kbd,
 
 /* Code block inside wrapper — extra right padding so text clears the copy button */
 .code-block .astro-code {
+  @apply text-sm;
   padding: 0.875rem 2rem 0.875rem 1rem;
   margin: 0;
-  font-size: 0.875rem;
   line-height: 1.5;
   overflow-x: auto;
 }

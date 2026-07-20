@@ -162,7 +162,7 @@ export function TableOfContents({
               .getElementById(slug)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full appearance-none rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2.5 pr-10 text-sm text-kumo-default"
+          className="w-full appearance-none text-base p-4 md:px-6 lg:px-12"
         >
           {groupHeadings(headings).map((group) => (
             <optgroup key={group.h2.slug} label={group.h2.text}>
@@ -179,7 +179,7 @@ export function TableOfContents({
         <CaretDownIcon
           size={16}
           weight="bold"
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-kumo-subtle"
+          className="pointer-events-none absolute right-4.5 md:right-6 lg:right-12 top-1/2 -translate-y-1/2 text-kumo-subtle"
         />
       </nav>
     );
@@ -198,6 +198,7 @@ export function TableOfContents({
                 href={`#${group.h2.slug}`}
                 active={activeId === group.h2.slug}
                 onClick={() => handleClick(group.h2.slug)}
+                className="overflow-visible whitespace-pre-wrap text-pretty"
               >
                 {group.h2.text}
               </TOC.Item>
@@ -217,6 +218,7 @@ export function TableOfContents({
                   href={`#${h3.slug}`}
                   active={activeId === h3.slug}
                   onClick={() => handleClick(h3.slug)}
+                  className="overflow-visible whitespace-pre-wrap text-pretty"
                 >
                   {h3.text}
                 </TOC.Item>
