@@ -1,91 +1,69 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
-
-import { useScrollspy } from "./use-scrollspy";
-
-/**
- * Tracks whether the window is mid-scroll so a click-driven `active` state
- * isn't immediately overwritten by scrollspy before the smooth scroll lands.
- */
-function useIsScrolling() {
-  const isScrolling = useRef(false);
-
-  useEffect(() => {
-    const markScrolling = () => {
-      isScrolling.current = true;
-    };
-    const markStopped = () => {
-      isScrolling.current = false;
-    };
-
-    window.addEventListener("scroll", markScrolling, { passive: true });
-    window.addEventListener("scrollend", markStopped);
-
-    return () => {
-      window.removeEventListener("scroll", markScrolling);
-      window.removeEventListener("scrollend", markStopped);
-    };
-  }, []);
-
-  return isScrolling;
-}
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface UseTableOfContentsActiveIdOptions {
   /**
-   * The section anchor elements (or refs) to observe, in document order.
-   * `null` is treated as "not resolved yet" — nothing is observed until the
-   * consumer supplies elements.
+   * The ids of the section anchor elements to track, in document order.
+   * Elements are resolved via `document.getElementById` on the client, so ids
+   * that aren't in the DOM yet are simply ignored until they appear on a
+   * subsequent change to `ids`.
    */
-  targets: (Element | RefObject<Element>)[] | null;
+  ids: string[];
   /**
-   * Distance in px from the top of the scrolling `<main>` to the scrollspy
-   * activation line — typically the fixed header height so the topmost section
-   * actually in view is the one highlighted. Measured once on mount.
+   * Distance in px from the top of the viewport (or `root`) to the scrollspy
+   * activation line — typically the fixed header height, so the topmost
+   * section actually in view is the one highlighted.
    *
    * @default 0
    */
   offset?: number;
+  /**
+   * The scroll container to track. Defaults to the viewport.
+   *
+   * @default null
+   */
+  root?: Element | null;
+  /**
+   * When enabled, the section named by `location.hash` is selected on mount
+   * and on `hashchange`, so deep links highlight the right section.
+   *
+   * @default true
+   */
+  trackHash?: boolean;
 }
 
-export interface UseTableOfContentsActiveId {
+export interface UseTableOfContentsActiveIdResult {
   /** The id of the section currently considered active, or `null`. */
   activeId: string | null;
   /**
-   * Force a section active (a ToC click or hash deep-link), temporarily
-   * pausing scrollspy so the chosen section sticks even when it's too short to
-   * reach the activation line. Scrollspy resumes once the smooth scroll ends.
+   * Force a section active (e.g. from a ToC item's `onClick`), temporarily
+   * pausing scrollspy so the chosen section sticks even when it's too short
+   * to reach the activation line. Scrollspy resumes once scrolling settles.
    */
   selectSection: (id: string) => void;
 }
 
-const SCROLL_DEBOUNCE_TIMEOUT = 50;
+/** How long scrolling must be quiet before a selected section unpins. */
+const SCROLL_SETTLE_MS = 150;
 
 /**
- * Table-of-contents scroll-tracking orchestration.
+ * Table-of-contents scroll tracking.
  *
  * Derives the currently-active section from scroll position via an
- * `IntersectionObserver` (see {@link useScrollspy}), and exposes a
- * `selectSection` action that pins a section on click / hash deep-link.
+ * `IntersectionObserver` (the topmost tracked section in view wins), and
+ * exposes a `selectSection` action that pins a section on click — held until
+ * scrolling settles, so short sections stay highlighted after a jump.
+ * Hash deep-links are handled automatically unless `trackHash` is disabled.
  *
  * The `TableOfContents` component itself is purely presentational — pair this
- * hook with it to drive the `active` prop of each item, so the active-section
- * behavior stays consistent (and isn't re-implemented per consumer).
+ * hook with it to drive the `active` prop of each item.
  *
- * The consumer owns resolving `targets` (from a DOM scan of `<a href>` anchors,
- * an explicit id list, etc.) and deciding when to call `selectSection` (a
- * `location.hash` effect, an `onClick`, a `hashchange` listener, …). This hook
- * owns only the scrollspy / hash mode-switching.
+ * All DOM work happens in effects, so the hook is SSR-safe (`activeId` is
+ * `null` on the server).
  *
  * @example
  * ```tsx
  * const { activeId, selectSection } = useTableOfContentsActiveId({
- *   targets: sectionElements,
+ *   ids: headings.map((h) => h.slug),
  *   offset: HEADER_HEIGHT,
  * });
  *
@@ -99,78 +77,111 @@ const SCROLL_DEBOUNCE_TIMEOUT = 50;
  * ```
  */
 export function useTableOfContentsActiveId({
-  targets,
+  ids,
   offset = 0,
-}: UseTableOfContentsActiveIdOptions): UseTableOfContentsActiveId {
+  root = null,
+  trackHash = true,
+}: UseTableOfContentsActiveIdOptions): UseTableOfContentsActiveIdResult {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [rootMargin, setRootMargin] = useState("0px 0px 0px 0px");
-  const mode = useRef<"scrollspy" | "hash">("scrollspy");
-  const isScrolling = useIsScrolling();
 
-  // Push the activation line down past the fixed header, measured from <main>.
-  useLayoutEffect(() => {
-    const root = document.querySelector("main");
+  // While pinned (after selectSection), scrollspy keeps tracking but doesn't
+  // overwrite the active id until scrolling settles and it unpins.
+  const pinned = useRef(false);
 
-    if (root) {
-      const rootTop = root.getBoundingClientRect().top;
-      const scrollY = document.documentElement.scrollTop;
-
-      setRootMargin(`-${rootTop + scrollY + 1 + offset}px 0px 0px 0px`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const activeTargetElement = useScrollspy(targets, { rootMargin });
+  // `ids` is typically rebuilt every render; key effects on its content.
+  const idsKey = ids.join("\n");
 
   useEffect(() => {
-    if (mode.current === "scrollspy" && activeTargetElement) {
-      setActiveId(activeTargetElement.id);
-    }
-  }, [activeTargetElement]);
+    const elements = idsKey
+      .split("\n")
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
 
-  // Track the pending "restore scrollspy" work so it can be torn down on
-  // unmount and superseded on rapid repeated clicks (no listener build-up).
-  const restoreTimeout = useRef<number | undefined>(undefined);
-  const restoreListener = useRef<(() => void) | null>(null);
+    if (elements.length === 0) return;
 
-  const clearPendingRestore = useCallback(() => {
-    if (restoreTimeout.current !== undefined) {
-      window.clearTimeout(restoreTimeout.current);
-      restoreTimeout.current = undefined;
-    }
-    if (restoreListener.current) {
-      document.removeEventListener("scrollend", restoreListener.current);
-      restoreListener.current = null;
-    }
-  }, []);
+    // Latest known intersection state per element, since observer callbacks
+    // only include entries that changed.
+    const intersecting = new Set<Element>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            intersecting.add(entry.target);
+          } else {
+            intersecting.delete(entry.target);
+          }
+        }
+
+        // Topmost tracked section in view, in document order. When nothing is
+        // in view (e.g. inside a long section body), keep the last active id.
+        const first = elements.find((el) => intersecting.has(el));
+        if (first && !pinned.current) {
+          setActiveId(first.id);
+        }
+      },
+      { root, rootMargin: `-${offset}px 0px 0px 0px` },
+    );
+
+    for (const el of elements) observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [idsKey, offset, root]);
+
+  // Pending unpin work, torn down on unmount and superseded by rapid clicks.
+  const settleTimer = useRef<number | undefined>(undefined);
+  const cancelPendingUnpin = useRef<(() => void) | null>(null);
 
   const selectSection = useCallback(
     (id: string) => {
-      clearPendingRestore();
-      mode.current = "hash";
+      cancelPendingUnpin.current?.();
+      pinned.current = true;
       setActiveId(id);
 
-      const restoreScrollspy = () => {
-        restoreTimeout.current = window.setTimeout(() => {
-          restoreTimeout.current = undefined;
+      // Unpin once scrolling has been quiet for a beat: every scroll event
+      // (including the smooth scroll to the target) pushes the deadline back.
+      // Works without `scrollend`, which Safari didn't support until 18.2.
+      const scrollTarget: EventTarget = root ?? window;
 
-          if (isScrolling.current) {
-            restoreListener.current = restoreScrollspy;
-            document.addEventListener("scrollend", restoreScrollspy, {
-              once: true,
-            });
-          } else {
-            mode.current = "scrollspy";
-          }
-        }, SCROLL_DEBOUNCE_TIMEOUT);
+      const armSettleTimer = () => {
+        window.clearTimeout(settleTimer.current);
+        settleTimer.current = window.setTimeout(() => {
+          cancelPendingUnpin.current?.();
+          pinned.current = false;
+        }, SCROLL_SETTLE_MS);
       };
 
-      restoreScrollspy();
+      scrollTarget.addEventListener("scroll", armSettleTimer, {
+        passive: true,
+      });
+      cancelPendingUnpin.current = () => {
+        window.clearTimeout(settleTimer.current);
+        scrollTarget.removeEventListener("scroll", armSettleTimer);
+        cancelPendingUnpin.current = null;
+      };
+
+      armSettleTimer();
     },
-    [clearPendingRestore, isScrolling],
+    [root],
   );
 
-  useEffect(() => clearPendingRestore, [clearPendingRestore]);
+  useEffect(() => () => cancelPendingUnpin.current?.(), []);
+
+  // Deep links: select the hash section on mount and whenever the hash
+  // changes, but only if it's one of the tracked sections.
+  useEffect(() => {
+    if (!trackHash) return;
+
+    const knownIds = new Set(idsKey.split("\n"));
+    const syncFromHash = () => {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      if (id && knownIds.has(id)) selectSection(id);
+    };
+
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
+  }, [trackHash, idsKey, selectSection]);
 
   return { activeId, selectSection };
 }

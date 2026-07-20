@@ -13,5 +13,5 @@ export {
 export {
   useTableOfContentsActiveId,
   type UseTableOfContentsActiveIdOptions,
-  type UseTableOfContentsActiveId,
+  type UseTableOfContentsActiveIdResult,
 } from "./use-table-of-contents-active-id";

@@ -81,41 +81,14 @@ export function TableOfContents({
     return scrapeHeadings();
   }, [headingsProp, hasMounted]);
 
-  // Resolve the heading anchor elements once they're in the DOM, then hand
-  // scroll tracking to the shared kumo hook. It derives the active section from
-  // scroll position via an IntersectionObserver (useTableOfContentsActiveId →
-  // useScrollspy), highlighting the topmost heading in view. It never
-  // force-jumps to the last heading at the page bottom, so short trailing
+  // Scroll tracking + hash deep-linking via the shared kumo hook. It
+  // highlights the topmost heading in view (offset by the fixed header) and
+  // pins a clicked heading until the smooth scroll settles, so short trailing
   // sections stay reachable.
-  const slugsKey = headings.map((h) => h.slug).join();
-  const [targets, setTargets] = useState<Element[]>([]);
-
-  useEffect(() => {
-    setTargets(
-      headings
-        .map((h) => document.getElementById(h.slug))
-        .filter((el): el is HTMLElement => el !== null),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slugsKey]);
-
-  const { activeId, selectSection } = useTableOfContentsActiveId({ targets });
-
-  // A TOC click or hash deep-link pins that section until the smooth scroll
-  // settles and scrollspy resumes — handled by the hook's `selectSection`.
-  useEffect(() => {
-    const syncFromHash = () => {
-      const id = window.location.hash.slice(1);
-      if (id) selectSection(id);
-    };
-
-    syncFromHash();
-    window.addEventListener("hashchange", syncFromHash);
-
-    return () => {
-      window.removeEventListener("hashchange", syncFromHash);
-    };
-  }, [selectSection]);
+  const { activeId, selectSection } = useTableOfContentsActiveId({
+    ids: headings.map((h) => h.slug),
+    offset: 96, // sticky header height (top-24)
+  });
 
   if (headings.length === 0) return null;
 

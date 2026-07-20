@@ -326,7 +326,7 @@ export {
   type KumoTableOfContentsState,
   useTableOfContentsActiveId,
   type UseTableOfContentsActiveIdOptions,
-  type UseTableOfContentsActiveId,
+  type UseTableOfContentsActiveIdResult,
 } from "./components/table-of-contents";
 // PLOP_INJECT_EXPORT
 

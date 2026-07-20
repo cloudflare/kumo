@@ -15,6 +15,7 @@ import {
   TableOfContentsGroupDemo,
   TableOfContentsWithoutTitleDemo,
   TableOfContentsRenderPropDemo,
+  TableOfContentsScrollspyDemo,
 } from "~/components/demos/TableOfContentsDemo";
 
 {/* Hero Demo */}
@@ -70,9 +71,74 @@ export default function Example() {
 ```
 
 <p>
-  This component is purely presentational. All interaction logic — scroll
-  tracking, `IntersectionObserver`, active state management — is left to the
-  consumer.
+  This component is purely presentational — you control `active` on each item.
+  For automatic scroll tracking, pair it with the `useTableOfContentsActiveId`
+  hook below.
+</p>
+
+</ComponentSection>
+
+{/* Scroll tracking */}
+
+<ComponentSection>
+
+## Scroll tracking
+
+<p>
+  `useTableOfContentsActiveId` derives the active section from scroll position:
+  pass the section ids in document order and it returns the id of the topmost
+  section in view, plus a `selectSection` action that pins a clicked section
+  until the smooth scroll settles (so short sections stay highlighted after a
+  jump). Hash deep-links (`#usage`) are handled automatically. The hook is
+  SSR-safe — all DOM access happens in effects.
+</p>
+
+```tsx
+import { TableOfContents, useTableOfContentsActiveId } from "@cloudflare/kumo";
+
+export default function Example({ headings }) {
+  const { activeId, selectSection } = useTableOfContentsActiveId({
+    ids: headings.map((h) => h.slug),
+    offset: 64, // fixed header height in px
+  });
+
+  return (
+    <TableOfContents>
+      <TableOfContents.Title>On this page</TableOfContents.Title>
+      <TableOfContents.List>
+        {headings.map((h) => (
+          <TableOfContents.Item
+            key={h.slug}
+            href={`#${h.slug}`}
+            active={activeId === h.slug}
+            onClick={() => selectSection(h.slug)}
+          >
+            {h.text}
+          </TableOfContents.Item>
+        ))}
+      </TableOfContents.List>
+    </TableOfContents>
+  );
+}
+```
+
+<p>
+  Pass a `root` element to track a custom scroll container instead of the
+  viewport (and `trackHash: false` when hash navigation doesn't apply):
+</p>
+
+<ComponentExample demo="TableOfContentsScrollspyDemo">
+  <TableOfContentsScrollspyDemo client:load />
+</ComponentExample>
+
+### Options
+
+<p>
+  `ids` — section anchor ids, in document order (required). `offset` — px from
+  the top of the viewport/root to the activation line, typically your fixed
+  header height (default `0`). `root` — custom scroll container (default:
+  viewport). `trackHash` — select the section from `location.hash` on load and
+  `hashchange` (default `true`).
 </p>
 
 </ComponentSection>
