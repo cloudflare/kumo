@@ -324,6 +324,9 @@ export {
   KUMO_TABLE_OF_CONTENTS_VARIANTS,
   KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
   type KumoTableOfContentsState,
+  useTableOfContentsActiveId,
+  type UseTableOfContentsActiveIdOptions,
+  type UseTableOfContentsActiveId,
 } from "./components/table-of-contents";
 // PLOP_INJECT_EXPORT
 

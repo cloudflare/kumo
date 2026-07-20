@@ -9,3 +9,9 @@ export {
   KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
   type KumoTableOfContentsState,
 } from "./table-of-contents";
+
+export {
+  useTableOfContentsActiveId,
+  type UseTableOfContentsActiveIdOptions,
+  type UseTableOfContentsActiveId,
+} from "./use-table-of-contents-active-id";
