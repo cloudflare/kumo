@@ -257,6 +257,21 @@ describe("CommandPalette", () => {
     });
   });
 
+  describe("Highlighted Text", () => {
+    it("uses a themed background for matching text", () => {
+      render(
+        <CommandPalette.HighlightedText
+          text="Autocomplete"
+          highlights={[[0, 3]]}
+        />,
+      );
+
+      const highlight = screen.getByText("Auto");
+      expect(highlight.tagName).toBe("MARK");
+      expect(highlight.className).toContain("bg-kumo-warning/50");
+    });
+  });
+
   describe("Keyboard Navigation", () => {
     it("navigates items with arrow keys", async () => {
       const user = userEvent.setup();
