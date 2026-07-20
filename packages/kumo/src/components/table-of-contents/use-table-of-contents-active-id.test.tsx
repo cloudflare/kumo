@@ -156,7 +156,9 @@ describe("useTableOfContentsActiveId", () => {
       act(() => result.current.selectSection("three"));
 
       // 150ms of scroll quiet → unpinned; the next scrollspy report wins.
-      act(() => vi.advanceTimersByTime(200));
+      act(() => {
+        vi.advanceTimersByTime(200);
+      });
       act(() => latestObserver().intersect([[one, true]]));
 
       expect(result.current.activeId).toBe("one");
