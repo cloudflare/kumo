@@ -53,44 +53,52 @@ export const KUMO_BUTTON_GROUP_STYLING = {
 export interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {
   /** Additional CSS classes merged via `cn()`. Use kumo semantic tokens only. */
   className?: string;
-  /** Buttons to join together. Typically `Button` / `LinkButton` elements. */
+  /**
+   * The tightly-coupled controls to join. Typically two `Button`s: a primary
+   * action and a dropdown trigger (a "split button").
+   */
   children?: ReactNode;
 }
 
 /**
- * Visually joins a set of related buttons into a single horizontal segmented
- * control.
+ * Joins a small set of tightly-coupled buttons into a single control — most
+ * commonly a **split button**: a primary action next to a dropdown trigger for
+ * related, secondary actions.
  *
  * Children keep their own variant, size, and shape — ButtonGroup only handles
- * the layout: it flattens the inner corners and overlaps borders so adjacent
- * buttons share one seam. Works for action rows, icon toolbars, and split
- * buttons (a primary action next to a dropdown trigger).
+ * the layout: it flattens the inner corners and overlaps borders so the buttons
+ * share one seam. Renders `role="group"` so assistive technology treats the
+ * buttons as a related set (pair it with an `aria-label`).
  *
- * @example
- * ```tsx
- * <ButtonGroup>
- *   <Button variant="secondary">Day</Button>
- *   <Button variant="secondary">Week</Button>
- *   <Button variant="secondary">Month</Button>
- * </ButtonGroup>
- * ```
+ * For grouping multiple *independent* buttons or inputs (e.g. a formatting bar
+ * or a page-level set of actions), use `Toolbar` instead — it provides the
+ * correct roaming-focus keyboard semantics for a toolbar.
  *
  * @example Split button
  * ```tsx
- * <ButtonGroup>
+ * <ButtonGroup aria-label="Deploy">
  *   <Button variant="primary">Deploy</Button>
- *   <Button variant="primary" shape="square" aria-label="More options">
- *     <CaretDownIcon />
- *   </Button>
+ *   <DropdownMenu>
+ *     <DropdownMenu.Trigger
+ *       render={
+ *         <Button variant="primary" shape="square" aria-label="More deploy options">
+ *           <CaretDownIcon />
+ *         </Button>
+ *       }
+ *     />
+ *     <DropdownMenu.Content>
+ *       <DropdownMenu.Item>Deploy to staging</DropdownMenu.Item>
+ *     </DropdownMenu.Content>
+ *   </DropdownMenu>
  * </ButtonGroup>
  * ```
  */
 export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(
-  ({ className, children, role, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        role={role ?? "group"}
+        role="group"
         data-kumo-component="ButtonGroup"
         className={cn(KUMO_BUTTON_GROUP_STYLING.baseClasses, className)}
         {...props}

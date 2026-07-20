@@ -33,13 +33,13 @@ describe("ButtonGroup", () => {
     expect(screen.getByRole("group")).toBeTruthy();
   });
 
-  it("allows overriding the role", () => {
+  it("forwards aria-label to the group", () => {
     render(
-      <ButtonGroup role="toolbar" aria-label="Actions">
+      <ButtonGroup aria-label="Deploy">
         <Button>One</Button>
       </ButtonGroup>,
     );
-    expect(screen.getByRole("toolbar", { name: "Actions" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Deploy" })).toBeTruthy();
   });
 
   it("lays buttons out horizontally", () => {

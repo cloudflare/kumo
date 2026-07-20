@@ -1,7 +1,7 @@
 ---
 layout: ~/layouts/MdxDocLayout.astro
 title: "Button Group"
-description: "Visually joins a set of related buttons into a single segmented control."
+description: "Joins a primary action and a dropdown trigger into a single split button."
 sourceFile: "components/button-group"
 ---
 
@@ -10,10 +10,8 @@ import ComponentSection from "~/components/docs/ComponentSection.astro";
 import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
-  ButtonGroupBasicDemo,
   ButtonGroupSplitDemo,
-  ButtonGroupIconDemo,
-  ButtonGroupWithIconsDemo,
+  ButtonGroupSecondaryDemo,
   ButtonGroupSizesDemo,
 } from "~/components/demos/ButtonGroupDemo";
 
@@ -21,12 +19,33 @@ import {
 
 <ComponentSection>
   <ComponentExample
-    demo="ButtonGroupBasicDemo"
+    demo="ButtonGroupSplitDemo"
     vrSection="basic"
     vrTitle="Basic"
   >
-    <ButtonGroupBasicDemo client:visible />
+    <ButtonGroupSplitDemo client:visible />
   </ComponentExample>
+</ComponentSection>
+
+{/* When to use */}
+
+<ComponentSection>
+
+## When to use
+
+<p>
+  `ButtonGroup` joins a small set of tightly-coupled buttons into a single
+  control — most commonly a **split button**: a primary action next to a
+  dropdown trigger for related, secondary actions.
+</p>
+
+<p>
+  <strong>Grouping multiple independent buttons or inputs?</strong> Use{" "}
+  <a href="/components/toolbar">Toolbar</a> instead. A toolbar (e.g. a
+  formatting bar or a page-level set of actions) needs roaming-focus keyboard
+  semantics that `ButtonGroup` intentionally does not provide.
+</p>
+
 </ComponentSection>
 
 {/* Installation */}
@@ -57,21 +76,36 @@ import {
 ## Usage
 
 <p>
-  ButtonGroup is a layout wrapper. Its children keep their own `variant`,
+  `ButtonGroup` is a layout wrapper. Its children keep their own `variant`,
   `size`, and `shape` — the group only flattens the inner corners and overlaps
-  borders so adjacent buttons share a single seam. Use the same `size` and
-  `variant` on every child for a consistent segmented control.
+  borders so the buttons share a single seam. Give the group an `aria-label`
+  describing the action, and give the dropdown trigger its own `aria-label`.
 </p>
 
   <CodeBlock
-    code={`import { Button, ButtonGroup } from "@cloudflare/kumo";
+    code={`import { Button, ButtonGroup, DropdownMenu } from "@cloudflare/kumo";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 export default function Example() {
   return (
-    <ButtonGroup>
-      <Button variant="secondary">Day</Button>
-      <Button variant="secondary">Week</Button>
-      <Button variant="secondary">Month</Button>
+    <ButtonGroup aria-label="Deploy">
+      <Button variant="primary">Deploy</Button>
+      <DropdownMenu>
+        <DropdownMenu.Trigger
+          render={
+            <Button
+              variant="primary"
+              shape="square"
+              aria-label="More deploy options"
+            >
+              <CaretDownIcon />
+            </Button>
+          }
+        />
+        <DropdownMenu.Content>
+          <DropdownMenu.Item>Deploy to staging</DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
     </ButtonGroup>
   );
 }`}
@@ -85,43 +119,23 @@ export default function Example() {
 
 ## Examples
 
-### Basic
-
-<p>A segmented row of related actions joined into a single control.</p>
-<ComponentExample demo="ButtonGroupBasicDemo">
-  <ButtonGroupBasicDemo client:visible />
-</ComponentExample>
-
 ### Split button
 
-<p>
-  Pair a primary action with a `DropdownMenu` trigger for secondary actions. The
-  caret button uses `shape="square"` and an `aria-label`.
-</p>
+<p>A primary action joined with a dropdown trigger for secondary actions.</p>
 <ComponentExample demo="ButtonGroupSplitDemo">
   <ButtonGroupSplitDemo client:visible />
 </ComponentExample>
 
-### Icon toolbar
+### Secondary
 
-<p>
-  Icon-only groups make compact toolbars. Set `role="toolbar"` and an
-  `aria-label` describing the set of actions.
-</p>
-<ComponentExample demo="ButtonGroupIconDemo">
-  <ButtonGroupIconDemo client:visible />
-</ComponentExample>
-
-### With icons and labels
-
-<p>Buttons with leading icons, grouped together.</p>
-<ComponentExample demo="ButtonGroupWithIconsDemo">
-  <ButtonGroupWithIconsDemo client:visible />
+<p>Split buttons work with any button variant.</p>
+<ComponentExample demo="ButtonGroupSecondaryDemo">
+  <ButtonGroupSecondaryDemo client:visible />
 </ComponentExample>
 
 ### Sizes
 
-<p>Set the same `size` on every button to keep the group aligned.</p>
+<p>Match the `size` on both buttons to keep the split button aligned.</p>
 <ComponentExample demo="ButtonGroupSizesDemo">
   <ButtonGroupSizesDemo client:visible />
 </ComponentExample>
