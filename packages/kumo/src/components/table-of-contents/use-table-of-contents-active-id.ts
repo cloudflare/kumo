@@ -89,11 +89,12 @@ export function useTableOfContentsActiveId({
   const pinned = useRef(false);
 
   // `ids` is typically rebuilt every render; key effects on its content.
-  const idsKey = ids.join("\n");
+  // \0 can't appear in a document id, so the round-trip is unambiguous.
+  const idsKey = ids.join("\0");
 
   useEffect(() => {
     const elements = idsKey
-      .split("\n")
+      .split("\0")
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
 
@@ -172,7 +173,7 @@ export function useTableOfContentsActiveId({
   useEffect(() => {
     if (!trackHash) return;
 
-    const knownIds = new Set(idsKey.split("\n"));
+    const knownIds = new Set(idsKey.split("\0"));
     const syncFromHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
       if (id && knownIds.has(id)) selectSection(id);

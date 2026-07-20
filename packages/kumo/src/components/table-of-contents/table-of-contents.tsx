@@ -173,6 +173,9 @@ const TableOfContentsGroup = forwardRef<
     );
   }
 
+  // Without an href the label is a non-interactive title, so `onClick` is
+  // intentionally not rendered — putting it on the <li> would also catch
+  // clicks bubbling up from the nested items.
   return (
     <li
       ref={ref}
