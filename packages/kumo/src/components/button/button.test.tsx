@@ -202,6 +202,18 @@ describe("LinkButton", () => {
     expect(ref.current).toBe(screen.getByRole("link"));
   });
 
+  it("title prop wraps the anchor in a Tooltip and removes the native title attribute", () => {
+    render(
+      <LinkButton href="/home" title="Go to the home page">
+        Home
+      </LinkButton>,
+    );
+    const link = screen.getByRole("link", { name: "Home" });
+    // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
+    expect(link.getAttribute("title")).toBeNull();
+    expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+  });
+
   describe("disabled", () => {
     it("renders a disabled <button> instead of an <a>", () => {
       render(

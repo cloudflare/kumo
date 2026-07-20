@@ -24,6 +24,7 @@ import {
   ButtonDisabledDemo,
   ButtonTitleDemo,
   ButtonLinkAsButtonDemo,
+  ButtonLinkTooltipDemo,
   ButtonDisabledLinkDemo,
 } from "~/components/demos/ButtonDemo";
 
@@ -232,6 +233,20 @@ export default function Example() {
   vrTitle="Link as Button"
 >
   <ButtonLinkAsButtonDemo client:visible />
+</ComponentExample>
+
+### Link with Tooltip
+
+<p>
+  Pass `title` to a `LinkButton` to wrap it in a tooltip, just like `Button`.
+  This surfaces extra context on hover and focus.
+</p>
+<ComponentExample
+  demo="ButtonLinkTooltipDemo"
+  vrSection="link-tooltip"
+  vrTitle="Link with Tooltip"
+>
+  <ButtonLinkTooltipDemo client:visible />
 </ComponentExample>
 
 ### Disabled Link

@@ -459,7 +459,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       );
     }
 
-    return (
+    const link = (
       <LinkComponent
         ref={ref}
         data-kumo-component="LinkButton"
@@ -470,7 +470,6 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         )}
         href={href}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
-        title={title}
         to={typeof href === "string" ? href : undefined}
         {...externalProps}
         {...props}
@@ -478,6 +477,12 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         {renderButtonContent(variant, renderIconNode(IconComponent), children)}
       </LinkComponent>
     );
+
+    if (title) {
+      return <Tooltip content={title} render={link} />;
+    }
+
+    return link;
   },
 );
 
