@@ -29,19 +29,28 @@ const COMPONENTS_WITHOUT_DOCS = new Set([
 
 /**
  * Chart components are auto-discovered from the @cloudflare/kumo registry, but
- * they are documented under /charts/* rather than /components/*. Their pages are
- * already covered by the curated STATIC_PAGES entries below, so we exclude the
- * registry-derived items to avoid broken /components/<name> links — e.g.
- * searching "chart" previously linked to /components/chart, which 404s.
+ * they are documented under /charts/* rather than /components/*. Map the ones
+ * with a dedicated page to their real docs URL so search results link correctly
+ * — e.g. searching "bubble" finds BubbleMap and links to /charts/maps#bubble-map
+ * instead of a non-existent /components/bubble-map. Components that share a page
+ * (BubbleMap + ChoroplethMap live on /charts/maps) deep-link to their section
+ * anchor so the result lands on the right content.
  */
-const COMPONENTS_DOCUMENTED_UNDER_CHARTS = new Set([
-  "Chart",
-  "ChartLegend",
-  "SankeyChart",
-  "TimeseriesChart",
-  "BubbleMap",
-  "ChoroplethMap",
-]);
+const CHART_COMPONENT_URLS: Record<string, string> = {
+  SankeyChart: "/charts/sankey",
+  TimeseriesChart: "/charts/timeseries",
+  BubbleMap: "/charts/maps#bubble-map",
+  ChoroplethMap: "/charts/maps#choropleth-map",
+};
+
+/**
+ * Chart components with no dedicated page of their own — they're already
+ * represented by curated STATIC_PAGES entries (the "Charts" overview and
+ * "Custom Chart"), so we exclude the registry duplicates from search.
+ * ChartLegend additionally has no Props type, so it isn't in the registry —
+ * listed here for clarity/forward-proofing.
+ */
+const CHART_COMPONENTS_WITHOUT_OWN_PAGE = new Set(["Chart", "ChartLegend"]);
 
 /**
  * Map registry component names to their doc page slugs.
@@ -109,23 +118,10 @@ const STATIC_PAGES: Array<{
     category: "Charts",
   },
   {
-    name: "Timeseries Chart",
-    description: "A specialized chart for displaying time-based data.",
-    url: "/charts/timeseries",
-    category: "Charts",
-  },
-  {
     name: "Maps",
     description:
       "Map chart components for visualizing geographic data with GeoJSON.",
     url: "/charts/maps",
-    category: "Charts",
-  },
-  {
-    name: "Sankey Chart",
-    description:
-      "A Sankey diagram component for visualizing flow data between nodes using ECharts.",
-    url: "/charts/sankey",
     category: "Charts",
   },
   {
@@ -259,6 +255,11 @@ interface SearchDialogProps {
 
 /** Build URL path from component type and name */
 function getComponentUrl(type: string, name: string): string {
+  // Chart components are documented under /charts/*, not /components/*.
+  if (CHART_COMPONENT_URLS[name]) {
+    return CHART_COMPONENT_URLS[name];
+  }
+
   const slug =
     SLUG_OVERRIDES[name] ??
     name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
@@ -420,7 +421,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       .filter(
         (component) =>
           !COMPONENTS_WITHOUT_DOCS.has(component.name) &&
-          !COMPONENTS_DOCUMENTED_UNDER_CHARTS.has(component.name),
+          !CHART_COMPONENTS_WITHOUT_OWN_PAGE.has(component.name),
       )
       .map((component) => ({
         name: component.name,
