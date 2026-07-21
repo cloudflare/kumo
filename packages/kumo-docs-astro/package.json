@@ -26,7 +26,7 @@
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/typography": "^0.5.19",
     "@types/turndown": "5.0.6",
-    "astro": "^5.18.1",
+    "astro": "^7.1.0",
     "clsx": "catalog:",
     "echarts": "^6.0.0",
     "marked": "^18.0.6",
