@@ -151,7 +151,7 @@ Remember that this change is specific to the current project and will not affect
 
 ### Linting
 
-The code is checked for linting errors by [ESLint](https://eslint.org/).
+The code is checked for linting errors by [Oxlint](https://oxc.rs/docs/guide/usage/linter.html), run through [Vite+](https://viteplus.dev/) (`vp lint`). Lint configuration lives in the `lint` block of the root and per-package `vite.config.ts` files.
 
 - Run the linting checks
 
@@ -159,17 +159,17 @@ The code is checked for linting errors by [ESLint](https://eslint.org/).
   pnpm run lint
   ```
 
-- The repository has a recommended VS Code plugin to run ESLint checks while editing source code, providing immediate feedback.
-
 ### Formatting
 
-The code is checked for formatting errors by [Prettier](https://prettier.io/).
+The code is formatted by [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html), run through Vite+ (`vp fmt`). Formatting configuration lives in the `fmt` block of the root `vite.config.ts`.
 
-- Use the following command to run prettier on the codebase
+- Use the following command to format the codebase
 
   ```sh
   pnpm run format
   ```
+
+- You can also run `vp check` to format, lint, and validate in one pass (`vp check --fix` applies fixes).
 
 ### Testing
 

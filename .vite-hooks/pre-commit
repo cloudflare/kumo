@@ -1,0 +1,7 @@
+# Regenerate the design skill when the source tips change (ported from lefthook).
+if git diff --cached --name-only --diff-filter=ACMR |
+  grep -qx 'packages/kumo-docs-astro/src/components/skill/design-tips.tsx'; then
+  pnpm --filter @cloudflare/kumo-docs-astro generate-design-skill
+  git add packages/kumo-docs-astro/public/skill.md skills/kumo-design/SKILL.md
+fi
+vp staged

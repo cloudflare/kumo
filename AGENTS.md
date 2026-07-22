@@ -19,7 +19,7 @@ kumo/
 ├── lint/                         # Custom oxlint rules (5 rules in package, 4 at root)
 ├── .changeset/                   # Changeset files
 ├── .github/workflows/            # 6 workflow YAMLs (release, pullrequest, preview, etc.)
-└── lefthook.yml                  # Pre-push changeset validation
+└── .vite-hooks/                  # Git hooks (Vite+): pre-commit codegen+staged, pre-push changeset validation
 ```
 
 ## WHERE TO LOOK
@@ -63,7 +63,7 @@ kumo/
 - **Enforced for `packages/kumo/`**: Pre-push hook requires changeset for npm-published library
 - **Optional for `kumo-docs-astro`**: Version appears in `/api/version` endpoint (debugging) but nothing depends on it
 - **Not needed for `kumo-figma`**: Figma plugin, not published to npm
-- **Pre-push hook**: Lefthook validates before push. Bypass: `git push --no-verify`
+- **Pre-push hook**: `.vite-hooks/pre-push` validates before push. Bypass: `git push --no-verify` (or `VITE_GIT_HOOKS=0`)
 - **AI agents NEVER**: `pnpm version`, `pnpm release`, `pnpm publish:beta`, `pnpm release:production`
 
 ### Pull Request Descriptions
@@ -127,17 +127,22 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 
 ## TOOLCHAIN
 
-| Tool       | Version   | Notes                                  |
-| ---------- | --------- | -------------------------------------- |
-| Node       | ^24.12.0  | Engine constraint                      |
-| pnpm       | >=10.21.0 | Workspace manager                      |
-| TypeScript | 5.9.2     | Via pnpm catalog                       |
-| Vite       | 7.1.7     | Library mode (kumo), dev server (docs) |
-| Tailwind   | 4.1.17    | v4 with `light-dark()` tokens          |
-| oxlint     | 1.42.0    | Primary linter + 5 custom JS rules     |
-| Vitest     | 3.2.4     | happy-dom env, v8 coverage             |
-| Changesets | latest    | Version management                     |
-| Astro      | latest    | Docs framework                         |
+| Tool       | Version   | Notes                                                     |
+| ---------- | --------- | --------------------------------------------------------- |
+| Node       | ^24.12.0  | Engine constraint (`.node-version`)                       |
+| pnpm       | >=10.21.0 | Workspace manager                                         |
+| Vite+      | 0.2.2     | Unified toolchain (`vp` CLI): build, test, lint, fmt      |
+| TypeScript | 5.9.2     | Via pnpm catalog                                          |
+| Vite       | 8.x       | Bundled via vite-plus; library mode (kumo), docs server   |
+| Tailwind   | 4.1.17    | v4 with `light-dark()` tokens                             |
+| Oxlint     | bundled   | Via `vp lint`; config in vite.config.ts + custom JS rules |
+| Oxfmt      | bundled   | Via `vp fmt`; replaced Prettier                           |
+| Vitest     | bundled   | Via `vp test`; happy-dom env, v8 coverage                 |
+| Changesets | latest    | Version management                                        |
+| Astro      | 7.x       | Docs framework                                            |
+
+Lint/format/test config lives in `vite.config.ts` (root and per-package) — there
+are no `.oxlintrc.json` / `.prettierrc` files. `vp check` runs format + lint.
 
 ## SECURITY
 
@@ -151,6 +156,6 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 - `src/primitives/` (40 files) are auto-generated Base UI re-exports
 - Blocks in `src/blocks/` are NOT exported from package index; installed via CLI `kumo add`
 - `src/catalog/` is a runtime JSON-UI rendering module (separate concern from component library)
-- Dual linter: oxlint (fast, custom rules) + ESLint (7 jsx-a11y rules only via oxlint JS plugin)
+- Single linter: Oxlint via `vp lint` (custom kumo JS rules + native jsx-a11y rules; type-aware in the kumo package)
 - `PLOP_INJECT_EXPORT` and `PLOP_INJECT_COMPONENT_ENTRY` markers in source for scaffolding
 - 6 GitHub Actions workflows exist in `.github/workflows/` (release, pullrequest, preview, preview-deploy, bonk, reviewer)

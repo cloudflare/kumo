@@ -83,7 +83,7 @@ When `captureSections: true`, the worker looks for elements with `data-vr-demo`,
 pnpm --filter @cloudflare/kumo-screenshot-worker dev        # Local dev server
 pnpm --filter @cloudflare/kumo-screenshot-worker deploy     # Deploy to Cloudflare
 pnpm --filter @cloudflare/kumo-screenshot-worker typecheck  # TypeScript check
-pnpm --filter @cloudflare/kumo-screenshot-worker lint       # oxlint
+pnpm --filter @cloudflare/kumo-screenshot-worker lint       # vp lint (Oxlint)
 ```
 
 ## NOTES

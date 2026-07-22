@@ -2,11 +2,6 @@
   "name": "kumo-workspace",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.22.0",
-  "engines": {
-    "node": "^24.12.0",
-    "pnpm": ">=10.21.0"
-  },
   "scripts": {
     "build": "pnpm --filter @cloudflare/kumo-docs-astro build",
     "codegen": "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos && pnpm --filter @cloudflare/kumo codegen",
@@ -14,9 +9,9 @@
     "changeset": "tsx ci/scripts/ensure-changeset-config.ts && changeset",
     "clean": "pnpm -r exec rm -rf dist build .astro .wrangler node_modules",
     "dev": "pnpm codegen && pnpm --filter @cloudflare/kumo-docs-astro dev",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
-    "lint": "pnpm --filter @cloudflare/kumo lint && oxlint --config .oxlintrc.json packages/*/src",
+    "format": "vp fmt --write",
+    "format:check": "vp fmt --check",
+    "lint": "pnpm --filter @cloudflare/kumo lint && vp lint packages/*/src",
     "lockfile-check": "pnpm install --no-frozen-lockfile && git diff --exit-code pnpm-lock.yaml",
     "preview": "pnpm --filter @cloudflare/kumo-docs-astro preview",
     "publish:beta": "bash ci/versioning/publish-beta.sh",
@@ -33,24 +28,33 @@
     "version": "changeset version",
     "version:beta": "./ci/versioning/version-beta.sh"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "lefthook",
-      "workerd"
-    ]
-  },
   "devDependencies": {
     "@changesets/cli": "2.29.7",
     "@octokit/rest": "22.0.1",
+    "@oxlint/plugins": "catalog:",
     "@types/node": "catalog:",
     "@types/pngjs": "^6.0.5",
-    "lefthook": "2.0.12",
-    "oxlint": "catalog:",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",
-    "prettier": "3.9.5",
-    "prettier-plugin-tailwindcss": "0.7.1",
     "tsx": "catalog:",
-    "typescript": "catalog:"
-  }
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "onFail": "warn",
+      "version": ">=10.21.0"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "^24.12.0"
+    }
+  },
+  "engines": {
+    "node": "^24.12.0",
+    "pnpm": ">=10.21.0"
+  },
+  "packageManager": "pnpm@10.22.0"
 }

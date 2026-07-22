@@ -1,4 +1,4 @@
-import { defineRule } from "oxlint";
+import { defineRule } from "@oxlint/plugins";
 
 const RULE_NAME = "no-tailwind-dark-variant";
 

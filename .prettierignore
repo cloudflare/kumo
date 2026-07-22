@@ -1,6 +1,0 @@
-# Generated artifacts (gitignored via nested .gitignore files, which
-# prettier does not read)
-.astro/
-packages/kumo-docs-astro/public/skill.md
-packages/kumo-figma/src/generated/
-packages/kumo/ai/

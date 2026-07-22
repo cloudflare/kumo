@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -234,7 +234,28 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         const primitiveName = exportKey.replace("./primitives/", "");
         const mapPath = join(primitivesDir, `${primitiveName}.js.map`);
 
-        if (!existsSync(mapPath)) {
+        if (existsSync(mapPath)) {
+          continue;
+        }
+
+        // Rolldown emits primitive entries as facade chunks (pure re-exports
+        // from ../chunks/*) without their own source map; the chunks that
+        // contain the actual code carry the maps. Only flag entries that hold
+        // real code but lack a map.
+        const jsPath = join(primitivesDir, `${primitiveName}.js`);
+        const content = existsSync(jsPath) ? readFileSync(jsPath, "utf-8") : "";
+        const isFacade = content
+          .split("\n")
+          .every(
+            (line) =>
+              line.trim() === "" ||
+              line.trim() === '"use client";' ||
+              line.startsWith("import ") ||
+              line.startsWith("export ") ||
+              /^[\w$]+ as [\w$$]+,?$/.test(line.trim()) ||
+              line.trim() === "};",
+          );
+        if (!isFacade) {
           missingMaps.push(`${primitiveName}.js.map`);
         }
       }
@@ -246,7 +267,8 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         );
       }
 
-      // We expect source maps in production builds
+      // We expect source maps (directly or via the underlying chunks) in
+      // production builds
       expect(missingMaps.length).toBeLessThan(primitiveExports.length / 2);
     });
 

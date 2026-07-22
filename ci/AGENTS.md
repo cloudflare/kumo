@@ -40,7 +40,7 @@ ci/
 
 | Task                 | Location                                     | Notes                                                   |
 | -------------------- | -------------------------------------------- | ------------------------------------------------------- |
-| Changeset validation | `scripts/validate-kumo-changeset.ts`         | Used by lefthook pre-push AND CI                        |
+| Changeset validation | `scripts/validate-kumo-changeset.ts`         | Used by `.vite-hooks/pre-push` AND CI                   |
 | PR comment system    | `reporters/` + `scripts/post-pr-report.ts`   | Artifact bus via `ci/reports/*.json`                    |
 | Beta release         | `versioning/publish-beta.sh`                 | Calls version-beta.sh internally                        |
 | Production release   | `versioning/release-production.sh`           | Creates release branch + PR                             |

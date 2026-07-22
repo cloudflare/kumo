@@ -50,7 +50,7 @@ kumo/
 
 ### Build System
 
-- **Three-step build**: `vite build` → `css-build.ts` (copies CSS + `@tailwindcss/cli`) → `build-cli.ts` (esbuild)
+- **Three-step build**: `vp build` (Vite+/Rolldown) → `css-build.ts` (copies CSS + `@tailwindcss/cli`) → `build-cli.ts` (esbuild)
 - **Bundled deps**: `@base-ui/react`, `clsx`, `tailwind-merge` are bundled (not external)
 - **External peers**: `react`, `react-dom`, `@phosphor-icons/react` only
 - **`"use client"` banner**: Injected on ALL output chunks for RSC compatibility

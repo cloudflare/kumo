@@ -1,9 +1,8 @@
-import { defineConfig } from "vite";
+import { defineConfig, lazyPlugins } from "vite-plus";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { readdirSync } from "fs";
 import dts from "vite-plugin-dts";
-import preserveDirectives from "rollup-plugin-preserve-directives";
 import { rebuildSignalPlugin } from "./vite-plugin-rebuild-signal";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +21,7 @@ function getPrimitiveEntries() {
         entries[`primitives/${name}`] = resolve(primitivesDir, file);
       }
     }
-  } catch (e) {
+  } catch {
     // Primitives directory doesn't exist yet (first build)
   }
 
@@ -33,7 +32,46 @@ export default defineConfig(({ mode }) => {
   const isDev = mode === "development";
 
   return {
-    plugins: [
+    lint: {
+      jsPlugins: [
+        "./lint/kumo-plugin.js",
+        {
+          name: "vite-plus",
+          specifier: "vite-plus/oxlint-plugin",
+        },
+      ],
+      plugins: ["eslint", "typescript", "unicorn", "oxc", "jsx-a11y"],
+      categories: {
+        correctness: "error",
+        suspicious: "warn",
+      },
+      rules: {
+        "kumo/no-tailwind-dark-variant": "error",
+        "kumo/no-primitive-colors": "error",
+        "kumo/enforce-variant-standard": "error",
+        "kumo/no-deprecated-props": "error",
+        "kumo/no-cross-package-imports": "error",
+        "kumo/no-flow-node-custom-render": "error",
+        "typescript/no-unsafe-type-assertion": "off",
+        "typescript/no-unnecessary-template-expression": "off",
+        "typescript/no-unnecessary-type-assertion": "off",
+        "jsx-a11y/no-autofocus": "off",
+        "unicorn/no-array-sort": "off",
+        "unicorn/no-array-reverse": "off",
+        "jsx-a11y/aria-proptypes": "error",
+        "jsx-a11y/no-static-element-interactions": "error",
+        "jsx-a11y/interactive-supports-focus": "error",
+        "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+        "jsx-a11y/no-noninteractive-element-interactions": "error",
+        "jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
+        "jsx-a11y/control-has-associated-label": "warn",
+        "vite-plus/prefer-vite-plus-imports": "error",
+      },
+      options: {
+        typeAware: true,
+      },
+    },
+    plugins: lazyPlugins(() => [
       dts({
         include: ["src/**/*", "ai/**/*", "scripts/theme-generator/**/*"],
         exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
@@ -44,7 +82,7 @@ export default defineConfig(({ mode }) => {
         },
       }),
       rebuildSignalPlugin(),
-    ],
+    ]),
     build: {
       lib: {
         entry: {
@@ -251,6 +289,10 @@ export default defineConfig(({ mode }) => {
             case id === "react-dom":
             case id.startsWith("react-dom/"):
             case id === "@phosphor-icons/react":
+            // CJS-only; bundling leaves require("react") calls that break
+            // importing the published ESM directly in Node.
+            case id === "use-sync-external-store":
+            case id.startsWith("use-sync-external-store/"):
               return true;
             // Externalize shiki for server entry - it should be resolved at runtime in Node.js
             // This prevents shiki from being bundled with "use client" directives

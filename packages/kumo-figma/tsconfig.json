@@ -10,7 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "types": ["@figma/plugin-typings", "node"],
-    "baseUrl": ".",
     "paths": {
       "@cloudflare/kumo/*": ["../kumo/*"]
     }

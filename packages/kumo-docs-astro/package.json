@@ -14,14 +14,14 @@
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro check",
-    "test": "vitest run",
-    "lint": "oxlint src/ && node ../../lint/lint-astro-colors.js src/",
-    "lint:oxlint": "oxlint src/",
+    "test": "vp test run",
+    "lint": "vp lint src/ && node ../../lint/lint-astro-colors.js src/",
+    "lint:oxlint": "vp lint src/",
     "lint:astro": "node ../../lint/lint-astro-colors.js src/"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.3",
     "@astrojs/markdown-remark": "^7.2.1",
+    "@astrojs/mdx": "^7.0.3",
     "@astrojs/sitemap": "^3.7.3",
     "@cloudflare/kumo": "workspace:*",
     "@phosphor-icons/react": "catalog:",
@@ -46,12 +46,13 @@
     "@types/mdast": "4.0.4",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "oxlint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "tailwindcss": "^4.3.3",
     "tsx": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
     "vitest": "catalog:",
     "wrangler": "catalog:"
   }

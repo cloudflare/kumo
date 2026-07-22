@@ -9,6 +9,7 @@ minimumReleaseAge: 4320
 catalog:
   "@cloudflare/vite-plugin": ^1.15.3
   "@cloudflare/workers-types": ^4.20240909.0
+  "@oxlint/plugins": =1.73.0
   "@phosphor-icons/react": ^2.1.10
   "@react-router/dev": ^7.9.6
   "@tailwindcss/cli": ^4.1.17
@@ -16,10 +17,9 @@ catalog:
   "@types/node": ^22.10.2
   "@types/react": 19.2.4
   "@types/react-dom": 19.2.3
-  "@vitest/ui": ^4.0.18
+  "@vitest/ui": 4.1.9
   chokidar: ^4.0.3
   clsx: ^2.1.1
-  eslint-plugin-jsx-a11y: ^6.10.2
   happy-dom: ^20.8.8
   isbot: ^5.1.31
   playwright: ^1.57.0
@@ -31,10 +31,33 @@ catalog:
   tailwindcss: ^4.1.17
   tsx: ^4.19.2
   typescript: ^5.9.2
-  vite: ^7.1.7
+  vite: npm:@voidzero-dev/vite-plus-core@0.2.2
   vite-plugin-dts: ^4.3.0
   vite-tsconfig-paths: ^5.1.4
-  vitest: ^4.1.0
-  oxlint: 1.42.0
-  oxlint-tsgolint: 0.11.3
+  vitest: 4.1.9
   wrangler: 4.87.0
+  vite-plus: 0.2.2
+  "@vitest/browser-playwright": 4.1.9
+onlyBuiltDependencies:
+  - workerd
+overrides:
+  vite: "catalog:"
+  vitest: "catalog:"
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"
+minimumReleaseAgeExclude:
+  - vite-plus
+  - "@voidzero-dev/*"
+  - oxlint
+  - "@oxlint/*"
+  - oxlint-tsgolint
+  - "@oxlint-tsgolint/*"
+  - oxfmt
+  - "@oxfmt/*"
+  - vitest
+  - "@vitest/*"

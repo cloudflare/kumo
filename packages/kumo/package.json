@@ -2,27 +2,41 @@
   "name": "@cloudflare/kumo",
   "version": "2.8.0",
   "private": false,
-  "type": "module",
   "description": "Kumo - Cloudflare's component library for building modern web applications",
+  "keywords": [
+    "cloudflare",
+    "components",
+    "design-system",
+    "react",
+    "ui"
+  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/cloudflare/kumo.git",
     "directory": "packages/kumo"
   },
-  "license": "MIT",
-  "keywords": [
-    "react",
-    "components",
-    "ui",
-    "cloudflare",
-    "design-system"
+  "bin": {
+    "kumo": "./bin/kumo.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "ai",
+    "templates",
+    "scripts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css",
+    "dist/styles/*.css"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/src/index.d.ts",
-  "bin": {
-    "kumo": "./bin/kumo.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
@@ -410,28 +424,14 @@
       "import": "./dist/scripts/theme-generator/types.js"
     }
   },
-  "files": [
-    "dist",
-    "bin",
-    "ai",
-    "templates",
-    "scripts",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
-  ],
-  "sideEffects": [
-    "*.css",
-    "dist/styles/*.css"
-  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "prepublishOnly": "pnpm run build && pnpm run test:unit",
-    "build": "pnpm run codegen:registry && vite build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
-    "dev": "vite build --watch --mode development",
+    "build": "pnpm run codegen:registry && vp build --mode production && tsx scripts/css-build.ts && tsx src/command-line/build-cli.ts",
+    "dev": "vp build --watch --mode development",
     "new:component": "plop component",
     "clean": "rm -rf dist",
     "codegen": "pnpm run codegen:primitives && pnpm run codegen:themes && pnpm run codegen:registry",
@@ -440,18 +440,62 @@
     "codegen:primitives": "tsx scripts/generate-primitives.ts",
     "codegen:registry": "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos && tsx scripts/component-registry/index.ts",
     "lint": "pnpm run lint:oxlint",
-    "lint:oxlint": "oxlint --config .oxlintrc.json src/** --type-aware",
-    "test": "CI=true vitest run --project=unit",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run",
-    "test:unit": "vitest run --project=unit",
-    "test:coverage": "vitest run --coverage",
-    "test:exports": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
-    "test:watch": "vitest run --project=unit --watch",
+    "lint:oxlint": "vp lint src/",
+    "test": "CI=true vp test run --project=unit",
+    "test:ui": "vp test --ui",
+    "test:run": "vp test run",
+    "test:unit": "vp test run --project=unit",
+    "test:coverage": "vp test run --coverage",
+    "test:exports": "vp test run --project=unit tests/imports/export-path-validation.test.ts",
+    "test:watch": "vp test run --project=unit --watch",
     "typecheck": "tsc --noEmit",
-    "validate:build": "vitest run --project=unit tests/imports/export-path-validation.test.ts",
+    "validate:build": "vp test run --project=unit tests/imports/export-path-validation.test.ts",
     "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts",
-    "test:browser": "vitest --config=vitest.browser.config.ts"
+    "test:browser": "vp test --config=vitest.browser.config.ts"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.6.0",
+    "@shikijs/langs": "^4.0.0",
+    "@shikijs/themes": "^4.0.0",
+    "cnfast": "^0.0.8",
+    "d3-geo": "^3.1.1",
+    "motion": "^12.34.1",
+    "react-day-picker": "^9.13.2",
+    "shiki": "^4.0.0",
+    "use-sync-external-store": "^1.6.0"
+  },
+  "devDependencies": {
+    "@oxlint/plugins": "catalog:",
+    "@tailwindcss/cli": "catalog:",
+    "@tailwindcss/vite": "catalog:",
+    "@testing-library/react": "16.3.1",
+    "@testing-library/user-event": "14.6.1",
+    "@types/d3-geo": "^3.1.0",
+    "@types/glob": "9.0.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/svg-path-parser": "^1.1.6",
+    "@vitejs/plugin-react": "~6.0.3",
+    "@vitest/browser-playwright": "catalog:",
+    "@vitest/ui": "catalog:",
+    "esbuild": "0.27.2",
+    "glob": "13.0.0",
+    "happy-dom": "catalog:",
+    "playwright": "catalog:",
+    "plop": "4.0.4",
+    "svg-path-parser": "^1.1.0",
+    "tailwindcss": "catalog:",
+    "ts-json-schema-generator": "2.4.0",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:",
+    "vitest-browser-react": "^2.0.5",
+    "wrangler": "catalog:",
+    "zod": "^4.0.0"
   },
   "peerDependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -467,50 +511,5 @@
     "echarts": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "@base-ui/react": "^1.6.0",
-    "@shikijs/langs": "^4.0.0",
-    "@shikijs/themes": "^4.0.0",
-    "cnfast": "^0.0.8",
-    "d3-geo": "^3.1.1",
-    "motion": "^12.34.1",
-    "react-day-picker": "^9.13.2",
-    "shiki": "^4.0.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/cli": "catalog:",
-    "@tailwindcss/vite": "catalog:",
-    "@testing-library/react": "16.3.1",
-    "@testing-library/user-event": "14.6.1",
-    "@types/d3-geo": "^3.1.0",
-    "@types/glob": "9.0.0",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@types/svg-path-parser": "^1.1.6",
-    "@vitejs/plugin-react": "^5.1.4",
-    "@vitest/browser-playwright": "^4.0.18",
-    "@vitest/ui": "catalog:",
-    "esbuild": "0.27.2",
-    "eslint-plugin-jsx-a11y": "catalog:",
-    "glob": "13.0.0",
-    "happy-dom": "catalog:",
-    "oxlint": "catalog:",
-    "oxlint-tsgolint": "catalog:",
-    "playwright": "catalog:",
-    "plop": "4.0.4",
-    "rollup-plugin-preserve-directives": "0.4.0",
-    "svg-path-parser": "^1.1.0",
-    "tailwindcss": "catalog:",
-    "ts-json-schema-generator": "2.4.0",
-    "tsx": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:",
-    "vite-plugin-dts": "catalog:",
-    "vitest": "catalog:",
-    "vitest-browser-react": "^2.0.5",
-    "wrangler": "catalog:",
-    "zod": "^4.0.0"
   }
 }

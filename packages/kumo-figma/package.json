@@ -2,9 +2,9 @@
   "name": "@cloudflare/kumo-figma",
   "version": "0.3.42",
   "private": true,
-  "type": "module",
   "description": "Figma plugin for generating Kumo UI Kit components",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "sync:maybe": "tsx scripts/maybe-sync.ts",
     "build": "pnpm run sync:maybe && pnpm run build:data && pnpm run build:plugin",
@@ -12,9 +12,9 @@
     "build:plugin": "esbuild src/code.ts --bundle --outfile=src/code.js --format=iife --target=es2017",
     "dev": "pnpm run sync:maybe && pnpm run build:data && pnpm run build:plugin --watch",
     "clean": "rm -rf src/generated src/code.js",
-    "test": "vitest run",
+    "test": "vp test run",
     "typecheck": "pnpm run build:data && tsc --noEmit",
-    "validate": "pnpm --filter @cloudflare/kumo codegen:registry && pnpm run build:data && vitest run src/generators/drift-detection.test.ts",
+    "validate": "pnpm --filter @cloudflare/kumo codegen:registry && pnpm run build:data && vp test run src/generators/drift-detection.test.ts",
     "figma:sync": "tsx scripts/sync-tokens-to-figma.ts"
   },
   "dependencies": {
@@ -29,6 +29,8 @@
     "esbuild": "0.27.2",
     "tsx": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
     "vitest": "catalog:"
   }
 }
