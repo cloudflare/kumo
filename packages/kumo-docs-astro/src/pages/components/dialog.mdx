@@ -17,6 +17,10 @@ import {
   DialogAlertDemo,
   DialogMaxWidthDemo,
   DialogSizesDemo,
+  DialogVariantsComparisonDemo,
+  DialogLayerVariantDemo,
+  DialogLayerFormDemo,
+  DialogLayerSeparatorDemo,
   DialogWithSelectDemo,
   DialogWithComboboxDemo,
   DialogWithDropdownDemo,
@@ -54,6 +58,8 @@ import {
 
 ## Usage
 
+Use `Dialog.Content` for the modal panel. The bare `<Dialog>` content shorthand remains supported for backwards compatibility, but `Dialog.Content` is the preferred API for new code.
+
 ```tsx
 import { Dialog, Button } from "@cloudflare/kumo";
 
@@ -61,7 +67,7 @@ export default function Example() {
   return (
     <Dialog.Root>
       <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
-      <Dialog>
+      <Dialog.Content>
         <Dialog.Title>Dialog Title</Dialog.Title>
         <Dialog.Description>Dialog content goes here.</Dialog.Description>
         <div className="flex justify-end gap-2 mt-4">
@@ -73,10 +79,52 @@ export default function Example() {
             )}
           />
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
+```
+
+</ComponentSection>
+
+{/* Variants */}
+
+<ComponentSection>
+
+## Variants
+
+<p>
+  Dialog supports two visual variants. The default `base` variant preserves the
+  existing modal surface. The `layer` variant composes the panel with LayerCard
+  sections for product workflow dialogs.
+</p>
+
+<ComponentExample demo="DialogVariantsComparisonDemo">
+  <DialogVariantsComparisonDemo client:load />
+</ComponentExample>
+
+```tsx
+<Dialog.Root>
+  <Dialog.Trigger render={(p) => <Button {...p}>Open</Button>} />
+  <Dialog.Content variant="layer" className="max-w-lg">
+    <Dialog.Body>
+      <Dialog.Title>Create Bucket</Dialog.Title>
+      <Dialog.Description>
+        High-performance storage for files and objects.
+      </Dialog.Description>
+    </Dialog.Body>
+    <Dialog.Footer className="justify-between">
+      <Dialog.Close
+        render={(p) => (
+          <Button {...p} variant="ghost">
+            Close
+          </Button>
+        )}
+      />
+      <Button>Create</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
 ```
 
 </ComponentSection>
@@ -184,6 +232,29 @@ export default function Example() {
   <DialogWithActionsDemo client:load />
 </ComponentExample>
 
+### Layer Variant
+
+<p>
+  Use `variant="layer"` for structured product workflows. Add `Dialog.Body`,
+  `Dialog.Footer`, and `Dialog.Separator` to compose LayerCard sections without
+  introducing a separate dialog component API.
+</p>
+<ComponentExample demo="DialogLayerVariantDemo">
+  <DialogLayerVariantDemo client:load />
+</ComponentExample>
+
+### Layer Variant with Form
+
+<ComponentExample demo="DialogLayerFormDemo">
+  <DialogLayerFormDemo client:load />
+</ComponentExample>
+
+### Layer Variant with Separator
+
+<ComponentExample demo="DialogLayerSeparatorDemo">
+  <DialogLayerSeparatorDemo client:load />
+</ComponentExample>
+
 ### Custom Max Width
 
 <p>
@@ -228,8 +299,16 @@ export default function Example() {
 
 ### Dialog
 
-<p>The main dialog container that renders the modal overlay and popup.</p>
+<p>
+  Backwards-compatible shorthand for `Dialog.Content`. Prefer `Dialog.Content`
+  in new code.
+</p>
 <PropsTable component="Dialog" />
+
+### Dialog.Content
+
+<p>The preferred content panel API that renders the modal overlay and popup.</p>
+<PropsTable component="Dialog.Content" />
 
 ### Dialog.Root
 
@@ -287,6 +366,21 @@ export default function Example() {
 
 ### Dialog.Close
 
-  <p>A button that closes the dialog when clicked.</p>
-  <PropsTable component="Dialog.Close" />
+<p>A button that closes the dialog when clicked.</p>
+<PropsTable component="Dialog.Close" />
+
+### Dialog.Body
+
+<p>A structured body section for `variant="layer"` dialogs.</p>
+<PropsTable component="Dialog.Body" />
+
+### Dialog.Footer
+
+<p>A structured footer section for `variant="layer"` dialog actions.</p>
+<PropsTable component="Dialog.Footer" />
+
+### Dialog.Separator
+
+<p>A horizontal divider for structured dialog content.</p>
+<PropsTable component="Dialog.Separator" />
 </ComponentSection>

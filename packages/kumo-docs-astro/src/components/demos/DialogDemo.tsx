@@ -5,6 +5,9 @@ import {
   Select,
   Combobox,
   DropdownMenu,
+  Input,
+  Radio,
+  Banner,
 } from "@cloudflare/kumo";
 import type { DialogProps } from "@cloudflare/kumo";
 import { Warning, X } from "@phosphor-icons/react";
@@ -13,7 +16,7 @@ export function DialogBasicDemo() {
   return (
     <Dialog.Root>
       <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
             Modal Title
@@ -35,7 +38,7 @@ export function DialogBasicDemo() {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </Dialog.Description>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -44,7 +47,7 @@ export function DialogWithActionsDemo() {
   return (
     <Dialog.Root>
       <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
             Modal Title
@@ -82,7 +85,7 @@ export function DialogWithActionsDemo() {
             )}
           />
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -94,8 +97,10 @@ export function DialogWithActionsDemo() {
 export function DialogMaxWidthDemo() {
   return (
     <Dialog.Root>
-      <Dialog.Trigger render={(p) => <Button {...p}>Open capped dialog</Button>} />
-      <Dialog className="max-w-lg p-8">
+      <Dialog.Trigger
+        render={(p) => <Button {...p}>Open capped dialog</Button>}
+      />
+      <Dialog.Content className="max-w-lg p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
             Max width override
@@ -120,7 +125,7 @@ export function DialogMaxWidthDemo() {
         <div className="mt-4 truncate rounded-md border border-kumo-line bg-kumo-recessed p-3 font-mono text-sm">
           abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -135,7 +140,7 @@ export function DialogConfirmationDemo() {
           </Button>
         )}
       />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
             <Warning size={20} className="text-kumo-danger" />
@@ -164,7 +169,7 @@ export function DialogConfirmationDemo() {
             )}
           />
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -183,7 +188,7 @@ export function DialogAlertDemo() {
           </Button>
         )}
       />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
             <Warning size={20} className="text-kumo-danger" weight="fill" />
@@ -212,7 +217,7 @@ export function DialogAlertDemo() {
             )}
           />
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -228,7 +233,7 @@ export function DialogWithSelectDemo() {
   return (
     <Dialog.Root>
       <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
             Create Resource
@@ -252,9 +257,7 @@ export function DialogWithSelectDemo() {
         <Select
           className="w-full"
           placeholder="Select region..."
-          renderValue={(v) =>
-            regions.find((r) => r.value === v)?.label
-          }
+          renderValue={(v) => regions.find((r) => r.value === v)?.label}
         >
           {regions.map((region) => (
             <Select.Option key={region.value} value={region.value}>
@@ -272,7 +275,7 @@ export function DialogWithSelectDemo() {
           />
           <Button variant="primary">Create</Button>
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -285,7 +288,7 @@ export function DialogWithComboboxDemo() {
   return (
     <Dialog.Root>
       <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
             Create Resource
@@ -332,7 +335,7 @@ export function DialogWithComboboxDemo() {
           />
           <Button variant="primary">Create</Button>
         </div>
-      </Dialog>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }
@@ -341,7 +344,7 @@ export function DialogWithDropdownDemo() {
   return (
     <Dialog.Root>
       <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
-      <Dialog className="p-8">
+      <Dialog.Content className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
             Resource Actions
@@ -380,7 +383,237 @@ export function DialogWithDropdownDemo() {
             )}
           />
         </div>
-      </Dialog>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+}
+
+/**
+ * Side-by-side triggers for comparing the base and layer dialog variants.
+ */
+export function DialogVariantsComparisonDemo() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Dialog.Root>
+        <Dialog.Trigger
+          render={(p) => (
+            <Button {...p} variant="secondary">
+              Open base variant
+            </Button>
+          )}
+        />
+        <Dialog.Content className="p-8">
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <Dialog.Title className="text-2xl font-semibold">
+              Base Dialog
+            </Dialog.Title>
+            <Dialog.Close
+              aria-label="Close"
+              render={(props) => (
+                <Button
+                  {...props}
+                  variant="secondary"
+                  shape="square"
+                  icon={<X />}
+                  aria-label="Close"
+                />
+              )}
+            />
+          </div>
+          <Dialog.Description className="text-kumo-subtle">
+            The base variant preserves the existing modal surface and spacing.
+          </Dialog.Description>
+          <div className="mt-8 flex justify-end gap-2">
+            <Dialog.Close
+              render={(p) => (
+                <Button {...p} variant="secondary">
+                  Cancel
+                </Button>
+              )}
+            />
+            <Button>Continue</Button>
+          </div>
+        </Dialog.Content>
+      </Dialog.Root>
+
+      <Dialog.Root>
+        <Dialog.Trigger
+          render={(p) => <Button {...p}>Open layer variant</Button>}
+        />
+        <Dialog.Content variant="layer" className="max-w-lg">
+          <Dialog.Body>
+            <Dialog.Title>Layer Dialog</Dialog.Title>
+            <Dialog.Description>
+              The layer variant composes the dialog with LayerCard sections for
+              product workflows.
+            </Dialog.Description>
+          </Dialog.Body>
+          <Dialog.Footer className="justify-between">
+            <Dialog.Close
+              render={(p) => (
+                <Button {...p} variant="ghost">
+                  Cancel
+                </Button>
+              )}
+            />
+            <Button>Continue</Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Root>
+    </div>
+  );
+}
+
+const DIALOG_REGION_OPTIONS = [
+  { label: "Asia-Pacific (APAC)", value: "apac" },
+  { label: "Eastern Europe (EEUR)", value: "eeur" },
+  { label: "Eastern North America (ENAM)", value: "enam" },
+  { label: "Oceania (OC)", value: "oc" },
+  { label: "Western Europe (WEUR)", value: "weur" },
+  { label: "Western North America (WNAM)", value: "wnam" },
+];
+
+/**
+ * Dialog using the layer variant for product workflow confirmations.
+ */
+export function DialogLayerVariantDemo() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger
+        render={(p) => <Button {...p}>Open layer dialog</Button>}
+      />
+      <Dialog.Content variant="layer" className="max-w-lg">
+        <Dialog.Body>
+          <Dialog.Title>Remove Database</Dialog.Title>
+          <Dialog.Description>
+            Are you sure you want to remove this database? This action cannot be
+            undone.
+          </Dialog.Description>
+        </Dialog.Body>
+        <Dialog.Footer className="justify-between">
+          <Dialog.Close
+            render={(p) => (
+              <Button {...p} variant="ghost">
+                Close
+              </Button>
+            )}
+          />
+          <Button variant="destructive">Confirm</Button>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+}
+
+/**
+ * Layer variant dialog with form fields and structured footer actions.
+ */
+export function DialogLayerFormDemo() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger
+        render={(p) => <Button {...p}>Open form dialog</Button>}
+      />
+      <Dialog.Content variant="layer" className="max-w-lg">
+        <Dialog.Body>
+          <Dialog.Title>Create Bucket</Dialog.Title>
+          <Dialog.Description>
+            High-performance storage for files and objects with zero egress
+            charges.
+          </Dialog.Description>
+
+          <div className="space-y-4 mt-4">
+            <Input label="Bucket name" placeholder="bucket-name" />
+            <Select
+              value="apac"
+              items={DIALOG_REGION_OPTIONS}
+              className="w-full"
+              label="Region"
+              placeholder="Region"
+            />
+            <Radio.Group
+              legend="Choose a plan"
+              appearance="card"
+              orientation="horizontal"
+              value="Standard"
+            >
+              <Radio.Item
+                label="Standard"
+                value="Standard"
+                description="Recommended for objects that will be accessed at least once a month."
+              />
+              <Radio.Item
+                label="Infrequent Access"
+                value="Infrequent Access"
+                description="Recommended for objects that will be accessed less than once a month."
+              />
+            </Radio.Group>
+          </div>
+        </Dialog.Body>
+        <Dialog.Footer className="justify-between">
+          <Dialog.Close
+            render={(p) => (
+              <Button {...p} variant="ghost">
+                Close
+              </Button>
+            )}
+          />
+          <Button variant="primary">Create</Button>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+}
+
+/**
+ * Layer variant dialog with a separator and inline validation feedback.
+ */
+export function DialogLayerSeparatorDemo() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger
+        render={(p) => <Button {...p}>Open separated dialog</Button>}
+      />
+      <Dialog.Content variant="layer" className="max-w-lg">
+        <Dialog.Body>
+          <Dialog.Title>Domain Registration</Dialog.Title>
+          <Dialog.Description>
+            At-cost domain registration and renewal. Securely register,
+            transfer, consolidate, and manage your domain portfolios.
+          </Dialog.Description>
+
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Input label="First name" placeholder="Matt" />
+              <Input label="Last name" placeholder="Flare" />
+            </div>
+            <Input label="Address" placeholder="Address" />
+          </div>
+
+          <Dialog.Separator />
+          <Dialog.Description>
+            This information is required for domain ownership records and to
+            ensure we can contact you regarding your registration.
+          </Dialog.Description>
+          <div className="space-y-4 mt-2">
+            <Input label="Email" placeholder="example@example.com" />
+            <Banner
+              variant="error"
+              description="You do not have permission to register domains in this region."
+            />
+          </div>
+        </Dialog.Body>
+        <Dialog.Footer className="justify-between">
+          <Dialog.Close
+            render={(p) => (
+              <Button {...p} variant="ghost">
+                Close
+              </Button>
+            )}
+          />
+          <Button variant="primary">Register</Button>
+        </Dialog.Footer>
+      </Dialog.Content>
     </Dialog.Root>
   );
 }

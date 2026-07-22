@@ -69,12 +69,18 @@ export {
   DialogTitle,
   DialogDescription,
   DialogClose,
+  DialogBody,
+  DialogFooter,
+  DialogSeparator,
   type DialogProps,
   type DialogRootProps,
   type DialogTriggerProps,
   type DialogTitleProps,
   type DialogDescriptionProps,
   type DialogCloseProps,
+  type DialogBodyProps,
+  type DialogFooterProps,
+  type DialogSeparatorProps,
 } from "./components/dialog";
 export { DropdownMenu } from "./components/dropdown";
 export {

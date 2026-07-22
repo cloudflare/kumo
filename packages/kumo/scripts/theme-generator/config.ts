@@ -57,6 +57,15 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-muted": {
+      newName: "",
+      theme: {
+        kumo: {
+          light: "var(--color-neutral-700, oklch(37.1% 0 0))", // between default and subtle
+          dark: "var(--color-neutral-300, oklch(87% 0 0))", // between default and subtle
+        },
+      },
+    },
     "kumo-inactive": {
       newName: "",
       theme: {
