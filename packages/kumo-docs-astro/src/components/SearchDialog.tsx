@@ -400,7 +400,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     }
 
     if (open && !registry) {
-      fetchRegistry();
+      void fetchRegistry();
     }
   }, [open, registry]);
 

@@ -156,6 +156,6 @@ are no `.oxlintrc.json` / `.prettierrc` files. `vp check` runs format + lint.
 - `src/primitives/` (40 files) are auto-generated Base UI re-exports
 - Blocks in `src/blocks/` are NOT exported from package index; installed via CLI `kumo add`
 - `src/catalog/` is a runtime JSON-UI rendering module (separate concern from component library)
-- Single linter: Oxlint via `vp lint` (custom kumo JS rules + native jsx-a11y rules; type-aware in the kumo package)
+- Single linter: Oxlint via `vp lint` (custom kumo JS rules + native jsx-a11y rules; type-aware + type-checked)
 - `PLOP_INJECT_EXPORT` and `PLOP_INJECT_COMPONENT_ENTRY` markers in source for scaffolding
 - 6 GitHub Actions workflows exist in `.github/workflows/` (release, pullrequest, preview, preview-deploy, bonk, reviewer)

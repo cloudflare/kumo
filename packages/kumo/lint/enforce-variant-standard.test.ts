@@ -36,7 +36,7 @@ function createProgramNode() {
 /**
  * Helper to create a mock ExportNamedDeclaration node
  */
-function createExportDeclaration(exportName) {
+function createExportDeclaration(exportName: string) {
   return {
     type: "ExportNamedDeclaration",
     declaration: {

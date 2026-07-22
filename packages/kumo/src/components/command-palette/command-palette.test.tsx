@@ -51,22 +51,24 @@ const getSelectableItems = (groups: TestGroup[]) =>
 /**
  * Helper to render CommandPalette with common setup
  */
+type RootProps = React.ComponentProps<typeof CommandPalette.Root<TestItem>>;
+
 const renderCommandPalette = ({
   open = true,
-  onOpenChange = vi.fn(),
+  onOpenChange = vi.fn<NonNullable<RootProps["onOpenChange"]>>(),
   items = mockGroups,
   value = "",
-  onValueChange = vi.fn(),
-  onSelect = vi.fn(),
+  onValueChange = vi.fn<NonNullable<RootProps["onValueChange"]>>(),
+  onSelect = vi.fn<NonNullable<RootProps["onSelect"]>>(),
   showLoading = false,
   showEmpty = false,
 }: {
   open?: boolean;
-  onOpenChange?: ReturnType<typeof vi.fn>;
+  onOpenChange?: RootProps["onOpenChange"];
   items?: TestGroup[];
   value?: string;
-  onValueChange?: ReturnType<typeof vi.fn>;
-  onSelect?: ReturnType<typeof vi.fn>;
+  onValueChange?: RootProps["onValueChange"];
+  onSelect?: RootProps["onSelect"];
   showLoading?: boolean;
   showEmpty?: boolean;
 } = {}) => {

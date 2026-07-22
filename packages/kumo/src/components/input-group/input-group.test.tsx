@@ -1,4 +1,5 @@
 import React from "react";
+import type { Icon, IconProps } from "@phosphor-icons/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -6,8 +7,10 @@ import { InputGroup } from "./input-group";
 import { INPUT_GROUP_SIZE, detectFocusMode } from "./context";
 import type { KumoInputSize } from "../input/input";
 
-const MockIcon = (props: { size?: number }) => (
-  <svg data-testid="mock-icon" data-size={props.size ?? "none"} />
+const MockIcon: Icon = React.forwardRef<SVGSVGElement, IconProps>(
+  ({ size }, ref) => (
+    <svg ref={ref} data-testid="mock-icon" data-size={size ?? "none"} />
+  ),
 );
 
 const FakeButton = (props: {
@@ -648,6 +651,7 @@ describe("InputGroup", () => {
 
       render(
         <InputGroup>
+          {/* @ts-expect-error -- deliberately misplaced prop to assert the dev warning */}
           <InputGroup.Input disabled aria-label="Test" />
         </InputGroup>,
       );
@@ -699,7 +703,10 @@ describe("InputGroup", () => {
     it("does not warn for misplaced props when Input is used standalone (no context)", () => {
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-      render(<InputGroup.Input disabled aria-label="Standalone" />);
+      render(
+        // @ts-expect-error -- deliberately misplaced prop to assert the dev warning
+        <InputGroup.Input disabled aria-label="Standalone" />,
+      );
 
       const calls = warnSpy.mock.calls.map((c) => c[0]);
       // Should warn about being outside InputGroup, but NOT about disabled being misplaced

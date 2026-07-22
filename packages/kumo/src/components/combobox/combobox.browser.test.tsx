@@ -195,7 +195,7 @@ describe("Combobox Playwright Interactions", () => {
       // NOTE: There's also a Clear button before the Trigger button!
       // The order in DOM is: input, [Clear button], Trigger button
       const adjacentButton =
-        input.parentElement?.querySelector("input + button");
+        input.parentElement?.querySelector<HTMLButtonElement>("input + button");
 
       expect(
         adjacentButton,

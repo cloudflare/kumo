@@ -215,6 +215,7 @@ function parseStylingObject(objStr: string): ComponentStyling | null {
     // Use Function constructor to safely evaluate the object literal
     // This is safe because we control the input (it comes from our own source files)
     // biome-ignore lint/security/noGlobalEval: Safe evaluation of known source file content
+    // oxlint-disable-next-line typescript/no-implied-eval -- same rationale as above
     const parsed = new Function(`return ${cleanedStr}`)();
 
     return parsed as ComponentStyling;

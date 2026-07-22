@@ -36,8 +36,8 @@ export default defineConfig({
     },
   },
   lint: {
-    // Unlinted legacy scripts; they import kumo's non-exported files.
-    ignorePatterns: ["packages/kumo-figma/scripts/**"],
+    // ci/ and tools/ were never linted; figma scripts import kumo's non-exported files.
+    ignorePatterns: ["ci/**", "tools/**", "packages/kumo-figma/scripts/**"],
     jsPlugins: [
       "./packages/kumo/lint/kumo-plugin.js",
       {
@@ -55,6 +55,10 @@ export default defineConfig({
       "kumo/no-tailwind-dark-variant": "error",
       "kumo/no-flow-node-custom-render": "error",
       "vite-plus/prefer-vite-plus-imports": "error",
+    },
+    options: {
+      typeAware: true,
+      typeCheck: true,
     },
   },
 });

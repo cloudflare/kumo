@@ -128,7 +128,7 @@ export function markdownPages({
             generated++;
           } catch (error) {
             logger.warn(
-              `Failed to generate markdown for ${htmlFile}: ${error}`,
+              `Failed to generate markdown for ${htmlFile}: ${String(error)}`,
             );
             skipped++;
           }

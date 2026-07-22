@@ -24,5 +24,9 @@ export default defineConfig({
       "typescript/no-unnecessary-type-assertion": "off",
       "vite-plus/prefer-vite-plus-imports": "error",
     },
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
   },
 });

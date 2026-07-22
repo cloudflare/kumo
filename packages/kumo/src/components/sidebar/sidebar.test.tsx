@@ -376,7 +376,8 @@ describe("Sidebar.Collapsible", () => {
           originalScrollIntoViewDescriptor,
         );
       } else {
-        delete HTMLElement.prototype.scrollIntoView;
+        delete (HTMLElement.prototype as { scrollIntoView?: unknown })
+          .scrollIntoView;
       }
       vi.useRealTimers();
     }
@@ -582,7 +583,7 @@ describe("Sidebar.MenuButton", () => {
     );
     const link = screen.getByText("Home").closest("a");
     expect(link).toBeTruthy();
-    expect(link.getAttribute("href")).toBe("/home");
+    expect(link!.getAttribute("href")).toBe("/home");
   });
 });
 
