@@ -37,11 +37,10 @@ type Mode = "masked" | "revealed" | "empty";
  * <SensitiveInput label="Secret" value={secret} onValueChange={setSecret} />
  * ```
  */
-export interface SensitiveInputProps
-  extends Omit<
-    ComponentPropsWithoutRef<"input">,
-    "size" | "type" | "value" | "defaultValue"
-  > {
+export interface SensitiveInputProps extends Omit<
+  ComponentPropsWithoutRef<"input">,
+  "size" | "type" | "value" | "defaultValue"
+> {
   /** Controlled value */
   value?: string;
   /** Uncontrolled default value */

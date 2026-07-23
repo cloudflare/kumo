@@ -195,8 +195,7 @@ function Clipboard({ text }: { text: string }) {
  * ```
  */
 export interface BreadcrumbsProps
-  extends PropsWithChildren,
-    KumoBreadcrumbsVariantsProps {
+  extends PropsWithChildren, KumoBreadcrumbsVariantsProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }

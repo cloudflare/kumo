@@ -154,12 +154,7 @@ const LINE_STYLE_BY_SERIES: Record<string, "solid" | "dashed" | "dotted"> = {
 };
 
 type SemanticColorName =
-  | "Attention"
-  | "Warning"
-  | "Success"
-  | "Neutral"
-  | "Disabled"
-  | "Skeleton";
+  "Attention" | "Warning" | "Success" | "Neutral" | "Disabled" | "Skeleton";
 
 const semanticColorNames: SemanticColorName[] = [
   "Attention",

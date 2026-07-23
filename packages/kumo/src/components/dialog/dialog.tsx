@@ -322,8 +322,7 @@ type BaseAlertDialogTriggerProps = ComponentPropsWithoutRef<
 >;
 
 export type DialogTriggerProps =
-  | BaseDialogTriggerProps
-  | BaseAlertDialogTriggerProps;
+  BaseDialogTriggerProps | BaseAlertDialogTriggerProps;
 
 function DialogTrigger({ children, ...props }: DialogTriggerProps) {
   const role = useDialogRole();

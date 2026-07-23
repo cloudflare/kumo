@@ -465,8 +465,7 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  * ```
  */
 export interface PaginationLegacyProps
-  extends PaginationBaseProps,
-    KumoPaginationVariantsProps {
+  extends PaginationBaseProps, KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {

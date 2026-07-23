@@ -69,8 +69,7 @@ const TableOfContentsList = forwardRef<
     {...props}
   />
 ));
-export interface TableOfContentsItemProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface TableOfContentsItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   /** Whether this item represents the currently active section. */
   active?: boolean;
   /**
@@ -126,8 +125,10 @@ const TableOfContentsItem = forwardRef<
   );
 });
 
-export interface TableOfContentsGroupProps
-  extends Omit<React.HTMLAttributes<HTMLLIElement>, "title"> {
+export interface TableOfContentsGroupProps extends Omit<
+  React.HTMLAttributes<HTMLLIElement>,
+  "title"
+> {
   /** Label displayed above the group's items. */
   label: string;
   /** URL the group label links to. When provided, the label renders as a clickable link with item styling. */

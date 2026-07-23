@@ -1041,11 +1041,10 @@ SidebarMenuItem.displayName = "Sidebar.MenuItem";
 
 export type SidebarMenuButtonSize = "base" | "sm";
 
-export interface SidebarMenuButtonProps
-  extends Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    "className" | "children"
-  > {
+export interface SidebarMenuButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "className" | "children"
+> {
   icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   active?: boolean;
   /**
@@ -1347,8 +1346,7 @@ SidebarMenuSubItem.displayName = "Sidebar.MenuSubItem";
 // Sidebar MenuSubButton
 // ============================================================================
 
-export interface SidebarMenuSubButtonProps
-  extends ComponentPropsWithoutRef<"button"> {
+export interface SidebarMenuSubButtonProps extends ComponentPropsWithoutRef<"button"> {
   /** Marks this sub-item as currently active/selected. @default false */
   active?: boolean;
   /** Navigation URL. When set, renders as a link via LinkProvider. */
@@ -1765,8 +1763,7 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   toggle: () => {},
 });
 
-export interface SidebarCollapsibleProps
-  extends ComponentPropsWithoutRef<"div"> {
+export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
   /** Initial open state (uncontrolled). @default false */
   defaultOpen?: boolean;
   /** Controlled open state. */
@@ -2051,8 +2048,7 @@ SidebarMenuChevron.displayName = "Sidebar.MenuChevron";
 
 const SlidingViewActiveContext = createContext<string>("");
 
-export interface SidebarSlidingViewsProps
-  extends ComponentPropsWithoutRef<"div"> {
+export interface SidebarSlidingViewsProps extends ComponentPropsWithoutRef<"div"> {
   /** Key of the currently active view. Must match a child `SlidingView` value. */
   activeKey: string;
   /**
@@ -2138,8 +2134,7 @@ const SidebarSlidingViews = forwardRef<
 
 SidebarSlidingViews.displayName = "Sidebar.SlidingViews";
 
-export interface SidebarSlidingViewProps
-  extends ComponentPropsWithoutRef<"div"> {
+export interface SidebarSlidingViewProps extends ComponentPropsWithoutRef<"div"> {
   /** Unique key matching this view. Must correspond to `activeKey` on `SlidingViews`. */
   value: string;
 }

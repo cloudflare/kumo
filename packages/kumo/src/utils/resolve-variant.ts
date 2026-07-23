@@ -29,8 +29,7 @@ export function resolveVariant<T extends Record<string, unknown>>(
   fallback: keyof T & string,
 ): T[keyof T] {
   const config = (variants as Record<string, unknown>)[key] as
-    | T[keyof T]
-    | undefined;
+    T[keyof T] | undefined;
 
   if (config !== undefined) return config;
 

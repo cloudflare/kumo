@@ -154,8 +154,10 @@ export enum BannerVariant {
  * <Banner variant="error" title="Save failed" description="We couldn't save your changes." />
  * ```
  */
-export interface BannerProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "children" | "title"> {
+export interface BannerProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "children" | "title"
+> {
   /** Icon element rendered before the banner content (e.g. from `@phosphor-icons/react`). */
   icon?: ReactNode;
   /** Primary heading text for the banner. Use for i18n string injection. */

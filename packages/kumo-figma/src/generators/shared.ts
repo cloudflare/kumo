@@ -485,8 +485,7 @@ export type AutoLayoutConfig = {
   counterAxisAlignItems?: "MIN" | "CENTER" | "MAX";
   /** Padding (all sides equal, or {top, right, bottom, left}) */
   padding?:
-    | number
-    | { top: number; right: number; bottom: number; left: number };
+    number | { top: number; right: number; bottom: number; left: number };
   /** Gap between child elements */
   itemSpacing?: number;
   /** Primary axis sizing behavior */

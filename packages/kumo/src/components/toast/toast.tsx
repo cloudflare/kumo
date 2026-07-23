@@ -213,8 +213,7 @@ function wrapManagerMethods<
     add: (options: KumoToastManagerAddOptions<any>) => {
       if (options.id) {
         const toasts = (manager as any).toasts as
-          | Array<ToastObject<any>>
-          | undefined;
+          Array<ToastObject<any>> | undefined;
 
         if (toasts) {
           const existingToast = toasts.find((toast) => toast.id === options.id);

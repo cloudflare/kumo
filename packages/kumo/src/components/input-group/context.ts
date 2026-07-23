@@ -120,7 +120,8 @@ export const INPUT_GROUP_HAS_CLASSES: Record<KumoInputSize, string> = {
  * (see `detectFocusMode`), so it is not part of the public or internal API.
  */
 export interface InputGroupRootPropsInternal
-  extends HTMLAttributes<HTMLElement>,
+  extends
+    HTMLAttributes<HTMLElement>,
     Partial<
       Pick<
         FieldProps,
