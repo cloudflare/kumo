@@ -129,7 +129,11 @@ describe("Link with href (standard usage)", () => {
 
   it("renders external URLs correctly with the default LinkProvider", () => {
     render(
-      <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
+      <Link
+        href="https://example.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         External
       </Link>,
     );

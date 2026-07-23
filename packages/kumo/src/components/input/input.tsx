@@ -6,7 +6,11 @@ import {
   type ReactNode,
 } from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
-import { Field, normalizeFieldError, type FieldErrorMatch } from "../field/field";
+import {
+  Field,
+  normalizeFieldError,
+  type FieldErrorMatch,
+} from "../field/field";
 
 /** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {

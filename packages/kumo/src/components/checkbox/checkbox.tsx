@@ -48,7 +48,13 @@ export interface KumoCheckboxVariantsProps {
 export function checkboxVariants({
   variant = KUMO_CHECKBOX_DEFAULT_VARIANTS.variant,
 }: KumoCheckboxVariantsProps = {}) {
-  return cn(resolveVariant(KUMO_CHECKBOX_VARIANTS.variant, variant, KUMO_CHECKBOX_DEFAULT_VARIANTS.variant).classes);
+  return cn(
+    resolveVariant(
+      KUMO_CHECKBOX_VARIANTS.variant,
+      variant,
+      KUMO_CHECKBOX_DEFAULT_VARIANTS.variant,
+    ).classes,
+  );
 }
 
 // Legacy type alias for backwards compatibility

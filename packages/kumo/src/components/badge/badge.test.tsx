@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import {
-  Badge,
-  badgeVariants,
-  KUMO_BADGE_VARIANTS,
-} from "./badge";
+import { Badge, badgeVariants, KUMO_BADGE_VARIANTS } from "./badge";
 
 describe("Badge", () => {
   it("renders children as text content", () => {
@@ -82,10 +78,9 @@ describe("Badge", () => {
         const badge = screen.getByText(variant).closest("span")!;
         const dot = badge.querySelector("[aria-hidden='true']");
         expect(dot, `dot should exist for variant="${variant}"`).toBeTruthy();
-        expect(
-          dot!.className,
-          `dot class for variant="${variant}"`,
-        ).toContain(expected);
+        expect(dot!.className, `dot class for variant="${variant}"`).toContain(
+          expected,
+        );
         unmount();
       }
     });
@@ -173,10 +168,9 @@ describe("KUMO_BADGE_VARIANTS", () => {
         entries as Record<string, { classes: string; description: string }>,
       )) {
         expect(entry.classes, `${dim}.${key}.classes`).toBeDefined();
-        expect(
-          typeof entry.description,
-          `${dim}.${key}.description`,
-        ).toBe("string");
+        expect(typeof entry.description, `${dim}.${key}.description`).toBe(
+          "string",
+        );
       }
     }
   });

@@ -55,9 +55,7 @@ describe("variant functions survive invalid variant values", () => {
   });
 
   it("textVariants", () => {
-    expect(() =>
-      textVariants({ variant: BOGUS, size: BOGUS }),
-    ).not.toThrow();
+    expect(() => textVariants({ variant: BOGUS, size: BOGUS })).not.toThrow();
     expect(typeof textVariants({ variant: BOGUS })).toBe("string");
   });
 
@@ -67,9 +65,7 @@ describe("variant functions survive invalid variant values", () => {
   });
 
   it("inputVariants", () => {
-    expect(() =>
-      inputVariants({ variant: BOGUS, size: BOGUS }),
-    ).not.toThrow();
+    expect(() => inputVariants({ variant: BOGUS, size: BOGUS })).not.toThrow();
     expect(typeof inputVariants({ variant: BOGUS })).toBe("string");
   });
 
@@ -137,9 +133,7 @@ describe("variant functions survive invalid variant values", () => {
   });
 
   it("gridVariants", () => {
-    expect(() =>
-      gridVariants({ variant: BOGUS, gap: BOGUS }),
-    ).not.toThrow();
+    expect(() => gridVariants({ variant: BOGUS, gap: BOGUS })).not.toThrow();
     expect(typeof gridVariants({ variant: BOGUS })).toBe("string");
   });
 
@@ -167,9 +161,7 @@ describe("variant functions survive invalid variant values", () => {
   });
 
   it("switchVariants", () => {
-    expect(() =>
-      switchVariants({ size: BOGUS, variant: BOGUS }),
-    ).not.toThrow();
+    expect(() => switchVariants({ size: BOGUS, variant: BOGUS })).not.toThrow();
     expect(typeof switchVariants({ size: BOGUS })).toBe("string");
   });
 

@@ -66,9 +66,7 @@ export function getGitRefs(): GitRefs {
       console.log(`Using base ref: ${fallbackRef}`);
       return { baseRef: fallbackRef, headRef: headRef };
     } catch (error) {
-      console.warn(
-        `  Could not fetch base branch ${baseRef}: ${error}`,
-      );
+      console.warn(`  Could not fetch base branch ${baseRef}: ${error}`);
     }
   }
 
@@ -120,9 +118,7 @@ export function getChangedFiles(
     const { baseRef, headRef } = getGitRefs();
 
     if (!baseRef) {
-      console.warn(
-        "  Warning: Could not determine base ref for file changes",
-      );
+      console.warn("  Warning: Could not determine base ref for file changes");
       return null;
     }
 
@@ -251,12 +247,8 @@ export function logPullRequestContext(): void {
   } else if (process.env.GITHUB_EVENT_NAME === "pull_request_target") {
     console.log("Detected PR context: Pull request target event");
   } else if (process.env.GITHUB_PR_NUMBER) {
-    console.log(
-      `Detected PR context: PR #${process.env.GITHUB_PR_NUMBER}`,
-    );
+    console.log(`Detected PR context: PR #${process.env.GITHUB_PR_NUMBER}`);
   } else if (process.env.CI_FORCE_PR_VALIDATION === "true") {
     console.log("Detected PR context: Manual validation override");
   }
 }
-
-

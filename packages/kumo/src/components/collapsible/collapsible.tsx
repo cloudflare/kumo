@@ -77,19 +77,20 @@ export interface CollapsibleTriggerProps extends BaseTriggerProps {
  * </Collapsible.Trigger>
  * ```
  */
-const CollapsibleTrigger = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <CollapsibleBase.Trigger
-        ref={ref}
-        data-kumo-component="Collapsible"
-        data-kumo-part="trigger"
-        className={cn("cursor-pointer", className)}
-        {...props}
-      />
-    );
-  },
-);
+const CollapsibleTrigger = forwardRef<
+  HTMLButtonElement,
+  CollapsibleTriggerProps
+>(({ className, ...props }, ref) => {
+  return (
+    <CollapsibleBase.Trigger
+      ref={ref}
+      data-kumo-component="Collapsible"
+      data-kumo-part="trigger"
+      className={cn("cursor-pointer", className)}
+      {...props}
+    />
+  );
+});
 
 CollapsibleTrigger.displayName = "Collapsible.Trigger";
 
@@ -116,13 +117,7 @@ export interface CollapsiblePanelProps extends BasePanelProps {
  */
 const CollapsiblePanel = forwardRef<HTMLDivElement, CollapsiblePanelProps>(
   ({ className, ...props }, ref) => {
-    return (
-      <CollapsibleBase.Panel
-        ref={ref}
-        className={className}
-        {...props}
-      />
-    );
+    return <CollapsibleBase.Panel ref={ref} className={className} {...props} />;
   },
 );
 
@@ -210,7 +205,10 @@ const CollapsibleDefaultPanel = forwardRef<
   return (
     <CollapsibleBase.Panel
       ref={ref}
-      className={cn("my-2 space-y-4 border-l-2 border-kumo-fill pl-4", className)}
+      className={cn(
+        "my-2 space-y-4 border-l-2 border-kumo-fill pl-4",
+        className,
+      )}
       {...props}
     >
       {children}

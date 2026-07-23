@@ -40,7 +40,11 @@ export function loaderVariants({
   size = KUMO_LOADER_DEFAULT_VARIANTS.size,
 }: KumoLoaderVariantsProps = {}): number {
   if (typeof size === "number") return size;
-  return resolveVariant(KUMO_LOADER_VARIANTS.size, size, KUMO_LOADER_DEFAULT_VARIANTS.size).value;
+  return resolveVariant(
+    KUMO_LOADER_VARIANTS.size,
+    size,
+    KUMO_LOADER_DEFAULT_VARIANTS.size,
+  ).value;
 }
 
 /**

@@ -178,7 +178,10 @@ export function HomeGrid() {
       id: "toolbar",
       Component: (
         <Toolbar className="w-[260px]">
-          <Toolbar.Input aria-label="Search DNS records" placeholder="Search..." />
+          <Toolbar.Input
+            aria-label="Search DNS records"
+            placeholder="Search..."
+          />
           <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
           <Toolbar.Button icon={PlusIcon} aria-label="Add" />
         </Toolbar>

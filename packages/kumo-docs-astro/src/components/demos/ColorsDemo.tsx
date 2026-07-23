@@ -201,7 +201,9 @@ function getColorsForTheme(theme: string): ColorsByCategory {
   }
 
   // Build sorted component groups with display names from the registry
-  const componentGroups: ComponentColorGroup[] = [...componentTokenMap.entries()]
+  const componentGroups: ComponentColorGroup[] = [
+    ...componentTokenMap.entries(),
+  ]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([comp, tokens]) => {
       // Find the proper-cased name from the registry
@@ -210,7 +212,8 @@ function getColorsForTheme(theme: string): ColorsByCategory {
       );
       return {
         component: comp,
-        displayName: registryName ?? comp.charAt(0).toUpperCase() + comp.slice(1),
+        displayName:
+          registryName ?? comp.charAt(0).toUpperCase() + comp.slice(1),
         tokens,
       };
     });

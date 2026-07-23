@@ -113,7 +113,9 @@ describe("useShikiHighlighter", () => {
     expect(html).toBeNull();
     expect(mockHighlighter.codeToHtml).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Language "js" is not in the ShikiProvider\'s languages list'),
+      expect.stringContaining(
+        'Language "js" is not in the ShikiProvider\'s languages list',
+      ),
     );
 
     warnSpy.mockRestore();
@@ -137,7 +139,9 @@ describe("useShikiHighlighter", () => {
     expect(html).toBeNull();
     expect(mockHighlighter.codeToHtml).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Language "rust" is not in the ShikiProvider\'s languages list'),
+      expect.stringContaining(
+        'Language "rust" is not in the ShikiProvider\'s languages list',
+      ),
     );
 
     warnSpy.mockRestore();
@@ -157,16 +161,13 @@ describe("useShikiHighlighter", () => {
     });
 
     result.current.highlight("const x = 1;", "javascript");
-    expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith(
-      "const x = 1;",
-      {
-        lang: "javascript",
-        themes: {
-          light: "github-light",
-          dark: "vesper",
-        },
+    expect(mockHighlighter.codeToHtml).toHaveBeenCalledWith("const x = 1;", {
+      lang: "javascript",
+      themes: {
+        light: "github-light",
+        dark: "vesper",
       },
-    );
+    });
   });
 
   it("returns null and warns when codeToHtml throws", () => {
@@ -190,7 +191,9 @@ describe("useShikiHighlighter", () => {
     const html = result.current.highlight("const x = 1;", "javascript");
     expect(html).toBeNull();
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to highlight code with language "javascript"'),
+      expect.stringContaining(
+        'Failed to highlight code with language "javascript"',
+      ),
       expect.any(Error),
     );
 

@@ -94,7 +94,9 @@ export function DialogWithActionsDemo() {
 export function DialogMaxWidthDemo() {
   return (
     <Dialog.Root>
-      <Dialog.Trigger render={(p) => <Button {...p}>Open capped dialog</Button>} />
+      <Dialog.Trigger
+        render={(p) => <Button {...p}>Open capped dialog</Button>}
+      />
       <Dialog className="max-w-lg p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
@@ -252,9 +254,7 @@ export function DialogWithSelectDemo() {
         <Select
           className="w-full"
           placeholder="Select region..."
-          renderValue={(v) =>
-            regions.find((r) => r.value === v)?.label
-          }
+          renderValue={(v) => regions.find((r) => r.value === v)?.label}
         >
           {regions.map((region) => (
             <Select.Option key={region.value} value={region.value}>
@@ -391,7 +391,11 @@ export function DialogWithDropdownDemo() {
  * dialog to stretch beyond its intended size.
  */
 export function DialogSizesDemo() {
-  const sizes: { size: NonNullable<DialogProps["size"]>; label: string; width: string }[] = [
+  const sizes: {
+    size: NonNullable<DialogProps["size"]>;
+    label: string;
+    width: string;
+  }[] = [
     { size: "sm", label: "Small", width: "288px" },
     { size: "base", label: "Base", width: "384px" },
     { size: "lg", label: "Large", width: "512px" },

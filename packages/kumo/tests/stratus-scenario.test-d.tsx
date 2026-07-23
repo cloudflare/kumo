@@ -24,7 +24,9 @@ function StratusBrokenScenario() {
         return t.name;
       }}
     >
-      <Select.Option value={{ id: "1", name: "Tunnel 1" }}>Tunnel 1</Select.Option>
+      <Select.Option value={{ id: "1", name: "Tunnel 1" }}>
+        Tunnel 1
+      </Select.Option>
     </Select>
   );
 }
@@ -43,7 +45,9 @@ function StratusWithIsItemEqual() {
       }}
       renderValue={(t) => t.name}
     >
-      <Select.Option value={{ id: "1", name: "Tunnel 1" }}>Tunnel 1</Select.Option>
+      <Select.Option value={{ id: "1", name: "Tunnel 1" }}>
+        Tunnel 1
+      </Select.Option>
     </Select>
   );
 }

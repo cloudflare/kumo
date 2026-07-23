@@ -43,18 +43,20 @@ type FlowState = {
     [id: string]: {
       width: number;
       height: number;
-    }
+    };
   };
   tree: TreeNode;
-}
+};
 
-type TreeNode = {
-  kind: "list" | "parallel"
-  children: TreeNode[]
-} | {
-  kind: "node"
-  id: string;
-}
+type TreeNode =
+  | {
+      kind: "list" | "parallel";
+      children: TreeNode[];
+    }
+  | {
+      kind: "node";
+      id: string;
+    };
 ```
 
 **Examples**
@@ -193,8 +195,8 @@ const nodePositions = computePositions(flowState)
 ```
 
 ```tsx
-type Edges = [string, string][] // [fromId, toId]
-type NodePositions = Record<string, { x: number; y: number }> // string = ID
+type Edges = [string, string][]; // [fromId, toId]
+type NodePositions = Record<string, { x: number; y: number }>; // string = ID
 ```
 
 **Computing edges**
@@ -246,7 +248,6 @@ B2 -> C
 ```
 
 3. Adjacent parallel nodes will _not_ link to one another.
-
 
 ```tsx
 {
@@ -319,7 +320,7 @@ C1 -> D
 ```tsx
 function computePositions(
   flowState: FlowState,
-  { columnGap = 64, rowGap = 48 } = {}
+  { columnGap = 64, rowGap = 48 } = {},
 ): Record<string, { x: number; y: number }>;
 ```
 

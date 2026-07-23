@@ -145,8 +145,10 @@ export function gridVariants({
 } = {}) {
   return cn(
     "grid",
-    variant && resolveVariant(KUMO_GRID_VARIANTS.variant, variant, "2up").classes,
-    resolveVariant(KUMO_GRID_VARIANTS.gap, gap, KUMO_GRID_DEFAULT_VARIANTS.gap).classes,
+    variant &&
+      resolveVariant(KUMO_GRID_VARIANTS.variant, variant, "2up").classes,
+    resolveVariant(KUMO_GRID_VARIANTS.gap, gap, KUMO_GRID_DEFAULT_VARIANTS.gap)
+      .classes,
   );
 }
 

@@ -501,9 +501,10 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
         shouldRestoreFocusRef.current = false;
         // Wait a frame so the aside is no longer inert before focusing
         requestAnimationFrame(() => {
-          const firstFocusable = mobileNodeRef.current?.querySelector<HTMLElement>(
-            FOCUSABLE_SELECTOR,
-          );
+          const firstFocusable =
+            mobileNodeRef.current?.querySelector<HTMLElement>(
+              FOCUSABLE_SELECTOR,
+            );
           (firstFocusable ?? mobileNodeRef.current)?.focus();
         });
       } else if (
@@ -562,7 +563,9 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
           <div
             data-sidebar-backdrop=""
             className={cn(
-              contained ? "absolute inset-0 z-40 bg-kumo-recessed" : "fixed inset-0 z-40 bg-kumo-recessed",
+              contained
+                ? "absolute inset-0 z-40 bg-kumo-recessed"
+                : "fixed inset-0 z-40 bg-kumo-recessed",
               "transition-opacity duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
               openMobile ? "opacity-80" : "opacity-0 pointer-events-none",

@@ -1,5 +1,5 @@
-import { Tooltip, TooltipProvider, Button } from '@cloudflare/kumo';
-import { Info, PlusIcon, TranslateIcon } from '@phosphor-icons/react';
+import { Tooltip, TooltipProvider, Button } from "@cloudflare/kumo";
+import { Info, PlusIcon, TranslateIcon } from "@phosphor-icons/react";
 
 export function TooltipHeroDemo() {
   return (
@@ -78,7 +78,7 @@ export function TooltipCustomTriggerDemo() {
  */
 export function TooltipOverflowDemo() {
   const longContent =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.';
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.";
   return (
     <TooltipProvider>
       <div className="flex w-full justify-between">

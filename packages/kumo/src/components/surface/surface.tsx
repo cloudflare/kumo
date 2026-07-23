@@ -37,7 +37,11 @@ export interface KumoSurfaceVariantsProps {
 export function surfaceVariants({
   color = KUMO_SURFACE_DEFAULT_VARIANTS.color,
 }: KumoSurfaceVariantsProps = {}) {
-  return resolveVariant(KUMO_SURFACE_VARIANTS.color, color, KUMO_SURFACE_DEFAULT_VARIANTS.color).classes;
+  return resolveVariant(
+    KUMO_SURFACE_VARIANTS.color,
+    color,
+    KUMO_SURFACE_DEFAULT_VARIANTS.color,
+  ).classes;
 }
 
 /**

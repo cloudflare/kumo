@@ -55,8 +55,7 @@ function useTextareaAutoResize({
     const style = window.getComputedStyle(textarea);
     const borders =
       parsePx(style.borderTopWidth) + parsePx(style.borderBottomWidth);
-    const padding =
-      parsePx(style.paddingTop) + parsePx(style.paddingBottom);
+    const padding = parsePx(style.paddingTop) + parsePx(style.paddingBottom);
     const isBorderBox = style.boxSizing === "border-box";
 
     // Collapsing to `auto` lets scrollHeight report the true content height

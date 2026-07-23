@@ -23,12 +23,12 @@ The registry at `packages/kumo/ai/component-registry.json` is the source of trut
 
 Use only semantic tokens. Raw Tailwind colors fail lint.
 
-| Do                                      | Do Not                             |
-| --------------------------------------- | ---------------------------------- |
-| `bg-kumo-base`, `bg-kumo-elevated`      | `bg-gray-100`, `bg-slate-50`       |
-| `text-kumo-default`, `text-kumo-subtle` | `text-gray-900`, `text-gray-500`   |
-| `border-kumo-line`, `ring-kumo-hairline`    | `border-gray-200`, `ring-blue-500` |
-| `bg-kumo-brand`, `bg-kumo-danger`       | `bg-orange-500`, `bg-red-500`      |
+| Do                                       | Do Not                             |
+| ---------------------------------------- | ---------------------------------- |
+| `bg-kumo-base`, `bg-kumo-elevated`       | `bg-gray-100`, `bg-slate-50`       |
+| `text-kumo-default`, `text-kumo-subtle`  | `text-gray-900`, `text-gray-500`   |
+| `border-kumo-line`, `ring-kumo-hairline` | `border-gray-200`, `ring-blue-500` |
+| `bg-kumo-brand`, `bg-kumo-danger`        | `bg-orange-500`, `bg-red-500`      |
 
 Allowed exceptions: `bg-white`, `bg-black`, `text-white`, `text-black`, `transparent`.
 

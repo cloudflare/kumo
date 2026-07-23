@@ -580,11 +580,7 @@ export function ComboboxCustomTriggerDemo() {
       onValueChange={(v) => setValue(v as Language)}
       items={languages}
     >
-      <Combobox.Trigger
-        render={
-          <Button variant="ghost" size="sm" />
-        }
-      >
+      <Combobox.Trigger render={<Button variant="ghost" size="sm" />}>
         <Combobox.Value>
           <span className="truncate">
             {value.emoji} {value.label}

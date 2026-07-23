@@ -1,4 +1,9 @@
-import { Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
+import {
+  Sidebar,
+  useSidebar,
+  DropdownMenu,
+  type SidebarState,
+} from "@cloudflare/kumo";
 import {
   HouseIcon,
   GlobeIcon,
@@ -237,9 +242,7 @@ export function SidebarToggleDemo() {
         </Sidebar>
         <DemoMain>
           <ToggleButton />
-          <p>
-            Click the button or the sidebar trigger to toggle
-          </p>
+          <p>Click the button or the sidebar trigger to toggle</p>
         </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>
@@ -254,7 +257,8 @@ export function SidebarToggleDemo() {
 export function SidebarResizableDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained
+      <Sidebar.Provider
+        contained
         defaultOpen
         resizable
         defaultWidth={240}
@@ -302,7 +306,12 @@ export function SidebarResizableDemo() {
 export function SidebarRightDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen side="right" className="min-h-0! h-full">
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        side="right"
+        className="min-h-0! h-full"
+      >
         <DemoMain />
         <Sidebar>
           <Sidebar.Content>
@@ -350,7 +359,12 @@ function PeekStateIndicator() {
 export function SidebarPeekingDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen peekable className="min-h-0! h-full">
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        peekable
+        className="min-h-0! h-full"
+      >
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -448,8 +462,12 @@ export function SidebarAutoScrollDemo() {
                     <Sidebar.CollapsibleContent>
                       <Sidebar.MenuSub>
                         <Sidebar.MenuSubButton>Overview</Sidebar.MenuSubButton>
-                        <Sidebar.MenuSubButton>Deployments</Sidebar.MenuSubButton>
-                        <Sidebar.MenuSubButton>Observability</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Deployments
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Observability
+                        </Sidebar.MenuSubButton>
                         <Sidebar.MenuSubButton>Settings</Sidebar.MenuSubButton>
                       </Sidebar.MenuSub>
                     </Sidebar.CollapsibleContent>
@@ -555,9 +573,7 @@ export function SidebarSlidingViewsDemo() {
             <p className="font-medium text-kumo-default">
               Active: {surface === "account" ? "Account" : "Zone"} surface
             </p>
-            <p>
-              Click the header button to slide between views
-            </p>
+            <p>Click the header button to slide between views</p>
           </div>
         </DemoMain>
       </Sidebar.Provider>
@@ -575,7 +591,12 @@ export function SidebarFullDemo() {
 
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen peekable className="min-h-0! h-full">
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        peekable
+        className="min-h-0! h-full"
+      >
         <Sidebar>
           <Sidebar.Header>
             <AccountSwitcher />
@@ -777,9 +798,7 @@ export function SidebarMobileDemo() {
             <Sidebar.Group>
               <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
               <Sidebar.Menu>
-                <Sidebar.MenuButton icon={CodeIcon}>
-                  Compute
-                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={CodeIcon}>Compute</Sidebar.MenuButton>
                 <Sidebar.MenuButton icon={DatabaseIcon}>
                   Storage
                 </Sidebar.MenuButton>

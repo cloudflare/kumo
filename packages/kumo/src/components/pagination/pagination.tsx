@@ -94,7 +94,11 @@ export function paginationVariants({
 }: KumoPaginationVariantsProps = {}) {
   return cn(
     "flex items-center justify-between gap-2",
-    resolveVariant(KUMO_PAGINATION_VARIANTS.controls, controls, KUMO_PAGINATION_DEFAULT_VARIANTS.controls).classes,
+    resolveVariant(
+      KUMO_PAGINATION_VARIANTS.controls,
+      controls,
+      KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
+    ).classes,
   );
 }
 
@@ -461,7 +465,8 @@ export interface PaginationCompoundProps extends PaginationBaseProps {
  * ```
  */
 export interface PaginationLegacyProps
-  extends PaginationBaseProps, KumoPaginationVariantsProps {
+  extends PaginationBaseProps,
+    KumoPaginationVariantsProps {
   children?: never;
   /** @deprecated Use Pagination.Info with children prop instead */
   text?: (props: {

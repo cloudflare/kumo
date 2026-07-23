@@ -50,7 +50,11 @@ export function breadcrumbsVariants({
 }: KumoBreadcrumbsVariantsProps = {}) {
   return cn(
     "group mr-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
-    resolveVariant(KUMO_BREADCRUMBS_VARIANTS.size, size, KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(
+      KUMO_BREADCRUMBS_VARIANTS.size,
+      size,
+      KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size,
+    ).classes,
   );
 }
 

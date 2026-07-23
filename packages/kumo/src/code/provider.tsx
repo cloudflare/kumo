@@ -3,7 +3,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ShikiContext, type ShikiContextValue } from "./context";
 import { LANGUAGE_ALIASES } from "./types";
-import type { ShikiProviderProps, SupportedLanguage, LanguageAlias } from "./types";
+import type {
+  ShikiProviderProps,
+  SupportedLanguage,
+  LanguageAlias,
+} from "./types";
 
 /**
  * Pre-bundled languages - only these languages are included in the Kumo bundle.
@@ -178,7 +182,13 @@ export function ShikiProvider({
       languages: state.languages,
       labels: mergedLabels,
     }),
-    [state.highlighter, state.isLoading, state.error, state.languages, mergedLabels],
+    [
+      state.highlighter,
+      state.isLoading,
+      state.error,
+      state.languages,
+      mergedLabels,
+    ],
   );
 
   return (

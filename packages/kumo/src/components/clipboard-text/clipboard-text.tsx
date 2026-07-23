@@ -66,7 +66,11 @@ export function clipboardTextVariants({
     // Base styles
     "flex items-center overflow-hidden bg-kumo-base px-0 font-mono",
     // Apply size styles from KUMO_CLIPBOARD_TEXT_VARIANTS
-    resolveVariant(KUMO_CLIPBOARD_TEXT_VARIANTS.size, size, KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(
+      KUMO_CLIPBOARD_TEXT_VARIANTS.size,
+      size,
+      KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
+    ).classes,
   );
 }
 
@@ -177,7 +181,11 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
   ) => {
     const [copied, setCopied] = useState(false);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const sizeConfig = resolveVariant(KUMO_CLIPBOARD_TEXT_VARIANTS.size, size, KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size);
+    const sizeConfig = resolveVariant(
+      KUMO_CLIPBOARD_TEXT_VARIANTS.size,
+      size,
+      KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
+    );
 
     // Destructure tooltip config with defaults
     const {

@@ -184,12 +184,13 @@ function clampChannel(value: number) {
 
 function hexToRgb(hex: string): [number, number, number] {
   const normalized = hex.replace("#", "");
-  const chunk = normalized.length === 3
-    ? normalized
-        .split("")
-        .map((char) => `${char}${char}`)
-        .join("")
-    : normalized;
+  const chunk =
+    normalized.length === 3
+      ? normalized
+          .split("")
+          .map((char) => `${char}${char}`)
+          .join("")
+      : normalized;
 
   const r = Number.parseInt(chunk.slice(0, 2), 16);
   const g = Number.parseInt(chunk.slice(2, 4), 16);
@@ -213,9 +214,10 @@ function srgbToLinear(channel: number) {
 
 function linearToSrgb(channel: number) {
   const clamped = Math.max(0, Math.min(1, channel));
-  const encoded = clamped <= 0.0031308
-    ? clamped * 12.92
-    : 1.055 * clamped ** (1 / 2.4) - 0.055;
+  const encoded =
+    clamped <= 0.0031308
+      ? clamped * 12.92
+      : 1.055 * clamped ** (1 / 2.4) - 0.055;
   return encoded * 255;
 }
 
@@ -334,7 +336,9 @@ export function CategoricalColorsDemo() {
           <Table.Body>
             <Table.Row>
               {categoricalColorIndices.map((colorIdx) => {
-                const color = String(ChartPalette.categorical(colorIdx, isDarkMode));
+                const color = String(
+                  ChartPalette.categorical(colorIdx, isDarkMode),
+                );
                 return (
                   <Table.Cell key={colorIdx} className="w-1/6">
                     <div className="flex items-center gap-2">
@@ -394,7 +398,10 @@ export function CategoricalCvdDemo() {
           <Table.Body>
             <Table.Row>
               {simulatedColors.map((color, index) => (
-                <Table.Cell key={`deuteranopia-${index}`} className="text-center w-1/6">
+                <Table.Cell
+                  key={`deuteranopia-${index}`}
+                  className="text-center w-1/6"
+                >
                   <div className="flex items-center gap-2">
                     <div
                       style={{ backgroundColor: color }}
@@ -474,11 +481,14 @@ export function SequentialHeatmapDemo() {
   const data = useMemo(
     () =>
       HEATMAP_DAYS.flatMap((day, dayIndex) =>
-        HEATMAP_HOURS.map((hour, hourIndex) => [
-          hourIndex,
-          dayIndex,
-          HEATMAP_VALUES[dayIndex][hourIndex],
-        ] as [number, number, number]),
+        HEATMAP_HOURS.map(
+          (hour, hourIndex) =>
+            [hourIndex, dayIndex, HEATMAP_VALUES[dayIndex][hourIndex]] as [
+              number,
+              number,
+              number,
+            ],
+        ),
       ),
     [],
   );
@@ -836,7 +846,10 @@ export function ChartColorSystemsDemo() {
         </Table.Body>
       </Table>
       <LayerCard.Primary className="!p-0 !m-0">
-        <Table layout="fixed" className="!p-0 !m-0 w-full [&_td]:align-top [&_td]:text-kumo-default">
+        <Table
+          layout="fixed"
+          className="!p-0 !m-0 w-full [&_td]:align-top [&_td]:text-kumo-default"
+        >
           <colgroup>
             <col className="w-[14%]" />
             <col className="w-[38%]" />

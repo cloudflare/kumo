@@ -31,7 +31,10 @@ export function ToolbarSizesDemo() {
         <div key={size} className="flex items-center gap-3">
           <span className="w-10 text-sm text-kumo-subtle">{size}</span>
           <Toolbar size={size} className="w-fit">
-            <Toolbar.Input aria-label={`${size} search`} placeholder="Search..." />
+            <Toolbar.Input
+              aria-label={`${size} search`}
+              placeholder="Search..."
+            />
             <Toolbar.Button>Apply</Toolbar.Button>
           </Toolbar>
         </div>
@@ -82,7 +85,11 @@ export function ToolbarActionsDemo() {
 export function ToolbarLabelsDemo() {
   return (
     <Toolbar className="w-full max-w-lg">
-      <Toolbar.Input aria-label="Search records" className="flex-1" placeholder="Search" />
+      <Toolbar.Input
+        aria-label="Search records"
+        className="flex-1"
+        placeholder="Search"
+      />
       <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
     </Toolbar>
   );

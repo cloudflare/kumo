@@ -44,6 +44,16 @@ jobs:
           path: packages/kumo/ai
           retention-days: 1
 
+  format:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - run: pnpm format:check
+
   lint:
     needs: build
     timeout-minutes: 5

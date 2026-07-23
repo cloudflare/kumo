@@ -97,7 +97,8 @@ export const KUMO_BADGE_VARIANTS = {
   dotColor: {
     none: {
       classes: "",
-      description: "No dot indicator (used when appearance is not dot, or variant has no dot color)",
+      description:
+        "No dot indicator (used when appearance is not dot, or variant has no dot color)",
     },
     success: {
       classes: "bg-kumo-success",

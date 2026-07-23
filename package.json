@@ -15,6 +15,7 @@
     "clean": "pnpm -r exec rm -rf dist build .astro .wrangler node_modules",
     "dev": "pnpm codegen && pnpm --filter @cloudflare/kumo-docs-astro dev",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "lint": "pnpm --filter @cloudflare/kumo lint && oxlint --config .oxlintrc.json packages/*/src",
     "lockfile-check": "pnpm install --no-frozen-lockfile && git diff --exit-code pnpm-lock.yaml",
     "preview": "pnpm --filter @cloudflare/kumo-docs-astro preview",

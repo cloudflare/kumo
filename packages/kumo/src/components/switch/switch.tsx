@@ -71,8 +71,16 @@ export function switchVariants({
   size = KUMO_SWITCH_DEFAULT_VARIANTS.size,
   variant = KUMO_SWITCH_DEFAULT_VARIANTS.variant,
 }: KumoSwitchVariantsProps = {}) {
-  const sizeConfig = resolveVariant(KUMO_SWITCH_VARIANTS.size, size, KUMO_SWITCH_DEFAULT_VARIANTS.size);
-  const variantConfig = resolveVariant(KUMO_SWITCH_VARIANTS.variant, variant, KUMO_SWITCH_DEFAULT_VARIANTS.variant);
+  const sizeConfig = resolveVariant(
+    KUMO_SWITCH_VARIANTS.size,
+    size,
+    KUMO_SWITCH_DEFAULT_VARIANTS.size,
+  );
+  const variantConfig = resolveVariant(
+    KUMO_SWITCH_VARIANTS.variant,
+    variant,
+    KUMO_SWITCH_DEFAULT_VARIANTS.variant,
+  );
   return cn(sizeConfig.classes, variantConfig.classes);
 }
 

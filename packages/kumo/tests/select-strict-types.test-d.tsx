@@ -98,7 +98,7 @@ function TestMultipleObjects() {
 
 function TestRenderValueNonNull() {
   const [country, setCountry] = useState<{ code: string; name: string } | null>(
-    null
+    null,
   );
 
   return (
@@ -139,4 +139,10 @@ function TestInference() {
 }
 
 // Ensure tests are used (prevents unused variable warnings)
-export { TestObjectOrNull, TestStringOrNull, TestMultipleObjects, TestRenderValueNonNull, TestInference };
+export {
+  TestObjectOrNull,
+  TestStringOrNull,
+  TestMultipleObjects,
+  TestRenderValueNonNull,
+  TestInference,
+};

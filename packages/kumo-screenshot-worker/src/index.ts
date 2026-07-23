@@ -263,7 +263,9 @@ app.use(
 );
 
 app.get("/screenshots/*", async (c) => {
-  const keyCheck = validateScreenshotKey(c.req.path.slice("/screenshots/".length));
+  const keyCheck = validateScreenshotKey(
+    c.req.path.slice("/screenshots/".length),
+  );
   if (!keyCheck.ok) {
     return c.json({ error: keyCheck.error }, 400);
   }
@@ -291,7 +293,9 @@ app.use("*", async (c, next) => {
 });
 
 app.put("/screenshots/*", async (c) => {
-  const keyCheck = validateScreenshotKey(c.req.path.slice("/screenshots/".length));
+  const keyCheck = validateScreenshotKey(
+    c.req.path.slice("/screenshots/".length),
+  );
   if (!keyCheck.ok) {
     return c.json({ error: keyCheck.error }, 400);
   }
@@ -316,7 +320,10 @@ app.put("/screenshots/*", async (c) => {
     httpMetadata: { contentType: "image/png" },
   });
 
-  return c.json({ key: keyCheck.key, url: getScreenshotUrl(c.req.url, keyCheck.key) });
+  return c.json({
+    key: keyCheck.key,
+    url: getScreenshotUrl(c.req.url, keyCheck.key),
+  });
 });
 
 app.post("/batch", (c) => handleBatch(c.req.raw, c.env, {}));

@@ -160,15 +160,15 @@ classes: "bg-kumo-elevated hover:bg-kumo-base focus:ring-kumo-hairline disabled:
 
 ## ANTI-PATTERNS
 
-| Pattern                             | Why                            | Instead                                      |
-| ----------------------------------- | ------------------------------ | -------------------------------------------- |
-| Missing `displayName`               | Breaks React DevTools          | Set after forwardRef                         |
-| Raw className string                | Loses passthrough              | Use `cn(base, className)`                    |
-| `as any`                            | Type safety                    | Model types correctly (3 exist, don't add)   |
-| Hardcoded colors                    | Breaks theming                 | Use semantic tokens                          |
-| `dark:` prefix                      | Redundant                      | Tokens auto-adapt                            |
-| `{cond && A}{!cond && B}`           | Unstable child positions       | `{cond ? A : B}` ternary                    |
-| Bare `{children}` with conditionals | Extensions reparent text nodes | Wrap in `<span className="contents">`        |
+| Pattern                             | Why                            | Instead                                    |
+| ----------------------------------- | ------------------------------ | ------------------------------------------ |
+| Missing `displayName`               | Breaks React DevTools          | Set after forwardRef                       |
+| Raw className string                | Loses passthrough              | Use `cn(base, className)`                  |
+| `as any`                            | Type safety                    | Model types correctly (3 exist, don't add) |
+| Hardcoded colors                    | Breaks theming                 | Use semantic tokens                        |
+| `dark:` prefix                      | Redundant                      | Tokens auto-adapt                          |
+| `{cond && A}{!cond && B}`           | Unstable child positions       | `{cond ? A : B}` ternary                   |
+| Bare `{children}` with conditionals | Extensions reparent text nodes | Wrap in `<span className="contents">`      |
 
 ## COMPLEXITY HOTSPOTS
 
