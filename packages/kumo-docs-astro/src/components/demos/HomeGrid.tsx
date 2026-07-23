@@ -498,7 +498,7 @@ export function HomeGrid() {
       name: "DatePicker",
       id: "date-picker",
       Component: (
-        <div className="-m-4 scale-85">
+        <div className="scale-85 bg-kumo-base p-4">
           <DatePicker mode="single" />
         </div>
       ),
