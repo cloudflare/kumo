@@ -53,4 +53,3 @@ jobs:
           mentions: "/bonk"
           opencode_version: "1.15.11"
           permissions: write
-          
