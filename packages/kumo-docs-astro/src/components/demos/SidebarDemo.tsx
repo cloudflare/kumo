@@ -304,6 +304,61 @@ export function SidebarLoadingDemo() {
   );
 }
 
+function SidebarLoadingSkeleton() {
+  return (
+    <>
+      <Sidebar.Header>
+        <div className="flex items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2">
+          <div className="size-4 shrink-0 rounded-sm bg-kumo-interact" />
+          <div className="h-3 w-24 rounded-full bg-kumo-interact group-data-[state=collapsed]/sidebar:hidden" />
+        </div>
+      </Sidebar.Header>
+      <Sidebar.Content>
+        {["72%", "58%"].map((labelWidth, groupIndex) => (
+          <Sidebar.Group key={labelWidth}>
+            <div className="mb-2 h-2.5 rounded-full bg-kumo-interact group-data-[state=collapsed]/sidebar:hidden" style={{ width: labelWidth }} />
+            <div className="space-y-1.5">
+              {["68%", "82%", "55%"].map((width, rowIndex) => (
+                <div key={width} className="flex h-8 items-center gap-3 px-2">
+                  <div className="size-4 shrink-0 rounded bg-kumo-interact" />
+                  <div
+                    className="h-2.5 rounded-full bg-kumo-interact group-data-[state=collapsed]/sidebar:hidden"
+                    style={{ width: groupIndex === 1 && rowIndex === 2 ? "74%" : width }}
+                  />
+                </div>
+              ))}
+            </div>
+          </Sidebar.Group>
+        ))}
+      </Sidebar.Content>
+      <Sidebar.Footer>
+        <Sidebar.Trigger />
+      </Sidebar.Footer>
+    </>
+  );
+}
+
+/** Concept loading state that mirrors sidebar groups in expanded and collapsed modes. */
+export function SidebarLoadingDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+        <Sidebar
+          aria-label="Loading navigation"
+          aria-busy="true"
+          className="animate-pulse motion-reduce:animate-none"
+        >
+          <SidebarLoadingSkeleton />
+        </Sidebar>
+        <DemoMain>
+          <ToggleButton />
+          <p>Toggle to preview both loading states</p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // 3. Resizable — drag handle with auto-collapse
 // ---------------------------------------------------------------------------

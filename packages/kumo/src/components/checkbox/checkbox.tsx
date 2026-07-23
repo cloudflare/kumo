@@ -1,16 +1,16 @@
-import { forwardRef, createContext, useContext, type ReactNode } from "react";
-import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
-import { cn } from "../../utils/cn";
-import { resolveVariant } from "../../utils/resolve-variant";
-import { Label } from "../label";
-import { Fieldset } from "@base-ui/react/fieldset";
-import { Field as FieldBase } from "@base-ui/react/field";
-import { CheckboxGroup as BaseCheckboxGroup } from "@base-ui/react/checkbox-group";
-import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
+import { forwardRef, createContext, useContext, type ReactNode } from 'react';
+import { CheckIcon, MinusIcon } from '@phosphor-icons/react';
+import { cn } from '../../utils/cn';
+import { resolveVariant } from '../../utils/resolve-variant';
+import { Label } from '../label';
+import { Fieldset } from '@base-ui/react/fieldset';
+import { Field as FieldBase } from '@base-ui/react/field';
+import { CheckboxGroup as BaseCheckboxGroup } from '@base-ui/react/checkbox-group';
+import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox';
 
 /** Event details passed to onCheckedChange callback. Re-exported from Base UI. */
 export type CheckboxChangeEventDetails = Parameters<
-  NonNullable<BaseCheckbox.Root.Props["onCheckedChange"]>
+  NonNullable<BaseCheckbox.Root.Props['onCheckedChange']>
 >[1];
 
 /** Checkbox variant definitions mapping variant names to their Tailwind classes. */
@@ -18,18 +18,18 @@ export const KUMO_CHECKBOX_VARIANTS = {
   variant: {
     default: {
       classes:
-        "[&:focus-within>span]:ring-kumo-focus [&:hover>span]:ring-kumo-hairline",
-      description: "Default checkbox appearance",
+        '[&:focus-within>span]:ring-kumo-focus [&:hover>span]:ring-kumo-hairline',
+      description: 'Default checkbox appearance'
     },
     error: {
-      classes: "[&>span]:ring-kumo-danger",
-      description: "Error state for validation failures",
-    },
-  },
+      classes: '[&>span]:ring-kumo-danger',
+      description: 'Error state for validation failures'
+    }
+  }
 } as const;
 
 export const KUMO_CHECKBOX_DEFAULT_VARIANTS = {
-  variant: "default",
+  variant: 'default'
 } as const;
 
 // Derived types from KUMO_CHECKBOX_VARIANTS
@@ -46,23 +46,33 @@ export interface KumoCheckboxVariantsProps {
 }
 
 export function checkboxVariants({
-  variant = KUMO_CHECKBOX_DEFAULT_VARIANTS.variant,
+  variant = KUMO_CHECKBOX_DEFAULT_VARIANTS.variant
 }: KumoCheckboxVariantsProps = {}) {
   return cn(
     resolveVariant(
       KUMO_CHECKBOX_VARIANTS.variant,
       variant,
-      KUMO_CHECKBOX_DEFAULT_VARIANTS.variant,
-    ).classes,
+      KUMO_CHECKBOX_DEFAULT_VARIANTS.variant
+    ).classes
   );
 }
 
 // Legacy type alias for backwards compatibility
 export type CheckboxVariant = KumoCheckboxVariant;
 
-// Context for passing controlFirst from Group to Items
-const CheckboxGroupContext = createContext<{ controlFirst: boolean }>({
+/** Visual treatment for items within a checkbox group. */
+export type CheckboxGroupAppearance = 'default' | 'bordered';
+
+/** Layout direction for items within a checkbox group. */
+export type CheckboxGroupOrientation = 'vertical' | 'horizontal';
+
+// Context for passing group layout options to Items.
+const CheckboxGroupContext = createContext<{
+  controlFirst: boolean;
+  appearance: CheckboxGroupAppearance;
+}>({
   controlFirst: true,
+  appearance: 'default'
 });
 
 /**
@@ -125,7 +135,7 @@ export type CheckboxProps = {
   /** Whether the checkbox is disabled */
   disabled?: boolean;
   /** Callback when the checked state changes */
-  onCheckedChange?: BaseCheckbox.Root.Props["onCheckedChange"];
+  onCheckedChange?: BaseCheckbox.Root.Props['onCheckedChange'];
   /** Name for form submission */
   name?: string;
   /** Whether the field is required */
@@ -133,9 +143,9 @@ export type CheckboxProps = {
   /** Additional class name */
   className?: string;
   /** Accessible label when no visible label is provided */
-  "aria-label"?: string;
+  'aria-label'?: string;
   /** ID of element that labels this checkbox */
-  "aria-labelledby"?: string;
+  'aria-labelledby'?: string;
 };
 
 /**
@@ -196,7 +206,11 @@ export interface CheckboxGroupProps {
   allValues?: string[];
   /** Whether all checkboxes in the group are disabled */
   disabled?: boolean;
-  /** When true (default), checkbox appears before label. When false, label appears before checkbox. */
+  /** Layout direction of the checkbox items. */
+  orientation?: CheckboxGroupOrientation;
+  /** Visual treatment applied to the group. */
+  appearance?: CheckboxGroupAppearance;
+  /** When true, checkbox appears before label. When false, label appears before checkbox. Defaults to true for default appearance and false for bordered appearance. */
   controlFirst?: boolean;
   /** Additional CSS classes */
   className?: string;
@@ -208,8 +222,8 @@ export interface CheckboxGroupProps {
 export type CheckboxItemProps = {
   /** Visual variant: "default" or "error" for validation failures */
   variant?: CheckboxVariant;
-  /** Label text displayed next to checkbox */
-  label: string;
+  /** Label content displayed next to checkbox */
+  label: ReactNode;
   /** Value of the checkbox (required when used in Checkbox.Group) */
   value?: string;
   /** Additional CSS classes for the label wrapper */
@@ -218,7 +232,7 @@ export type CheckboxItemProps = {
   indeterminate?: boolean;
   disabled?: boolean;
   /** Callback when the checked state changes */
-  onCheckedChange?: BaseCheckbox.Root.Props["onCheckedChange"];
+  onCheckedChange?: BaseCheckbox.Root.Props['onCheckedChange'];
   name?: string;
 };
 
@@ -230,7 +244,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       checked,
       indeterminate,
       disabled,
-      variant = "default",
+      variant = 'default',
       label,
       labelTooltip,
       controlFirst = true,
@@ -239,21 +253,21 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       name,
       ...props
     },
-    ref,
+    ref
   ) => {
     // A11y enforcement: warn in dev if no accessible name provided
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== 'production') {
       const hasLabel = Boolean(label);
-      const hasAriaLabel = Boolean(props["aria-label"]);
-      const hasAriaLabelledBy = Boolean(props["aria-labelledby"]);
+      const hasAriaLabel = Boolean(props['aria-label']);
+      const hasAriaLabelledBy = Boolean(props['aria-labelledby']);
 
       if (!hasLabel && !hasAriaLabel && !hasAriaLabelledBy) {
         console.warn(
-          "[Kumo Checkbox]: Checkbox must have an accessible name. Provide either:\n" +
+          '[Kumo Checkbox]: Checkbox must have an accessible name. Provide either:\n' +
             "  - label prop: <Checkbox label='Accept terms' />\n" +
             "  - aria-label: <Checkbox aria-label='Select item' />\n" +
-            "  - aria-labelledby for custom label association\n" +
-            "  Note: When used inside Checkbox.Group, label is optional",
+            '  - aria-labelledby for custom label association\n' +
+            '  Note: When used inside Checkbox.Group, label is optional'
         );
       }
     }
@@ -268,14 +282,14 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         disabled={disabled}
         onCheckedChange={onCheckedChange}
         className={cn(
-          "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-none",
-          label && "mt-0.5",
-          variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
+          'relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2',
+          label && 'mt-0.5',
+          variant === 'error' ? 'ring-kumo-danger' : 'ring-kumo-hairline',
           !disabled &&
-            "hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
-          "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
-          disabled && "cursor-not-allowed opacity-50",
-          className,
+            'hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand',
+          'data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast',
+          disabled && 'cursor-not-allowed opacity-50',
+          className
         )}
         {...props}
       >
@@ -306,9 +320,9 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       <FieldBase.Root className="inline-flex">
         <FieldBase.Label
           className={cn(
-            "!m-0 inline-flex !min-h-0 items-start gap-2 !text-base",
-            controlFirst ? "flex-row" : "flex-row-reverse justify-end",
-            disabled ? "cursor-not-allowed" : "cursor-pointer",
+            '!m-0 !min-h-0 !text-base inline-flex items-start gap-2',
+            controlFirst ? 'flex-row' : 'flex-row-reverse justify-end',
+            disabled ? 'cursor-not-allowed' : 'cursor-pointer'
           )}
         >
           {checkboxControl}
@@ -322,10 +336,10 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         </FieldBase.Label>
       </FieldBase.Root>
     );
-  },
+  }
 );
 
-CheckboxBase.displayName = "Checkbox";
+CheckboxBase.displayName = 'Checkbox';
 
 // Checkbox.Item for use within Checkbox.Group
 const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
@@ -335,27 +349,35 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
       checked,
       indeterminate,
       disabled,
-      variant = "default",
+      variant = 'default',
       label,
       value,
       onCheckedChange,
-      name,
+      name
     },
-    ref,
+    ref
   ) => {
-    const { controlFirst } = useContext(CheckboxGroupContext);
+    const { controlFirst, appearance } = useContext(CheckboxGroupContext);
+    const isBordered = appearance === 'bordered';
 
     return (
       <label
         data-kumo-component="Checkbox"
         data-kumo-part="item-label"
         className={cn(
-          "relative m-0 inline-flex items-start gap-2",
+          'm-0 relative inline-flex items-start gap-2',
+          isBordered &&
+            'w-full flex-1 p-3 transition-colors has-[[data-checked]]:bg-kumo-elevated',
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
-          !controlFirst && "flex-row-reverse justify-end",
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-          className,
+          !controlFirst && 'flex-row-reverse justify-end',
+          disabled
+            ? cn(
+                'cursor-not-allowed',
+                isBordered ? '[&>*]:opacity-50' : 'opacity-50'
+              )
+            : cn('cursor-pointer', isBordered && 'hover:bg-kumo-elevated'),
+          className
         )}
       >
         <BaseCheckbox.Root
@@ -369,11 +391,11 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           disabled={disabled}
           onCheckedChange={onCheckedChange}
           className={cn(
-            "peer relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
-            variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
+            'peer relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2',
+            variant === 'error' ? 'ring-kumo-danger' : 'ring-kumo-hairline',
             !disabled &&
-              "group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
-            "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
+              'group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand',
+            'data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast'
           )}
         >
           <BaseCheckbox.Indicator
@@ -390,26 +412,34 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             )}
           />
         </BaseCheckbox.Root>
-        <span className="text-base text-kumo-default">{label}</span>
+        <span
+          data-kumo-part="item-content"
+          className={cn(
+            'text-base text-kumo-default',
+            isBordered && 'flex-1 text-pretty leading-5'
+          )}
+        >
+          {label}
+        </span>
       </label>
     );
-  },
+  }
 );
 
-CheckboxItem.displayName = "Checkbox.Item";
+CheckboxItem.displayName = 'Checkbox.Item';
 
 // Checkbox.Legend — composable legend sub-component for Checkbox.Group
 function CheckboxLegend({ children, className }: CheckboxLegendProps) {
   return (
     <Fieldset.Legend
-      className={cn("text-base font-medium text-kumo-default", className)}
+      className={cn('text-base font-medium text-kumo-default', className)}
     >
       {children}
     </Fieldset.Legend>
   );
 }
 
-CheckboxLegend.displayName = "Checkbox.Legend";
+CheckboxLegend.displayName = 'Checkbox.Legend';
 
 // Checkbox.Group with built-in Fieldset and CheckboxGroup
 function CheckboxGroup({
@@ -422,11 +452,17 @@ function CheckboxGroup({
   onValueChange,
   allValues,
   disabled,
-  controlFirst = true,
-  className,
+  orientation = 'vertical',
+  appearance = 'default',
+  controlFirst,
+  className
 }: CheckboxGroupProps) {
+  const effectiveControlFirst = controlFirst ?? appearance === 'default';
+
   return (
-    <CheckboxGroupContext.Provider value={{ controlFirst }}>
+    <CheckboxGroupContext.Provider
+      value={{ controlFirst: effectiveControlFirst, appearance }}
+    >
       <BaseCheckboxGroup
         defaultValue={defaultValue}
         value={value}
@@ -434,13 +470,30 @@ function CheckboxGroup({
         allValues={allValues}
         disabled={disabled}
       >
-        <Fieldset.Root className={cn("flex flex-col gap-4", className)}>
+        <Fieldset.Root className={cn('flex flex-col gap-4', className)}>
           {legend && (
             <Fieldset.Legend className="text-base font-medium text-kumo-default">
               {legend}
             </Fieldset.Legend>
           )}
-          <div className="flex flex-col gap-2">{children}</div>
+          <div
+            data-kumo-component="Checkbox"
+            data-kumo-part="group-items"
+            className={cn(
+              appearance === 'bordered'
+                ? cn(
+                    'overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base',
+                    orientation === 'vertical'
+                      ? 'flex flex-col [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-t [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-kumo-line'
+                      : 'flex flex-row [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-l [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-kumo-line'
+                  )
+                : orientation === 'vertical'
+                  ? 'flex flex-col gap-2'
+                  : 'flex flex-row flex-wrap gap-2'
+            )}
+          >
+            {children}
+          </div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
           {description && (
             <p className="text-sm text-kumo-subtle">{description}</p>
@@ -455,7 +508,7 @@ function CheckboxGroup({
 export const Checkbox = Object.assign(CheckboxBase, {
   Item: CheckboxItem,
   Group: CheckboxGroup,
-  Legend: CheckboxLegend,
+  Legend: CheckboxLegend
 });
 
-Checkbox.displayName = "Checkbox";
+Checkbox.displayName = 'Checkbox';

@@ -13,6 +13,7 @@ import {
   RadioBasicDemo,
   RadioDefaultDemo,
   RadioHorizontalDemo,
+  RadioBorderedDemo,
   RadioDescriptionDemo,
   RadioErrorDemo,
   RadioDisabledDemo,
@@ -99,6 +100,19 @@ export default function Example() {
 </p>
 <ComponentExample demo="RadioHorizontalDemo">
   <RadioHorizontalDemo client:visible />
+</ComponentExample>
+
+### Bordered Group
+
+<p>
+  Use `appearance="bordered"` to place options in one contiguous surface with
+  shared dividers. It supports both vertical and horizontal orientations and
+  places controls at the end by default. Set `controlPosition="start"` to place
+  controls before their labels. The examples below also cover rich labels, long
+  wrapping text, disabled options, and larger option sets.
+</p>
+<ComponentExample demo="RadioBorderedDemo">
+  <RadioBorderedDemo client:visible />
 </ComponentExample>
 
 ### With Description
