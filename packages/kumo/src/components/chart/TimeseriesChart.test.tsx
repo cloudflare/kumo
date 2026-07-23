@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { TimeseriesChart } from "./TimeseriesChart";
 
 const createMockChart = () => ({

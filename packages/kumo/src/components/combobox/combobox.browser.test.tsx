@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 import { Combobox } from "./combobox";
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { createElement } from "react";
 import { render } from "@testing-library/react";
 import { SensitiveInput } from "./sensitive-input";

@@ -11,7 +11,7 @@
  * input.tsx → component-registry.json → sensitive-input.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   SENSITIVE_INPUT_SIZE_VALUES,
   SENSITIVE_INPUT_VARIANT_VALUES,

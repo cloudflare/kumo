@@ -11,7 +11,7 @@
  * date-range-picker.tsx → component-registry.json → date-range-picker.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getDateRangePickerSizeConfig,
   getDateRangePickerVariantConfig,

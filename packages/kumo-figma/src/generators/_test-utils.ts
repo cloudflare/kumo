@@ -11,7 +11,7 @@
  * - DO NOT test specific colors, sizes, or variant names
  */
 
-import { expect } from "vitest";
+import { expect } from "vite-plus/test";
 import { parseTailwindClasses } from "../parsers/tailwind-to-figma";
 
 /**

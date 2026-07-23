@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { Select } from "../src/components/select/select";
-import { expectTypeOf } from "vitest";
+import { expectTypeOf } from "vite-plus/test";
 
 // =============================================================================
 // Test: Object value with null state (the original bug)

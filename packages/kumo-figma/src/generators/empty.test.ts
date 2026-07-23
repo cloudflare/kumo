@@ -3,7 +3,7 @@
  * Source of truth chain: empty.tsx → component-registry.json → empty.ts → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getEmptySizeConfig,
   getEmptyParsedBaseStyles,

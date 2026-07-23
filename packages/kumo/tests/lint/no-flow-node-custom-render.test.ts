@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { noFlowNodeCustomRenderRule } from "../../lint/no-flow-node-custom-render.js";
 
 interface Report {

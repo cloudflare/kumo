@@ -11,7 +11,7 @@
  * surface.tsx → component-registry.json → surface.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getSurfaceDimensionsConfig,
   getSurfaceColorBindings,

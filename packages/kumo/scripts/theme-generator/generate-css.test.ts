@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { THEME_CONFIG } from "./config";
 import { generateKumoThemeCSS, generateThemeOverrideCSS } from "./generate-css";
 

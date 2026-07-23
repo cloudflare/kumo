@@ -13,7 +13,7 @@
  * loader.tsx → component-registry.json → (validation)
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getLoaderSizeConfig,
   getLoaderSvgData,

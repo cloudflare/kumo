@@ -1,5 +1,12 @@
 import { act, renderHook } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+} from "vite-plus/test";
 
 import { useTableOfContentsActiveId } from "./use-table-of-contents-active-id";
 

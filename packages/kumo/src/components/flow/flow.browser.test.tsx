@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { forwardRef, useState, type ReactNode } from "react";

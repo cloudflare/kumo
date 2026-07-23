@@ -11,7 +11,7 @@ import {
   afterEach,
   beforeAll,
   vi,
-} from "vitest";
+} from "vite-plus/test";
 import {
   mkdtempSync,
   rmSync,

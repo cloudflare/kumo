@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { act, render, screen } from "@testing-library/react";
 import { useState, useEffect } from "react";
 import { createRoundedPath } from "./connectors";

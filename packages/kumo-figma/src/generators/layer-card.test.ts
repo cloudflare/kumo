@@ -11,7 +11,7 @@
  * layer-card.tsx → component-registry.json → layer-card.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getLayerCardDimensionsConfig,
   getLayerCardColorBindings,

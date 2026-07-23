@@ -6,7 +6,7 @@
  * of every variant function and assert it returns a value instead of
  * crashing with `TypeError: Cannot read properties of undefined`.
  */
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 
 // Suppress the expected dev warnings from resolveVariant
 vi.spyOn(console, "warn").mockImplementation(() => {});

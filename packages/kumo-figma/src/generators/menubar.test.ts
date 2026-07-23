@@ -11,7 +11,7 @@
  * menubar.tsx → component-registry.json → menubar.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getMenuBarDimensionsConfig,
   getMenuBarDefaultOptions,

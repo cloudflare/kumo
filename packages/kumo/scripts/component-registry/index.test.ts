@@ -6,7 +6,7 @@
  * functionality during the refactoring.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { detectComponentExportsFromIndex } from "./discovery.js";
 
 // =============================================================================

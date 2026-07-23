@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll } from "vite-plus/test";
 import { getMainEntryExports } from "./test-utils";
 
 describe("Main Entry Point Imports", () => {
