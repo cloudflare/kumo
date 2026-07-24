@@ -34,11 +34,12 @@ export const KUMO_INPUT_VARIANTS = {
   },
   variant: {
     default: {
-      classes: "focus:ring-kumo-focus/50 focus:ring-[1.5px]",
+      classes: "focus:border-kumo-focus/50 focus:border-[1.5px]",
       description: "Default input appearance",
     },
     error: {
-      classes: "!ring-kumo-danger focus:ring-kumo-danger/50 focus:ring-[1.5px]",
+      classes:
+        "!border-kumo-danger focus:border-kumo-danger/50 focus:border-[1.5px]",
       description: "Error state for validation failures",
     },
   },
@@ -66,11 +67,11 @@ export const KUMO_INPUT_STYLING = {
     background: "color-secondary",
     text: "text-color-surface",
     placeholder: "text-color-muted",
-    ring: "color-border",
+    border: "color-border",
   },
   stateTokens: {
-    focus: { ring: "color-active" },
-    error: { ring: "color-error" },
+    focus: { border: "color-active" },
+    error: { border: "color-error" },
     disabled: { opacity: 0.5, text: "text-color-muted" },
   },
 } as const;
@@ -111,7 +112,7 @@ export function inputVariants({
 }: KumoInputVariantsProps = {}) {
   return cn(
     // Base styles
-    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line outline-none focus:outline-none",
+    "border border-kumo-line bg-kumo-control bg-clip-padding text-kumo-default outline-none focus:outline-none",
     // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
     "kumo-input-placeholder disabled:text-kumo-disabled",
     // Apply size styles from KUMO_INPUT_VARIANTS
@@ -129,12 +130,12 @@ export function inputVariants({
     // Focus state handling
     parentFocusIndicator &&
       (variant === "error"
-        ? "focus-within:ring-[1.5px] focus-within:ring-kumo-danger/50"
-        : "focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50"),
+        ? "focus-within:border-[1.5px] focus-within:border-kumo-danger/50"
+        : "focus-within:border-[1.5px] focus-within:border-kumo-focus/50"),
     focusIndicator &&
       (variant === "error"
-        ? "focus:ring-[1.5px] focus:ring-kumo-danger/50"
-        : "focus:ring-[1.5px] focus:ring-kumo-focus/50"),
+        ? "focus:border-[1.5px] focus:border-kumo-danger/50"
+        : "focus:border-[1.5px] focus:border-kumo-focus/50"),
   );
 }
 

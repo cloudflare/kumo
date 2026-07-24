@@ -41,8 +41,8 @@ describe("SensitiveInput", () => {
     const { container } = render(
       <SensitiveInput aria-label="API Key" error="Invalid key" />,
     );
-    // Error styling (ring-kumo-danger) is on the container div wrapping the password input
+    // Error border styling is on the container div wrapping the password input
     const inputEl = container.querySelector("input");
-    expect(inputEl?.parentElement?.className).toContain("ring-kumo-danger");
+    expect(inputEl?.parentElement?.className).toContain("border-kumo-danger");
   });
 });

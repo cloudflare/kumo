@@ -90,7 +90,7 @@ describe("Combobox", () => {
       renderComboboxWithInput({ error: "Selection required" });
 
       const input = screen.getByRole("combobox");
-      expect(input.className).toContain("ring-kumo-danger");
+      expect(input.className).toContain("border-kumo-danger");
     });
 
     it("applies error border to TriggerValue when error prop is truthy", () => {
@@ -114,7 +114,7 @@ describe("Combobox", () => {
       );
 
       const trigger = screen.getByRole("combobox");
-      expect(trigger.className).toContain("ring-kumo-danger");
+      expect(trigger.className).toContain("border-kumo-danger");
     });
 
     it("renders error message string with label", () => {

@@ -80,14 +80,18 @@ describe("Input", () => {
   // Variant styles
   it("renders with default variant 'default'", () => {
     render(<Input aria-label="Test" />);
-    expect(screen.getByRole("textbox").className).toContain(
-      "focus:ring-kumo-focus/50",
-    );
+    const className = screen.getByRole("textbox").className;
+
+    expect(className).toContain("bg-clip-padding");
+    expect(className).toContain("focus:border-kumo-focus/50");
+    expect(className).not.toContain("ring-");
   });
 
   it("renders with variant 'error'", () => {
     render(<Input aria-label="Test" variant="error" />);
-    expect(screen.getByRole("textbox").className).toContain("ring-kumo-danger");
+    expect(screen.getByRole("textbox").className).toContain(
+      "border-kumo-danger",
+    );
   });
 
   // Field wrapping
@@ -145,7 +149,9 @@ describe("Input", () => {
 
   it("applies error variant styling without label", () => {
     render(<Input aria-label="Email" error="Bad value" />);
-    expect(screen.getByRole("textbox").className).toContain("ring-kumo-danger");
+    expect(screen.getByRole("textbox").className).toContain(
+      "border-kumo-danger",
+    );
   });
 
   it("renders description without label", () => {
@@ -199,7 +205,7 @@ describe("Input", () => {
 
   it("applies variant classes from KUMO_INPUT_VARIANTS", () => {
     const classes = inputVariants({ variant: "error" });
-    expect(classes).toContain("ring-kumo-danger");
+    expect(classes).toContain("border-kumo-danger");
   });
 
   it("applies parentFocusIndicator class when true", () => {
@@ -209,7 +215,7 @@ describe("Input", () => {
 
   it("applies focusIndicator class when true", () => {
     const classes = inputVariants({ focusIndicator: true });
-    expect(classes).toContain("focus:ring-kumo-focus/50");
+    expect(classes).toContain("focus:border-kumo-focus/50");
   });
 
   // Variants export
