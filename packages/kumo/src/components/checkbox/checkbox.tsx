@@ -366,8 +366,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
         data-kumo-part="item-label"
         className={cn(
           "relative m-0 inline-flex items-start gap-2",
-          isBordered &&
-            "w-full flex-1 p-3 transition-colors has-[[data-checked]]:bg-kumo-elevated",
+          isBordered && "w-full flex-1 p-3 transition-colors",
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",

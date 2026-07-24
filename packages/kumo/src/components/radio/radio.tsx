@@ -46,8 +46,7 @@ export const KUMO_RADIO_VARIANTS = {
         "Choice card appearance with border, padding, and highlighted selection state",
     },
     bordered: {
-      classes:
-        "p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:bg-kumo-elevated",
+      classes: "p-3 transition-colors hover:bg-kumo-elevated",
       description: "Option within a bordered group with shared dividers",
     },
   },
@@ -393,8 +392,7 @@ function _RadioItem<T = string>(
       data-kumo-part="item-label"
       className={cn(
         "group relative m-0 inline-flex items-start gap-2",
-        isBordered &&
-          "w-full flex-1 p-3 transition-colors has-[[data-checked]]:bg-kumo-elevated",
+        isBordered && "w-full flex-1 p-3 transition-colors",
         // "start" (default): radio before label
         // "end": label before radio using flex-row-reverse
         effectiveControlPosition === "end" && "flex-row-reverse justify-end",
