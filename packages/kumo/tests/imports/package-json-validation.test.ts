@@ -133,9 +133,10 @@ describe("Package.json Validation", () => {
       expect(packageJson).toHaveProperty("name");
       expect(packageJson).toHaveProperty("version");
       expect(packageJson).toHaveProperty("type");
-      expect(packageJson).toHaveProperty("main");
-      expect(packageJson).toHaveProperty("module");
       expect(packageJson).toHaveProperty("types");
+      // ESM-only: resolvers use "exports"; legacy main/module are omitted.
+      expect(packageJson).not.toHaveProperty("main");
+      expect(packageJson).not.toHaveProperty("module");
       expect(packageJson).toHaveProperty("exports");
       expect(packageJson).toHaveProperty("files");
     });

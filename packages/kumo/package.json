@@ -34,13 +34,31 @@
     "*.css",
     "dist/styles/*.css"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./ai/schemas": {
+      "types": "./dist/ai/schemas.d.ts",
+      "import": "./dist/ai/schemas.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "import": "./dist/catalog.js"
+    },
+    "./code": {
+      "types": "./dist/code.d.ts",
+      "import": "./dist/code.js"
+    },
+    "./code/server": {
+      "types": "./dist/code/server.d.ts",
+      "import": "./dist/code/server.js"
+    },
+    "./components/autocomplete": {
+      "types": "./dist/components/autocomplete.d.ts",
+      "import": "./dist/components/autocomplete.js"
     },
     "./components/badge": {
       "types": "./dist/components/badge.d.ts",
@@ -50,29 +68,29 @@
       "types": "./dist/components/banner.d.ts",
       "import": "./dist/components/banner.js"
     },
+    "./components/breadcrumbs": {
+      "types": "./dist/components/breadcrumbs.d.ts",
+      "import": "./dist/components/breadcrumbs.js"
+    },
     "./components/button": {
       "types": "./dist/components/button.d.ts",
       "import": "./dist/components/button.js"
-    },
-    "./components/date-range-picker": {
-      "types": "./dist/components/date-range-picker.d.ts",
-      "import": "./dist/components/date-range-picker.js"
-    },
-    "./components/date-picker": {
-      "types": "./dist/components/date-picker.d.ts",
-      "import": "./dist/components/date-picker.js"
-    },
-    "./components/checkbox": {
-      "types": "./dist/components/checkbox.d.ts",
-      "import": "./dist/components/checkbox.js"
     },
     "./components/chart": {
       "types": "./dist/components/chart.d.ts",
       "import": "./dist/components/chart.js"
     },
+    "./components/checkbox": {
+      "types": "./dist/components/checkbox.d.ts",
+      "import": "./dist/components/checkbox.js"
+    },
     "./components/clipboard-text": {
       "types": "./dist/components/clipboard-text.d.ts",
       "import": "./dist/components/clipboard-text.js"
+    },
+    "./components/cloudflare-logo": {
+      "types": "./dist/components/cloudflare-logo.d.ts",
+      "import": "./dist/components/cloudflare-logo.js"
     },
     "./components/code": {
       "types": "./dist/components/code.d.ts",
@@ -86,9 +104,17 @@
       "types": "./dist/components/combobox.d.ts",
       "import": "./dist/components/combobox.js"
     },
-    "./components/toolbar": {
-      "types": "./dist/components/toolbar.d.ts",
-      "import": "./dist/components/toolbar.js"
+    "./components/command-palette": {
+      "types": "./dist/components/command-palette.d.ts",
+      "import": "./dist/components/command-palette.js"
+    },
+    "./components/date-picker": {
+      "types": "./dist/components/date-picker.d.ts",
+      "import": "./dist/components/date-picker.js"
+    },
+    "./components/date-range-picker": {
+      "types": "./dist/components/date-range-picker.d.ts",
+      "import": "./dist/components/date-range-picker.js"
     },
     "./components/dialog": {
       "types": "./dist/components/dialog.d.ts",
@@ -98,6 +124,22 @@
       "types": "./dist/components/dropdown.d.ts",
       "import": "./dist/components/dropdown.js"
     },
+    "./components/empty": {
+      "types": "./dist/components/empty.d.ts",
+      "import": "./dist/components/empty.js"
+    },
+    "./components/field": {
+      "types": "./dist/components/field.d.ts",
+      "import": "./dist/components/field.js"
+    },
+    "./components/flow": {
+      "types": "./dist/components/flow.d.ts",
+      "import": "./dist/components/flow.js"
+    },
+    "./components/grid": {
+      "types": "./dist/components/grid.d.ts",
+      "import": "./dist/components/grid.js"
+    },
     "./components/input": {
       "types": "./dist/components/input.d.ts",
       "import": "./dist/components/input.js"
@@ -106,13 +148,17 @@
       "types": "./dist/components/input-group.d.ts",
       "import": "./dist/components/input-group.js"
     },
+    "./components/label": {
+      "types": "./dist/components/label.d.ts",
+      "import": "./dist/components/label.js"
+    },
     "./components/layer-card": {
       "types": "./dist/components/layer-card.d.ts",
       "import": "./dist/components/layer-card.js"
     },
-    "./components/label": {
-      "types": "./dist/components/label.d.ts",
-      "import": "./dist/components/label.js"
+    "./components/link": {
+      "types": "./dist/components/link.d.ts",
+      "import": "./dist/components/link.js"
     },
     "./components/loader": {
       "types": "./dist/components/loader.d.ts",
@@ -130,6 +176,14 @@
       "types": "./dist/components/pagination.d.ts",
       "import": "./dist/components/pagination.js"
     },
+    "./components/popover": {
+      "types": "./dist/components/popover.d.ts",
+      "import": "./dist/components/popover.js"
+    },
+    "./components/radio": {
+      "types": "./dist/components/radio.d.ts",
+      "import": "./dist/components/radio.js"
+    },
     "./components/select": {
       "types": "./dist/components/select.d.ts",
       "import": "./dist/components/select.js"
@@ -137,6 +191,10 @@
     "./components/sensitive-input": {
       "types": "./dist/components/sensitive-input.d.ts",
       "import": "./dist/components/sensitive-input.js"
+    },
+    "./components/sidebar": {
+      "types": "./dist/components/sidebar.d.ts",
+      "import": "./dist/components/sidebar.js"
     },
     "./components/surface": {
       "types": "./dist/components/surface.d.ts",
@@ -150,6 +208,10 @@
       "types": "./dist/components/table.d.ts",
       "import": "./dist/components/table.js"
     },
+    "./components/table-of-contents": {
+      "types": "./dist/components/table-of-contents.d.ts",
+      "import": "./dist/components/table-of-contents.js"
+    },
     "./components/tabs": {
       "types": "./dist/components/tabs.d.ts",
       "import": "./dist/components/tabs.js"
@@ -162,68 +224,13 @@
       "types": "./dist/components/toast.d.ts",
       "import": "./dist/components/toast.js"
     },
+    "./components/toolbar": {
+      "types": "./dist/components/toolbar.d.ts",
+      "import": "./dist/components/toolbar.js"
+    },
     "./components/tooltip": {
       "types": "./dist/components/tooltip.d.ts",
       "import": "./dist/components/tooltip.js"
-    },
-    "./components/popover": {
-      "types": "./dist/components/popover.d.ts",
-      "import": "./dist/components/popover.js"
-    },
-    "./ai/component-registry.json": {
-      "import": "./ai/component-registry.json"
-    },
-    "./components/radio": {
-      "types": "./dist/components/radio.d.ts",
-      "import": "./dist/components/radio.js"
-    },
-    "./components/command-palette": {
-      "types": "./dist/components/command-palette.d.ts",
-      "import": "./dist/components/command-palette.js"
-    },
-    "./components/link": {
-      "types": "./dist/components/link.d.ts",
-      "import": "./dist/components/link.js"
-    },
-    "./components/breadcrumbs": {
-      "types": "./dist/components/breadcrumbs.d.ts",
-      "import": "./dist/components/breadcrumbs.js"
-    },
-    "./components/empty": {
-      "types": "./dist/components/empty.d.ts",
-      "import": "./dist/components/empty.js"
-    },
-    "./components/field": {
-      "types": "./dist/components/field.d.ts",
-      "import": "./dist/components/field.js"
-    },
-    "./components/grid": {
-      "types": "./dist/components/grid.d.ts",
-      "import": "./dist/components/grid.js"
-    },
-    "./components/cloudflare-logo": {
-      "types": "./dist/components/cloudflare-logo.d.ts",
-      "import": "./dist/components/cloudflare-logo.js"
-    },
-    "./components/flow": {
-      "types": "./dist/components/flow.d.ts",
-      "import": "./dist/components/flow.js"
-    },
-    "./components/autocomplete": {
-      "types": "./dist/components/autocomplete.d.ts",
-      "import": "./dist/components/autocomplete.js"
-    },
-    "./components/sidebar": {
-      "types": "./dist/components/sidebar.d.ts",
-      "import": "./dist/components/sidebar.js"
-    },
-    "./components/table-of-contents": {
-      "types": "./dist/components/table-of-contents.d.ts",
-      "import": "./dist/components/table-of-contents.js"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.js"
     },
     "./primitives": {
       "types": "./dist/primitives.d.ts",
@@ -393,28 +400,6 @@
       "types": "./dist/registry.d.ts",
       "import": "./dist/registry.js"
     },
-    "./catalog": {
-      "types": "./dist/catalog.d.ts",
-      "import": "./dist/catalog.js"
-    },
-    "./code": {
-      "types": "./dist/code.d.ts",
-      "import": "./dist/code.js"
-    },
-    "./code/server": {
-      "types": "./dist/code/server.d.ts",
-      "import": "./dist/code/server.js"
-    },
-    "./ai/schemas": {
-      "types": "./dist/ai/schemas.d.ts",
-      "import": "./dist/ai/schemas.js"
-    },
-    "./registry/component-registry.json": "./ai/component-registry.json",
-    "./registry/component-registry.md": "./ai/component-registry.md",
-    "./styles/tailwind": "./dist/styles/kumo.css",
-    "./styles/standalone": "./dist/styles/kumo-standalone.css",
-    "./styles": "./dist/styles/kumo.css",
-    "./styles/*": "./dist/styles/*.css",
     "./scripts/theme-generator/config": {
       "types": "./dist/scripts/theme-generator/config.d.ts",
       "import": "./dist/scripts/theme-generator/config.js"
@@ -422,7 +407,21 @@
     "./scripts/theme-generator/types": {
       "types": "./dist/scripts/theme-generator/types.d.ts",
       "import": "./dist/scripts/theme-generator/types.js"
-    }
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js"
+    },
+    "./package.json": "./package.json",
+    "./ai/component-registry.json": {
+      "import": "./ai/component-registry.json"
+    },
+    "./registry/component-registry.json": "./ai/component-registry.json",
+    "./registry/component-registry.md": "./ai/component-registry.md",
+    "./styles/tailwind": "./dist/styles/kumo.css",
+    "./styles/standalone": "./dist/styles/kumo-standalone.css",
+    "./styles": "./dist/styles/kumo.css",
+    "./styles/*": "./dist/styles/*.css"
   },
   "publishConfig": {
     "access": "public",

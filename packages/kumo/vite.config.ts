@@ -182,6 +182,8 @@ export default defineConfig({
       typeCheck: true,
     },
   },
+  // Two passes because JS and d.ts need opposite externalization (bundle the
+  // code, reference the types) and tsdown has one deps policy per config.
   pack: [
     {
       entry: packEntries,
@@ -192,9 +194,36 @@ export default defineConfig({
       sourcemap: true,
       minify: true,
       dts: false,
+      // The dts pass emits declarations this pass can't see — pair them by
+      // co-location; asset entries aren't chunks, so re-attach them here.
+      exports: {
+        // Version metadata for bundled deps would churn package.json on every bump.
+        inlinedDependencies: false,
+        customExports(exports: Record<string, unknown>) {
+          const out: Record<string, unknown> = {};
+          for (const [key, value] of Object.entries(exports)) {
+            out[key] =
+              typeof value === "string" && value.endsWith(".js")
+                ? { types: value.replace(/\.js$/, ".d.ts"), import: value }
+                : value;
+          }
+          return {
+            ...out,
+            "./ai/component-registry.json": {
+              import: "./ai/component-registry.json",
+            },
+            "./registry/component-registry.json":
+              "./ai/component-registry.json",
+            "./registry/component-registry.md": "./ai/component-registry.md",
+            "./styles/tailwind": "./dist/styles/kumo.css",
+            "./styles/standalone": "./dist/styles/kumo-standalone.css",
+            "./styles": "./dist/styles/kumo.css",
+            "./styles/*": "./dist/styles/*.css",
+          };
+        },
+      },
       clean: false,
-      // Bundle all node_modules except the peers below (tsdown externalizes
-      // package.json dependencies by default).
+      // tsdown externalizes declared deps by default — override to ship them bundled.
       deps: {
         alwaysBundle: /.+/,
         neverBundle: (id, importer) => {
@@ -228,14 +257,14 @@ export default defineConfig({
       },
       outputOptions: {
         entryFileNames: "[name].js",
-        // Chunk names without trailing dashes; base36 hashes (Jest-safe names).
+        // Default chunk names (trailing dashes, base64 hashes) break Jest consumers.
         chunkFileNames: (chunkInfo) => {
           const name = chunkInfo.name.replace(/[-_]+$/, "") || "chunk";
           return `chunks/${name}-[hash:16].js`;
         },
         hashCharacters: "base36",
         hoistTransitiveImports: false,
-        // "use client" on all chunks except the server-only entry.
+        // Rolldown drops "use client" directives; re-add on client chunks.
         banner: (chunk) => {
           if (
             chunk.name === "code/server" ||
@@ -260,8 +289,7 @@ export default defineConfig({
           ],
         },
       },
-      // Signal build completion for dependent dev servers (port of
-      // vite-plugin-rebuild-signal).
+      // Dependent dev servers watch this file to pick up rebuilds.
       onSuccess: () => {
         writeFileSync(
           resolve(__dirname, "dist", ".build-complete"),
@@ -275,8 +303,7 @@ export default defineConfig({
       platform: "browser",
       outDir: "dist",
       clean: false,
-      // Types-only pass: bundle our own declarations per entry, keep every
-      // bare import (deps/peers) external so consumers resolve real packages.
+      // Keep bare imports external so consumers resolve real packages' types.
       deps: { neverBundle: /^[^./]/ },
       dts: { emitDtsOnly: true },
       sourcemap: false,
