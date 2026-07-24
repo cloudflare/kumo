@@ -15,12 +15,12 @@
   ],
   "observability": {
     "logs": {
-      "enabled": true
+      "enabled": true,
     },
     "traces": {
-      "enabled": true
-    }
-  }
+      "enabled": true,
+    },
+  },
   // Secrets (never commit values here — use `wrangler secret put` or .dev.vars for local dev):
   //   API_KEY  — shared secret sent as X-API-Key header by callers
 }

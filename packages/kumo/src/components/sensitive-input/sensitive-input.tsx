@@ -326,7 +326,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       inputVariants({ size, variant, parentFocusIndicator: true }),
       "group/container relative flex w-full items-center",
       // Show browser-native focus outline on container when child input is focused
-      "focus-within:outline focus-within:outline-2 focus-within:outline-kumo-focus",
+      "focus-within:outline-2 focus-within:outline-kumo-focus",
       isMaskedWithValue && !disabled && "cursor-pointer",
       disabled && "cursor-not-allowed",
       className,
