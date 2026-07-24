@@ -352,7 +352,7 @@ export function ComboboxWithFieldDemo() {
 
 export function ComboboxDisabledDemo() {
   return (
-    <div className="flex flex-wrap gap-4 items-start">
+    <div className="flex flex-wrap items-start gap-4">
       <Combobox value="Apple" items={fruits} disabled>
         <Combobox.TriggerInput
           className="w-[200px]"
@@ -586,7 +586,7 @@ export function ComboboxCustomTriggerDemo() {
             {value.emoji} {value.label}
           </span>
         </Combobox.Value>
-        <CaretUpDownIcon size={14} className="text-kumo-subtle shrink-0" />
+        <CaretUpDownIcon size={14} className="shrink-0 text-kumo-subtle" />
       </Combobox.Trigger>
       <Combobox.Content>
         <Combobox.Input placeholder="Search languages" />

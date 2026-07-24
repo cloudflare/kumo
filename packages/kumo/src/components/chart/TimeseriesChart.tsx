@@ -761,7 +761,7 @@ export const TimeseriesChart = forwardRef<
           >
             <TooltipPrimitive.Popup
               data-mode={isDarkMode ? "dark" : "light"}
-              className="bg-kumo-base rounded-lg shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill p-2 min-w-[150px] max-w-xs"
+              className="max-w-xs min-w-[150px] rounded-lg bg-kumo-base p-2 shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill"
             >
               <TooltipContent
                 state={tooltipState}

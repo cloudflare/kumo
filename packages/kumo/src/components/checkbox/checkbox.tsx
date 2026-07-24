@@ -268,11 +268,11 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         disabled={disabled}
         onCheckedChange={onCheckedChange}
         className={cn(
-          "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
+          "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-none",
           label && "mt-0.5",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
           !disabled &&
-            "hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+            "hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
@@ -306,7 +306,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       <FieldBase.Root className="inline-flex">
         <FieldBase.Label
           className={cn(
-            "!m-0 !min-h-0 !text-base inline-flex items-start gap-2",
+            "!m-0 inline-flex !min-h-0 items-start gap-2 !text-base",
             controlFirst ? "flex-row" : "flex-row-reverse justify-end",
             disabled ? "cursor-not-allowed" : "cursor-pointer",
           )}
@@ -350,7 +350,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
         data-kumo-component="Checkbox"
         data-kumo-part="item-label"
         className={cn(
-          "m-0 relative inline-flex items-start gap-2",
+          "relative m-0 inline-flex items-start gap-2",
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
@@ -372,7 +372,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             "peer relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
             !disabled &&
-              "group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           )}
         >

@@ -159,7 +159,7 @@ const CollapsibleDefaultTrigger = forwardRef<
       data-kumo-part="default-trigger"
       className={cn(
         // Defensive resets to prevent global button styles from polluting the trigger
-        "bg-transparent border-none shadow-none p-0 m-0",
+        "m-0 border-none bg-transparent p-0 shadow-none",
         // Base styles for the trigger
         "flex cursor-pointer items-center gap-1 text-sm text-kumo-link select-none",
         className,

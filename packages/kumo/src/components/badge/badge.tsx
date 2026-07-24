@@ -239,7 +239,7 @@ export function Badge({
       {dotColor ? (
         <span
           aria-hidden="true"
-          className={cn("size-1.75 rounded-full shrink-0", dotColor)}
+          className={cn("size-1.75 shrink-0 rounded-full", dotColor)}
         />
       ) : null}
       {children}

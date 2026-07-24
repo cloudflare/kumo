@@ -79,10 +79,10 @@ const ToolbarSizeContext = createContext<{ size: ToolbarSize }>({
 
 function toolbarControlClassName(className?: string) {
   return cn(
-    "relative min-w-0 border-0 bg-transparent shadow-none ring-0 focus:z-2 focus-within:z-2 focus-visible:z-2",
+    "relative min-w-0 border-0 bg-transparent shadow-none ring-0 focus-within:z-2 focus:z-2 focus-visible:z-2",
     "rounded-none first:rounded-l-lg last:rounded-r-lg only:rounded-lg",
     "not-first:border-l not-first:border-kumo-line",
-    "focus:ring-kumo-focus/50 focus:ring-[1.5px] focus-visible:ring-2 focus-visible:ring-kumo-brand",
+    "focus:ring-[1.5px] focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
     className,
   );
 }
@@ -106,7 +106,7 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
         ref={ref}
         data-kumo-component="Toolbar"
         className={cn(
-          "inline-flex w-fit items-stretch rounded-lg ring ring-kumo-line bg-kumo-control shadow-xs",
+          "inline-flex w-fit items-stretch rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line",
           KUMO_TOOLBAR_VARIANTS.size[size].classes,
           className,
         )}

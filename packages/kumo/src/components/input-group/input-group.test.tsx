@@ -829,7 +829,7 @@ describe("InputGroup", () => {
   describe("stratus backward compatibility", () => {
     it("supports legacy search bar pattern with Label", () => {
       render(
-        <InputGroup className="bg-kumo-base flex-1">
+        <InputGroup className="flex-1 bg-kumo-base">
           <InputGroup.Label>
             <svg data-testid="search-icon" />
           </InputGroup.Label>

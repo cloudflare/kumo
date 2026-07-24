@@ -129,14 +129,14 @@ export function DeleteResource({
           />
         </div>
 
-        <div className="flex flex-col p-6 gap-4">
+        <div className="flex flex-col gap-4 p-6">
           <div className="flex flex-col gap-2">
             {errorMessage && (
               <Banner icon={<WarningCircleIcon />} variant="error">
                 {errorMessage}
               </Banner>
             )}
-            <p className="text-base text-kumo-subtle max-w-prose text-pretty">
+            <p className="max-w-prose text-base text-pretty text-kumo-subtle">
               This action cannot be undone. This will permanently delete the{" "}
               <span className="font-medium text-kumo-default">
                 {resourceName}
@@ -150,7 +150,7 @@ export function DeleteResource({
               <span>
                 Type{" "}
                 <button
-                  className="font-mono text-sm inline font-semibold bg-kumo-tint hover:bg-kumo-fill rounded-md px-2 py-1 group hover:cursor-pointer"
+                  className="group inline rounded-md bg-kumo-tint px-2 py-1 font-mono text-sm font-semibold hover:cursor-pointer hover:bg-kumo-fill"
                   onClick={handleCopy}
                   aria-label={`Copy ${resourceName} to clipboard`}
                 >
@@ -160,13 +160,13 @@ export function DeleteResource({
                     <CheckIcon
                       size={12}
                       weight="bold"
-                      className="inline ml-1.5"
+                      className="ml-1.5 inline"
                     />
                   ) : (
                     <CopyIcon
                       size={12}
                       weight="bold"
-                      className="inline text-kumo-subtle group-hover:text-kumo-default ml-1.5"
+                      className="ml-1.5 inline text-kumo-subtle group-hover:text-kumo-default"
                     />
                   )}
                 </button>{" "}

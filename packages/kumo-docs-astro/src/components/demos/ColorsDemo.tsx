@@ -332,7 +332,7 @@ export const TailwindColorTokens: FC = () => {
 
 export function StatusBannerDemo() {
   return (
-    <div className="flex items-center gap-2 p-4 rounded-lg bg-kumo-danger-tint/70">
+    <div className="flex items-center gap-2 rounded-lg bg-kumo-danger-tint/70 p-4">
       <WarningIcon weight="fill" className="fill-kumo-danger" />
       <span className="text-sm text-kumo-danger">Something went wrong.</span>
     </div>

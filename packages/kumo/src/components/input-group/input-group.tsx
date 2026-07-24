@@ -133,10 +133,10 @@ const Root = forwardRef<
         ? [
             "overflow-hidden",
             // Focus state must come AFTER inputVariants to override ring-kumo-line
-            "focus-within:ring-kumo-focus/50 focus-within:ring-[1.5px]",
+            "focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50",
           ]
         : // isolate creates a new stacking context so z-index in children doesn't leak out
-          "isolate overflow-visible ring-0 shadow-none",
+          "isolate overflow-visible shadow-none ring-0",
       // Error state must also come after inputVariants
       "has-[input[aria-invalid=true]]:ring-kumo-danger",
       // Reset horizontal padding — children handle their own spacing
@@ -198,7 +198,7 @@ const Root = forwardRef<
                 "flex min-w-0 flex-1 items-center gap-0",
                 // Use a clean 1px CSS border instead of ring+shadow from inputVariants
                 // so the zone matches adjacent individual-mode buttons exactly.
-                "ring-0 shadow-none",
+                "shadow-none ring-0",
                 "border border-kumo-line",
                 "focus-within:border-kumo-focus/50",
                 // z-[2] lifts above adjacent button's -ml-px overlap so focus border shows
@@ -206,7 +206,7 @@ const Root = forwardRef<
                 // Negative margin (not border-l-0) so the border is still paintable on focus
                 "not-first:-ml-px",
                 // Outer edges inherit radius; inner edges are flat against sibling buttons
-                "first:rounded-l-[inherit] last:rounded-r-[inherit] rounded-none",
+                "rounded-none first:rounded-l-[inherit] last:rounded-r-[inherit]",
                 // Size-specific padding adjustments when addons or suffixes are present
                 INPUT_GROUP_HAS_CLASSES[size],
                 // When a suffix is present, let the input shrink to its content width
@@ -223,7 +223,7 @@ const Root = forwardRef<
                 <label
                   htmlFor={inputId}
                   // Positioned behind children (z-0) so it catches clicks on empty space
-                  className="absolute inset-0 z-0 cursor-text mb-0!"
+                  className="absolute inset-0 z-0 mb-0! cursor-text"
                   aria-hidden="true"
                 />
               )}

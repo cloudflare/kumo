@@ -129,12 +129,12 @@ export function inputVariants({
     // Focus state handling
     parentFocusIndicator &&
       (variant === "error"
-        ? "focus-within:ring-kumo-danger/50 focus-within:ring-[1.5px]"
-        : "focus-within:ring-kumo-focus/50 focus-within:ring-[1.5px]"),
+        ? "focus-within:ring-[1.5px] focus-within:ring-kumo-danger/50"
+        : "focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50"),
     focusIndicator &&
       (variant === "error"
-        ? "focus:ring-kumo-danger/50 focus:ring-[1.5px]"
-        : "focus:ring-kumo-focus/50 focus:ring-[1.5px]"),
+        ? "focus:ring-[1.5px] focus:ring-kumo-danger/50"
+        : "focus:ring-[1.5px] focus:ring-kumo-focus/50"),
   );
 }
 

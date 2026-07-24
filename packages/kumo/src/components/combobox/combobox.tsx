@@ -271,7 +271,7 @@ function TriggerValue({
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
-        "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+        "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
         className,
@@ -280,7 +280,7 @@ function TriggerValue({
       <ComboboxBase.Value {...props} />
       <ComboboxBase.Icon
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 flex items-center text-kumo-subtle",
+          "absolute top-1/2 flex -translate-y-1/2 items-center text-kumo-subtle",
           iconStyles.iconRight,
         )}
       >
@@ -342,7 +342,7 @@ function TriggerInput({
     <div
       className={cn(
         "relative inline-block w-full max-w-xs",
-        "has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed",
+        "has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
         props.className,
       )}
     >
@@ -374,7 +374,7 @@ function TriggerInput({
         data-kumo-part="trigger"
         aria-label={showOptionsLabel}
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 flex items-center justify-center cursor-pointer text-kumo-subtle",
+          "absolute top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-kumo-subtle",
           "m-0 bg-transparent p-0", // Reset Stratus global button styles
           iconStyles.caretRight,
         )}
@@ -448,7 +448,7 @@ function List({
     <ComboboxBase.List
       {...props}
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-pt-2 scroll-pb-2",
+        "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-contain",
         className,
       )}
     />
@@ -471,7 +471,7 @@ function Group(props: ComboboxBase.Group.Props) {
   return (
     <ComboboxBase.Group
       {...props}
-      className="border-t border-kumo-hairline mt-2 pt-2 first:border-t-0 first:mt-0 first:pt-0"
+      className="mt-2 border-t border-kumo-hairline pt-2 first:mt-0 first:border-t-0 first:pt-0"
     />
   );
 }
@@ -490,7 +490,7 @@ function Chip({
       {...props}
       className={cn(
         "flex items-center gap-2.5", // Layout
-        "h-6 pl-2 pr-[3px]", // Dimensions
+        "h-6 pr-[3px] pl-2", // Dimensions
         "rounded-sm ring-1 ring-kumo-hairline", // Border
         "bg-kumo-overlay", // Background
         "text-sm", // Typography
@@ -503,7 +503,7 @@ function Chip({
         aria-label={removeLabel}
         className={cn(
           "cursor-pointer rounded-md p-1 hover:bg-kumo-fill-hover",
-          "bg-transparent flex",
+          "flex bg-transparent",
         )}
       >
         <XIcon size={10} />
@@ -543,21 +543,21 @@ function TriggerMultipleWithInput<ValueType>({
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "flex flex-col",
-        "gap-1 py-1 px-1.5",
+        "gap-1 px-1.5 py-1",
         sizeToMinHeight[size],
         "h-auto",
-        "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+        "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,
       )}
     >
       {inputSide === "top" && (
         <ComboboxBase.Input
           placeholder={placeholder}
-          className="w-full px-2 py-1 border-0 bg-inherit"
+          className="w-full border-0 bg-inherit px-2 py-1"
         />
       )}
       {/* Chips container */}
-      <div className="flex items-center flex-wrap gap-1.5 flex-1">
+      <div className="flex flex-1 flex-wrap items-center gap-1.5">
         {/* Render chips from controlled value if provided */}
         {chipsToRender !== undefined &&
           chipsToRender.length > 0 &&
@@ -577,7 +577,7 @@ function TriggerMultipleWithInput<ValueType>({
         {inputSide === "right" && (
           <ComboboxBase.Input
             placeholder={placeholder}
-            className="min-w-[100px] flex-1 px-2 py-1 border-0 bg-inherit"
+            className="min-w-[100px] flex-1 border-0 bg-inherit px-2 py-1"
           />
         )}
       </div>

@@ -52,7 +52,7 @@ function DesignTipExamples({
   orientation = "horizontal",
 }: DesignTipExamplesProps) {
   return (
-    <div className="md:-mx-2 mt-6 rounded-xl bg-kumo-tint p-2 ring ring-kumo-line">
+    <div className="mt-6 rounded-xl bg-kumo-tint p-2 ring ring-kumo-line md:-mx-2">
       <div
         className={cn(
           "divide-kumo-line overflow-hidden rounded-lg bg-kumo-base shadow-md ring ring-kumo-line",

@@ -348,7 +348,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           autoComplete={autoComplete}
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
-            "w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none kumo-input-placeholder disabled:cursor-not-allowed disabled:text-kumo-subtle",
+            "kumo-input-placeholder w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none disabled:cursor-not-allowed disabled:text-kumo-subtle",
             size === "xs" && "pr-5",
             size === "sm" && "pr-6",
             size === "base" && "pr-8",
@@ -396,7 +396,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
               ••••••••
             </span>
             {isMaskedWithValue && !disabled && (
-              <span className="invisible absolute left-0 top-0 whitespace-nowrap text-kumo-subtle group-focus-within/container:visible group-hover/mask:visible">
+              <span className="invisible absolute top-0 left-0 whitespace-nowrap text-kumo-subtle group-focus-within/container:visible group-hover/mask:visible">
                 Click to reveal
               </span>
             )}
@@ -413,9 +413,9 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           aria-label={mode === "revealed" ? "Hide value" : "Reveal value"}
           tabIndex={showEyeButton ? 0 : -1}
           className={cn(
-            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:rounded-sm",
+            "absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer text-kumo-subtle hover:text-kumo-default focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-kumo-brand",
             // Defensive styles to prevent global CSS pollution (e.g., button { background: gray })
-            "bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 inline-flex items-center justify-center",
+            "m-0 inline-flex h-auto min-h-0 items-center justify-center border-none bg-transparent p-0 shadow-none",
             // Match right padding from inputVariants
             size === "xs" && "right-1.5",
             size === "sm" && "right-2",
@@ -442,9 +442,9 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             onKeyDown={(e) => e.stopPropagation()}
             aria-label={copied ? "Copied" : "Copy to clipboard"}
             className={cn(
-              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
               // Defensive styles to prevent global CSS pollution
-              "border-none shadow-none m-0 h-auto min-h-0",
+              "m-0 h-auto min-h-0 border-none shadow-none",
             )}
           >
             {copied ? "Copied" : "Copy"}

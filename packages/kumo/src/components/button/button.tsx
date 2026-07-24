@@ -133,7 +133,7 @@ export function buttonVariants({
     // Base styles
     "group flex w-max shrink-0 items-center font-medium select-none",
     "border-0 shadow-xs",
-    "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+    "focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",

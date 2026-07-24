@@ -40,7 +40,7 @@ function DemoContainer({ children }: { children: React.ReactNode }) {
 
 function DemoMain({ children }: { children?: React.ReactNode }) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-kumo-subtle text-base">
+    <main className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-base text-kumo-subtle">
       {children ?? "Main content area"}
     </main>
   );
@@ -48,9 +48,9 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
 
 function BrandLogo() {
   return (
-    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)">
+    <div className="flex w-full min-w-0 items-center gap-2 px-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:px-2">
       <CubeIcon className="size-4 shrink-0 text-kumo-brand" weight="duotone" />
-      <span className="flex-1 text-sm font-semibold text-kumo-strong truncate">
+      <span className="flex-1 truncate text-sm font-semibold text-kumo-strong">
         Company
       </span>
     </div>
@@ -72,16 +72,16 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
+            className="flex w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) outline-none hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
               weight="duotone"
             />
-            <span className="flex flex-1 items-center min-w-0 text-left overflow-hidden">
+            <span className="flex min-w-0 flex-1 items-center overflow-hidden text-left">
               {active.name}
             </span>
-            <span className="shrink-0 overflow-hidden transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) w-4 group-data-[state=collapsed]/sidebar:w-0">
+            <span className="w-4 shrink-0 overflow-hidden transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:w-0">
               <CaretUpDownIcon className="size-4 text-kumo-subtle" />
             </span>
           </button>
@@ -91,7 +91,7 @@ function AccountSwitcher() {
         {accounts.map((account) => (
           <DropdownMenu.Item
             key={account.id}
-            className="gap-2 cursor-pointer"
+            className="cursor-pointer gap-2"
             onClick={() => setActive(account)}
           >
             <account.icon className="size-4 text-kumo-brand" weight="duotone" />
@@ -114,7 +114,7 @@ function AccountSwitcher() {
 export function SidebarBasicDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Content>
             <Sidebar.Group>
@@ -213,7 +213,7 @@ function ToggleButton() {
 export function SidebarToggleDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -258,7 +258,7 @@ export function SidebarLoadingDemo() {
   const [loading, setLoading] = useState(true);
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -319,7 +319,7 @@ export function SidebarResizableDemo() {
         defaultWidth={240}
         minWidth={180}
         maxWidth={400}
-        className="min-h-0! h-full"
+        className="h-full min-h-0!"
       >
         <Sidebar>
           <Sidebar.Header>
@@ -365,7 +365,7 @@ export function SidebarRightDemo() {
         contained
         defaultOpen
         side="right"
-        className="min-h-0! h-full"
+        className="h-full min-h-0!"
       >
         <DemoMain />
         <Sidebar>
@@ -418,7 +418,7 @@ export function SidebarPeekingDemo() {
         contained
         defaultOpen
         peekable
-        className="min-h-0! h-full"
+        className="h-full min-h-0!"
       >
         <Sidebar>
           <Sidebar.Header>
@@ -462,7 +462,7 @@ export function SidebarPeekingDemo() {
 export function SidebarAutoScrollDemo() {
   return (
     <div className="relative h-[420px] w-full overflow-hidden rounded-lg border border-kumo-line bg-kumo-base">
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -557,7 +557,7 @@ export function SidebarSlidingViewsDemo() {
 
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <button
@@ -565,7 +565,7 @@ export function SidebarSlidingViewsDemo() {
               onClick={() =>
                 setSurface((s) => (s === "account" ? "zone" : "account"))
               }
-              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-kumo-default hover:bg-kumo-tint transition-colors"
+              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
             >
               <ArrowsLeftRightIcon className="size-4 shrink-0 text-kumo-brand" />
               <span className="flex-1 text-left font-semibold text-kumo-strong">
@@ -650,7 +650,7 @@ export function SidebarFullDemo() {
         contained
         defaultOpen
         peekable
-        className="min-h-0! h-full"
+        className="h-full min-h-0!"
       >
         <Sidebar>
           <Sidebar.Header>
@@ -667,7 +667,7 @@ export function SidebarFullDemo() {
                     <Sidebar.MenuButton
                       icon={MagnifyingGlassIcon}
                       tooltip="Search"
-                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-transparent mb-3 group-data-[state=collapsed]/sidebar:mb-0 transition-[margin] duration-(--sidebar-animation-duration)"
+                      className="mb-3 ring ring-kumo-line transition-[margin] duration-(--sidebar-animation-duration) group-data-[state=collapsed]/sidebar:mb-0 group-data-[state=collapsed]/sidebar:ring-transparent"
                     >
                       Quick search&hellip;
                     </Sidebar.MenuButton>

@@ -191,7 +191,7 @@ export function Tabs({
         className={cn(
           "relative flex min-w-0 shrink items-stretch",
           isSegmented &&
-            "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 [--scroll-fade-width:3rem] scroll-px-(--scroll-fade-width)",
+            "kumo-tabs-list scroll-px-(--scroll-fade-width) overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 [--scroll-fade-width:3rem]",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
@@ -214,16 +214,16 @@ export function Tabs({
               });
             }}
             className={cn(
-              "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
               isOverflowing
                 ? "cursor-grab active:cursor-grabbing"
                 : "cursor-pointer",
               isSm ? "text-xs" : "text-base",
               isSegmented &&
-                "my-0.5 text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
-              isSegmented && (isSm ? "px-2 rounded-sm" : "px-2.5 rounded-md"),
+                "my-0.5 text-kumo-subtle hover:text-kumo-default focus-visible:ring-inset aria-selected:text-kumo-default",
+              isSegmented && (isSm ? "rounded-sm px-2" : "rounded-md px-2.5"),
               isUnderline &&
-                "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
+                "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:font-medium aria-selected:text-kumo-default aria-selected:hover:bg-kumo-tint",
               isUnderline && (isSm ? "px-1.5 py-2.5" : "px-2 py-3"),
               tab.className,
             )}
@@ -236,7 +236,7 @@ export function Tabs({
             <div
               {...props}
               className={cn(
-                "absolute z-1 left-0",
+                "absolute left-0 z-1",
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
                 "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&

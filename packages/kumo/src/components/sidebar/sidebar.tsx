@@ -380,7 +380,7 @@ function SidebarProvider({
           } as CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper relative isolate flex w-full [--sidebar-bg:var(--color-kumo-base)] [--sidebar-active-bg:var(--color-kumo-tint)]",
+          "group/sidebar-wrapper relative isolate flex w-full [--sidebar-active-bg:var(--color-kumo-tint)] [--sidebar-bg:var(--color-kumo-base)]",
           !contained && !isMobile && "min-h-svh",
           "has-data-[variant=inset]:bg-kumo-recessed",
           isResizing && "select-none",
@@ -569,7 +569,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 : "fixed inset-0 z-40 bg-kumo-recessed",
               "transition-opacity duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
               "motion-reduce:transition-none",
-              openMobile ? "opacity-80" : "opacity-0 pointer-events-none",
+              openMobile ? "opacity-80" : "pointer-events-none opacity-0",
             )}
             onClick={() => {
               shouldRestoreFocusRef.current = true;
@@ -703,7 +703,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 {/* Peek zone — header + content (not footer) */}
                 <div
                   data-sidebar="peek-zone"
-                  className="flex flex-1 flex-col min-h-0"
+                  className="flex min-h-0 flex-1 flex-col"
                   onMouseEnter={startPeek}
                   onMouseLeave={stopPeek}
                   onFocus={startPeek}
@@ -749,7 +749,7 @@ const SidebarHeader = forwardRef<
     data-sidebar="header"
     className={cn(
       "flex h-[58px] shrink-0 items-center gap-1 border-b border-kumo-line",
-      "px-3 overflow-hidden",
+      "overflow-hidden px-3",
       className,
     )}
     {...props}
@@ -799,9 +799,9 @@ const SidebarContent = forwardRef<
     <ScrollAreaBase.Scrollbar
       orientation="vertical"
       className={cn(
-        "flex w-1.5 touch-none select-none p-px",
+        "flex w-1.5 touch-none p-px select-none",
         "opacity-0 transition-opacity duration-150",
-        "data-[scrolling]:opacity-100 data-[hovering]:opacity-100",
+        "data-[hovering]:opacity-100 data-[scrolling]:opacity-100",
       )}
     >
       <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
@@ -835,14 +835,14 @@ const SidebarFooter = forwardRef<
     ref={ref}
     data-sidebar="footer"
     className={cn(
-      "flex h-12 shrink-0 items-center gap-4 overflow-hidden whitespace-nowrap border-t border-kumo-line",
+      "flex h-12 shrink-0 items-center gap-4 overflow-hidden border-t border-kumo-line whitespace-nowrap",
       "px-[11px] group-not-data-[state=collapsed]/sidebar:px-4",
       "bg-(--sidebar-bg)",
       "w-(--sidebar-width)",
       "transition-[width,padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
       "motion-reduce:transition-none",
       "sticky bottom-0",
-      "group-data-[state=collapsed]/sidebar:w-(--sidebar-width-icon) bg-clip-padding",
+      "bg-clip-padding group-data-[state=collapsed]/sidebar:w-(--sidebar-width-icon)",
       "group-data-[state=collapsed]/sidebar:border-r group-data-[state=collapsed]/sidebar:border-kumo-line",
       className,
     )}
@@ -979,13 +979,13 @@ const SidebarGroupLabel = forwardRef<
       // Mobile: no collapse animation — sidebar is always expanded
       "group-data-[mobile=true]/sidebar:transition-none",
       // Collapsed: spacer with divider line between icon groups
-      "grid-rows-[0fr] my-3 border-b border-kumo-line",
+      "my-3 grid-rows-[0fr] border-b border-kumo-line",
       // First group: no spacer or divider needed
       "[[data-sidebar=group]:first-child_&]:my-0 [[data-sidebar=group]:first-child_&]:border-transparent",
       // Expanded: reveal the label text
-      "group-not-data-[state=collapsed]/sidebar:grid-rows-[1fr] group-not-data-[state=collapsed]/sidebar:my-0 group-not-data-[state=collapsed]/sidebar:border-transparent",
+      "group-not-data-[state=collapsed]/sidebar:my-0 group-not-data-[state=collapsed]/sidebar:grid-rows-[1fr] group-not-data-[state=collapsed]/sidebar:border-transparent",
       // Mobile: always show labels (sidebar content is always expanded on mobile)
-      "group-data-[mobile=true]/sidebar:grid-rows-[1fr] group-data-[mobile=true]/sidebar:my-0 group-data-[mobile=true]/sidebar:border-transparent",
+      "group-data-[mobile=true]/sidebar:my-0 group-data-[mobile=true]/sidebar:grid-rows-[1fr] group-data-[mobile=true]/sidebar:border-transparent",
       className,
     )}
     {...props}
@@ -993,7 +993,7 @@ const SidebarGroupLabel = forwardRef<
     <div className="min-h-0 min-w-0">
       <div
         className={cn(
-          "truncate px-3 mt-4 mb-2 text-sm font-medium text-kumo-subtle",
+          "mt-4 mb-2 truncate px-3 text-sm font-medium text-kumo-subtle",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
@@ -1193,7 +1193,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     const content = (
       <div
         className={cn(
-          "flex flex-1 items-center min-w-0 gap-3",
+          "flex min-w-0 flex-1 items-center gap-3",
           "translate-x-[-3px] group-not-data-[state=collapsed]/sidebar:translate-x-0",
           "transition-transform duration-(--sidebar-animation-duration)",
         )}
@@ -1201,7 +1201,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
         {iconNode}
         <span
           className={cn(
-            "flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden",
+            "flex min-w-0 flex-1 items-center gap-2 overflow-hidden text-left",
           )}
         >
           {React.Children.map(children, (child) =>
@@ -1217,7 +1217,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     const buttonClasses = cn(
       // Layout
-      "group/menu-button relative flex w-full min-w-0 items-center gap-2.5 rounded-lg outline-none cursor-pointer",
+      "group/menu-button relative flex w-full min-w-0 cursor-pointer items-center gap-2.5 rounded-lg outline-none",
       "before:absolute before:inset-x-0 before:-inset-y-px",
       // Sizing
       size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
@@ -1230,7 +1230,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-(--sidebar-active-bg)",
       // Focus
-      "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-(--sidebar-active-bg)",
+      "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
       className,
     );
 
@@ -1334,7 +1334,7 @@ const SidebarMenuBadge = forwardRef<
     data-sidebar="menu-badge"
     className={cn(
       "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
-      "select-none px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong",
+      "px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong select-none",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1371,12 +1371,12 @@ const SidebarMenuSub = forwardRef<
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "relative m-0 flex min-w-0 list-none flex-col gap-y-px p-0 pl-7 pr-0 overflow-hidden",
+      "relative m-0 flex min-w-0 list-none flex-col gap-y-px overflow-hidden p-0 pr-0 pl-7",
       className,
     )}
     {...props}
   >
-    <div className="absolute left-[19px] inset-y-px w-px bg-kumo-line z-10" />
+    <div className="absolute inset-y-px left-[19px] z-10 w-px bg-kumo-line" />
     {children}
   </ul>
 ));
@@ -1446,17 +1446,17 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "group/menu-button relative flex w-full min-w-0 items-center gap-2 rounded-lg min-h-8.5 px-3 py-0 text-sm font-medium outline-none cursor-pointer",
+    "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-sm font-medium outline-none",
     "before:absolute before:inset-x-0 before:-inset-y-px",
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",
     active && "bg-(--sidebar-active-bg)",
-    "focus:outline-none focus-visible:text-kumo-strong focus-visible:bg-(--sidebar-active-bg)",
+    "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
     className,
   );
 
   const content = (
-    <span className="flex flex-1 items-center gap-2 min-w-0 text-left overflow-hidden">
+    <span className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden text-left">
       {React.Children.map(children, (child) =>
         typeof child === "string" || typeof child === "number" ? (
           <span className="truncate">{child}</span>
@@ -1609,9 +1609,9 @@ const SidebarTrigger = forwardRef<
       aria-expanded={open}
       aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
       className={cn(
-        "flex shrink-0 size-8.5 justify-center items-center rounded-lg cursor-pointer",
-        "text-kumo-subtle hover:text-kumo-default hover:bg-(--sidebar-active-bg)",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
+        "flex size-8.5 shrink-0 cursor-pointer items-center justify-center rounded-lg",
+        "text-kumo-subtle hover:bg-(--sidebar-active-bg) hover:text-kumo-default",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
         className,
       )}
       onClick={(e) => {
@@ -1797,7 +1797,7 @@ const SidebarResizeHandle = forwardRef<
         "absolute inset-y-0 z-2 hidden w-3 cursor-col-resize sm:block",
         "after:absolute after:inset-y-0 after:w-0.5",
         "after:bg-transparent after:transition-colors",
-        "hover:after:bg-kumo-hairline active:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline",
+        "hover:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline active:after:bg-kumo-hairline",
         "focus:outline-none",
         side === "left" && "right-0 after:right-0",
         side === "right" && "left-0 after:left-0",
@@ -2099,7 +2099,7 @@ function SidebarMenuChevron({ className }: { className?: string }) {
       size={12}
       weight="bold"
       className={cn(
-        "ml-auto shrink-0 opacity-40 group-hover/menu-button:opacity-100 transition-[transform,rotate,opacity] duration-200",
+        "ml-auto shrink-0 opacity-40 transition-[transform,rotate,opacity] duration-200 group-hover/menu-button:opacity-100",
         isCollapsible && isOpen && "rotate-90",
         // Hidden when sidebar is collapsed
         "group-data-[state=collapsed]/sidebar:hidden",
@@ -2179,7 +2179,7 @@ const SidebarSlidingViews = forwardRef<
           ref={ref}
           data-sidebar="sliding-views"
           className={cn(
-            "flex flex-1 min-h-0 max-w-(--sidebar-width) overflow-hidden",
+            "flex min-h-0 max-w-(--sidebar-width) flex-1 overflow-hidden",
             className,
           )}
           {...props}
@@ -2252,7 +2252,7 @@ const SidebarSlidingView = forwardRef<HTMLDivElement, SidebarSlidingViewProps>(
         data-value={value}
         aria-hidden={!isActive}
         className={cn(
-          "flex w-full shrink-0 flex-col min-h-0",
+          "flex min-h-0 w-full shrink-0 flex-col",
           !isActive && "pointer-events-none",
           className,
         )}

@@ -221,7 +221,7 @@ function List({
     <AutocompleteBase.List
       {...props}
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto overscroll-contain scroll-pt-2 scroll-pb-2",
+        "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-contain",
         className,
       )}
     />
@@ -260,7 +260,7 @@ function Group(props: AutocompleteBase.Group.Props) {
   return (
     <AutocompleteBase.Group
       {...props}
-      className="border-t border-kumo-line mt-2 pt-2 first:border-t-0 first:mt-0 first:pt-0"
+      className="mt-2 border-t border-kumo-line pt-2 first:mt-0 first:border-t-0 first:pt-0"
     />
   );
 }

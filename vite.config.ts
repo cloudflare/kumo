@@ -29,6 +29,11 @@ export default defineConfig({
       "packages/kumo/src/utils/resolve-variant.ts",
       "tools/deployments/validate-pr-description.ts",
     ],
+    // Replaces prettier-plugin-tailwindcss; the stylesheet teaches kumo-* utilities.
+    sortTailwindcss: {
+      functions: ["cn", "clsx"],
+      stylesheet: "./packages/kumo/src/styles/kumo-standalone.css",
+    },
   },
   lint: {
     // Unlinted legacy scripts; they import kumo's non-exported files.

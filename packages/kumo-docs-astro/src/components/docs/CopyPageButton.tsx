@@ -100,7 +100,7 @@ export function CopyPageButton({ align = "end" }: CopyPageButtonProps) {
   return (
     <div className="flex items-center" data-copy-ignore>
       <Button
-        className="rounded-r-none border-r-0 gap-1.5"
+        className="gap-1.5 rounded-r-none border-r-0"
         icon={<ButtonIcon size={16} />}
         onClick={handleCopyMarkdown}
         size="sm"

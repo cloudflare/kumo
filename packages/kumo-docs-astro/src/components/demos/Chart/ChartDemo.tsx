@@ -428,7 +428,7 @@ export function LegendDefaultDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium mt-12">Inactive State</h3>
+      <h3 className="mt-12 text-sm font-medium">Inactive State</h3>
 
       <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem
@@ -453,7 +453,7 @@ export function LegendDefaultDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium mt-12">Loading state</h3>
+      <h3 className="mt-12 text-sm font-medium">Loading state</h3>
 
       <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem loading />
@@ -491,7 +491,7 @@ export function LegendCompactDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium mt-12">Inactive State</h3>
+      <h3 className="mt-12 text-sm font-medium">Inactive State</h3>
       <div className="flex flex-wrap gap-4">
         <ChartLegend.SmallItem
           name="Requests"
@@ -515,7 +515,7 @@ export function LegendCompactDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium mt-12">Loading state</h3>
+      <h3 className="mt-12 text-sm font-medium">Loading state</h3>
 
       <div className="flex flex-wrap gap-4">
         <ChartLegend.SmallItem loading />
@@ -565,7 +565,7 @@ export function BarChartDemo() {
 export function LoadingChartDemo() {
   const isDarkMode = useIsDarkMode();
   return (
-    <div className="flex flex-col flex-1 w-full">
+    <div className="flex w-full flex-1 flex-col">
       <TimeseriesChart
         echarts={echarts}
         isDarkMode={isDarkMode}
@@ -585,7 +585,7 @@ export function LoadingChartDemo() {
 export function LoadingBarChartDemo() {
   const isDarkMode = useIsDarkMode();
   return (
-    <div className="flex flex-col flex-1 w-full">
+    <div className="flex w-full flex-1 flex-col">
       <TimeseriesChart
         echarts={echarts}
         isDarkMode={isDarkMode}
@@ -624,7 +624,7 @@ export function LoadingToggleChartDemo() {
   );
 
   return (
-    <div className="flex flex-col flex-1 w-full gap-3">
+    <div className="flex w-full flex-1 flex-col gap-3">
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-4">
           {data.map((series) => (
@@ -688,7 +688,7 @@ export function ChartExampleDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-hairline gap-4 px-2 mb-2">
+        <div className="mb-2 flex gap-4 divide-x divide-kumo-hairline px-2">
           <ChartLegend.LargeItem
             name="P99"
             color={ChartPalette.semantic("Attention", isDarkMode)}
@@ -779,7 +779,7 @@ export function LegendHighlightDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line px-2 mb-2">
+        <div className="mb-2 flex divide-x divide-kumo-line px-2">
           {series.map((s) => (
             <ChartLegend.LargeItem
               key={s.name}
@@ -905,7 +905,7 @@ export function LegendOnClickDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line px-2 mb-2">
+        <div className="mb-2 flex divide-x divide-kumo-line px-2">
           {series.map((s) => (
             <ChartLegend.LargeItem
               key={s.name}

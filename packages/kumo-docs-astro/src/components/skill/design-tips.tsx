@@ -329,8 +329,8 @@ export const designTips = [
 </div>`,
         jsx: (
           <div className="size-40 overflow-hidden">
-            <div className="size-80 rounded-[48px] bg-kumo-tint p-4 ring-2 ring-inset ring-kumo-line">
-              <div className="size-full rounded-4xl bg-kumo-base ring-2 ring-inset ring-kumo-line" />
+            <div className="size-80 rounded-[48px] bg-kumo-tint p-4 ring-2 ring-kumo-line ring-inset">
+              <div className="size-full rounded-4xl bg-kumo-base ring-2 ring-kumo-line ring-inset" />
             </div>
           </div>
         ),
@@ -342,8 +342,8 @@ export const designTips = [
 </div>`,
         jsx: (
           <div className="size-40 overflow-hidden">
-            <div className="size-80 rounded-[48px] bg-kumo-tint p-4 ring-2 ring-inset ring-kumo-line">
-              <div className="size-full rounded-[48px] bg-kumo-base ring-2 ring-inset ring-kumo-line" />
+            <div className="size-80 rounded-[48px] bg-kumo-tint p-4 ring-2 ring-kumo-line ring-inset">
+              <div className="size-full rounded-[48px] bg-kumo-base ring-2 ring-kumo-line ring-inset" />
             </div>
           </div>
         ),

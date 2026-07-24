@@ -292,7 +292,7 @@ export function DatePickerDisabledWithFooterDemo() {
       disabled={unavailableDates}
       fixedWeeks
       footer={
-        <p className="text-xs text-kumo-subtle pt-2 w-full">
+        <p className="w-full pt-2 text-xs text-kumo-subtle">
           {selectedCount}/{maxDays} days selected. Grayed dates are unavailable.
         </p>
       }

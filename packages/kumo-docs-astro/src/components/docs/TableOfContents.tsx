@@ -106,7 +106,7 @@ export function TableOfContents({
               .getElementById(slug)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full appearance-none text-base p-4 md:px-6 lg:px-12"
+          className="w-full appearance-none p-4 text-base md:px-6 lg:px-12"
         >
           {groupHeadings(headings).map((group) => (
             <optgroup key={group.h2.slug} label={group.h2.text}>
@@ -123,7 +123,7 @@ export function TableOfContents({
         <CaretDownIcon
           size={16}
           weight="bold"
-          className="pointer-events-none absolute right-4.5 md:right-6 lg:right-12 top-1/2 -translate-y-1/2 text-kumo-subtle"
+          className="pointer-events-none absolute top-1/2 right-4.5 -translate-y-1/2 text-kumo-subtle md:right-6 lg:right-12"
         />
       </nav>
     );
@@ -142,7 +142,7 @@ export function TableOfContents({
                 href={`#${group.h2.slug}`}
                 active={activeId === group.h2.slug}
                 onClick={() => selectSection(group.h2.slug)}
-                className="overflow-visible whitespace-pre-wrap text-pretty"
+                className="overflow-visible text-pretty whitespace-pre-wrap"
               >
                 {group.h2.text}
               </TOC.Item>
@@ -162,7 +162,7 @@ export function TableOfContents({
                   href={`#${h3.slug}`}
                   active={activeId === h3.slug}
                   onClick={() => selectSection(h3.slug)}
-                  className="overflow-visible whitespace-pre-wrap text-pretty"
+                  className="overflow-visible text-pretty whitespace-pre-wrap"
                 >
                   {h3.text}
                 </TOC.Item>

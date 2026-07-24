@@ -327,14 +327,14 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "m-0 group relative flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+          "group relative m-0 flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
           controlAtStart && "flex-row-reverse",
           variant === "error" &&
             "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
           disabled
             ? "cursor-not-allowed opacity-50"
             : cn(
-                "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50 cursor-pointer",
+                "cursor-pointer has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50",
                 variant !== "error" &&
                   "hover:not-has-[[data-disabled]]:bg-kumo-tint",
               ),
@@ -356,7 +356,7 @@ function _RadioItem<T = string>(
           value={value}
           disabled={disabled}
           className={cn(
-            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring ring-2 focus:outline-none focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
+            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring ring-2 focus:ring-kumo-focus focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
@@ -383,7 +383,7 @@ function _RadioItem<T = string>(
       data-kumo-component="Radio"
       data-kumo-part="item-label"
       className={cn(
-        "m-0 group relative inline-flex items-start gap-2",
+        "group relative m-0 inline-flex items-start gap-2",
         // "start" (default): radio before label
         // "end": label before radio using flex-row-reverse
         effectiveControlPosition === "end" && "flex-row-reverse justify-end",
@@ -398,14 +398,14 @@ function _RadioItem<T = string>(
         value={value}
         disabled={disabled}
         className={cn(
-          "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:outline-none after:absolute after:-inset-x-3 after:-inset-y-2",
+          "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-none",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled &&
             variant !== "error" &&
-            "group-hover:ring-kumo-hairline focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
+            "group-hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
           !disabled &&
             variant === "error" &&
-            "focus:ring-kumo-focus focus:ring-2 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
+            "focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
           "data-[checked]:bg-kumo-contrast",
         )}
       >

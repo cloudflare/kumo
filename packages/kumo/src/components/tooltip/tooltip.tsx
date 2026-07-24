@@ -171,7 +171,7 @@ export function Tooltip({
           // These prevent global button styles from polluting the trigger
           // Consumer styles passed via className will override these.
           !shouldUseRender &&
-            "inline-flex items-center bg-transparent border-none shadow-none p-0 m-0 h-auto min-h-0 leading-[0]",
+            "m-0 inline-flex h-auto min-h-0 items-center border-none bg-transparent p-0 leading-[0] shadow-none",
           // Tooltip triggers are disclosure elements, not actions — override
           // cursor: pointer (e.g. from Button used via render prop) so the
           // trigger doesn't appear clickable

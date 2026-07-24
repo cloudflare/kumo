@@ -113,7 +113,7 @@ export function DatePicker({
       classNames={{
         ...classNames,
         root: cn(
-          "rdp-root select-none rounded-xl bg-kumo-base",
+          "rdp-root rounded-xl bg-kumo-base select-none",
           classNames?.root,
           className,
         ),

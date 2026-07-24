@@ -75,7 +75,7 @@ const Link = ({
       data-kumo-component="Breadcrumbs"
       data-kumo-part="link"
       to={href}
-      className="flex min-w-0 max-w-full items-center gap-1 text-kumo-subtle no-underline"
+      className="flex max-w-full min-w-0 items-center gap-1 text-kumo-subtle no-underline"
     >
       {!!icon && <span className="flex shrink-0 items-center">{icon}</span>}
       <span className="truncate">{children}</span>
@@ -104,7 +104,7 @@ function Current({
 
   return (
     <div
-      className="flex min-w-0 max-w-full items-center gap-1 font-medium"
+      className="flex max-w-full min-w-0 items-center gap-1 font-medium"
       aria-current="page"
     >
       {icon && <span className="flex shrink-0 items-center">{icon}</span>}

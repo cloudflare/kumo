@@ -343,7 +343,7 @@ function _Text<Variant extends TextVariant = "body">(
           (size === "lg"
             ? KUMO_TEXT_VARIANTS.size.base.classes
             : KUMO_TEXT_VARIANTS.size.sm.classes),
-        truncate && "truncate min-w-0",
+        truncate && "min-w-0 truncate",
         DANGEROUS_className,
       )}
       style={DANGEROUS_style}

@@ -256,7 +256,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
           {icon && (
             <span
               className={cn(
-                "shrink-0 flex items-center",
+                "flex shrink-0 items-center",
                 sizeParts.icon,
                 variantConfig.iconClasses,
               )}
@@ -274,7 +274,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
             {isCompact ? (
               <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
                 {title && (
-                  <span className="font-medium leading-snug">
+                  <span className="leading-snug font-medium">
                     {title}
                     {!description && hasInlineLinkAction && (
                       <span className="ml-1.5 [&_[data-kumo-component=Link]]:inline">
@@ -296,7 +296,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
               </div>
             ) : (
               <div className="flex flex-col gap-0.5">
-                {title && <p className="font-medium leading-snug">{title}</p>}
+                {title && <p className="leading-snug font-medium">{title}</p>}
                 {description && (
                   <div className={cn(sizeParts.description, "leading-snug")}>
                     {isValidElement(description) ? (

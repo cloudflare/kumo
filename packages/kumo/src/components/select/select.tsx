@@ -432,7 +432,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // hover/focus coupling that a native <label> (from Field) would cause.
   const showOptional = required === false;
   const selectLabelNode = label ? (
-    <SelectBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
+    <SelectBase.Label className="m-0 text-base font-medium text-kumo-default select-none">
       <Label
         showOptional={showOptional}
         tooltip={hideLabel ? undefined : labelTooltip}
@@ -457,7 +457,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           selectVariants({ size }),
           props.disabled && "cursor-not-allowed opacity-50",
           error &&
-            "!ring-kumo-danger focus:ring-kumo-danger/50 focus:ring-[1.5px]",
+            "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
           className,
         )}
         aria-label={triggerAriaLabel}
@@ -497,7 +497,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           >
             <SelectBase.List
               className={cn(
-                "min-h-0 flex-1 overflow-y-auto overscroll-none scroll-pt-2 scroll-pb-2",
+                "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-none",
               )}
             >
               {renderedChildren}
