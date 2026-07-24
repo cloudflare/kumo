@@ -50,7 +50,7 @@ describe("htmlToMarkdown table robustness", () => {
       "<main><table><thead><tr><th>Token</th><th>Use</th></tr></thead><tbody><tr><td><code>bg-kumo-elevated</code></td><td><p>Slightly elevated surface</p></td></tr></tbody></table></main>";
     const md = htmlToMarkdown(withParagraphs);
     expect(md).toContain(
-      "| \`bg-kumo-elevated\` | Slightly elevated surface |",
+      "| `bg-kumo-elevated` | Slightly elevated surface |",
     );
   });
 
