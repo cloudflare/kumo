@@ -98,6 +98,14 @@ git checkout -b <new-branch-name>
 git push origin <new-branch-name>
 ```
 
+### Global Vite+ CLI (optional)
+
+Everything in this repo works through `pnpm` scripts. The `vp` binary ships with the local `vite-plus` dependency, and git hooks resolve it from `node_modules/.bin` automatically.
+
+[Installing the global CLI](https://viteplus.dev/) is **optional but recommended**. It adds bare `vp <command>` usage such as `vp install` and managed Node.js versions (`vp env`) if enabled.
+
+Without it, use `pnpm vp <command>` for direct commands, and `.nvmrc` / `.node-version` with your own version manager for Node.
+
 ### Install dependencies
 
 This repository is setup as a [mono-repo](https://pnpm.io/workspaces) of workspaces. The workspaces are stored in the [`packages`](https://github.com/cloudflare/kumo/tree/main/packages) directory.
@@ -169,7 +177,7 @@ The code is formatted by [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html)
   pnpm run format
   ```
 
-- You can also run `vp check` to format, lint, and validate in one pass (`vp check --fix` applies fixes).
+- You can also run `pnpm vp check` to format, lint, and validate in one pass (`--fix` applies fixes). If you have the [global Vite+ CLI](#global-vite-cli-optional) installed, plain `vp check` does the same.
 
 ### Testing
 

@@ -143,6 +143,7 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 
 Lint/format/test config lives in `vite.config.ts` (root and per-package) — there
 are no `.oxlintrc.json` / `.prettierrc` files. `vp check` runs format + lint.
+The [global Vite+ CLI](https://viteplus.dev/) is optional but recommended for contributors: the binary ships with the local `vite-plus` dependency (`pnpm vp …`), and hooks resolve it from `node_modules/.bin`.
 
 ## SECURITY
 
