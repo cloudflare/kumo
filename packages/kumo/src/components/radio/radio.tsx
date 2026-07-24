@@ -45,6 +45,11 @@ export const KUMO_RADIO_VARIANTS = {
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
+    bordered: {
+      classes:
+        "p-3 transition-colors hover:bg-kumo-elevated has-[[data-checked]]:bg-kumo-elevated",
+      description: "Option within a bordered group with shared dividers",
+    },
   },
 } as const;
 
@@ -69,6 +74,7 @@ export interface KumoRadioVariantsProps {
    * Visual appearance.
    * - `"default"` — Standard inline radio item
    * - `"card"` — Choice card with border, padding, and highlighted selection state
+   * - `"bordered"` — Option within a bordered group with shared dividers
    * @default "default"
    */
   appearance?: KumoRadioAppearance;
@@ -100,7 +106,7 @@ export type RadioControlPosition = "start" | "end";
 
 // Context for passing controlPosition and appearance from Group to Items.
 // `controlPosition` may be undefined so each item can fall back to an
-// appearance-appropriate default (start for default, end for card).
+// appearance-appropriate default (start for default, end for card/bordered).
 const RadioGroupContext = createContext<{
   controlPosition: RadioControlPosition | undefined;
   appearance: KumoRadioAppearance;
@@ -220,6 +226,7 @@ export interface RadioGroupProps<Value = string> {
    * Visual appearance applied to all Radio.Item children.
    * - `"default"` — Standard inline radio items
    * - `"card"` — Choice card with border, padding, and highlighted selection state
+   * - `"bordered"` — Contiguous bordered group with dividers between items
    *
    * Individual items can override this with their own `appearance` prop.
    * @default "default"
@@ -243,7 +250,7 @@ export interface RadioGroupProps<Value = string> {
   ) => void;
   /** Whether all radios in the group are disabled */
   disabled?: boolean;
-  /** Position of radio control relative to label: "start" puts radio before label, "end" puts label before radio. Defaults to "start" for default appearance and "end" for card appearance. */
+  /** Position of radio control relative to label: "start" puts radio before label, "end" puts label before radio. Defaults to "start" for default appearance and "end" for card or bordered appearance. */
   controlPosition?: RadioControlPosition;
   /** Form submission name for the radio group */
   name?: string;
@@ -279,6 +286,7 @@ export type RadioItemProps<Value = string> = {
    * Visual appearance of the radio item.
    * - `"default"` — Standard inline radio item
    * - `"card"` — Choice card with border, padding, and highlighted selection state
+   * - `"bordered"` — Option within a contiguous bordered group
    *
    * When set on an individual item, overrides the group-level `appearance`.
    * @default "default"
@@ -313,12 +321,13 @@ function _RadioItem<T = string>(
     useContext(RadioGroupContext);
   const appearance = appearanceProp ?? groupAppearance;
   const isCard = appearance === "card";
+  const isBordered = appearance === "bordered";
 
   // Fall back to an appearance-appropriate default when controlPosition is
-  // not provided: card defaults to "end" (radio on the right), default
-  // appearance defaults to "start" (radio on the left).
+  // not provided: card and bordered default to "end" (radio on the right),
+  // while default appearance puts the radio on the left.
   const effectiveControlPosition: RadioControlPosition =
-    controlPosition ?? (isCard ? "end" : "start");
+    controlPosition ?? (isCard || isBordered ? "end" : "start");
 
   if (isCard) {
     const controlAtStart = effectiveControlPosition === "start";
@@ -389,7 +398,12 @@ function _RadioItem<T = string>(
         // "start" (default): radio before label
         // "end": label before radio using flex-row-reverse
         effectiveControlPosition === "end" && "flex-row-reverse justify-end",
-        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+        disabled
+          ? cn(
+              "cursor-not-allowed",
+              isBordered ? "[&>*]:opacity-50" : "opacity-50",
+            )
+          : cn("cursor-pointer", isBordered && "hover:bg-kumo-elevated"),
         className,
       )}
     >
@@ -490,12 +504,24 @@ function RadioGroup<Value = string>({
             </Fieldset.Legend>
           )}
           <div
+            data-kumo-component="Radio"
+            data-kumo-part="group-items"
             className={cn(
-              orientation === "vertical"
-                ? cn("flex flex-col", appearance === "card" ? "gap-3" : "gap-2")
-                : appearance === "card"
-                  ? "grid grid-cols-2 gap-3"
-                  : "flex flex-row flex-wrap gap-2",
+              appearance === "bordered"
+                ? cn(
+                    "overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base",
+                    orientation === "vertical"
+                      ? "flex flex-col [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-t [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-kumo-line"
+                      : "flex flex-row [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-l [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-kumo-line",
+                  )
+                : orientation === "vertical"
+                  ? cn(
+                      "flex flex-col",
+                      appearance === "card" ? "gap-3" : "gap-2",
+                    )
+                  : appearance === "card"
+                    ? "grid grid-cols-2 gap-3"
+                    : "flex flex-row flex-wrap gap-2",
             )}
           >
             {children}
