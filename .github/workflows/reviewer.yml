@@ -20,32 +20,41 @@ jobs:
     steps:
       - name: Get PR number
         id: pr-number
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo "number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Verify PR exists
         id: verify-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if gh api /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} > /dev/null 2>&1; then
+          if gh api "/repos/$REPOSITORY/pulls/$PR_NUMBER" > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "::warning::PR #${{ github.event.pull_request.number }} not found, skipping review"
+            echo "::warning::PR #$PR_NUMBER not found, skipping review"
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout repository
         if: steps.verify-pr.outputs.exists == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Get PR details
         if: steps.verify-pr.outputs.exists == 'true'
         id: pr-details
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr-number.outputs.number }}
         run: |
-          gh api /repos/${{ github.repository }}/pulls/${{ steps.pr-number.outputs.number }} > /tmp/pr_data.json
+          gh api "/repos/$REPOSITORY/pulls/$PR_NUMBER" > /tmp/pr_data.json
           echo "title=$(jq -r .title /tmp/pr_data.json)" >> $GITHUB_OUTPUT
           echo "sha=$(jq -r .head.sha /tmp/pr_data.json)" >> $GITHUB_OUTPUT
           {
@@ -53,8 +62,6 @@ jobs:
             jq -r .body /tmp/pr_data.json
             echo EOF
           } >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Reviewer
         if: steps.verify-pr.outputs.exists == 'true'

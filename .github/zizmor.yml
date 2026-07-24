@@ -1,0 +1,8 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # Align with PR #525: GitHub-maintained first-party actions may remain
+        # tag-pinned; third-party actions must be pinned to immutable SHAs.
+        actions/*: ref-pin
+        "*": hash-pin

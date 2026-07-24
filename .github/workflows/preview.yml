@@ -8,9 +8,7 @@ on:
       - "opencode/**"
       - "changeset-release/main"
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
   group: preview-${{ github.event.pull_request.number || github.ref }}
@@ -22,6 +20,8 @@ jobs:
     name: Resolve PR
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     outputs:
       pr_number: ${{ steps.find-pr.outputs.pr_number }}
       is_fork: ${{ steps.find-pr.outputs.is_fork }}
@@ -54,12 +54,15 @@ jobs:
     name: Package Preview
     if: ${{ github.repository_owner == 'cloudflare' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -78,12 +81,15 @@ jobs:
   docs-build:
     name: Docs Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
@@ -113,6 +119,10 @@ jobs:
   docs-deploy:
     name: Docs Deploy
     needs: [docs-build, resolve-pr]
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
     # Run for pull_request (non-fork) OR push events with resolved PR (non-fork)
     if: |
       always() &&
@@ -129,17 +139,22 @@ jobs:
     steps:
       - name: Set PR number
         id: set-pr
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          RESOLVED_PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "pr_number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "pr_number=$PULL_REQUEST_NUMBER" >> "$GITHUB_OUTPUT"
           else
-            echo "pr_number=${{ needs.resolve-pr.outputs.pr_number }}" >> "$GITHUB_OUTPUT"
+            echo "pr_number=$RESOLVED_PR_NUMBER" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout
         uses: actions/checkout@v4
         with:
           sparse-checkout: packages/kumo-docs-astro/wrangler.jsonc
+          persist-credentials: false
 
       - name: Download docs artifact
         uses: actions/download-artifact@v4
@@ -236,6 +251,9 @@ jobs:
     needs: docs-deploy
     if: always() && needs.docs-deploy.result == 'success' && needs.docs-deploy.outputs.preview_url != ''
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     timeout-minutes: 15
     steps:
       # Pin to main so that a PR modifying run-visual-regression.ts cannot
@@ -244,6 +262,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          persist-credentials: false
           sparse-checkout: |
             ci/visual-regression
             .github/actions/install-dependencies
@@ -251,7 +270,9 @@ jobs:
       # Fetch the PR's HEAD so git diff can detect changed files.
       # (HEAD points to main after checkout, so we need the explicit SHA)
       - name: Fetch PR head for git diff
-        run: git fetch --depth=1 origin ${{ github.event.pull_request.head.sha }}
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: git fetch --depth=1 origin "$PR_HEAD_SHA"
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies

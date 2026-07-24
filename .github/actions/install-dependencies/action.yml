@@ -10,7 +10,7 @@ runs:
   using: "composite"
   steps:
     - name: Install pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
       with:
         version: 10.22.0
 
@@ -31,9 +31,11 @@ runs:
 
     - name: Install dependencies
       shell: bash
+      env:
+        FILTER: ${{ inputs.filter }}
       run: |
-        if [ -n "${{ inputs.filter }}" ]; then
-          pnpm install --frozen-lockfile --filter "${{ inputs.filter }}"
+        if [ -n "$FILTER" ]; then
+          pnpm install --frozen-lockfile --filter "$FILTER"
         else
           pnpm install --frozen-lockfile
         fi

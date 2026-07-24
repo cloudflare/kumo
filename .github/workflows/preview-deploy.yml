@@ -22,13 +22,12 @@
 name: Preview Deploy (Forks)
 
 on:
+  # zizmor: ignore[dangerous-triggers] Fork previews require a privileged follow-up workflow; this workflow only deploys artifacts and checks out trusted code from main.
   workflow_run:
     workflows: ["Preview"]
     types: [completed]
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
   group: preview-deploy-${{ github.event.workflow_run.id }}
@@ -37,6 +36,10 @@ concurrency:
 jobs:
   deploy:
     name: Docs Deploy (Fork)
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
     # Only run for:
     # 1. Successful workflow runs
     # 2. Pull request events (not push)
@@ -60,6 +63,7 @@ jobs:
         with:
           sparse-checkout: packages/kumo-docs-astro/wrangler.jsonc
           ref: main
+          persist-credentials: false
 
       - name: Resolve PR metadata
         id: metadata
@@ -191,6 +195,9 @@ jobs:
     needs: deploy
     if: ${{ needs.deploy.outputs.preview_url }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     timeout-minutes: 15
     steps:
       # Always check out the VR script from main — never from the fork's SHA.
@@ -202,13 +209,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          persist-credentials: false
           sparse-checkout: |
             ci/visual-regression
             .github/actions/install-dependencies
 
       # Fetch the fork's HEAD so git diff works for changed-file detection.
       - name: Fetch fork HEAD for git diff
-        run: git fetch --depth=1 origin ${{ github.event.workflow_run.head_sha }}
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: git fetch --depth=1 origin "$HEAD_SHA"
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies

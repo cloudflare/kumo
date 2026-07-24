@@ -25,6 +25,9 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           REVIEW_BODY: ${{ github.event.review.body || '' }}
           REVIEW_USER: ${{ github.event.review.user.login || '' }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
 
@@ -36,10 +39,10 @@ jobs:
           }
 
           if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_review" ]; then
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-            SHA="${{ github.event.pull_request.head.sha }}"
+            PR_NUMBER="$PULL_REQUEST_NUMBER"
+            SHA="$PULL_REQUEST_HEAD_SHA"
           else
-            PR_NUMBER="${{ github.event.issue.number }}"
+            PR_NUMBER="$ISSUE_NUMBER"
             SHA=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')
           fi
 
@@ -79,9 +82,12 @@ jobs:
           fi
 
       - name: Summarize result
+        env:
+          FOUND: ${{ steps.check.outputs.found }}
+          BONK_USER: ${{ steps.check.outputs.bonk_user }}
         run: |
-          if [ "${{ steps.check.outputs.found }}" = "true" ]; then
-            echo "✅ /bonk called by ${{ steps.check.outputs.bonk_user }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$FOUND" = "true" ]; then
+            echo "✅ /bonk called by $BONK_USER" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "❌ /bonk has not been called on this PR by a collaborator" >> "$GITHUB_STEP_SUMMARY"
           fi
