@@ -384,6 +384,8 @@ function _RadioItem<T = string>(
       data-kumo-part="item-label"
       className={cn(
         "group relative m-0 inline-flex items-start gap-2",
+        isBordered &&
+          "w-full flex-1 p-3 transition-colors has-[[data-checked]]:bg-kumo-elevated",
         // "start" (default): radio before label
         // "end": label before radio using flex-row-reverse
         effectiveControlPosition === "end" && "flex-row-reverse justify-end",
@@ -416,7 +418,15 @@ function _RadioItem<T = string>(
           <span className="h-2 w-2 rounded-full bg-kumo-base" />
         </BaseRadio.Indicator>
       </BaseRadio.Root>
-      <span className="text-base text-kumo-default">{label}</span>
+      <span
+        data-kumo-part="item-content"
+        className={cn(
+          "text-base text-kumo-default",
+          isBordered && "flex-1 leading-5 text-pretty",
+        )}
+      >
+        {label}
+      </span>
     </label>
   );
 }

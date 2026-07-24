@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Badge, Checkbox } from '@cloudflare/kumo';
-import { ChatCircleTextIcon, EnvelopeIcon } from '@phosphor-icons/react';
+import { useState } from "react";
+import { Badge, Checkbox } from "@cloudflare/kumo";
+import { ChatCircleTextIcon, EnvelopeIcon } from "@phosphor-icons/react";
 
 export function CheckboxBasicDemo() {
   const [checked, setChecked] = useState(false);
@@ -63,7 +63,7 @@ export function CheckboxErrorDemo() {
 }
 
 export function CheckboxGroupDemo() {
-  const [preferences, setPreferences] = useState<string[]>(['email']);
+  const [preferences, setPreferences] = useState<string[]>(["email"]);
 
   return (
     <Checkbox.Group
@@ -80,16 +80,16 @@ export function CheckboxGroupDemo() {
 }
 
 export function CheckboxBorderedGroupDemo() {
-  const [notifications, setNotifications] = useState<string[]>(['email']);
+  const [notifications, setNotifications] = useState<string[]>(["email"]);
   const [alertCategories, setAlertCategories] = useState<string[]>([
-    'security',
-    'performance'
+    "security",
+    "performance",
   ]);
   const [exportContents, setExportContents] = useState<string[]>([
-    'configuration',
-    'analytics'
+    "configuration",
+    "analytics",
   ]);
-  const [permissions, setPermissions] = useState<string[]>(['read', 'edit']);
+  const [permissions, setPermissions] = useState<string[]>(["read", "edit"]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -187,7 +187,7 @@ export function CheckboxBorderedGroupDemo() {
 
 /** Shows Checkbox.Legend with sr-only to visually hide the legend while keeping it accessible, useful when a parent Field already provides a visible label */
 export function CheckboxLegendSrOnlyDemo() {
-  const [preferences, setPreferences] = useState<string[]>(['email']);
+  const [preferences, setPreferences] = useState<string[]>(["email"]);
   return (
     <Checkbox.Group value={preferences} onValueChange={setPreferences}>
       <Checkbox.Legend className="sr-only">
@@ -202,7 +202,7 @@ export function CheckboxLegendSrOnlyDemo() {
 
 /** Shows Checkbox.Legend with custom styling for full control over legend presentation */
 export function CheckboxLegendCustomDemo() {
-  const [preferences, setPreferences] = useState<string[]>(['email']);
+  const [preferences, setPreferences] = useState<string[]>(["email"]);
   return (
     <Checkbox.Group value={preferences} onValueChange={setPreferences}>
       <Checkbox.Legend className="text-sm font-normal text-kumo-subtle">
