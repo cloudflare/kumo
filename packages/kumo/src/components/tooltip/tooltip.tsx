@@ -54,7 +54,7 @@ export function tooltipVariants({
   return cn(
     // Base styles
     "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-2.5 py-1.5 text-sm text-kumo-default",
-    "shadow-lg shadow-kumo-tip-shadow outline outline-1 outline-kumo-fill",
+    "shadow-lg shadow-kumo-tip-shadow outline-1 outline-kumo-fill",
     "transition-[transform,scale,opacity] duration-150",
     "data-[starting-style]:scale-90 data-[starting-style]:opacity-0",
     "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
