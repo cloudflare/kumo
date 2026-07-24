@@ -1,0 +1,31 @@
+---
+import { Button, Input, Select } from "@cloudflare/kumo";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Button test">
+  <main class="mx-auto max-w-3xl p-6 md:p-12 grid gap-8">
+    <div class="flex items-center gap-2">
+      <Input aria-label="Name" placeholder="Enter a name" />
+      <Select
+        aria-label="Action"
+        className="w-40"
+        items={{ create: "Create", update: "Update" }}
+        placeholder="Choose an action"
+        client:load
+      />
+      <Button variant="primary">Submit</Button>
+    </div>
+    <div class="flex items-center gap-2">
+      <Input aria-label="Name" placeholder="Enter a name" />
+      <Select
+        aria-label="Action"
+        className="w-40"
+        items={{ create: "Create", update: "Update" }}
+        placeholder="Choose an action"
+        client:load
+      />
+      <Button>Submit</Button>
+    </div>
+  </main>
+</BaseLayout>
