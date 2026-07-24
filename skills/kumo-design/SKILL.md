@@ -42,7 +42,9 @@ Never capitalize or uppercase headings. Product names must be title-cased.
 ```
 
 ```tsx
-<Text as="h2" DANGEROUS_className="uppercase">Recent requests</Text>
+<Text as="h2" DANGEROUS_className="uppercase">
+  Recent requests
+</Text>
 ```
 
 ### `font-tracking` Never change the font's tracking
@@ -134,7 +136,9 @@ Color changes on hover must be immediate. Transitions on fast interactions make 
 **Avoid**
 
 ```tsx
-<button className="transition-colors duration-300 hover:bg-kumo-tint">...</button>
+<button className="transition-colors duration-300 hover:bg-kumo-tint">
+  ...
+</button>
 ```
 
 ### `shadow-borders` Never use borders with drop shadows
@@ -181,7 +185,9 @@ Inline icons must be optically the same size as and be center-aligned with text.
 
 ```tsx
 <div className="flex items-start gap-2">
-  <span className="h-lh flex items-center"><Icon /></span>
+  <span className="h-lh flex items-center">
+    <Icon />
+  </span>
   <Text>Text that may wrap onto multiple lines</Text>
 </div>
 ```
@@ -190,7 +196,9 @@ Inline icons must be optically the same size as and be center-aligned with text.
 
 ```tsx
 <div className="flex items-start gap-2">
-  <span className="flex items-center"><Icon /></span>
+  <span className="flex items-center">
+    <Icon />
+  </span>
   <Text>Text that may wrap onto multiple lines</Text>
 </div>
 ```
@@ -210,8 +218,8 @@ Monospaced text should have a slightly smaller font size (~0.9em) when mixed wit
 
 ```tsx
 <Text size="lg">
-  Edit <span className="font-mono text-[0.9em]">wrangler.toml</span>{" "}
-  to continue.
+  Edit <span className="font-mono text-[0.9em]">wrangler.toml</span> to
+  continue.
 </Text>
 ```
 
@@ -295,11 +303,13 @@ Conditionally rendering dialogs disables their open/close animation. Use the `op
 **Avoid**
 
 ```tsx
-{open && (
-  <Dialog.Root open>
-    <Dialog>
-      <Dialog.Title>Edit Worker</Dialog.Title>
-    </Dialog>
-  </Dialog.Root>
-)}
+{
+  open && (
+    <Dialog.Root open>
+      <Dialog>
+        <Dialog.Title>Edit Worker</Dialog.Title>
+      </Dialog>
+    </Dialog.Root>
+  );
+}
 ```

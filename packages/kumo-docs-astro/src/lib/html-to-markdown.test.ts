@@ -45,7 +45,6 @@ describe("htmlToMarkdown table robustness", () => {
     expect(htmlToMarkdown(html)).toContain("| `sm` `base` | x |");
   });
 
-
   it("renders block elements inside cells inline (MDX paragraph-wrapping)", () => {
     const withParagraphs =
       "<main><table><thead><tr><th>Token</th><th>Use</th></tr></thead><tbody><tr><td><code>bg-kumo-elevated</code></td><td><p>Slightly elevated surface</p></td></tr></tbody></table></main>";
