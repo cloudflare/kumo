@@ -12,7 +12,6 @@ kumo-figma/
 │   ├── code.ts                    # Plugin entry: GENERATORS array, page management
 │   ├── ui.html                    # Plugin UI
 │   ├── manifest.json              # Figma manifest (main: "code.js")
-│   ├── build.sh                   # Build script: codegen → esbuild (ES2017, IIFE)
 │   ├── generators/                # → see src/generators/AGENTS.md
 │   │   ├── shared.ts              # ALL constants + utilities (~1544 lines, critical)
 │   │   ├── icon-utils.ts          # Icon creation, placeholder, color binding (308 lines)
@@ -30,7 +29,7 @@ kumo-figma/
 │   ├── figma-api.ts               # Low-level Figma REST client (723 lines)
 │   ├── color-utils.ts             # oklch → sRGB conversion (uses culori)
 │   └── maybe-sync.ts              # Conditional sync gate (skips if no FIGMA_TOKEN)
-└── vitest.config.ts               # Node env (no DOM)
+└── vite.config.ts                 # Test config (Node env) + vp pack bundle config
 ```
 
 ## WHERE TO LOOK
@@ -56,7 +55,7 @@ pnpm build =
      b. tsx build-loader-data.ts       → generated/loader-data.json
      c. tsx build-phosphor-icons.ts    → generated/phosphor-icons.json
      d. tsx build-figma-variables.ts   → generated/figma-variables.json
-  3. build:plugin =                    # esbuild → src/code.js (IIFE, ES2017)
+  3. build:plugin =                    # vp pack (tsdown) → src/code.js (IIFE, ES2017)
 ```
 
 ### Testing Philosophy

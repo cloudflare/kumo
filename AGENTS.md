@@ -120,7 +120,7 @@ kumo-docs-astro demos → dist/demo-metadata.json
                               ↓
 kumo codegen:registry → ai/component-registry.{json,md} + ai/schemas.ts
                               ↓
-kumo-figma build:data → generated/*.json → esbuild → code.js (IIFE, ES2017)
+kumo-figma build:data → generated/*.json → vp pack (tsdown) → code.js (IIFE, ES2017)
 ```
 
 Cross-package dependency: registry codegen requires docs demo metadata. Run `codegen:demos` in docs before `codegen:registry` in kumo.
