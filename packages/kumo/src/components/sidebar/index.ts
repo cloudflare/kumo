@@ -5,6 +5,7 @@ export {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarLoading,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,

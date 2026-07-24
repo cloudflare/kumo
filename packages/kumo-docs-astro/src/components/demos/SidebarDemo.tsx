@@ -250,6 +250,61 @@ export function SidebarToggleDemo() {
 }
 
 // ---------------------------------------------------------------------------
+// Loading — nav-item-shaped skeleton shown while nav resolves
+// ---------------------------------------------------------------------------
+
+/** Loading state: nav-item-shaped skeleton rows shown until the nav is ready. */
+export function SidebarLoadingDemo() {
+  const [loading, setLoading] = useState(true);
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          {loading ? (
+            <Sidebar.Loading />
+          ) : (
+            <Sidebar.Content>
+              <Sidebar.Group>
+                <Sidebar.Menu>
+                  <Sidebar.MenuButton icon={HouseIcon} active>
+                    Home
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={ChartBarIcon}>
+                    Analytics
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={CodeIcon}>
+                    Compute
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={DatabaseIcon}>
+                    Storage
+                  </Sidebar.MenuButton>
+                </Sidebar.Menu>
+              </Sidebar.Group>
+            </Sidebar.Content>
+          )}
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <button
+            type="button"
+            onClick={() => setLoading((l) => !l)}
+            className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+          >
+            {loading ? "Show loaded nav" : "Show loading"}
+          </button>
+          <p>Toggle to compare the loading state with the loaded nav</p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // 3. Resizable — drag handle with auto-collapse
 // ---------------------------------------------------------------------------
 

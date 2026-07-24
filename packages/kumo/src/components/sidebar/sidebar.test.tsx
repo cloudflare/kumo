@@ -18,6 +18,7 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarLoading,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -743,5 +744,58 @@ describe("Sidebar mobile behavior", () => {
 
     expect(nav.getAttribute("aria-hidden")).toBe("false");
     expect(nav.hasAttribute("inert")).toBe(false);
+  });
+});
+
+// ============================================================================
+// Sidebar.Loading
+// ============================================================================
+
+describe("Sidebar.Loading", () => {
+  it("should expose a status role with a default accessible label", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarLoading />
+      </TestSidebar>,
+    );
+    const status = screen.getByRole("status");
+    expect(status.getAttribute("aria-label")).toBe("Loading");
+    expect(status.dataset.sidebar).toBe("loading");
+  });
+
+  it("should use a custom label when provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarLoading label="Loading navigation" />
+      </TestSidebar>,
+    );
+    expect(screen.getByRole("status").getAttribute("aria-label")).toBe(
+      "Loading navigation",
+    );
+  });
+
+  it("should render a group-label and item skeleton for every placeholder row", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarLoading />
+      </TestSidebar>,
+    );
+    const status = screen.getByRole("status");
+    // 2 groups × (1 group-label + 3 rows × [icon + label]) = 2 + 12 = 14 blocks
+    expect(status.querySelectorAll(".skeleton-line")).toHaveLength(14);
+  });
+
+  it("should forward ref and className", () => {
+    const ref = { current: null as HTMLDivElement | null };
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarLoading ref={ref} className="custom-loading" />
+      </TestSidebar>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+    expect(ref.current?.dataset.sidebar).toBe("loading");
+    expect(
+      screen.getByRole("status").classList.contains("custom-loading"),
+    ).toBe(true);
   });
 });

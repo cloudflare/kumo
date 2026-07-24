@@ -17,6 +17,7 @@ import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 import { CaretRightIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
+import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
 
 // ============================================================================
@@ -850,6 +851,74 @@ const SidebarFooter = forwardRef<
 ));
 
 SidebarFooter.displayName = "Sidebar.Footer";
+
+// ============================================================================
+// Sidebar Loading
+// ============================================================================
+
+/**
+ * Placeholder rows for `Sidebar.Loading`, grouped like a real nav. Each string
+ * is a label-width utility; each group renders a group label above its items.
+ */
+const SIDEBAR_LOADING_GROUPS: readonly (readonly string[])[] = [
+  ["w-28", "w-40", "w-24"],
+  ["w-24", "w-36", "w-32"],
+];
+
+/**
+ * Loading state for the whole sidebar nav: nav-item-shaped placeholder rows
+ * (icon + label) grouped like the real nav, composed from `SkeletonLine` so it
+ * shares Kumo's skeleton shimmer. Drop it in place of the nav content while
+ * routes/permissions resolve. When collapsed only the icon squares remain.
+ *
+ * @example
+ * ```tsx
+ * <Sidebar>
+ *   {isLoading ? <Sidebar.Loading /> : <Sidebar.Content>…</Sidebar.Content>}
+ * </Sidebar>
+ * ```
+ */
+const SidebarLoading = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<"div"> & {
+    /** Accessible label announced to assistive tech. */
+    label?: string;
+  }
+>(({ className, label = "Loading", ...props }, ref) => (
+  <div
+    ref={ref}
+    data-sidebar="loading"
+    role="status"
+    aria-label={label}
+    className={cn(
+      "flex min-h-0 w-full flex-1 flex-col gap-4 px-2 py-3",
+      className,
+    )}
+    {...props}
+  >
+    {SIDEBAR_LOADING_GROUPS.map((widths, groupIndex) => (
+      <div key={groupIndex} className="flex flex-col gap-0.5">
+        <SkeletonLine className="mb-1 ml-2 h-2 w-16 rounded-full group-data-[state=collapsed]/sidebar:hidden" />
+        {widths.map((width, itemIndex) => (
+          <div
+            key={itemIndex}
+            className="flex min-h-8.5 items-center gap-3 rounded-lg px-3 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:px-0"
+          >
+            <SkeletonLine className="size-4.5 shrink-0 rounded-md" />
+            <SkeletonLine
+              className={cn(
+                "h-2.5 rounded-full group-data-[state=collapsed]/sidebar:hidden",
+                width,
+              )}
+            />
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+));
+
+SidebarLoading.displayName = "Sidebar.Loading";
 
 // ============================================================================
 // Sidebar Group
@@ -2236,6 +2305,7 @@ export const Sidebar = Object.assign(SidebarRoot, {
   Header: SidebarHeader,
   Content: SidebarContent,
   Footer: SidebarFooter,
+  Loading: SidebarLoading,
   Group: SidebarGroup,
   GroupLabel: SidebarGroupLabel,
   Menu: SidebarMenu,
@@ -2263,6 +2333,7 @@ export {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarLoading,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,

@@ -8,6 +8,7 @@ import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   SidebarBasicDemo,
   SidebarToggleDemo,
+  SidebarLoadingDemo,
   SidebarFullDemo,
   SidebarResizableDemo,
   SidebarRightDemo,
@@ -147,6 +148,24 @@ function AppLayout({ children }) {
 // Or programmatically:
 const { toggleSidebar } = useSidebar();`}>
           <SidebarToggleDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Loading</Heading>
+        <p>
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Loading</code> shows nav-item-shaped skeleton rows in place of the nav content while routes and permissions resolve. When collapsed only the icon squares remain. Honours reduced-motion.
+        </p>
+        <ComponentExample code={`<Sidebar>
+  <Sidebar.Header>…</Sidebar.Header>
+  {isLoading ? (
+    <Sidebar.Loading />
+  ) : (
+    <Sidebar.Content>…</Sidebar.Content>
+  )}
+  <Sidebar.Footer>…</Sidebar.Footer>
+</Sidebar>`}>
+          <SidebarLoadingDemo client:load />
         </ComponentExample>
       </div>
 
