@@ -25,9 +25,7 @@ describe("Package.json Validation", () => {
           console.error(`   - ${name}`);
           console.error(`     Add this to package.json exports:`);
           console.error(`     "./components/${name}": {`);
-          console.error(
-            `       "types": "./dist/src/components/${name}/index.d.ts",`,
-          );
+          console.error(`       "types": "./dist/components/${name}.d.ts",`);
           console.error(`       "import": "./dist/components/${name}.js"`);
           console.error(`     }`);
         });
@@ -71,7 +69,7 @@ describe("Package.json Validation", () => {
         });
 
         it("should have correct types path", () => {
-          const expectedTypesPath = `./dist/src/components/${componentName}/index.d.ts`;
+          const expectedTypesPath = `./dist/components/${componentName}.d.ts`;
           expect(exportConfig.types).toBe(expectedTypesPath);
         });
 

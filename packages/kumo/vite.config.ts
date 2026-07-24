@@ -1,9 +1,7 @@
-import { defineConfig, lazyPlugins } from "vite-plus";
+import { defineConfig } from "vite-plus";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-import { readdirSync } from "fs";
-import dts from "vite-plugin-dts";
-import { rebuildSignalPlugin } from "./vite-plugin-rebuild-signal";
+import { readdirSync, writeFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,261 +26,178 @@ function getPrimitiveEntries() {
   return entries;
 }
 
-export default defineConfig(({ mode }) => {
-  const isDev = mode === "development";
+const packEntries = {
+  // Main entry point
+  index: resolve(__dirname, "src/index.ts"),
+  // Dynamically add primitive entries
+  ...getPrimitiveEntries(),
+  // Component entry points
+  "components/badge": resolve(__dirname, "src/components/badge/index.ts"),
+  "components/banner": resolve(__dirname, "src/components/banner/index.ts"),
+  "components/button": resolve(__dirname, "src/components/button/index.ts"),
+  "components/date-range-picker": resolve(
+    __dirname,
+    "src/components/date-range-picker/index.ts",
+  ),
+  "components/chart": resolve(__dirname, "src/components/chart/index.ts"),
+  "components/checkbox": resolve(__dirname, "src/components/checkbox/index.ts"),
+  "components/clipboard-text": resolve(
+    __dirname,
+    "src/components/clipboard-text/index.ts",
+  ),
+  "components/code": resolve(__dirname, "src/components/code/index.ts"),
+  "components/combobox": resolve(__dirname, "src/components/combobox/index.ts"),
+  "components/toolbar": resolve(__dirname, "src/components/toolbar/index.ts"),
+  "components/dialog": resolve(__dirname, "src/components/dialog/index.ts"),
+  "components/dropdown": resolve(__dirname, "src/components/dropdown/index.ts"),
+  "components/collapsible": resolve(
+    __dirname,
+    "src/components/collapsible/index.ts",
+  ),
+  "components/field": resolve(__dirname, "src/components/field/index.ts"),
 
-  return {
-    lint: {
-      jsPlugins: [
-        "./lint/kumo-plugin.js",
-        {
-          name: "vite-plus",
-          specifier: "vite-plus/oxlint-plugin",
-        },
-      ],
-      plugins: ["eslint", "typescript", "unicorn", "oxc", "jsx-a11y"],
-      categories: {
-        correctness: "error",
-        suspicious: "warn",
+  "components/input": resolve(__dirname, "src/components/input/index.ts"),
+  "components/input-group": resolve(
+    __dirname,
+    "src/components/input-group/index.ts",
+  ),
+  "components/layer-card": resolve(
+    __dirname,
+    "src/components/layer-card/index.ts",
+  ),
+  "components/label": resolve(__dirname, "src/components/label/index.ts"),
+  "components/loader": resolve(__dirname, "src/components/loader/index.ts"),
+  "components/menubar": resolve(__dirname, "src/components/menubar/index.ts"),
+  "components/meter": resolve(__dirname, "src/components/meter/index.ts"),
+  "components/pagination": resolve(
+    __dirname,
+    "src/components/pagination/index.ts",
+  ),
+  "components/select": resolve(__dirname, "src/components/select/index.ts"),
+  "components/surface": resolve(__dirname, "src/components/surface/index.ts"),
+  "components/switch": resolve(__dirname, "src/components/switch/index.ts"),
+  "components/table": resolve(__dirname, "src/components/table/index.ts"),
+  "components/tabs": resolve(__dirname, "src/components/tabs/index.ts"),
+  "components/text": resolve(__dirname, "src/components/text/index.ts"),
+  "components/toast": resolve(__dirname, "src/components/toast/index.ts"),
+  "components/tooltip": resolve(__dirname, "src/components/tooltip/index.ts"),
+  "components/popover": resolve(__dirname, "src/components/popover/index.ts"),
+  "components/sensitive-input": resolve(
+    __dirname,
+    "src/components/sensitive-input/index.ts",
+  ),
+  "components/radio": resolve(__dirname, "src/components/radio/index.ts"),
+  "components/command-palette": resolve(
+    __dirname,
+    "src/components/command-palette/index.ts",
+  ),
+  "components/link": resolve(__dirname, "src/components/link/index.ts"),
+  "components/breadcrumbs": resolve(
+    __dirname,
+    "src/components/breadcrumbs/index.ts",
+  ),
+  "components/empty": resolve(__dirname, "src/components/empty/index.ts"),
+  "components/grid": resolve(__dirname, "src/components/grid/index.ts"),
+  "components/cloudflare-logo": resolve(
+    __dirname,
+    "src/components/cloudflare-logo/index.ts",
+  ),
+  "components/date-picker": resolve(
+    __dirname,
+    "src/components/date-picker/index.ts",
+  ),
+  "components/flow": resolve(__dirname, "src/components/flow/index.ts"),
+  "components/autocomplete": resolve(
+    __dirname,
+    "src/components/autocomplete/index.ts",
+  ),
+  "components/sidebar": resolve(__dirname, "src/components/sidebar/index.ts"),
+  "components/table-of-contents": resolve(
+    __dirname,
+    "src/components/table-of-contents/index.ts",
+  ),
+  // PLOP_INJECT_COMPONENT_ENTRY
+  // Utils entry point
+  utils: resolve(__dirname, "src/utils/index.ts"),
+  // Primitives entry point (base-ui re-exports)
+  primitives: resolve(__dirname, "src/primitives/index.ts"),
+  // Registry entry point (component metadata types)
+  registry: resolve(__dirname, "src/registry/index.ts"),
+  // Catalog module entry point (runtime validation, JSON UI rendering)
+  catalog: resolve(__dirname, "src/catalog/index.ts"),
+  // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
+  code: resolve(__dirname, "src/code/index.ts"),
+  "code/server": resolve(__dirname, "src/code/server.tsx"),
+  // AI schemas for runtime validation (compiled to avoid consumers type-checking raw .ts)
+  "ai/schemas": resolve(__dirname, "ai/schemas.ts"),
+  // Theme generator utilities for consumers extending the theme
+  "scripts/theme-generator/config": resolve(
+    __dirname,
+    "scripts/theme-generator/config.ts",
+  ),
+  "scripts/theme-generator/types": resolve(
+    __dirname,
+    "scripts/theme-generator/types.ts",
+  ),
+};
+
+export default defineConfig({
+  lint: {
+    jsPlugins: [
+      "./lint/kumo-plugin.js",
+      {
+        name: "vite-plus",
+        specifier: "vite-plus/oxlint-plugin",
       },
-      rules: {
-        "kumo/no-tailwind-dark-variant": "error",
-        "kumo/no-primitive-colors": "error",
-        "kumo/enforce-variant-standard": "error",
-        "kumo/no-deprecated-props": "error",
-        "kumo/no-cross-package-imports": "error",
-        "kumo/no-flow-node-custom-render": "error",
-        "typescript/no-unsafe-type-assertion": "off",
-        "typescript/no-unnecessary-template-expression": "off",
-        "typescript/no-unnecessary-type-assertion": "off",
-        "jsx-a11y/no-autofocus": "off",
-        "unicorn/no-array-sort": "off",
-        "unicorn/no-array-reverse": "off",
-        "jsx-a11y/aria-proptypes": "error",
-        "jsx-a11y/no-static-element-interactions": "error",
-        "jsx-a11y/interactive-supports-focus": "error",
-        "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
-        "jsx-a11y/no-noninteractive-element-interactions": "error",
-        "jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
-        "jsx-a11y/control-has-associated-label": "warn",
-        "vite-plus/prefer-vite-plus-imports": "error",
-      },
-      options: {
-        typeAware: true,
-        typeCheck: true,
-      },
+    ],
+    plugins: ["eslint", "typescript", "unicorn", "oxc", "jsx-a11y"],
+    categories: {
+      correctness: "error",
+      suspicious: "warn",
     },
-    plugins: lazyPlugins(() => [
-      dts({
-        include: ["src/**/*", "ai/**/*", "scripts/theme-generator/**/*"],
-        exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
-        rollupTypes: false, // Disabled - causes timeouts with many entry points
-        compilerOptions: {
-          incremental: isDev,
-          tsBuildInfoFile: isDev ? "./.tsbuildinfo" : undefined,
-        },
-      }),
-      rebuildSignalPlugin(),
-    ]),
-    build: {
-      lib: {
-        entry: {
-          // Main entry point
-          index: resolve(__dirname, "src/index.ts"),
-          // Dynamically add primitive entries
-          ...getPrimitiveEntries(),
-          // Component entry points
-          "components/badge": resolve(
-            __dirname,
-            "src/components/badge/index.ts",
-          ),
-          "components/banner": resolve(
-            __dirname,
-            "src/components/banner/index.ts",
-          ),
-          "components/button": resolve(
-            __dirname,
-            "src/components/button/index.ts",
-          ),
-          "components/date-range-picker": resolve(
-            __dirname,
-            "src/components/date-range-picker/index.ts",
-          ),
-          "components/chart": resolve(
-            __dirname,
-            "src/components/chart/index.ts",
-          ),
-          "components/checkbox": resolve(
-            __dirname,
-            "src/components/checkbox/index.ts",
-          ),
-          "components/clipboard-text": resolve(
-            __dirname,
-            "src/components/clipboard-text/index.ts",
-          ),
-          "components/code": resolve(__dirname, "src/components/code/index.ts"),
-          "components/combobox": resolve(
-            __dirname,
-            "src/components/combobox/index.ts",
-          ),
-          "components/toolbar": resolve(
-            __dirname,
-            "src/components/toolbar/index.ts",
-          ),
-          "components/dialog": resolve(
-            __dirname,
-            "src/components/dialog/index.ts",
-          ),
-          "components/dropdown": resolve(
-            __dirname,
-            "src/components/dropdown/index.ts",
-          ),
-          "components/collapsible": resolve(
-            __dirname,
-            "src/components/collapsible/index.ts",
-          ),
-          "components/field": resolve(
-            __dirname,
-            "src/components/field/index.ts",
-          ),
+    rules: {
+      "kumo/no-tailwind-dark-variant": "error",
+      "kumo/no-primitive-colors": "error",
+      "kumo/enforce-variant-standard": "error",
+      "kumo/no-deprecated-props": "error",
+      "kumo/no-cross-package-imports": "error",
+      "kumo/no-flow-node-custom-render": "error",
+      "typescript/no-unsafe-type-assertion": "off",
+      "typescript/no-unnecessary-template-expression": "off",
+      "typescript/no-unnecessary-type-assertion": "off",
+      "jsx-a11y/no-autofocus": "off",
+      "unicorn/no-array-sort": "off",
+      "unicorn/no-array-reverse": "off",
+      "jsx-a11y/aria-proptypes": "error",
+      "jsx-a11y/no-static-element-interactions": "error",
+      "jsx-a11y/interactive-supports-focus": "error",
+      "jsx-a11y/no-interactive-element-to-noninteractive-role": "error",
+      "jsx-a11y/no-noninteractive-element-interactions": "error",
+      "jsx-a11y/no-noninteractive-element-to-interactive-role": "error",
+      "jsx-a11y/control-has-associated-label": "warn",
+      "vite-plus/prefer-vite-plus-imports": "error",
+    },
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+  },
+  pack: [
+    {
+      entry: packEntries,
 
-          "components/input": resolve(
-            __dirname,
-            "src/components/input/index.ts",
-          ),
-          "components/input-group": resolve(
-            __dirname,
-            "src/components/input-group/index.ts",
-          ),
-          "components/layer-card": resolve(
-            __dirname,
-            "src/components/layer-card/index.ts",
-          ),
-          "components/label": resolve(
-            __dirname,
-            "src/components/label/index.ts",
-          ),
-          "components/loader": resolve(
-            __dirname,
-            "src/components/loader/index.ts",
-          ),
-          "components/menubar": resolve(
-            __dirname,
-            "src/components/menubar/index.ts",
-          ),
-          "components/meter": resolve(
-            __dirname,
-            "src/components/meter/index.ts",
-          ),
-          "components/pagination": resolve(
-            __dirname,
-            "src/components/pagination/index.ts",
-          ),
-          "components/select": resolve(
-            __dirname,
-            "src/components/select/index.ts",
-          ),
-          "components/surface": resolve(
-            __dirname,
-            "src/components/surface/index.ts",
-          ),
-          "components/switch": resolve(
-            __dirname,
-            "src/components/switch/index.ts",
-          ),
-          "components/table": resolve(
-            __dirname,
-            "src/components/table/index.ts",
-          ),
-          "components/tabs": resolve(__dirname, "src/components/tabs/index.ts"),
-          "components/text": resolve(__dirname, "src/components/text/index.ts"),
-          "components/toast": resolve(
-            __dirname,
-            "src/components/toast/index.ts",
-          ),
-          "components/tooltip": resolve(
-            __dirname,
-            "src/components/tooltip/index.ts",
-          ),
-          "components/popover": resolve(
-            __dirname,
-            "src/components/popover/index.ts",
-          ),
-          "components/sensitive-input": resolve(
-            __dirname,
-            "src/components/sensitive-input/index.ts",
-          ),
-          "components/radio": resolve(
-            __dirname,
-            "src/components/radio/index.ts",
-          ),
-          "components/command-palette": resolve(
-            __dirname,
-            "src/components/command-palette/index.ts",
-          ),
-          "components/link": resolve(__dirname, "src/components/link/index.ts"),
-          "components/breadcrumbs": resolve(
-            __dirname,
-            "src/components/breadcrumbs/index.ts",
-          ),
-          "components/empty": resolve(
-            __dirname,
-            "src/components/empty/index.ts",
-          ),
-          "components/grid": resolve(__dirname, "src/components/grid/index.ts"),
-          "components/cloudflare-logo": resolve(
-            __dirname,
-            "src/components/cloudflare-logo/index.ts",
-          ),
-          "components/date-picker": resolve(
-            __dirname,
-            "src/components/date-picker/index.ts",
-          ),
-          "components/flow": resolve(__dirname, "src/components/flow/index.ts"),
-          "components/autocomplete": resolve(
-            __dirname,
-            "src/components/autocomplete/index.ts",
-          ),
-          "components/sidebar": resolve(
-            __dirname,
-            "src/components/sidebar/index.ts",
-          ),
-          "components/table-of-contents": resolve(
-            __dirname,
-            "src/components/table-of-contents/index.ts",
-          ),
-          // PLOP_INJECT_COMPONENT_ENTRY
-          // Utils entry point
-          utils: resolve(__dirname, "src/utils/index.ts"),
-          // Primitives entry point (base-ui re-exports)
-          primitives: resolve(__dirname, "src/primitives/index.ts"),
-          // Registry entry point (component metadata types)
-          registry: resolve(__dirname, "src/registry/index.ts"),
-          // Catalog module entry point (runtime validation, JSON UI rendering)
-          catalog: resolve(__dirname, "src/catalog/index.ts"),
-          // Shiki-powered code highlighting (separate entry to avoid bundle bloat)
-          code: resolve(__dirname, "src/code/index.ts"),
-          "code/server": resolve(__dirname, "src/code/server.tsx"),
-          // AI schemas for runtime validation (compiled to avoid consumers type-checking raw .ts)
-          "ai/schemas": resolve(__dirname, "ai/schemas.ts"),
-          // Theme generator utilities for consumers extending the theme
-          "scripts/theme-generator/config": resolve(
-            __dirname,
-            "scripts/theme-generator/config.ts",
-          ),
-          "scripts/theme-generator/types": resolve(
-            __dirname,
-            "scripts/theme-generator/types.ts",
-          ),
-        },
-        formats: ["es"],
-        fileName: (format, entryName) => {
-          return `${entryName}.js`;
-        },
-      },
-      rollupOptions: {
-        // Externalize dependencies that shouldn't be bundled
-        external: (id, importer) => {
+      format: "esm",
+      platform: "browser",
+      outDir: "dist",
+      sourcemap: true,
+      minify: true,
+      dts: false,
+      clean: false,
+      // Bundle all node_modules except the peers below (tsdown externalizes
+      // package.json dependencies by default).
+      deps: {
+        alwaysBundle: /.+/,
+        neverBundle: (id, importer) => {
           // Only externalize peer dependencies - bundle everything else
           switch (true) {
             case id === "react":
@@ -310,93 +225,71 @@ export default defineConfig(({ mode }) => {
               return false;
           }
         },
-        output: {
-          // Don't preserve modules - bundle dependencies into flat output
-          // This avoids nested node_modules/.pnpm/ paths in dist that break Jest
-          preserveModules: false,
-          // Chunk filenames without double-dashes (fixes Jest resolution issues)
-          // Use a function to sanitize chunk names
-          chunkFileNames: (chunkInfo) => {
-            // Strip trailing dashes/underscores from chunk name
-            const name = chunkInfo.name.replace(/[-_]+$/, "") || "chunk";
-            // Use hashCharacters to avoid dashes in hash (Rollup 4.8+)
-            return `chunks/${name}-[hash:16].js`;
-          },
-          // Use only alphanumeric characters in hashes to avoid filename issues
-          hashCharacters: "base36",
-          // Hoist "use client" directives to the top of chunks
-          hoistTransitiveImports: false,
-          // Add "use client" directive to all output chunks
-          // This is necessary because rollup-plugin-preserve-directives only works with preserveModules: true
-          banner: (chunk) => {
-            // Add "use client" to all chunks since this is a client-side component library
-            // RSC apps will need this directive on all components that use hooks/events
-            // Exception: server utilities should NOT have "use client"
-            if (
-              chunk.name === "code/server" ||
-              chunk.fileName?.includes("code/server")
-            ) {
-              return "";
-            }
-            return '"use client";\n';
-          },
-          // Manual chunks for better code splitting
-          manualChunks: (id) => {
-            // Vendor chunks for large dependencies
-            if (id.includes("node_modules")) {
-              // Class merging utilities
-              if (id.includes("cnfast")) {
-                return "vendor-styling";
-              }
-              // Floating UI positioning libraries
-              if (id.includes("@floating-ui")) {
-                return "vendor-floating-ui";
-              }
-              // Base UI components
-              if (id.includes("@base-ui")) {
-                return "vendor-base-ui";
-              }
-              // Other vendor dependencies
-              if (
-                id.includes("tabbable") ||
-                id.includes("use-sync-external-store") ||
-                id.includes("reselect")
-              ) {
-                return "vendor-utils";
-              }
-            }
-          },
-          // Global variables for UMD build (if needed)
-          globals: {
-            react: "React",
-            "react-dom": "ReactDOM",
-            "react/jsx-runtime": "jsxRuntime",
-          },
+      },
+      outputOptions: {
+        entryFileNames: "[name].js",
+        // Chunk names without trailing dashes; base36 hashes (Jest-safe names).
+        chunkFileNames: (chunkInfo) => {
+          const name = chunkInfo.name.replace(/[-_]+$/, "") || "chunk";
+          return `chunks/${name}-[hash:16].js`;
         },
-        // Note: preserveDirectives plugin removed - it only works with preserveModules: true
-        // We use output.banner instead to add "use client" to all chunks
-        plugins: [],
-        // Enable Rollup caching for faster rebuilds
-        cache: isDev,
-      },
-      // Faster sourcemaps in dev
-      sourcemap: isDev ? "inline" : true,
-      // Skip minification in dev for faster rebuilds
-      minify: isDev ? false : "esbuild",
-      // Don't clear dist/ on every rebuild in dev
-      emptyOutDir: !isDev,
-      // Selective file watching in dev
-      watch: isDev
-        ? {
-            include: "src/**",
-            exclude: ["**/*.test.*", "**/*.stories.*", "**/__tests__/**"],
+        hashCharacters: "base36",
+        hoistTransitiveImports: false,
+        // "use client" on all chunks except the server-only entry.
+        banner: (chunk) => {
+          if (
+            chunk.name === "code/server" ||
+            chunk.fileName?.includes("code/server")
+          ) {
+            return "";
           }
-        : undefined,
-    },
-    resolve: {
-      alias: {
-        "@": resolve(__dirname, "src"),
+          return '"use client";\n';
+        },
+        advancedChunks: {
+          groups: [
+            { name: "vendor-styling", test: /node_modules\/.*cnfast/ },
+            {
+              name: "vendor-floating-ui",
+              test: /node_modules\/.*@floating-ui/,
+            },
+            { name: "vendor-base-ui", test: /node_modules\/.*@base-ui/ },
+            {
+              name: "vendor-utils",
+              test: /node_modules\/.*(?:tabbable|reselect)/,
+            },
+          ],
+        },
+      },
+      // Signal build completion for dependent dev servers (port of
+      // vite-plugin-rebuild-signal).
+      onSuccess: () => {
+        writeFileSync(
+          resolve(__dirname, "dist", ".build-complete"),
+          String(Date.now()),
+        );
       },
     },
-  };
+    {
+      entry: packEntries,
+      format: "esm",
+      platform: "browser",
+      outDir: "dist",
+      clean: false,
+      // Types-only pass: bundle our own declarations per entry, keep every
+      // bare import (deps/peers) external so consumers resolve real packages.
+      deps: { neverBundle: /^[^./]/ },
+      dts: { emitDtsOnly: true },
+      sourcemap: false,
+      // rolldown-plugin-dts transforms without maps; maps are irrelevant for d.ts.
+      inputOptions: { checks: { sourcemapBroken: false } },
+      // Package-correctness gates on the final output (runs on the packed
+      // tarball): styles/registry entries are non-JS assets by design.
+      attw: {
+        profile: "esm-only",
+        level: "error",
+        excludeEntrypoints: [/styles/, /component-registry/],
+      },
+      publint: true,
+    },
+  ],
 });

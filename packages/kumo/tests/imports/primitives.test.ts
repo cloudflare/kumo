@@ -59,7 +59,7 @@ describe("Primitives Export", () => {
       const primitivesExport = packageJson.exports["./primitives"];
       expect(primitivesExport).toHaveProperty("types");
       expect(primitivesExport).toHaveProperty("import");
-      expect(primitivesExport.types).toBe("./dist/src/primitives/index.d.ts");
+      expect(primitivesExport.types).toBe("./dist/primitives.d.ts");
       expect(primitivesExport.import).toBe("./dist/primitives.js");
     });
   });
@@ -292,7 +292,7 @@ describe("Primitives Export", () => {
 
         if (!exportValue) continue;
 
-        const expectedTypes = `./dist/src/primitives/${exportName}.d.ts`;
+        const expectedTypes = `./dist/primitives/${exportName}.d.ts`;
         const expectedImport = `./dist/primitives/${exportName}.js`;
 
         if (

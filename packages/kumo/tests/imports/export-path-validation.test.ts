@@ -84,7 +84,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
 
           // Check if paths follow expected patterns
           // JS files should be in dist/[category]/[name].js
-          // Type files should be in dist/src/[category]/[name]/index.d.ts
+          // Type files sit next to their entry: dist/[category]/[name].d.ts
 
           const jsMatch = importPath.match(/^\.\/dist\/([^/]+)\/(.+)\.js$/);
           const tsMatch = typesPath.match(
@@ -147,8 +147,8 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       expect(missingFiles).toEqual([]);
     });
 
-    it("should have all primitive .d.ts files in dist/src/primitives/", () => {
-      const typesDir = join(__dirname, "../../dist/src/primitives");
+    it("should have all primitive .d.ts files in dist/primitives/", () => {
+      const typesDir = join(__dirname, "../../dist/primitives");
       const primitiveExports = Object.keys(packageJson.exports).filter((key) =>
         key.startsWith("./primitives/"),
       );
@@ -164,9 +164,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       }
 
       if (missingFiles.length > 0) {
-        console.error(
-          "\n❌ Missing primitive type files in dist/src/primitives/:",
-        );
+        console.error("\n❌ Missing primitive type files in dist/primitives/:");
         missingFiles.forEach((f) => console.error(`   - ${f}`));
       }
 
@@ -175,7 +173,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
 
     it("should have barrel export files", () => {
       const barrelJs = join(__dirname, "../../dist/primitives.js");
-      const barrelDts = join(__dirname, "../../dist/src/primitives/index.d.ts");
+      const barrelDts = join(__dirname, "../../dist/primitives.d.ts");
 
       expect(existsSync(barrelJs)).toBe(true);
       expect(existsSync(barrelDts)).toBe(true);
@@ -244,17 +242,24 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         // real code but lack a map.
         const jsPath = join(primitivesDir, `${primitiveName}.js`);
         const content = existsSync(jsPath) ? readFileSync(jsPath, "utf-8") : "";
-        const isFacade = content
-          .split("\n")
-          .every(
-            (line) =>
-              line.trim() === "" ||
-              line.trim() === '"use client";' ||
-              line.startsWith("import ") ||
-              line.startsWith("export ") ||
-              /^[\w$]+ as [\w$$]+,?$/.test(line.trim()) ||
-              line.trim() === "};",
+        // Minified single-line facade: "use client";import{...}from"...";export{...};
+        const isMinifiedFacade =
+          /^("use client";)?(import\s*\{[^}]*\}\s*from\s*"[^"]+";)+export\s*\{[^}]*\};?\s*$/.test(
+            content.trim(),
           );
+        const isFacade =
+          isMinifiedFacade ||
+          content
+            .split("\n")
+            .every(
+              (line) =>
+                line.trim() === "" ||
+                line.trim() === '"use client";' ||
+                line.startsWith("import ") ||
+                line.startsWith("export ") ||
+                /^[\w$]+ as [\w$$]+,?$/.test(line.trim()) ||
+                line.trim() === "};",
+            );
         if (!isFacade) {
           missingMaps.push(`${primitiveName}.js.map`);
         }
@@ -277,7 +282,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       const content = readFileSync(sliderJs, "utf-8");
 
       // Should import from bundled chunk files (e.g., index.parts-*.js), not external packages
-      expect(content).toMatch(/from\s+["']\.\.\/.+\.js["']/);
+      expect(content).toMatch(/from\s*["']\.\.\/.+\.js["']/);
 
       // Should NOT import directly from @base-ui-components (would indicate externalization)
       expect(content).not.toMatch(/from\s+['"]@base-ui-components\/react/);
@@ -297,7 +302,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       if (hasPreserveModules) {
         // With preserveModules, build output is flattened
         // JS: dist/components/button.js
-        // Types: dist/src/components/button/index.d.ts (from vite-plugin-dts)
+        // Types: dist/components/button.d.ts (bundled per entry by vp pack)
 
         const exports = packageJson.exports;
         const mismatches: string[] = [];
@@ -324,7 +329,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
 
           // Expected paths with preserveModules
           const expectedImport = `./dist/${category}/${name}.js`;
-          const expectedTypes = `./dist/src/${category}/${name}/index.d.ts`;
+          const expectedTypes = `./dist/${category}/${name}.d.ts`;
 
           if (exportConfig.import !== expectedImport) {
             mismatches.push(
