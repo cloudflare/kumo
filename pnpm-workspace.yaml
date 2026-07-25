@@ -31,12 +31,12 @@ catalog:
   tailwindcss: ^4.1.17
   tsx: ^4.19.2
   typescript: ^5.9.2
-  vite: npm:@voidzero-dev/vite-plus-core@0.2.2
+  vite: npm:@voidzero-dev/vite-plus-core@0.2.6
   vite-plugin-dts: ^4.3.0
   vite-tsconfig-paths: ^5.1.4
   vitest: 4.1.9
   wrangler: 4.87.0
-  vite-plus: 0.2.2
+  vite-plus: 0.2.6
   "@vitest/browser-playwright": 4.1.9
 onlyBuiltDependencies:
   - workerd
