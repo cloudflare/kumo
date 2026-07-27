@@ -173,6 +173,26 @@
   transform-origin: center;
 }
 
+/* Subtle bump for small anchored clipboard "Copied" toasts */
+@keyframes clipboard-toast-bump {
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.04);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-clipboard-toast-bump {
+  animation: clipboard-toast-bump 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
+
 @layer base {
   .skeleton-line {
     position: relative;
