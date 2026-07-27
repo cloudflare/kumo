@@ -1,12 +1,5 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { Toast } from "@base-ui/react/toast";
 import { Tooltip } from "@base-ui/react/tooltip";
 import { Button } from "../button";
@@ -129,11 +122,6 @@ export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
   };
 }
 
-type ClipboardToastData = {
-  /** Monotonic key so the bump animation restarts on every spam click */
-  bumpKey?: number;
-};
-
 /**
  * Anchored toasts viewport - renders "Copied" toasts anchored to buttons
  */
@@ -142,18 +130,17 @@ function AnchoredToasts() {
   return (
     <Toast.Viewport className="pointer-events-none fixed inset-0 isolate">
       {toasts.map((toast) => {
-        const data = toast.data as ClipboardToastData | undefined;
-        const bumpKey = data?.bumpKey ?? 0;
+        const updateKey = toast.updateKey ?? 0;
         return (
           <Toast.Positioner key={toast.id} toast={toast} className="absolute">
             {/* key forces a fresh animation instance on every bump */}
             <Toast.Root
-              key={bumpKey}
+              key={updateKey}
               toast={toast}
               className={cn(
                 "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-3 py-1.5 font-sans text-xs text-kumo-default",
                 "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
-                bumpKey > 0 && "animate-clipboard-toast-bump",
+                updateKey > 0 && "animate-clipboard-toast-bump",
               )}
             >
               <Toast.Description />
@@ -203,9 +190,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
     const [copied, setCopied] = useState(false);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const toastOpenRef = useRef(false);
-    const bumpKeyRef = useRef(0);
-    const toastId = useId();
+    const toastIdRef = useRef<string | null>(null);
     const sizeConfig = resolveVariant(
       KUMO_CLIPBOARD_TEXT_VARIANTS.size,
       size,
@@ -273,38 +258,20 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
 
         // Show anchored toast if tooltip mode is enabled
         if (tooltip) {
-          const alreadyOpen = toastOpenRef.current;
-
-          if (alreadyOpen) {
-            // Same toast visible — bump + refresh dismiss timer on every click
-            bumpKeyRef.current += 1;
-            clipboardToastManager.update(toastId, {
-              description: copiedText,
-              timeout: COPIED_FEEDBACK_MS,
-              data: {
-                bumpKey: bumpKeyRef.current,
-              } satisfies ClipboardToastData,
-            });
-          } else {
-            bumpKeyRef.current = 0;
-            clipboardToastManager.add({
-              id: toastId,
-              description: copiedText,
-              positionerProps: {
-                anchor: buttonRef.current,
-                side: tooltipSide,
-                sideOffset: 8,
-              },
-              timeout: COPIED_FEEDBACK_MS,
-              data: { bumpKey: 0 } satisfies ClipboardToastData,
-              onClose() {
-                toastOpenRef.current = false;
-                bumpKeyRef.current = 0;
-                setCopied(false);
-              },
-            });
-            toastOpenRef.current = true;
-          }
+          toastIdRef.current = clipboardToastManager.add({
+            id: toastIdRef.current ?? undefined,
+            description: copiedText,
+            positionerProps: {
+              anchor: buttonRef.current,
+              side: tooltipSide,
+              sideOffset: 8,
+            },
+            timeout: COPIED_FEEDBACK_MS,
+            onClose() {
+              toastIdRef.current = null;
+              setCopied(false);
+            },
+          });
         } else {
           // Keep check icon visible; only reset after the last click settles
           scheduleCopiedReset();
@@ -321,7 +288,6 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
       tooltip,
       copiedText,
       tooltipSide,
-      toastId,
       scheduleCopiedReset,
     ]);
 

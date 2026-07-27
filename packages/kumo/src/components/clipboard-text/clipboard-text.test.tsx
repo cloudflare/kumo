@@ -101,13 +101,14 @@ describe("ClipboardText", () => {
   });
 
   it("shows a single anchored copied toast and bumps it on re-click", async () => {
-    render(
+    const { container } = render(
       <ClipboardText
         text="npx kumo add button"
         tooltip={{ text: "Copy", copiedText: "Copied!", side: "top" }}
       />,
     );
     const button = screen.getByRole("button", { name: "Copy to clipboard" });
+    const liveRegion = container.querySelector('[aria-live="polite"]');
 
     await act(async () => {
       fireEvent.click(button);
@@ -118,21 +119,40 @@ describe("ClipboardText", () => {
     expect(document.querySelector(".animate-clipboard-toast-bump")).toBeNull();
 
     await act(async () => {
-      fireEvent.click(button);
+      vi.advanceTimersByTime(1000);
     });
-
-    expect(
-      document.querySelector(".animate-clipboard-toast-bump"),
-    ).toBeTruthy();
 
     await act(async () => {
       fireEvent.click(button);
     });
 
-    // Still bumps on subsequent spam clicks while open
+    const secondToast = document.querySelector(".animate-clipboard-toast-bump");
+    expect(secondToast).toBeTruthy();
     expect(
-      document.querySelector(".animate-clipboard-toast-bump"),
-    ).toBeTruthy();
+      document.querySelectorAll(".animate-clipboard-toast-bump"),
+    ).toHaveLength(1);
+    expect(liveRegion?.textContent).toBe("Copied!");
+
+    await act(async () => {
+      fireEvent.click(button);
+    });
+
+    const thirdToast = document.querySelector(".animate-clipboard-toast-bump");
+    expect(thirdToast).toBeTruthy();
+    expect(thirdToast).not.toBe(secondToast);
+    expect(
+      document.querySelectorAll(".animate-clipboard-toast-bump"),
+    ).toHaveLength(1);
+
+    await act(async () => {
+      vi.advanceTimersByTime(1499);
+    });
+    expect(liveRegion?.textContent).toBe("Copied!");
+
+    await act(async () => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(liveRegion?.textContent).toBe("");
   });
 
   it("calls onCopy after a successful copy", async () => {
