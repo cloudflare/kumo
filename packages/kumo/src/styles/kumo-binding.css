@@ -193,6 +193,12 @@
   transform-origin: center;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-clipboard-toast-bump {
+    animation: none;
+  }
+}
+
 @layer base {
   .skeleton-line {
     position: relative;
