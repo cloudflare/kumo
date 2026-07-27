@@ -66,8 +66,9 @@ jobs:
         with:
           filter: "@cloudflare/kumo..."
 
+      - uses: ./.github/actions/vite-task-cache
       - name: Build @cloudflare/kumo
-        run: vp run --filter @cloudflare/kumo build
+        run: vp run build:kumo
 
       - name: Publish preview package
         run: vp dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
@@ -90,11 +91,10 @@ jobs:
         with:
           filter: "@cloudflare/kumo-docs-astro..."
 
-      - name: Build @cloudflare/kumo
-        run: vp run --filter @cloudflare/kumo build
-
+      - uses: ./.github/actions/vite-task-cache
+      # build:docs builds kumo first (task dependency).
       - name: Build docs
-        run: vp run --filter @cloudflare/kumo-docs-astro build
+        run: vp run build:docs
 
       - name: Test docs
         run: vp run --filter @cloudflare/kumo-docs-astro test

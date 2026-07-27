@@ -1,0 +1,25 @@
+# Keeps the Vite Task cache warm on main so pull requests can restore a
+# populated base-branch cache.
+name: Warm Task Cache
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  warm:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: ./.github/actions/vite-task-cache
+      - run: vp run gen:figma-data
+      # Warms the whole chain: demos, registry, kumo build, docs build.
+      - run: vp run build:docs

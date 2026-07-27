@@ -4,6 +4,49 @@ export default defineConfig({
   staged: {
     "*": "vp check --fix",
   },
+  run: {
+    // We use pnpm until
+    // https://github.com/voidzero-dev/vite-plus/issues/2238 is fixed.
+    tasks: {
+      "gen:demos": {
+        command: "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos",
+      },
+      "gen:registry": {
+        command: "tsx packages/kumo/scripts/component-registry/index.ts",
+        dependsOn: ["gen:demos"],
+        // The registry's own incremental cache is memoization, not an input.
+        input: [{ auto: true }, "!packages/kumo/.cache/**"],
+      },
+      "build:kumo": {
+        command: "pnpm --filter @cloudflare/kumo build",
+        // Pre-warms the registry memo so the in-build codegen pass is incremental.
+        dependsOn: ["gen:registry"],
+        // The build regenerates these itself; outputs, not inputs.
+        input: [
+          { auto: true },
+          "!packages/kumo/ai/**",
+          "!packages/kumo/dist/**",
+          "!packages/kumo/.cache/**",
+          "!packages/kumo-docs-astro/dist/**",
+        ],
+      },
+      "gen:figma-data": {
+        command: "pnpm --filter @cloudflare/kumo-figma build:data",
+      },
+      "build:docs": {
+        command: "pnpm --filter @cloudflare/kumo-docs-astro build",
+        // The docs site consumes the built kumo package.
+        dependsOn: ["build:kumo"],
+        // The build regenerates these itself; outputs, not inputs.
+        input: [
+          { auto: true },
+          "!packages/kumo-docs-astro/.astro/**",
+          "!packages/kumo-docs-astro/public/skill.md",
+          "!packages/kumo-docs-astro/dist/**",
+        ],
+      },
+    },
+  },
   fmt: {
     // Match the repo's previous Prettier print width.
     printWidth: 80,

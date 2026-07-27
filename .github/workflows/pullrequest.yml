@@ -32,7 +32,8 @@ jobs:
         with:
           fetch-depth: 1
       - uses: ./.github/actions/install-dependencies
-      - run: vp run --filter @cloudflare/kumo build
+      - uses: ./.github/actions/vite-task-cache
+      - run: vp run build:kumo
       - uses: actions/upload-artifact@v4
         with:
           name: kumo-dist
@@ -71,8 +72,9 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
+      - uses: ./.github/actions/vite-task-cache
       # kumo-figma imports generated JSON data; type-aware lint needs it
-      - run: vp run --filter @cloudflare/kumo-figma build:data
+      - run: vp run gen:figma-data
       - run: vp run --filter @cloudflare/kumo lint:oxlint
       - run: vp lint packages/*/src
 
