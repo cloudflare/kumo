@@ -29,20 +29,20 @@ jobs:
         uses: ./.github/actions/install-dependencies
 
       - name: Build @cloudflare/kumo
-        run: pnpm --filter @cloudflare/kumo build
+        run: vp run --filter @cloudflare/kumo build
 
       # changesets/action either:
       # 1. Creates/updates a "Version Packages" PR (when changesets exist)
-      # 2. Publishes to npm via `pnpm run release` (when Version Packages PR merges)
-      # Note: `pnpm run release` runs `pnpm build:all && changeset publish`,
+      # 2. Publishes to npm via `vp run release` (when Version Packages PR merges)
+      # Note: `vp run release` runs `pnpm build:all && changeset publish`,
       # which rebuilds kumo (redundant but harmless). If this becomes slow,
       # consider a publish-only script.
       - name: Create Version PR or Publish to npm
         id: changesets
         uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1
         with:
-          version: pnpm run version
-          publish: pnpm run release
+          version: vp run version
+          publish: vp run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
@@ -51,4 +51,4 @@ jobs:
       # (GITHUB_TOKEN PRs don't trigger workflows, so we do it here)
       - name: Publish package preview
         if: ${{ steps.changesets.outputs.pullRequestNumber }}
-        run: pnpm dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
+        run: vp dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo

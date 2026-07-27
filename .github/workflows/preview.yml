@@ -67,10 +67,10 @@ jobs:
           filter: "@cloudflare/kumo..."
 
       - name: Build @cloudflare/kumo
-        run: pnpm --filter @cloudflare/kumo build
+        run: vp run --filter @cloudflare/kumo build
 
       - name: Publish preview package
-        run: pnpm dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
+        run: vp dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
 
   # Stage 1: Build docs (runs for ALL PRs including forks).
   # Produces an artifact consumed by either docs-deploy (internal) or
@@ -91,13 +91,13 @@ jobs:
           filter: "@cloudflare/kumo-docs-astro..."
 
       - name: Build @cloudflare/kumo
-        run: pnpm --filter @cloudflare/kumo build
+        run: vp run --filter @cloudflare/kumo build
 
       - name: Build docs
-        run: pnpm --filter @cloudflare/kumo-docs-astro build
+        run: vp run --filter @cloudflare/kumo-docs-astro build
 
       - name: Test docs
-        run: pnpm --filter @cloudflare/kumo-docs-astro test
+        run: vp run --filter @cloudflare/kumo-docs-astro test
 
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4
@@ -267,7 +267,7 @@ jobs:
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.docs-deploy.outputs.preview_url }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
-        run: pnpm tsx ci/visual-regression/run-visual-regression.ts
+        run: vp exec tsx ci/visual-regression/run-visual-regression.ts
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v4

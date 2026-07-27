@@ -56,7 +56,7 @@ jobs:
         with:
           format: "json"
 
-      - run: pnpm tsx tools/deployments/validate-pr-description.ts
+      - run: vp exec tsx tools/deployments/validate-pr-description.ts
         if: steps.changes.outputs.everything_but_markdown == 'true'
         env:
           TITLE: ${{ github.event.pull_request.title }}

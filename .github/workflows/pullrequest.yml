@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/install-dependencies
-      - run: pnpm tsx ci/scripts/validate-kumo-changeset.ts
+      - run: vp exec tsx ci/scripts/validate-kumo-changeset.ts
 
   build:
     timeout-minutes: 5
@@ -32,7 +32,7 @@ jobs:
         with:
           fetch-depth: 1
       - uses: ./.github/actions/install-dependencies
-      - run: pnpm --filter @cloudflare/kumo build
+      - run: vp run --filter @cloudflare/kumo build
       - uses: actions/upload-artifact@v4
         with:
           name: kumo-dist
@@ -52,7 +52,7 @@ jobs:
         with:
           fetch-depth: 1
       - uses: ./.github/actions/install-dependencies
-      - run: pnpm format:check
+      - run: vp run format:check
 
   lint:
     needs: build
@@ -72,8 +72,8 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       # kumo-figma imports generated JSON data; type-aware lint needs it
-      - run: pnpm --filter @cloudflare/kumo-figma build:data
-      - run: pnpm lint
+      - run: vp run --filter @cloudflare/kumo-figma build:data
+      - run: vp run lint
 
   typecheck:
     needs: build
@@ -92,7 +92,7 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
-      - run: pnpm typecheck
+      - run: vp run typecheck
 
   test:
     needs: build
@@ -111,7 +111,7 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
-      - run: pnpm --filter @cloudflare/kumo test
+      - run: vp run --filter @cloudflare/kumo test
 
   test-react-compatibility:
     needs: build
@@ -134,12 +134,12 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - name: Install React ${{ matrix.react-version }} test dependencies
         run: |
-          pnpm pkg set \
+          npm pkg set \
             "pnpm.overrides.react=${{ matrix.react-version }}" \
             "pnpm.overrides.react-dom=${{ matrix.react-version }}" \
             "pnpm.overrides.@types/react=${{ matrix.types-react-version }}" \
             "pnpm.overrides.@types/react-dom=${{ matrix.types-react-dom-version }}"
-          pnpm install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
+          vp install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
       - uses: actions/download-artifact@v4
         with:
           name: kumo-dist
@@ -150,7 +150,8 @@ jobs:
           path: packages/kumo/ai
       - name: Verify React test versions
         run: |
-          pnpm --filter @cloudflare/kumo exec node -e "if (require('react/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
-          pnpm --filter @cloudflare/kumo exec node -e "if (require('react-dom/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
-      - run: pnpm --filter @cloudflare/kumo typecheck
-      - run: pnpm --filter @cloudflare/kumo test
+          cd packages/kumo
+          node -e "if (require('react/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
+          node -e "if (require('react-dom/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
+      - run: vp run --filter @cloudflare/kumo typecheck
+      - run: vp run --filter @cloudflare/kumo test
