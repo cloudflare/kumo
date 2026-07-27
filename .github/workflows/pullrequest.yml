@@ -73,7 +73,7 @@ jobs:
           path: packages/kumo/ai
       # kumo-figma imports generated JSON data; type-aware lint needs it
       - run: vp run --filter @cloudflare/kumo-figma build:data
-      - run: vp run lint
+      - run: pnpm lint
 
   typecheck:
     needs: build
