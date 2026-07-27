@@ -1,5 +1,5 @@
-# Keeps the Vite Task cache warm on main so pull requests can restore a
-# populated base-branch cache.
+# PRs can only restore caches created on their base branch, so warm main's
+# cache after every push.
 name: Warm Task Cache
 
 on:
@@ -21,5 +21,5 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - uses: ./.github/actions/vite-task-cache
       - run: vp run gen:figma-data
-      # Warms the whole chain: demos, registry, kumo build, docs build.
+      # Pulls in the rest of the chain via task dependencies.
       - run: vp run build:docs
