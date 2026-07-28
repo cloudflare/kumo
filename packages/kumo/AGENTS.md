@@ -50,7 +50,7 @@ kumo/
 
 ### Build System
 
-- **Two-step build**: `css-build.ts` copies CSS with `@tailwindcss/cli`, then `vp pack` builds browser library entries, the Node CLI, and declarations
+- **Build pipeline**: `codegen:registry` → `css-build.ts` → `vp pack` (browser library, Node CLI, declarations)
 - **Bundled deps**: `@base-ui/react`, `clsx`, `tailwind-merge` are bundled (not external)
 - **External peers**: `react`, `react-dom`, `@phosphor-icons/react` only
 - **`"use client"` banner**: Injected on ALL output chunks for RSC compatibility
