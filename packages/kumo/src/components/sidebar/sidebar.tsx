@@ -14,11 +14,12 @@ import React, {
 } from "react";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
-import { CaretRightIcon } from "@phosphor-icons/react";
+import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
+import { Button } from "../button";
 
 // ============================================================================
 // Variants (required by Kumo convention)
@@ -431,7 +432,16 @@ export interface SidebarRootProps extends ComponentPropsWithoutRef<"aside"> {
  * ```
  */
 const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
-  ({ className, contentClassName, children, fullScreenOnMobile = false, ...props }, ref) => {
+  (
+    {
+      className,
+      contentClassName,
+      children,
+      fullScreenOnMobile = false,
+      ...props
+    },
+    ref,
+  ) => {
     const {
       state,
       open,
@@ -578,7 +588,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
               "motion-reduce:transition-none",
               openMobile && !fullScreenOnMobile
                 ? "opacity-80"
-                : "opacity-0 pointer-events-none",
+                : "pointer-events-none opacity-0",
             )}
             onClick={() => {
               shouldRestoreFocusRef.current = true;
@@ -603,7 +613,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
             data-sidebar="sidebar"
             data-mobile="true"
             className={cn(
-              "group/sidebar z-50 flex inset-y-0 flex-col overflow-hidden",
+              "group/sidebar inset-y-0 z-50 flex flex-col overflow-hidden",
               contained ? "absolute" : "fixed",
               fullScreenOnMobile ? "w-full" : "w-(--sidebar-width)",
               "bg-(--sidebar-bg) text-kumo-default",
@@ -1639,6 +1649,56 @@ const SidebarTrigger = forwardRef<
 SidebarTrigger.displayName = "Sidebar.Trigger";
 
 // ============================================================================
+// Sidebar Close
+// ============================================================================
+
+/**
+ * Close button for the mobile sidebar sheet. Most useful inside
+ * `Sidebar.Header` when `fullScreenOnMobile` is true, where the backdrop is
+ * hidden and there is no adjacent page content to click.
+ *
+ * On desktop this is a no-op (the sidebar is not a sheet), so it can be
+ * rendered unconditionally without conditional checks.
+ *
+ * @example
+ * ```tsx
+ * <Sidebar.Header>
+ *   <span className="flex-1">Navigation</span>
+ *   <Sidebar.Close />
+ * </Sidebar.Header>
+ * ```
+ */
+const SidebarClose = forwardRef<
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<"button">
+>(({ className, onClick, ...props }, ref) => {
+  const { setOpenMobile } = useSidebar();
+
+  return (
+    <Button
+      ref={ref}
+      variant="ghost"
+      shape="square"
+      size="sm"
+      data-sidebar="close"
+      data-kumo-component="Sidebar"
+      data-kumo-part="close"
+      aria-label="Close navigation"
+      className={cn("shrink-0", className)}
+      onClick={(e) => {
+        onClick?.(e);
+        setOpenMobile(false);
+      }}
+      {...props}
+    >
+      <XIcon size={18} />
+    </Button>
+  );
+});
+
+SidebarClose.displayName = "Sidebar.Close";
+
+// ============================================================================
 // Sidebar Rail
 // ============================================================================
 
@@ -2285,11 +2345,12 @@ SidebarSlidingView.displayName = "Sidebar.SlidingView";
  * Sidebar — responsive navigation panel with expand/collapse support.
  *
  * Compound component: `Sidebar` (root `<aside>`), `.Provider`, `.Header`,
- * `.Content`, `.Footer`, `.Group`, `.GroupLabel`,
+ * `.Content`, `.Footer`, `.Loading`, `.Group`, `.GroupLabel`,
  * `.Menu`, `.MenuItem`, `.MenuButton`, `.MenuBadge`,
  * `.MenuSub`, `.MenuSubItem`, `.MenuSubButton`, `.Separator`,
- * `.Trigger`, `.Rail`, `.MenuChevron`,
- * `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`.
+ * `.Trigger`, `.Close`, `.Rail`, `.ResizeHandle`, `.MenuChevron`,
+ * `.Collapsible`, `.CollapsibleTrigger`, `.CollapsibleContent`,
+ * `.SlidingViews`, `.SlidingView`.
  *
  * @example
  * ```tsx
@@ -2328,6 +2389,7 @@ export const Sidebar = Object.assign(SidebarRoot, {
   MenuSubButton: SidebarMenuSubButton,
   Separator: SidebarSeparator,
   Trigger: SidebarTrigger,
+  Close: SidebarClose,
   Rail: SidebarRail,
   ResizeHandle: SidebarResizeHandle,
   MenuChevron: SidebarMenuChevron,
@@ -2356,6 +2418,7 @@ export {
   SidebarMenuSubButton,
   SidebarSeparator,
   SidebarTrigger,
+  SidebarClose,
   SidebarRail,
   SidebarResizeHandle,
   SidebarMenuChevron,

@@ -114,9 +114,7 @@ function AccountSwitcher() {
 function initialsFor(name: string) {
   const words = name.trim().split(/\s+/);
   return (
-    words.length > 1
-      ? words[0][0] + words[1][0]
-      : name.slice(0, 2)
+    words.length > 1 ? words[0][0] + words[1][0] : name.slice(0, 2)
   ).toUpperCase();
 }
 
@@ -135,7 +133,7 @@ function AccountAvatar({ name, size = 28 }: { name: string; size?: number }) {
       className="flex shrink-0 items-center justify-center rounded-[30%] bg-kumo-control text-kumo-default shadow-xs ring ring-kumo-line"
     >
       <span
-        className="font-semibold leading-none tracking-tight"
+        className="leading-none font-semibold tracking-tight"
         style={{ fontSize: size * 0.4 }}
       >
         {initialsFor(name)}
@@ -158,7 +156,7 @@ function CompactAccountSwitcher() {
           <button
             type="button"
             aria-label={`Account: ${active.name}`}
-            className="shrink-0 cursor-pointer rounded-full outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-kumo-line"
+            className="shrink-0 cursor-pointer rounded-full transition-opacity outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-kumo-line"
           >
             <AccountAvatar name={active.name} />
           </button>
@@ -168,7 +166,7 @@ function CompactAccountSwitcher() {
         {accounts.map((account) => (
           <DropdownMenu.Item
             key={account.id}
-            className="gap-2 cursor-pointer"
+            className="cursor-pointer gap-2"
             onClick={() => setActive(account)}
           >
             <AccountAvatar name={account.name} size={20} />
@@ -979,7 +977,7 @@ function QuickSearch() {
   return (
     <button
       type="button"
-      className="group flex h-8 w-full shrink-0 cursor-pointer select-none items-center gap-2 overflow-x-clip rounded-lg border-0 bg-kumo-base px-3 text-left text-sm font-normal !text-kumo-default shadow-xs ring ring-kumo-line transition-[color,background,border,box-shadow] duration-250 not-disabled:hover:bg-kumo-tint focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand"
+      className="group flex h-8 w-full shrink-0 cursor-pointer items-center gap-2 overflow-x-clip rounded-lg border-0 bg-kumo-base px-3 text-left text-sm font-normal !text-kumo-default shadow-xs ring ring-kumo-line transition-[color,background,border,box-shadow] duration-250 select-none not-disabled:hover:bg-kumo-tint focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
     >
       <MagnifyingGlassIcon className="size-4 shrink-0" />
       <span className="flex-1 text-left">Quick search...</span>
@@ -1255,6 +1253,7 @@ export function SidebarFullScreenMobileDemo() {
                   <Breadcrumbs.Current>{current}</Breadcrumbs.Current>
                 </Breadcrumbs>
               </div>
+              <Sidebar.Close />
             </Sidebar.Header>
             <Sidebar.Content>
               <div className="pt-1 pb-2">
