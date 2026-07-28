@@ -245,11 +245,17 @@ const renderButtonContent = (
   );
 };
 
+const getTitleLabel = (title: React.ReactNode) => {
+  if (typeof title === "string") return title;
+  if (typeof title === "number") return String(title);
+  return undefined;
+};
+
 /**
  * Button component props.
  *
  * Uses a discriminated union on `shape` so that icon-only buttons
- * (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ * (`shape="square"` or `shape="circle"`) require an accessible name.
  *
  * @example
  * ```tsx
@@ -277,15 +283,34 @@ type ButtonWithTextProps = ButtonBaseProps & {
   variant?: KumoButtonVariant;
 };
 
-type IconOnlyButtonProps = ButtonBaseProps & {
+type IconOnlyButtonAccessibleNameProps =
+  | {
+      /** Required for icon-only buttons to provide an accessible label for screen readers. */
+      "aria-label": string;
+      "aria-labelledby"?: string;
+    }
+  | {
+      "aria-label"?: string;
+      /** References an element that provides the accessible label for screen readers. */
+      "aria-labelledby": string;
+    }
+  | {
+      /** Used as tooltip content and as a fallback accessible label when no children are provided. */
+      title: string | number;
+      "aria-label"?: string;
+      "aria-labelledby"?: string;
+    };
+
+type IconOnlyButtonProps = ButtonBaseProps &
+  IconOnlyButtonAccessibleNameProps & {
   shape: "square" | "circle";
   size?: KumoButtonSize;
   variant?: KumoButtonVariant;
-  /** Required for icon-only buttons to provide accessible label for screen readers */
-  "aria-label": string;
 };
 
 export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
+
+export type RefreshButtonProps = Omit<IconOnlyButtonProps, "children" | "icon" | "shape">;
 
 /**
  * LinkButton component props — renders an anchor styled as a button.
@@ -339,6 +364,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const { type, ...restProps } = props;
     const emphasisStyle = getEmphasisStyle(variant);
+    const titleLabel = getTitleLabel(title);
+    const buttonProps = {
+      ...restProps,
+      ...(!React.Children.count(children) &&
+        !restProps["aria-label"] &&
+        !restProps["aria-labelledby"] &&
+        titleLabel && { "aria-label": titleLabel }),
+    };
     const iconNode = loading ? (
       <Loader size={size === "lg" ? 16 : 14} />
     ) : (
@@ -357,7 +390,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading || disabled}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         type={type ?? "button"}
-        {...restProps}
+        {...buttonProps}
       >
         {renderButtonContent(variant, iconNode, children)}
       </button>
@@ -393,7 +426,7 @@ export const RefreshButton = ({
   "aria-label": ariaLabel = "Refresh",
   loading,
   ...props
-}: ButtonProps) => (
+}: RefreshButtonProps) => (
   <Button shape="square" aria-label={ariaLabel} {...props}>
     <ArrowsClockwise
       className={cn({

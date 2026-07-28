@@ -113,6 +113,32 @@ describe("Button", () => {
     expect(button.getAttribute("title")).toBeNull();
   });
 
+  it("uses title as the accessible name when there are no children", () => {
+    render(<Button shape="square" icon={Plus} title="Remove" />);
+
+    const button = screen.getByRole("button", { name: "Remove" });
+    expect(button.getAttribute("aria-label")).toBe("Remove");
+    expect(button.getAttribute("title")).toBeNull();
+  });
+
+  it("does not override explicit accessible names with title", () => {
+    render(
+      <>
+        <Button aria-label="Delete" shape="square" icon={Plus} title="Remove" />
+        <span id="archive-label">Archive</span>
+        <Button
+          aria-labelledby="archive-label"
+          shape="square"
+          icon={Plus}
+          title="Move"
+        />
+      </>,
+    );
+
+    expect(screen.getByRole("button", { name: "Delete" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Archive" })).toBeTruthy();
+  });
+
   it("uses an enabled tooltip trigger around a disabled button", () => {
     render(
       <Button title="Saving is unavailable" disabled>
