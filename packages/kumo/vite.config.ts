@@ -281,7 +281,6 @@ export default defineConfig({
               name: "vendor-floating-ui",
               test: /node_modules\/.*@floating-ui/,
             },
-            { name: "vendor-base-ui", test: /node_modules\/.*@base-ui/ },
             {
               name: "vendor-utils",
               test: /node_modules\/.*(?:tabbable|reselect)/,

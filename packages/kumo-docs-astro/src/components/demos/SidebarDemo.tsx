@@ -2,6 +2,7 @@ import {
   Sidebar,
   useSidebar,
   DropdownMenu,
+  Breadcrumbs,
   type SidebarState,
 } from "@cloudflare/kumo";
 import {
@@ -23,8 +24,11 @@ import {
   ArrowsLeftRightIcon,
   ArrowLeftIcon,
   MagnifyingGlassIcon,
+  ClockCounterClockwiseIcon,
+  FileMagnifyingGlassIcon,
+  ChartPieIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -95,6 +99,77 @@ function AccountSwitcher() {
             onClick={() => setActive(account)}
           >
             <account.icon className="size-4 text-kumo-brand" weight="duotone" />
+            {account.name}
+            {account.id === active.id && (
+              <CheckIcon className="ml-auto size-4" />
+            )}
+          </DropdownMenu.Item>
+        ))}
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/** Initials from an account name: "Workers Prod" → "WP", "Company" → "CO". */
+function initialsFor(name: string) {
+  const words = name.trim().split(/\s+/);
+  return (
+    words.length > 1 ? words[0][0] + words[1][0] : name.slice(0, 2)
+  ).toUpperCase();
+}
+
+/**
+ * Squircle avatar with a hairline ring, so it sits on the surface rather than
+ * floating. Muted neutral fill. Reads as an identity
+ * affordance rather than decoration. Sized to the header row rather than to
+ * iOS touch-target minimums — the whole row is generous, and an oversized mark
+ * competes with the breadcrumb trail that should carry the emphasis.
+ */
+function AccountAvatar({ name, size = 28 }: { name: string; size?: number }) {
+  return (
+    <span
+      aria-hidden
+      style={{ width: size, height: size }}
+      className="flex shrink-0 items-center justify-center rounded-[30%] bg-kumo-control text-kumo-default shadow-xs ring ring-kumo-line"
+    >
+      <span
+        className="leading-none font-semibold tracking-tight"
+        style={{ fontSize: size * 0.4 }}
+      >
+        {initialsFor(name)}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Avatar account switcher. The account name lives one tap away in the dropdown,
+ * freeing the header row for the breadcrumb trail.
+ */
+function CompactAccountSwitcher() {
+  const [active, setActive] = useState(accounts[0]);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger
+        render={
+          <button
+            type="button"
+            aria-label={`Account: ${active.name}`}
+            className="shrink-0 cursor-pointer rounded-full transition-opacity outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-kumo-line"
+          >
+            <AccountAvatar name={active.name} />
+          </button>
+        }
+      />
+      <DropdownMenu.Content align="start">
+        {accounts.map((account) => (
+          <DropdownMenu.Item
+            key={account.id}
+            className="cursor-pointer gap-2"
+            onClick={() => setActive(account)}
+          >
+            <AccountAvatar name={account.name} size={20} />
             {account.name}
             {account.id === active.id && (
               <CheckIcon className="ml-auto size-4" />
@@ -872,6 +947,347 @@ export function SidebarMobileDemo() {
           </p>
         </DemoMain>
       </Sidebar.Provider>
+    </div>
+  );
+}
+// ---------------------------------------------------------------------------
+// 10. Full-screen mobile — nav fills the viewport, route lives in breadcrumbs
+// ---------------------------------------------------------------------------
+
+/** A node in the nav tree. Leaves are navigable; branches expand. */
+interface NavNode {
+  label: string;
+  icon?: React.ElementType;
+  /** Small status pill, e.g. "Beta" / "New". */
+  badge?: string;
+  children?: NavNode[];
+}
+
+/** Status pill used beside nav labels. */
+function NavBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="ml-1.5 shrink-0 rounded-full border border-dashed border-kumo-line px-1.5 py-px text-[10px] font-medium text-kumo-subtle">
+      {children}
+    </span>
+  );
+}
+
+/** Quick search affordance pinned above the nav list. */
+function QuickSearch() {
+  return (
+    <button
+      type="button"
+      className="group flex h-8 w-full shrink-0 cursor-pointer items-center gap-2 overflow-x-clip rounded-lg border-0 bg-kumo-base px-3 text-left text-sm font-normal !text-kumo-default shadow-xs ring ring-kumo-line transition-[color,background,border,box-shadow] duration-250 select-none not-disabled:hover:bg-kumo-tint focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
+    >
+      <MagnifyingGlassIcon className="size-4 shrink-0" />
+      <span className="flex-1 text-left">Quick search...</span>
+      <kbd className="shrink-0 font-sans text-xs text-kumo-subtle">⌘K</kbd>
+    </button>
+  );
+}
+
+/**
+ * The nav tree. Breadcrumbs are derived from this, so the trail can never drift
+ * out of sync with the sidebar — selecting a leaf yields its full ancestry.
+ */
+const NAV_TREE: { group: string | null; items: NavNode[] }[] = [
+  {
+    group: null,
+    items: [
+      { label: "Account home", icon: HouseIcon },
+      { label: "Recents", icon: ClockCounterClockwiseIcon },
+      { label: "Domains", icon: GlobeIcon },
+    ],
+  },
+  {
+    group: "Observe",
+    items: [
+      {
+        label: "Investigate",
+        icon: FileMagnifyingGlassIcon,
+        children: [
+          { label: "Log Explorer" },
+          { label: "Trace", badge: "Beta" },
+          { label: "Logpush" },
+        ],
+      },
+      {
+        label: "Analytics",
+        icon: ChartPieIcon,
+        children: [
+          { label: "Dashboards", badge: "New" },
+          { label: "Account analytics" },
+          { label: "Web analytics" },
+        ],
+      },
+    ],
+  },
+  {
+    group: "Build",
+    items: [
+      {
+        label: "Compute",
+        icon: CodeIcon,
+        children: [
+          { label: "Workers & Pages" },
+          { label: "Observability" },
+          { label: "Workers for Platforms" },
+          { label: "Containers" },
+          { label: "Durable Objects" },
+          { label: "Queues" },
+          { label: "Workflows" },
+          { label: "Browser Run" },
+          { label: "VPC", badge: "Beta" },
+        ],
+      },
+      {
+        label: "Storage & Databases",
+        icon: DatabaseIcon,
+        children: [
+          { label: "R2 Object Storage" },
+          { label: "KV" },
+          { label: "D1 SQL Database" },
+          { label: "Hyperdrive" },
+        ],
+      },
+    ],
+  },
+  {
+    group: "Secure",
+    items: [
+      {
+        label: "Access",
+        icon: LockIcon,
+        children: [{ label: "Applications" }, { label: "Service Auth" }],
+      },
+      { label: "WAF", icon: ShieldCheckIcon },
+    ],
+  },
+];
+
+/**
+ * Renders a nav subtree. Branches are collapsible and auto-open when they are
+ * on the selected path; leaves select and close the nav.
+ */
+function NavSubtree({
+  nodes,
+  path,
+  selected,
+  onSelect,
+}: {
+  nodes: NavNode[];
+  path: string[];
+  selected: string[];
+  onSelect: (path: string[]) => void;
+}) {
+  return (
+    <Sidebar.MenuSub>
+      {nodes.map((node) => {
+        const nodePath = [...path, node.label];
+        const onSelectedPath = nodePath.every((p, i) => selected[i] === p);
+
+        if (!node.children) {
+          return (
+            <Sidebar.MenuSubItem key={node.label}>
+              <Sidebar.MenuSubButton
+                active={onSelectedPath && selected.length === nodePath.length}
+                onClick={() => onSelect(nodePath)}
+              >
+                {node.label}
+                {node.badge && <NavBadge>{node.badge}</NavBadge>}
+              </Sidebar.MenuSubButton>
+            </Sidebar.MenuSubItem>
+          );
+        }
+
+        return (
+          <Sidebar.MenuSubItem key={node.label}>
+            <Sidebar.Collapsible defaultOpen={onSelectedPath}>
+              <Sidebar.CollapsibleTrigger
+                render={
+                  <Sidebar.MenuSubButton>
+                    {node.label}
+                    <Sidebar.MenuChevron />
+                  </Sidebar.MenuSubButton>
+                }
+              />
+              <Sidebar.CollapsibleContent>
+                <NavSubtree
+                  nodes={node.children}
+                  path={nodePath}
+                  selected={selected}
+                  onSelect={onSelect}
+                />
+              </Sidebar.CollapsibleContent>
+            </Sidebar.Collapsible>
+          </Sidebar.MenuSubItem>
+        );
+      })}
+    </Sidebar.MenuSub>
+  );
+}
+
+/** Closes the mobile nav after a leaf is chosen, mirroring real navigation. */
+function NavTree({
+  selected,
+  onSelect,
+}: {
+  selected: string[];
+  onSelect: (path: string[]) => void;
+}) {
+  const { setOpenMobile } = useSidebar();
+  const select = (path: string[]) => {
+    onSelect(path);
+    setOpenMobile(false);
+  };
+
+  return (
+    <>
+      {NAV_TREE.map(({ group, items }) => (
+        <Sidebar.Group key={group ?? "root"}>
+          {group && <Sidebar.GroupLabel>{group}</Sidebar.GroupLabel>}
+          <Sidebar.Menu>
+            {items.map((node) => {
+              const nodePath = [node.label];
+              const onSelectedPath = selected[0] === node.label;
+
+              if (!node.children) {
+                return (
+                  <Sidebar.MenuButton
+                    key={node.label}
+                    icon={node.icon}
+                    active={onSelectedPath && selected.length === 1}
+                    onClick={() => select(nodePath)}
+                  >
+                    {node.label}
+                  </Sidebar.MenuButton>
+                );
+              }
+
+              return (
+                <Sidebar.MenuItem key={node.label}>
+                  <Sidebar.Collapsible defaultOpen={onSelectedPath}>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={node.icon}>
+                          {node.label}
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <NavSubtree
+                        nodes={node.children}
+                        path={nodePath}
+                        selected={selected}
+                        onSelect={select}
+                      />
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+              );
+            })}
+          </Sidebar.Menu>
+        </Sidebar.Group>
+      ))}
+    </>
+  );
+}
+
+/**
+ * Full-screen mobile nav. The sheet covers the viewport instead of leaving a
+ * sliver of the page behind, so nav items get comfortable touch targets. The
+ * current route is carried by breadcrumbs derived from the nav tree itself.
+ */
+export function SidebarFullScreenMobileDemo() {
+  // Deep default selection, so the trail starts in a realistic overflow state.
+  const [selected, setSelected] = useState(["Analytics", "Account analytics"]);
+  // Narrower than the demo box, so overflow collapsing is visible without
+  // needing to resize the browser.
+  const [width, setWidth] = useState(390);
+
+  // Trail derived from the selection: ancestors collapse, leaf is current.
+  const ancestors = selected.slice(0, -1);
+  const current = selected[selected.length - 1];
+  // No overflow machinery: render the trail plainly and let the leaf truncate
+  // when it runs out of room. Simpler, and the route stays readable because it
+  // is the only thing allowed to shrink.
+  // No account crumb — the avatar to the left already carries it, and at phone
+  // widths every crumb spent on context is width taken from the actual route.
+  const trail = ancestors;
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Width control — stands in for resizing a real phone viewport. */}
+      <label className="flex items-center gap-3 text-sm text-kumo-subtle">
+        <span className="shrink-0">Viewport</span>
+        <input
+          type="range"
+          min={280}
+          max={720}
+          value={width}
+          onChange={(e) => setWidth(Number(e.target.value))}
+          className="flex-1 cursor-pointer"
+        />
+        <span className="w-14 shrink-0 text-right tabular-nums">{width}px</span>
+      </label>
+
+      <div
+        className="relative h-[540px] overflow-hidden rounded-lg border border-kumo-line bg-kumo-base"
+        style={{ width }}
+      >
+        <Sidebar.Provider contained mobileBreakpoint={9999} className="h-full">
+          <Sidebar fullScreenOnMobile>
+            {/* Single row: avatar, then the trail takes the rest of the width.
+                Mirrors the product header — account mark, then breadcrumbs. */}
+            <Sidebar.Header className="gap-2 px-3.5">
+              <CompactAccountSwitcher />
+              <div className="min-w-0 flex-1">
+                <Breadcrumbs size="sm">
+                  {trail.map((label) => (
+                    <Fragment key={label}>
+                      <Breadcrumbs.Link href="#">{label}</Breadcrumbs.Link>
+                      <Breadcrumbs.Separator />
+                    </Fragment>
+                  ))}
+                  <Breadcrumbs.Current>{current}</Breadcrumbs.Current>
+                </Breadcrumbs>
+              </div>
+              <Sidebar.Close />
+            </Sidebar.Header>
+            <Sidebar.Content>
+              <div className="pt-1 pb-2">
+                <QuickSearch />
+              </div>
+              <NavTree selected={selected} onSelect={setSelected} />
+            </Sidebar.Content>
+          </Sidebar>
+
+          <div className="flex min-w-0 flex-1 flex-col">
+            <header className="flex h-12 shrink-0 items-center gap-2 border-b border-kumo-line px-3">
+              <Sidebar.Trigger />
+              <div className="min-w-0 flex-1">
+                <Breadcrumbs size="sm">
+                  {trail.map((label) => (
+                    <Fragment key={label}>
+                      <Breadcrumbs.Link href="#">{label}</Breadcrumbs.Link>
+                      <Breadcrumbs.Separator />
+                    </Fragment>
+                  ))}
+                  <Breadcrumbs.Current>{current}</Breadcrumbs.Current>
+                </Breadcrumbs>
+              </div>
+            </header>
+            <DemoMain>
+              <p className="text-kumo-default">{current}</p>
+              <p className="text-sm text-kumo-subtle">
+                Drill into the nav — the trail is derived from the tree, so it
+                always matches where you are.
+              </p>
+            </DemoMain>
+          </div>
+        </Sidebar.Provider>
+      </div>
     </div>
   );
 }

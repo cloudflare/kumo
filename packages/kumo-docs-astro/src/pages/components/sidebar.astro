@@ -16,6 +16,7 @@ import {
   SidebarAutoScrollDemo,
   SidebarSlidingViewsDemo,
   SidebarMobileDemo,
+  SidebarFullScreenMobileDemo,
 } from "../../components/demos/SidebarDemo";
 ---
 
@@ -335,6 +336,35 @@ const { state, isPeeking } = useSidebar();
   </Sidebar>
 </Sidebar.Provider>`}>
           <SidebarMobileDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Full-screen mobile</Heading>
+        <p>
+          Pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">fullScreenOnMobile</code> to have the drawer cover the whole viewport instead of leaving a sliver of the page visible.
+          Nav items get comfortable touch targets, and the backdrop is suppressed since nothing shows behind the sheet.
+          Add <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Close</code> inside the header so the sheet can be dismissed from within the nav.
+          Pair it with breadcrumbs in the page header so the current route stays visible once the nav is closed.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider mobileBreakpoint={9999}>
+  <Sidebar fullScreenOnMobile>
+    <Sidebar.Header>
+      <Sidebar.Close />
+    </Sidebar.Header>
+    <Sidebar.Content>...</Sidebar.Content>
+  </Sidebar>
+
+  <header>
+    <Sidebar.Trigger />
+    <Breadcrumbs size="sm">
+      <Breadcrumbs.Link href="/">Company</Breadcrumbs.Link>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Current>Analytics</Breadcrumbs.Current>
+    </Breadcrumbs>
+  </header>
+</Sidebar.Provider>`}>
+          <SidebarFullScreenMobileDemo client:load />
         </ComponentExample>
       </div>
 

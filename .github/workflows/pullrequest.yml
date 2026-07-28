@@ -2,6 +2,7 @@ name: Pull Request
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths-ignore:
       - "*.md"
       - ".changeset/**"
@@ -23,6 +24,8 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/install-dependencies
       - run: vp exec tsx ci/scripts/validate-kumo-changeset.ts
+        env:
+          NO_CHANGESET_REQUIRED: ${{ contains(github.event.pull_request.labels.*.name, 'no-changeset-required') }}
 
   build:
     timeout-minutes: 5
