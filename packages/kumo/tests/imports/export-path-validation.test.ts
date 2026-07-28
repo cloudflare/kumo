@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vite-plus/test";
-import { existsSync, readdirSync } from "fs";
+import { existsSync, readdirSync, statSync } from "fs";
+import { spawnSync } from "child_process";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { readFileSync } from "fs";
@@ -239,6 +240,36 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       walk(distDir);
 
       expect(mapFiles).toEqual([]);
+    });
+
+    it("should ship one executable CLI bundle that the package bin can launch", () => {
+      const packageDir = join(__dirname, "../..");
+      const cliDir = join(packageDir, "dist/command-line");
+      const cliPath = join(cliDir, "cli.js");
+      const binPath = join(
+        packageDir,
+        packageJson.bin.kumo.replace(/^\.\//, ""),
+      );
+
+      expect(readdirSync(cliDir).sort()).toEqual(["cli.js"]);
+      expect(readFileSync(cliPath, "utf-8")).toMatch(
+        /^#!\/usr\/bin\/env node\n/,
+      );
+
+      if (process.platform !== "win32") {
+        expect(statSync(cliPath).mode & 0o111).not.toBe(0);
+      }
+
+      const result = spawnSync(process.execPath, [binPath, "help"], {
+        cwd: packageDir,
+        encoding: "utf-8",
+      });
+
+      expect(result.status).toBe(0);
+      expect(result.stderr).toBe("");
+      expect(result.stdout).toContain(
+        "Kumo CLI - Component registry and blocks distribution",
+      );
     });
 
     it("primitive JS files should import from bundled chunks", async () => {
