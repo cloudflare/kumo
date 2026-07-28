@@ -303,14 +303,17 @@ type IconOnlyButtonAccessibleNameProps =
 
 type IconOnlyButtonProps = ButtonBaseProps &
   IconOnlyButtonAccessibleNameProps & {
-  shape: "square" | "circle";
-  size?: KumoButtonSize;
-  variant?: KumoButtonVariant;
-};
+    shape: "square" | "circle";
+    size?: KumoButtonSize;
+    variant?: KumoButtonVariant;
+  };
 
 export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
 
-export type RefreshButtonProps = Omit<IconOnlyButtonProps, "children" | "icon" | "shape">;
+export type RefreshButtonProps = Omit<
+  IconOnlyButtonProps,
+  "children" | "icon" | "shape"
+>;
 
 /**
  * LinkButton component props — renders an anchor styled as a button.
