@@ -161,12 +161,12 @@ const CollapsibleDefaultTrigger = forwardRef<
         // Defensive resets to prevent global button styles from polluting the trigger
         "m-0 border-none bg-transparent p-0 shadow-none",
         // Base styles for the trigger
-        "flex cursor-pointer items-center gap-1 text-sm text-kumo-link select-none",
+        "flex cursor-pointer items-center gap-1 text-base text-kumo-link select-none",
         className,
       )}
     >
       {children}{" "}
-      <CaretDownIcon className="h-4 w-4 transition-transform [[data-panel-open]_&]:rotate-180" />
+      <CaretDownIcon className="h-3.5 w-3.5 transition-transform [[data-panel-open]_&]:rotate-180" />
     </CollapsibleBase.Trigger>
   );
 });

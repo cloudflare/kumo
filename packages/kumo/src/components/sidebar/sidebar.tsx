@@ -1014,7 +1014,7 @@ const SidebarGroupLabel = forwardRef<
     <div className="min-h-0 min-w-0">
       <div
         className={cn(
-          "mt-4 mb-2 truncate px-3 text-sm font-medium text-kumo-subtle",
+          "mt-4 mb-2 truncate px-3 text-base font-medium text-kumo-subtle",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
@@ -1241,8 +1241,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       "group/menu-button relative flex w-full min-w-0 cursor-pointer items-center gap-2.5 rounded-lg outline-none",
       "before:absolute before:inset-x-0 before:-inset-y-px",
       // Sizing
-      size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
-      size === "sm" && "min-h-7 px-2 py-0 text-sm",
+      size === "base" && "min-h-8.5 px-3 py-0 text-base font-medium",
+      size === "sm" && "min-h-7 px-2 py-0 text-base",
       "text-kumo-default",
       "transition-[color,box-shadow,outline] duration-(--sidebar-animation-duration)",
       !active && "hover:bg-(--sidebar-active-bg)",
@@ -1467,7 +1467,7 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-sm font-medium outline-none",
+    "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-base font-medium outline-none",
     "before:absolute before:inset-x-0 before:-inset-y-px",
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",

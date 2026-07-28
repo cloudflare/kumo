@@ -24,7 +24,7 @@ export type KumoTableOfContentsState =
   keyof typeof KUMO_TABLE_OF_CONTENTS_VARIANTS.state;
 
 const ITEM_BASE =
-  "block w-full truncate border-l-2 border-transparent py-0.5 pl-4 text-sm text-left no-underline";
+  "block w-full truncate border-l-2 border-transparent py-0.5 pl-4 text-base text-left no-underline";
 
 export type TableOfContentsProps = React.HTMLAttributes<HTMLElement>;
 
@@ -186,7 +186,7 @@ const TableOfContentsGroup = forwardRef<
         className={cn("-ml-0.5 flex flex-col gap-2", className)}
         {...props}
       >
-        <p className="py-0.5 pl-4 text-sm leading-5 font-medium text-kumo-subtle">
+        <p className="py-0.5 pl-4 text-base leading-5 font-medium text-kumo-subtle">
           {label}
         </p>
         <ul className={cn(NESTED_UL_CLASSES)}>{children}</ul>

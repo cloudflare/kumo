@@ -30,12 +30,13 @@ export const KUMO_TOAST_VARIANTS = {
     description: "Toast container with background, border, and shadow",
   },
   title: {
-    classes: "text-[0.975rem] leading-5 font-medium text-kumo-default",
-    description: "Toast title with primary text color",
+    classes: "text-lg leading-5 font-medium text-kumo-default",
+    description:
+      "Toast title — role: section-title (15px medium). Pairs with body-lg description.",
   },
   description: {
-    classes: "text-[0.925rem] leading-5 text-kumo-subtle",
-    description: "Toast description with muted text color",
+    classes: "text-lg leading-5 text-kumo-subtle",
+    description: "Toast description — body-lg (15px regular), muted color.",
   },
   close: {
     classes:
@@ -93,7 +94,7 @@ export const KUMO_TOAST_STYLING = {
     gap: 4,
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 500,
     color: "text-color-surface",
   },
@@ -370,9 +371,9 @@ function ToastList() {
               <div className="flex flex-col gap-1 overflow-hidden">
                 <Toast.Title
                   data-toast-title
-                  className="text-[0.975rem] leading-5 font-medium text-kumo-default"
+                  className="text-lg leading-5 font-medium text-kumo-default"
                 />
-                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
+                <Toast.Description className="text-lg leading-5 text-kumo-default/70" />
 
                 {!!toast.actions && (
                   <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">

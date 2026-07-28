@@ -25,26 +25,27 @@ export const KUMO_BUTTON_VARIANTS = {
   size: {
     xs: {
       classes: "h-5 gap-1 rounded-sm px-1.5 text-xs",
-      description: "Extra small button for compact UIs",
+      description:
+        '@deprecated Use `size="sm"` instead. The `xs` size will be removed in a future major version.',
     },
     sm: {
-      classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
-      description: "Small button for secondary actions",
+      classes: "h-6.5 gap-1 rounded-md px-2 text-sm leading-none",
+      description: "Small button (26px tall) for secondary actions",
     },
     base: {
-      classes: "h-9 gap-1.5 rounded-lg px-3 text-base",
-      description: "Default button size",
+      classes: "h-8 gap-1.5 rounded-lg px-3 text-base",
+      description: "Default button size (32px tall)",
     },
     lg: {
-      classes: "h-10 gap-2 rounded-lg px-4 text-base",
-      description: "Large button for primary CTAs",
+      classes: "h-9 gap-2 rounded-lg px-4 text-base",
+      description: "Large button (36px tall) for primary CTAs",
     },
   },
   compactSize: {
     xs: { classes: "size-3.5" },
     sm: { classes: "size-6.5" },
-    base: { classes: "size-9" },
-    lg: { classes: "size-10" },
+    base: { classes: "size-8" },
+    lg: { classes: "size-9" },
   },
   variant: {
     primary: {
@@ -102,10 +103,10 @@ export interface KumoButtonVariantsProps {
   shape?: KumoButtonShape;
   /**
    * Button size.
-   * - `"xs"` — Extra small for compact UIs
-   * - `"sm"` — Small for secondary actions
-   * - `"base"` — Default size
-   * - `"lg"` — Large for primary CTAs
+   * - `"sm"` — Small for secondary actions (26px tall)
+   * - `"base"` — Default size (32px tall)
+   * - `"lg"` — Large for primary CTAs (36px tall)
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
    * @default "base"
    */
   size?: KumoButtonSize;
@@ -366,6 +367,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const { type, ...restProps } = props;
+
+    if (process.env.NODE_ENV !== "production" && size === "xs") {
+      console.warn(
+        '[Kumo Button]: size="xs" is deprecated. Use size="sm" instead. ' +
+          "The xs size will be removed in a future major version.",
+      );
+    }
+
     const emphasisStyle = getEmphasisStyle(variant);
     const titleLabel = getTitleLabel(title);
     const buttonProps = {

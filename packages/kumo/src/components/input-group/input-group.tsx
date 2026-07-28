@@ -29,20 +29,21 @@ export { type InputGroupSuffixProps } from "./input-group-suffix";
 export const KUMO_INPUT_GROUP_VARIANTS = {
   size: {
     xs: {
-      classes: "h-6 text-xs",
-      description: "Extra small size.",
+      classes: "h-5 text-xs",
+      description:
+        "@deprecated Use `size=\"sm\"` instead. The `xs` size will be removed in a future major version.",
     },
     sm: {
-      classes: "h-7 text-xs",
-      description: "Small size.",
+      classes: "h-6.5 text-sm",
+      description: "Small size (26px tall).",
     },
     base: {
-      classes: "h-9 text-base",
-      description: "Default size.",
+      classes: "h-8 text-base",
+      description: "Default size (32px tall).",
     },
     lg: {
-      classes: "h-11 text-base",
-      description: "Large size.",
+      classes: "h-9 text-base",
+      description: "Large size (36px tall).",
     },
   },
 } as const;
@@ -102,6 +103,13 @@ const Root = forwardRef<
   ) => {
     const inputId = useId();
     const focusMode = detectFocusMode(children);
+
+    if (process.env.NODE_ENV !== "production" && size === "xs") {
+      console.warn(
+        '[Kumo InputGroup]: size="xs" is deprecated. Use size="sm" instead. ' +
+          "The xs size will be removed in a future major version.",
+      );
+    }
 
     const contextValue = useMemo(
       () => ({

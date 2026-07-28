@@ -15,7 +15,7 @@ export function DialogBasicDemo() {
       <Dialog.Trigger render={(p) => <Button {...p}>Click me</Button>} />
       <Dialog className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <Dialog.Title className="text-2xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Modal Title
           </Dialog.Title>
           <Dialog.Close
@@ -31,7 +31,7 @@ export function DialogBasicDemo() {
             )}
           />
         </div>
-        <Dialog.Description className="text-kumo-subtle">
+        <Dialog.Description className="text-lg text-kumo-subtle">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </Dialog.Description>
@@ -46,7 +46,7 @@ export function DialogWithActionsDemo() {
       <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
       <Dialog className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <Dialog.Title className="text-2xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Modal Title
           </Dialog.Title>
           <Dialog.Close
@@ -62,7 +62,7 @@ export function DialogWithActionsDemo() {
             )}
           />
         </div>
-        <Dialog.Description className="text-kumo-subtle">
+        <Dialog.Description className="text-lg text-kumo-subtle">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </Dialog.Description>
@@ -99,7 +99,7 @@ export function DialogMaxWidthDemo() {
       />
       <Dialog className="max-w-lg p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <Dialog.Title className="text-2xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Max width override
           </Dialog.Title>
           <Dialog.Close
@@ -115,7 +115,7 @@ export function DialogMaxWidthDemo() {
             )}
           />
         </div>
-        <Dialog.Description className="text-kumo-subtle">
+        <Dialog.Description className="text-lg text-kumo-subtle">
           This dialog uses <code>className="max-w-lg"</code> and should stay
           capped around 512px on desktop.
         </Dialog.Description>
@@ -142,11 +142,11 @@ export function DialogConfirmationDemo() {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
             <Warning size={20} className="text-kumo-danger" />
           </div>
-          <Dialog.Title className="text-xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Delete Project?
           </Dialog.Title>
         </div>
-        <Dialog.Description className="text-kumo-subtle">
+        <Dialog.Description className="text-lg text-kumo-subtle">
           This action cannot be undone. This will permanently delete the project
           and all associated data.
         </Dialog.Description>
@@ -190,11 +190,11 @@ export function DialogAlertDemo() {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-kumo-danger/20">
             <Warning size={20} className="text-kumo-danger" weight="fill" />
           </div>
-          <Dialog.Title className="text-xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Delete Account?
           </Dialog.Title>
         </div>
-        <Dialog.Description className="text-kumo-subtle">
+        <Dialog.Description className="text-lg text-kumo-subtle">
           This action cannot be undone. All your data will be permanently
           removed from our servers. Are you sure you want to proceed?
         </Dialog.Description>
@@ -232,7 +232,7 @@ export function DialogWithSelectDemo() {
       <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
       <Dialog className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <Dialog.Title className="text-2xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Create Resource
           </Dialog.Title>
           <Dialog.Close
@@ -248,7 +248,7 @@ export function DialogWithSelectDemo() {
             )}
           />
         </div>
-        <Dialog.Description className="mb-4 text-kumo-subtle">
+        <Dialog.Description className="mb-4 text-lg text-kumo-subtle">
           Select a region for your new resource.
         </Dialog.Description>
         <Select
@@ -287,7 +287,7 @@ export function DialogWithComboboxDemo() {
       <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
       <Dialog className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <Dialog.Title className="text-2xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Create Resource
           </Dialog.Title>
           <Dialog.Close
@@ -303,7 +303,7 @@ export function DialogWithComboboxDemo() {
             )}
           />
         </div>
-        <Dialog.Description className="mb-4 text-kumo-subtle">
+        <Dialog.Description className="mb-4 text-lg text-kumo-subtle">
           Search and select a region for your new resource.
         </Dialog.Description>
         <Combobox value={value} onValueChange={setValue} items={regions}>
@@ -343,7 +343,7 @@ export function DialogWithDropdownDemo() {
       <Dialog.Trigger render={(p) => <Button {...p}>Open Form</Button>} />
       <Dialog className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <Dialog.Title className="text-2xl font-semibold">
+          <Dialog.Title className="text-lg font-medium">
             Resource Actions
           </Dialog.Title>
           <Dialog.Close
@@ -359,7 +359,7 @@ export function DialogWithDropdownDemo() {
             )}
           />
         </div>
-        <Dialog.Description className="mb-4 text-kumo-subtle">
+        <Dialog.Description className="mb-4 text-lg text-kumo-subtle">
           Choose an action for the selected resource.
         </Dialog.Description>
         <DropdownMenu>
@@ -415,7 +415,7 @@ export function DialogSizesDemo() {
           />
           <Dialog size={size} className="p-8">
             <div className="mb-4 flex items-start justify-between gap-4">
-              <Dialog.Title className="text-2xl font-semibold">
+              <Dialog.Title className="text-lg font-medium">
                 {label} Dialog
               </Dialog.Title>
               <Dialog.Close
@@ -431,7 +431,7 @@ export function DialogSizesDemo() {
                 )}
               />
             </div>
-            <Dialog.Description className="text-kumo-subtle">
+            <Dialog.Description className="text-lg text-kumo-subtle">
               This <code>size="{size}"</code> dialog should stay at {width} wide
               regardless of the content below.
             </Dialog.Description>

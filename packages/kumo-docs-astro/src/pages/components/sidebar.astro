@@ -45,9 +45,9 @@ import {
 
   <ComponentSection>
     <Heading level={2}>Installation</Heading>
-    <Heading level={3} class="mb-2 text-lg">Barrel</Heading>
+    <Heading level={3} class="mb-2">Barrel</Heading>
     <CodeBlock code={`import { Sidebar } from "@cloudflare/kumo";`} lang="tsx" />
-    <h3 class="mt-4 mb-2 text-lg font-semibold">Granular</h3>
+    <Heading level={3} class="mt-4 mb-2">Granular</Heading>
     <CodeBlock code={`import { Sidebar } from "@cloudflare/kumo/components/sidebar";`} lang="tsx" />
   </ComponentSection>
 
@@ -376,7 +376,7 @@ const { state, isPeeking } = useSidebar();
 
     <div class="space-y-8">
       <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar</h3>
+        <Heading level={3} class="mb-3 font-mono">Sidebar</Heading>
         <p>
           The main sidebar container. Renders as <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;aside&gt;</code> on desktop and a navigation drawer on mobile.
         </p>
@@ -384,7 +384,7 @@ const { state, isPeeking } = useSidebar();
       </div>
 
       <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Provider</h3>
+        <Heading level={3} class="mb-3 font-mono">Sidebar.Provider</Heading>
         <p>
           Context provider managing expand/collapse state and mobile detection.
         </p>
@@ -392,14 +392,14 @@ const { state, isPeeking } = useSidebar();
       </div>
 
       <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.Content</h3>
+        <Heading level={3} class="mb-3 font-mono">Sidebar.Content</Heading>
         <p>
           Scrollable middle section (<code class="rounded bg-kumo-control px-1 py-0.5 text-xs">flex-1 overflow-y-auto</code>). Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Header</code> / <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Footer</code> to pin content above or below this scroll area.
         </p>
       </div>
 
       <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.MenuButton</h3>
+        <Heading level={3} class="mb-3 font-mono">Sidebar.MenuButton</Heading>
         <p>
           Primary interactive element. Supports icons, active state, links, and auto-tooltip when collapsed.
           Auto-wraps in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code> &mdash; no <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuItem</code> wrapper needed unless wrapping a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Collapsible</code>.
@@ -408,7 +408,7 @@ const { state, isPeeking } = useSidebar();
       </div>
 
       <div>
-        <h3 class="mb-3 text-lg font-semibold font-mono">Sidebar.MenuSubButton</h3>
+        <Heading level={3} class="mb-3 font-mono">Sidebar.MenuSubButton</Heading>
         <p>
           Button inside a sub-menu for nested navigation.
           Auto-wraps in <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code> &mdash; no <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuSubItem</code> wrapper needed.

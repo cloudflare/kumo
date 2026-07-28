@@ -18,7 +18,29 @@ import { Text } from "./text";
 // Positive cases — these MUST compile cleanly.
 // ---------------------------------------------------------------------------
 
-// Heading variant with required `as`.
+// Role-based heading variants with required `as`.
+const _display = (
+  <Text variant="display" as="h1">
+    Welcome
+  </Text>
+);
+const _pageTitle = (
+  <Text variant="page-title" as="h1">
+    Account settings
+  </Text>
+);
+const _sectionTitle = (
+  <Text variant="section-title" as="h2">
+    General
+  </Text>
+);
+const _heading = (
+  <Text variant="heading" as="h3">
+    API tokens
+  </Text>
+);
+
+// Deprecated numeric aliases still compile (soft deprecation).
 const _headingH1 = (
   <Text variant="heading1" as="h1">
     Page Title
@@ -37,7 +59,7 @@ const _headingH3 = (
 
 // Heading variant using `as="span"` for decorative (non-section) usage.
 const _decorativeHeading = (
-  <Text variant="heading1" as="span">
+  <Text variant="display" as="span">
     Big bold label
   </Text>
 );
@@ -90,7 +112,7 @@ const _small = (
 );
 const _time = <Text as="time">2026-04-27</Text>;
 const _headingAsLabel = (
-  <Text variant="heading2" as="label">
+  <Text variant="page-title" as="label">
     Form heading
   </Text>
 );
@@ -101,21 +123,80 @@ const _headingAsLabel = (
 // tsc itself fails the typecheck with "Unused '@ts-expect-error' directive".
 // ---------------------------------------------------------------------------
 
-// Missing `as` on heading1 → type error.
+// Missing `as` on new role-based heading variants → type error.
+// @ts-expect-error — heading variants require `as`
+const _missingAsDisplay = <Text variant="display">Missing as</Text>;
+// @ts-expect-error — heading variants require `as`
+const _missingAsPageTitle = <Text variant="page-title">Missing as</Text>;
+// @ts-expect-error — heading variants require `as`
+const _missingAsSectionTitle = <Text variant="section-title">Missing as</Text>;
+// @ts-expect-error — heading variants require `as`
+const _missingAsHeading = <Text variant="heading">Missing as</Text>;
+
+// Missing `as` on deprecated aliases still errors.
 // @ts-expect-error — heading variants require `as`
 const _missingAsH1 = <Text variant="heading1">Missing as</Text>;
-
-// Missing `as` on heading2 → type error.
 // @ts-expect-error — heading variants require `as`
 const _missingAsH2 = <Text variant="heading2">Missing as</Text>;
-
-// Missing `as` on heading3 → type error.
 // @ts-expect-error — heading variants require `as`
 const _missingAsH3 = <Text variant="heading3">Missing as</Text>;
+
+// `bold` prop is allowed on copy variants (body, secondary, success, error)
+// where it bumps weight to font-medium. Reject on headings (already carry
+// their role's weight) and mono (design decision — mono stays regular).
+const _boldBody = <Text bold>Bold body</Text>;
+const _boldSecondary = (
+  <Text variant="secondary" bold>
+    Bold secondary
+  </Text>
+);
+const _boldSuccess = (
+  <Text variant="success" bold>
+    Bold success
+  </Text>
+);
+const _boldError = (
+  <Text variant="error" bold>
+    Bold error
+  </Text>
+);
+const _boldHeading = (
+  <Text
+    variant="heading"
+    as="h3"
+    // @ts-expect-error — bold is disallowed on heading variants; already medium/semibold
+    bold
+  >
+    Bold heading
+  </Text>
+);
+const _boldSectionTitle = (
+  <Text
+    variant="section-title"
+    as="h2"
+    // @ts-expect-error — bold is disallowed on section-title
+    bold
+  >
+    Bold section title
+  </Text>
+);
+const _boldMono = (
+  <Text
+    variant="mono"
+    // @ts-expect-error — bold is disallowed on mono
+    bold
+  >
+    Bold mono
+  </Text>
+);
 
 // Silence unused-variable warnings for all the sentinels above.
 // This file is never executed; it exists purely for type checking.
 export const __typeSpec = {
+  _display,
+  _pageTitle,
+  _sectionTitle,
+  _heading,
   _headingH1,
   _headingH2,
   _headingH3,
@@ -141,7 +222,18 @@ export const __typeSpec = {
   _small,
   _time,
   _headingAsLabel,
+  _missingAsDisplay,
+  _missingAsPageTitle,
+  _missingAsSectionTitle,
+  _missingAsHeading,
   _missingAsH1,
   _missingAsH2,
   _missingAsH3,
+  _boldBody,
+  _boldSecondary,
+  _boldSuccess,
+  _boldError,
+  _boldHeading,
+  _boldSectionTitle,
+  _boldMono,
 };

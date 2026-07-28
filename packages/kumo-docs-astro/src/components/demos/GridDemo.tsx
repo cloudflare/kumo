@@ -5,7 +5,7 @@ export function GridDemo() {
     <Grid variant="2up" gap="base">
       <GridItem>
         <Surface className="rounded-lg p-4">
-          <Text bold>Item 1</Text>
+          <Text DANGEROUS_className="font-medium">Item 1</Text>
           <div className="mt-1">
             <Text variant="secondary">First grid item</Text>
           </div>
@@ -13,7 +13,7 @@ export function GridDemo() {
       </GridItem>
       <GridItem>
         <Surface className="rounded-lg p-4">
-          <Text bold>Item 2</Text>
+          <Text DANGEROUS_className="font-medium">Item 2</Text>
           <div className="mt-1">
             <Text variant="secondary">Second grid item</Text>
           </div>
@@ -100,7 +100,7 @@ export function GridAsymmetricDemo() {
         <Grid variant="2-1" gap="sm">
           <GridItem>
             <Surface className="rounded-lg p-4">
-              <Text bold>Main Content</Text>
+              <Text DANGEROUS_className="font-medium">Main Content</Text>
               <div className="mt-1">
                 <Text variant="secondary">Two-thirds width</Text>
               </div>
@@ -108,7 +108,7 @@ export function GridAsymmetricDemo() {
           </GridItem>
           <GridItem>
             <Surface className="rounded-lg p-4">
-              <Text bold>Sidebar</Text>
+              <Text DANGEROUS_className="font-medium">Sidebar</Text>
               <div className="mt-1">
                 <Text variant="secondary">One-third width</Text>
               </div>
@@ -122,7 +122,7 @@ export function GridAsymmetricDemo() {
         <Grid variant="1-2" gap="sm">
           <GridItem>
             <Surface className="rounded-lg p-4">
-              <Text bold>Sidebar</Text>
+              <Text DANGEROUS_className="font-medium">Sidebar</Text>
               <div className="mt-1">
                 <Text variant="secondary">One-third width</Text>
               </div>
@@ -130,7 +130,7 @@ export function GridAsymmetricDemo() {
           </GridItem>
           <GridItem>
             <Surface className="rounded-lg p-4">
-              <Text bold>Main Content</Text>
+              <Text DANGEROUS_className="font-medium">Main Content</Text>
               <div className="mt-1">
                 <Text variant="secondary">Two-thirds width</Text>
               </div>
@@ -219,7 +219,7 @@ export function GridMobileDividerDemo() {
     <Grid variant="4up" gap="base" mobileDivider>
       <GridItem>
         <Surface className="rounded-lg p-4">
-          <Text bold>Item 1</Text>
+          <Text DANGEROUS_className="font-medium">Item 1</Text>
           <div className="mt-1">
             <Text variant="secondary">Has divider on mobile</Text>
           </div>
@@ -227,7 +227,7 @@ export function GridMobileDividerDemo() {
       </GridItem>
       <GridItem>
         <Surface className="rounded-lg p-4">
-          <Text bold>Item 2</Text>
+          <Text DANGEROUS_className="font-medium">Item 2</Text>
           <div className="mt-1">
             <Text variant="secondary">Has divider on mobile</Text>
           </div>
@@ -235,7 +235,7 @@ export function GridMobileDividerDemo() {
       </GridItem>
       <GridItem>
         <Surface className="rounded-lg p-4">
-          <Text bold>Item 3</Text>
+          <Text DANGEROUS_className="font-medium">Item 3</Text>
           <div className="mt-1">
             <Text variant="secondary">Has divider on mobile</Text>
           </div>
@@ -243,7 +243,7 @@ export function GridMobileDividerDemo() {
       </GridItem>
       <GridItem>
         <Surface className="rounded-lg p-4">
-          <Text bold>Item 4</Text>
+          <Text DANGEROUS_className="font-medium">Item 4</Text>
           <div className="mt-1">
             <Text variant="secondary">Has divider on mobile</Text>
           </div>

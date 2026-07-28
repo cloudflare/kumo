@@ -226,21 +226,6 @@ export function InputGroupSuffixDemo() {
 export function InputGroupSizesDemo() {
   return (
     <div className="flex w-full max-w-3xs flex-col gap-4">
-      <InputGroup size="xs" label="Extra Small">
-        <InputGroup.Addon>
-          <MagnifyingGlassIcon />
-        </InputGroup.Addon>
-        <InputGroup.Input placeholder="Extra small input" />
-        <InputGroup.Addon align="end">
-          <InputGroup.Button
-            className="text-kumo-subtle"
-            icon={QuestionIcon}
-            shape="square"
-            aria-label="Help"
-          />
-        </InputGroup.Addon>
-      </InputGroup>
-
       <InputGroup size="sm" label="Small">
         <InputGroup.Addon>
           <MagnifyingGlassIcon />

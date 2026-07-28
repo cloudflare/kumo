@@ -27,7 +27,7 @@ export function ToolbarDemo() {
 export function ToolbarSizesDemo() {
   return (
     <div className="grid gap-3">
-      {(["xs", "sm", "base", "lg"] as const).map((size) => (
+      {(["sm", "base", "lg"] as const).map((size) => (
         <div key={size} className="flex items-center gap-3">
           <span className="w-10 text-sm text-kumo-subtle">{size}</span>
           <Toolbar size={size} className="w-fit">

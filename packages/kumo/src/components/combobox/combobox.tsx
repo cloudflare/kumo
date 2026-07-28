@@ -54,10 +54,10 @@ export type KumoComboboxInputSide =
 export interface KumoComboboxVariantsProps {
   /**
    * Size of the combobox trigger. Matches Input component sizes.
-   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
-   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
-   * - `"base"` — Default size (h-9 / 36px)
-   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * - `"sm"` — Small for secondary fields (26px tall)
+   * - `"base"` — Default size (32px tall)
+   * - `"lg"` — Large for prominent fields (36px tall)
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
    * @default "base"
    */
   size?: KumoComboboxSize;
@@ -166,6 +166,13 @@ function Root<Value, Multiple extends boolean | undefined = false>({
   error?: string | { message: ReactNode; match: FieldErrorMatch };
   size?: KumoComboboxSize;
 }) {
+  if (process.env.NODE_ENV !== "production" && size === "xs") {
+    console.warn(
+      '[Kumo Combobox]: size="xs" is deprecated. Use size="sm" instead. ' +
+        "The xs size will be removed in a future major version.",
+    );
+  }
+
   const comboboxControl = (
     <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
       <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
@@ -251,10 +258,10 @@ const triggerValueIconStyles: Record<
   KumoComboboxSize,
   { padding: string; iconSize: number; iconRight: string }
 > = {
-  xs: { padding: "pr-5", iconSize: 12, iconRight: "right-1" },
-  sm: { padding: "pr-6", iconSize: 14, iconRight: "right-1.5" },
-  base: { padding: "pr-8", iconSize: 16, iconRight: "right-2" },
-  lg: { padding: "pr-10", iconSize: 18, iconRight: "right-3" },
+  xs: { padding: "pr-5", iconSize: 10, iconRight: "right-1" },
+  sm: { padding: "pr-6", iconSize: 12, iconRight: "right-1.5" },
+  base: { padding: "pr-8", iconSize: 14, iconRight: "right-2" },
+  lg: { padding: "pr-10", iconSize: 16, iconRight: "right-3" },
 };
 
 function TriggerValue({
@@ -290,32 +297,47 @@ function TriggerValue({
   );
 }
 
-// Size-dependent styles for TriggerInput icons
+// Size-dependent styles for TriggerInput icons.
+//
+// The clear X icon renders one step smaller than the caret at every size.
+// Phosphor's `XIcon` has two crossed strokes that carry more optical weight
+// than the single-stroke caret at matching numeric sizes, so shrinking the
+// X keeps the two glyphs visually balanced next to each other.
 const triggerInputIconStyles: Record<
   KumoComboboxSize,
-  { padding: string; iconSize: number; clearRight: string; caretRight: string }
+  {
+    padding: string;
+    clearIconSize: number;
+    caretIconSize: number;
+    clearRight: string;
+    caretRight: string;
+  }
 > = {
   xs: {
     padding: "pr-7",
-    iconSize: 12,
+    clearIconSize: 8,
+    caretIconSize: 10,
     clearRight: "right-5",
     caretRight: "right-1",
   },
   sm: {
     padding: "pr-9",
-    iconSize: 14,
+    clearIconSize: 10,
+    caretIconSize: 12,
     clearRight: "right-6",
     caretRight: "right-1.5",
   },
   base: {
     padding: "pr-12",
-    iconSize: 16,
+    clearIconSize: 12,
+    caretIconSize: 14,
     clearRight: "right-8",
     caretRight: "right-2",
   },
   lg: {
     padding: "pr-14",
-    iconSize: 18,
+    clearIconSize: 14,
+    caretIconSize: 16,
     clearRight: "right-9",
     caretRight: "right-3",
   },
@@ -366,7 +388,7 @@ function TriggerInput({
           iconStyles.clearRight,
         )}
       >
-        <XIcon size={iconStyles.iconSize} />
+        <XIcon size={iconStyles.clearIconSize} />
       </ComboboxBase.Clear>
 
       <ComboboxBase.Trigger
@@ -380,7 +402,10 @@ function TriggerInput({
         )}
       >
         <ComboboxBase.Icon className="flex items-center">
-          <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
+          <CaretDownIcon
+            size={iconStyles.caretIconSize}
+            className="fill-current"
+          />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
     </div>
@@ -516,8 +541,8 @@ function Chip({
 const sizeToMinHeight: Record<KumoComboboxSize, string> = {
   xs: "min-h-5",
   sm: "min-h-6.5",
-  base: "min-h-9",
-  lg: "min-h-10",
+  base: "min-h-8",
+  lg: "min-h-9",
 };
 
 function TriggerMultipleWithInput<ValueType>({

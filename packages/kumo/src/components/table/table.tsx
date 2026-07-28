@@ -135,7 +135,7 @@ const TableRoot = forwardRef<
     ).classes,
     "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
-    "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:text-base [&_th]:font-semibold", // Header styles
+    "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:text-base [&_th]:font-medium", // Header styles (heading role: 13px medium)
     "[&_th]:bg-kumo-base", // Header background color
     "text-left text-base text-kumo-default",
     props.className,
@@ -159,7 +159,7 @@ const TableHeader = forwardRef<
   const isCompact = variant === "compact";
   const className = cn(
     "group/header",
-    isCompact && "text-xs text-kumo-strong [&_th]:bg-kumo-elevated [&_th]:py-2",
+    isCompact && "text-sm text-kumo-strong [&_th]:bg-kumo-elevated [&_th]:py-2",
     sticky && "[&_th]:sticky [&_th]:top-0 [&_th]:z-1",
     props.className,
   );

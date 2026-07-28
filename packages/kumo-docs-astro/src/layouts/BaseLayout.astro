@@ -75,6 +75,8 @@ const buildDate =
       // must be re-applied after each view-transition swap because the <html>
       // attributes are replaced during navigation.
       (function () {
+        var FONT_SCALES = ["small", "default", "large"];
+
         function setTheme(theme) {
           localStorage.setItem("theme", theme);
           document.documentElement.setAttribute("data-mode", theme);
@@ -92,16 +94,28 @@ const buildDate =
           }
         }
 
+        function applyStoredFontScale() {
+          const stored = localStorage.getItem("font-scale");
+          if (stored && FONT_SCALES.indexOf(stored) !== -1 && stored !== "default") {
+            document.documentElement.setAttribute("data-font-scale", stored);
+          } else {
+            document.documentElement.removeAttribute("data-font-scale");
+          }
+        }
+
         // Apply on this (initial or freshly-swapped) document immediately.
         applyStoredTheme();
+        applyStoredFontScale();
 
         // Register global listeners exactly once across soft navigations.
         if (!window.__kumoThemeInit) {
           window.__kumoThemeInit = true;
 
-          // Reapply theme before each swap paints, so there's no light flash.
+          // Reapply theme + font-scale before each swap paints, so there's no flash.
           document.addEventListener("astro:before-swap", applyStoredTheme);
           document.addEventListener("astro:after-swap", applyStoredTheme);
+          document.addEventListener("astro:before-swap", applyStoredFontScale);
+          document.addEventListener("astro:after-swap", applyStoredFontScale);
 
           document.addEventListener("keydown", function (event) {
             if (event.defaultPrevented || event.repeat) return;

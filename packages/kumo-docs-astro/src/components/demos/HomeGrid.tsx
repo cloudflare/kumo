@@ -542,7 +542,7 @@ export function HomeGrid() {
       name: "Link",
       id: "link",
       Component: (
-        <div className="flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-2">
           <Link href="#">Default link</Link>
           <Link href="#" variant="current">
             Current color link
@@ -671,11 +671,14 @@ export function HomeGrid() {
       id: "text",
       Component: (
         <div className="flex flex-col gap-1">
-          <Text size="lg" bold>
-            Large Bold Text
+          <Text variant="section-title" as="span">
+            Section title
           </Text>
-          <Text size="base">Regular text content</Text>
-          <Text size="sm" color="subtle">
+          <Text variant="heading" as="span">
+            Heading
+          </Text>
+          <Text>Regular text content</Text>
+          <Text variant="secondary" size="sm">
             Small subtle text
           </Text>
         </div>
@@ -704,7 +707,7 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            <div className="flex w-full items-center justify-center p-8 leading-normal tracking-normal">
+            <div className="flex w-full items-center justify-center p-8 text-base leading-normal tracking-normal">
               {c.Component ?? (
                 <p className="text-base font-medium text-kumo-subtle">TBD</p>
               )}

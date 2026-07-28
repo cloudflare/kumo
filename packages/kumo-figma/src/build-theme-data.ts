@@ -114,18 +114,29 @@ function remToPx(remValue: string): number {
 function parseKumoFontSizes(css: string): Record<string, number> {
   const sizes: Record<string, number> = {};
 
+  // Match `calc(<Npx> * var(--font-scale, ...))` — extract the unscaled
+  // px value. Font-size tokens are emitted wrapped in this multiplier so
+  // consumers can shift the whole scale via `--font-scale`; Figma
+  // operates at 1× so we take the base value.
+  const calcMatches = css.matchAll(
+    /--text-(\w+):\s*calc\(\s*(\d+)px\s*\*\s*var\(--font-scale[^)]*\)\s*\)/g,
+  );
+  for (const match of calcMatches) {
+    sizes[match[1]] = parseInt(match[2], 10);
+  }
+
   // Match: --text-xs: 12px; or --text-sm: 13px;
-  const pxMatches = css.matchAll(/--text-(\w+):\s*(\d+)px/g);
+  const pxMatches = css.matchAll(/--text-(\w+):\s*(\d+)px\s*;/g);
   for (const match of pxMatches) {
+    if (sizes[match[1]] !== undefined) continue;
     sizes[match[1]] = parseInt(match[2], 10);
   }
 
   // Match rem values: --text-xl: 1.25rem;
-  const remMatches = css.matchAll(/--text-(\w+):\s*([\d.]+)rem/g);
+  const remMatches = css.matchAll(/--text-(\w+):\s*([\d.]+)rem\s*;/g);
   for (const match of remMatches) {
-    if (!sizes[match[1]]) {
-      sizes[match[1]] = remToPx(match[2] + "rem");
-    }
+    if (sizes[match[1]] !== undefined) continue;
+    sizes[match[1]] = remToPx(match[2] + "rem");
   }
 
   return sizes;

@@ -1,5 +1,6 @@
 ---
 import { ThemeToggle } from "./ThemeToggle";
+import { FontScaleToggle } from "./FontScaleToggle";
 
 declare const __KUMO_VERSION__: string;
 
@@ -26,7 +27,12 @@ const kumoVersion =
     </a>
   </div>
 
-  <div class="flex w-12 shrink-0 items-center justify-center">
-    <ThemeToggle client:only="react" />
+  <div class="flex shrink-0 items-stretch">
+    <div class="flex w-12 shrink-0 items-center justify-center border-r border-kumo-hairline">
+      <FontScaleToggle client:only="react" />
+    </div>
+    <div class="flex w-12 shrink-0 items-center justify-center">
+      <ThemeToggle client:only="react" />
+    </div>
   </div>
 </header>

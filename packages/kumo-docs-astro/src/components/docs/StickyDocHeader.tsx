@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@cloudflare/kumo";
 import { GithubLogoIcon } from "@phosphor-icons/react";
 import { ThemeToggle } from "../ThemeToggle";
+import { FontScaleToggle } from "../FontScaleToggle";
 import { BaseUIIcon } from "./icons/BaseUIIcon";
 
 interface StickyDocHeaderProps {
@@ -159,8 +160,13 @@ export function StickyDocHeader({
             @cloudflare/kumo
           </a>
         </div>
-        <div className="hidden w-12 shrink-0 items-center justify-center lg:flex">
-          <ThemeToggle />
+        <div className="hidden shrink-0 items-stretch lg:flex">
+          <div className="flex w-12 shrink-0 items-center justify-center border-r border-kumo-hairline">
+            <FontScaleToggle />
+          </div>
+          <div className="flex w-12 shrink-0 items-center justify-center">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
     </>

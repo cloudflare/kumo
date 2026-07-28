@@ -59,12 +59,15 @@ describe("Input", () => {
   // Size variants
   it("renders with default size 'base'", () => {
     render(<Input aria-label="Test" />);
-    expect(screen.getByRole("textbox").className).toContain("h-9");
+    expect(screen.getByRole("textbox").className).toContain("h-8");
   });
 
-  it("renders with size 'xs'", () => {
+  it("renders with size 'xs' (deprecated)", () => {
+    // xs is deprecated but still functional; assertion covers the legacy path.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     render(<Input aria-label="Test" size="xs" />);
     expect(screen.getByRole("textbox").className).toContain("h-5");
+    warn.mockRestore();
   });
 
   it("renders with size 'sm'", () => {
@@ -74,7 +77,7 @@ describe("Input", () => {
 
   it("renders with size 'lg'", () => {
     render(<Input aria-label="Test" size="lg" />);
-    expect(screen.getByRole("textbox").className).toContain("h-10");
+    expect(screen.getByRole("textbox").className).toContain("h-9");
   });
 
   // Variant styles
@@ -193,7 +196,7 @@ describe("Input", () => {
 
   it("applies size classes from KUMO_INPUT_VARIANTS", () => {
     const classes = inputVariants({ size: "lg" });
-    expect(classes).toContain("h-10");
+    expect(classes).toContain("h-9");
     expect(classes).toContain("px-4");
   });
 

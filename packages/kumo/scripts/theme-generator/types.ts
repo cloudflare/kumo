@@ -65,6 +65,32 @@ export type TypographyTokens = {
   [tokenName: string]: TypographyTokenDefinition;
 };
 
+/**
+ * Font-scale configuration
+ *
+ * Introduces a global multiplier variable (`--font-scale`) applied to every
+ * font-size token (but NOT to line-heights — those stay ratios and grow
+ * naturally because they multiply against the already-scaled font-size).
+ *
+ * `presets` maps arbitrary preset names to multiplier values. Each preset
+ * emits a `[data-font-scale="{name}"] { --font-scale: {multiplier}; }` block.
+ * The `default` multiplier is applied to `:root`.
+ *
+ * Example:
+ * ```ts
+ * fontScale: {
+ *   default: 1,
+ *   presets: { small: 12 / 13, large: 14 / 13 },
+ * }
+ * ```
+ */
+export type FontScaleConfig = {
+  /** Multiplier applied to `:root` (usually 1). */
+  default: number;
+  /** Named presets → multiplier. */
+  presets: Record<string, number>;
+};
+
 /** Complete theme configuration */
 export type ThemeConfig = {
   /** Text color tokens */
@@ -73,6 +99,8 @@ export type ThemeConfig = {
   color: ColorTokens;
   /** Typography tokens (font sizes and line heights) */
   typography?: TypographyTokens;
+  /** Optional font-scale multiplier + named presets */
+  fontScale?: FontScaleConfig;
 };
 
 /** Output options for CSS generation */

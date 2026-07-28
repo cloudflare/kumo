@@ -25,10 +25,10 @@ export type KumoAutocompleteSize = keyof typeof KUMO_AUTOCOMPLETE_VARIANTS.size;
 export interface KumoAutocompleteVariantsProps {
   /**
    * Size of the autocomplete input. Matches Input component sizes.
-   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
-   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
-   * - `"base"` — Default size (h-9 / 36px)
-   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * - `"sm"` — Small for secondary fields (26px tall)
+   * - `"base"` — Default size (32px tall)
+   * - `"lg"` — Large for prominent fields (36px tall)
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
    * @default "base"
    */
   size?: KumoAutocompleteSize;
@@ -154,6 +154,14 @@ function InputGroup({
   placeholder?: string;
 }) {
   const { hasError } = useContext(AutocompleteContext);
+
+  if (process.env.NODE_ENV !== "production" && size === "xs") {
+    console.warn(
+      '[Kumo Autocomplete]: size="xs" is deprecated. Use size="sm" instead. ' +
+        "The xs size will be removed in a future major version.",
+    );
+  }
+
   return (
     <AutocompleteBase.Input
       className={cn(

@@ -592,36 +592,49 @@ export const THEME_CONFIG: ThemeConfig = {
    *
    * Note: Typography is NOT theme-dependent (no light/dark mode).
    * Values are the same across color modes but may differ per theme.
+   *
+   * Scale rationale:
+   * - Weight is the primary hierarchy signal; size is used only for large jumps.
+   * - `base` (13px) is the product default body size — dense-app appropriate.
+   * - `sm` (12px) is for helper/caption text and descriptions.
+   * - `xs` (11px) is an escape hatch for chart labels and dense metadata.
+   * - `lg` (15px) covers long-form body and mid-level section headings.
+   * - `xl` (17px) is the standard page/dialog title.
+   * - `2xl` (24px) is reserved for prominent/hero moments.
    */
   typography: {
     xs: {
       newName: "",
+      description:
+        "Escape hatch: chart labels, dense metadata. Avoid in body copy.",
       theme: {
-        kumo: "12px",
+        kumo: "11px",
       },
     },
     "xs--line-height": {
       newName: "",
       theme: {
-        kumo: "calc(1 / 0.75)",
+        kumo: "1.4",
       },
     },
     sm: {
       newName: "",
+      description: "Caption — helper text, descriptions, table metadata.",
       theme: {
-        kumo: "13px",
+        kumo: "12px",
       },
     },
     "sm--line-height": {
       newName: "",
       theme: {
-        kumo: "calc(1 / 0.85)",
+        kumo: "1.45",
       },
     },
     base: {
       newName: "",
+      description: "Body — default product text size.",
       theme: {
-        kumo: "14px",
+        kumo: "13px",
       },
     },
     "base--line-height": {
@@ -632,8 +645,9 @@ export const THEME_CONFIG: ThemeConfig = {
     },
     lg: {
       newName: "",
+      description: "Body-lg / section heading — long-form content, dialogs.",
       theme: {
-        kumo: "16px",
+        kumo: "15px",
       },
     },
     "lg--line-height": {
@@ -642,6 +656,51 @@ export const THEME_CONFIG: ThemeConfig = {
         kumo: "1.5",
       },
     },
+    xl: {
+      newName: "",
+      description: "Page / dialog title — paired with a description.",
+      theme: {
+        kumo: "17px",
+      },
+    },
+    "xl--line-height": {
+      newName: "",
+      theme: {
+        kumo: "1.4",
+      },
+    },
+    "2xl": {
+      newName: "",
+      description: "Display — hero / prominent moments.",
+      theme: {
+        kumo: "24px",
+      },
+    },
+    "2xl--line-height": {
+      newName: "",
+      theme: {
+        kumo: "1.3",
+      },
+    },
+  },
+
+  /**
+   * Font-scale — exposes `--font-scale` as a hookable multiplier on every
+   * font-size token. Font-size tokens are emitted as
+   * `calc(<rem> * var(--font-scale, 1))`; consumers can override the
+   * variable at any scope to shift the whole scale.
+   *
+   * The library ships no named presets — that's an application-level UX
+   * concern, not a token concern. Consumers who want density modes
+   * declare their own selectors (e.g. `[data-font-scale="compact"]`) in
+   * their own stylesheet.
+   *
+   * Line-heights stay as raw ratios and multiply against the already-
+   * scaled font-size at use time.
+   */
+  fontScale: {
+    default: 1,
+    presets: {},
   },
 };
 

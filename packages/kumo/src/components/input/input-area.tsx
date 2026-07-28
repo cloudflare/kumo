@@ -174,6 +174,13 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       );
     }
 
+    if (process.env.NODE_ENV !== "production" && size === "xs") {
+      console.warn(
+        '[Kumo InputArea]: size="xs" is deprecated. Use size="sm" instead. ' +
+          "The xs size will be removed in a future major version.",
+      );
+    }
+
     // Auto-apply error styling when error prop is truthy
     // Explicit variant prop takes precedence for backwards compatibility
     const variant = variantProp ?? (error ? "error" : "default");

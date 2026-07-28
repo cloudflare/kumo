@@ -130,7 +130,8 @@ describe("Banner", () => {
     const cta = screen.getByTestId("cta");
     expect(cta.className).toContain("h-6.5");
     expect(cta.className).toContain("px-2");
-    expect(cta.className).toContain("text-xs");
+    // sm buttons use text-sm (12px) to stay proportional to their 26px height.
+    expect(cta.className).toContain("text-sm");
   });
 
   it("applies compact spacing for the sm banner size", () => {
@@ -146,7 +147,7 @@ describe("Banner", () => {
     expect(className).not.toContain("items-start");
   });
 
-  it("defaults Banner.Action children to xs in an sm banner", () => {
+  it("defaults Banner.Action children to sm in an sm banner", () => {
     render(
       <Banner
         size="sm"
@@ -157,9 +158,10 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    // Inherits the banner's size => xs (h-5), not the standalone sm default (h-6.5).
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
+    // Both base and compact banners now render actions at the sm Button
+    // size (26px) — xs was removed from the Button scale.
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
   });
 
   it("matches an icon-only action to the text action height in an sm banner", () => {
@@ -179,9 +181,10 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
-    expect(cta.className).not.toContain("size-3.5");
+    // Icon-only Banner.Action inherits the sm Button size (26px tall). It
+    // doesn't set a compact `shape`, so it stays rectangular.
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
   });
 
   it("renders title and description inline in an sm banner", () => {
@@ -217,7 +220,12 @@ describe("Banner", () => {
 
     expect(actionGroup?.parentElement).toBe(description);
     expect(actionGroup?.className).toContain("ml-1.5");
-    expect(description.className).toContain("text-sm");
+    // In an sm banner the description inherits `text-sm` (12px) from the
+    // banner container rather than carrying the class itself. Title and
+    // description share the container size; only the title's font weight
+    // distinguishes them.
+    const banner = description.closest('[class*="text-sm"]');
+    expect(banner).not.toBeNull();
   });
 
   it("keeps a Banner.Action trailing in an sm banner", () => {

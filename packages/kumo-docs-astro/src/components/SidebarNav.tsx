@@ -8,6 +8,7 @@ import {
 import { KumoMenuIcon } from "./KumoMenuIcon";
 import { SearchDialog } from "./SearchDialog";
 import { ThemeToggle } from "./ThemeToggle";
+import { FontScaleToggle } from "./FontScaleToggle";
 
 interface NavItem {
   label: string;
@@ -213,9 +214,9 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     <>
       <button
         onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
+        className="mb-3 flex h-8 w-full items-center gap-2 rounded-lg bg-kumo-control pr-3 pl-2 text-base text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
       >
-        <MagnifyingGlassIcon size={16} className="shrink-0" />
+        <MagnifyingGlassIcon size={14} className="shrink-0" />
         <span>Search...</span>
       </button>
 
@@ -242,7 +243,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         {/* Components Section */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-base font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
           onClick={() => setComponentsOpen(!componentsOpen)}
         >
           <span>Components</span>
@@ -282,7 +283,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div className="mb-4">
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-base font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
           onClick={() => setChartsOpen(!chartsOpen)}
         >
           <span>Charts</span>
@@ -322,7 +323,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         {/* Blocks Section */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-base font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
           onClick={() => setBlocksOpen(!blocksOpen)}
         >
           <span>Blocks</span>
@@ -378,7 +379,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           <KumoMenuIcon />
         </Button>
         <h1 className="text-base font-medium">Kumo</h1>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <FontScaleToggle />
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Mobile slide-out drawer */}
@@ -403,7 +407,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         <div
           ref={mobileScrollRef}
           data-sidebar-scroll="mobile"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-base leading-tight text-kumo-subtle"
           style={{ scrollBehavior: "auto" }}
         >
           {navContent}
@@ -453,7 +457,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         <div
           ref={desktopScrollRef}
           data-sidebar-scroll="desktop"
-          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-sm text-kumo-subtle"
+          className="min-h-0 grow overflow-y-auto overscroll-contain px-3 py-4 text-base leading-tight text-kumo-subtle"
         >
           {navContent}
         </div>

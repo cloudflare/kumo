@@ -57,7 +57,25 @@ export default function Example() {
 ```
 
 <section class="mt-8 space-y-4">
-  <Text variant="heading3" as="h3">Semantic HTML</Text>
+  <Text variant="section-title" as="h3">Heading variants</Text>
+  <Text>
+    Heading variants are role-based. Reach for the one that describes what the
+    text **is**, not how big you want it:
+  </Text>
+
+  - `variant="display"` — hero / prominent moments (24px semibold)
+  - `variant="page-title"` — the single title of a page or dialog (17px medium)
+  - `variant="section-title"` — card / panel / section heading (15px medium)
+  - `variant="heading"` — inline / row / list-item heading (13px medium)
+
+  <Text>
+    `heading` is the small, most-used one — reach for it before adding extra
+    weight or size to body text.
+  </Text>
+</section>
+
+<section class="mt-8 space-y-4">
+  <Text variant="section-title" as="h3">Semantic HTML</Text>
   <Text>
     The `variant` prop controls visual styling only—it does not determine the HTML element rendered.
     Heading variants **require** the `as` prop to avoid silently excluding real section headings from
@@ -67,17 +85,19 @@ export default function Example() {
 
 ```tsx
 // Heading variants REQUIRE `as` — TypeScript will flag usages missing it
-<Text variant="heading1">Page Title</Text> // Doesn't compile
+<Text variant="display">Welcome</Text> // Doesn't compile
 
 // Real section headings (contribute to the document outline)
-<Text variant="heading1" as="h1">Page Title</Text>
-<Text variant="heading2" as="h2">Section Title</Text>
+<Text variant="display" as="h1">Welcome</Text>
+<Text variant="page-title" as="h1">Account settings</Text>
+<Text variant="section-title" as="h2">General</Text>
+<Text variant="heading" as="h3">API tokens</Text>
 
 // Decorative heading-styled text that is NOT a section heading
-<Text variant="heading1" as="span">Big bold card label</Text>
+<Text variant="display" as="span">Big card label</Text>
 
 // Visually one size, semantically another
-<Text variant="heading1" as="h3">Visually large, but semantically h3</Text>
+<Text variant="display" as="h3">Visually large, but semantically h3</Text>
 ```
 
   <Text>
@@ -88,40 +108,59 @@ export default function Example() {
 </section>
 
 <section class="mt-8 space-y-4">
-  <Text variant="heading3" as="h3">Restrictions</Text>
+  <Text variant="section-title" as="h3">Restrictions</Text>
   <Text>
-    The `bold` and `size` props are intentionally restricted to the `base`, `secondary`, `success`, and `error` text variants.
+    The `size` prop is intentionally restricted to the `body`, `secondary`, `success`, and `error` variants.
   </Text>
 
 ```tsx
-<Text size="sm" bold>Body</Text>
-<Text variant="secondary" bold>Body secondary</Text>
-<Text variant="success" size="lg">Success</Text>
+<Text size="sm">Body</Text>
+<Text variant="secondary" size="sm">Body secondary</Text>
+<Text variant="success">Success</Text>
 <Text variant="error">Error</Text>
 ```
 
 <Text>
-  Monospace variants (`mono` and `mono-secondary`) can only set `size` to `lg`
-  and cannot use the `bold` prop:
+  Monospace variants (`mono` and `mono-secondary`) always render at 12px and
+  do not accept a `size` prop.
 </Text>
 
 ```tsx
 <Text variant="mono">Monospace</Text>
-<Text variant="mono" size="lg">Monospace</Text>
-<Text variant="mono" bold>Monospace</Text> // Doesn't compile
 ```
 
 <Text>
-  Headings (i.e. `heading1`, `heading2` and `heading3` variants) cannot use
-  these props at all:
+  Heading variants (`display`, `page-title`, `section-title`, `heading`) don't
+  accept `size` — the size is part of the role.
+</Text>
+
+<Text>
+  The `bold` prop follows the same shape: it applies only to copy variants
+  (`body`, `secondary`, `success`, `error`), where it bumps weight to
+  `font-medium` (500) for inline emphasis. Heading variants already carry
+  their role's weight, and monospace stays regular by design — both type
+  `bold` as `never` so consumers get a compile error rather than a silent
+  no-op. For structural hierarchy inside a document outline reach for
+  `variant="heading"` instead of `bold`.
 </Text>
 
 ```tsx
-<Text variant="heading1" bold>
-  Heading 1
-</Text> // Doesn't compile
+<Text bold>Important detail</Text>
+<Text variant="secondary" bold>Muted but bumped</Text>
 ```
 
+</section>
+
+<section class="mt-8 space-y-4">
+  <Text variant="section-title" as="h3">Deprecated variants</Text>
+  <Text>
+    The numeric heading names still work but emit a warning in development.
+    Migrate call sites to the role-based names:
+  </Text>
+
+  - `heading1` → `display`
+  - `heading2` → `page-title`
+  - `heading3` → `section-title`
 </section>
 
 </ComponentSection>
