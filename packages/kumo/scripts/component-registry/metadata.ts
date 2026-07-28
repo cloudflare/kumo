@@ -917,19 +917,6 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
       borderRadius: 8,
     },
   },
-  MenuBar: {
-    container: {
-      height: 32,
-      borderRadius: 8,
-      padding: 2,
-      gap: 2,
-    },
-    button: {
-      width: 36,
-      borderRadius: 6,
-      iconSize: 18,
-    },
-  },
   Select: {
     trigger: {
       height: 36, // h-9

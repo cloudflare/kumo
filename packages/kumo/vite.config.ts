@@ -67,7 +67,6 @@ const packEntries = {
   ),
   "components/label": resolve(__dirname, "src/components/label/index.ts"),
   "components/loader": resolve(__dirname, "src/components/loader/index.ts"),
-  "components/menubar": resolve(__dirname, "src/components/menubar/index.ts"),
   "components/meter": resolve(__dirname, "src/components/meter/index.ts"),
   "components/pagination": resolve(
     __dirname,

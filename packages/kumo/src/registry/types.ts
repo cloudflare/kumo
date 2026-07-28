@@ -159,7 +159,7 @@ export interface ComponentStyling {
     base?: string;
     sizes?: Record<string, string>;
   };
-  /** Container styling (for compound components like Tabs, LayerCard, MenuBar) */
+  /** Container styling (for compound components like Tabs and LayerCard) */
   container?: PartStyling;
   /** Layout configuration (for Pagination, etc.) */
   layout?: DimensionConfig;
@@ -177,7 +177,7 @@ export interface ComponentStyling {
   secondary?: PartStyling;
   /** Primary part styling (for LayerCard) */
   primary?: PartStyling;
-  /** Button styling (for MenuBar) */
+  /** Button styling */
   button?: PartStyling;
   /** Allow additional part-specific styling */
   [key: string]: unknown;

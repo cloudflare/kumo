@@ -60,7 +60,6 @@ export const CATEGORY_MAP: Record<string, string> = {
   surface: "Layout",
   // Navigation
   "command-palette": "Navigation",
-  menubar: "Navigation",
   pagination: "Navigation",
   tabs: "Navigation",
   // Overlay

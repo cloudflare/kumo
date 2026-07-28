@@ -56,7 +56,6 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `LayerCard`        | Display    | Card with header and collapsible body | `title`, `tag`, `actions`, `icon`                                                                                              |
 | `Link`             | Other      | Styled anchor/router link             | `variant`: inline, current, plain; `href`, `external`                                                                          |
 | `Loader`           | Feedback   | Animated loading spinner              | `size`: number (default 16)                                                                                                    |
-| `MenuBar`          | Navigation | Horizontal icon toolbar               | `isActive`, `options: { icon, tooltip, onClick }[]`                                                                            |
 | `Meter`            | Display    | Progress/usage meter bar              | `value`, `max`, `label`, `size`                                                                                                |
 | `Pagination`       | Navigation | Page navigation controls              | `page`, `setPage`, `perPage`, `totalCount`; `controls`: full, simple                                                           |
 | `Popover`          | Overlay    | Popup content anchored to trigger     | `.Trigger`, `.Content`, `.Title`, `.Description`, `.Close`; `side`, `align`                                                    |

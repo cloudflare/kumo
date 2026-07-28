@@ -15,7 +15,7 @@
  * - **Feedback:** Banner, Loader, Toast
  * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
  * - **Layout:** Grid, Surface
- * - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
+ * - **Navigation:** CommandPalette, Pagination, Tabs
  * - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
  * - **Other:** Label, Link
  *
@@ -126,7 +126,6 @@ export {
   type DeleteResourceProps,
 } from "./blocks/delete-resource";
 export { Loader, SkeletonLine } from "./components/loader";
-export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
 export { Select } from "./components/select";

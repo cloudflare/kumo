@@ -206,7 +206,7 @@ export function classifyChangedFiles(
   return { affectedComponents, requiresFullRegression, allSkippable };
 }
 
-/** Strip hyphens for fuzzy slug comparison (e.g. "menubar" matches "menu-bar") */
+/** Strip hyphens for fuzzy slug comparison (e.g. "datepicker" matches "date-picker") */
 function normalizeSlug(slug: string): string {
   return slug.replace(/-/g, "");
 }

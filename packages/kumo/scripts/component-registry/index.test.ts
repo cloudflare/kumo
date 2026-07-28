@@ -336,7 +336,6 @@ describe("shouldIncludeExample", () => {
     const undefinedComponents = [
       "RefreshButton",
       "LinkButton",
-      "DefaultMenuBar",
       "ToastTriggerButton",
     ];
     for (const comp of undefinedComponents) {
@@ -371,7 +370,6 @@ describe("shouldIncludeExample", () => {
 
   it("rejects examples with undefined components", () => {
     expect(shouldIncludeExample("<RefreshButton />", "Button")).toBe(false);
-    expect(shouldIncludeExample("<DefaultMenuBar />", "MenuBar")).toBe(false);
   });
 
   it("rejects empty examples", () => {

@@ -295,7 +295,7 @@ describe("Figma Plugin - No Magic Numbers", () => {
 
   it("should not have hardcoded shadow effects (use SHADOWS from shared.ts)", () => {
     // Files known to use shadows
-    const shadowFiles = ["dialog.ts", "tabs.ts", "surface.ts", "menubar.ts"];
+    const shadowFiles = ["dialog.ts", "tabs.ts", "surface.ts"];
 
     const violations: string[] = [];
 
@@ -1121,7 +1121,6 @@ describe("Figma Plugin - Registry Styling Integration", () => {
     { file: "pagination.ts", component: "Pagination" },
     { file: "input-area.ts", component: "InputArea" },
     { file: "layer-card.ts", component: "LayerCard" },
-    { file: "menubar.ts", component: "MenuBar" },
   ];
 
   it("should read styling from registry for components with hardcoded configs", () => {

@@ -164,10 +164,6 @@
       "types": "./dist/components/loader.d.ts",
       "import": "./dist/components/loader.js"
     },
-    "./components/menubar": {
-      "types": "./dist/components/menubar.d.ts",
-      "import": "./dist/components/menubar.js"
-    },
     "./components/meter": {
       "types": "./dist/components/meter.d.ts",
       "import": "./dist/components/meter.js"

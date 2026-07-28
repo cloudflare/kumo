@@ -199,7 +199,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, string> = {
   "layer-card":
     "A card with a layered visual effect for navigation or highlights.",
   loader: "A loading spinner to indicate loading state.",
-  menubar: "A horizontal menu bar with icon buttons for toolbars.",
   popover: "An accessible popup anchored to a trigger element.",
   radio: "A control that allows selecting one option from a set.",
   select: "Displays a list of options for the user to pick from.",
