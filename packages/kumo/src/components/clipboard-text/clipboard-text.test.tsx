@@ -13,7 +13,6 @@ describe("ClipboardText", () => {
   let writeText: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -27,6 +26,13 @@ describe("ClipboardText", () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
+
+  const clickCopyButton = async (
+    button = screen.getByRole("button", { name: "Copy to clipboard" }),
+  ) => {
+    fireEvent.click(button);
+    await act(() => Promise.resolve());
+  };
 
   it("should be defined", () => {
     expect(ClipboardText).toBeDefined();
@@ -43,23 +49,18 @@ describe("ClipboardText", () => {
   it("copies text and announces copied state without tooltip", async () => {
     render(<ClipboardText text="token-value" />);
 
-    await act(async () => {
-      fireEvent.click(
-        screen.getByRole("button", { name: "Copy to clipboard" }),
-      );
-    });
+    await clickCopyButton();
 
     expect(writeText).toHaveBeenCalledWith("token-value");
     expect(screen.getByText("Copied")).toBeTruthy();
   });
 
   it("keeps the check state while spam-clicking and resets after the last click settles", async () => {
+    vi.useFakeTimers();
     render(<ClipboardText text="token-value" />);
     const button = screen.getByRole("button", { name: "Copy to clipboard" });
 
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await clickCopyButton(button);
     expect(screen.getByText("Copied")).toBeTruthy();
 
     // Advance partway through the feedback window, then click again
@@ -68,9 +69,7 @@ describe("ClipboardText", () => {
     });
     expect(screen.getByText("Copied")).toBeTruthy();
 
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await clickCopyButton(button);
     expect(screen.getByText("Copied")).toBeTruthy();
 
     // Previous timeout must have been cleared — still copied after 1000ms
@@ -91,16 +90,13 @@ describe("ClipboardText", () => {
       <ClipboardText text="visible-text" textToCopy="hidden-secret-value" />,
     );
 
-    await act(async () => {
-      fireEvent.click(
-        screen.getByRole("button", { name: "Copy to clipboard" }),
-      );
-    });
+    await clickCopyButton();
 
     expect(writeText).toHaveBeenCalledWith("hidden-secret-value");
   });
 
   it("shows a single anchored copied toast and bumps it on re-click", async () => {
+    vi.useFakeTimers();
     const { container } = render(
       <ClipboardText
         text="npx kumo add button"
@@ -110,9 +106,7 @@ describe("ClipboardText", () => {
     const button = screen.getByRole("button", { name: "Copy to clipboard" });
     const liveRegion = container.querySelector('[aria-live="polite"]');
 
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await clickCopyButton(button);
 
     // Live region + toast description both surface "Copied!"
     expect(screen.getAllByText("Copied!").length).toBeGreaterThanOrEqual(1);
@@ -122,9 +116,7 @@ describe("ClipboardText", () => {
       vi.advanceTimersByTime(1000);
     });
 
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await clickCopyButton(button);
 
     const secondToast = document.querySelector(".animate-clipboard-toast-bump");
     expect(secondToast).toBeTruthy();
@@ -133,9 +125,7 @@ describe("ClipboardText", () => {
     ).toHaveLength(1);
     expect(liveRegion?.textContent).toBe("Copied!");
 
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await clickCopyButton(button);
 
     const thirdToast = document.querySelector(".animate-clipboard-toast-bump");
     expect(thirdToast).toBeTruthy();
@@ -159,11 +149,7 @@ describe("ClipboardText", () => {
     const onCopy = vi.fn();
     render(<ClipboardText text="token-value" onCopy={onCopy} />);
 
-    await act(async () => {
-      fireEvent.click(
-        screen.getByRole("button", { name: "Copy to clipboard" }),
-      );
-    });
+    await clickCopyButton();
 
     expect(onCopy).toHaveBeenCalledTimes(1);
   });
