@@ -23,8 +23,7 @@ kumo/
 ├── scripts/
 │   ├── component-registry/  # Registry codegen (13 sub-modules, 930+ lines orchestrator)
 │   ├── theme-generator/     # Theme CSS codegen from config.ts
-│   ├── generate-primitives.ts
-│   └── css-build.ts         # Post-Vite CSS processing
+│   └── generate-primitives.ts
 ├── lint/                    # 5 custom oxlint rules (superset of root lint/)
 ├── tests/imports/           # Structural validation: export paths, package.json, build entries
 ├── vite.config.ts           # Library mode, dynamic primitive discovery, PLOP marker
