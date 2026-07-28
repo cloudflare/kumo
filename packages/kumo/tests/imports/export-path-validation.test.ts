@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vite-plus/test";
-import { existsSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { readFileSync } from "fs";
@@ -221,60 +221,24 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       expect(hasChunkFiles).toBe(true);
     });
 
-    it("should have source maps for primitives", () => {
-      const primitivesDir = join(__dirname, "../../dist/primitives");
-      const primitiveExports = Object.keys(packageJson.exports).filter((key) =>
-        key.startsWith("./primitives/"),
-      );
-
-      const missingMaps: string[] = [];
-      for (const exportKey of primitiveExports) {
-        const primitiveName = exportKey.replace("./primitives/", "");
-        const mapPath = join(primitivesDir, `${primitiveName}.js.map`);
-
-        if (existsSync(mapPath)) {
-          continue;
+    it("should not ship source maps or declaration maps", () => {
+      // The dist is intentionally unminified with no maps: consumers' bundlers
+      // minify anyway, and declaration maps would point at unpublished ../src.
+      const distDir = join(__dirname, "../../dist");
+      const mapFiles: string[] = [];
+      const walk = (dir: string) => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+          const fullPath = join(dir, entry.name);
+          if (entry.isDirectory()) {
+            walk(fullPath);
+          } else if (entry.name.endsWith(".map")) {
+            mapFiles.push(fullPath);
+          }
         }
+      };
+      walk(distDir);
 
-        // Rolldown emits primitive entries as facade chunks (pure re-exports
-        // from ../chunks/*) without their own source map; the chunks that
-        // contain the actual code carry the maps. Only flag entries that hold
-        // real code but lack a map.
-        const jsPath = join(primitivesDir, `${primitiveName}.js`);
-        const content = existsSync(jsPath) ? readFileSync(jsPath, "utf-8") : "";
-        // Minified single-line facade: "use client";import{...}from"...";export{...};
-        const isMinifiedFacade =
-          /^("use client";)?(import\s*\{[^}]*\}\s*from\s*"[^"]+";)+export\s*\{[^}]*\};?\s*$/.test(
-            content.trim(),
-          );
-        const isFacade =
-          isMinifiedFacade ||
-          content
-            .split("\n")
-            .every(
-              (line) =>
-                line.trim() === "" ||
-                line.trim() === '"use client";' ||
-                line.startsWith("import ") ||
-                line.startsWith("export ") ||
-                /^[\w$]+ as [\w$$]+,?$/.test(line.trim()) ||
-                line.trim() === "};",
-            );
-        if (!isFacade) {
-          missingMaps.push(`${primitiveName}.js.map`);
-        }
-      }
-
-      // Source maps are nice-to-have, just warn if missing
-      if (missingMaps.length > 0) {
-        console.warn(
-          `\n⚠️  ${missingMaps.length} primitive source maps missing`,
-        );
-      }
-
-      // We expect source maps (directly or via the underlying chunks) in
-      // production builds
-      expect(missingMaps.length).toBeLessThan(primitiveExports.length / 2);
+      expect(mapFiles).toEqual([]);
     });
 
     it("primitive JS files should import from bundled chunks", async () => {
