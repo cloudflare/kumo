@@ -256,10 +256,6 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         /^#!\/usr\/bin\/env node\n/,
       );
 
-      if (process.platform !== "win32") {
-        expect(statSync(cliPath).mode & 0o111).not.toBe(0);
-      }
-
       const result = spawnSync(process.execPath, [binPath, "help"], {
         cwd: packageDir,
         encoding: "utf-8",
@@ -271,6 +267,15 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         "Kumo CLI - Component registry and blocks distribution",
       );
     });
+
+    it.skipIf(process.platform === "win32")(
+      "should mark the CLI bundle as executable",
+      () => {
+        const cliPath = join(__dirname, "../../dist/command-line/cli.js");
+
+        expect(statSync(cliPath).mode & 0o111).not.toBe(0);
+      },
+    );
 
     it("primitive JS files should import from bundled chunks", async () => {
       const sliderJs = join(__dirname, "../../dist/primitives/slider.js");
