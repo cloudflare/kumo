@@ -191,8 +191,6 @@ export default defineConfig({
       format: "esm",
       platform: "browser",
       outDir: "dist",
-      sourcemap: true,
-      minify: true,
       dts: false,
       // The dts pass emits declarations this pass can't see — pair them by
       // co-location; asset entries aren't chunks, so re-attach them here.
@@ -305,7 +303,9 @@ export default defineConfig({
       clean: false,
       // Keep bare imports external so consumers resolve real packages' types.
       deps: { neverBundle: /^[^./]/ },
-      dts: { emitDtsOnly: true },
+      // tsconfig's declarationMap is for the workspace; published maps point at
+      // ../src, which isn't shipped.
+      dts: { emitDtsOnly: true, sourcemap: false },
       sourcemap: false,
       // rolldown-plugin-dts transforms without maps; maps are irrelevant for d.ts.
       inputOptions: { checks: { sourcemapBroken: false } },
