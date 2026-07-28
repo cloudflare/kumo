@@ -50,7 +50,7 @@ kumo/
 
 ### Build System
 
-- **Build pipeline**: `codegen:registry` → `css-build.ts` → `vp pack` (browser library, Node CLI, declarations)
+- **Build pipeline**: `codegen:registry` → `vp pack` (browser library, Node CLI, declarations, package assets)
 - **Bundled deps**: `@base-ui/react`, `clsx`, `tailwind-merge` are bundled (not external)
 - **External peers**: `react`, `react-dom`, `@phosphor-icons/react` only
 - **`"use client"` banner**: Injected on ALL output chunks for RSC compatibility

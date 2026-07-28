@@ -429,7 +429,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run build && pnpm run test:unit",
-    "build": "pnpm run codegen:registry && tsx scripts/css-build.ts && vp pack",
+    "build": "pnpm run codegen:registry && vp pack",
     "dev": "vp pack --watch",
     "new:component": "plop component",
     "clean": "rm -rf dist",

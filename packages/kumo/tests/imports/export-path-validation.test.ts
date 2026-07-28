@@ -1,9 +1,8 @@
 import { describe, it, expect } from "vite-plus/test";
-import { existsSync, readdirSync, statSync } from "fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "fs";
 import { spawnSync } from "child_process";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -276,6 +275,52 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         expect(statSync(cliPath).mode & 0o111).not.toBe(0);
       },
     );
+
+    it("should ship raw and compiled CSS assets", () => {
+      const packageDir = join(__dirname, "../..");
+      const sourceDir = join(packageDir, "src/styles");
+      const outputDir = join(packageDir, "dist/styles");
+      const rawFiles = [
+        "kumo.css",
+        "kumo-binding.css",
+        "theme-kumo.css",
+        "theme-fedramp.css",
+      ];
+
+      for (const file of rawFiles) {
+        expect(readFileSync(join(outputDir, file), "utf-8")).toBe(
+          readFileSync(join(sourceDir, file), "utf-8"),
+        );
+      }
+
+      const standaloneCss = readFileSync(
+        join(outputDir, "kumo-standalone.css"),
+        "utf-8",
+      );
+      expect(standaloneCss).not.toContain('@import "tailwindcss"');
+      expect(standaloneCss).toContain("--color-kumo-base");
+    });
+
+    it("should ship block sources used by the CLI", () => {
+      const packageDir = join(__dirname, "../..");
+      const sourceDir = join(packageDir, "src/blocks");
+      const outputDir = join(packageDir, "dist/blocks-source");
+
+      for (const block of readdirSync(sourceDir, { withFileTypes: true })) {
+        if (!block.isDirectory()) continue;
+
+        const blockDir = join(sourceDir, block.name);
+        const files = readdirSync(blockDir).filter((file) =>
+          file.endsWith(".tsx"),
+        );
+
+        for (const file of files) {
+          expect(readFileSync(join(outputDir, block.name, file), "utf-8")).toBe(
+            readFileSync(join(blockDir, file), "utf-8"),
+          );
+        }
+      }
+    });
 
     it("primitive JS files should import from bundled chunks", async () => {
       const sliderJs = join(__dirname, "../../dist/primitives/slider.js");
