@@ -295,23 +295,21 @@ export default defineConfig({
       },
     },
     {
-      // The package bin wrapper loads this single, self-contained Node bundle.
-      // All command modules are statically imported by cli.ts, so separate
-      // command entry points would only duplicate code in the published package.
+      // Extra entries would duplicate commands already imported by cli.ts.
       entry: {
         cli: resolve(__dirname, "src/command-line/cli.ts"),
       },
       format: "esm",
       platform: "node",
+      // Preserve the existing Node compatibility floor.
       target: "node18",
-      // Clean only the CLI subtree so stale standalone command bundles cannot
-      // survive an incremental build, without touching library or CSS outputs.
+      // Limit cleaning because other builds share dist.
       outDir: "dist/command-line",
       clean: true,
       dts: false,
       sourcemap: false,
       exports: false,
-      // Match esbuild's previous `packages: "external"` behavior.
+      // Avoid bundling dependencies supplied by the installed package.
       deps: { neverBundle: true },
       outputOptions: {
         entryFileNames: "[name].js",
