@@ -45,6 +45,19 @@ export const KUMO_TABS_STYLING = {
   },
 } as const;
 
+/** Labels for internationalization of Tabs component. */
+export interface TabsLabels {
+  /** Aria label for the button that scrolls to earlier tabs. @default "Scroll tabs left" */
+  scrollStart?: string;
+  /** Aria label for the button that scrolls to later tabs. @default "Scroll tabs right" */
+  scrollEnd?: string;
+}
+
+const DEFAULT_LABELS: Required<TabsLabels> = {
+  scrollStart: "Scroll tabs left",
+  scrollEnd: "Scroll tabs right",
+};
+
 // Derived types from KUMO_TABS_VARIANTS
 export interface KumoTabsVariantsProps {
   /**
@@ -113,6 +126,8 @@ export type TabsProps = KumoTabsVariantsProps & {
   listClassName?: string;
   /** Additional CSS classes for the indicator element. */
   indicatorClassName?: string;
+  /** Labels for internationalization of aria-labels. All labels have English defaults. */
+  labels?: TabsLabels;
 };
 
 /**
@@ -138,6 +153,7 @@ export function Tabs({
   className,
   listClassName,
   indicatorClassName,
+  labels: labelsProp,
   variant = KUMO_TABS_DEFAULT_VARIANTS.variant,
   size = KUMO_TABS_DEFAULT_VARIANTS.size,
 }: TabsProps) {
@@ -157,6 +173,7 @@ export function Tabs({
   const isSegmented = variant === "segmented";
   const isUnderline = variant === "underline";
   const isSm = size === "sm";
+  const labels = { ...DEFAULT_LABELS, ...labelsProp };
   const {
     ref: listRef,
     isOverflowing,
@@ -262,6 +279,7 @@ export function Tabs({
         visible={canScrollStart}
         variant={variant}
         size={size}
+        label={labels.scrollStart}
         onClick={() => scrollTabs(listRef, "start")}
       />
       <TabsOverflowControl
@@ -269,6 +287,7 @@ export function Tabs({
         visible={canScrollEnd}
         variant={variant}
         size={size}
+        label={labels.scrollEnd}
         onClick={() => scrollTabs(listRef, "end")}
       />
     </TabsPrimitive.Root>
@@ -280,12 +299,14 @@ function TabsOverflowControl({
   visible,
   variant,
   size,
+  label,
   onClick,
 }: {
   side: "start" | "end";
   visible: boolean;
   variant: NonNullable<TabsProps["variant"]>;
   size: NonNullable<TabsProps["size"]>;
+  label: string;
   onClick: () => void;
 }) {
   const isStart = side === "start";
@@ -294,7 +315,7 @@ function TabsOverflowControl({
   return (
     <button
       type="button"
-      aria-label={isStart ? "Scroll tabs left" : "Scroll tabs right"}
+      aria-label={label}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       onClick={onClick}
