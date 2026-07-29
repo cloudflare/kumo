@@ -1,5 +1,93 @@
 # @cloudflare/kumo
 
+## 2.9.0
+
+### Minor Changes
+
+- ff8ad54: Improves Banner contrast and CTA colors, adds compact sizing, and keeps components that consume the updated status tokens visually balanced.
+
+  - Updated status tokens to improve contrast between Banner backgrounds, text, and CTAs.
+  - Rebalanced Badge status tints, Toast backgrounds, and Command Palette search highlights to correspond with the updated tokens.
+  - Added a new `Banner.Action` CTA compound that builds on `Button` with banner-specific accent styling. It supports `primary` (filled), `secondary` (accent-hued outline on a transparent background), and `ghost` variants.
+  - Added a `size` prop to `Banner` (`"base"` | `"sm"`); the compact `"sm"` size suits dialogs and other tight spaces and sets its `Banner.Action` children to the `xs` size.
+
+- f919182: Improve chart loading states with a static, reduced-motion-aware `TimeseriesChart` skeleton (line and bar variants matching `type`) and a new `loading` prop for `ChartLegend.SmallItem` and `ChartLegend.LargeItem`.
+- 535d579: Add a `disabled` prop to `LinkButton`. When disabled, it renders a real disabled `<button>` (dropping anchor-only attributes and event handlers) and supports `title` tooltips explaining why the action is unavailable.
+
+  Also removes stale Storybook references from the README and drops `.stories.tsx` generation from the component scaffolder, since Storybook is no longer set up in this repo.
+
+- aae94f1: `LinkButton` now wraps in a Kumo `Tooltip` when a `title` is provided, matching `Button`'s behavior. Previously an enabled `LinkButton` only set a native `title` attribute; it now surfaces the same styled tooltip on hover and focus.
+- 9e083d2: Add `fullScreenOnMobile` prop to `Sidebar`. When set, the mobile navigation
+  sheet expands to the full viewport instead of leaving a sliver of the page
+  visible, giving nav items comfortable touch targets. The backdrop is suppressed
+  and the divider border dropped, since neither has anything to separate. Defaults
+  to `false`.
+
+  Also adds `Sidebar.Close`, a ghost button that dismisses the mobile sheet. It is
+  intended for `Sidebar.Header` in full-screen mobile layouts where the backdrop is
+  hidden and there is no adjacent page content to tap.
+
+  Also fixes `Breadcrumbs.Link` shrinking alongside the current crumb. Flexbox
+  distributed truncation across every crumb, turning the trail into unreadable
+  stubs; ancestors now hold their width so only the current page truncates.
+
+- 51aa44c: Add `Sidebar.Loading`, a nav loading skeleton so apps stop hand-rolling their own. It renders nav-item-shaped placeholder rows (icon + label) grouped like the real nav, composed from `SkeletonLine` and matching the `Sidebar.MenuButton` box model so there's no layout shift when the real nav swaps in. Collapse-aware (icon squares only when collapsed) and exposes `role="status"` with a configurable `label`.
+- 86ee08c: Add `useTableOfContentsActiveId` hook for `TableOfContents` scroll tracking.
+
+  The `TableOfContents` component is presentational, so consumers had to wire up their own scroll-position tracking. This adds a shared hook: pass the section ids (in document order) and it returns the active section id plus a `selectSection` action for click handling.
+
+  ```tsx
+  const { activeId, selectSection } = useTableOfContentsActiveId({
+    ids: headings.map((h) => h.slug),
+    offset: HEADER_HEIGHT,
+  });
+  ```
+
+  - Highlights the topmost section actually in view (via `IntersectionObserver`), offset by an optional fixed-header `offset`; supports custom scroll containers via `root`.
+  - Handles `location.hash` deep links on load and `hashchange` automatically (opt out with `trackHash: false`).
+  - `selectSection` pins a clicked section until scrolling settles, so short sections stay highlighted after a jump. Works on browsers without `scrollend` support.
+  - SSR-safe: all DOM access happens in effects, so it renders under Astro/Next SSR (`activeId` is `null` on the server).
+
+  The docs site "On this page" table of contents now consumes this hook instead of its own bespoke observer.
+
+- 87d1ebc: Ship unminified `dist` output without sourcemaps or declaration maps
+
+  Consumers' bundlers minify (and tree-shake) the library code anyway, so
+  pre-minifying only obscured the shipped modules, and the declaration maps
+  pointed at source files that aren't published. The package shrinks from
+  ~13.9 MB to ~6.5 MB unpacked, and the code in `node_modules` is now
+  readable. No API or behavior changes; final application bundle sizes are
+  effectively unchanged.
+
+### Patch Changes
+
+- fc5e222: Use a string or numeric Button title as the fallback accessible label when the button has no text children.
+- 8e71b38: Bump Prettier 3.6.2 → 3.9.5 and reformat (Prettier changed e.g. interface heritage-clause wrapping). No functional changes.
+- 2a463f7: Prevent TimeseriesChart tooltips from following the cursor outside the chart after a browser context menu interaction.
+- 0f0c44d: ClipboardText: keep the check icon until the last copy click settles, and bump the anchored "Copied" toast (without stacking) when the button is pressed again while it's open.
+- b171c71: Render Kumo Link actions inline in compact Banners while keeping CTA actions trailing.
+- 4f0ed75: Fix purple badge token fallback colors to use purple OKLCH values.
+- 5efe6dd: Add a lint rule that verifies custom components used with `Flow.Node`'s `render` prop forward refs and spread received props.
+- 32b2168: Keep TimeseriesChart brush-to-zoom active after replacing ECharts options.
+- b0870e1: Remove the subtle `shadow-xs` drop shadow from `InputGroup` `Root` and from nested `InputGroup.Button`, so the component matches the flat appearance of the standalone `Input` and other form controls (previously non-ghost button variants still had the base Button's `shadow-xs`).
+- 34e1672: Bundle the library with vp pack (tsdown) instead of Vite lib mode; declarations are now bundled per entry and export types paths follow the import paths
+- 2575f9c: Use muted chart colors for timeseries axes and horizontal gridlines.
+- 7c33107: One-time repo-wide format with the repo's own Prettier 3.6.2 (formatting was never enforced; drift accumulated). No functional changes.
+- ee6e569: Set default `text-base` and `text-lg` line heights to 1.5.
+- 927d19f: Remove inert Tailwind classes surfaced by class sorting: `ring` alongside `ring-2` (overridden — later stylesheet rule wins) and bare `outline` in three places (no such utility in Tailwind v4; `outline-1` already applies the default solid style). No visual changes.
+- 924f07a: Split Base UI across fine-grained chunks instead of one `vendor-base-ui` chunk
+
+  Components now pull in only the Base UI modules they actually use, improving
+  consumer tree-shaking: a single-Button app bundle drops from ~173 KB to
+  ~129 KB minified (~57 KB to ~44 KB gzipped) compared to 2.8.0.
+
+- 7ef8c46: Add clearer edge affordances when Tabs overflow horizontally.
+- 86afc2b: Show Button title tooltips when the button is disabled or loading.
+- 5516c22: Fix command palette match highlight contrast in dark mode.
+- 24149b9: Normalize Tailwind class strings via Oxfmt class sorting (`sortTailwindcss`, canonical Tailwind order, duplicates removed). No functional changes.
+- 8de0551: Migrate the toolchain to Vite+ (`vp`): the library now builds with Vite 8 on Rolldown, tests run through `vp test` (Vitest), and linting/formatting run through `vp lint` (Oxlint) / `vp fmt` (Oxfmt, replacing Prettier). No API changes; published output is functionally identical, though entry files are now re-export facades whose source maps live in the shared chunks, and `use-sync-external-store` is now an explicit dependency instead of being bundled (bundling it left CJS `require("react")` calls that broke importing the package directly in Node).
+- 60f5bfa: Enable full type-checking in `vp check` / `vp lint` (typeAware + typeCheck) and fix the type issues it surfaced in files `tsc --noEmit` never covered. Only runtime-visible change: the CLI entrypoint explicitly voids its `main()` promise.
+
 ## 2.8.0
 
 ### Minor Changes
