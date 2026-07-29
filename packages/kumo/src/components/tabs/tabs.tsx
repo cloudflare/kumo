@@ -196,9 +196,8 @@ export function Tabs({
         data-overflow-end={canScrollEnd ? "" : undefined}
         {...bindDrag()}
         className={cn(
-          "kumo-tabs-list scroll-px-(--scroll-fade-width) relative flex min-w-0 shrink items-stretch overflow-x-auto overflow-y-hidden [--scroll-fade-width:3rem]",
-          isSegmented &&
-            "rounded-lg bg-kumo-recessed px-0.5",
+          "kumo-tabs-list relative flex min-w-0 shrink scroll-px-(--scroll-fade-width) items-stretch overflow-x-auto overflow-y-hidden [--scroll-fade-width:3rem]",
+          isSegmented && "rounded-lg bg-kumo-recessed px-0.5",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
@@ -303,7 +302,9 @@ function TabsOverflowControl({
         isStart
           ? "left-0 justify-start bg-linear-to-r"
           : "right-0 justify-end bg-linear-to-l",
-        visible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+        visible
+          ? "pointer-events-auto opacity-100"
+          : "pointer-events-none opacity-0",
         isSegmented
           ? "from-kumo-recessed via-kumo-recessed/95 to-transparent"
           : "from-kumo-base via-kumo-base/95 to-transparent",
