@@ -15,6 +15,7 @@ import {
   TabsSmDemo,
   TabsControlledDemo,
   TabsManyDemo,
+  TabsOverflowDemo,
 } from "~/components/demos/TabsDemo";
 
 {/* Hero Demo */}
@@ -116,6 +117,16 @@ export default function Example() {
 <p>Tabs automatically scroll horizontally when there are many items.</p>
 <ComponentExample demo="TabsManyDemo">
   <TabsManyDemo client:visible />
+</ComponentExample>
+
+### Horizontal Overflow
+
+<p>
+  When tabs overflow their container, scroll buttons appear at the clipped edge.
+  Use them, horizontal scrolling, or mouse drag to reveal off-screen tabs.
+</p>
+<ComponentExample demo="TabsOverflowDemo">
+  <TabsOverflowDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>
