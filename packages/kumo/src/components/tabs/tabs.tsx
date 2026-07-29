@@ -295,6 +295,7 @@ function TabsOverflowControl({
     <button
       type="button"
       aria-label={isStart ? "Scroll tabs left" : "Scroll tabs right"}
+      aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       onClick={onClick}
       className={cn(
