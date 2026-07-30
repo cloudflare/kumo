@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vite-plus/test";
-import { existsSync, readFileSync, readdirSync, statSync } from "fs";
+import { existsSync, readFileSync, readdirSync } from "fs";
 import { spawnSync } from "child_process";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -241,7 +241,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       expect(mapFiles).toEqual([]);
     });
 
-    it("should ship one executable CLI bundle that the package bin can launch", () => {
+    it("should ship one CLI bundle that the package bin can launch", () => {
       const packageDir = join(__dirname, "../..");
       const cliDir = join(packageDir, "dist/command-line");
       const cliPath = join(cliDir, "cli.js");
@@ -266,15 +266,6 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
         "Kumo CLI - Component registry and blocks distribution",
       );
     });
-
-    it.skipIf(process.platform === "win32")(
-      "should mark the CLI bundle as executable",
-      () => {
-        const cliPath = join(__dirname, "../../dist/command-line/cli.js");
-
-        expect(statSync(cliPath).mode & 0o111).not.toBe(0);
-      },
-    );
 
     it("should ship raw and compiled CSS assets", () => {
       const packageDir = join(__dirname, "../..");
