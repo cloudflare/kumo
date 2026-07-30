@@ -327,7 +327,7 @@ export function HomeGrid() {
         >
           <Collapsible.DefaultTrigger>What is Kumo?</Collapsible.DefaultTrigger>
           <Collapsible.DefaultPanel>
-            Kumo is Cloudflare's component library.
+            <Text>Kumo is Cloudflare's component library.</Text>
           </Collapsible.DefaultPanel>
         </Collapsible.Root>
       ),

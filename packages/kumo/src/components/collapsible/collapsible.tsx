@@ -161,12 +161,16 @@ const CollapsibleDefaultTrigger = forwardRef<
         // Defensive resets to prevent global button styles from polluting the trigger
         "m-0 border-none bg-transparent p-0 shadow-none",
         // Base styles for the trigger
-        "flex cursor-pointer items-center gap-1 text-sm text-kumo-link select-none",
+        "flex cursor-pointer items-center gap-1 text-base text-kumo-link select-none",
         className,
       )}
     >
       {children}{" "}
-      <CaretDownIcon className="h-4 w-4 transition-transform [[data-panel-open]_&]:rotate-180" />
+      <CaretDownIcon
+        size={12}
+        weight="bold"
+        className="transition-transform duration-250 [[data-panel-open]_&]:rotate-180"
+      />
     </CollapsibleBase.Trigger>
   );
 });
@@ -206,7 +210,7 @@ const CollapsibleDefaultPanel = forwardRef<
     <CollapsibleBase.Panel
       ref={ref}
       className={cn(
-        "my-2 space-y-4 border-l-2 border-kumo-fill pl-4",
+        "my-2 space-y-4 border-l-2 border-kumo-fill pl-4 transition-opacity duration-250 ease-out [&[hidden]:not([hidden='until-found'])]:hidden data-ending-style:opacity-0 data-starting-style:opacity-0",
         className,
       )}
       {...props}
