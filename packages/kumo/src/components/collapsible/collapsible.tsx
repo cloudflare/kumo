@@ -165,12 +165,15 @@ const CollapsibleDefaultTrigger = forwardRef<
         className,
       )}
     >
-      {children}{" "}
-      <CaretDownIcon
-        size={12}
-        weight="bold"
-        className="transition-transform duration-250 [[data-panel-open]_&]:rotate-180"
-      />
+      <span>{children}</span>
+      <span className="inline-grid w-4 shrink-0 place-items-center">
+        <CaretDownIcon
+          aria-hidden
+          size={12}
+          weight="bold"
+          className="block size-3 origin-center transition-transform duration-150 ease-out [[data-panel-open]_&]:rotate-180"
+        />
+      </span>
     </CollapsibleBase.Trigger>
   );
 });
@@ -210,12 +213,14 @@ const CollapsibleDefaultPanel = forwardRef<
     <CollapsibleBase.Panel
       ref={ref}
       className={cn(
-        "my-2 space-y-4 border-l-2 border-kumo-fill pl-4 transition-opacity duration-250 ease-out [&[hidden]:not([hidden='until-found'])]:hidden data-ending-style:opacity-0 data-starting-style:opacity-0",
+        "h-[var(--collapsible-panel-height)] overflow-hidden transition-[height,opacity] duration-150 ease-out [&[hidden]:not([hidden='until-found'])]:hidden data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0",
         className,
       )}
       {...props}
     >
-      {children}
+      <div className="my-2 space-y-4 border-l-2 border-kumo-fill py-1 pr-1 pl-4">
+        {children}
+      </div>
     </CollapsibleBase.Panel>
   );
 });
