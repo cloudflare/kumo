@@ -115,6 +115,32 @@ export function CollapsibleKeepMountedDemo() {
 }
 
 /**
+ * Form controls inside DefaultPanel for testing focus ring clipping.
+ */
+export function CollapsibleFormDemo() {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="w-full">
+      <Collapsible.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Collapsible.DefaultTrigger>
+          Contact settings
+        </Collapsible.DefaultTrigger>
+        <Collapsible.DefaultPanel>
+          <form
+            className="flex max-w-sm flex-col gap-4"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <Input label="Email" placeholder="user@example.com" type="email" />
+            <Input label="Team name" placeholder="Design engineering" />
+            <Button type="submit">Save settings</Button>
+          </form>
+        </Collapsible.DefaultPanel>
+      </Collapsible.Root>
+    </div>
+  );
+}
+
+/**
  * Accordion pattern where only one item can be open at a time.
  */
 export function CollapsibleAccordionDemo() {

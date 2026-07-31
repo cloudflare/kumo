@@ -1,5 +1,68 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.13
+
+### Patch Changes
+
+- 9f17a15: Fix broken chart links in the docs site search.
+
+  Chart components (`Chart`, `SankeyChart`, `TimeseriesChart`, `BubbleMap`, `ChoroplethMap`) are auto-discovered from the component registry, but their search results linked to `/components/<name>` (e.g. `/components/bubble-map`), which 404s — chart docs live under `/charts/*`. Search now links `SankeyChart`, `TimeseriesChart`, `BubbleMap`, and `ChoroplethMap` to their correct `/charts/*` pages, and excludes `Chart`/`ChartLegend`, which are already covered by the curated "Charts" and "Custom Chart" entries. Components that share the `/charts/maps` page (`BubbleMap`, `ChoroplethMap`) deep-link to their section anchor, so e.g. searching "bubble" resolves to `/charts/maps#bubble-map`.
+
+- bc2508c: Improve mobile and tablet responsive layout of the docs site.
+
+  - Introduce a tiered horizontal padding scale for docs content: tight on mobile, medium on tablet, full-width on desktop.
+  - Move the desktop sidebar to the `lg:` breakpoint (≥1024px) so tablets use the mobile drawer UX instead of a cramped side-by-side layout.
+  - Align padding across chrome bars (hamburger, sticky doc header) with content wrappers at each breakpoint for visual consistency.
+
+- 86ee08c: Add `useTableOfContentsActiveId` hook for `TableOfContents` scroll tracking.
+
+  The `TableOfContents` component is presentational, so consumers had to wire up their own scroll-position tracking. This adds a shared hook: pass the section ids (in document order) and it returns the active section id plus a `selectSection` action for click handling.
+
+  ```tsx
+  const { activeId, selectSection } = useTableOfContentsActiveId({
+    ids: headings.map((h) => h.slug),
+    offset: HEADER_HEIGHT,
+  });
+  ```
+
+  - Highlights the topmost section actually in view (via `IntersectionObserver`), offset by an optional fixed-header `offset`; supports custom scroll containers via `root`.
+  - Handles `location.hash` deep links on load and `hashchange` automatically (opt out with `trackHash: false`).
+  - `selectSection` pins a clicked section until scrolling settles, so short sections stay highlighted after a jump. Works on browsers without `scrollend` support.
+  - SSR-safe: all DOM access happens in effects, so it renders under Astro/Next SSR (`activeId` is `null` on the server).
+
+  The docs site "On this page" table of contents now consumes this hook instead of its own bespoke observer.
+
+- Updated dependencies [ff8ad54]
+- Updated dependencies [fc5e222]
+- Updated dependencies [8e71b38]
+- Updated dependencies [2a463f7]
+- Updated dependencies [f919182]
+- Updated dependencies [0f0c44d]
+- Updated dependencies [b171c71]
+- Updated dependencies [4f0ed75]
+- Updated dependencies [5efe6dd]
+- Updated dependencies [32b2168]
+- Updated dependencies [b0870e1]
+- Updated dependencies [34e1672]
+- Updated dependencies [535d579]
+- Updated dependencies [aae94f1]
+- Updated dependencies [2575f9c]
+- Updated dependencies [7c33107]
+- Updated dependencies [ee6e569]
+- Updated dependencies [927d19f]
+- Updated dependencies [9e083d2]
+- Updated dependencies [51aa44c]
+- Updated dependencies [924f07a]
+- Updated dependencies [7ef8c46]
+- Updated dependencies [86afc2b]
+- Updated dependencies [5516c22]
+- Updated dependencies [86ee08c]
+- Updated dependencies [87d1ebc]
+- Updated dependencies [24149b9]
+- Updated dependencies [8de0551]
+- Updated dependencies [60f5bfa]
+  - @cloudflare/kumo@2.9.0
+
 ## 1.5.12
 
 ### Patch Changes

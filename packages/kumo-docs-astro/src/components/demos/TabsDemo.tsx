@@ -101,6 +101,26 @@ export function TabsManyDemo() {
   );
 }
 
+export function TabsOverflowDemo() {
+  return (
+    <div className="w-full max-w-xs">
+      <Tabs
+        tabs={[
+          { value: "overview", label: "Overview" },
+          { value: "analytics", label: "Analytics" },
+          { value: "reports", label: "Reports" },
+          { value: "notifications", label: "Notifications" },
+          { value: "settings", label: "Settings" },
+          { value: "billing", label: "Billing" },
+          { value: "security", label: "Security" },
+          { value: "integrations", label: "Integrations" },
+        ]}
+        selectedValue="overview"
+      />
+    </div>
+  );
+}
+
 export function TabsSmDemo() {
   return (
     <div className="flex flex-col gap-6">
