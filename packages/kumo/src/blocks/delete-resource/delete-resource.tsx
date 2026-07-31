@@ -123,7 +123,7 @@ export function DeleteResource({
                 aria-label="Close"
                 disabled={isDeleting}
               >
-                <XIcon size={18} />
+                <XIcon size="1.25em" />
               </Button>
             )}
           />
@@ -157,14 +157,9 @@ export function DeleteResource({
                   {resourceName}
 
                   {copied ? (
-                    <CheckIcon
-                      size={12}
-                      weight="bold"
-                      className="ml-1.5 inline"
-                    />
+                    <CheckIcon weight="bold" className="ml-1.5 inline" />
                   ) : (
                     <CopyIcon
-                      size={12}
                       weight="bold"
                       className="ml-1.5 inline text-kumo-subtle group-hover:text-kumo-default"
                     />

@@ -267,7 +267,7 @@ function PaginationControls({
                 setEditingPage(1);
               }}
             >
-              <CaretDoubleLeftIcon size={16} />
+              <CaretDoubleLeftIcon />
             </InputGroup.Button>
           )}
           <InputGroup.Button
@@ -280,7 +280,7 @@ function PaginationControls({
               setEditingPage(previousPage);
             }}
           >
-            <CaretLeftIcon size={16} />
+            <CaretLeftIcon />
           </InputGroup.Button>
           {controls === "full" &&
             (pageSelector === "dropdown" ? (
@@ -338,7 +338,7 @@ function PaginationControls({
               setEditingPage(nextPage);
             }}
           >
-            <CaretRightIcon size={16} />
+            <CaretRightIcon />
           </InputGroup.Button>
           {controls === "full" && (
             <InputGroup.Button
@@ -350,7 +350,7 @@ function PaginationControls({
                 setEditingPage(maxPage);
               }}
             >
-              <CaretDoubleRightIcon size={16} />
+              <CaretDoubleRightIcon />
             </InputGroup.Button>
           )}
         </InputGroup>

@@ -113,9 +113,7 @@ export const Button = forwardRef<
     // Addon icon sizing (e.g. 18px at "base"). Without this, Button's
     // internal renderIconNode renders `<Icon />` with no size prop,
     // falling back to CSS font-size (~14px).
-    const contextIconSize = context
-      ? INPUT_GROUP_SIZE[context.size ?? "base"].iconSize
-      : undefined;
+    const contextIconSize = context ? "1.15em" : undefined;
 
     const sizedIcon =
       icon &&
@@ -124,7 +122,7 @@ export const Button = forwardRef<
         (typeof icon === "object" &&
           icon !== null &&
           !React.isValidElement(icon)))
-        ? React.createElement(icon as React.ComponentType<{ size?: number }>, {
+        ? React.createElement(icon as React.ComponentType<{ size?: string }>, {
             size: contextIconSize,
           })
         : icon;

@@ -214,7 +214,8 @@ function wrapManagerMethods<
     add: (options: KumoToastManagerAddOptions<any>) => {
       if (options.id) {
         const toasts = (manager as any).toasts as
-          Array<ToastObject<any>> | undefined;
+          | Array<ToastObject<any>>
+          | undefined;
 
         if (toasts) {
           const existingToast = toasts.find((toast) => toast.id === options.id);
@@ -399,7 +400,7 @@ function ToastList() {
                 "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
                 toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
               )}
-              icon={<XIcon className="h-3 w-3" />}
+              icon={<XIcon />}
             />
           }
         />
@@ -443,7 +444,5 @@ function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   );
   if (!("icon" in variantConfig)) return null;
   const Icon = variantConfig.icon;
-  return (
-    <Icon data-toast-icon className="mt-0.5 h-4 w-4 shrink-0" weight="fill" />
-  );
+  return <Icon data-toast-icon className="mt-0.5 shrink-0" weight="fill" />;
 }

@@ -291,7 +291,7 @@ function TriggerValue({
           iconStyles.iconRight,
         )}
       >
-        <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
+        <CaretDownIcon className="fill-current" />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
   );
@@ -388,7 +388,7 @@ function TriggerInput({
           iconStyles.clearRight,
         )}
       >
-        <XIcon size={iconStyles.clearIconSize} />
+        <XIcon />
       </ComboboxBase.Clear>
 
       <ComboboxBase.Trigger
@@ -402,10 +402,7 @@ function TriggerInput({
         )}
       >
         <ComboboxBase.Icon className="flex items-center">
-          <CaretDownIcon
-            size={iconStyles.caretIconSize}
-            className="fill-current"
-          />
+          <CaretDownIcon className="fill-current" />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
     </div>
@@ -531,7 +528,7 @@ function Chip({
           "flex bg-transparent",
         )}
       >
-        <XIcon size={10} />
+        <XIcon size="0.85em" />
       </ComboboxBase.ChipRemove>
     </ComboboxBase.Chip>
   );

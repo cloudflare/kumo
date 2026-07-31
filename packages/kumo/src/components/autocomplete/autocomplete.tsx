@@ -1,5 +1,4 @@
 import { Autocomplete as AutocompleteBase } from "@base-ui/react/autocomplete";
-import { CheckIcon } from "@phosphor-icons/react";
 import { createContext, useContext, type ReactNode } from "react";
 import { inputVariants, KUMO_INPUT_VARIANTS } from "../input/input";
 import { cn } from "../../utils/cn";
@@ -242,12 +241,9 @@ function Item({ children, ...props }: AutocompleteBase.Item.Props) {
       data-kumo-component="Autocomplete"
       data-kumo-part="item"
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay data-selected:font-medium"
+      className="mx-1.5 cursor-pointer rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
     >
-      <div className="col-start-1">{children}</div>
-      <span className="col-start-2 hidden items-center group-data-selected:flex">
-        <CheckIcon size={14} />
-      </span>
+      {children}
     </AutocompleteBase.Item>
   );
 }

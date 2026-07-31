@@ -137,12 +137,12 @@ export function Empty({
           >
             {emptyStateCopied ? (
               <CheckIcon
-                size={16}
+                size="1.15em"
                 className="animate-bounce-in text-kumo-success"
               />
             ) : (
               <CopyIcon
-                size={16}
+                size="1.15em"
                 className="text-kumo-inactive group-hover:text-kumo-brand"
               />
             )}

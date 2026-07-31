@@ -1201,14 +1201,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       if (!IconProp) return null;
       if (React.isValidElement(IconProp)) return IconProp;
       const Comp = IconProp as React.ComponentType<{ className?: string }>;
-      return (
-        <Comp
-          className={cn(
-            "shrink-0 opacity-40",
-            size === "base" ? "size-4" : "size-3.5",
-          )}
-        />
-      );
+      return <Comp className={cn("shrink-0 opacity-40 size-[1.25em]")} />;
     })();
 
     const content = (
@@ -1355,7 +1348,7 @@ const SidebarMenuBadge = forwardRef<
     data-sidebar="menu-badge"
     className={cn(
       "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
-      "px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong select-none",
+      "px-1.5 py-0.5 text-xs/none font-medium text-kumo-strong select-none",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -2167,7 +2160,7 @@ function SidebarMenuChevron({ className }: { className?: string }) {
 
   return (
     <CaretRightIcon
-      size={12}
+      size="0.9em"
       weight="bold"
       className={cn(
         "ml-auto shrink-0 opacity-40 transition-[transform,rotate,opacity] duration-200 group-hover/menu-button:opacity-100",

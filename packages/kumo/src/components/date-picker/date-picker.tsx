@@ -17,7 +17,7 @@ import { cn } from "../../utils/cn";
  */
 const Chevron: CustomComponents["Chevron"] = ({ orientation, ...props }) => {
   const Icon = orientation === "left" ? CaretLeftIcon : CaretRightIcon;
-  return <Icon size={16} {...props} />;
+  return <Icon size="0.85em" {...props} />;
 };
 
 /** Base props shared across all DatePicker modes */

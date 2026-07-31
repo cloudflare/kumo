@@ -85,14 +85,11 @@ export function selectVariants({
   );
 }
 
-const triggerIconStyles: Record<
-  KumoInputSize,
-  { iconSize: number; className: string }
-> = {
-  xs: { iconSize: 10, className: "text-kumo-subtle" },
-  sm: { iconSize: 12, className: "text-kumo-subtle" },
-  base: { iconSize: 14, className: "text-kumo-subtle" },
-  lg: { iconSize: 16, className: "text-kumo-subtle" },
+const triggerIconStyles: Record<KumoInputSize, { className: string }> = {
+  xs: { className: "text-kumo-subtle" },
+  sm: { className: "text-kumo-subtle" },
+  base: { className: "text-kumo-subtle" },
+  lg: { className: "text-kumo-subtle" },
 };
 
 /**
@@ -486,10 +483,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             triggerIconStyles[size].className,
           )}
         >
-          <CaretUpDownIcon
-            size={triggerIconStyles[size].iconSize}
-            className="fill-current"
-          />
+          <CaretUpDownIcon className="fill-current" />
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal container={container}>

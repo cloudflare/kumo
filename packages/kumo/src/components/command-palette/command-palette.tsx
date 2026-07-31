@@ -255,7 +255,7 @@ function InputHeader({
     <div className="flex items-center gap-3 bg-kumo-base px-4 py-3 focus-within:ring-2 focus-within:ring-kumo-brand">
       {leading ?? (
         <MagnifyingGlassIcon
-          className="h-4 w-4 text-kumo-subtle"
+          className="text-lg text-kumo-subtle"
           weight="bold"
         />
       )}
@@ -514,7 +514,7 @@ function ResultItem<T>({
                 className="text-base text-kumo-default"
               />
               <CaretRightIcon
-                className="h-3 w-3 flex-shrink-0 text-kumo-subtle"
+                className="flex-shrink-0 text-xs text-kumo-subtle"
                 weight="bold"
               />
             </span>
@@ -525,7 +525,7 @@ function ResultItem<T>({
             className="text-base text-kumo-default"
           />
           {external && (
-            <ArrowSquareOutIcon className="h-3.5 w-3.5 flex-shrink-0 text-kumo-subtle" />
+            <ArrowSquareOutIcon className="text-sm shrink-0 text-kumo-subtle" />
           )}
           {description && (
             <>
@@ -538,7 +538,7 @@ function ResultItem<T>({
         </div>
       </div>
       {showArrow && !external && !nonInteractive && (
-        <ArrowRightIcon className="h-4 w-4 flex-shrink-0 text-kumo-subtle opacity-0 transition-opacity group-data-[highlighted]:opacity-100" />
+        <ArrowRightIcon className="text-base shrink-0 text-kumo-subtle opacity-0 transition-opacity group-data-highlighted:opacity-100" />
       )}
     </Autocomplete.Item>
   );
