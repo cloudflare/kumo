@@ -557,9 +557,7 @@ describe("InputGroup", () => {
       );
 
       const icon = screen.getByTestId("mock-icon");
-      expect(icon.getAttribute("data-size")).toBe(
-        String(INPUT_GROUP_SIZE.base.iconSize),
-      );
+      expect(icon.getAttribute("data-size")).toBe("1.15em");
     });
 
     it.each(["xs", "sm", "base", "lg"] as const)(
@@ -575,9 +573,7 @@ describe("InputGroup", () => {
         );
 
         const icon = screen.getByTestId("mock-icon");
-        expect(icon.getAttribute("data-size")).toBe(
-          String(INPUT_GROUP_SIZE[groupSize].iconSize),
-        );
+        expect(icon.getAttribute("data-size")).toBe("1.15em");
       },
     );
 

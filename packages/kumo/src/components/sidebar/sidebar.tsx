@@ -1014,7 +1014,7 @@ const SidebarGroupLabel = forwardRef<
     <div className="min-h-0 min-w-0">
       <div
         className={cn(
-          "mt-4 mb-2 truncate px-3 text-sm font-medium text-kumo-subtle",
+          "mt-4 mb-2 truncate px-3 text-base font-medium text-kumo-subtle",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
@@ -1201,14 +1201,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       if (!IconProp) return null;
       if (React.isValidElement(IconProp)) return IconProp;
       const Comp = IconProp as React.ComponentType<{ className?: string }>;
-      return (
-        <Comp
-          className={cn(
-            "shrink-0 opacity-40",
-            size === "base" ? "size-4" : "size-3.5",
-          )}
-        />
-      );
+      return <Comp className={cn("shrink-0 opacity-40 size-[1.25em]")} />;
     })();
 
     const content = (
@@ -1241,8 +1234,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       "group/menu-button relative flex w-full min-w-0 cursor-pointer items-center gap-2.5 rounded-lg outline-none",
       "before:absolute before:inset-x-0 before:-inset-y-px",
       // Sizing
-      size === "base" && "min-h-8.5 px-3 py-0 text-sm font-medium",
-      size === "sm" && "min-h-7 px-2 py-0 text-sm",
+      size === "base" && "min-h-8.5 px-3 py-0 text-base font-medium",
+      size === "sm" && "min-h-7 px-2 py-0 text-base",
       "text-kumo-default",
       "transition-[color,box-shadow,outline] duration-(--sidebar-animation-duration)",
       !active && "hover:bg-(--sidebar-active-bg)",
@@ -1355,7 +1348,7 @@ const SidebarMenuBadge = forwardRef<
     data-sidebar="menu-badge"
     className={cn(
       "inline-flex shrink-0 items-center rounded-full border border-dashed border-kumo-line",
-      "px-1.5 py-0.5 text-[11px]/none font-medium text-kumo-strong select-none",
+      "px-1.5 py-0.5 text-xs/none font-medium text-kumo-strong select-none",
       // Hidden when collapsed
       "group-data-[state=collapsed]/sidebar:hidden",
       className,
@@ -1467,7 +1460,7 @@ const SidebarMenuSubButton = forwardRef<
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
 
   const buttonClasses = cn(
-    "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-sm font-medium outline-none",
+    "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-base font-medium outline-none",
     "before:absolute before:inset-x-0 before:-inset-y-px",
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",
@@ -2167,7 +2160,7 @@ function SidebarMenuChevron({ className }: { className?: string }) {
 
   return (
     <CaretRightIcon
-      size={12}
+      size="0.9em"
       weight="bold"
       className={cn(
         "ml-auto shrink-0 opacity-40 transition-[transform,rotate,opacity] duration-200 group-hover/menu-button:opacity-100",

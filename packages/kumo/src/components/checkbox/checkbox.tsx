@@ -281,13 +281,13 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
       >
         <BaseCheckbox.Indicator
           keepMounted
-          className="flex items-center justify-center text-kumo-inverse data-[unchecked]:invisible"
+          className="flex items-center justify-center text-kumo-inverse data-unchecked:invisible"
           render={(renderProps, state) => (
             <span {...renderProps}>
               {state.indeterminate ? (
-                <MinusIcon weight="bold" size={12} />
+                <MinusIcon weight="bold" size="0.85em" />
               ) : (
-                <CheckIcon weight="bold" size={12} />
+                <CheckIcon weight="bold" size="0.85em" />
               )}
             </span>
           )}
@@ -378,13 +378,13 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
         >
           <BaseCheckbox.Indicator
             keepMounted
-            className="flex items-center justify-center text-kumo-inverse data-[unchecked]:invisible"
+            className="flex items-center justify-center text-kumo-inverse data-unchecked:invisible"
             render={(renderProps, state) => (
               <span {...renderProps}>
                 {state.indeterminate ? (
-                  <MinusIcon weight="bold" size={12} />
+                  <MinusIcon weight="bold" size="0.85em" />
                 ) : (
-                  <CheckIcon weight="bold" size={12} />
+                  <CheckIcon weight="bold" size="0.85em" />
                 )}
               </span>
             )}

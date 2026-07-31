@@ -161,7 +161,7 @@ const GITHUB_RELEASE_URL = "https://github.com/cloudflare/kumo/releases/tag/%40c
             >
               <LinkSimple className="size-4 text-kumo-subtle" />
             </span>
-            <Text as="span" variant="heading2">{v.version}</Text>
+            <Text as="span" variant="page-title">{v.version}</Text>
           </a>
           <Badge variant={badgeConfig[v.bump].variant}>{badgeConfig[v.bump].label}</Badge>
           <a
@@ -180,7 +180,7 @@ const GITHUB_RELEASE_URL = "https://github.com/cloudflare/kumo/releases/tag/%40c
           {v.sections.map((section: ParsedSection) => (
             <div>
               <div class="mb-2.5 [&>h3]:m-0">
-                <Text as="h3" bold>{sectionLabels[section.type]}</Text>
+                <Text as="h3" DANGEROUS_className="font-medium">{sectionLabels[section.type]}</Text>
               </div>
               <ul class="list-none p-0 mt-0 mb-0 [&>li]:ps-0 md:[&>li]:ml-4">
                 {section.entries.map((entry: ParsedEntry) => (

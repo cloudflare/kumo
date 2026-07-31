@@ -421,7 +421,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             size === "sm" && "right-2",
             size === "base" && "right-3",
             size === "lg" && "right-4",
-            iconSize,
+            "size-[1.15em]",
             !showEyeButton && "pointer-events-none opacity-0",
           )}
         >

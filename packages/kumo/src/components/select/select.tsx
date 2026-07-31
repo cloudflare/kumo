@@ -28,13 +28,13 @@ export const KUMO_SELECT_DEFAULT_VARIANTS = {
  */
 export const KUMO_SELECT_STYLING = {
   trigger: {
-    height: 36, // h-9
+    height: 32, // h-8
     paddingX: 12, // px-3
     borderRadius: 8, // rounded-lg
     background: "bg-kumo-elevated",
     text: "text-color-surface",
     ring: "color-border",
-    fontSize: 16, // text-base
+    fontSize: 13, // text-base
     fontWeight: 400, // font-normal
   },
   stateTokens: {
@@ -42,8 +42,8 @@ export const KUMO_SELECT_STYLING = {
     disabled: { opacity: 0.5 },
   },
   icons: {
-    caret: { name: "ph-caret-up-down", size: 20 },
-    check: { name: "ph-check", size: 20 },
+    caret: { name: "ph-caret-up-down", size: 14 },
+    check: { name: "ph-check", size: 14 },
   },
   popup: {
     background: "bg-kumo-elevated",
@@ -55,7 +55,7 @@ export const KUMO_SELECT_STYLING = {
     paddingX: 8, // px-2
     paddingY: 6, // py-1.5
     borderRadius: 4, // rounded
-    fontSize: 16, // text-base
+    fontSize: 13, // text-base
     highlightBackground: "color-surface-secondary",
   },
 } as const;
@@ -66,10 +66,10 @@ export type KumoSelectSize = keyof typeof KUMO_SELECT_VARIANTS.size;
 export interface KumoSelectVariantsProps {
   /**
    * Size of the select trigger. Matches Input component sizes.
-   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
-   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
-   * - `"base"` — Default size (h-9 / 36px)
-   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * - `"sm"` — Small for secondary fields (26px tall)
+   * - `"base"` — Default size (32px tall)
+   * - `"lg"` — Large for prominent fields (36px tall)
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
    * @default "base"
    */
   size?: KumoSelectSize;
@@ -85,14 +85,11 @@ export function selectVariants({
   );
 }
 
-const triggerIconStyles: Record<
-  KumoInputSize,
-  { iconSize: number; className: string }
-> = {
-  xs: { iconSize: 12, className: "text-kumo-subtle" },
-  sm: { iconSize: 14, className: "text-kumo-subtle" },
-  base: { iconSize: 16, className: "text-kumo-subtle" },
-  lg: { iconSize: 18, className: "text-kumo-subtle" },
+const triggerIconStyles: Record<KumoInputSize, { className: string }> = {
+  xs: { className: "text-kumo-subtle" },
+  sm: { className: "text-kumo-subtle" },
+  base: { className: "text-kumo-subtle" },
+  lg: { className: "text-kumo-subtle" },
 };
 
 /**
@@ -379,6 +376,13 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     );
   }
 
+  if (process.env.NODE_ENV !== "production" && size === "xs") {
+    console.warn(
+      '[Kumo Select]: size="xs" is deprecated. Use size="sm" instead. ' +
+        "The xs size will be removed in a future major version.",
+    );
+  }
+
   // New behavior: label presence determines Field wrapper visibility (like Input)
   // hideLabel is only respected for backward compatibility when explicitly set to true
   const useFieldWrapper = label && hideLabel !== true;
@@ -479,10 +483,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
             triggerIconStyles[size].className,
           )}
         >
-          <CaretUpDownIcon
-            size={triggerIconStyles[size].iconSize}
-            className="fill-current"
-          />
+          <CaretUpDownIcon className="fill-current" />
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal container={container}>

@@ -55,7 +55,7 @@ const MenuOption = ({
       )}
       onClick={onClick}
     >
-      <IconContext.Provider value={{ size: 18 }} {...({} as any)}>
+      <IconContext.Provider value={{ size: "var(--text-lg)" }} {...({} as any)}>
         {icon}
       </IconContext.Provider>
     </button>

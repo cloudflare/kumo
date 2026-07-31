@@ -12,6 +12,23 @@
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+/* ==========================================================================
+   Font-scale presets (docs-only)
+   --------------------------------------------------------------------------
+   Kumo exposes `--font-scale` as a hookable multiplier on every font-size
+   token via `calc(<rem> * var(--font-scale, 1))`. The library ships NO
+   presets — density modes are an application-level UX concern. These
+   selectors are docs-only and drive the FontScaleToggle in the header.
+   ========================================================================== */
+@layer base {
+  [data-font-scale="small"] {
+    --font-scale: 0.875;
+  }
+  [data-font-scale="large"] {
+    --font-scale: 1.125;
+  }
+}
+
 * {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;

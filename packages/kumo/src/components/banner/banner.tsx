@@ -64,24 +64,28 @@ export type KumoBannerSize = keyof typeof KUMO_BANNER_VARIANTS.size;
 /**
  * Per-size render-site classes not carried by `bannerVariants` (which only emits
  * the container classes). `row` is the title↔action flex gap, `icon` the icon
- * wrapper height, `description` the description text size, and `action` the size
- * that child `Banner.Action`s inherit via {@link BannerActionContext}.
+ * wrapper height, and `action` the size that child `Banner.Action`s inherit via
+ * {@link BannerActionContext}.
+ *
+ * The title and description both inherit the container's text size
+ * (`text-base` for `base`, `text-sm` for `sm`) — hierarchy is expressed via
+ * font weight (title `font-medium`, description regular), not size. This
+ * mirrors the `Text` scale's weight-first hierarchy: within a banner, the
+ * title is a `heading` role and the description is `body`.
  */
 const BANNER_SIZE_PARTS: Record<
   KumoBannerSize,
-  { row: string; icon: string; description: string; action: BannerActionSize }
+  { row: string; icon: string; action: BannerActionSize }
 > = {
   base: {
     row: "gap-3",
     icon: "h-[1.375em]",
-    description: "text-sm",
     action: "sm",
   },
   sm: {
     row: "gap-2",
     icon: "h-[1.25em]",
-    description: "text-sm",
-    action: "xs",
+    action: "sm",
   },
 };
 
@@ -186,10 +190,12 @@ export interface BannerProps extends Omit<
    */
   variant?: KumoBannerVariant;
   /**
-   * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`,
-   * renders a Kumo `Link` action inline with the description, and sets its
-   * `Banner.Action` children to the `"xs"` size — suited to dialogs and other
-   * tight spaces.
+   * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`
+   * (12px) and renders a Kumo `Link` action inline with the description —
+   * suited to dialogs and other tight spaces. In both sizes the title and
+   * description share the container text size (only the title's
+   * `font-medium` weight distinguishes them), and `Banner.Action` children
+   * render at the small (26px) Button size.
    * @default "base"
    */
   size?: KumoBannerSize;
@@ -284,7 +290,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
                   </span>
                 )}
                 {description && (
-                  <span className={cn(sizeParts.description, "leading-snug")}>
+                  <span className="leading-snug">
                     {description}
                     {hasInlineLinkAction && (
                       <span className="ml-1.5 [&_[data-kumo-component=Link]]:inline">
@@ -298,7 +304,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
               <div className="flex flex-col gap-0.5">
                 {title && <p className="leading-snug font-medium">{title}</p>}
                 {description && (
-                  <div className={cn(sizeParts.description, "leading-snug")}>
+                  <div className="leading-snug">
                     {isValidElement(description) ? (
                       description
                     ) : (

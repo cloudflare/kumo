@@ -160,6 +160,11 @@ export function generateKumoThemeCSS(
   lines.push("}");
 
   // Typography tokens (font sizes and line heights)
+  //
+  // Font-size tokens are multiplied by `--font-scale` so a single knob can
+  // shift the whole scale. Line-height tokens stay as raw ratios — they'll
+  // multiply against the already-scaled font-size at use time and grow
+  // naturally, so scaling them here would double-apply.
   if (config.typography && Object.keys(config.typography).length > 0) {
     lines.push("");
     lines.push("@theme {");
@@ -168,10 +173,37 @@ export function generateKumoThemeCSS(
     for (const [tokenName, def] of Object.entries(config.typography)) {
       const name = useNewNames && def.newName ? def.newName : tokenName;
       const value = def.theme.kumo;
+      const isLineHeight = tokenName.endsWith("--line-height");
 
-      lines.push(`  --text-${name}: ${value};`);
+      const emitted =
+        config.fontScale && !isLineHeight
+          ? `calc(${value} * var(--font-scale, 1))`
+          : value;
+
+      lines.push(`  --text-${name}: ${emitted};`);
     }
 
+    lines.push("}");
+  }
+
+  // Font-scale presets.
+  //
+  // The library declares no named presets — the default multiplier lives
+  // in the `var(--font-scale, 1)` fallback in the typography block above.
+  // Consumers can override `--font-scale` at any scope (typically on
+  // `<html>` via a `data-*` attribute) to shift the whole scale. Kept as
+  // a hook here in case an internal preset is ever justified.
+  if (config.fontScale && Object.keys(config.fontScale.presets).length > 0) {
+    lines.push("");
+    lines.push("@layer base {");
+    lines.push("  /* Font-scale presets — override --font-scale by selector. */");
+    const fmt = (n: number) =>
+      Number.isInteger(n) ? n.toString() : n.toFixed(4).replace(/\.?0+$/, "");
+    for (const [preset, value] of Object.entries(config.fontScale.presets)) {
+      lines.push(
+        `  [data-font-scale="${preset}"] { --font-scale: ${fmt(value)}; }`,
+      );
+    }
     lines.push("}");
   }
 

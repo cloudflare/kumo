@@ -17,19 +17,20 @@ export const KUMO_INPUT_VARIANTS = {
   size: {
     xs: {
       classes: "h-5 gap-1 rounded-sm px-1.5 text-xs",
-      description: "Extra small input for compact UIs",
+      description:
+        "@deprecated Use `size=\"sm\"` instead. The `xs` size will be removed in a future major version.",
     },
     sm: {
-      classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
-      description: "Small input for secondary fields",
+      classes: "h-6.5 gap-1 rounded-md px-2 text-sm",
+      description: "Small input (26px tall) for secondary fields",
     },
     base: {
-      classes: "h-9 gap-1.5 rounded-lg px-3 text-base",
-      description: "Default input size",
+      classes: "h-8 gap-1.5 rounded-lg px-3 text-base",
+      description: "Default input size (32px tall)",
     },
     lg: {
-      classes: "h-10 gap-2 rounded-lg px-4 text-base",
-      description: "Large input for prominent fields",
+      classes: "h-9 gap-2 rounded-lg px-4 text-base",
+      description: "Large input (36px tall) for prominent fields",
     },
   },
   variant: {
@@ -51,16 +52,16 @@ export const KUMO_INPUT_DEFAULT_VARIANTS = {
 
 export const KUMO_INPUT_STYLING = {
   dimensions: {
-    xs: { height: 20, paddingX: 6, fontSize: 12, borderRadius: 2, width: 160 },
-    sm: { height: 26, paddingX: 8, fontSize: 12, borderRadius: 6, width: 200 },
+    xs: { height: 20, paddingX: 6, fontSize: 11, borderRadius: 2, width: 160 },
+    sm: { height: 26, paddingX: 8, fontSize: 13, borderRadius: 6, width: 200 },
     base: {
-      height: 36,
+      height: 32,
       paddingX: 12,
-      fontSize: 16,
+      fontSize: 13,
       borderRadius: 8,
       width: 280,
     },
-    lg: { height: 40, paddingX: 16, fontSize: 16, borderRadius: 8, width: 320 },
+    lg: { height: 36, paddingX: 16, fontSize: 13, borderRadius: 8, width: 320 },
   },
   baseTokens: {
     background: "color-secondary",
@@ -82,10 +83,10 @@ export type KumoInputVariant = keyof typeof KUMO_INPUT_VARIANTS.variant;
 export interface KumoInputVariantsProps {
   /**
    * Input size.
-   * - `"xs"` — Extra small for compact UIs
-   * - `"sm"` — Small for secondary fields
-   * - `"base"` — Default size
-   * - `"lg"` — Large for prominent fields
+   * - `"sm"` — Small for secondary fields (26px tall)
+   * - `"base"` — Default size (32px tall)
+   * - `"lg"` — Large for prominent fields (36px tall)
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
    * @default "base"
    */
   size?: KumoInputSize;
@@ -157,6 +158,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
       '[Kumo Input]: variant="error" is deprecated. ' +
         "Error styling is now automatically applied when the `error` prop is truthy. " +
         "Simply remove the variant prop and pass an error message instead.",
+    );
+  }
+
+  if (process.env.NODE_ENV !== "production" && size === "xs") {
+    console.warn(
+      '[Kumo Input]: size="xs" is deprecated. Use size="sm" instead. ' +
+        "The xs size will be removed in a future major version.",
     );
   }
 

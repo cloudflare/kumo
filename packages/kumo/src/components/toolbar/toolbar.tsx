@@ -15,10 +15,11 @@ export const KUMO_TOOLBAR_VARIANTS = {
   size: {
     xs: {
       classes: "text-xs",
-      description: "Extra small toolbar for compact UIs",
+      description:
+        '@deprecated Use `size="sm"` instead. Toolbar `xs` warns once at the Toolbar level and remaps to `sm` internally, so child Button/Input never see the deprecated size.',
     },
     sm: {
-      classes: "text-xs",
+      classes: "text-sm",
       description: "Small toolbar for secondary controls",
     },
     base: {
@@ -41,7 +42,14 @@ export type ToolbarSize = keyof typeof KUMO_TOOLBAR_VARIANTS.size;
 export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
   /** Toolbar controls rendered as one grouped card. */
   children: React.ReactNode;
-  /** Locks every toolbar item to this size. */
+  /**
+   * Locks every toolbar item to this size.
+   * - `"sm"` — Small toolbar for secondary controls
+   * - `"base"` — Default toolbar size
+   * - `"lg"` — Large toolbar for prominent controls
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
+   * @default "base"
+   */
   size?: ToolbarSize;
 }
 
@@ -101,6 +109,18 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
     },
     ref,
   ) => {
+    if (process.env.NODE_ENV !== "production" && size === "xs") {
+      console.warn(
+        '[Kumo Toolbar]: size="xs" is deprecated. Use size="sm" instead. ' +
+          "The xs size will be removed in a future major version.",
+      );
+    }
+
+    // Remap deprecated `xs` to `sm` internally so child Button/Input/InputGroup
+    // don't emit their own duplicate deprecation warnings. Toolbar renders the
+    // single, coherent warning above; children receive the migrated value.
+    const forwardedSize = size === "xs" ? "sm" : size;
+
     return (
       <ToolbarBase.Root
         ref={ref}
@@ -112,7 +132,7 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
         )}
         {...props}
       >
-        <ToolbarSizeContext.Provider value={{ size }}>
+        <ToolbarSizeContext.Provider value={{ size: forwardedSize }}>
           {children}
         </ToolbarSizeContext.Provider>
       </ToolbarBase.Root>

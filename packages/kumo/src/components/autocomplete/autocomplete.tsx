@@ -1,5 +1,4 @@
 import { Autocomplete as AutocompleteBase } from "@base-ui/react/autocomplete";
-import { CheckIcon } from "@phosphor-icons/react";
 import { createContext, useContext, type ReactNode } from "react";
 import { inputVariants, KUMO_INPUT_VARIANTS } from "../input/input";
 import { cn } from "../../utils/cn";
@@ -25,10 +24,10 @@ export type KumoAutocompleteSize = keyof typeof KUMO_AUTOCOMPLETE_VARIANTS.size;
 export interface KumoAutocompleteVariantsProps {
   /**
    * Size of the autocomplete input. Matches Input component sizes.
-   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
-   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
-   * - `"base"` — Default size (h-9 / 36px)
-   * - `"lg"` — Large for prominent fields (h-10 / 40px)
+   * - `"sm"` — Small for secondary fields (26px tall)
+   * - `"base"` — Default size (32px tall)
+   * - `"lg"` — Large for prominent fields (36px tall)
+   * - `"xs"` — **Deprecated.** Use `"sm"` instead.
    * @default "base"
    */
   size?: KumoAutocompleteSize;
@@ -154,6 +153,14 @@ function InputGroup({
   placeholder?: string;
 }) {
   const { hasError } = useContext(AutocompleteContext);
+
+  if (process.env.NODE_ENV !== "production" && size === "xs") {
+    console.warn(
+      '[Kumo Autocomplete]: size="xs" is deprecated. Use size="sm" instead. ' +
+        "The xs size will be removed in a future major version.",
+    );
+  }
+
   return (
     <AutocompleteBase.Input
       className={cn(
@@ -234,12 +241,9 @@ function Item({ children, ...props }: AutocompleteBase.Item.Props) {
       data-kumo-component="Autocomplete"
       data-kumo-part="item"
       {...props}
-      className="group mx-1.5 grid cursor-pointer grid-cols-[1fr_16px] gap-2 rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay data-selected:font-medium"
+      className="mx-1.5 cursor-pointer rounded px-2 py-1.5 text-base data-highlighted:bg-kumo-overlay"
     >
-      <div className="col-start-1">{children}</div>
-      <span className="col-start-2 hidden items-center group-data-selected:flex">
-        <CheckIcon size={14} />
-      </span>
+      {children}
     </AutocompleteBase.Item>
   );
 }

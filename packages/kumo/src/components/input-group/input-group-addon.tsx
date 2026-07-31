@@ -46,8 +46,8 @@ export const Addon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
       }
       const props = child.props as { size?: unknown };
       if (props.size !== undefined) return child;
-      return cloneElement(child as ReactElement<{ size?: number }>, {
-        size: tokens.iconSize,
+      return cloneElement(child as ReactElement<{ size?: string }>, {
+        size: "1.15em",
       });
     });
 

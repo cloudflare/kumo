@@ -89,10 +89,10 @@ Consider a `ProductCard`. It's a specific arrangement of components for a specif
 <Surface className="rounded-lg p-4">
   <img src={imgSrc} alt={imgAlt} className="rounded-md" />
   <div className="mt-3">
-    <Text size="lg" weight="semibold">
+    <Text variant="section-title" as="h3">
       {title}
     </Text>
-    <Text className="text-kumo-subtle">{description}</Text>
+    <Text variant="secondary">{description}</Text>
     <StarRating rating={rating} />
   </div>
   <div className="mt-4">

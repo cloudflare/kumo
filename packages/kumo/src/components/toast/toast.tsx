@@ -30,12 +30,13 @@ export const KUMO_TOAST_VARIANTS = {
     description: "Toast container with background, border, and shadow",
   },
   title: {
-    classes: "text-[0.975rem] leading-5 font-medium text-kumo-default",
-    description: "Toast title with primary text color",
+    classes: "text-lg leading-5 font-medium text-kumo-default",
+    description:
+      "Toast title — role: section-title (15px medium). Pairs with body-lg description.",
   },
   description: {
-    classes: "text-[0.925rem] leading-5 text-kumo-subtle",
-    description: "Toast description with muted text color",
+    classes: "text-lg leading-5 text-kumo-subtle",
+    description: "Toast description — body-lg (15px regular), muted color.",
   },
   close: {
     classes:
@@ -93,7 +94,7 @@ export const KUMO_TOAST_STYLING = {
     gap: 4,
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 500,
     color: "text-color-surface",
   },
@@ -213,7 +214,8 @@ function wrapManagerMethods<
     add: (options: KumoToastManagerAddOptions<any>) => {
       if (options.id) {
         const toasts = (manager as any).toasts as
-          Array<ToastObject<any>> | undefined;
+          | Array<ToastObject<any>>
+          | undefined;
 
         if (toasts) {
           const existingToast = toasts.find((toast) => toast.id === options.id);
@@ -370,9 +372,9 @@ function ToastList() {
               <div className="flex flex-col gap-1 overflow-hidden">
                 <Toast.Title
                   data-toast-title
-                  className="text-[0.975rem] leading-5 font-medium text-kumo-default"
+                  className="text-lg leading-5 font-medium text-kumo-default"
                 />
-                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
+                <Toast.Description className="text-lg leading-5 text-kumo-default/70" />
 
                 {!!toast.actions && (
                   <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
@@ -398,7 +400,7 @@ function ToastList() {
                 "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
                 toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
               )}
-              icon={<XIcon className="h-3 w-3" />}
+              icon={<XIcon />}
             />
           }
         />
@@ -442,7 +444,5 @@ function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   );
   if (!("icon" in variantConfig)) return null;
   const Icon = variantConfig.icon;
-  return (
-    <Icon data-toast-icon className="mt-0.5 h-4 w-4 shrink-0" weight="fill" />
-  );
+  return <Icon data-toast-icon className="mt-0.5 shrink-0" weight="fill" />;
 }

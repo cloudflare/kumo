@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Input } from "../input/input";
@@ -19,7 +19,7 @@ describe("Toolbar", () => {
 
     expect(toolbarInput.className).toContain("h-6.5");
     expect(toolbarInput.className).toContain("rounded-none");
-    expect(directInput.className).toContain("h-10");
+    expect(directInput.className).toContain("h-9");
     expect(directInput.className).not.toContain("rounded-none");
   });
 
@@ -93,5 +93,47 @@ describe("Toolbar", () => {
 
     await user.keyboard("{ArrowRight}");
     expect(document.activeElement).toBe(visit);
+  });
+
+  describe("deprecated xs size", () => {
+    it("emits a single deprecation warning at the Toolbar level", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      render(
+        <Toolbar size="xs">
+          <Toolbar.Input aria-label="Toolbar input" />
+        </Toolbar>,
+      );
+
+      const toolbarWarnings = warn.mock.calls.filter((args) =>
+        String(args[0]).includes('[Kumo Toolbar]: size="xs" is deprecated'),
+      );
+      expect(toolbarWarnings).toHaveLength(1);
+      warn.mockRestore();
+    });
+
+    it("does not emit child Button/Input xs deprecation warnings (remapped to sm)", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      render(
+        <Toolbar size="xs">
+          <Toolbar.Input aria-label="Toolbar input" />
+          <Toolbar.Button aria-label="Action">A</Toolbar.Button>
+        </Toolbar>,
+      );
+
+      const childWarnings = warn.mock.calls.filter((args) => {
+        const msg = String(args[0]);
+        return (
+          msg.includes('[Kumo Button]: size="xs" is deprecated') ||
+          msg.includes('[Kumo Input]: size="xs" is deprecated')
+        );
+      });
+      expect(childWarnings).toHaveLength(0);
+
+      // Child Input should render at sm height (26px), not xs (20px).
+      const input = screen.getByRole("textbox", { name: "Toolbar input" });
+      expect(input.className).toContain("h-6.5");
+      expect(input.className).not.toContain("h-5");
+      warn.mockRestore();
+    });
   });
 });

@@ -277,7 +277,7 @@ export function DateRangePicker({
             className="absolute top-0 left-0 cursor-pointer rounded bg-kumo-interact/85 p-1.5 hover:bg-kumo-interact"
             onClick={() => adjustMonth(-1)}
           >
-            <CaretLeftIcon size={sizeConfig.iconSize} />
+            <CaretLeftIcon />
           </button>
 
           <DateRangeMonthHeader
@@ -378,7 +378,7 @@ export function DateRangePicker({
             className="absolute top-0 right-0 cursor-pointer rounded bg-kumo-interact/85 p-1.5 hover:bg-kumo-interact"
             onClick={() => adjustMonth(1)}
           >
-            <CaretRightIcon size={sizeConfig.iconSize} />
+            <CaretRightIcon />
           </button>
 
           <DateRangeMonthHeader
@@ -650,7 +650,7 @@ function DateRangeFooter({
         sizeConfig.textSize,
       )}
     >
-      <GlobeHemisphereWestIcon size={sizeConfig.iconSize} />
+      <GlobeHemisphereWestIcon />
       <span className="flex-1">Timezone: {timezone}</span>
       <button
         type="button"

@@ -81,9 +81,9 @@ const DropdownMenuSubTrigger = React.forwardRef<
     )}
     {...props}
   >
-    {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+    {IconComponent && <IconComponent className="mr-2 size-[1.15em]" />}
     {children}
-    <CaretRight className="ml-auto h-4 w-4" />
+    <CaretRight className="ml-auto" />
   </DropdownMenuPrimitive.SubmenuTrigger>
 ));
 
@@ -142,7 +142,7 @@ const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (!IconComponent) return null;
   if (React.isValidElement(IconComponent)) return IconComponent;
   const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
-  return <Comp className="mr-2 h-4 w-4" />;
+  return <Comp className="mr-2 size-[1.15em]" />;
 };
 
 /**
@@ -348,7 +348,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     {...props}
   >
     <DropdownMenuPrimitive.CheckboxItemIndicator className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-inherit">
-      <CheckIcon weight="bold" size={12} />
+      <CheckIcon weight="bold" size="0.9em" />
     </DropdownMenuPrimitive.CheckboxItemIndicator>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
@@ -435,7 +435,7 @@ const DropdownMenuRadioItemIndicator = React.forwardRef<
     className={cn("ml-auto", className)}
     {...props}
   >
-    {children ?? <Check className="h-4 w-4" />}
+    {children ?? <Check className="size-[1.15em]" />}
   </DropdownMenuPrimitive.RadioItemIndicator>
 ));
 DropdownMenuRadioItemIndicator.displayName = "DropdownMenuRadioItemIndicator";

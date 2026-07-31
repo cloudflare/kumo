@@ -5,7 +5,9 @@ import { Select } from "./select";
 
 describe("Select", () => {
   describe("size", () => {
-    it("applies size classes to the trigger", () => {
+    it("applies size classes to the trigger (deprecated xs)", () => {
+      // xs is deprecated but still functional; assertion covers the legacy path.
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
       const { container } = render(
         <Select aria-label="Pick one" size="xs">
           <Select.Option value="a">Option A</Select.Option>
@@ -17,6 +19,19 @@ describe("Select", () => {
       expect(trigger?.className).toContain("h-5");
       expect(trigger?.className).toContain("px-1.5");
       expect(trigger?.className).toContain("text-xs");
+      warn.mockRestore();
+    });
+
+    it("applies size classes to the trigger (base)", () => {
+      const { container } = render(
+        <Select aria-label="Pick one" size="base">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = container.querySelector('[role="combobox"]');
+      expect(trigger?.className).toContain("h-8");
+      expect(trigger?.className).toContain("text-base");
     });
   });
 

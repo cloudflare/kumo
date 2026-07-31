@@ -34,16 +34,17 @@ export function CodeExample({ code }: CodeExampleProps) {
 export const designTips = [
   {
     id: "content-text-size",
-    title: "Use 14px for content text",
+    title: "Use 13px for content text",
     description:
-      "All content text—body, buttons, data, other interactables—must be 14px in size. 16px and above are restricted to headings and subheadings.",
+      "Body copy, buttons, inputs, table cells, and other interactables all render at 13px (`text-base`) — the default `Text` size. Reserve 15px+ (`section-title`, `page-title`, `display`) for role-based headings. Never bump body up with `size=\"lg\"` to signal importance; use `variant=\"heading\"` (13px medium) or a stronger heading variant instead. `size=\"xs\"` (11px) and `size=\"lg\"` (15px) on body variants are deprecated.",
     examples: [
       {
         variant: "good",
-        exampleCode: `<Text>Content text</Text>`,
+        exampleCode: `<Text as="h3" variant="heading">API tokens</Text>
+<Text>Production token expires in 30 days.</Text>`,
         jsx: (
           <LayerCard className="grid w-full gap-1 p-5">
-            <Text as="h3" variant="heading3">
+            <Text as="h3" variant="heading">
               API tokens
             </Text>
             <Text>Production token expires in 30 days.</Text>
@@ -52,10 +53,11 @@ export const designTips = [
       },
       {
         variant: "bad",
-        exampleCode: `<Text size="lg">Content text</Text>`,
+        exampleCode: `<Text as="h3" variant="heading">API tokens</Text>
+<Text size="lg">Production token expires in 30 days.</Text>`,
         jsx: (
           <LayerCard className="grid w-full gap-1 p-5">
-            <Text as="h3" variant="heading3">
+            <Text as="h3" variant="heading">
               API tokens
             </Text>
             <Text size="lg">Production token expires in 30 days.</Text>
@@ -126,20 +128,20 @@ export const designTips = [
     id: "font-weight",
     title: "Never use `font-bold`",
     description:
-      "Use `font-semibold` for headings and `font-medium` for bold inline text.",
+      "Weight-first hierarchy is the recommended pattern: reach for `variant=\"heading\"` (13px medium), `variant=\"section-title\"` (15px medium), or `variant=\"page-title\"` (17px medium) instead of bumping size. For inline emphasis on body copy, pass `bold` on `Text` (bumps to `font-medium`) or wrap in `<strong>`. Never use `font-bold`; use `font-semibold` for the rare heading that genuinely needs it.",
     examples: [
       {
         variant: "good",
-        exampleCode: `<Text as="h3" variant="heading3">Account settings</Text>
-<Text as="strong" bold>required</Text>`,
+        exampleCode: `<Text as="h3" variant="heading">Account settings</Text>
+<Text as="strong" DANGEROUS_className="font-medium">required</Text>`,
         jsx: (
           <div className="grid gap-1">
-            <Text as="h3" variant="heading3">
+            <Text as="h3" variant="heading">
               Account settings
             </Text>
             <Text>
               This action is{" "}
-              <Text as="strong" bold>
+              <Text as="strong" DANGEROUS_className="font-medium">
                 required
               </Text>
               .
@@ -187,7 +189,7 @@ export const designTips = [
           <LayerCard className="w-full p-5">
             <div className="grid gap-6">
               <div className="grid gap-1.5">
-                <Text as="h3" variant="heading3">
+                <Text as="h3" variant="heading">
                   Web Analytics
                 </Text>
                 <Text variant="secondary" DANGEROUS_className="text-pretty">
@@ -209,7 +211,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="w-full p-5">
             <div className="grid gap-4">
-              <Text as="h3" variant="heading3">
+              <Text as="h3" variant="heading">
                 Web Analytics
               </Text>
               <Text variant="secondary" DANGEROUS_className="text-pretty">
@@ -233,7 +235,7 @@ export const designTips = [
         exampleCode: `<LayerCard className="px-5 py-4">...</LayerCard>`,
         jsx: (
           <LayerCard className="px-5 py-4">
-            <Text bold>Production</Text>
+            <Text DANGEROUS_className="font-medium">Production</Text>
           </LayerCard>
         ),
       },
@@ -242,7 +244,7 @@ export const designTips = [
         exampleCode: `<LayerCard className="p-5">...</LayerCard>`,
         jsx: (
           <LayerCard className="p-5">
-            <Text bold>Production</Text>
+            <Text DANGEROUS_className="font-medium">Production</Text>
           </LayerCard>
         ),
       },
@@ -292,7 +294,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="w-full shadow-md ring ring-kumo-line">
             <LayerCard.Primary className="grid gap-1 p-5">
-              <Text as="h3" variant="heading3">
+              <Text as="h3" variant="heading">
                 Workers API
               </Text>
               <Text variant="secondary">Last deployed 4 minutes ago</Text>
@@ -306,7 +308,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="w-full border border-kumo-line shadow-md ring-0">
             <LayerCard.Primary className="grid gap-1 p-5 ring-0">
-              <Text as="h3" variant="heading3">
+              <Text as="h3" variant="heading">
                 Workers API
               </Text>
               <Text variant="secondary">Last deployed 4 minutes ago</Text>
@@ -410,7 +412,7 @@ export const designTips = [
       {
         variant: "good",
         jsx: (
-          <Text size="lg">
+          <Text>
             Edit <span className="font-mono text-[0.9em]">wrangler.toml</span>{" "}
             to continue.
           </Text>
@@ -419,7 +421,7 @@ export const designTips = [
       {
         variant: "bad",
         jsx: (
-          <Text size="lg">
+          <Text>
             Edit <span className="font-mono">wrangler.toml</span> to continue.
           </Text>
         ),
@@ -436,7 +438,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="h-56 w-full overflow-auto">
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-kumo-line bg-kumo-base px-3 py-2">
-              <Text bold>API tokens</Text>
+              <Text DANGEROUS_className="font-medium">API tokens</Text>
               <Button size="sm">Create</Button>
             </div>
             <div className="grid gap-4 p-3">
@@ -460,7 +462,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="h-56 w-full overflow-auto">
             <div className="sticky top-0 z-10 flex items-center justify-between bg-kumo-base px-3 py-2">
-              <Text bold>API tokens</Text>
+              <Text DANGEROUS_className="font-medium">API tokens</Text>
               <Button size="sm">Create</Button>
             </div>
             <div className="grid gap-4 p-3">
@@ -515,19 +517,19 @@ export const designTips = [
         jsx: (
           <div className="grid w-full">
             <div className="flex h-10 items-center">
-              <Text as="h3" bold>
+              <Text as="h3" DANGEROUS_className="font-medium">
                 Recent Requests
               </Text>
             </div>
             <LayerCard>
               <LayerCard.Secondary className="grid h-12 grid-cols-3 items-center gap-4 px-3 py-0">
-                <Text bold size="sm">
+                <Text size="sm" DANGEROUS_className="font-medium">
                   Time
                 </Text>
-                <Text bold size="sm">
+                <Text size="sm" DANGEROUS_className="font-medium">
                   Status
                 </Text>
-                <Text bold size="sm">
+                <Text size="sm" DANGEROUS_className="font-medium">
                   Query
                 </Text>
               </LayerCard.Secondary>
@@ -551,15 +553,15 @@ export const designTips = [
         jsx: (
           <LayerCard className="w-full">
             <div className="flex h-10 items-center px-3">
-              <Text as="h3" bold>
+              <Text as="h3" DANGEROUS_className="font-medium">
                 Recent Requests
               </Text>
             </div>
             <LayerCard>
               <LayerCard.Secondary className="grid h-12 grid-cols-3 gap-4 px-3 py-0">
-                <Text bold>Time</Text>
-                <Text bold>Status</Text>
-                <Text bold>Query</Text>
+                <Text DANGEROUS_className="font-medium">Time</Text>
+                <Text DANGEROUS_className="font-medium">Status</Text>
+                <Text DANGEROUS_className="font-medium">Query</Text>
               </LayerCard.Secondary>
               <LayerCard.Primary className="grid h-10 grid-cols-3 items-center gap-4 px-3 py-0">
                 <Text>00:50 UTC</Text>

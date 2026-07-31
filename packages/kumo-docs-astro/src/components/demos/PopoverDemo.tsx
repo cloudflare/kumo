@@ -200,7 +200,7 @@ export function PopoverVirtualAnchorDemo() {
                 <td className="px-4 py-2 text-kumo-subtle">{row.status}</td>
                 <td className="px-4 py-2">
                   <Button
-                    size="xs"
+                    size="sm"
                     variant="ghost"
                     shape="square"
                     icon={DotsThree}

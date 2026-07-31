@@ -10,6 +10,7 @@
  *   pnpm codegen:themes --dry-run # Preview without writing
  */
 
+import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -146,6 +147,31 @@ async function main() {
   }
 
   if (!args.dryRun) {
+    // Format generated CSS with oxfmt so codegen output stays consistent with
+    // the rest of the repo — otherwise minor whitespace / numeric drift from
+    // the ad-hoc string builder pollutes every regen with unrelated diff.
+    const filenames = [...files.keys()];
+    try {
+      execFileSync(
+        "pnpm",
+        [
+          "exec",
+          "vp",
+          "fmt",
+          ...filenames.map((n) => path.join("src/styles", n)),
+        ],
+        {
+          cwd: path.resolve(__dirname, "../.."),
+          stdio: "inherit",
+        },
+      );
+    } catch (err) {
+      console.warn(
+        "  Warning: oxfmt pass failed; generated CSS may have inconsistent formatting.",
+        err instanceof Error ? err.message : err,
+      );
+    }
+
     console.log("\nTheme generation complete!");
     console.log(
       "\nTip: Run with --dry-run to preview changes without writing files",
