@@ -122,7 +122,9 @@ export function CollapsibleFormDemo() {
   return (
     <div className="w-full">
       <Collapsible.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Collapsible.DefaultTrigger>Contact settings</Collapsible.DefaultTrigger>
+        <Collapsible.DefaultTrigger>
+          Contact settings
+        </Collapsible.DefaultTrigger>
         <Collapsible.DefaultPanel>
           <form
             className="flex max-w-sm flex-col gap-4"
