@@ -13,6 +13,7 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import { createPortal } from "react-dom";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
@@ -1548,6 +1549,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       "text-kumo-default",
       "transition-[color,box-shadow,outline] duration-(--sidebar-animation-duration)",
       !active && "hover:bg-(--sidebar-active-bg)",
+      !active && "data-[preview-open]:bg-(--sidebar-active-bg)",
       // Active state
       active && "bg-(--sidebar-active-bg)",
       // When a child sub-button is active, don't show active styling on the parent trigger
@@ -1783,6 +1785,7 @@ const SidebarMenuSubButton = forwardRef<
     "before:absolute before:inset-x-0 before:-inset-y-px",
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",
+    !active && "data-[preview-open]:bg-(--sidebar-active-bg)",
     active && "bg-(--sidebar-active-bg)",
     "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
     className,
@@ -2200,10 +2203,12 @@ SidebarResizeHandle.displayName = "Sidebar.ResizeHandle";
 interface SidebarCollapseContextValue {
   contentId: string;
   isOpen: boolean;
+  isPreviewOpen: boolean;
   isCollapsible: boolean;
   autoScrollOnOpen: boolean;
   toggle: () => void;
   completeOpenChange: () => void;
+  closePreview: () => void;
 }
 
 const isCollapsibleContentShown = (
@@ -2214,11 +2219,29 @@ const isCollapsibleContentShown = (
 const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   contentId: "",
   isOpen: true,
+  isPreviewOpen: false,
   isCollapsible: false,
   autoScrollOnOpen: false,
   toggle: () => {},
   completeOpenChange: () => {},
+  closePreview: () => {},
 });
+
+function getCollapsiblePreviewContent(children: ReactNode) {
+  let previewContent: ReactNode = null;
+
+  React.Children.forEach(children, (child) => {
+    if (
+      React.isValidElement(child) &&
+      (child.type as { displayName?: string })?.displayName ===
+        "Sidebar.CollapsibleContent"
+    ) {
+      previewContent = (child.props as { children?: ReactNode }).children;
+    }
+  });
+
+  return previewContent;
+}
 
 export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
   /** Initial open state (uncontrolled). @default false */
@@ -2268,6 +2291,8 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       autoScrollOnOpen = false,
       className,
       children,
+      onMouseEnter,
+      onMouseLeave,
       ...props
     },
     ref,
@@ -2275,10 +2300,37 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     const sidebar = useSidebar();
     const { animationDuration } = sidebar;
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
     const isOpen = openProp ?? internalOpen;
     const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
+    const closePreviewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+      null,
+    );
+    const previewContent = getCollapsiblePreviewContent(children);
+    const hasPreviewContent = previewContent !== null;
+    const { isMobile, side } = useSidebar();
+
+    const clearPreviewCloseTimeout = useCallback(() => {
+      if (closePreviewTimeoutRef.current) {
+        clearTimeout(closePreviewTimeoutRef.current);
+        closePreviewTimeoutRef.current = null;
+      }
+    }, []);
+
+    const closePreview = useCallback(() => {
+      clearPreviewCloseTimeout();
+      closePreviewTimeoutRef.current = setTimeout(() => {
+        setPreviewOpen(false);
+      }, 120);
+    }, [clearPreviewCloseTimeout]);
+
+    const closePreviewImmediately = useCallback(() => {
+      clearPreviewCloseTimeout();
+      setPreviewOpen(false);
+    }, [clearPreviewCloseTimeout]);
 
     const toggle = useCallback(() => {
       const next = !isOpen;
@@ -2298,12 +2350,64 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       () => ({
         contentId,
         isOpen,
+        isPreviewOpen: previewOpen,
         isCollapsible: true,
         autoScrollOnOpen,
         toggle,
         completeOpenChange,
+        closePreview: closePreviewImmediately,
       }),
-      [contentId, isOpen, autoScrollOnOpen, toggle, completeOpenChange],
+      [
+        contentId,
+        isOpen,
+        previewOpen,
+        autoScrollOnOpen,
+        toggle,
+        completeOpenChange,
+        closePreviewImmediately,
+      ],
+    );
+
+    const handleMouseEnter = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        onMouseEnter?.(e);
+        if (isOpen || isMobile || !hasPreviewContent) return;
+        clearPreviewCloseTimeout();
+
+        const trigger = e.currentTarget.querySelector<HTMLElement>(
+          "[data-sidebar='menu-button'], [data-sidebar='menu-sub-button']",
+        );
+        const rect = (trigger ?? e.currentTarget).getBoundingClientRect();
+
+        setPreviewPosition({
+          top: Math.max(8, rect.top - 4),
+          left: side === "left" ? rect.right + 8 : rect.left - 232,
+        });
+        setPreviewOpen(true);
+      },
+      [
+        clearPreviewCloseTimeout,
+        hasPreviewContent,
+        isMobile,
+        isOpen,
+        onMouseEnter,
+        side,
+      ],
+    );
+
+    const handleMouseLeave = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        onMouseLeave?.(e);
+        closePreview();
+      },
+      [closePreview, onMouseLeave],
+    );
+
+    useEffect(
+      () => () => {
+        clearPreviewCloseTimeout();
+      },
+      [clearPreviewCloseTimeout],
     );
 
     const handleFocusIn = useCallback(
@@ -2341,11 +2445,44 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
           ref={ref}
           data-open={isOpen || undefined}
           className={cn("min-w-0", className)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           onFocus={handleFocusIn}
           onBlur={handleFocusOut}
           {...props}
         >
           {children}
+          {previewOpen &&
+            previewContent &&
+            typeof document !== "undefined" &&
+            createPortal(
+              <div
+                data-sidebar="collapsible-preview"
+                aria-hidden="true"
+                className={cn(
+                  "fixed z-[1000] w-56 overflow-y-auto rounded-lg bg-kumo-control p-1.5 text-kumo-default shadow-lg ring ring-kumo-line",
+                  "max-h-[calc(100vh-1rem)]",
+                  "animate-in fade-in-0 zoom-in-95 duration-150",
+                )}
+                style={{
+                  "--sidebar-active-bg": "var(--color-kumo-tint)",
+                  top: previewPosition.top,
+                  left: previewPosition.left,
+                } as CSSProperties}
+                onMouseEnter={clearPreviewCloseTimeout}
+                onMouseLeave={closePreview}
+              >
+                <div
+                  className={cn(
+                    "[&_[data-sidebar=menu-sub]]:p-0 [&_[data-sidebar=menu-sub]>div]:hidden",
+                    "[&_[data-sidebar=menu-sub-button]]:px-3",
+                  )}
+                >
+                  {previewContent}
+                </div>
+              </div>,
+              document.body,
+            )}
         </div>
       </SidebarCollapseContext.Provider>
     );
@@ -2376,18 +2513,21 @@ export interface SidebarCollapsibleTriggerProps {
  * ```
  */
 function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
-  const { contentId, isOpen, toggle } = useContext(SidebarCollapseContext);
+  const { contentId, isOpen, isPreviewOpen, toggle, closePreview } =
+    useContext(SidebarCollapseContext);
 
   return React.cloneElement(render, {
     "aria-expanded": isOpen,
     "aria-controls": contentId,
     "data-open": isOpen || undefined,
+    "data-preview-open": isPreviewOpen || undefined,
     onClick: (e: React.MouseEvent) => {
       // Call any existing onClick on the render element
       const existingOnClick = (
         render.props as { onClick?: (e: React.MouseEvent) => void }
       ).onClick;
       existingOnClick?.(e);
+      closePreview();
       toggle();
     },
   } as Record<string, unknown>);

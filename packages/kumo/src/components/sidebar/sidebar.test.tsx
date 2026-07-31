@@ -599,6 +599,78 @@ describe("Sidebar.Collapsible", () => {
     expect(trigger.getAttribute("aria-controls")).toBe(content.id);
   });
 
+  it("should preview nested content on hover without toggling open", () => {
+    vi.useFakeTimers();
+    render(<CollapsibleTest />);
+
+    try {
+      const trigger = screen.getByRole("button", { name: /Compute/i });
+      const collapsible = trigger.parentElement!;
+      const content = screen.getByTestId("collapsible-content");
+
+      expect(trigger.getAttribute("aria-expanded")).toBe("false");
+      expect(content.getAttribute("aria-hidden")).toBe("true");
+
+      fireEvent.mouseEnter(collapsible);
+
+      const preview = document.querySelector(
+        "[data-sidebar='collapsible-preview']",
+      );
+      expect(preview).toBeTruthy();
+      expect(preview?.getAttribute("aria-hidden")).toBe("true");
+      expect(preview?.hasAttribute("inert")).toBe(false);
+      expect(preview?.textContent).toContain("Workers");
+      expect(
+        (preview as HTMLElement).style.getPropertyValue(
+          "--sidebar-active-bg",
+        ),
+      ).toBe("var(--color-kumo-tint)");
+      expect(trigger.getAttribute("data-preview-open")).toBe("true");
+      expect(trigger.getAttribute("aria-expanded")).toBe("false");
+      expect(content.getAttribute("aria-hidden")).toBe("true");
+
+      fireEvent.click(trigger);
+
+      expect(
+        document.querySelector("[data-sidebar='collapsible-preview']"),
+      ).toBeNull();
+      expect(trigger.getAttribute("aria-expanded")).toBe("true");
+      expect(content.getAttribute("aria-hidden")).toBe("false");
+
+      fireEvent.click(trigger);
+      fireEvent.mouseEnter(collapsible);
+
+      fireEvent.mouseLeave(collapsible);
+      fireEvent.mouseEnter(
+        document.querySelector(
+          "[data-sidebar='collapsible-preview']",
+        ) as HTMLElement,
+      );
+      act(() => {
+        vi.advanceTimersByTime(120);
+      });
+
+      expect(
+        document.querySelector("[data-sidebar='collapsible-preview']"),
+      ).toBeTruthy();
+
+      fireEvent.mouseLeave(
+        document.querySelector(
+          "[data-sidebar='collapsible-preview']",
+        ) as HTMLElement,
+      );
+      act(() => {
+        vi.advanceTimersByTime(120);
+      });
+
+      expect(
+        document.querySelector("[data-sidebar='collapsible-preview']"),
+      ).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("should have role=region on content", () => {
     render(<CollapsibleTest />);
     const content = screen.getByTestId("collapsible-content");
