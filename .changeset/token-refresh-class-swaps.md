@@ -3,12 +3,17 @@
 ---
 
 Align internal typography class tokens with the refreshed scale for `Badge`,
-`Sidebar`, and `TableOfContents`. **Rendered pixel size is unchanged** in
+`Sidebar`, and `TableOfContents`. **Rendered font-size is unchanged** in
 every case — old `text-sm` / `text-xs` and new `text-base` / `text-sm`
 resolve to the same pixel values on their respective scales. Only the
 class names change so component internals read consistently with the
 refreshed scale (body = `text-base`, caption = `text-sm`, escape hatch =
 `text-xs`).
+
+Note: rendered *line-height* shifts slightly because the refreshed scale
+uses different ratios (see the accompanying line-height tuning changeset).
+Sidebar rows in particular gain ~1px of leading vs. the old scale even
+though the font-size is identical.
 
 **Affected surfaces:**
 

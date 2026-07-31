@@ -627,7 +627,7 @@ export const THEME_CONFIG: ThemeConfig = {
     "sm--line-height": {
       newName: "",
       theme: {
-        kumo: "1.45",
+        kumo: "1.35",
       },
     },
     base: {
@@ -640,7 +640,7 @@ export const THEME_CONFIG: ThemeConfig = {
     "base--line-height": {
       newName: "",
       theme: {
-        kumo: "1.5",
+        kumo: "1.4",
       },
     },
     lg: {
@@ -653,7 +653,7 @@ export const THEME_CONFIG: ThemeConfig = {
     "lg--line-height": {
       newName: "",
       theme: {
-        kumo: "1.5",
+        kumo: "1.45",
       },
     },
     xl: {

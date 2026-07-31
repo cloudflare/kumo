@@ -282,11 +282,11 @@
   --text-xs: calc(11px * var(--font-scale, 1));
   --text-xs--line-height: 1.4;
   --text-sm: calc(12px * var(--font-scale, 1));
-  --text-sm--line-height: 1.45;
+  --text-sm--line-height: 1.35;
   --text-base: calc(13px * var(--font-scale, 1));
-  --text-base--line-height: 1.5;
+  --text-base--line-height: 1.4;
   --text-lg: calc(15px * var(--font-scale, 1));
-  --text-lg--line-height: 1.5;
+  --text-lg--line-height: 1.45;
   --text-xl: calc(17px * var(--font-scale, 1));
   --text-xl--line-height: 1.4;
   --text-2xl: calc(24px * var(--font-scale, 1));
