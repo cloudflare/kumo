@@ -2,7 +2,7 @@
  * Tests for Kumo catalog module
  */
 
-import { describe, it, expect } from "vite-plus/test";
+import { describe, it, expect, vi } from "vite-plus/test";
 import {
   getByPath,
   setByPath,
@@ -253,5 +253,22 @@ describe("visibility evaluation", () => {
       };
       expect(evaluateVisibility(condition, ctx)).toBe(true);
     });
+  });
+});
+
+describe("initCatalog", () => {
+  it("makes synchronous validation available after awaiting", async () => {
+    // Fresh module so the module-level schema cache from other tests
+    // cannot mask a broken initCatalog.
+    vi.resetModules();
+    const { createKumoCatalog, initCatalog } = await import("./catalog");
+    const catalog = createKumoCatalog();
+
+    expect(catalog.hasComponent("Button")).toBe(false);
+
+    await initCatalog(catalog);
+
+    expect(catalog.hasComponent("Button")).toBe(true);
+    expect(catalog.componentNames.length).toBeGreaterThan(0);
   });
 });
