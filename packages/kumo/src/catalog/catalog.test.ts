@@ -258,8 +258,7 @@ describe("visibility evaluation", () => {
 
 describe("initCatalog", () => {
   it("makes synchronous validation available after awaiting", async () => {
-    // Fresh module so the module-level schema cache from other tests
-    // cannot mask a broken initCatalog.
+    // Fresh module — schemas cached by other tests would mask a broken init
     vi.resetModules();
     const { createKumoCatalog, initCatalog } = await import("./catalog");
     const catalog = createKumoCatalog();
@@ -270,5 +269,29 @@ describe("initCatalog", () => {
 
     expect(catalog.hasComponent("Button")).toBe(true);
     expect(catalog.componentNames.length).toBeGreaterThan(0);
+  });
+
+  it("retries schema loading after a failed load", async () => {
+    vi.resetModules();
+    let failLoad = true;
+    vi.doMock("../../ai/schemas", async (importActual) => {
+      if (failLoad) throw new Error("chunk load failed");
+      return importActual();
+    });
+
+    try {
+      const { createKumoCatalog, initCatalog } = await import("./catalog");
+      const catalog = createKumoCatalog();
+
+      // Vitest wraps factory errors, so only the rejection itself is asserted
+      await expect(initCatalog(catalog)).rejects.toThrow();
+      expect(catalog.hasComponent("Button")).toBe(false);
+
+      failLoad = false;
+      await initCatalog(catalog);
+      expect(catalog.hasComponent("Button")).toBe(true);
+    } finally {
+      vi.doUnmock("../../ai/schemas");
+    }
   });
 });

@@ -49,10 +49,16 @@ export async function loadSchemas(): Promise<SchemasModule> {
   if (schemasModule) return schemasModule;
   if (schemasLoadPromise) return schemasLoadPromise;
 
-  schemasLoadPromise = import("../../ai/schemas").then((mod: unknown) => {
-    schemasModule = mod as unknown as SchemasModule;
-    return schemasModule;
-  });
+  schemasLoadPromise = import("../../ai/schemas")
+    .then((mod: unknown) => {
+      schemasModule = mod as unknown as SchemasModule;
+      return schemasModule;
+    })
+    .catch((err: unknown) => {
+      // Failures are usually transient — don't cache them, so retries work
+      schemasLoadPromise = null;
+      throw err;
+    });
 
   return schemasLoadPromise;
 }
