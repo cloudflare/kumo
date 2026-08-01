@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { cn } from "../utils/cn";
 import { Button } from "../components/button";
 import { useShikiHighlighter } from "./use-shiki-highlighter";
@@ -64,8 +64,8 @@ export function CodeHighlighted({
     }
   }, [code]);
 
-  // Get highlighted HTML (or null if not ready/failed)
-  const html = highlight(code, lang);
+  // Memoized so unrelated rerenders (e.g. copy state) don't re-highlight
+  const html = useMemo(() => highlight(code, lang), [highlight, code, lang]);
 
   // Count lines for line numbers
   const lineCount = useMemo(() => code.split("\n").length, [code]);
@@ -116,10 +116,15 @@ export function CodeHighlighted({
       </div>
     ) : null;
 
-  // Error state — still show code, just log the error
-  if (error) {
-    console.error("[Kumo CodeHighlighted] Shiki initialization error:", error);
-  }
+  // Still show the code on error; log once per error, not every render
+  useEffect(() => {
+    if (error) {
+      console.error(
+        "[Kumo CodeHighlighted] Shiki initialization error:",
+        error,
+      );
+    }
+  }, [error]);
 
   // Loading or failed to highlight — show plain text
   if (isLoading || html === null) {

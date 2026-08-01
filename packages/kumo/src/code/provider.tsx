@@ -96,8 +96,31 @@ export function ShikiProvider({
     languages: [],
   });
 
+  // Equivalent inline `languages` arrays must not re-create the highlighter
+  const languageKey = [
+    ...new Set(
+      languages
+        .map((lang) => normalizeLanguage(lang))
+        .filter((lang): lang is SupportedLanguage => lang !== null),
+    ),
+  ]
+    .sort()
+    .join(",");
+
   useEffect(() => {
     let cancelled = false;
+    let ownedHighlighter: ShikiContextValue["highlighter"] = null;
+
+    const validLanguages = languageKey
+      ? (languageKey.split(",") as SupportedLanguage[])
+      : [];
+
+    // Children must fall back to plain text, not use the disposed instance
+    setState((prev) =>
+      prev.highlighter
+        ? { highlighter: null, isLoading: true, error: null, languages: [] }
+        : prev,
+    );
 
     async function initializeShiki() {
       try {
@@ -120,16 +143,6 @@ export function ShikiProvider({
           import("@shikijs/themes/vesper"),
         ]);
 
-        // Load only the requested languages from our bundled set,
-        // normalizing aliases (e.g., 'js' -> 'javascript') first
-        const validLanguages = [
-          ...new Set(
-            languages
-              .map((lang) => normalizeLanguage(lang))
-              .filter((lang): lang is SupportedLanguage => lang !== null),
-          ),
-        ];
-
         const langModules = await Promise.all(
           validLanguages.map((lang) => BUNDLED_LANGS[lang]()),
         );
@@ -141,14 +154,18 @@ export function ShikiProvider({
           engine: engineInstance,
         });
 
-        if (!cancelled) {
-          setState({
-            highlighter,
-            isLoading: false,
-            error: null,
-            languages: validLanguages,
-          });
+        if (cancelled) {
+          highlighter.dispose();
+          return;
         }
+
+        ownedHighlighter = highlighter;
+        setState({
+          highlighter,
+          isLoading: false,
+          error: null,
+          languages: validLanguages,
+        });
       } catch (err) {
         if (!cancelled) {
           setState({
@@ -166,8 +183,9 @@ export function ShikiProvider({
 
     return () => {
       cancelled = true;
+      ownedHighlighter?.dispose();
     };
-  }, [engine, languages]);
+  }, [engine, languageKey]);
 
   const mergedLabels = useMemo(
     () => ({ ...DEFAULT_LABELS, ...labels }),
