@@ -115,9 +115,10 @@ export function ShikiProvider({
       ? (languageKey.split(",") as SupportedLanguage[])
       : [];
 
-    // Children must fall back to plain text, not use the disposed instance
+    // Children must fall back to plain text, not use the disposed instance —
+    // and a retry after a failed init must not keep showing the stale error
     setState((prev) =>
-      prev.highlighter
+      prev.highlighter || prev.error
         ? { highlighter: null, isLoading: true, error: null, languages: [] }
         : prev,
     );

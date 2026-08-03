@@ -340,6 +340,38 @@ describe("ShikiProvider", () => {
     });
   });
 
+  it("clears a stale error when reinitializing after a failed init", async () => {
+    vi.mocked(createHighlighterCore).mockRejectedValueOnce(new Error("boom"));
+
+    function StateProbe() {
+      const { isLoading, error, isReady } = useShikiHighlighter();
+      const status = error ? "error" : isLoading ? "loading" : "ready";
+      return <div data-testid="probe">{isReady ? "ready" : status}</div>;
+    }
+
+    const { rerender } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <StateProbe />
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("probe").textContent).toBe("error");
+    });
+
+    // A language change retries — the stale error must clear immediately
+    rerender(
+      <ShikiProvider engine="javascript" languages={["javascript", "python"]}>
+        <StateProbe />
+      </ShikiProvider>,
+    );
+    expect(screen.getByTestId("probe").textContent).toBe("loading");
+
+    await waitFor(() => {
+      expect(screen.getByTestId("probe").textContent).toBe("ready");
+    });
+  });
+
   it("does not re-highlight when an unrelated parent state changes", async () => {
     mockHighlighter.codeToHtml.mockReturnValue(
       '<pre><code><span class="line">const x = 1;</span></code></pre>',
