@@ -14,6 +14,7 @@ import {
   SidebarResizableDemo,
   SidebarRightDemo,
   SidebarPeekingDemo,
+  SidebarHoverPreviewDemo,
   SidebarAutoScrollDemo,
   SidebarTransitionCompleteDemo,
   SidebarSlidingViewsDemo,
@@ -311,6 +312,51 @@ const { state, isPeeking } = useSidebar();
 const { scrollToItem } = useSidebar();
 scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
           <SidebarScrollToItemDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Hover Preview</Heading>
+        <p>
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">previewOnHover</code> on the Provider (default
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">false</code>) to reveal a closed collapsible's nested
+          content in a floating popup on hover, instead of expanding it inline. A collapsed rail can't render inline
+          content, so its sections preview regardless of open state. Previews are mouse-only (hidden from the
+          accessibility tree); keyboard and assistive-tech users get inline expansion.
+        </p>
+        <p>
+          The collapsed top-level popup shows the parent's name as a title (from the trigger's
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code>, or its text when omitted), replacing
+          the trigger's own tooltip. Nested popups omit it &mdash; the parent row is already visible beside them. Items
+          with no nested content keep their tooltip instead.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider previewOnHover>
+  <Sidebar>
+    <Sidebar.Content>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          {/* Childless: no popup, tooltip falls back to the button text */}
+          <Sidebar.MenuButton icon={ChartBarIcon}>Analytics</Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+        <Sidebar.MenuItem>
+          <Sidebar.Collapsible>
+            <Sidebar.CollapsibleTrigger
+              render={
+                <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                  Compute <Sidebar.MenuChevron />
+                </Sidebar.MenuButton>
+              }
+            />
+            <Sidebar.CollapsibleContent>
+              <Sidebar.MenuSub>...</Sidebar.MenuSub>
+            </Sidebar.CollapsibleContent>
+          </Sidebar.Collapsible>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Content>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarHoverPreviewDemo client:load />
         </ComponentExample>
       </div>
 

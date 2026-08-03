@@ -536,7 +536,7 @@ describe("Sidebar.Collapsible", () => {
     sidebarOpen?: boolean;
   }) {
     return (
-      <TestSidebar defaultOpen open={sidebarOpen}>
+      <TestSidebar defaultOpen open={sidebarOpen} previewOnHover>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -556,7 +556,10 @@ describe("Sidebar.Collapsible", () => {
                 />
                 <SidebarCollapsibleContent data-testid="collapsible-content">
                   <SidebarMenuSub>
-                    <SidebarMenuSubButton>Workers</SidebarMenuSubButton>
+                    <SidebarMenuSubButton>
+                      <svg data-testid="sub-icon" aria-hidden="true" />
+                      Workers
+                    </SidebarMenuSubButton>
                   </SidebarMenuSub>
                 </SidebarCollapsibleContent>
               </SidebarCollapsible>
@@ -617,13 +620,35 @@ describe("Sidebar.Collapsible", () => {
         "[data-sidebar='collapsible-preview']",
       );
       expect(preview).toBeTruthy();
+      // Mouse-only affordance: hidden from the accessibility tree, but NOT
+      // inert (so it stays clickable). Keyboard users get inline expansion.
       expect(preview?.getAttribute("aria-hidden")).toBe("true");
       expect(preview?.hasAttribute("inert")).toBe(false);
+      expect(preview?.hasAttribute("role")).toBe(false);
       expect(preview?.textContent).toContain("Workers");
+
+      // The popup opens from its parent trigger, so the top-level sub-list sits
+      // flush: a wrapper collapses the indent and hides the tree connector line
+      // via direct-child (`>`) overrides. Icons still pass through.
+      const previewSub = preview?.querySelector(
+        "[data-sidebar='menu-sub']",
+      ) as HTMLElement;
+      expect(previewSub).toBeTruthy();
+      // The line is still in the DOM (hidden via CSS), not removed.
       expect(
-        (preview as HTMLElement).style.getPropertyValue(
-          "--sidebar-active-bg",
-        ),
+        previewSub.querySelector(":scope > li[aria-hidden='true']"),
+      ).toBeTruthy();
+      // Wrapper carries the top-level-only flatten overrides.
+      const flattenWrapper = previewSub.parentElement as HTMLElement;
+      expect(flattenWrapper.className).toContain(
+        "[&>[data-sidebar=menu-sub]]:pl-0",
+      );
+      expect(flattenWrapper.className).toContain(
+        "[&>[data-sidebar=menu-sub]>li[aria-hidden=true]]:hidden",
+      );
+      expect(preview?.querySelector("[data-testid='sub-icon']")).toBeTruthy();
+      expect(
+        (preview as HTMLElement).style.getPropertyValue("--sidebar-active-bg"),
       ).toBe("var(--color-kumo-tint)");
       expect(trigger.getAttribute("data-preview-open")).toBe("true");
       expect(trigger.getAttribute("aria-expanded")).toBe("false");
@@ -669,6 +694,443 @@ describe("Sidebar.Collapsible", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  // Single collapsible driving all preview tests: the provider toggle, initial
+  // rail/section open states, and the trigger's optional `tooltip`.
+  function PreviewFixture({
+    previewOnHover,
+    railOpen = true,
+    sectionOpen = false,
+    tooltip,
+  }: {
+    previewOnHover?: boolean;
+    railOpen?: boolean;
+    sectionOpen?: boolean;
+    tooltip?: string;
+  }) {
+    return (
+      <TestSidebar defaultOpen={railOpen} previewOnHover={previewOnHover}>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible defaultOpen={sectionOpen}>
+                <SidebarCollapsibleTrigger
+                  render={
+                    <SidebarMenuButton tooltip={tooltip}>
+                      Compute
+                      <SidebarMenuChevron />
+                    </SidebarMenuButton>
+                  }
+                />
+                <SidebarCollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubButton>Workers</SidebarMenuSubButton>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>
+    );
+  }
+
+  const previewEl = () =>
+    document.querySelector("[data-sidebar='collapsible-preview']");
+
+  it("should not preview when previewOnHover is unset (opt-in)", () => {
+    render(<PreviewFixture />);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    expect(previewEl()).toBeNull();
+  });
+
+  it("should preview when the Provider opts in", () => {
+    render(<PreviewFixture previewOnHover />);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    expect(previewEl()).toBeTruthy();
+  });
+
+  it("should not preview an open section when the rail is expanded", () => {
+    render(<PreviewFixture previewOnHover sectionOpen />);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    // Expanded rail already shows the section inline → no popup.
+    expect(previewEl()).toBeNull();
+  });
+
+  it("should preview an open section when the rail is collapsed", () => {
+    // A collapsed rail cannot render inline content, so even a section marked
+    // open must fall back to the hover popup.
+    render(<PreviewFixture previewOnHover railOpen={false} sectionOpen />);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    expect(previewEl()).toBeTruthy();
+  });
+
+  it("should anchor the popup top to the trigger, offset by its padding", () => {
+    // Align the popup's first row with the row that opened it: top is the
+    // trigger's top minus the popup padding (PREVIEW_PADDING = 6, matching
+    // `p-1.5`). A fixed rect keeps this above the viewport-inset clamp.
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        top: 120,
+        left: 40,
+        right: 88,
+        bottom: 154,
+        width: 48,
+        height: 34,
+        x: 40,
+        y: 120,
+        toJSON: () => ({}),
+      } as DOMRect);
+
+    try {
+      render(<PreviewFixture previewOnHover />);
+      fireEvent.mouseEnter(
+        screen.getByRole("button", { name: /Compute/i }).parentElement!,
+      );
+      const preview = previewEl() as HTMLElement;
+      expect(preview).toBeTruthy();
+      expect(preview.style.top).toBe("114px"); // 120 - 6
+    } finally {
+      rectSpy.mockRestore();
+    }
+  });
+
+  it("should align the collapsed popup's title row with the trigger", () => {
+    // The title mirrors the parent, so it overlays the trigger row: no offset,
+    // the popup's top edge meets the trigger's top (both are min-h-8.5).
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        top: 120,
+        left: 40,
+        right: 88,
+        bottom: 154,
+        width: 48,
+        height: 34,
+        x: 40,
+        y: 120,
+        toJSON: () => ({}),
+      } as DOMRect);
+
+    try {
+      render(
+        <PreviewFixture previewOnHover railOpen={false} tooltip="Compute" />,
+      );
+      fireEvent.mouseEnter(
+        screen.getByRole("button", { name: /Compute/i }).parentElement!,
+      );
+      const preview = previewEl() as HTMLElement;
+      expect(preview).toBeTruthy();
+      expect(preview.style.top).toBe("120px"); // 120 - 0
+    } finally {
+      rectSpy.mockRestore();
+    }
+  });
+
+  const titleEl = () =>
+    document.querySelector(
+      "[data-sidebar='collapsible-preview-title']",
+    ) as HTMLElement | null;
+
+  it("should replace the tooltip with a popup title on collapsed preview", () => {
+    // With a preview available the tooltip is suppressed (showTooltip is
+    // gated on !hasPreview) and the popup carries the parent's name instead.
+    // The tooltip popup is portaled + hover/delay driven and unreliable under
+    // happy-dom, so we assert the observable outcome: preview + title present,
+    // no tooltip popup leaked into the DOM.
+    render(
+      <PreviewFixture previewOnHover railOpen={false} tooltip="Compute" />,
+    );
+
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+
+    expect(previewEl()).toBeTruthy();
+    expect(titleEl()?.textContent).toBe("Compute");
+    expect(document.querySelector(".kumo-tooltip-popup")).toBeNull();
+  });
+
+  it("should title the collapsed popup from the trigger's tooltip", () => {
+    render(
+      <PreviewFixture previewOnHover railOpen={false} tooltip="Compute" />,
+    );
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    expect(titleEl()?.textContent).toBe("Compute");
+  });
+
+  it("should title the collapsed popup from the trigger's text when no tooltip", () => {
+    render(<PreviewFixture previewOnHover railOpen={false} />);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    // Text extraction skips the chevron element → just the label.
+    expect(titleEl()?.textContent).toBe("Compute");
+  });
+
+  it("should not title the popup when the rail is expanded", () => {
+    render(<PreviewFixture previewOnHover tooltip="Compute" />);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    expect(previewEl()).toBeTruthy();
+    expect(titleEl()).toBeNull();
+  });
+
+  it("should title only the top-level popup, not nested ones", () => {
+    render(<NestedCollapsibleTest railOpen={false} tooltip="Compute" />);
+
+    // Open the top-level popup, then the nested one.
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: /Compute/i }).parentElement!,
+    );
+    const popup1 = previewEl() as HTMLElement;
+    fireEvent.mouseEnter(
+      popup1.querySelector("[data-sidebar='menu-sub-button']")!.parentElement!,
+    );
+
+    expect(
+      document.querySelectorAll("[data-sidebar='collapsible-preview']").length,
+    ).toBe(2);
+    // Nested popup omits the title — its parent row shows in popup 1 to the
+    // left — so only the top-level "Compute" title exists.
+    const titles = document.querySelectorAll(
+      "[data-sidebar='collapsible-preview-title']",
+    );
+    expect(titles.length).toBe(1);
+    expect(titles[0].textContent).toBe("Compute");
+  });
+
+  it("should keep preview items clickable but out of the tab order", () => {
+    render(<CollapsibleTest />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    const collapsible = trigger.parentElement!;
+
+    // Keyboard never opens the popup — the trigger does not advertise one.
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+
+    fireEvent.mouseEnter(collapsible);
+    const preview = document.querySelector(
+      "[data-sidebar='collapsible-preview']",
+    ) as HTMLElement;
+    expect(preview).toBeTruthy();
+
+    // Items inside are removed from the tab order (keyboard-invisible)...
+    const subButton = preview.querySelector(
+      "[data-sidebar='menu-sub-button']",
+    ) as HTMLElement;
+    expect(subButton).toBeTruthy();
+    expect(subButton.getAttribute("tabindex")).toBe("-1");
+
+    // ...but remain mouse-clickable.
+    const onClick = vi.fn();
+    subButton.addEventListener("click", onClick);
+    fireEvent.click(subButton);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  function NestedCollapsibleTest({
+    railOpen = true,
+    tooltip,
+  }: {
+    railOpen?: boolean;
+    tooltip?: string;
+  } = {}) {
+    return (
+      <TestSidebar defaultOpen={railOpen} previewOnHover>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible>
+                <SidebarCollapsibleTrigger
+                  render={
+                    <SidebarMenuButton tooltip={tooltip}>
+                      Compute
+                      <SidebarMenuChevron />
+                    </SidebarMenuButton>
+                  }
+                />
+                <SidebarCollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarCollapsible>
+                        <SidebarCollapsibleTrigger
+                          render={
+                            <SidebarMenuSubButton>
+                              Workers & Pages
+                              <SidebarMenuChevron />
+                            </SidebarMenuSubButton>
+                          }
+                        />
+                        <SidebarCollapsibleContent>
+                          <SidebarMenuSub>
+                            <SidebarMenuSubButton href="/overview">
+                              Overview
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSub>
+                        </SidebarCollapsibleContent>
+                      </SidebarCollapsible>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>
+    );
+  }
+
+  it("should dismiss the whole popup stack when a leaf item is clicked", () => {
+    render(<NestedCollapsibleTest />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    fireEvent.mouseEnter(trigger.parentElement!);
+
+    const popup1 = document.querySelector(
+      "[data-sidebar='collapsible-preview']",
+    ) as HTMLElement;
+    expect(popup1).toBeTruthy();
+
+    // Hover the nested parent inside popup 1 to open popup 2.
+    const nestedParent = popup1.querySelector(
+      "[data-sidebar='menu-sub-button']",
+    ) as HTMLElement;
+    fireEvent.mouseEnter(nestedParent.parentElement!);
+
+    const popups = () =>
+      document.querySelectorAll("[data-sidebar='collapsible-preview']");
+    expect(popups().length).toBe(2);
+
+    // Click a leaf (link) in the deepest popup: navigation is allowed and the
+    // entire popup stack is dismissed. (Popups are aria-hidden, so query the
+    // DOM directly rather than by accessible role.)
+    const popup2 = popups()[1] as HTMLElement;
+    const overview = popup2.querySelector('a[href="/overview"]') as HTMLElement;
+    expect(overview).toBeTruthy();
+    const clickEvent = fireEvent.click(overview);
+    expect(clickEvent).toBe(true); // not preventDefault-ed → navigation proceeds
+    expect(popups().length).toBe(0);
+  });
+
+  it("should not toggle a parent's disclosure when clicked inside a popup", () => {
+    render(<NestedCollapsibleTest />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    fireEvent.mouseEnter(trigger.parentElement!);
+
+    const popup1 = document.querySelector(
+      "[data-sidebar='collapsible-preview']",
+    ) as HTMLElement;
+    const nestedParent = popup1.querySelector(
+      "[data-sidebar='menu-sub-button']",
+    ) as HTMLElement;
+
+    // Chevron on a parent inside the popup is static (never rotated open).
+    const chevron = nestedParent.querySelector("svg") as SVGElement;
+    expect(chevron.getAttribute("class") ?? "").not.toContain("rotate-90");
+
+    // A hover-only parent (children, no href) has no click action → no pointer.
+    // `!` beats the unlayered cursor:pointer base rule in kumo.css. (Only the
+    // class can be checked here; happy-dom doesn't load Tailwind CSS.)
+    expect(nestedParent.className).toContain("cursor-default!");
+
+    // Clicking the parent keeps the popup open (children are hover-only) and
+    // does not flip the disclosure — so hovering it still opens its popup.
+    fireEvent.click(nestedParent);
+    expect(
+      document.querySelectorAll("[data-sidebar='collapsible-preview']").length,
+    ).toBe(1);
+    expect(nestedParent.getAttribute("data-open")).toBeNull();
+
+    fireEvent.mouseEnter(nestedParent.parentElement!);
+    expect(
+      document.querySelectorAll("[data-sidebar='collapsible-preview']").length,
+    ).toBe(2);
+  });
+
+  function HrefParentTest() {
+    return (
+      <TestSidebar defaultOpen previewOnHover>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible>
+                <SidebarCollapsibleTrigger
+                  render={
+                    <SidebarMenuButton>
+                      Compute
+                      <SidebarMenuChevron />
+                    </SidebarMenuButton>
+                  }
+                />
+                <SidebarCollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarCollapsible>
+                        <SidebarCollapsibleTrigger
+                          render={
+                            <SidebarMenuSubButton href="/workers">
+                              Workers & Pages
+                              <SidebarMenuChevron />
+                            </SidebarMenuSubButton>
+                          }
+                        />
+                        <SidebarCollapsibleContent>
+                          <SidebarMenuSub>
+                            <SidebarMenuSubButton href="/overview">
+                              Overview
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSub>
+                        </SidebarCollapsibleContent>
+                      </SidebarCollapsible>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>
+    );
+  }
+
+  it("should navigate and dismiss all popups when a parent with href is clicked", () => {
+    render(<HrefParentTest />);
+
+    const trigger = screen.getByRole("button", { name: /Compute/i });
+    fireEvent.mouseEnter(trigger.parentElement!);
+
+    const popup1 = document.querySelector(
+      "[data-sidebar='collapsible-preview']",
+    ) as HTMLElement;
+    const nestedParent = popup1.querySelector(
+      'a[href="/workers"]',
+    ) as HTMLElement;
+    expect(nestedParent).toBeTruthy();
+
+    // A parent with an href is a real link → keeps the pointer cursor.
+    expect(nestedParent.className).not.toContain("cursor-default");
+
+    // Clicking navigates (not preventDefault-ed) and dismisses the popup stack.
+    const clickEvent = fireEvent.click(nestedParent);
+    expect(clickEvent).toBe(true);
+    expect(
+      document.querySelectorAll("[data-sidebar='collapsible-preview']").length,
+    ).toBe(0);
   });
 
   it("should have role=region on content", () => {
@@ -1118,6 +1580,37 @@ describe("Sidebar.MenuButton", () => {
     expect(link!.getAttribute("aria-current")).toBe("true");
     expect(link!.getAttribute("data-active")).toBe("true");
     expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
+  });
+
+  // The collapsed rail labels every item via a tooltip. The popup render is
+  // portal + hover-delay driven (unreliable under happy-dom), so we assert the
+  // wrapping: a labelled button becomes a tooltip trigger, a bare one does not.
+  it("should tooltip a collapsed item from its own text when no tooltip is set", () => {
+    render(
+      <TestSidebar defaultOpen={false}>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton>Analytics</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const button = screen.getByRole("button", { name: "Analytics" });
+    expect(button.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+  });
+
+  it("should not tooltip a collapsed item with no label", () => {
+    render(
+      <TestSidebar defaultOpen={false}>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton aria-label="icon only" />
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const button = screen.getByRole("button", { name: "icon only" });
+    expect(button.hasAttribute("data-base-ui-tooltip-trigger")).toBe(false);
   });
 });
 

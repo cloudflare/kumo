@@ -1,3 +1,4 @@
+import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 import React, {
   type ComponentPropsWithoutRef,
   type CSSProperties,
@@ -7,21 +8,20 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useId,
+  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
-import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
+import { Button } from "../button";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
-import { Button } from "../button";
 
 // ============================================================================
 // Variants (required by Kumo convention)
@@ -99,6 +99,8 @@ const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
 const TRANSITION_FALLBACK_GRACE_MS = 50;
 const MOBILE_BREAKPOINT = 768;
+/** Label typography shared by group labels and preview popup titles. */
+const SIDEBAR_LABEL_TEXT = "truncate text-sm font-medium text-kumo-subtle";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -211,6 +213,7 @@ export interface SidebarContextValue {
   setWidth: (width: number) => void;
   isPeeking: boolean;
   peekable: boolean;
+  previewOnHover: boolean;
   startPeek: () => void;
   stopPeek: () => void;
   contained: boolean;
@@ -324,6 +327,15 @@ export interface SidebarProviderProps {
    */
   peekable?: boolean;
   /**
+   * When true, hovering a closed collapsible section shows its nested content in
+   * a floating popup instead of expanding inline.
+   *
+   * When the sidebar rail is collapsed, previews appear regardless of the
+   * section's open state (inline content cannot render in a collapsed rail).
+   * @default false
+   */
+  previewOnHover?: boolean;
+  /**
    * Duration of sidebar expand/collapse animation in milliseconds.
    * @default 250
    */
@@ -373,6 +385,7 @@ function SidebarProvider({
   onWidthChange,
   contained = false,
   peekable = false,
+  previewOnHover = false,
   animationDuration = SIDEBAR_ANIMATION_DURATION_MS,
   mobileBreakpoint,
   children,
@@ -562,6 +575,7 @@ function SidebarProvider({
       setWidth,
       isPeeking,
       peekable,
+      previewOnHover,
       startPeek,
       stopPeek,
       contained,
@@ -1275,7 +1289,8 @@ const SidebarGroupLabel = forwardRef<
     <div className="min-h-0 min-w-0">
       <div
         className={cn(
-          "mt-4 mb-2 truncate px-3 text-sm font-medium text-kumo-subtle",
+          SIDEBAR_LABEL_TEXT,
+          "mt-4 mb-2 px-3",
           // First group: less top margin
           "[[data-sidebar=group]:first-child_&]:mt-2",
         )}
@@ -1427,6 +1442,11 @@ export interface SidebarMenuButtonProps extends Omit<
   href?: string;
   /** Link target — only meaningful when `href` is provided. */
   target?: React.HTMLAttributeAnchorTarget;
+  /**
+   * Collapsed-rail label. Defaults to the button's text; set this to override
+   * (e.g. a shorter label). Not shown when the sidebar is peekable or a hover
+   * preview supplies the label.
+   */
   tooltip?: string;
   /** Anchor id for `useSidebar().scrollToItem(id)`. */
   itemId?: string;
@@ -1478,6 +1498,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     const { state, peekable, registerItem } = useSidebar();
     const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
+    const { hasPreview } = useContext(SidebarCollapseContext);
 
     const registerAutoWrap = useCallback(
       (node: HTMLLIElement | null) => {
@@ -1604,16 +1625,18 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       );
     }
 
-    // Always wrap in Tooltip when tooltip text is provided so the DOM
-    // structure stays stable across expand/collapse — preventing React from
-    // remounting the button (which would kill CSS transitions).
-    // The tooltip popup only shows when collapsed and peeking is disabled —
-    // when peekable, hovering reveals the full sidebar so tooltips are redundant.
-    const showTooltip = state === "collapsed" && !peekable;
-    if (tooltip) {
+    // Label every childless item on the collapsed rail: explicit `tooltip`
+    // wins, else the button's own text. Wrapping is unconditional (when there's
+    // any label) so the DOM stays stable across expand/collapse — otherwise
+    // React remounts the button and kills its CSS transitions.
+    // Suppressed when peekable (hover reveals the full sidebar) or when a hover
+    // preview owns the label (its popup carries the title and sits in front).
+    const showTooltip = state === "collapsed" && !peekable && !hasPreview;
+    const tooltipText = tooltip ?? getElementText(children);
+    if (tooltipText) {
       button = (
         <Tooltip
-          content={tooltip}
+          content={tooltipText}
           disabled={!showTooltip}
           side="right"
           render={button}
@@ -2206,6 +2229,8 @@ interface SidebarCollapseContextValue {
   isPreviewOpen: boolean;
   isCollapsible: boolean;
   autoScrollOnOpen: boolean;
+  /** True when this section can open a hover-preview popup. */
+  hasPreview: boolean;
   toggle: () => void;
   completeOpenChange: () => void;
   closePreview: () => void;
@@ -2222,10 +2247,43 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   isPreviewOpen: false,
   isCollapsible: false,
   autoScrollOnOpen: false,
+  hasPreview: false,
   toggle: () => {},
   completeOpenChange: () => {},
   closePreview: () => {},
 });
+
+interface SidebarPreviewContextValue {
+  /** True when descendants are rendered inside a hover-preview popup. */
+  insidePreview: boolean;
+  /** Close this popup and every ancestor popup in the chain. */
+  dismissAll: () => void;
+}
+
+const SidebarPreviewContext = createContext<SidebarPreviewContextValue>({
+  insidePreview: false,
+  dismissAll: () => {},
+});
+
+/** Preview popup width in px (matches the `w-56` class below). */
+const PREVIEW_WIDTH = 224;
+/** Gap between the trigger and the preview popup in px. */
+const PREVIEW_GAP = 7;
+/** Minimum viewport inset for the preview popup in px. */
+const PREVIEW_VIEWPORT_INSET = 8;
+/**
+ * Preview popup inner padding in px (must match the `p-1.5` class below).
+ * When there's no title, offsetting the popup top by this amount aligns its
+ * first item with the row that opened it, so nested popups don't drift.
+ */
+const PREVIEW_PADDING = 6;
+/**
+ * Extra vertical offset for the collapsed-rail title popup, in px, applied on
+ * top of the base padding. `0` cancels the padding so the popup's top edge
+ * meets the trigger's — the title row (min-h-8.5) overlays the parent row it
+ * opened from. Increase to drop the popup down. Tune here to adjust alignment.
+ */
+const PREVIEW_TITLE_OFFSET = 0;
 
 function getCollapsiblePreviewContent(children: ReactNode) {
   let previewContent: ReactNode = null;
@@ -2241,6 +2299,48 @@ function getCollapsiblePreviewContent(children: ReactNode) {
   });
 
   return previewContent;
+}
+
+/**
+ * The button's own text label: only direct string/number children. Skips the
+ * icon element and nested elements (e.g. a MenuBadge) so a popup title reads
+ * "Workers", not "Workers3".
+ */
+function getElementText(children: ReactNode): string {
+  let text = "";
+  React.Children.forEach(children, (child) => {
+    if (typeof child === "string" || typeof child === "number") {
+      text += child;
+    }
+  });
+  return text.trim();
+}
+
+/**
+ * Label for a collapsible's preview popup: the trigger's `tooltip` when set,
+ * otherwise its plain-text children. Returns null when neither is available.
+ */
+function getCollapsibleTriggerLabel(children: ReactNode): string | null {
+  let label: string | null = null;
+
+  React.Children.forEach(children, (child) => {
+    if (
+      React.isValidElement(child) &&
+      (child.type as { displayName?: string })?.displayName ===
+        "Sidebar.CollapsibleTrigger"
+    ) {
+      const render = (child.props as { render?: React.ReactElement }).render;
+      if (React.isValidElement(render)) {
+        const props = render.props as {
+          tooltip?: string;
+          children?: ReactNode;
+        };
+        label = props.tooltip?.trim() || getElementText(props.children) || null;
+      }
+    }
+  });
+
+  return label;
 }
 
 export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
@@ -2306,12 +2406,20 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
+    const previewRef = useRef<HTMLDivElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const closePreviewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
       null,
     );
     const previewContent = getCollapsiblePreviewContent(children);
     const hasPreviewContent = previewContent !== null;
-    const { isMobile, side } = useSidebar();
+    const previewLabel = getCollapsibleTriggerLabel(children);
+    const {
+      isMobile,
+      side,
+      state,
+      previewOnHover: previewEnabled,
+    } = useSidebar();
 
     const clearPreviewCloseTimeout = useCallback(() => {
       if (closePreviewTimeoutRef.current) {
@@ -2332,6 +2440,21 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       setPreviewOpen(false);
     }, [clearPreviewCloseTimeout]);
 
+    // Chain up ancestor popups so a click anywhere in the stack dismisses all.
+    const parentPreview = useContext(SidebarPreviewContext);
+    // The title only renders for a collapsed, top-level popup with a label.
+    const showPreviewTitle =
+      state === "collapsed" && !parentPreview.insidePreview && !!previewLabel;
+    const dismissAll = useCallback(() => {
+      closePreviewImmediately();
+      parentPreview.dismissAll();
+    }, [closePreviewImmediately, parentPreview]);
+
+    const previewProviderValue = useMemo<SidebarPreviewContextValue>(
+      () => ({ insidePreview: true, dismissAll }),
+      [dismissAll],
+    );
+
     const toggle = useCallback(() => {
       const next = !isOpen;
       setInternalOpen(next);
@@ -2346,53 +2469,81 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       onOpenChangeComplete,
     );
 
-    const contextValue = useMemo<SidebarCollapseContextValue>(
-      () => ({
-        contentId,
-        isOpen,
-        isPreviewOpen: previewOpen,
-        isCollapsible: true,
-        autoScrollOnOpen,
-        toggle,
-        completeOpenChange,
-        closePreview: closePreviewImmediately,
-      }),
-      [
-        contentId,
-        isOpen,
-        previewOpen,
-        autoScrollOnOpen,
-        toggle,
-        completeOpenChange,
-        closePreviewImmediately,
-      ],
-    );
+    const openPreview = useCallback(() => {
+      if (
+        !previewEnabled ||
+        isMobile ||
+        !hasPreviewContent ||
+        !containerRef.current
+      ) {
+        return;
+      }
+      // A collapsed rail cannot render inline content (see
+      // SidebarCollapsibleContent), so preview regardless of open state.
+      // Otherwise only preview closed sections — open ones show inline.
+      if (state !== "collapsed" && isOpen) {
+        return;
+      }
+      clearPreviewCloseTimeout();
+
+      const trigger = containerRef.current.querySelector<HTMLElement>(
+        "[data-sidebar='menu-button'], [data-sidebar='menu-sub-button']",
+      );
+      const anchor = trigger ?? containerRef.current;
+      const rect = anchor.getBoundingClientRect();
+
+      // When the trigger lives inside another preview popup, measure the
+      // horizontal gap from that popup's outer edge (not the button's, which
+      // is inset by the popup's padding/indent). Keeps every popup-to-popup
+      // gap visually equal.
+      const parentPopup = anchor.closest<HTMLElement>(
+        "[data-sidebar='collapsible-preview']",
+      );
+      const horizontalRect = parentPopup?.getBoundingClientRect() ?? rect;
+
+      const rawLeft =
+        side === "left"
+          ? horizontalRect.right + PREVIEW_GAP
+          : horizontalRect.left - PREVIEW_WIDTH - PREVIEW_GAP;
+      const maxLeft =
+        window.innerWidth - PREVIEW_WIDTH - PREVIEW_VIEWPORT_INSET;
+      const maxTop = window.innerHeight - PREVIEW_VIEWPORT_INSET;
+
+      // A title mirrors the parent row, so align the two: the popup's top edge
+      // meets the trigger's (both are min-h-8.5). Without a title, pull up by
+      // the popup's padding so the first item aligns instead.
+      const topOffset = showPreviewTitle
+        ? PREVIEW_TITLE_OFFSET
+        : PREVIEW_PADDING;
+
+      setPreviewPosition({
+        top: Math.min(
+          Math.max(PREVIEW_VIEWPORT_INSET, rect.top - topOffset),
+          Math.max(PREVIEW_VIEWPORT_INSET, maxTop),
+        ),
+        left: Math.min(
+          Math.max(PREVIEW_VIEWPORT_INSET, rawLeft),
+          Math.max(PREVIEW_VIEWPORT_INSET, maxLeft),
+        ),
+      });
+      setPreviewOpen(true);
+    }, [
+      clearPreviewCloseTimeout,
+      hasPreviewContent,
+      isMobile,
+      isOpen,
+      previewEnabled,
+      showPreviewTitle,
+      side,
+      state,
+    ]);
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         onMouseEnter?.(e);
-        if (isOpen || isMobile || !hasPreviewContent) return;
-        clearPreviewCloseTimeout();
-
-        const trigger = e.currentTarget.querySelector<HTMLElement>(
-          "[data-sidebar='menu-button'], [data-sidebar='menu-sub-button']",
-        );
-        const rect = (trigger ?? e.currentTarget).getBoundingClientRect();
-
-        setPreviewPosition({
-          top: Math.max(8, rect.top - 4),
-          left: side === "left" ? rect.right + 8 : rect.left - 232,
-        });
-        setPreviewOpen(true);
+        openPreview();
       },
-      [
-        clearPreviewCloseTimeout,
-        hasPreviewContent,
-        isMobile,
-        isOpen,
-        onMouseEnter,
-        side,
-      ],
+      [onMouseEnter, openPreview],
     );
 
     const handleMouseLeave = useCallback(
@@ -2403,12 +2554,50 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       [closePreview, onMouseLeave],
     );
 
+    const contextValue = useMemo<SidebarCollapseContextValue>(
+      () => ({
+        contentId,
+        isOpen,
+        isPreviewOpen: previewOpen,
+        isCollapsible: true,
+        autoScrollOnOpen,
+        hasPreview: previewEnabled && hasPreviewContent,
+        toggle,
+        completeOpenChange,
+        closePreview: closePreviewImmediately,
+      }),
+      [
+        contentId,
+        isOpen,
+        previewOpen,
+        autoScrollOnOpen,
+        previewEnabled,
+        hasPreviewContent,
+        toggle,
+        completeOpenChange,
+        closePreviewImmediately,
+      ],
+    );
+
     useEffect(
       () => () => {
         clearPreviewCloseTimeout();
       },
       [clearPreviewCloseTimeout],
     );
+
+    // The preview is a mouse-only affordance: it stays clickable, but its
+    // contents are removed from the tab order so keyboard users transparently
+    // get the inline expansion instead (handleFocusIn). Paired with
+    // aria-hidden on the popup, this avoids focusable content in a hidden
+    // subtree.
+    useEffect(() => {
+      if (!previewOpen || !previewRef.current) return;
+      const focusables = previewRef.current.querySelectorAll<HTMLElement>(
+        "a[href], button, input, select, textarea, [tabindex]",
+      );
+      for (const el of focusables) el.setAttribute("tabindex", "-1");
+    }, [previewOpen, previewContent]);
 
     const handleFocusIn = useCallback(
       (e: React.FocusEvent<HTMLDivElement>) => {
@@ -2442,7 +2631,11 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     return (
       <SidebarCollapseContext.Provider value={contextValue}>
         <div
-          ref={ref}
+          ref={(node) => {
+            containerRef.current = node;
+            if (typeof ref === "function") ref(node);
+            else if (ref) ref.current = node;
+          }}
           data-open={isOpen || undefined}
           className={cn("min-w-0", className)}
           onMouseEnter={handleMouseEnter}
@@ -2456,31 +2649,61 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
             previewContent &&
             typeof document !== "undefined" &&
             createPortal(
-              <div
-                data-sidebar="collapsible-preview"
-                aria-hidden="true"
-                className={cn(
-                  "fixed z-[1000] w-56 overflow-y-auto rounded-lg bg-kumo-control p-1.5 text-kumo-default shadow-lg ring ring-kumo-line",
-                  "max-h-[calc(100vh-1rem)]",
-                  "animate-in fade-in-0 zoom-in-95 duration-150",
-                )}
-                style={{
-                  "--sidebar-active-bg": "var(--color-kumo-tint)",
-                  top: previewPosition.top,
-                  left: previewPosition.left,
-                } as CSSProperties}
-                onMouseEnter={clearPreviewCloseTimeout}
-                onMouseLeave={closePreview}
-              >
+              <SidebarPreviewContext.Provider value={previewProviderValue}>
                 <div
+                  ref={previewRef}
+                  data-sidebar="collapsible-preview"
+                  // Mouse-only affordance. Hidden from the accessibility tree
+                  // and its contents removed from the tab order (see effect
+                  // above); keyboard/AT users get the inline expansion instead.
+                  aria-hidden="true"
                   className={cn(
-                    "[&_[data-sidebar=menu-sub]]:p-0 [&_[data-sidebar=menu-sub]>div]:hidden",
-                    "[&_[data-sidebar=menu-sub-button]]:px-3",
+                    "fixed z-[1000] w-56 overflow-y-auto rounded-lg bg-kumo-control p-1.5 text-kumo-default shadow-lg ring ring-kumo-line",
+                    "max-h-[calc(100vh-1rem)]",
+                    "animate-in fade-in-0 zoom-in-95 duration-150",
                   )}
+                  style={
+                    {
+                      "--sidebar-active-bg": "var(--color-kumo-tint)",
+                      top: previewPosition.top,
+                      left: previewPosition.left,
+                    } as CSSProperties
+                  }
+                  onMouseEnter={clearPreviewCloseTimeout}
+                  onMouseLeave={closePreview}
+                  // Any click on an item (navigation) dismisses the whole
+                  // popup stack. Parent triggers stop propagation to stay open.
+                  onClick={dismissAll}
                 >
-                  {previewContent}
+                  {/* Names the parent, hidden by the collapsed rail, styled to
+                      match Sidebar.GroupLabel. Negative margins cancel `p-1.5`
+                      for a wall-to-wall separator; pl-[18px] = popup p-1.5 (6) +
+                      item px-3 (12) aligns the title with the items. Nested
+                      popups omit it. */}
+                  {showPreviewTitle && (
+                    <div
+                      data-sidebar="collapsible-preview-title"
+                      className={cn(
+                        SIDEBAR_LABEL_TEXT,
+                        "-mx-1.5 -mt-1.5 mb-1.5 flex min-h-8.5 items-center border-b border-kumo-line pr-3 pl-[18px]",
+                      )}
+                    >
+                      {previewLabel}
+                    </div>
+                  )}
+                  {/* Flatten the top-level sub-list (no indent/connector) since
+                      the popup already opens from its parent; deeper levels keep
+                      theirs. `>` targets only the first level. */}
+                  <div
+                    className={cn(
+                      "[&>[data-sidebar=menu-sub]]:pl-0",
+                      "[&>[data-sidebar=menu-sub]>li[aria-hidden=true]]:hidden",
+                    )}
+                  >
+                    {previewContent}
+                  </div>
                 </div>
-              </div>,
+              </SidebarPreviewContext.Provider>,
               document.body,
             )}
         </div>
@@ -2513,20 +2736,48 @@ export interface SidebarCollapsibleTriggerProps {
  * ```
  */
 function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
-  const { contentId, isOpen, isPreviewOpen, toggle, closePreview } =
-    useContext(SidebarCollapseContext);
+  const { contentId, isOpen, isPreviewOpen, toggle, closePreview } = useContext(
+    SidebarCollapseContext,
+  );
+  const { insidePreview } = useContext(SidebarPreviewContext);
+
+  const hasHref = Boolean((render.props as { href?: string }).href);
 
   return React.cloneElement(render, {
     "aria-expanded": isOpen,
     "aria-controls": contentId,
     "data-open": isOpen || undefined,
     "data-preview-open": isPreviewOpen || undefined,
+    // Inside a popup, a parent with no href only reveals children on hover —
+    // it has no click action, so drop the pointer cursor. `!` is required: the
+    // base clickable-affordance rule in kumo.css is unlayered and would
+    // otherwise win over the (layered) utility.
+    ...(insidePreview && !hasHref
+      ? {
+          className: cn(
+            (render.props as { className?: string }).className,
+            "cursor-default!",
+          ),
+        }
+      : {}),
     onClick: (e: React.MouseEvent) => {
       // Call any existing onClick on the render element
       const existingOnClick = (
         render.props as { onClick?: (e: React.MouseEvent) => void }
       ).onClick;
       existingOnClick?.(e);
+
+      // Inside a popup, children are revealed by hover only — never toggle the
+      // disclosure (that would set isOpen and disable this item's own hover
+      // popup).
+      if (insidePreview) {
+        // A parent with no href has no click action: keep the flyout open by
+        // stopping the bubble to the container's dismiss-all. A parent with an
+        // href navigates, so let it bubble and dismiss the whole popup stack.
+        if (!hasHref) e.stopPropagation();
+        return;
+      }
+
       closePreview();
       toggle();
     },
@@ -2891,30 +3142,30 @@ export const Sidebar = Object.assign(SidebarRoot, {
 });
 
 export {
-  SidebarProvider,
-  SidebarRoot,
-  SidebarHeader,
+  SidebarClose,
+  SidebarCollapsible,
+  SidebarCollapsibleContent,
+  SidebarCollapsibleTrigger,
   SidebarContent,
   SidebarFooter,
-  SidebarLoading,
   SidebarGroup,
   SidebarGroupLabel,
+  SidebarHeader,
+  SidebarLoading,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuChevron,
+  SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubItem,
   SidebarMenuSubButton,
-  SidebarSeparator,
-  SidebarTrigger,
-  SidebarClose,
+  SidebarMenuSubItem,
+  SidebarProvider,
   SidebarRail,
   SidebarResizeHandle,
-  SidebarMenuChevron,
-  SidebarCollapsible,
-  SidebarCollapsibleTrigger,
-  SidebarCollapsibleContent,
-  SidebarSlidingViews,
+  SidebarRoot,
+  SidebarSeparator,
   SidebarSlidingView,
+  SidebarSlidingViews,
+  SidebarTrigger,
 };

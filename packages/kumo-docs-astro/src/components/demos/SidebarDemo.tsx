@@ -336,6 +336,122 @@ export function SidebarToggleDemo() {
 }
 
 // ---------------------------------------------------------------------------
+// Hover Preview — collapsed collapsibles reveal nested content in a popup
+// ---------------------------------------------------------------------------
+
+/**
+ * Opt-in hover previews via `previewOnHover`: hovering a closed section shows
+ * its nested content in a popup instead of expanding inline. Collapse the rail
+ * to see closed and open sections alike preview. Childless items (Analytics)
+ * have nothing to preview, so they show a plain tooltip.
+ */
+export function SidebarHoverPreviewDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        previewOnHover
+        className="h-full min-h-0!"
+      >
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuItem>
+                  {/* Childless item: no popup, so its tooltip survives. With no
+                      `tooltip` prop the label falls back to the button text. */}
+                  <Sidebar.MenuButton icon={ChartBarIcon}>
+                    Analytics
+                  </Sidebar.MenuButton>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuItem>
+                  {/* Closed section: hovering previews its children in a popup.
+                      `tooltip` names the parent (the popup lists only its
+                      children). */}
+                  <Sidebar.Collapsible>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubItem>
+                          <Sidebar.Collapsible>
+                            <Sidebar.CollapsibleTrigger
+                              render={
+                                <Sidebar.MenuSubButton>
+                                  Workers & Pages
+                                  <Sidebar.MenuChevron />
+                                </Sidebar.MenuSubButton>
+                              }
+                            />
+                            <Sidebar.CollapsibleContent>
+                              <Sidebar.MenuSub>
+                                <Sidebar.MenuSubButton>
+                                  Overview
+                                </Sidebar.MenuSubButton>
+                                <Sidebar.MenuSubButton>
+                                  Workers
+                                </Sidebar.MenuSubButton>
+                                <Sidebar.MenuSubButton>
+                                  Pages
+                                </Sidebar.MenuSubButton>
+                              </Sidebar.MenuSub>
+                            </Sidebar.CollapsibleContent>
+                          </Sidebar.Collapsible>
+                        </Sidebar.MenuSubItem>
+                        <Sidebar.MenuSubButton>
+                          Durable Objects
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={DatabaseIcon}>
+                          Storage
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>R2</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>KV</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>D1</Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <ToggleButton />
+          <p>Hover a collapsed icon to preview its nested items</p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Loading — nav-item-shaped skeleton shown while nav resolves
 // ---------------------------------------------------------------------------
 
