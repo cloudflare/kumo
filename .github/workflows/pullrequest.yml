@@ -48,6 +48,30 @@ jobs:
           path: packages/kumo/ai
           retention-days: 1
 
+  bundle-report:
+    needs: build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
+      - run: vp exec tsx ci/scripts/write-bundle-size-report.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-size-report
+          path: ci/reports
+          retention-days: 7
+
   format:
     timeout-minutes: 5
     runs-on: ubuntu-latest
@@ -99,6 +123,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run typecheck
+      - run: pnpm run ci:typecheck
 
   test:
     needs: build
@@ -118,6 +143,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run --filter @cloudflare/kumo test
+      - run: pnpm run test:ci
 
   test-react-compatibility:
     needs: build
