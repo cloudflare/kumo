@@ -320,7 +320,7 @@ function TabsOverflowControl({
       tabIndex={visible ? 0 : -1}
       onClick={onClick}
       className={cn(
-        "absolute inset-y-0 z-3 flex items-center border-0 p-0 transition-opacity duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        "absolute inset-y-0 z-3 flex items-center border-0 bg-transparent p-0 transition-opacity duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
         isStart
           ? "left-0 justify-start bg-linear-to-r"
           : "right-0 justify-end bg-linear-to-l",
