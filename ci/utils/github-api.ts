@@ -22,13 +22,13 @@ export interface CreatePullRequestOptions {
 }
 
 export interface PRCommentSummary {
-  id: number;
-  body?: string | null;
-  authorLogin?: string;
+  readonly id: number;
+  readonly body: string | null;
+  readonly authorLogin: string | null;
 }
 
 export interface PRCommentClient {
-  listComments(): Promise<PRCommentSummary[]>;
+  listComments(): Promise<readonly PRCommentSummary[]>;
   createComment(body: string): Promise<void>;
   updateComment(commentId: number, body: string): Promise<void>;
 }
@@ -115,8 +115,8 @@ export async function upsertPRComment(
       });
       return comments.map((comment) => ({
         id: comment.id,
-        body: comment.body,
-        authorLogin: comment.user?.login,
+        body: comment.body ?? null,
+        authorLogin: comment.user?.login ?? null,
       }));
     },
     async createComment(body) {

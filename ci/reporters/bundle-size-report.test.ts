@@ -1,20 +1,19 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  BUNDLE_SIZE_FIXTURE_LABELS,
+  BUNDLE_SIZE_FIXTURES,
   BUNDLE_SIZE_SCHEMA_VERSION,
   buildBundleSizeMarkdown,
+  parseBundleSizeArtifact,
   parseBundleSizeData,
   type BundleSizeData,
-  type BundleSizeFixtureId,
 } from "./bundle-size-report";
 
 function createBundleSizeData(): BundleSizeData {
   return {
     schemaVersion: BUNDLE_SIZE_SCHEMA_VERSION,
-    fixtures: Object.entries(BUNDLE_SIZE_FIXTURE_LABELS).map(([id, label]) => ({
-      id: id as BundleSizeFixtureId,
-      label,
+    fixtures: BUNDLE_SIZE_FIXTURES.map((fixture) => ({
+      ...fixture,
       raw: 2048,
       gzip: 1024,
       brotli: 768,
@@ -31,16 +30,21 @@ function createBundleSizeData(): BundleSizeData {
 
 describe("parseBundleSizeData", () => {
   it("uses trusted fixture labels and validates structured data", () => {
-    const input = createBundleSizeData();
-    input.fixtures[0]!.label = "untrusted label";
+    const original = createBundleSizeData();
+    const input = {
+      ...original,
+      fixtures: original.fixtures.map((fixture, index) =>
+        index === 0 ? { ...fixture, label: "untrusted label" } : fixture,
+      ),
+    };
 
     const data = parseBundleSizeData(input);
 
     assert.equal(data.fixtures[0]?.label, "Button (root)");
 
     const unknownFixture = {
-      ...createBundleSizeData(),
-      fixtures: createBundleSizeData().fixtures.map((fixture, index) =>
+      ...original,
+      fixtures: original.fixtures.map((fixture, index) =>
         index === 0 ? { ...fixture, id: "unknown" } : fixture,
       ),
     };
@@ -57,22 +61,37 @@ describe("parseBundleSizeData", () => {
       /Unsupported bundle size schema version: 2/,
     );
   });
+
+  it("extracts data from a report artifact without a type assertion", () => {
+    const data = createBundleSizeData();
+
+    assert.deepEqual(parseBundleSizeArtifact({ data }), data);
+    assert.throws(
+      () => parseBundleSizeArtifact({}),
+      /artifact is missing data/,
+    );
+  });
 });
 
 describe("buildBundleSizeMarkdown", () => {
   it("escapes artifact text before rendering Markdown", () => {
-    const data = createBundleSizeData();
-    data.fixtures = [
-      {
-        id: "root-button",
-        label: "Button | root",
-        raw: 2048,
-        gzip: 1024,
-        brotli: 768,
-        warnings: ["warning `with code`"],
+    const original = createBundleSizeData();
+    const firstFixture = original.fixtures.at(0);
+    assert.ok(firstFixture);
+    const data: BundleSizeData = {
+      ...original,
+      fixtures: [
+        {
+          ...firstFixture,
+          label: "Button | root",
+          warnings: ["warning `with code`"],
+        },
+      ],
+      tarball: {
+        ...original.tarball,
+        flaggedFiles: ["bad`file.test.ts"],
       },
-    ];
-    data.tarball.flaggedFiles = ["bad`file.test.ts"];
+    };
 
     const markdown = buildBundleSizeMarkdown(data);
 

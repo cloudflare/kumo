@@ -10,10 +10,10 @@ import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { brotliCompressSync, constants, gzipSync } from "node:zlib";
-import { build } from "vite";
+import { build, type Rolldown } from "vite";
 import type { CIContext, ReportItem, Reporter } from "./types";
 import {
-  BUNDLE_SIZE_FIXTURE_LABELS,
+  BUNDLE_SIZE_FIXTURES,
   BUNDLE_SIZE_SCHEMA_VERSION,
   buildBundleSizeMarkdown,
   type BundleSizeData,
@@ -26,63 +26,32 @@ const REPO_ROOT = resolve(import.meta.dirname, "../..");
 const KUMO_DIR = join(REPO_ROOT, "packages/kumo");
 
 interface Fixture {
-  id: BundleSizeFixtureId;
-  label: string;
-  entry: string;
-}
-
-function defineFixture(id: BundleSizeFixtureId, entry: string): Fixture {
-  return { id, label: BUNDLE_SIZE_FIXTURE_LABELS[id], entry };
+  readonly id: BundleSizeFixtureId;
+  readonly label: string;
+  readonly entry: string;
 }
 
 /**
- * Consumer fixtures: each entry is bundled as an application would bundle it,
- * with only Kumo's peer dependencies left external.
+ * Each entry is bundled as a consumer would bundle it. The record type keeps
+ * entries in sync with the fixture IDs used by the artifact contract.
  */
-const FIXTURES = [
-  defineFixture("root-button", `export { Button } from "@cloudflare/kumo";`),
-  defineFixture(
-    "subpath-button",
-    `export { Button } from "@cloudflare/kumo/components/button";`,
-  ),
-  defineFixture(
-    "root-trio",
-    `export { Button, Dialog, Select } from "@cloudflare/kumo";`,
-  ),
-  defineFixture(
-    "subpath-trio",
-    `
+const FIXTURE_ENTRIES = {
+  "root-button": `export { Button } from "@cloudflare/kumo";`,
+  "subpath-button": `export { Button } from "@cloudflare/kumo/components/button";`,
+  "root-trio": `export { Button, Dialog, Select } from "@cloudflare/kumo";`,
+  "subpath-trio": `
       export { Button } from "@cloudflare/kumo/components/button";
       export { Dialog } from "@cloudflare/kumo/components/dialog";
       export { Select } from "@cloudflare/kumo/components/select";
     `,
-  ),
-  defineFixture("root-chart", `export { Chart } from "@cloudflare/kumo";`),
-  defineFixture(
-    "subpath-chart",
-    `export { Chart } from "@cloudflare/kumo/components/chart";`,
-  ),
-  defineFixture(
-    "subpath-badge",
-    `export { Badge } from "@cloudflare/kumo/components/badge";`,
-  ),
-  defineFixture(
-    "subpath-flow",
-    `export { Flow } from "@cloudflare/kumo/components/flow";`,
-  ),
-  defineFixture(
-    "primitive-button",
-    `export * from "@cloudflare/kumo/primitives/button";`,
-  ),
-  defineFixture(
-    "primitives-barrel",
-    `export * from "@cloudflare/kumo/primitives";`,
-  ),
-  defineFixture(
-    "code",
-    `export { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";`,
-  ),
-];
+  "root-chart": `export { Chart } from "@cloudflare/kumo";`,
+  "subpath-chart": `export { Chart } from "@cloudflare/kumo/components/chart";`,
+  "subpath-badge": `export { Badge } from "@cloudflare/kumo/components/badge";`,
+  "subpath-flow": `export { Flow } from "@cloudflare/kumo/components/flow";`,
+  "primitive-button": `export * from "@cloudflare/kumo/primitives/button";`,
+  "primitives-barrel": `export * from "@cloudflare/kumo/primitives";`,
+  code: `export { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";`,
+} satisfies Record<BundleSizeFixtureId, string>;
 
 /** Peer dependencies stay external — consumers always provide these. */
 const EXTERNALS = [
@@ -95,6 +64,12 @@ const EXTERNALS = [
 
 /** Published files that should not ship (item 34 of the improvement audit). */
 const FLAGGED_TARBALL_PATTERNS = [/\.test\./, /\.stories\./, /^scripts\//];
+
+function isBuildOutput(
+  result: Rolldown.RolldownOutput | Rolldown.RolldownWatcher,
+): result is Rolldown.RolldownOutput {
+  return "output" in result;
+}
 
 async function measureFixture(fixture: Fixture): Promise<FixtureResult> {
   // A virtual entry addressed inside packages/kumo, so the package.json
@@ -131,18 +106,16 @@ async function measureFixture(fixture: Fixture): Promise<FixtureResult> {
     },
   });
 
-  const outputs = (Array.isArray(result) ? result : [result]) as Array<{
-    output: Array<{
-      type: string;
-      code?: string;
-      source?: string | Uint8Array;
-    }>;
-  }>;
-  const chunks = outputs
-    .flatMap((r) => r.output)
-    .map((o) =>
-      Buffer.from(o.type === "chunk" ? (o.code ?? "") : (o.source ?? "")),
+  const buildResults = Array.isArray(result) ? result : [result];
+  const chunks = buildResults.flatMap((buildResult) => {
+    if (!isBuildOutput(buildResult)) {
+      throw new Error("Vite unexpectedly returned a watch result");
+    }
+    return buildResult.output.map(
+      (output: Rolldown.OutputChunk | Rolldown.OutputAsset) =>
+        Buffer.from(output.type === "chunk" ? output.code : output.source),
     );
+  });
 
   // Each emitted file is transferred with its own content encoding. Summing
   // per-file compressed sizes avoids undercounting code-split fixtures by
@@ -229,8 +202,13 @@ export async function collectBundleSizeData(): Promise<BundleSizeData> {
   }
 
   const fixtures: FixtureResult[] = [];
-  for (const fixture of FIXTURES) {
-    fixtures.push(await measureFixture(fixture));
+  for (const fixture of BUNDLE_SIZE_FIXTURES) {
+    fixtures.push(
+      await measureFixture({
+        ...fixture,
+        entry: FIXTURE_ENTRIES[fixture.id],
+      }),
+    );
   }
 
   return {

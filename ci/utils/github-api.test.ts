@@ -6,7 +6,7 @@ import {
   type PRCommentSummary,
 } from "./github-api";
 
-function createFakeClient(comments: PRCommentSummary[]) {
+function createFakeClient(comments: readonly PRCommentSummary[]) {
   const created: string[] = [];
   const updated: Array<{ commentId: number; body: string }> = [];
   const client: PRCommentClient = {

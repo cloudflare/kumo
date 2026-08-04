@@ -5,44 +5,47 @@
  * workflow_run reporter uses it to validate data produced by untrusted PR code.
  */
 
-export const BUNDLE_SIZE_SCHEMA_VERSION = 1 as const;
+export const BUNDLE_SIZE_SCHEMA_VERSION = 1;
 
-export const BUNDLE_SIZE_FIXTURE_LABELS = {
-  "root-button": "Button (root)",
-  "subpath-button": "Button (components/button)",
-  "root-trio": "Button + Dialog + Select (root)",
-  "subpath-trio": "Button + Dialog + Select (component subpaths)",
-  "root-chart": "Chart (root)",
-  "subpath-chart": "Chart (components/chart)",
-  "subpath-badge": "Badge (components/badge)",
-  "subpath-flow": "Flow (components/flow)",
-  "primitive-button": "Button (primitives/button)",
-  "primitives-barrel": "Primitives barrel",
-  code: "Code highlighting (code)",
-} as const;
+export const BUNDLE_SIZE_FIXTURES = [
+  { id: "root-button", label: "Button (root)" },
+  { id: "subpath-button", label: "Button (components/button)" },
+  { id: "root-trio", label: "Button + Dialog + Select (root)" },
+  {
+    id: "subpath-trio",
+    label: "Button + Dialog + Select (component subpaths)",
+  },
+  { id: "root-chart", label: "Chart (root)" },
+  { id: "subpath-chart", label: "Chart (components/chart)" },
+  { id: "subpath-badge", label: "Badge (components/badge)" },
+  { id: "subpath-flow", label: "Flow (components/flow)" },
+  { id: "primitive-button", label: "Button (primitives/button)" },
+  { id: "primitives-barrel", label: "Primitives barrel" },
+  { id: "code", label: "Code highlighting (code)" },
+] as const;
 
-export type BundleSizeFixtureId = keyof typeof BUNDLE_SIZE_FIXTURE_LABELS;
+export type BundleSizeFixtureId = (typeof BUNDLE_SIZE_FIXTURES)[number]["id"];
 
 export interface FixtureResult {
-  id: BundleSizeFixtureId;
-  label: string;
-  raw: number;
-  gzip: number;
-  brotli: number;
-  warnings: string[];
+  readonly id: BundleSizeFixtureId;
+  readonly label: string;
+  readonly raw: number;
+  readonly gzip: number;
+  readonly brotli: number;
+  readonly warnings: readonly string[];
 }
 
 export interface TarballReport {
-  fileCount: number;
-  packedSize: number;
-  unpackedSize: number;
-  flaggedFiles: string[];
+  readonly fileCount: number;
+  readonly packedSize: number;
+  readonly unpackedSize: number;
+  readonly flaggedFiles: readonly string[];
 }
 
 export interface BundleSizeData {
-  schemaVersion: typeof BUNDLE_SIZE_SCHEMA_VERSION;
-  fixtures: FixtureResult[];
-  tarball: TarballReport;
+  readonly schemaVersion: typeof BUNDLE_SIZE_SCHEMA_VERSION;
+  readonly fixtures: readonly FixtureResult[];
+  readonly tarball: TarballReport;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -53,8 +56,8 @@ function isNonNegativeSafeInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
-function isFixtureId(value: string): value is BundleSizeFixtureId {
-  return Object.hasOwn(BUNDLE_SIZE_FIXTURE_LABELS, value);
+function findFixture(value: string) {
+  return BUNDLE_SIZE_FIXTURES.find((fixture) => fixture.id === value);
 }
 
 function formatKB(bytes: number): string {
@@ -86,8 +89,7 @@ export function parseBundleSizeData(value: unknown): BundleSizeData {
     throw new Error("Bundle size data is missing fixtures");
   }
 
-  const expectedFixtureCount = Object.keys(BUNDLE_SIZE_FIXTURE_LABELS).length;
-  if (value.fixtures.length !== expectedFixtureCount) {
+  if (value.fixtures.length !== BUNDLE_SIZE_FIXTURES.length) {
     throw new Error("Bundle size data does not contain every fixture");
   }
 
@@ -104,21 +106,22 @@ export function parseBundleSizeData(value: unknown): BundleSizeData {
     ) {
       throw new Error("Bundle size data contains an invalid fixture");
     }
-    if (!isFixtureId(fixture.id)) {
+    const definition = findFixture(fixture.id);
+    if (!definition) {
       throw new Error(
         `Bundle size data contains unknown fixture: ${fixture.id}`,
       );
     }
-    if (seenFixtures.has(fixture.id)) {
+    if (seenFixtures.has(definition.id)) {
       throw new Error(
         `Bundle size data contains duplicate fixture: ${fixture.id}`,
       );
     }
-    seenFixtures.add(fixture.id);
+    seenFixtures.add(definition.id);
 
     return {
-      id: fixture.id,
-      label: BUNDLE_SIZE_FIXTURE_LABELS[fixture.id],
+      id: definition.id,
+      label: definition.label,
       raw: fixture.raw,
       gzip: fixture.gzip,
       brotli: fixture.brotli,
@@ -155,6 +158,14 @@ export function parseBundleSizeData(value: unknown): BundleSizeData {
         .map((file) => file.slice(0, 200)),
     },
   };
+}
+
+/** Extract and validate bundle-size data from a report artifact. */
+export function parseBundleSizeArtifact(value: unknown): BundleSizeData {
+  if (!isRecord(value) || !("data" in value)) {
+    throw new Error("Bundle size artifact is missing data");
+  }
+  return parseBundleSizeData(value.data);
 }
 
 export function buildBundleSizeMarkdown(data: BundleSizeData): string {

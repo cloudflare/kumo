@@ -11,16 +11,12 @@
 import { readFileSync } from "node:fs";
 import {
   buildBundleSizeMarkdown,
-  parseBundleSizeData,
+  parseBundleSizeArtifact,
 } from "../reporters/bundle-size-report";
 import { upsertPRComment } from "../utils/github-api";
 
 const REPORT_PATH = "ci/reports/bundle-size.json";
 const COMMENT_MARKER = "<!-- kumo-bundle-size-report -->";
-
-interface BundleSizeArtifact {
-  data?: unknown;
-}
 
 async function main(): Promise<void> {
   const token = process.env.GITHUB_TOKEN ?? "";
@@ -33,10 +29,8 @@ async function main(): Promise<void> {
     );
   }
 
-  const artifact = JSON.parse(
-    readFileSync(REPORT_PATH, "utf-8"),
-  ) as BundleSizeArtifact;
-  const data = parseBundleSizeData(artifact.data);
+  const artifact: unknown = JSON.parse(readFileSync(REPORT_PATH, "utf-8"));
+  const data = parseBundleSizeArtifact(artifact);
   const content = [
     "### 📐 Bundle Size",
     "",
