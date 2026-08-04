@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import puppeteer from "@cloudflare/puppeteer";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -17,15 +18,24 @@ const HIDE_SIDEBAR_CSS = `
 // is internal tooling and should never be called from arbitrary origins.
 const ALLOWED_ORIGINS = [
   "https://kumo-ui.com",
+  "https://staging.kumo-ui.com",
   /^https:\/\/[a-z0-9-]+-kumo-docs\.design-engineering\.workers\.dev$/,
   /^https:\/\/[a-z0-9-]+\.kumo-docs\.pages\.dev$/,
 ];
+
+const ALLOWED_TARGET_ORIGINS = ALLOWED_ORIGINS;
 
 function getCorsOrigin(origin: string): string {
   const allowed = ALLOWED_ORIGINS.some((o) =>
     typeof o === "string" ? o === origin : o.test(origin),
   );
   return allowed ? origin : "null";
+}
+
+function isAllowedOrigin(origin: string): boolean {
+  return ALLOWED_TARGET_ORIGINS.some((o) =>
+    typeof o === "string" ? o === origin : o.test(origin),
+  );
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -86,9 +96,9 @@ interface ScreenshotResult {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
- * Validates that a URL is safe to navigate to:
- * - Must be https:// (or http://localhost for local dev)
- * - Must not target private/cloud-metadata IP ranges
+ * Validates that a URL is safe for Browser Rendering to navigate to.
+ * This worker only needs Kumo docs and preview deployments, so use an
+ * allowlist instead of trying to safely enumerate every blocked network.
  */
 function validateUrl(
   rawUrl: string,
@@ -100,43 +110,46 @@ function validateUrl(
     return { ok: false, error: `Invalid URL: ${rawUrl}` };
   }
 
-  const { protocol, hostname } = parsed;
-
-  // Only allow https (or http for localhost in dev)
-  const isHttps = protocol === "https:";
-  const isLocalhost =
-    protocol === "http:" &&
-    (hostname === "localhost" || hostname === "127.0.0.1");
-  if (!isHttps && !isLocalhost) {
+  if (parsed.protocol !== "https:") {
     return {
       ok: false,
-      error: `URL must use https (got: ${protocol}//${hostname})`,
+      error: `URL must use https (got: ${parsed.protocol}//${parsed.hostname})`,
     };
   }
 
-  // Block cloud metadata and private IP ranges
-  const privatePatterns = [
-    /^169\.254\./, // AWS/GCP metadata (link-local)
-    /^10\./, // RFC 1918
-    /^172\.(1[6-9]|2\d|3[01])\./, // RFC 1918
-    /^192\.168\./, // RFC 1918
-    /^100\.64\./, // CGNAT
-    /^::1$/, // IPv6 loopback
-    /^fc00:/, // IPv6 ULA
-    /^fd[0-9a-f]{2}:/i, // IPv6 ULA
-    /^metadata\.google\.internal$/,
-  ];
-
-  for (const pattern of privatePatterns) {
-    if (pattern.test(hostname)) {
-      return {
-        ok: false,
-        error: `URL targets a private/reserved address: ${hostname}`,
-      };
-    }
+  if (!isAllowedOrigin(parsed.origin)) {
+    return {
+      ok: false,
+      error: `URL origin is not allowed: ${parsed.origin}`,
+    };
   }
 
   return { ok: true, url: parsed.toString() };
+}
+
+function getPageUrl(
+  baseUrl: string,
+  pageUrl: string,
+): { ok: true; url: string } | { ok: false; error: string } {
+  try {
+    return validateUrl(new URL(pageUrl, baseUrl).toString());
+  } catch {
+    return { ok: false, error: `Invalid URL: ${pageUrl}` };
+  }
+}
+
+function hasValidApiKey(apiKey: string | undefined, expected: string): boolean {
+  if (!apiKey || !expected) {
+    return false;
+  }
+
+  const apiKeyBytes = Buffer.from(apiKey);
+  const expectedBytes = Buffer.from(expected);
+
+  return (
+    apiKeyBytes.length === expectedBytes.length &&
+    timingSafeEqual(apiKeyBytes, expectedBytes)
+  );
 }
 
 function sanitizeKeyPart(value: string): string {
@@ -285,7 +298,7 @@ app.get("/screenshots/*", async (c) => {
 
 app.use("*", async (c, next) => {
   const apiKey = c.req.header("X-API-Key");
-  if (!apiKey || apiKey !== c.env.API_KEY) {
+  if (!hasValidApiKey(apiKey, c.env.API_KEY)) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
@@ -366,9 +379,7 @@ async function handleBatch(
 
   // Validate baseUrl early so we catch misconfigured callers immediately.
   if (baseUrl) {
-    const baseCheck = validateUrl(
-      baseUrl.endsWith("/") ? baseUrl + "_" : baseUrl + "/_",
-    );
+    const baseCheck = getPageUrl(baseUrl, "_");
     if (!baseCheck.ok) {
       return Response.json(
         { error: `Invalid baseUrl: ${baseCheck.error}` },
@@ -421,13 +432,9 @@ async function handleBatch(
 
     for (const pageConfig of pages) {
       // Resolve and validate the full URL for this page.
-      const rawUrl = pageConfig.url.startsWith("http")
-        ? pageConfig.url
-        : `${baseUrl}${pageConfig.url}`;
-
-      const urlCheck = validateUrl(rawUrl);
+      const urlCheck = getPageUrl(baseUrl, pageConfig.url);
       if (!urlCheck.ok) {
-        results.push({ url: rawUrl, error: urlCheck.error });
+        results.push({ url: pageConfig.url, error: urlCheck.error });
         continue;
       }
       const fullUrl = urlCheck.url;
