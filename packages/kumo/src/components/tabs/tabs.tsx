@@ -315,6 +315,9 @@ function TabsOverflowControl({
   return (
     <button
       type="button"
+      data-kumo-component="Tabs"
+      data-kumo-part="overflow-control"
+      data-side={side}
       aria-label={label}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
