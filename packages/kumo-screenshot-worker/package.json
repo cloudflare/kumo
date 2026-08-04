@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^1.0.0",
-    "hono": "^4.12.16"
+    "hono": "^4.12.34"
   },
   "devDependencies": {
     "typescript": "catalog:",
