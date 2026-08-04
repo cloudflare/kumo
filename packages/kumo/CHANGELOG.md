@@ -1,5 +1,25 @@
 # @cloudflare/kumo
 
+## 2.9.1
+
+### Patch Changes
+
+- ff76f30: Update the default collapsible trigger and panel styling.
+
+  `Collapsible.DefaultPanel` now uses an inner content wrapper so the outer panel can animate height smoothly while clipping overflow during the transition. Consumers applying custom layout or spacing classes directly to `DefaultPanel` may need to move those styles to their content, or use `Collapsible.Panel` for a fully custom layout.
+
+- 7468623: Fix `initCatalog` so it actually loads the validation schemas.
+
+  Previously it triggered a synchronous validation whose "schemas not loaded" error was swallowed, so `await initCatalog(catalog)` could resolve while `hasComponent`, `componentNames`, and the other synchronous catalog APIs still reported no components. It now awaits `loadSchemas()` directly.
+
+  A failed schema load is also no longer cached: retrying `initCatalog` (or `loadSchemas`) after a transient failure now re-attempts the import instead of returning the stale rejection.
+
+- d7639f2: Fix Shiki highlighter lifecycle in `ShikiProvider` and `CodeHighlighted`.
+
+  `ShikiProvider` no longer re-creates the highlighter when a parent rerender passes an equivalent inline `languages` array — initialization is keyed on the normalized language set. Highlighters are now disposed on unmount and when the engine or language set changes, instead of leaking. `CodeHighlighted` memoizes the highlighted HTML so unrelated rerenders (such as copy-button state changes) no longer re-highlight unchanged code, and initialization errors are logged once instead of on every render. Reinitializing after a failed initialization now clears the stale error state instead of showing it during the retry.
+
+- c599590: Reset the Tabs overflow control background so host button styles do not show through the scrim gradient.
+
 ## 2.9.0
 
 ### Minor Changes

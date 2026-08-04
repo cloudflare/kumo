@@ -1,9 +1,11 @@
 import { describe, expect, it, vi, beforeEach } from "vite-plus/test";
-import { render, waitFor, screen } from "@testing-library/react";
+import { useState } from "react";
+import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 import { createHighlighterCore } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { ShikiProvider } from "./provider";
+import { CodeHighlighted } from "./code-highlighted";
 import type { LanguageInput } from "./types";
 import { useShikiHighlighter } from "./use-shiki-highlighter";
 
@@ -57,11 +59,18 @@ vi.mock("@shikijs/langs/toml", () => mockLang);
 // ---------------------------------------------------------------------------
 
 describe("ShikiProvider", () => {
+  let mockHighlighter: {
+    codeToHtml: ReturnType<typeof vi.fn>;
+    dispose: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(() => {
-    vi.mocked(createHighlighterCore).mockClear();
-    vi.mocked(createHighlighterCore).mockResolvedValue({
+    mockHighlighter = {
       codeToHtml: vi.fn(),
-    } as any);
+      dispose: vi.fn(),
+    };
+    vi.mocked(createHighlighterCore).mockClear();
+    vi.mocked(createHighlighterCore).mockResolvedValue(mockHighlighter as any);
     vi.mocked(createJavaScriptRegexEngine).mockClear();
     vi.mocked(createOnigurumaEngine).mockClear();
   });
@@ -232,6 +241,164 @@ describe("ShikiProvider", () => {
     });
 
     expect(createOnigurumaEngine).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not reinitialize for an equivalent inline languages array", async () => {
+    const { rerender } = render(
+      <ShikiProvider engine="javascript" languages={["ts", "js"]}>
+        <div>child</div>
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(createHighlighterCore).toHaveBeenCalledTimes(1);
+    });
+
+    // New array identity, different order and aliasing — same canonical set
+    rerender(
+      <ShikiProvider
+        engine="javascript"
+        languages={["javascript", "typescript"]}
+      >
+        <div>child</div>
+      </ShikiProvider>,
+    );
+
+    // An effect re-run would dispose synchronously during cleanup, so this
+    // catches it without racing the async init path
+    expect(mockHighlighter.dispose).not.toHaveBeenCalled();
+
+    // Flush the async init path before asserting nothing new started
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(createHighlighterCore).toHaveBeenCalledTimes(1);
+  });
+
+  it("reinitializes and disposes the old highlighter when languages change", async () => {
+    const { rerender } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <div>child</div>
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(createHighlighterCore).toHaveBeenCalledTimes(1);
+    });
+
+    rerender(
+      <ShikiProvider engine="javascript" languages={["javascript", "python"]}>
+        <div>child</div>
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(createHighlighterCore).toHaveBeenCalledTimes(2);
+    });
+    expect(mockHighlighter.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("disposes the highlighter on unmount", async () => {
+    const { unmount } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <div>child</div>
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(createHighlighterCore).toHaveBeenCalledTimes(1);
+    });
+
+    unmount();
+    await waitFor(() => {
+      expect(mockHighlighter.dispose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("disposes a highlighter that resolves after unmount", async () => {
+    let resolveCreate: (value: unknown) => void = () => {};
+    vi.mocked(createHighlighterCore).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCreate = resolve;
+        }) as any,
+    );
+
+    const { unmount } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <div>child</div>
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(createHighlighterCore).toHaveBeenCalledTimes(1);
+    });
+
+    unmount();
+    resolveCreate(mockHighlighter);
+
+    await waitFor(() => {
+      expect(mockHighlighter.dispose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("clears a stale error when reinitializing after a failed init", async () => {
+    vi.mocked(createHighlighterCore).mockRejectedValueOnce(new Error("boom"));
+
+    function StateProbe() {
+      const { isLoading, error, isReady } = useShikiHighlighter();
+      const status = error ? "error" : isLoading ? "loading" : "ready";
+      return <div data-testid="probe">{isReady ? "ready" : status}</div>;
+    }
+
+    const { rerender } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <StateProbe />
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("probe").textContent).toBe("error");
+    });
+
+    // A language change retries — the stale error must clear immediately
+    rerender(
+      <ShikiProvider engine="javascript" languages={["javascript", "python"]}>
+        <StateProbe />
+      </ShikiProvider>,
+    );
+    expect(screen.getByTestId("probe").textContent).toBe("loading");
+
+    await waitFor(() => {
+      expect(screen.getByTestId("probe").textContent).toBe("ready");
+    });
+  });
+
+  it("does not re-highlight when an unrelated parent state changes", async () => {
+    mockHighlighter.codeToHtml.mockReturnValue(
+      '<pre><code><span class="line">const x = 1;</span></code></pre>',
+    );
+
+    function Wrapper() {
+      const [count, setCount] = useState(0);
+      return (
+        <div>
+          <button onClick={() => setCount((c) => c + 1)}>bump {count}</button>
+          <CodeHighlighted code="const x = 1;" lang="javascript" />
+        </div>
+      );
+    }
+
+    render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <Wrapper />
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockHighlighter.codeToHtml).toHaveBeenCalledTimes(1);
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /bump/ }));
+    expect(mockHighlighter.codeToHtml).toHaveBeenCalledTimes(1);
   });
 
   it("exposes normalized languages in context so hook alias resolution works end-to-end", async () => {
