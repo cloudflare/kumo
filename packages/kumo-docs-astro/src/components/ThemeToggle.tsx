@@ -82,15 +82,14 @@ export function ThemeToggle() {
             variant="ghost"
             shape="square"
             aria-label={`Select theme, current theme is ${theme}`}
-            title="Select theme"
           >
             <ActiveIcon size={20} />
           </Button>
         }
       />
       <DropdownMenu.Content align="end">
-        <DropdownMenu.Label>Theme</DropdownMenu.Label>
         <DropdownMenu.RadioGroup value={theme} onValueChange={selectTheme}>
+          <DropdownMenu.Label>Theme</DropdownMenu.Label>
           {themeOptions.map((option) => (
             <DropdownMenu.RadioItem
               key={option.value}
