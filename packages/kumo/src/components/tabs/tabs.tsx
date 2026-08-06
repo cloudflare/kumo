@@ -339,7 +339,7 @@ function TabsOverflowControl({
     >
       <span
         className={cn(
-          "flex items-center justify-center rounded-full bg-kumo-elevated text-kumo-subtle shadow-sm ring ring-kumo-line transition-colors hover:bg-kumo-base hover:text-kumo-default",
+          "flex items-center justify-center text-kumo-subtle transition-colors hover:text-kumo-default",
           size === "sm" ? "size-5" : "size-6",
           isStart ? "ml-1" : "mr-1",
         )}
