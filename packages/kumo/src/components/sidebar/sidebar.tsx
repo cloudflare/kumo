@@ -1261,6 +1261,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       button = (
         <LinkComponent
           ref={ref as React.Ref<HTMLAnchorElement>}
+          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           className={cn(buttonClasses, "no-underline!")}
           href={href}
           to={href}
@@ -1270,9 +1271,6 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           data-kumo-component="Sidebar"
           data-kumo-part="menu-button-link"
           data-size={size}
-          onClick={
-            props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
-          }
         >
           {content}
         </LinkComponent>
@@ -1494,6 +1492,7 @@ const SidebarMenuSubButton = forwardRef<
     button = (
       <LinkComponent
         ref={ref as React.Ref<HTMLAnchorElement>}
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         className={cn(buttonClasses, "no-underline!")}
         href={href}
         to={href}
@@ -1502,9 +1501,6 @@ const SidebarMenuSubButton = forwardRef<
         data-sidebar="menu-sub-button"
         data-kumo-component="Sidebar"
         data-kumo-part="menu-sub-button-link"
-        onClick={
-          props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
-        }
       >
         {content}
       </LinkComponent>

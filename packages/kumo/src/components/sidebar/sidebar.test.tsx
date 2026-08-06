@@ -585,6 +585,25 @@ describe("Sidebar.MenuButton", () => {
     expect(link).toBeTruthy();
     expect(link!.getAttribute("href")).toBe("/home");
   });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton href="/tenants" active aria-current="true">
+              Tenants
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Tenants").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("true");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
+  });
 });
 
 describe("Sidebar.MenuSubButton", () => {
@@ -619,6 +638,29 @@ describe("Sidebar.MenuSubButton", () => {
     );
     const link = screen.getByText("External").closest("a");
     expect(link!.getAttribute("target")).toBe("_self");
+  });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuSubButton
+              href="/observability"
+              active
+              aria-current="page"
+            >
+              Observability
+            </SidebarMenuSubButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Observability").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("page");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-sub-button-link");
   });
 });
 
