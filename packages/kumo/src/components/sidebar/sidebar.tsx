@@ -494,6 +494,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const triggerRef = useRef<Element | null>(null);
     const mobileNodeRef = useRef<HTMLElement | null>(null);
     const shouldRestoreFocusRef = useRef(false);
+    const isPointerInPeekZoneRef = useRef(false);
 
     // Escape key closes the mobile sidebar
     useEffect(() => {
@@ -537,12 +538,25 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
 
     const handlePeekBlur = useCallback(
       (e: React.FocusEvent<HTMLDivElement>) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+        if (
+          !e.currentTarget.contains(e.relatedTarget as Node) &&
+          !isPointerInPeekZoneRef.current
+        ) {
           stopPeek();
         }
       },
       [stopPeek],
     );
+
+    const handlePeekMouseEnter = useCallback(() => {
+      isPointerInPeekZoneRef.current = true;
+      startPeek();
+    }, [startPeek]);
+
+    const handlePeekMouseLeave = useCallback(() => {
+      isPointerInPeekZoneRef.current = false;
+      stopPeek();
+    }, [stopPeek]);
 
     if (collapsible === "none") {
       return (
@@ -725,8 +739,8 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 <div
                   data-sidebar="peek-zone"
                   className="flex min-h-0 flex-1 flex-col"
-                  onMouseEnter={startPeek}
-                  onMouseLeave={stopPeek}
+                  onMouseEnter={handlePeekMouseEnter}
+                  onMouseLeave={handlePeekMouseLeave}
                   onFocus={startPeek}
                   onBlur={handlePeekBlur}
                 >
