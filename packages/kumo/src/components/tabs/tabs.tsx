@@ -89,6 +89,11 @@ export type TabsItem = {
    * When using a function, it receives the props to spread on the element and the tab's state.
    */
   render?: TabsTab.Props["render"];
+  /**
+   * Whether the rendered tab is a native button. Set to `false` when `render` produces a non-button element, such as a link.
+   * @default true
+   */
+  nativeButton?: TabsTab.Props["nativeButton"];
 };
 
 /**
@@ -229,6 +234,7 @@ export function Tabs({
             data-kumo-part="tab"
             value={tab.value}
             render={tab.render}
+            nativeButton={tab.nativeButton}
             onClick={(e) => {
               e.currentTarget.scrollIntoView({
                 behavior: "smooth",
