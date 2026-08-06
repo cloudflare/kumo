@@ -274,22 +274,26 @@ export function Tabs({
           )}
         />
       </TabsPrimitive.List>
-      <TabsOverflowControl
-        side="start"
-        visible={canScrollStart}
-        variant={variant}
-        size={size}
-        label={labels.scrollStart}
-        onClick={() => scrollTabs(listRef, "start")}
-      />
-      <TabsOverflowControl
-        side="end"
-        visible={canScrollEnd}
-        variant={variant}
-        size={size}
-        label={labels.scrollEnd}
-        onClick={() => scrollTabs(listRef, "end")}
-      />
+      {isSegmented && (
+        <>
+          <TabsOverflowControl
+            side="start"
+            visible={canScrollStart}
+            variant={variant}
+            size={size}
+            label={labels.scrollStart}
+            onClick={() => scrollTabs(listRef, "start")}
+          />
+          <TabsOverflowControl
+            side="end"
+            visible={canScrollEnd}
+            variant={variant}
+            size={size}
+            label={labels.scrollEnd}
+            onClick={() => scrollTabs(listRef, "end")}
+          />
+        </>
+      )}
     </TabsPrimitive.Root>
   );
 }
@@ -323,7 +327,7 @@ function TabsOverflowControl({
       tabIndex={visible ? 0 : -1}
       onClick={onClick}
       className={cn(
-        "absolute inset-y-0 z-3 flex items-center border-0 bg-transparent p-0 transition-opacity duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        "absolute inset-y-0 z-3 flex items-center border-0 bg-transparent p-0 transition-opacity duration-150 focus:outline-none focus-visible:[&>span]:ring-2 focus-visible:[&>span]:ring-kumo-brand",
         isStart
           ? "left-0 justify-start bg-linear-to-r"
           : "right-0 justify-end bg-linear-to-l",
@@ -341,6 +345,7 @@ function TabsOverflowControl({
         className={cn(
           "flex items-center justify-center text-kumo-subtle transition-colors hover:text-kumo-default",
           size === "sm" ? "size-5" : "size-6",
+          isSegmented ? (size === "sm" ? "rounded-sm" : "rounded-md") : "rounded",
           isStart ? "ml-1" : "mr-1",
         )}
       >
