@@ -139,8 +139,14 @@ const buildDate =
             }
 
             event.preventDefault();
-            const current = document.documentElement.getAttribute("data-mode");
-            setTheme(current === "dark" ? "light" : "dark");
+            const current = localStorage.getItem("theme");
+            const nextTheme =
+              current === "light"
+                ? "dark"
+                : current === "dark"
+                  ? "system"
+                  : "light";
+            setTheme(nextTheme);
           });
         }
       })();

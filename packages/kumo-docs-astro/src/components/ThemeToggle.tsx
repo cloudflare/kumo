@@ -4,10 +4,16 @@ import { DesktopIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
 
 type ThemePreference = "light" | "dark" | "system";
 
+const themeIcons: Record<ThemePreference, typeof SunIcon> = {
+  light: SunIcon,
+  dark: MoonIcon,
+  system: DesktopIcon,
+};
+
 const themeOptions = [
-  { value: "light", label: "Light", icon: SunIcon },
-  { value: "dark", label: "Dark", icon: MoonIcon },
-  { value: "system", label: "System", icon: DesktopIcon },
+  { value: "light", label: "Light", icon: themeIcons.light },
+  { value: "dark", label: "Dark", icon: themeIcons.dark },
+  { value: "system", label: "System", icon: themeIcons.system },
 ] as const;
 
 function isThemePreference(value: unknown): value is ThemePreference {
@@ -70,9 +76,7 @@ export function ThemeToggle() {
     );
   }
 
-  const ActiveIcon = themeOptions.find(
-    (option) => option.value === theme,
-  )!.icon;
+  const ActiveIcon = themeIcons[theme];
 
   return (
     <DropdownMenu>
