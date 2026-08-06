@@ -95,7 +95,7 @@ describe("buildBundleSizeMarkdown", () => {
 
     const markdown = buildBundleSizeMarkdown(data);
 
-    assert.match(markdown, /Button \\| root/);
+    assert.ok(markdown.includes("Button \\| root"));
     assert.match(markdown, /bad'file\.test\.ts/);
     assert.match(markdown, /warning 'with code'/);
   });

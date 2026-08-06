@@ -7,6 +7,10 @@
 
 export const BUNDLE_SIZE_SCHEMA_VERSION = 1;
 
+/**
+ * Trusted fixture allowlist. New fixture IDs must land on the default branch
+ * before an untrusted PR artifact can use them.
+ */
 export const BUNDLE_SIZE_FIXTURES = [
   { id: "root-button", label: "Button (root)" },
   { id: "subpath-button", label: "Button (components/button)" },

@@ -123,7 +123,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run typecheck
-      - run: pnpm run ci:typecheck
+      - run: vp run ci:typecheck
 
   test:
     needs: build
@@ -143,7 +143,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run --filter @cloudflare/kumo test
-      - run: pnpm run test:ci
+      - run: vp run test:ci
 
   test-react-compatibility:
     needs: build

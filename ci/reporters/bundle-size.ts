@@ -186,6 +186,8 @@ export function parseTarballReport(output: string): TarballReport {
 }
 
 function collectTarballReport(): TarballReport {
+  // pnpm pack supports JSON output but not dry-run or ignore-scripts, so use npm
+  // here to inspect the package without creating a tarball or running hooks.
   const output = execFileSync(
     "npm",
     ["pack", "--dry-run", "--json", "--ignore-scripts"],
