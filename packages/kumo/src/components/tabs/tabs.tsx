@@ -345,7 +345,11 @@ function TabsOverflowControl({
         className={cn(
           "flex items-center justify-center text-kumo-subtle transition-colors hover:text-kumo-default",
           size === "sm" ? "size-5" : "size-6",
-          isSegmented ? (size === "sm" ? "rounded-sm" : "rounded-md") : "rounded",
+          isSegmented
+            ? size === "sm"
+              ? "rounded-sm"
+              : "rounded-md"
+            : "rounded",
           isStart ? "ml-1" : "mr-1",
         )}
       >
