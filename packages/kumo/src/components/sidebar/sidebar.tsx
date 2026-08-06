@@ -837,6 +837,7 @@ const SidebarContent = forwardRef<
         "flex w-1.5 touch-none p-px select-none",
         "opacity-0 transition-opacity duration-150",
         "data-[hovering]:opacity-100 data-[scrolling]:opacity-100",
+        "group-data-[state=collapsed]/sidebar:hidden",
       )}
     >
       <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
