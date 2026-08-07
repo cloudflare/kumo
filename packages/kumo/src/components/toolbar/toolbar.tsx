@@ -10,7 +10,14 @@ import { cn } from "../../utils/cn";
 import { Button as KumoButton, type ButtonProps } from "../button/button";
 import { Input as KumoInput, type InputProps } from "../input/input";
 import { InputGroup } from "../input-group/input-group";
+import { Select as KumoSelect, type SelectRootProps } from "../select/select";
+import {
+  Combobox as KumoCombobox,
+  type ComboboxRootProps,
+} from "../combobox/combobox";
+import { ToolbarControlProvider } from "./toolbar-context";
 
+/** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
 export const KUMO_TOOLBAR_VARIANTS = {
   size: {
     xs: {
@@ -32,16 +39,21 @@ export const KUMO_TOOLBAR_VARIANTS = {
   },
 } as const;
 
+/** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
 export const KUMO_TOOLBAR_DEFAULT_VARIANTS = {
   size: "base",
 } as const;
 
+/** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
 export type ToolbarSize = keyof typeof KUMO_TOOLBAR_VARIANTS.size;
 
 export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
   /** Toolbar controls rendered as one grouped card. */
   children: React.ReactNode;
-  /** Locks every toolbar item to this size. */
+  /**
+   * Locks every toolbar item to this size.
+   * @deprecated Omit this prop to use the default base size. Toolbar size customization will be removed in a future major release.
+   */
   size?: ToolbarSize;
 }
 
@@ -69,6 +81,37 @@ export type ToolbarInputGroupProps = Omit<
   "size"
 >;
 
+export type ToolbarSelectProps<
+  Value,
+  Multiple extends boolean | undefined = false,
+> = Omit<
+  SelectRootProps<Value, Multiple>,
+  | "className"
+  | "size"
+  | "label"
+  | "hideLabel"
+  | "labelTooltip"
+  | "description"
+  | "error"
+> & {
+  /** Additional classes applied to the grouped toolbar item surface. */
+  className?: string;
+  /** When `true`, the item remains in the toolbar focus order when disabled. */
+  focusableWhenDisabled?: ToolbarBase.Button.Props["focusableWhenDisabled"];
+};
+
+export type ToolbarComboboxProps<
+  Value,
+  Multiple extends boolean | undefined = false,
+> = Omit<ComboboxRootProps<Value, Multiple>, "children"> & {
+  /** Regular `Combobox.*` components rendered inside this root replacement. */
+  children: React.ReactNode;
+  /** Additional classes applied to the grouped toolbar item surface. */
+  className?: string;
+  /** When `true`, the item remains in the toolbar focus order when disabled. */
+  focusableWhenDisabled?: ToolbarBase.Input.Props["focusableWhenDisabled"];
+};
+
 type ToolbarInputGroupChildProps = React.ComponentPropsWithoutRef<
   typeof InputGroup.Input
 >;
@@ -79,18 +122,17 @@ const ToolbarSizeContext = createContext<{ size: ToolbarSize }>({
 
 function toolbarControlClassName(className?: string) {
   return cn(
-    "relative min-w-0 border-0 bg-transparent shadow-none ring-0 focus-within:z-2 focus:z-2 focus-visible:z-2",
+    "relative min-w-0 border-0 bg-transparent shadow-none ring-0",
+    "focus-within:z-2 focus:z-2 focus-visible:z-2 has-[:focus-visible]:z-2",
     "rounded-none first:rounded-l-lg last:rounded-r-lg only:rounded-lg",
     "not-first:border-l not-first:border-kumo-line",
     "focus:ring-[1.5px] focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+    "focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-kumo-brand",
     className,
   );
 }
 
-/**
- * Groups toolbar controls into one compact card with shared sizing and internal
- * separators.
- */
+/** Groups toolbar controls into one compact card. */
 const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
   (
     {
@@ -250,10 +292,78 @@ const InputGroupRoot = React.forwardRef<HTMLElement, ToolbarInputGroupProps>(
 
 InputGroupRoot.displayName = "Toolbar.InputGroup";
 
+function ToolbarSelect<Value, Multiple extends boolean | undefined = false>({
+  className,
+  focusableWhenDisabled,
+  disabled = false,
+  loading = false,
+  ...props
+}: ToolbarSelectProps<Value, Multiple>) {
+  const toolbar = React.useContext(ToolbarSizeContext);
+  const itemDisabled = disabled || loading;
+
+  return (
+    <ToolbarControlProvider
+      value={{ disabled: itemDisabled, focusableWhenDisabled }}
+    >
+      <div
+        data-kumo-component="Toolbar.Select"
+        data-disabled={itemDisabled ? "" : undefined}
+        className={toolbarControlClassName(
+          cn("isolate overflow-hidden", className),
+        )}
+      >
+        <KumoSelect<Value, Multiple>
+          {...props}
+          disabled={disabled}
+          loading={loading}
+          size={toolbar.size}
+        />
+      </div>
+    </ToolbarControlProvider>
+  );
+}
+
+ToolbarSelect.displayName = "Toolbar.Select";
+
+function ToolbarCombobox<Value, Multiple extends boolean | undefined = false>({
+  children,
+  className,
+  focusableWhenDisabled,
+  disabled = false,
+  ...props
+}: ToolbarComboboxProps<Value, Multiple>) {
+  const toolbar = React.useContext(ToolbarSizeContext);
+
+  return (
+    <ToolbarControlProvider value={{ disabled, focusableWhenDisabled }}>
+      <div
+        data-kumo-component="Toolbar.Combobox"
+        data-disabled={disabled ? "" : undefined}
+        className={toolbarControlClassName(
+          cn("isolate overflow-hidden", className),
+        )}
+      >
+        <KumoCombobox<Value, Multiple>
+          {...props}
+          disabled={disabled}
+          size={toolbar.size}
+        >
+          {children}
+        </KumoCombobox>
+      </div>
+    </ToolbarControlProvider>
+  );
+}
+
+ToolbarCombobox.displayName = "Toolbar.Combobox";
+
 export const Toolbar = Object.assign(Root, {
   Button,
   Input,
   InputGroup: InputGroupRoot,
+  Select: ToolbarSelect,
+  Combobox: ToolbarCombobox,
 });
 
 Toolbar.displayName = "Toolbar";

@@ -1,4 +1,4 @@
-import { InputGroup, Toolbar } from "@cloudflare/kumo";
+import { Combobox, InputGroup, Select, Toolbar } from "@cloudflare/kumo";
 import {
   DownloadSimpleIcon,
   FunnelSimpleIcon,
@@ -23,7 +23,7 @@ export function ToolbarDemo() {
   );
 }
 
-/** Toolbar locks supported item sizes to the toolbar size. */
+/** @deprecated Toolbar size customization remains for compatibility. */
 export function ToolbarSizesDemo() {
   return (
     <div className="grid gap-3">
@@ -91,6 +91,45 @@ export function ToolbarLabelsDemo() {
         placeholder="Search"
       />
       <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
+    </Toolbar>
+  );
+}
+
+/** Toolbar.Select replaces the Select root while using regular Select options. */
+export function ToolbarSelectDemo() {
+  return (
+    <Toolbar>
+      <Toolbar.Button icon={FunnelSimpleIcon}>Filter</Toolbar.Button>
+      <Toolbar.Select aria-label="Sort records" defaultValue="name">
+        <Select.Option value="name">Name</Select.Option>
+        <Select.Option value="created">Created date</Select.Option>
+        <Select.Option value="status">Status</Select.Option>
+      </Toolbar.Select>
+      <Toolbar.Button icon={GearSixIcon} aria-label="View settings" />
+    </Toolbar>
+  );
+}
+
+const toolbarComboboxItems = ["All records", "Active", "Paused", "Failed"];
+
+/** Toolbar.Combobox replaces the root while using regular Combobox children. */
+export function ToolbarComboboxDemo() {
+  return (
+    <Toolbar className="w-full max-w-md">
+      <Toolbar.Button icon={FunnelSimpleIcon}>Status</Toolbar.Button>
+      <Toolbar.Combobox items={toolbarComboboxItems} className="flex-1">
+        <Combobox.TriggerInput placeholder="Filter status…" />
+        <Combobox.Content>
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+          <Combobox.Empty>No matching statuses.</Combobox.Empty>
+        </Combobox.Content>
+      </Toolbar.Combobox>
     </Toolbar>
   );
 }

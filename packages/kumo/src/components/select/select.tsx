@@ -1,4 +1,5 @@
 import { Select as SelectBase } from "@base-ui/react/select";
+import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
@@ -12,6 +13,10 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
+import {
+  toolbarInnerControlClassName,
+  useToolbarControlContext,
+} from "../toolbar/toolbar-context";
 
 /** Select variant definitions. */
 export const KUMO_SELECT_VARIANTS = {
@@ -189,10 +194,10 @@ function renderOptionsFromItems<T>(
     });
 }
 
-type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
-  SelectBase.Root.Props<T, Multiple>,
-  "items"
-> &
+export type SelectRootProps<
+  T,
+  Multiple extends boolean | undefined = false,
+> = Omit<SelectBase.Root.Props<T, Multiple>, "items"> &
   KumoSelectVariantsProps & {
     multiple?: Multiple;
     /**
@@ -359,9 +364,10 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   required,
   container: containerProp,
   ...props
-}: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
+}: SelectRootProps<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
   const contextContainer = usePortalContainer();
+  const toolbarControl = useToolbarControlContext();
   const container = containerProp ?? contextContainer ?? undefined;
   const propLookup = props as Record<string, unknown>;
   const ariaLabel = propLookup["aria-label"] as string | undefined;
@@ -443,48 +449,64 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     </SelectBase.Label>
   ) : null;
 
+  const selectTrigger = (
+    <SelectBase.Trigger
+      data-kumo-component="Select"
+      data-kumo-part="trigger"
+      className={cn(
+        selectVariants({ size }),
+        toolbarControl && toolbarInnerControlClassName("w-full"),
+        props.disabled && "cursor-not-allowed opacity-50",
+        error &&
+          "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
+        className,
+      )}
+      aria-label={triggerAriaLabel}
+      aria-labelledby={triggerLabelledBy}
+    >
+      {loading ? (
+        <SkeletonLine className="w-32" />
+      ) : (
+        <SelectBase.Value
+          placeholder={placeholder}
+          className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
+        >
+          {valueChildrenFn}
+        </SelectBase.Value>
+      )}
+      <SelectBase.Icon
+        className={cn(
+          "flex shrink-0 items-center",
+          triggerIconStyles[size].className,
+        )}
+      >
+        <CaretUpDownIcon
+          size={triggerIconStyles[size].iconSize}
+          className="fill-current"
+        />
+      </SelectBase.Icon>
+    </SelectBase.Trigger>
+  );
+
+  const adaptedSelectTrigger = toolbarControl ? (
+    <ToolbarBase.Button
+      disabled={toolbarControl.disabled}
+      focusableWhenDisabled={toolbarControl.focusableWhenDisabled}
+      render={selectTrigger}
+    />
+  ) : (
+    selectTrigger
+  );
+
   const selectControl = (
     <SelectBase.Root
       {...baseProps}
       items={normalizedItems}
       disabled={loading || props.disabled}
+      required={required}
     >
       {selectLabelNode}
-      <SelectBase.Trigger
-        data-kumo-component="Select"
-        data-kumo-part="trigger"
-        className={cn(
-          selectVariants({ size }),
-          props.disabled && "cursor-not-allowed opacity-50",
-          error &&
-            "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
-          className,
-        )}
-        aria-label={triggerAriaLabel}
-        aria-labelledby={triggerLabelledBy}
-      >
-        {loading ? (
-          <SkeletonLine className="w-32" />
-        ) : (
-          <SelectBase.Value
-            placeholder={placeholder}
-            className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
-          >
-            {valueChildrenFn}
-          </SelectBase.Value>
-        )}
-        <SelectBase.Icon
-          className={cn(
-            "flex shrink-0 items-center",
-            triggerIconStyles[size].className,
-          )}
-        >
-          <CaretUpDownIcon
-            size={triggerIconStyles[size].iconSize}
-            className="fill-current"
-          />
-        </SelectBase.Icon>
-      </SelectBase.Trigger>
+      {adaptedSelectTrigger}
       <SelectBase.Portal container={container}>
         <SelectBase.Positioner>
           <SelectBase.Popup
@@ -507,6 +529,12 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       </SelectBase.Portal>
     </SelectBase.Root>
   );
+
+  // Toolbar.Select owns the single grouped surface and does not render the
+  // standalone helper-text grid around the Base UI root.
+  if (toolbarControl) {
+    return selectControl;
+  }
 
   // Use Field wrapper when label is provided and not hidden
   if (useFieldWrapper) {
