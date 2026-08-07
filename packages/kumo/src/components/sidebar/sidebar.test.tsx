@@ -479,6 +479,28 @@ describe("Sidebar.SlidingViews", () => {
     );
   }
 
+  function PeekingSlidingTest({ activeKey = "a" }: { activeKey?: string }) {
+    return (
+      <TestSidebar defaultOpen={false} peekable>
+        <StateReader />
+        <SidebarSlidingViews activeKey={activeKey}>
+          <SidebarSlidingView value="a">
+            <SidebarContent>
+              <button type="button" data-testid="view-a-button">
+                Go to B
+              </button>
+            </SidebarContent>
+          </SidebarSlidingView>
+          <SidebarSlidingView value="b">
+            <SidebarContent>
+              <button type="button">Go to A</button>
+            </SidebarContent>
+          </SidebarSlidingView>
+        </SidebarSlidingViews>
+      </TestSidebar>
+    );
+  }
+
   it("should show the active view", () => {
     render(<SlidingTest activeKey="a" />);
     const viewA = screen
@@ -509,6 +531,25 @@ describe("Sidebar.SlidingViews", () => {
       .closest("[data-sidebar='sliding-view']")!;
     expect(viewA.getAttribute("aria-hidden")).toBe("true");
     expect(viewB.getAttribute("aria-hidden")).toBe("false");
+  });
+
+  it("should keep peeking when a view change blurs the active item under the pointer", () => {
+    const { rerender } = render(<PeekingSlidingTest activeKey="a" />);
+
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']")!;
+    fireEvent.mouseEnter(peekZone);
+
+    const activeButton = screen.getByTestId("view-a-button");
+    fireEvent.focus(activeButton);
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
+
+    rerender(<PeekingSlidingTest activeKey="b" />);
+    fireEvent.blur(activeButton, { relatedTarget: null });
+
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
+
+    fireEvent.mouseLeave(peekZone);
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("collapsed");
   });
 });
 
@@ -585,6 +626,25 @@ describe("Sidebar.MenuButton", () => {
     expect(link).toBeTruthy();
     expect(link!.getAttribute("href")).toBe("/home");
   });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton href="/tenants" active aria-current="true">
+              Tenants
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Tenants").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("true");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
+  });
 });
 
 describe("Sidebar.MenuSubButton", () => {
@@ -619,6 +679,29 @@ describe("Sidebar.MenuSubButton", () => {
     );
     const link = screen.getByText("External").closest("a");
     expect(link!.getAttribute("target")).toBe("_self");
+  });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuSubButton
+              href="/observability"
+              active
+              aria-current="page"
+            >
+              Observability
+            </SidebarMenuSubButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Observability").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("page");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-sub-button-link");
   });
 });
 

@@ -165,11 +165,13 @@ export function TabsRenderPropDemo() {
         {
           value: "tab2",
           label: "Link Tab",
+          nativeButton: false,
           render: (props) => <a {...props} href="#tab2" />,
         },
         {
           value: "tab3",
           label: "Cloudflare",
+          nativeButton: false,
           render: (props) => (
             <a {...props} href="https://cloudflare.com" target="_blank" />
           ),

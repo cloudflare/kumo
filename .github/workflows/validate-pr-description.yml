@@ -56,6 +56,10 @@ jobs:
         with:
           format: "json"
 
+      - name: Test PR description validation
+        if: steps.changes.outputs.everything_but_markdown == 'true'
+        run: vp exec tsx --test tools/deployments/validate-pr-description.test.ts
+
       - run: vp exec tsx tools/deployments/validate-pr-description.ts
         if: steps.changes.outputs.everything_but_markdown == 'true'
         env:

@@ -494,6 +494,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
     const triggerRef = useRef<Element | null>(null);
     const mobileNodeRef = useRef<HTMLElement | null>(null);
     const shouldRestoreFocusRef = useRef(false);
+    const isPointerInPeekZoneRef = useRef(false);
 
     // Escape key closes the mobile sidebar
     useEffect(() => {
@@ -537,12 +538,25 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
 
     const handlePeekBlur = useCallback(
       (e: React.FocusEvent<HTMLDivElement>) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+        if (
+          !e.currentTarget.contains(e.relatedTarget as Node) &&
+          !isPointerInPeekZoneRef.current
+        ) {
           stopPeek();
         }
       },
       [stopPeek],
     );
+
+    const handlePeekMouseEnter = useCallback(() => {
+      isPointerInPeekZoneRef.current = true;
+      startPeek();
+    }, [startPeek]);
+
+    const handlePeekMouseLeave = useCallback(() => {
+      isPointerInPeekZoneRef.current = false;
+      stopPeek();
+    }, [stopPeek]);
 
     if (collapsible === "none") {
       return (
@@ -725,8 +739,8 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
                 <div
                   data-sidebar="peek-zone"
                   className="flex min-h-0 flex-1 flex-col"
-                  onMouseEnter={startPeek}
-                  onMouseLeave={stopPeek}
+                  onMouseEnter={handlePeekMouseEnter}
+                  onMouseLeave={handlePeekMouseLeave}
                   onFocus={startPeek}
                   onBlur={handlePeekBlur}
                 >
@@ -823,6 +837,7 @@ const SidebarContent = forwardRef<
         "flex w-1.5 touch-none p-px select-none",
         "opacity-0 transition-opacity duration-150",
         "data-[hovering]:opacity-100 data-[scrolling]:opacity-100",
+        "group-data-[state=collapsed]/sidebar:hidden",
       )}
     >
       <ScrollAreaBase.Thumb className="flex-1 rounded-full bg-kumo-line" />
@@ -1261,6 +1276,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       button = (
         <LinkComponent
           ref={ref as React.Ref<HTMLAnchorElement>}
+          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           className={cn(buttonClasses, "no-underline!")}
           href={href}
           to={href}
@@ -1270,9 +1286,6 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
           data-kumo-component="Sidebar"
           data-kumo-part="menu-button-link"
           data-size={size}
-          onClick={
-            props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
-          }
         >
           {content}
         </LinkComponent>
@@ -1494,6 +1507,7 @@ const SidebarMenuSubButton = forwardRef<
     button = (
       <LinkComponent
         ref={ref as React.Ref<HTMLAnchorElement>}
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         className={cn(buttonClasses, "no-underline!")}
         href={href}
         to={href}
@@ -1502,9 +1516,6 @@ const SidebarMenuSubButton = forwardRef<
         data-sidebar="menu-sub-button"
         data-kumo-component="Sidebar"
         data-kumo-part="menu-sub-button-link"
-        onClick={
-          props.onClick as unknown as React.MouseEventHandler<HTMLAnchorElement>
-        }
       >
         {content}
       </LinkComponent>
