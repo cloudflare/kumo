@@ -23,6 +23,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/install-dependencies
+      - name: Test changeset validation
+        run: vp exec tsx --test ci/utils/git-operations.test.ts
       - run: vp exec tsx ci/scripts/validate-kumo-changeset.ts
         env:
           NO_CHANGESET_REQUIRED: ${{ contains(github.event.pull_request.labels.*.name, 'no-changeset-required') }}
