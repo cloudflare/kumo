@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type MouseEvent,
@@ -179,12 +180,13 @@ export function Tabs({
   const isUnderline = variant === "underline";
   const isSm = size === "sm";
   const labels = { ...DEFAULT_LABELS, ...labelsProp };
+  const overflowWatchKey = items.map((item) => item.value).join("|");
   const {
     ref: listRef,
     isOverflowing,
     canScrollStart,
     canScrollEnd,
-  } = useOverflowDetect(true);
+  } = useOverflowDetect(true, overflowWatchKey);
   const bindDrag = useHorizontalDragScroll(listRef, isOverflowing);
 
   return (
@@ -506,7 +508,7 @@ function useHorizontalDragScroll(
  * Returns a ref to attach and a boolean for conditional rendering.
  * The `data-overflowing` attribute drives the scroll-fade CSS.
  */
-function useOverflowDetect(enabled: boolean) {
+function useOverflowDetect(enabled: boolean, watchKey: string) {
   const ref = useRef<HTMLDivElement>(null);
   const [overflowState, setOverflowState] = useState({
     isOverflowing: false,
@@ -514,27 +516,21 @@ function useOverflowDetect(enabled: boolean) {
     canScrollEnd: false,
   });
 
+  useLayoutEffect(() => {
+    if (!enabled) return;
+    const el = ref.current;
+    if (!el) return;
+
+    setOverflowState((prevState) => getNextOverflowState(el, prevState));
+  }, [enabled, watchKey]);
+
   useEffect(() => {
     if (!enabled) return;
     const el = ref.current;
     if (!el) return;
 
     const check = () => {
-      const maxScrollLeft = Math.max(0, el.scrollWidth - el.clientWidth);
-      const scrollLeft = Math.min(Math.max(0, el.scrollLeft), maxScrollLeft);
-      const nextState = {
-        isOverflowing: maxScrollLeft > 1,
-        canScrollStart: scrollLeft > 1,
-        canScrollEnd: maxScrollLeft - scrollLeft > 1,
-      };
-
-      setOverflowState((prevState) =>
-        prevState.isOverflowing === nextState.isOverflowing &&
-        prevState.canScrollStart === nextState.canScrollStart &&
-        prevState.canScrollEnd === nextState.canScrollEnd
-          ? prevState
-          : nextState,
-      );
+      setOverflowState((prevState) => getNextOverflowState(el, prevState));
     };
 
     const ro = new ResizeObserver(check);
@@ -552,4 +548,27 @@ function useOverflowDetect(enabled: boolean) {
   }, [enabled]);
 
   return { ref, ...overflowState };
+}
+
+function getNextOverflowState(
+  el: HTMLElement,
+  prevState: {
+    isOverflowing: boolean;
+    canScrollStart: boolean;
+    canScrollEnd: boolean;
+  },
+) {
+  const maxScrollLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+  const scrollLeft = Math.min(Math.max(0, el.scrollLeft), maxScrollLeft);
+  const nextState = {
+    isOverflowing: maxScrollLeft > 1,
+    canScrollStart: scrollLeft > 1,
+    canScrollEnd: maxScrollLeft - scrollLeft > 1,
+  };
+
+  return prevState.isOverflowing === nextState.isOverflowing &&
+    prevState.canScrollStart === nextState.canScrollStart &&
+    prevState.canScrollEnd === nextState.canScrollEnd
+    ? prevState
+    : nextState;
 }

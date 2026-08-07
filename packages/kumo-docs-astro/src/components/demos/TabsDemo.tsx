@@ -1,6 +1,22 @@
 import { useState } from "react";
 import { Tabs } from "@cloudflare/kumo";
 
+const productionLikeTabs = [
+  { value: "overview", label: "Overview" },
+  { value: "metrics", label: "Metrics" },
+  { value: "deployments", label: "Deployments" },
+  { value: "observability", label: "Observability" },
+  { value: "domains", label: "Domains" },
+  { value: "access", label: "Access" },
+  { value: "settings", label: "Settings" },
+];
+
+const productionLikeExtraTabs = [
+  { value: "analytics", label: "Analytics" },
+  { value: "logs", label: "Logs" },
+  { value: "security", label: "Security" },
+];
+
 export function TabsDefaultDemo() {
   return (
     <div className="flex flex-col gap-6">
@@ -117,6 +133,31 @@ export function TabsOverflowDemo() {
         ]}
         selectedValue="overview"
       />
+    </div>
+  );
+}
+
+export function TabsDynamicCountDemo() {
+  const [showExtraTabs, setShowExtraTabs] = useState(true);
+  const tabs = showExtraTabs
+    ? [...productionLikeTabs, ...productionLikeExtraTabs]
+    : productionLikeTabs;
+
+  return (
+    <div className="space-y-3">
+      <div className="w-full max-w-[588px]">
+        <Tabs tabs={tabs} selectedValue="settings" />
+      </div>
+      <div className="flex items-center gap-3 text-sm text-kumo-subtle">
+        <button
+          type="button"
+          className="rounded-md border border-kumo-line bg-kumo-base px-2.5 py-1 text-kumo-default hover:bg-kumo-tint focus:ring-2 focus:ring-kumo-brand focus:outline-none"
+          onClick={() => setShowExtraTabs((current) => !current)}
+        >
+          Toggle extra tabs
+        </button>
+        <span>{showExtraTabs ? "10 tabs" : "7 tabs"}</span>
+      </div>
     </div>
   );
 }

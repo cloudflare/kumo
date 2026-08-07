@@ -16,6 +16,7 @@ import {
   TabsControlledDemo,
   TabsManyDemo,
   TabsOverflowDemo,
+  TabsDynamicCountDemo,
 } from "~/components/demos/TabsDemo";
 
 {/* Hero Demo */}
@@ -128,6 +129,17 @@ export default function Example() {
 </p>
 <ComponentExample demo="TabsOverflowDemo">
   <TabsOverflowDemo client:visible />
+</ComponentExample>
+
+### Dynamic Tab Count
+
+<p>
+  This example toggles between an overflowing tab set and the production-like
+  seven-tab set. When the extra tabs disappear, the end overflow control should
+  hide once the remaining tabs fit.
+</p>
+<ComponentExample demo="TabsDynamicCountDemo">
+  <TabsDynamicCountDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>
