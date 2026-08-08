@@ -78,11 +78,18 @@ export function validateDescription(
 
   // Validate changeset
   const changedFiles = JSON.parse(changedFilesJson) as string[];
+  const hasKumoChanges = changedFiles.some((f) =>
+    f.startsWith("packages/kumo/"),
+  );
   const changesetIncluded = changedFiles.some((f) =>
     f.startsWith(".changeset/"),
   );
 
-  if (!changesetIncluded && !parsedLabels.includes("no-changeset-required")) {
+  if (
+    hasKumoChanges &&
+    !changesetIncluded &&
+    !parsedLabels.includes("no-changeset-required")
+  ) {
     errors.push(
       "Your PR doesn't include a changeset. Either include one (following the instructions in CONTRIBUTING.md) or add the 'no-changeset-required' label to bypass this check. See https://github.com/cloudflare/kumo/blob/main/CONTRIBUTING.md#changesets for more details.",
     );

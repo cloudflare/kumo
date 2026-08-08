@@ -104,4 +104,4 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 - **Required secrets**: `NPM_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `GITHUB_TOKEN`, `FIGMA_TOKEN` (optional)
 - **Visual regression**: Creates ephemeral `vr-screenshots-{pr}-{runId}` branches for diff images
 - **Fork PR security**: `preview-deploy.yml` handles fork PRs via `workflow_run` (no secrets in fork context)
-- **Composite action**: `.github/actions/install-dependencies/action.yml` installs pnpm 10.22.0, Node 24, with optional filter
+- **Composite action**: `.github/actions/install-dependencies/action.yml` installs pnpm 10.34.0, Node 24, with optional filter

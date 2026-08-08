@@ -1,5 +1,12 @@
 # @cloudflare/kumo
 
+## 2.9.2
+
+### Patch Changes
+
+- 188a82c: Remove the elevated chip styling from Tabs overflow scroll controls.
+- c5ad709: Constrain Tabs overflow controls to segmented tabs and focus the caret target.
+
 ## 2.9.1
 
 ### Patch Changes
