@@ -62,11 +62,6 @@ describe("Input", () => {
     expect(screen.getByRole("textbox").className).toContain("h-9");
   });
 
-  it("renders with size 'xs'", () => {
-    render(<Input aria-label="Test" size="xs" />);
-    expect(screen.getByRole("textbox").className).toContain("h-5");
-  });
-
   it("renders with size 'sm'", () => {
     render(<Input aria-label="Test" size="sm" />);
     expect(screen.getByRole("textbox").className).toContain("h-6.5");
@@ -214,7 +209,6 @@ describe("Input", () => {
 
   // Variants export
   it("exports KUMO_INPUT_VARIANTS with size and variant axes", () => {
-    expect(KUMO_INPUT_VARIANTS.size.xs).toBeDefined();
     expect(KUMO_INPUT_VARIANTS.size.sm).toBeDefined();
     expect(KUMO_INPUT_VARIANTS.size.base).toBeDefined();
     expect(KUMO_INPUT_VARIANTS.size.lg).toBeDefined();

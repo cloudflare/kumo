@@ -25,7 +25,6 @@ export type KumoAutocompleteSize = keyof typeof KUMO_AUTOCOMPLETE_VARIANTS.size;
 export interface KumoAutocompleteVariantsProps {
   /**
    * Size of the autocomplete input. Matches Input component sizes.
-   * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
    * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
    * - `"base"` — Default size (h-9 / 36px)
    * - `"lg"` — Large for prominent fields (h-10 / 40px)

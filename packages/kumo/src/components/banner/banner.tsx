@@ -66,6 +66,9 @@ export type KumoBannerSize = keyof typeof KUMO_BANNER_VARIANTS.size;
  * the container classes). `row` is the title↔action flex gap, `icon` the icon
  * wrapper height, `description` the description text size, and `action` the size
  * that child `Banner.Action`s inherit via {@link BannerActionContext}.
+ *
+ * Both banner sizes render their actions at `"sm"` now that `Button` no longer
+ * offers an `"xs"` size.
  */
 const BANNER_SIZE_PARTS: Record<
   KumoBannerSize,
@@ -81,7 +84,7 @@ const BANNER_SIZE_PARTS: Record<
     row: "gap-2",
     icon: "h-[1.25em]",
     description: "text-sm",
-    action: "xs",
+    action: "sm",
   },
 };
 
@@ -186,10 +189,9 @@ export interface BannerProps extends Omit<
    */
   variant?: KumoBannerVariant;
   /**
-   * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`,
-   * renders a Kumo `Link` action inline with the description, and sets its
-   * `Banner.Action` children to the `"xs"` size — suited to dialogs and other
-   * tight spaces.
+   * Size of the banner. A `"sm"` banner uses tighter spacing and `text-sm`
+   * and renders a Kumo `Link` action inline with the description — suited to
+   * dialogs and other tight spaces.
    * @default "base"
    */
   size?: KumoBannerSize;

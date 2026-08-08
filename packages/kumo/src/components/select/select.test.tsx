@@ -7,15 +7,15 @@ describe("Select", () => {
   describe("size", () => {
     it("applies size classes to the trigger", () => {
       const { container } = render(
-        <Select aria-label="Pick one" size="xs">
+        <Select aria-label="Pick one" size="sm">
           <Select.Option value="a">Option A</Select.Option>
         </Select>,
       );
 
       const trigger = container.querySelector('[role="combobox"]');
       expect(trigger).toBeTruthy();
-      expect(trigger?.className).toContain("h-5");
-      expect(trigger?.className).toContain("px-1.5");
+      expect(trigger?.className).toContain("h-6.5");
+      expect(trigger?.className).toContain("px-2");
       expect(trigger?.className).toContain("text-xs");
     });
   });

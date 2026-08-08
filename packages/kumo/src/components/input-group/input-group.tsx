@@ -28,10 +28,6 @@ export { type InputGroupSuffixProps } from "./input-group-suffix";
 
 export const KUMO_INPUT_GROUP_VARIANTS = {
   size: {
-    xs: {
-      classes: "h-6 text-xs",
-      description: "Extra small size.",
-    },
     sm: {
       classes: "h-7 text-xs",
       description: "Small size.",

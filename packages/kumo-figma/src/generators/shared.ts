@@ -435,8 +435,6 @@ export const FALLBACK_VALUES = {
    * Generated from: button.tsx KUMO_BUTTON_VARIANTS.compactSize
    */
   buttonCompactSize: {
-    /** Extra small compact button (size-3.5) */
-    xs: themeData.computed.buttonCompactSize.xs,
     /** Small compact button (size-6.5) */
     sm: themeData.computed.buttonCompactSize.sm,
     /** Base compact button (size-9) */

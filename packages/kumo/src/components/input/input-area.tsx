@@ -1,4 +1,4 @@
-import { inputVariants } from "./input";
+import { inputVariants, type KumoInputSize } from "./input";
 import { cn } from "../../utils/cn";
 import {
   useCallback,
@@ -286,7 +286,8 @@ export const Textarea = InputArea;
 export type InputAreaProps = {
   onValueChange?: (value: string) => void;
   variant?: "default" | "error";
-  size?: "xs" | "sm" | "base" | "lg";
+  /** Textarea size. */
+  size?: KumoInputSize;
   // Then other custom props
   children?: React.ReactNode;
   className?: string;

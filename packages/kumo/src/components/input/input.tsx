@@ -15,10 +15,6 @@ import {
 /** Input size and variant definitions mapping names to their Tailwind classes. */
 export const KUMO_INPUT_VARIANTS = {
   size: {
-    xs: {
-      classes: "h-5 gap-1 rounded-sm px-1.5 text-xs",
-      description: "Extra small input for compact UIs",
-    },
     sm: {
       classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
       description: "Small input for secondary fields",
@@ -51,7 +47,6 @@ export const KUMO_INPUT_DEFAULT_VARIANTS = {
 
 export const KUMO_INPUT_STYLING = {
   dimensions: {
-    xs: { height: 20, paddingX: 6, fontSize: 12, borderRadius: 2, width: 160 },
     sm: { height: 26, paddingX: 8, fontSize: 12, borderRadius: 6, width: 200 },
     base: {
       height: 36,
@@ -82,7 +77,6 @@ export type KumoInputVariant = keyof typeof KUMO_INPUT_VARIANTS.variant;
 export interface KumoInputVariantsProps {
   /**
    * Input size.
-   * - `"xs"` — Extra small for compact UIs
    * - `"sm"` — Small for secondary fields
    * - `"base"` — Default size
    * - `"lg"` — Large for prominent fields

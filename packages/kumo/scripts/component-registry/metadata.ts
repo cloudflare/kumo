@@ -889,7 +889,6 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
   },
   InputArea: {
     sizeVariants: {
-      xs: { minHeight: 60, width: 200 },
       sm: { minHeight: 72, width: 240 },
       base: { minHeight: 88, width: 320 },
       lg: { minHeight: 100, width: 360 },

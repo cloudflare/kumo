@@ -347,12 +347,12 @@ describe("InputGroup", () => {
     });
 
     // Regression test: addon padding tokens must be static pl-/pr- strings
-    // so Tailwind JIT can detect them. Dynamic "px-N".replace() broke xs/sm.
-    it.each(["xs", "sm", "base", "lg"] as const)(
+    // so Tailwind JIT can detect them. Dynamic "px-N".replace() broke sizes
+    // in the past.
+    it.each(["sm", "base", "lg"] as const)(
       "start addon has correct padding class for size %s",
       (size: KumoInputSize) => {
         const labels: Record<KumoInputSize, string> = {
-          xs: "Extra Small",
           sm: "Small",
           base: "Base (default)",
           lg: "Large",
@@ -375,7 +375,7 @@ describe("InputGroup", () => {
     // Ensure all addonOuter tokens are static directional classes
     // (not symmetric px- that would need runtime string replacement)
     it("all addon tokens use static pl-/pr- classes (not px-)", () => {
-      for (const size of ["xs", "sm", "base", "lg"] as const) {
+      for (const size of ["sm", "base", "lg"] as const) {
         const tokens = INPUT_GROUP_SIZE[size];
         expect(tokens.addonOuterStart).toMatch(/^pl-/);
         expect(tokens.addonOuterEnd).toMatch(/^pr-/);
@@ -562,7 +562,7 @@ describe("InputGroup", () => {
       );
     });
 
-    it.each(["xs", "sm", "base", "lg"] as const)(
+    it.each(["sm", "base", "lg"] as const)(
       "passes correct icon size for InputGroup size %s",
       (groupSize: KumoInputSize) => {
         render(

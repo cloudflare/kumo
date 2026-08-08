@@ -51,7 +51,6 @@ export interface SensitiveInputProps extends Omit<
   onCopy?: () => void;
   /**
    * Size of the input.
-   * - `"xs"` — Extra small for compact UIs
    * - `"sm"` — Small for secondary fields
    * - `"base"` — Default input size
    * - `"lg"` — Large for prominent fields
@@ -320,7 +319,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       !disabled && (mode === "revealed" || (mode === "empty" && hasValue));
 
     // Icon sizes matching input sizes
-    const iconSize = size === "xs" || size === "sm" ? "size-3" : "size-4";
+    const iconSize = size === "sm" ? "size-3" : "size-4";
 
     const containerClassName = cn(
       inputVariants({ size, variant, parentFocusIndicator: true }),
@@ -349,7 +348,6 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
             "kumo-input-placeholder w-full border-0 bg-transparent p-0 text-kumo-default ring-0 outline-none disabled:cursor-not-allowed disabled:text-kumo-subtle",
-            size === "xs" && "pr-5",
             size === "sm" && "pr-6",
             size === "base" && "pr-8",
             size === "lg" && "pr-10",
@@ -364,12 +362,10 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           className={cn(
             "pointer-events-none absolute inset-y-0 left-0 flex items-center overflow-hidden select-none",
             // Match input pr padding (space for icon)
-            size === "xs" && "right-5",
             size === "sm" && "right-6",
             size === "base" && "right-8",
             size === "lg" && "right-10",
             // Match the padding from inputVariants
-            size === "xs" && "px-1.5",
             size === "sm" && "px-2",
             size === "base" && "px-3",
             size === "lg" && "px-4",
@@ -417,7 +413,6 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             // Defensive styles to prevent global CSS pollution (e.g., button { background: gray })
             "m-0 inline-flex h-auto min-h-0 items-center justify-center border-none bg-transparent p-0 shadow-none",
             // Match right padding from inputVariants
-            size === "xs" && "right-1.5",
             size === "sm" && "right-2",
             size === "base" && "right-3",
             size === "lg" && "right-4",

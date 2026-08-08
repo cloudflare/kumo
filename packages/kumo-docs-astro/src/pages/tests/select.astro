@@ -259,14 +259,13 @@ const [value, setValue] = useState<string | null>(null);
       <div>
         <h2 class="text-xl font-semibold text-kumo-default">9. Size Variants</h2>
         <p class="text-sm text-kumo-subtle mt-1">
-          All four sizes match Input component sizing.
+          Three sizes match Input component sizing.
         </p>
       </div>
       <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
         <SelectSizeVariantsDemo client:visible />
       </div>
-      <pre class={codeBlockClass}>{`<Select size="xs" ... />  // Extra small: h-5 (20px)
-<Select size="sm" ... />  // Small: h-6.5 (26px)
+      <pre class={codeBlockClass}>{`<Select size="sm" ... />  // Small: h-6.5 (26px)
 <Select size="base" ... /> // Default: h-9 (36px)
 <Select size="lg" ... />  // Large: h-10 (40px)`}</pre>
     </section>

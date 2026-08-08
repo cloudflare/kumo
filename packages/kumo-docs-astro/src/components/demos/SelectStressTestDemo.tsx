@@ -404,12 +404,6 @@ export function SelectSizeVariantsDemo() {
   return (
     <div className="space-y-4">
       <Select
-        size="xs"
-        label="Extra Small (xs)"
-        placeholder="xs size"
-        items={items}
-      />
-      <Select
         size="sm"
         label="Small (sm)"
         placeholder="sm size"

@@ -18,10 +18,11 @@ import {
  * In container mode, buttons render "one size down" so they stay visually
  * subordinate to the input.  In individual mode the size passes through
  * unchanged (pagination / toolbar buttons should match the input height).
+ *
+ * `sm` has no smaller sibling now that `xs` is removed, so it stays at `sm`.
  */
 const COMPACT_BUTTON_SIZE: Record<KumoInputSize, KumoInputSize> = {
-  xs: "xs",
-  sm: "xs",
+  sm: "sm",
   base: "sm",
   lg: "base",
 };

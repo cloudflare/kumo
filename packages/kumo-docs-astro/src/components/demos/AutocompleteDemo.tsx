@@ -210,22 +210,10 @@ export function AutocompleteGroupedDemo() {
   );
 }
 
-/** Demonstrates the four size variants: xs, sm, base, and lg. */
+/** Demonstrates the three size variants: sm, base, and lg. */
 export function AutocompleteSizesDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Autocomplete items={fruits.slice(0, 10)}>
-        <Autocomplete.InputGroup size="xs" placeholder="xs" />
-        <Autocomplete.Content>
-          <Autocomplete.List>
-            {(item: string) => (
-              <Autocomplete.Item key={item} value={item}>
-                {item}
-              </Autocomplete.Item>
-            )}
-          </Autocomplete.List>
-        </Autocomplete.Content>
-      </Autocomplete>
       <Autocomplete items={fruits.slice(0, 10)}>
         <Autocomplete.InputGroup size="sm" placeholder="sm" />
         <Autocomplete.Content>

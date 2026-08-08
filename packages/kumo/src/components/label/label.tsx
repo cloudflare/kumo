@@ -104,7 +104,7 @@ export function Label({
           render={
             <Button
               variant="ghost"
-              size="xs"
+              size="sm"
               shape="square"
               aria-label="More information"
             >

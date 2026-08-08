@@ -61,7 +61,6 @@ const sizeProp = buttonProps.size as {
  * Uses FALLBACK_VALUES.iconSize from shared.ts to prevent drift
  */
 const REFRESH_ICON_SIZE: Record<string, number> = {
-  xs: FALLBACK_VALUES.iconSize.xs, // size-3 = 12px
   sm: FALLBACK_VALUES.iconSize.sm, // size-4 = 16px
   base: FALLBACK_VALUES.iconSize.medium, // size-4.5 = 18px
   lg: FALLBACK_VALUES.iconSize.base, // size-5 = 20px

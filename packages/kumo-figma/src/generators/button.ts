@@ -167,7 +167,6 @@ export function getButtonParsedShapeStyles(shape: string) {
  * Parses size-* Tailwind classes to derive pixel values.
  *
  * Source: button.tsx KUMO_BUTTON_VARIANTS.compactSize
- * - xs: size-3.5 = 14px
  * - sm: size-6.5 = 26px
  * - base: size-9 = 36px
  * - lg: size-10 = 40px
@@ -178,7 +177,6 @@ export function getButtonParsedShapeStyles(shape: string) {
 export function getCompactSizeMap(): Record<string, number> {
   // Compact size classes from KUMO_BUTTON_VARIANTS.compactSize in button.tsx
   const compactSizeClasses: Record<string, string> = {
-    xs: "size-3.5",
     sm: "size-6.5",
     base: "size-9",
     lg: "size-10",
@@ -727,7 +725,7 @@ export async function generateButtonComponents(
   ];
 
   // Define column headers for shape rows (sizes)
-  const shapeColumnHeaders = ["xs", "sm", "base", "lg"];
+  const shapeColumnHeaders = ["sm", "base", "lg"];
 
   // Track shape section column headers separately
   const shapeColumnHeaderPositions: { x: number; text: string }[] = [];

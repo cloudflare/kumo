@@ -146,7 +146,7 @@ describe("Banner", () => {
     expect(className).not.toContain("items-start");
   });
 
-  it("defaults Banner.Action children to xs in an sm banner", () => {
+  it("defaults Banner.Action children to sm in an sm banner", () => {
     render(
       <Banner
         size="sm"
@@ -157,9 +157,9 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    // Inherits the banner's size => xs (h-5), not the standalone sm default (h-6.5).
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
+    // Both banner sizes render actions at sm now that Button no longer has xs.
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
   });
 
   it("matches an icon-only action to the text action height in an sm banner", () => {
@@ -179,9 +179,8 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    expect(cta.className).toContain("h-5");
-    expect(cta.className).toContain("px-1.5");
-    expect(cta.className).not.toContain("size-3.5");
+    expect(cta.className).toContain("h-6.5");
+    expect(cta.className).toContain("px-2");
   });
 
   it("renders title and description inline in an sm banner", () => {

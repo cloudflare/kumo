@@ -367,7 +367,7 @@ function generateSpacingScale(baseUnitPx: number): Record<string, number> {
  */
 function parseButtonCompactSizes(tsx: string): Record<string, number> {
   const sizes: Record<string, number> = {};
-  const sizeNames = ["xs", "sm", "base", "lg"];
+  const sizeNames = ["sm", "base", "lg"];
 
   for (const name of sizeNames) {
     // Match: xs: { classes: "size-3.5" }
@@ -421,7 +421,7 @@ console.log(
 console.log("\n🔘 Parsing button.tsx compact sizes...");
 const buttonCompactSizes = parseButtonCompactSizes(buttonTsx);
 console.log(
-  `   - Compact sizes: xs=${buttonCompactSizes.xs}px, sm=${buttonCompactSizes.sm}px, base=${buttonCompactSizes.base}px, lg=${buttonCompactSizes.lg}px`,
+  `   - Compact sizes: sm=${buttonCompactSizes.sm}px, base=${buttonCompactSizes.base}px, lg=${buttonCompactSizes.lg}px`,
 );
 
 // Generate full spacing scale

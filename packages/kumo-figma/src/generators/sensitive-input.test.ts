@@ -42,7 +42,6 @@ describe("SensitiveInput Generator - Registry Validation", () => {
     // Verify size values match Input component
     expect(Array.isArray(sizeProIf.values)).toBe(true);
     expect(sizeProIf.values.length).toBeGreaterThan(0);
-    expect(sizeProIf.values).toContain("xs");
     expect(sizeProIf.values).toContain("sm");
     expect(sizeProIf.values).toContain("base");
     expect(sizeProIf.values).toContain("lg");
@@ -104,8 +103,7 @@ describe("SensitiveInput Generator - Registry Validation", () => {
 describe("SensitiveInput Generator - Size Configuration", () => {
   it("should export size values", () => {
     expect(Array.isArray(SENSITIVE_INPUT_SIZE_VALUES)).toBe(true);
-    expect(SENSITIVE_INPUT_SIZE_VALUES.length).toBe(4);
-    expect(SENSITIVE_INPUT_SIZE_VALUES).toContain("xs");
+    expect(SENSITIVE_INPUT_SIZE_VALUES.length).toBe(3);
     expect(SENSITIVE_INPUT_SIZE_VALUES).toContain("sm");
     expect(SENSITIVE_INPUT_SIZE_VALUES).toContain("base");
     expect(SENSITIVE_INPUT_SIZE_VALUES).toContain("lg");
@@ -180,7 +178,7 @@ describe("SensitiveInput Generator - WithLabel Configuration", () => {
 
 describe("SensitiveInput Generator - Component Variant Combinations", () => {
   it("should generate correct number of variant combinations", () => {
-    // 4 sizes × 2 variants × 3 states × 2 modes × 2 withLabel = 96 total combinations
+    // 3 sizes × 2 variants × 3 states × 2 modes × 2 withLabel = 72 total combinations
     const expectedCombinations =
       SENSITIVE_INPUT_SIZE_VALUES.length *
       SENSITIVE_INPUT_VARIANT_VALUES.length *
@@ -188,7 +186,7 @@ describe("SensitiveInput Generator - Component Variant Combinations", () => {
       SENSITIVE_INPUT_MODE_VALUES.length *
       2; // withLabel (false, true)
 
-    expect(expectedCombinations).toBe(96);
+    expect(expectedCombinations).toBe(72);
   });
 
   it("should validate all size values are valid", () => {

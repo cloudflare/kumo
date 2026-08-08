@@ -42,7 +42,6 @@ describe("RefreshButton Generator - Registry Validation", () => {
   it("should have all expected size variants in registry", () => {
     expect(Array.isArray(sizeProp.values)).toBe(true);
     expect(sizeProp.values.length).toBeGreaterThan(0);
-    expect(sizeProp.values).toContain("xs");
     expect(sizeProp.values).toContain("sm");
     expect(sizeProp.values).toContain("base");
     expect(sizeProp.values).toContain("lg");
@@ -103,7 +102,7 @@ describe("RefreshButton Generator - Compact Size Configuration", () => {
   const COMPACT_SIZE_MAP = FALLBACK_VALUES.buttonCompactSize;
 
   it("should have compact size mapping for all sizes", () => {
-    expect(Object.keys(COMPACT_SIZE_MAP)).toHaveLength(4);
+    expect(Object.keys(COMPACT_SIZE_MAP)).toHaveLength(3);
     for (const size of sizeProp.values) {
       expect(
         COMPACT_SIZE_MAP[size as keyof typeof COMPACT_SIZE_MAP],
@@ -125,7 +124,6 @@ describe("RefreshButton Generator - Compact Size Configuration", () => {
   });
 
   it("should have increasing size values", () => {
-    expect(COMPACT_SIZE_MAP.sm).toBeGreaterThan(COMPACT_SIZE_MAP.xs);
     expect(COMPACT_SIZE_MAP.base).toBeGreaterThan(COMPACT_SIZE_MAP.sm);
     expect(COMPACT_SIZE_MAP.lg).toBeGreaterThan(COMPACT_SIZE_MAP.base);
   });
@@ -134,14 +132,13 @@ describe("RefreshButton Generator - Compact Size Configuration", () => {
 describe("RefreshButton Generator - Icon Size Configuration", () => {
   // RefreshButton-specific icon sizes (not in shared.ts as these are component-specific)
   const REFRESH_ICON_SIZE: Record<string, number> = {
-    xs: 12,
     sm: 16,
     base: 18,
     lg: 20,
   };
 
   it("should have icon size mapping for all sizes", () => {
-    expect(Object.keys(REFRESH_ICON_SIZE)).toHaveLength(4);
+    expect(Object.keys(REFRESH_ICON_SIZE)).toHaveLength(3);
     for (const size of sizeProp.values) {
       expect(REFRESH_ICON_SIZE[size]).toBeDefined();
       expect(typeof REFRESH_ICON_SIZE[size]).toBe("number");
@@ -160,7 +157,7 @@ describe("RefreshButton Generator - Icon Size Configuration", () => {
   });
 
   it("should have increasing icon size values", () => {
-    expect(Object.keys(REFRESH_ICON_SIZE)).toHaveLength(4);
+    expect(Object.keys(REFRESH_ICON_SIZE)).toHaveLength(3);
     for (const size of sizeProp.values) {
       expect(REFRESH_ICON_SIZE[size]).toBeDefined();
       expect(typeof REFRESH_ICON_SIZE[size]).toBe("number");
@@ -170,14 +167,12 @@ describe("RefreshButton Generator - Icon Size Configuration", () => {
 
   it("should have icon sizes smaller than button sizes", () => {
     const REFRESH_ICON_SIZE: Record<string, number> = {
-      xs: 12,
       sm: 16,
       base: 18,
       lg: 20,
     };
 
     const COMPACT_SIZE_MAP: Record<string, number> = {
-      xs: 14,
       sm: 26,
       base: 36,
       lg: 40,
@@ -190,18 +185,15 @@ describe("RefreshButton Generator - Icon Size Configuration", () => {
 
   it("should have increasing icon size values", () => {
     const REFRESH_ICON_SIZE: Record<string, number> = {
-      xs: 12,
       sm: 16,
       base: 18,
       lg: 20,
     };
 
-    const xs = REFRESH_ICON_SIZE.xs;
     const sm = REFRESH_ICON_SIZE.sm;
     const base = REFRESH_ICON_SIZE.base;
     const lg = REFRESH_ICON_SIZE.lg;
 
-    expect(sm).toBeGreaterThan(xs);
     expect(base).toBeGreaterThan(sm);
     expect(lg).toBeGreaterThan(base);
   });
@@ -282,8 +274,8 @@ describe("RefreshButton Generator - Size Styles Parsing", () => {
 describe("RefreshButton Generator - Complete Variant Data", () => {
   it("should have size values array", () => {
     expect(Array.isArray(sizeProp.values)).toBe(true);
-    expect(sizeProp.values.length).toBe(4);
-    expect(sizeProp.values).toEqual(["xs", "sm", "base", "lg"]);
+    expect(sizeProp.values.length).toBe(3);
+    expect(sizeProp.values).toEqual(["sm", "base", "lg"]);
   });
 
   it("should have loading state options", () => {
@@ -299,7 +291,7 @@ describe("RefreshButton Generator - Complete Variant Data", () => {
     const loadingOptions = [false, true];
     const totalCombinations = sizes.length * loadingOptions.length;
 
-    expect(totalCombinations).toBe(8);
+    expect(totalCombinations).toBe(6);
   });
 
   it("should have consistent data structure for all sizes", () => {
@@ -319,21 +311,19 @@ describe("RefreshButton Generator - Complete Variant Data", () => {
 
   it("should have all required configuration maps", () => {
     const COMPACT_SIZE_MAP: Record<string, number> = {
-      xs: 14,
       sm: 26,
       base: 36,
       lg: 40,
     };
 
     const REFRESH_ICON_SIZE: Record<string, number> = {
-      xs: 12,
       sm: 16,
       base: 18,
       lg: 20,
     };
 
-    expect(Object.keys(COMPACT_SIZE_MAP)).toHaveLength(4);
-    expect(Object.keys(REFRESH_ICON_SIZE)).toHaveLength(4);
+    expect(Object.keys(COMPACT_SIZE_MAP)).toHaveLength(3);
+    expect(Object.keys(REFRESH_ICON_SIZE)).toHaveLength(3);
 
     // Verify all size values have mappings
     for (const size of sizeProp.values) {

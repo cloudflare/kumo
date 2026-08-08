@@ -16,20 +16,10 @@ export function SelectBasicDemo() {
   );
 }
 
-/** Select trigger sizes (xs/sm/base/lg) matching Input and Combobox. */
+/** Select trigger sizes (sm/base/lg) matching Input and Combobox. */
 export function SelectSizesDemo() {
   return (
     <div className="grid gap-4">
-      <div className="flex items-center gap-3">
-        <span className="w-10 text-sm text-kumo-subtle">xs</span>
-        <Select
-          aria-label="Select size xs"
-          size="xs"
-          className="w-[200px]"
-          placeholder="Choose..."
-          items={{ a: "Option A", b: "Option B" }}
-        />
-      </div>
       <div className="flex items-center gap-3">
         <span className="w-10 text-sm text-kumo-subtle">sm</span>
         <Select

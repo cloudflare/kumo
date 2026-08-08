@@ -73,7 +73,6 @@ const VARIANT_VALUES = variantProp.values;
  * Width mapping for SensitiveInput (layout-specific)
  */
 const SIZE_WIDTHS: Record<string, number> = {
-  xs: 200,
   sm: 220,
   base: 280,
   lg: 320,
@@ -83,7 +82,6 @@ const SIZE_WIDTHS: Record<string, number> = {
  * Icon size mapping for SensitiveInput (layout-specific)
  */
 const ICON_SIZES: Record<string, string> = {
-  xs: "sm",
   sm: "sm",
   base: "base",
   lg: "base",
@@ -120,12 +118,6 @@ function getSizeConfigFromRegistry(size: string): {
     string,
     { height: number; paddingX: number; fontSize: number; borderRadius: number }
   > = {
-    xs: {
-      height: 20,
-      paddingX: 6,
-      fontSize: 12,
-      borderRadius: BORDER_RADIUS.xs,
-    },
     sm: {
       height: 26,
       paddingX: 8,

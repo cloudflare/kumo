@@ -13,10 +13,6 @@ import { InputGroup } from "../input-group/input-group";
 
 export const KUMO_TOOLBAR_VARIANTS = {
   size: {
-    xs: {
-      classes: "text-xs",
-      description: "Extra small toolbar for compact UIs",
-    },
     sm: {
       classes: "text-xs",
       description: "Small toolbar for secondary controls",

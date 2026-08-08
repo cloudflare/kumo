@@ -50,16 +50,6 @@ export interface InputGroupSizeTokens {
 }
 
 export const INPUT_GROUP_SIZE: Record<KumoInputSize, InputGroupSizeTokens> = {
-  xs: {
-    inputOuter: "px-1.5",
-    addonOuterStart: "pl-1.5",
-    addonOuterEnd: "pr-1.5",
-    addonButtonOuterStart: "pl-1",
-    addonButtonOuterEnd: "pr-1",
-    suffixPad: "pr-1.5",
-    fontSize: "text-xs",
-    iconSize: 10,
-  },
   sm: {
     inputOuter: "px-2",
     addonOuterStart: "pl-1.5",
@@ -95,10 +85,6 @@ export const INPUT_GROUP_SIZE: Record<KumoInputSize, InputGroupSizeTokens> = {
 // Build the has-[] container classes that reduce input padding when addons
 // are present. These are static strings so Tailwind JIT can detect them.
 export const INPUT_GROUP_HAS_CLASSES: Record<KumoInputSize, string> = {
-  xs: [
-    "has-[[data-slot=input-group-addon-start]]:[&_input]:pl-1",
-    "has-[[data-slot=input-group-addon-end]]:[&_input]:pr-1",
-  ].join(" "),
   sm: [
     "has-[[data-slot=input-group-addon-start]]:[&_input]:pl-1.5",
     "has-[[data-slot=input-group-addon-end]]:[&_input]:pr-1.5",

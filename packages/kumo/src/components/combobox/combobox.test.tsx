@@ -44,7 +44,7 @@ describe("Combobox", () => {
   // Variants export
 
   it("exports KUMO_COMBOBOX_VARIANTS with size and inputSide axes", () => {
-    expect(KUMO_COMBOBOX_VARIANTS.size.xs).toBeDefined();
+    expect(KUMO_COMBOBOX_VARIANTS.size.sm).toBeDefined();
     expect(KUMO_COMBOBOX_VARIANTS.size.base).toBeDefined();
     expect(KUMO_COMBOBOX_VARIANTS.inputSide.right).toBeDefined();
     expect(KUMO_COMBOBOX_VARIANTS.inputSide.top).toBeDefined();

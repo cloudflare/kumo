@@ -74,7 +74,6 @@ function getSizeConfigFromRegistry(size: string) {
     string,
     { minHeight: number; width: number }
   > = {
-    xs: { minHeight: 60, width: 200 },
     sm: { minHeight: 72, width: 240 },
     base: { minHeight: 88, width: 320 },
     lg: { minHeight: 100, width: 360 },
@@ -124,7 +123,6 @@ const SIZE_CONFIG: Record<
     width: number;
   }
 > = {
-  xs: getSizeConfigFromRegistry("xs"),
   sm: getSizeConfigFromRegistry("sm"),
   base: getSizeConfigFromRegistry("base"),
   lg: getSizeConfigFromRegistry("lg"),
