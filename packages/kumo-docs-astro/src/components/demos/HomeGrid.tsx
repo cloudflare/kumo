@@ -40,6 +40,7 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+import { CommandPaletteBasicDemo } from "~/components/demos/CommandPaletteDemo";
 import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
   MagnifyingGlassIcon,
@@ -560,9 +561,7 @@ export function HomeGrid() {
     {
       name: "CommandPalette",
       id: "command-palette",
-      Component: (
-        <Button icon={MagnifyingGlassIcon}>Open Command Palette</Button>
-      ),
+      Component: <CommandPaletteBasicDemo />,
     },
     {
       name: "Flow",
