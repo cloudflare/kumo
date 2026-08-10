@@ -95,16 +95,20 @@ export function ToolbarLabelsDemo() {
   );
 }
 
-/** Toolbar.Select replaces the Select root while using regular Select options. */
+/** Select composes its trigger with Toolbar.Button. */
 export function ToolbarSelectDemo() {
   return (
     <Toolbar>
       <Toolbar.Button icon={FunnelSimpleIcon}>Filter</Toolbar.Button>
-      <Toolbar.Select aria-label="Sort records" defaultValue="name">
+      <Select
+        aria-label="Sort records"
+        defaultValue="name"
+        render={<Toolbar.Button />}
+      >
         <Select.Option value="name">Name</Select.Option>
         <Select.Option value="created">Created date</Select.Option>
         <Select.Option value="status">Status</Select.Option>
-      </Toolbar.Select>
+      </Select>
       <Toolbar.Button icon={GearSixIcon} aria-label="View settings" />
     </Toolbar>
   );
@@ -112,13 +116,18 @@ export function ToolbarSelectDemo() {
 
 const toolbarComboboxItems = ["All records", "Active", "Paused", "Failed"];
 
-/** Toolbar.Combobox replaces the root while using regular Combobox children. */
+/** Combobox composes its editable trigger with Toolbar.Input. */
 export function ToolbarComboboxDemo() {
   return (
     <Toolbar className="w-full max-w-md">
       <Toolbar.Button icon={FunnelSimpleIcon}>Status</Toolbar.Button>
-      <Toolbar.Combobox items={toolbarComboboxItems} className="flex-1">
-        <Combobox.TriggerInput placeholder="Filter status…" />
+      <Combobox items={toolbarComboboxItems}>
+        <Combobox.TriggerInput
+          aria-label="Filter status"
+          className="flex-1"
+          placeholder="Filter status…"
+          render={<Toolbar.Input />}
+        />
         <Combobox.Content>
           <Combobox.List>
             {(item: string) => (
@@ -129,7 +138,7 @@ export function ToolbarComboboxDemo() {
           </Combobox.List>
           <Combobox.Empty>No matching statuses.</Combobox.Empty>
         </Combobox.Content>
-      </Toolbar.Combobox>
+      </Combobox>
     </Toolbar>
   );
 }

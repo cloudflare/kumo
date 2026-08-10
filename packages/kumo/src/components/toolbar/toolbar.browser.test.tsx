@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { describe, expect, test } from "vite-plus/test";
 import { userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
@@ -9,14 +8,18 @@ import { Toolbar } from "./toolbar";
 const fruits = ["Apple", "Banana", "Cherry"];
 
 describe("Toolbar popup control interactions", () => {
-  test("Select opens and selects a regular Select.Option", async () => {
+  test("Select opens and selects through a rendered Toolbar.Button", async () => {
     const { getByRole } = await render(
       <Toolbar>
         <Toolbar.Button>Before</Toolbar.Button>
-        <Toolbar.Select aria-label="Sort records" placeholder="Sort by">
+        <Select
+          aria-label="Sort records"
+          placeholder="Sort by"
+          render={<Toolbar.Button />}
+        >
           <Select.Option value="name">Name</Select.Option>
           <Select.Option value="created">Created</Select.Option>
-        </Toolbar.Select>
+        </Select>
       </Toolbar>,
     );
 
@@ -29,11 +32,14 @@ describe("Toolbar popup control interactions", () => {
     await expect.element(trigger).toHaveTextContent("created");
   });
 
-  test("Combobox opens, filters, and selects through regular children", async () => {
-    const { getByPlaceholder, getByRole } = await render(
+  test("Combobox opens, filters, and selects through a rendered Toolbar.Input", async () => {
+    const { getByRole } = await render(
       <Toolbar>
-        <Toolbar.Combobox items={fruits}>
-          <Combobox.TriggerInput placeholder="Search fruits" />
+        <Combobox items={fruits}>
+          <Combobox.TriggerInput
+            aria-label="Search fruits"
+            render={<Toolbar.Input />}
+          />
           <Combobox.Content>
             <Combobox.List>
               {(item: string) => (
@@ -43,11 +49,11 @@ describe("Toolbar popup control interactions", () => {
               )}
             </Combobox.List>
           </Combobox.Content>
-        </Toolbar.Combobox>
+        </Combobox>
       </Toolbar>,
     );
 
-    const input = getByPlaceholder("Search fruits");
+    const input = getByRole("combobox", { name: "Search fruits" });
     await input.fill("ban");
     await expect.element(getByRole("listbox")).toBeVisible();
     await expect.element(getByRole("option", { name: "Banana" })).toBeVisible();
@@ -55,62 +61,19 @@ describe("Toolbar popup control interactions", () => {
     await expect.element(input).toHaveValue("Banana");
   });
 
-  test("multiple Combobox selection renders chips", async () => {
-    function MultipleCombobox() {
-      const [value, setValue] = useState<string[]>([]);
-
-      return (
-        <Toolbar>
-          <Toolbar.Combobox<string, true>
-            items={fruits}
-            multiple
-            value={value}
-            onValueChange={setValue}
-          >
-            <Combobox.TriggerMultipleWithInput<string>
-              placeholder="Add fruits"
-              value={value}
-              renderItem={(item) => (
-                <Combobox.Chip key={item}>{item}</Combobox.Chip>
-              )}
-            />
-            <Combobox.Content>
-              <Combobox.List>
-                {(item: string) => (
-                  <Combobox.Item key={item} value={item}>
-                    {item}
-                  </Combobox.Item>
-                )}
-              </Combobox.List>
-            </Combobox.Content>
-          </Toolbar.Combobox>
-          <output data-testid="selection">{value.join(",")}</output>
-        </Toolbar>
-      );
-    }
-
-    const { getByPlaceholder, getByRole, getByTestId } = await render(
-      <MultipleCombobox />,
-    );
-
-    await getByPlaceholder("Add fruits").click();
-    await getByRole("option", { name: "Apple" }).click();
-    await getByRole("option", { name: "Banana" }).click();
-    await expect
-      .element(getByTestId("selection"))
-      .toHaveTextContent("Apple,Banana");
-  });
-
-  test("closed popup controls participate in toolbar focus movement", async () => {
+  test("composed popup controls participate in toolbar focus movement", async () => {
     const { getByRole } = await render(
       <Toolbar>
         <Toolbar.Button>Before</Toolbar.Button>
-        <Toolbar.Select aria-label="Sort records">
+        <Select aria-label="Sort records" render={<Toolbar.Button />}>
           <Select.Option value="name">Name</Select.Option>
-        </Toolbar.Select>
-        <Toolbar.Combobox items={fruits} defaultValue="Apple">
-          <Combobox.TriggerInput aria-label="Fruit" />
-        </Toolbar.Combobox>
+        </Select>
+        <Combobox items={fruits} defaultValue="Apple">
+          <Combobox.TriggerInput
+            aria-label="Fruit"
+            render={<Toolbar.Input />}
+          />
+        </Combobox>
         <Toolbar.Button>After</Toolbar.Button>
       </Toolbar>,
     );

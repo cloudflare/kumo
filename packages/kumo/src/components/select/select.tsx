@@ -1,5 +1,4 @@
 import { Select as SelectBase } from "@base-ui/react/select";
-import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
@@ -13,10 +12,6 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
-import {
-  toolbarInnerControlClassName,
-  useToolbarControlContext,
-} from "../toolbar/toolbar-context";
 
 /** Select variant definitions. */
 export const KUMO_SELECT_VARIANTS = {
@@ -194,10 +189,10 @@ function renderOptionsFromItems<T>(
     });
 }
 
-export type SelectRootProps<
-  T,
-  Multiple extends boolean | undefined = false,
-> = Omit<SelectBase.Root.Props<T, Multiple>, "items"> &
+type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
+  SelectBase.Root.Props<T, Multiple>,
+  "items"
+> &
   KumoSelectVariantsProps & {
     multiple?: Multiple;
     /**
@@ -212,6 +207,8 @@ export type SelectRootProps<
      * ```
      */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
+    /** Replaces the trigger element while preserving Select behavior. */
+    render?: SelectBase.Trigger.Props["render"];
     className?: string;
     /**
      * Data structure of items rendered in the popup.
@@ -283,6 +280,8 @@ export type SelectRootProps<
 export interface SelectProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Replaces the trigger element while preserving Select behavior. */
+  render?: SelectBase.Trigger.Props["render"];
   /** Size of the select trigger. Matches Input component sizes. */
   size?: KumoSelectSize;
   /**
@@ -352,6 +351,7 @@ export interface SelectOptionProps {
 export function Select<T, Multiple extends boolean | undefined = false>({
   children,
   className,
+  render,
   renderValue,
   label,
   hideLabel,
@@ -364,10 +364,9 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   required,
   container: containerProp,
   ...props
-}: SelectRootProps<T, Multiple> & { required?: boolean }) {
+}: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
   const contextContainer = usePortalContainer();
-  const toolbarControl = useToolbarControlContext();
   const container = containerProp ?? contextContainer ?? undefined;
   const propLookup = props as Record<string, unknown>;
   const ariaLabel = propLookup["aria-label"] as string | undefined;
@@ -453,9 +452,9 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     <SelectBase.Trigger
       data-kumo-component="Select"
       data-kumo-part="trigger"
+      render={render}
       className={cn(
         selectVariants({ size }),
-        toolbarControl && toolbarInnerControlClassName("w-full"),
         props.disabled && "cursor-not-allowed opacity-50",
         error &&
           "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
@@ -488,16 +487,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     </SelectBase.Trigger>
   );
 
-  const adaptedSelectTrigger = toolbarControl ? (
-    <ToolbarBase.Button
-      disabled={toolbarControl.disabled}
-      focusableWhenDisabled={toolbarControl.focusableWhenDisabled}
-      render={selectTrigger}
-    />
-  ) : (
-    selectTrigger
-  );
-
   const selectControl = (
     <SelectBase.Root
       {...baseProps}
@@ -506,7 +495,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       required={required}
     >
       {selectLabelNode}
-      {adaptedSelectTrigger}
+      {selectTrigger}
       <SelectBase.Portal container={container}>
         <SelectBase.Positioner>
           <SelectBase.Popup
@@ -529,12 +518,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       </SelectBase.Portal>
     </SelectBase.Root>
   );
-
-  // Toolbar.Select owns the single grouped surface and does not render the
-  // standalone helper-text grid around the Base UI root.
-  if (toolbarControl) {
-    return selectControl;
-  }
 
   // Use Field wrapper when label is provided and not hidden
   if (useFieldWrapper) {

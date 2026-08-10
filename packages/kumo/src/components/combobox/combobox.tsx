@@ -1,5 +1,4 @@
 import { Combobox as ComboboxBase } from "@base-ui/react/combobox";
-import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
 import {
   Fragment,
@@ -20,10 +19,6 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
-import {
-  toolbarInnerControlClassName,
-  useToolbarControlContext,
-} from "../toolbar/toolbar-context";
 
 /** Combobox variant definitions. */
 export const KUMO_COMBOBOX_VARIANTS = {
@@ -266,20 +261,24 @@ const triggerValueIconStyles: Record<
 
 function TriggerValue({
   className,
+  render,
   ...props
-}: ComboboxBase.Value.Props & { className?: string }) {
+}: ComboboxBase.Value.Props & {
+  className?: string;
+  /** Replaces the trigger element while preserving Combobox behavior. */
+  render?: ComboboxBase.Trigger.Props["render"];
+}) {
   const { size, hasError } = useContext(ComboboxContext);
-  const toolbarControl = useToolbarControlContext();
   const iconStyles = triggerValueIconStyles[size];
 
-  const trigger = (
+  return (
     <ComboboxBase.Trigger
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
+      render={render}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
-        toolbarControl && toolbarInnerControlClassName("w-full"),
         "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         "data-[placeholder]:text-kumo-placeholder",
         iconStyles.padding,
@@ -296,16 +295,6 @@ function TriggerValue({
         <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
-  );
-
-  return toolbarControl ? (
-    <ToolbarBase.Button
-      disabled={toolbarControl.disabled}
-      focusableWhenDisabled={toolbarControl.focusableWhenDisabled}
-      render={trigger}
-    />
-  ) : (
-    trigger
   );
 }
 
@@ -355,40 +344,25 @@ function TriggerInput({
   showOptionsLabel?: string;
 }) {
   const { size, hasError } = useContext(ComboboxContext);
-  const toolbarControl = useToolbarControlContext();
   const iconStyles = triggerInputIconStyles[size];
-  const input = (
-    <ComboboxBase.Input
-      {...props}
-      className={cn(
-        inputVariants({ size, variant: hasError ? "error" : "default" }),
-        "w-full",
-        toolbarControl && toolbarInnerControlClassName(),
-        iconStyles.padding,
-        "disabled:cursor-not-allowed",
-      )}
-    />
-  );
-  const adaptedInput = toolbarControl ? (
-    <ToolbarBase.Input
-      disabled={toolbarControl.disabled || props.disabled}
-      focusableWhenDisabled={toolbarControl.focusableWhenDisabled}
-      render={input}
-    />
-  ) : (
-    input
-  );
 
   return (
     <div
       className={cn(
-        "relative inline-block w-full max-w-xs",
-        toolbarControl && "max-w-none",
+        "relative inline-block w-full",
         "has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
         props.className,
       )}
     >
-      {adaptedInput}
+      <ComboboxBase.Input
+        {...props}
+        className={cn(
+          inputVariants({ size, variant: hasError ? "error" : "default" }),
+          "w-full",
+          iconStyles.padding,
+          "disabled:cursor-not-allowed",
+        )}
+      />
 
       <ComboboxBase.Clear
         data-kumo-component="Combobox"
@@ -569,31 +543,17 @@ function TriggerMultipleWithInput<ValueType>({
   value?: ValueType[];
 }) {
   const { size, hasError } = useContext(ComboboxContext);
-  const toolbarControl = useToolbarControlContext();
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
-  const renderTriggerInput = (className: string) => {
-    const input = (
-      <ComboboxBase.Input placeholder={placeholder} className={className} />
-    );
-
-    return toolbarControl ? (
-      <ToolbarBase.Input
-        disabled={toolbarControl.disabled}
-        focusableWhenDisabled={toolbarControl.focusableWhenDisabled}
-        render={input}
-      />
-    ) : (
-      input
-    );
-  };
+  const renderTriggerInput = (className: string) => (
+    <ComboboxBase.Input placeholder={placeholder} className={className} />
+  );
 
   return (
     <ComboboxBase.Chips
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "flex flex-col",
-        toolbarControl && toolbarInnerControlClassName("w-full"),
         "gap-1 px-1.5 py-1",
         sizeToMinHeight[size],
         "h-auto",

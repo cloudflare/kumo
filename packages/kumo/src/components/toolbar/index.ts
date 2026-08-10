@@ -7,6 +7,4 @@ export {
   type ToolbarButtonProps,
   type ToolbarInputProps,
   type ToolbarInputGroupProps,
-  type ToolbarSelectProps,
-  type ToolbarComboboxProps,
 } from "./toolbar";
