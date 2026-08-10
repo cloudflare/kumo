@@ -96,7 +96,7 @@ Toolbar item components intentionally own grouped control presentation:
 
 ### Select
 
-Select keeps its regular root props and `Select.*` children. Its `render` prop
+Select keeps its regular root props, including `items`. Its `render` prop
 replaces the trigger, so rendering `Toolbar.Button` makes that trigger a toolbar
 item without replacing the Select root.
 
@@ -210,10 +210,9 @@ on the rendered toolbar control:
 <Select
   aria-label="Sort records"
   disabled
+  items={{ name: "Name" }}
   render={<Toolbar.Button focusableWhenDisabled={false} />}
->
-  <Select.Option value="name">Name</Select.Option>
-</Select>
+/>
 ```
 
 ### Combobox composition

@@ -103,12 +103,9 @@ export function ToolbarSelectDemo() {
       <Select
         aria-label="Sort records"
         defaultValue="name"
+        items={{ name: "Name", created: "Created date", status: "Status" }}
         render={<Toolbar.Button />}
-      >
-        <Select.Option value="name">Name</Select.Option>
-        <Select.Option value="created">Created date</Select.Option>
-        <Select.Option value="status">Status</Select.Option>
-      </Select>
+      />
       <Toolbar.Button icon={GearSixIcon} aria-label="View settings" />
     </Toolbar>
   );
