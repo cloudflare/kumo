@@ -15,6 +15,8 @@ import {
   ToolbarInputGroupDemo,
   ToolbarActionsDemo,
   ToolbarLabelsDemo,
+  ToolbarSelectDemo,
+  ToolbarComboboxDemo,
 } from "~/components/demos/ToolbarDemo";
 
 <ComponentSection>
@@ -44,8 +46,9 @@ import {
 ## Usage
 
 Use `Toolbar` when multiple controls should read as one compact toolbar or
-filter card. Use `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup` to
-opt supported controls into toolbar sizing, button styling, borders, and radii.
+filter card. Use `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup`
+directly. Compose Select and Combobox triggers with those toolbar controls
+through their `render` props.
 
 ```tsx
 import { InputGroup, Toolbar } from "@cloudflare/kumo";
@@ -74,17 +77,44 @@ export default function Example() {
 
 Toolbar item components intentionally own grouped control presentation:
 
-- `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup` inherit the toolbar `size`.
+- Every `Toolbar.*` control uses the `base` size by default.
+- The Toolbar `size` prop remains available for compatibility but is deprecated; omit it for the base size.
 - `Toolbar.Button` always renders with quiet toolbar button styling.
-- `Toolbar.InputGroup` passes props directly to `InputGroup` with the toolbar `size`.
-- Adjacent toolbar items share borders and only the outer corners are rounded.
-- Direct `Toolbar` children that are not one of the supported toolbar item components do not receive toolbar overrides.
+- `Toolbar.InputGroup` passes props directly to `InputGroup` with the resolved toolbar size.
+- Give Select `render={<Toolbar.Button />}` to compose its trigger into the toolbar.
+- Give `Combobox.TriggerInput` `render={<Toolbar.Input />}` for an editable toolbar combobox.
+- Give `Combobox.TriggerValue` `render={<Toolbar.Button />}` for a button-style toolbar combobox.
+- Select and Combobox retain their value behavior, popup portals, filtering, and form inputs while joining toolbar arrow-key navigation.
+- Adjacent toolbar items share borders and only the Toolbar's outer corners are rounded.
+- A Select or Combobox without a rendered Toolbar control keeps its standalone presentation and does not join the toolbar's roving focus order.
 
 </ComponentSection>
 
 <ComponentSection>
 
 ## Examples
+
+### Select
+
+Select keeps its regular root props, including `items`. Its `render` prop
+replaces the trigger, so rendering `Toolbar.Button` makes that trigger a toolbar
+item without replacing the Select root.
+
+<ComponentExample demo="ToolbarSelectDemo">
+  <ToolbarSelectDemo client:visible />
+</ComponentExample>
+
+### Combobox
+
+Compose an editable Combobox trigger with `Toolbar.Input`. For a non-editable
+value trigger, render `Toolbar.Button` from `Combobox.TriggerValue`. Continue to
+compose the popup from regular `Combobox.*` components. In a horizontal toolbar,
+place an editable trigger last so left and right arrows can continue to serve
+both text-cursor and toolbar navigation predictably.
+
+<ComponentExample demo="ToolbarComboboxDemo">
+  <ToolbarComboboxDemo client:visible />
+</ComponentExample>
 
 ### Input Shorthand
 
@@ -103,10 +133,11 @@ inline addon or suffix.
   <ToolbarInputGroupDemo client:visible />
 </ComponentExample>
 
-### Sizes
+### Deprecated sizing
 
-The `size` prop supports `xs`, `sm`, `base`, and `lg`. Every supported toolbar
-item is locked to the same size.
+The `size` prop still supports `xs`, `sm`, `base`, and `lg` for compatibility,
+but it is deprecated and will be removed in a future major release. Omit it to
+use the default `base` size.
 
 <ComponentExample demo="ToolbarSizesDemo">
   <ToolbarSizesDemo client:visible />
@@ -123,7 +154,11 @@ visually quiet and consistent.
 
 ### Accessible Labels
 
-Use `aria-label` for compact toolbar controls that do not have visible labels.
+Use `aria-label` or `aria-labelledby` for compact controls without visible
+labels. A Select trigger and each Combobox trigger still need an accessible
+name. For editable inputs, toolbar focus moves only when the caret is already at
+the relevant text boundary; while a popup is open, arrow keys navigate its
+options instead.
 
 <ComponentExample demo="ToolbarLabelsDemo">
   <ToolbarLabelsDemo client:visible />
@@ -152,10 +187,10 @@ Use `aria-label` for compact toolbar controls that do not have visible labels.
       <td>Toolbar controls rendered as one grouped card.</td>
     </tr>
     <tr>
-      <td><code>size</code></td>
+      <td><code>size</code> <strong>Deprecated</strong></td>
       <td><code>&quot;xs&quot; | &quot;sm&quot; | &quot;base&quot; | &quot;lg&quot;</code></td>
       <td><code>&quot;base&quot;</code></td>
-      <td>Locks every supported toolbar item to this size.</td>
+      <td>Sets every supported item size. Omit this deprecated prop to use the default base size.</td>
     </tr>
     <tr>
       <td><code>className</code></td>
@@ -165,4 +200,37 @@ Use `aria-label` for compact toolbar controls that do not have visible labels.
     </tr>
   </tbody>
 </table>
+
+### Select composition
+
+Pass `render={<Toolbar.Button />}` to Select. Configure disabled-focus behavior
+on the rendered toolbar control:
+
+```tsx
+<Select
+  aria-label="Sort records"
+  disabled
+  items={{ name: "Name" }}
+  render={<Toolbar.Button focusableWhenDisabled={false} />}
+/>
+```
+
+### Combobox composition
+
+Pass `render={<Toolbar.Input />}` to `Combobox.TriggerInput`, or render
+`Toolbar.Button` from `Combobox.TriggerValue`:
+
+```tsx
+<Combobox items={items}>
+  <Combobox.TriggerInput
+    aria-label="Filter records"
+    render={<Toolbar.Input />}
+  />
+  <Combobox.Content>...</Combobox.Content>
+</Combobox>
+```
+
+Set `focusableWhenDisabled` on the rendered `Toolbar.Button` or `Toolbar.Input`
+to control whether a disabled trigger remains in the toolbar's roving focus
+order.
 </ComponentSection>
