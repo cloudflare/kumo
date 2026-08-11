@@ -16,6 +16,7 @@ import {
   BannerErrorDemo,
   BannerSecondaryDemo,
   BannerWithIconDemo,
+  BannerIconAlignmentPreview,
   BannerWithActionDemo,
   BannerWithActionsDemo,
   BannerCompactDemo,
@@ -109,6 +110,23 @@ export default function Example() {
 
 <ComponentExample demo="BannerWithIconDemo">
   <BannerWithIconDemo client:visible />
+</ComponentExample>
+
+#### Icon alignment with wrapping text
+
+Icons align to the first line of banner text and keep their size when the message wraps.
+
+<ComponentExample
+  code={`<Banner
+  size="sm"
+  icon={<Warning weight="fill" />}
+  variant="alert"
+  description="A DNS record already exists in this zone and must be reviewed before continuing."
+/>`}
+  vrSection="banner-icon-alignment"
+  vrTitle="Banner Icon Alignment"
+>
+  <BannerIconAlignmentPreview client:visible />
 </ComponentExample>
 
 ### With action
