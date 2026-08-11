@@ -156,7 +156,7 @@ describe("Banner", () => {
 
     const icon = screen.getByTestId("icon");
     const iconClassName = icon.getAttribute("class") ?? "";
-    expect(iconClassName).toContain("h-[1lh]");
+    expect(iconClassName).toContain("size-[1em]");
     expect(iconClassName).toContain("flex-none");
     expect(iconClassName).toContain("custom-icon");
     expect(icon.parentElement?.className).toContain("h-[1lh]");

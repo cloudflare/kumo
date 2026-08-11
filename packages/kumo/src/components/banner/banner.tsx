@@ -93,7 +93,7 @@ const renderBannerIcon = (icon: ReactNode, className?: string) => {
     ? cloneElement(iconElement, {
         className: cn(
           iconElement.props.className,
-          "h-[1lh] flex-none leading-snug",
+          "size-[1em] flex-none leading-snug",
         ),
       })
     : icon;

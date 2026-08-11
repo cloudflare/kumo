@@ -443,6 +443,8 @@ function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   if (!("icon" in variantConfig)) return null;
   const Icon = variantConfig.icon;
   return (
-    <Icon data-toast-icon className="h-[1lh] flex-none leading-5" weight="fill" />
+    <span className="flex h-[1lh] flex-none items-center leading-5">
+      <Icon data-toast-icon className="size-[1em] flex-none" weight="fill" />
+    </span>
   );
 }
