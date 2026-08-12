@@ -2,6 +2,33 @@ import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Table } from "./table";
 
+describe("Table styling", () => {
+  it("uses alternating row backgrounds without body row borders", () => {
+    const { container } = render(
+      <Table>
+        <Table.Body>
+          <Table.Row data-testid="default-row">
+            <Table.Cell>Default</Table.Cell>
+          </Table.Row>
+          <Table.Row data-testid="selected-row" variant="selected">
+            <Table.Cell>Selected</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>,
+    );
+
+    expect(screen.getByTestId("default-row").className).toContain(
+      "even:bg-kumo-tint",
+    );
+    expect(screen.getByTestId("selected-row").className).not.toContain(
+      "even:bg-kumo-tint",
+    );
+    expect(container.querySelector("table")?.className).not.toContain(
+      "[&_td]:border",
+    );
+  });
+});
+
 describe("Table.CheckCell / Table.CheckHead", () => {
   it("calls onCheckedChange with the new checked state", async () => {
     const onCheckedChange = vi.fn();
