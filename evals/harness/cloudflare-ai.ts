@@ -1,30 +1,30 @@
 import { createHarness, createJudgeHarness } from "vitest-evals";
 
 interface WorkersAiMessage {
-	role: "user" | "assistant" | "system";
-	content: string;
+  role: "user" | "assistant" | "system";
+  content: string;
 }
 
 interface WorkersAiResponse {
-	result?: {
-		response?: string;
-		choices?: Array<{
-			finish_reason?: string;
-			message?: {
-				content?: string;
-				reasoning_content?: string;
-				role?: string;
-			};
-		}>;
-	};
-	errors?: Array<{ message: string }>;
+  result?: {
+    response?: string;
+    choices?: Array<{
+      finish_reason?: string;
+      message?: {
+        content?: string;
+        reasoning_content?: string;
+        role?: string;
+      };
+    }>;
+  };
+  errors?: Array<{ message: string }>;
 }
 
 export interface ComponentGenerationInput {
-	task: string;
-	context: string;
-	expectedValues: string[];
-	expectedLabels: string[];
+  task: string;
+  context: string;
+  expectedValues: string[];
+  expectedLabels: string[];
 }
 
 // Prefer Cloudflare AI Gateway with the same org-level secrets that Bonk uses.
@@ -38,62 +38,59 @@ const gatewayToken = process.env.CF_AI_GATEWAY_TOKEN;
 const directAccountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 const directApiKey = process.env.CLOUDFLARE_API_KEY;
 
-const model =
-	process.env.KUMO_EVAL_MODEL ?? "@cf/moonshotai/kimi-k2.7-code";
+const model = process.env.KUMO_EVAL_MODEL ?? "@cf/moonshotai/kimi-k2.7-code";
 
 function hasGatewayCredentials(): boolean {
-	return Boolean(gatewayAccountId && gatewayId && gatewayToken);
+  return Boolean(gatewayAccountId && gatewayId && gatewayToken);
 }
 
 function hasDirectCredentials(): boolean {
-	return Boolean(directAccountId && directApiKey);
+  return Boolean(directAccountId && directApiKey);
 }
 
 async function callWorkersAi(
-	messages: WorkersAiMessage[],
-	signal?: AbortSignal,
+  messages: WorkersAiMessage[],
+  signal?: AbortSignal,
 ): Promise<string> {
-	let url: string;
-	let authorization: string;
+  let url: string;
+  let authorization: string;
 
-	if (hasGatewayCredentials()) {
-		url = `https://gateway.ai.cloudflare.com/v1/${gatewayAccountId}/${gatewayId}/workers-ai/${model}`;
-		authorization = `Bearer ${gatewayToken}`;
-	} else if (hasDirectCredentials()) {
-		url = `https://api.cloudflare.com/client/v4/accounts/${directAccountId}/ai/run/${model}`;
-		authorization = `Bearer ${directApiKey}`;
-	} else {
-		throw new Error(
-			"Evals require either CF_AI_GATEWAY_ACCOUNT_ID/CF_AI_GATEWAY_NAME/CF_AI_GATEWAY_TOKEN (preferred) or CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_API_KEY.",
-		);
-	}
+  if (hasGatewayCredentials()) {
+    url = `https://gateway.ai.cloudflare.com/v1/${gatewayAccountId}/${gatewayId}/workers-ai/${model}`;
+    authorization = `Bearer ${gatewayToken}`;
+  } else if (hasDirectCredentials()) {
+    url = `https://api.cloudflare.com/client/v4/accounts/${directAccountId}/ai/run/${model}`;
+    authorization = `Bearer ${directApiKey}`;
+  } else {
+    throw new Error(
+      "Evals require either CF_AI_GATEWAY_ACCOUNT_ID/CF_AI_GATEWAY_NAME/CF_AI_GATEWAY_TOKEN (preferred) or CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_API_KEY.",
+    );
+  }
 
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"content-type": "application/json",
-			authorization,
-		},
-		body: JSON.stringify({ messages, temperature: 0.1, max_tokens: 900 }),
-		signal,
-	});
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization,
+    },
+    body: JSON.stringify({ messages, temperature: 0.1, max_tokens: 900 }),
+    signal,
+  });
 
-	const body = (await response.json()) as WorkersAiResponse;
+  const body = (await response.json()) as WorkersAiResponse;
 
-	if (!response.ok || body.errors?.length) {
-		throw new Error(
-			`Workers AI request failed: ${response.status} ${JSON.stringify(body.errors)}`,
-		);
-	}
+  if (!response.ok || body.errors?.length) {
+    throw new Error(
+      `Workers AI request failed: ${response.status} ${JSON.stringify(body.errors)}`,
+    );
+  }
 
-	const text =
-		body.result?.response ??
-		body.result?.choices?.[0]?.message?.content ??
-		"";
-	if (!text) {
-		throw new Error("Workers AI returned an empty response");
-	}
-	return text;
+  const text =
+    body.result?.response ?? body.result?.choices?.[0]?.message?.content ?? "";
+  if (!text) {
+    throw new Error("Workers AI returned an empty response");
+  }
+  return text;
 }
 
 const systemPrompt = `You are a React expert writing components with @cloudflare/kumo.
@@ -110,45 +107,45 @@ Rules:
 - Return only TSX code, with no explanation or thinking text.`;
 
 export const componentGenerationHarness = createHarness<
-	ComponentGenerationInput,
-	string
+  ComponentGenerationInput,
+  string
 >({
-	name: "kumo-component-generation",
-	run: async ({ input, signal, setArtifact }) => {
-		const response = await callWorkersAi(
-			[
-				{ role: "system", content: systemPrompt },
-				{ role: "user", content: input.context },
-				{
-					role: "user",
-					content: `Write a complete, self-contained React component using @cloudflare/kumo Select for this task:\n\n${input.task}`,
-				},
-			],
-			signal,
-		);
+  name: "kumo-component-generation",
+  run: async ({ input, signal, setArtifact }) => {
+    const response = await callWorkersAi(
+      [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: input.context },
+        {
+          role: "user",
+          content: `Write a complete, self-contained React component using @cloudflare/kumo Select for this task:\n\n${input.task}`,
+        },
+      ],
+      signal,
+    );
 
-		setArtifact("task", input.task);
-		setArtifact("expectedValues", input.expectedValues);
-		setArtifact("expectedLabels", input.expectedLabels);
+    setArtifact("task", input.task);
+    setArtifact("expectedValues", input.expectedValues);
+    setArtifact("expectedLabels", input.expectedLabels);
 
-		return {
-			output: response,
-			events: [
-				{ type: "message", role: "user", content: input.task },
-				{ type: "message", role: "assistant", content: response },
-			],
-			usage: { provider: "cloudflare", model },
-		};
-	},
+    return {
+      output: response,
+      events: [
+        { type: "message", role: "user", content: input.task },
+        { type: "message", role: "assistant", content: response },
+      ],
+      usage: { provider: "cloudflare", model },
+    };
+  },
 });
 
 export const judgeHarness = createJudgeHarness({
-	name: "kumo-judge-model",
-	run: async ({ prompt }, { signal }) => {
-		const response = await callWorkersAi(
-			[{ role: "user", content: prompt }],
-			signal,
-		);
-		return response;
-	},
+  name: "kumo-judge-model",
+  run: async ({ prompt }, { signal }) => {
+    const response = await callWorkersAi(
+      [{ role: "user", content: prompt }],
+      signal,
+    );
+    return response;
+  },
 });
