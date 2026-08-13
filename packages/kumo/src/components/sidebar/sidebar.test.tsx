@@ -11,6 +11,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import {
   Sidebar,
@@ -881,5 +883,84 @@ describe("Sidebar.Loading", () => {
     expect(
       screen.getByRole("status").classList.contains("custom-loading"),
     ).toBe(true);
+  });
+});
+
+// ============================================================================
+// Mobile detection (useIsMobile) — SSR / hydration safety
+// ============================================================================
+//
+// useIsMobile must be SSR-safe: during server rendering and hydration it must
+// report desktop (getServerSnapshot), so the SSR HTML (desktop <aside>) can be
+// hydrated without a mismatch even on a mobile viewport, then switch to the
+// mobile overlay once the client subscribes to matchMedia.
+describe("Sidebar mobile detection (useIsMobile)", () => {
+  it("should render the desktop <aside> during SSR regardless of viewport", () => {
+    setMobileMatchMedia(true);
+
+    const html = renderToString(
+      <SidebarProvider mobileBreakpoint={768}>
+        <Sidebar>
+          <SidebarHeader>Header</SidebarHeader>
+        </Sidebar>
+      </SidebarProvider>,
+    );
+
+    expect(html).toContain("<aside");
+    expect(html).not.toContain("data-mobile");
+  });
+
+  it("should hydrate the SSR output without a hydration mismatch on a mobile viewport", () => {
+    setMobileMatchMedia(true);
+
+    const ui = (
+      <SidebarProvider mobileBreakpoint={768}>
+        <Sidebar>
+          <SidebarHeader>Header</SidebarHeader>
+        </Sidebar>
+      </SidebarProvider>
+    );
+
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(ui);
+
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    act(() => {
+      hydrateRoot(container, ui);
+    });
+
+    const hydrationErrors = errorSpy.mock.calls.filter((args) =>
+      /hydration|did not match|hydrate/i.test(args.map(String).join(" ")),
+    );
+    expect(hydrationErrors).toEqual([]);
+
+    errorSpy.mockRestore();
+  });
+
+  it("should render the mobile overlay on the client when the viewport matches", () => {
+    setMobileMatchMedia(true);
+
+    render(
+      <TestSidebar mobileBreakpoint={768}>
+        <SidebarHeader>Header</SidebarHeader>
+      </TestSidebar>,
+    );
+
+    expect(document.querySelector('[data-mobile="true"]')).not.toBeNull();
+  });
+
+  it("should render the desktop aside on the client on a desktop viewport", () => {
+    setMobileMatchMedia(false);
+
+    render(
+      <TestSidebar mobileBreakpoint={768}>
+        <SidebarHeader>Header</SidebarHeader>
+      </TestSidebar>,
+    );
+
+    expect(
+      document.querySelector('aside[data-sidebar="sidebar"]'),
+    ).not.toBeNull();
+    expect(document.querySelector('[data-mobile="true"]')).toBeNull();
   });
 });
