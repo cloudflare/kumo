@@ -59,6 +59,13 @@ describe("Button", () => {
     expect(button.hasAttribute("disabled")).toBe(true);
   });
 
+  it("prevents text selection", () => {
+    render(<Button>Save</Button>);
+    const button = screen.getByRole("button");
+    expect(button.classList.contains("select-none")).toBe(true);
+    expect(button.classList.contains("select-text")).toBe(false);
+  });
+
   it("forwards ref to the <button> DOM node", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
@@ -207,6 +214,13 @@ describe("LinkButton", () => {
     expect(link.getAttribute("href")).toBe("/home");
   });
 
+  it("allows text selection", () => {
+    render(<LinkButton href="/home">Home</LinkButton>);
+    const link = screen.getByRole("link");
+    expect(link.classList.contains("select-text")).toBe(true);
+    expect(link.classList.contains("select-none")).toBe(false);
+  });
+
   it("external sets target='_blank' and rel='noopener noreferrer'", () => {
     render(
       <LinkButton href="https://example.com" external>
@@ -281,6 +295,17 @@ describe("LinkButton", () => {
       );
       const button = screen.getByRole("button", { name: "Home" });
       expect(button.getAttribute("data-kumo-component")).toBe("LinkButton");
+    });
+
+    it("allows text selection", () => {
+      render(
+        <LinkButton href="/home" disabled>
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(button.classList.contains("select-text")).toBe(true);
+      expect(button.classList.contains("select-none")).toBe(false);
     });
 
     it("wraps a title in an enabled tooltip trigger around the disabled button", () => {
