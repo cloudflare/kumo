@@ -1,0 +1,158 @@
+name: Kumo Evals
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: "Version Packages PR number"
+        required: true
+        type: number
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  evals:
+    name: Run Kumo Evals on Version Packages PR
+    if: ${{ github.repository_owner == 'cloudflare' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Validate release PR
+        id: validate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = Number(core.getInput('pull_request_number'));
+            if (!Number.isInteger(prNumber) || prNumber <= 0) {
+              core.setFailed('pull_request_number must be a positive integer.');
+              return;
+            }
+
+            if (context.ref !== 'refs/heads/changeset-release/main') {
+              core.setFailed('Run this workflow from the changeset-release/main branch so the check attaches to the Version Packages PR.');
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            if (pr.state !== 'open') {
+              core.setFailed(`PR #${prNumber} is not open.`);
+              return;
+            }
+
+            if (pr.base.ref !== 'main') {
+              core.setFailed(`PR #${prNumber} targets ${pr.base.ref}, not main.`);
+              return;
+            }
+
+            if (pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.setFailed(`PR #${prNumber} is from ${pr.head.repo.full_name}, not this repository.`);
+              return;
+            }
+
+            if (pr.head.ref !== 'changeset-release/main') {
+              core.setFailed(`PR #${prNumber} head is ${pr.head.ref}, not changeset-release/main.`);
+              return;
+            }
+
+            if (pr.title !== 'Version Packages') {
+              core.setFailed(`PR #${prNumber} title is ${JSON.stringify(pr.title)}, not "Version Packages".`);
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+
+            const isAllowedVersionFile = (filename) =>
+              filename === 'package.json' ||
+              filename === 'pnpm-lock.yaml' ||
+              /^\.changeset\/[^/]+\.md$/.test(filename) ||
+              /^packages\/[^/]+\/package\.json$/.test(filename) ||
+              /^packages\/[^/]+\/CHANGELOG\.md$/.test(filename);
+
+            const unexpectedFiles = files
+              .map((file) => file.filename)
+              .filter((filename) => !isAllowedVersionFile(filename));
+
+            if (unexpectedFiles.length > 0) {
+              core.setFailed(`PR #${prNumber} contains files outside the expected Version Packages surface: ${unexpectedFiles.join(', ')}`);
+              return;
+            }
+
+            core.setOutput('head_sha', pr.head.sha);
+            core.setOutput('pull_request_number', String(prNumber));
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ steps.validate.outputs.head_sha }}
+
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Generate Select registry context
+        run: pnpm --filter @cloudflare/kumo codegen:registry
+
+      - name: Run Select evals
+        env:
+          CF_AI_GATEWAY_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
+          CF_AI_GATEWAY_NAME: ${{ secrets.CF_AI_GATEWAY_NAME }}
+          CF_AI_GATEWAY_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
+          KUMO_EVAL_MODEL: "@cf/moonshotai/kimi-k2.7-code"
+        run: pnpm evals:ci
+
+      - name: Upload eval artifacts
+        if: ${{ always() && steps.validate.outputs.pull_request_number != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-eval-results
+          path: |
+            evals/.generated/vitest-results.json
+          retention-days: 30
+
+      - name: Post eval summary to Version Packages PR
+        if: ${{ always() && steps.validate.outputs.pull_request_number != '' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('node:fs');
+            const path = 'evals/.generated/vitest-results.json';
+            let body = '## Kumo Select Evals\n\n';
+            if (!fs.existsSync(path)) {
+              body += 'Eval results were not generated.';
+            } else {
+              const results = JSON.parse(fs.readFileSync(path, 'utf-8'));
+              const failed = results.numFailedTests ?? 0;
+              const passed = results.numPassedTests ?? 0;
+              const skipped = results.numSkippedTests ?? 0;
+              body += `**Passed:** ${passed} | **Failed:** ${failed} | **Skipped:** ${skipped}\n\n`;
+              if (failed > 0) {
+                body += '### Failures\n\n';
+                for (const suite of results.testResults ?? []) {
+                  for (const test of suite.assertionResults ?? []) {
+                    if (test.status === 'failed') {
+                      body += `- \`${test.ancestorTitles?.join(' > ')} > ${test.title}\`: ${test.failureMessages?.join('\n')}\n`;
+                    }
+                  }
+                }
+              }
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number('${{ steps.validate.outputs.pull_request_number }}'),
+              body,
+            });

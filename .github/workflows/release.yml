@@ -19,8 +19,6 @@ jobs:
     if: ${{ github.repository_owner == 'cloudflare' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    outputs:
-      pullRequestNumber: ${{ steps.changesets.outputs.pullRequestNumber }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,75 +52,3 @@ jobs:
       - name: Publish package preview
         if: ${{ steps.changesets.outputs.pullRequestNumber }}
         run: vp dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
-
-  evals:
-    name: Run Kumo Evals on Version Packages PR
-    needs: release
-    if: ${{ github.repository_owner == 'cloudflare' && needs.release.outputs.pullRequestNumber != '' }}
-    runs-on: ubuntu-latest
-    environment: kumo-evals
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - uses: ./.github/actions/install-dependencies
-
-      - name: Generate Select registry context
-        run: pnpm --filter @cloudflare/kumo codegen:registry
-
-      - name: Run Select evals
-        env:
-          CF_AI_GATEWAY_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
-          CF_AI_GATEWAY_NAME: ${{ secrets.CF_AI_GATEWAY_NAME }}
-          CF_AI_GATEWAY_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
-          KUMO_EVAL_MODEL: "@cf/moonshotai/kimi-k2.7-code"
-        run: pnpm evals:ci
-
-      - name: Upload eval artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vitest-eval-results
-          path: |
-            evals/.generated/vitest-results.json
-          retention-days: 30
-
-      - name: Post eval summary to Version Packages PR
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('node:fs');
-            const path = 'evals/.generated/vitest-results.json';
-            let body = '## 🤖 Kumo Select Evals\n\n';
-            if (!fs.existsSync(path)) {
-              body += '❌ Eval results were not generated.';
-            } else {
-              const results = JSON.parse(fs.readFileSync(path, 'utf-8'));
-              const failed = results.numFailedTests ?? 0;
-              const passed = results.numPassedTests ?? 0;
-              const skipped = results.numSkippedTests ?? 0;
-              body += `**Passed:** ${passed} | **Failed:** ${failed} | **Skipped:** ${skipped}\n\n`;
-              if (failed > 0) {
-                body += '### Failures\n\n';
-                for (const suite of results.testResults ?? []) {
-                  for (const test of suite.assertionResults ?? []) {
-                    if (test.status === 'failed') {
-                      body += `- \`${test.ancestorTitles?.join(' > ')} > ${test.title}\`: ${test.failureMessages?.join('\n')}\n`;
-                    }
-                  }
-                }
-              }
-            }
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ needs.release.outputs.pullRequestNumber }},
-              body,
-            });
