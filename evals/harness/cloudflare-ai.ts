@@ -40,6 +40,11 @@ const directApiKey = process.env.CLOUDFLARE_API_KEY;
 
 const model = process.env.KUMO_EVAL_MODEL ?? "@cf/moonshotai/kimi-k2.7-code";
 
+// Model IDs are multi-segment paths (e.g. `@cf/moonshotai/kimi-k2.7-code`), so
+// we encode each segment individually to preserve the `/` separators while
+// neutralizing any `?`, `#`, or traversal characters in an override.
+const encodedModelPath = model.split("/").map(encodeURIComponent).join("/");
+
 function hasGatewayCredentials(): boolean {
   return Boolean(gatewayAccountId && gatewayId && gatewayToken);
 }
@@ -56,10 +61,10 @@ async function callWorkersAi(
   let authorization: string;
 
   if (hasGatewayCredentials()) {
-    url = `https://gateway.ai.cloudflare.com/v1/${gatewayAccountId}/${gatewayId}/workers-ai/${model}`;
+    url = `https://gateway.ai.cloudflare.com/v1/${gatewayAccountId}/${gatewayId}/workers-ai/${encodedModelPath}`;
     authorization = `Bearer ${gatewayToken}`;
   } else if (hasDirectCredentials()) {
-    url = `https://api.cloudflare.com/client/v4/accounts/${directAccountId}/ai/run/${model}`;
+    url = `https://api.cloudflare.com/client/v4/accounts/${directAccountId}/ai/run/${encodedModelPath}`;
     authorization = `Bearer ${directApiKey}`;
   } else {
     throw new Error(
@@ -80,9 +85,14 @@ async function callWorkersAi(
   const body = (await response.json()) as WorkersAiResponse;
 
   if (!response.ok || body.errors?.length) {
-    throw new Error(
-      `Workers AI request failed: ${response.status} ${JSON.stringify(body.errors)}`,
-    );
+    // Avoid writing the raw upstream error body to CI logs by default; the
+    // gateway/API response can contain routing or account metadata. Opt in
+    // with KUMO_EVAL_DEBUG=1 when diagnosing failures locally.
+    const detail =
+      process.env.KUMO_EVAL_DEBUG === "1"
+        ? ` ${JSON.stringify(body.errors)}`
+        : "";
+    throw new Error(`Workers AI request failed: ${response.status}${detail}`);
   }
 
   const text =
