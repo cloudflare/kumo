@@ -17,6 +17,7 @@ jobs:
     name: Run Kumo Evals on Version Packages PR
     if: ${{ github.repository_owner == 'cloudflare' }}
     runs-on: ubuntu-latest
+    environment: kumo-evals
     timeout-minutes: 20
     permissions:
       contents: read

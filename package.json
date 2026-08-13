@@ -47,7 +47,7 @@
     "vite": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:",
-    "vitest-evals": "^0.16.1"
+    "vitest-evals": "0.16.1"
   },
   "devEngines": {
     "packageManager": {
