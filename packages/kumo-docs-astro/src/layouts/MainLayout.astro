@@ -29,12 +29,12 @@ const currentPath = Astro.url.pathname;
               el.scrollTop = pos;
             }
           } catch {
-            // no-op
+            // Storage can be unavailable in privacy-restricted contexts.
           }
         }
 
         restore();
-        window.addEventListener("astro:after-swap", restore);
+        document.addEventListener("astro:after-swap", restore);
       })();
     </script>
 
