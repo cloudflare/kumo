@@ -206,6 +206,13 @@ function Content({
   sideOffset = 4,
   alignOffset,
   side,
+  anchor,
+  positionMethod,
+  collisionAvoidance,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  disableAnchorTracking,
   container: containerProp,
 }: PropsWithChildren<{
   className?: string;
@@ -213,6 +220,13 @@ function Content({
   alignOffset?: ComboboxBase.Positioner.Props["alignOffset"];
   side?: ComboboxBase.Positioner.Props["side"];
   sideOffset?: ComboboxBase.Positioner.Props["sideOffset"];
+  anchor?: ComboboxBase.Positioner.Props["anchor"];
+  positionMethod?: ComboboxBase.Positioner.Props["positionMethod"];
+  collisionAvoidance?: ComboboxBase.Positioner.Props["collisionAvoidance"];
+  collisionBoundary?: ComboboxBase.Positioner.Props["collisionBoundary"];
+  collisionPadding?: ComboboxBase.Positioner.Props["collisionPadding"];
+  sticky?: ComboboxBase.Positioner.Props["sticky"];
+  disableAnchorTracking?: ComboboxBase.Positioner.Props["disableAnchorTracking"];
   /**
    * Container element for the portal. Use this to render the combobox inside
    * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
@@ -231,6 +245,13 @@ function Content({
         sideOffset={sideOffset}
         alignOffset={alignOffset}
         side={side}
+        anchor={anchor}
+        positionMethod={positionMethod}
+        collisionAvoidance={collisionAvoidance}
+        collisionBoundary={collisionBoundary}
+        collisionPadding={collisionPadding}
+        sticky={sticky}
+        disableAnchorTracking={disableAnchorTracking}
       >
         <ComboboxBase.Popup
           className={cn(

@@ -480,7 +480,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       return (
         <Button
           {...toDisabledButtonProps(props)}
-          className={className}
+          className={cn("select-text", className)}
           data-kumo-component="LinkButton"
           disabled
           icon={IconComponent}
@@ -501,7 +501,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "flex items-center no-underline!",
+          "flex items-center no-underline! select-text",
           className,
         )}
         href={href}
