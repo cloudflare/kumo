@@ -11,6 +11,8 @@ import {
   BadgeSemanticVariantsDemo,
   BadgeColorVariantsDemo,
   BadgeInSentenceDemo,
+  BadgeIconDemo,
+  BadgeLinkDemo,
   BadgeDotDemo,
 } from "~/components/demos/BadgeDemo";
 
@@ -71,6 +73,22 @@ Use `appearance="dot"` for a subtle status indicator with a colored dot. Support
 
 <ComponentExample demo="BadgeInSentenceDemo">
   <BadgeInSentenceDemo client:visible />
+</ComponentExample>
+
+### With an icon
+
+Pass a Phosphor icon component or React element to `icon` to render it before the badge label.
+
+<ComponentExample demo="BadgeIconDemo">
+  <BadgeIconDemo client:visible />
+</ComponentExample>
+
+### Linked badge
+
+Pass `href` to render a badge as a link. Linked badges use the link component configured by [`LinkProvider`](/components/link#framework-integration-linkprovider).
+
+<ComponentExample demo="BadgeLinkDemo">
+  <BadgeLinkDemo client:visible />
 </ComponentExample>
 
 ## API Reference
