@@ -2,4 +2,4 @@
 "@cloudflare/kumo": minor
 ---
 
-Add link and icon support to Badge through the `href` and `icon` props, and use the base surface background for outline badges.
+Add icon support to filled Badge variants through the `icon` prop, add linked-badge hover styles, and use the base surface background for outline badges.

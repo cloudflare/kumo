@@ -1,11 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
-import { forwardRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import {
-  LinkProvider,
-  type LinkComponentProps,
-} from "../../utils/link-provider";
 import { Badge, badgeVariants, KUMO_BADGE_VARIANTS } from "./badge";
 
 describe("Badge", () => {
@@ -20,32 +15,21 @@ describe("Badge", () => {
     expect(el.tagName).toBe("SPAN");
   });
 
-  it("renders as a link when href is provided", () => {
-    render(<Badge href="/docs">Docs</Badge>);
-    const link = screen.getByRole("link", { name: "Docs" });
-    expect(link.tagName).toBe("A");
-    expect(link.getAttribute("href")).toBe("/docs");
+  it("merges custom className", () => {
+    render(<Badge className="my-custom">Tag</Badge>);
+    const el = screen.getByText("Tag");
+    expect(el.className).toContain("my-custom");
   });
 
-  it("uses the component configured by LinkProvider", () => {
-    const RouterLink = forwardRef<HTMLAnchorElement, LinkComponentProps>(
-      ({ children, ...props }, ref) => (
-        <a ref={ref} data-routed="true" {...props}>
-          {children}
-        </a>
-      ),
-    );
-    RouterLink.displayName = "RouterLink";
-
+  it("shows a ring when an ancestor link is hovered", () => {
     render(
-      <LinkProvider component={RouterLink}>
-        <Badge href="/workers">Workers</Badge>
-      </LinkProvider>,
+      <a href="/docs">
+        <Badge>Docs</Badge>
+      </a>,
     );
-
-    const link = screen.getByRole("link", { name: "Workers" });
-    expect(link.getAttribute("data-routed")).toBe("true");
-    expect(link.getAttribute("href")).toBe("/workers");
+    const badge = screen.getByText("Docs");
+    expect(badge.classList.contains("[a:hover_&]:ring")).toBe(true);
+    expect(badge.classList.contains("[a:hover_&]:ring-current")).toBe(true);
   });
 
   it("renders an icon", () => {
@@ -54,6 +38,12 @@ describe("Badge", () => {
   });
 
   describe("filled appearance (default)", () => {
+    it("applies variant classes for filled badges", () => {
+      render(<Badge variant="error">Error</Badge>);
+      const el = screen.getByText("Error");
+      expect(el.className).toContain("bg-kumo-danger-tint");
+    });
+
     it("does not render a dot indicator", () => {
       render(<Badge variant="success">OK</Badge>);
       const el = screen.getByText("OK");
@@ -71,6 +61,45 @@ describe("Badge", () => {
       const badge = screen.getByText("Healthy").closest("span")!;
       const dot = badge.querySelector("[aria-hidden='true']");
       expect(dot).toBeTruthy();
+      expect(dot!.className).toContain("bg-kumo-success");
+    });
+
+    it("applies dot appearance classes instead of variant classes", () => {
+      render(
+        <Badge variant="error" appearance="dot">
+          Down
+        </Badge>,
+      );
+      const badge = screen.getByText("Down").closest("span")!;
+      // Dot appearance overrides variant bg/text
+      expect(badge.className).toContain("bg-transparent");
+      expect(badge.className).toContain("text-kumo-default");
+      // Should NOT contain the filled error classes
+      expect(badge.className).not.toContain("bg-kumo-danger-tint");
+    });
+
+    it("renders correct dot color per variant", () => {
+      const cases = [
+        { variant: "success" as const, expected: "bg-kumo-success" },
+        { variant: "warning" as const, expected: "bg-kumo-badge-orange" },
+        { variant: "error" as const, expected: "bg-kumo-badge-red" },
+        { variant: "neutral" as const, expected: "bg-kumo-badge-neutral" },
+      ];
+
+      for (const { variant, expected } of cases) {
+        const { unmount } = render(
+          <Badge variant={variant} appearance="dot">
+            {variant}
+          </Badge>,
+        );
+        const badge = screen.getByText(variant).closest("span")!;
+        const dot = badge.querySelector("[aria-hidden='true']");
+        expect(dot, `dot should exist for variant="${variant}"`).toBeTruthy();
+        expect(dot!.className, `dot class for variant="${variant}"`).toContain(
+          expected,
+        );
+        unmount();
+      }
     });
 
     it("does not render a dot for unsupported variants", () => {
@@ -104,6 +133,23 @@ describe("Badge", () => {
 });
 
 describe("badgeVariants", () => {
+  it("returns base styles with no arguments", () => {
+    const result = badgeVariants();
+    expect(result).toContain("inline-flex");
+    expect(result).toContain("rounded-full");
+  });
+
+  it("includes variant classes for filled appearance", () => {
+    const result = badgeVariants({ variant: "success" });
+    expect(result).toContain("bg-kumo-success-tint");
+  });
+
+  it("omits variant classes for dot appearance", () => {
+    const result = badgeVariants({ variant: "success", appearance: "dot" });
+    expect(result).not.toContain("bg-kumo-success-tint");
+    expect(result).toContain("bg-transparent");
+  });
+
   it("survives invalid variant without throwing", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const BOGUS = "nope" as any;
@@ -133,9 +179,12 @@ describe("KUMO_BADGE_VARIANTS", () => {
     expect(KUMO_BADGE_VARIANTS.dotColor).toBeDefined();
   });
 
-  it("every variant entry has a description", () => {
+  it("every variant entry has classes and description", () => {
     for (const [dim, entries] of Object.entries(KUMO_BADGE_VARIANTS)) {
-      for (const [key, entry] of Object.entries(entries)) {
+      for (const [key, entry] of Object.entries(
+        entries as Record<string, { classes: string; description: string }>,
+      )) {
+        expect(entry.classes, `${dim}.${key}.classes`).toBeDefined();
         expect(typeof entry.description, `${dim}.${key}.description`).toBe(
           "string",
         );

@@ -1,12 +1,11 @@
 import React, { type ReactNode } from "react";
 import type { Icon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
-import { useLinkComponent } from "../../utils/link-provider";
 import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Base styles applied to all badge variants. */
 export const KUMO_BADGE_BASE_STYLES =
-  "inline-flex w-fit flex-none shrink-0 items-center justify-self-start gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap";
+  "inline-flex w-fit flex-none shrink-0 items-center justify-self-start gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap [a:hover_&]:ring [a:hover_&]:ring-current";
 
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
@@ -193,7 +192,7 @@ const renderIconNode = (IconComponent?: Icon | ReactNode) => {
  * <Badge variant="success" appearance="dot">Healthy</Badge>
  * ```
  */
-export interface BadgeProps {
+interface BadgeBaseProps {
   /**
    * Color variant of the badge.
    * Recommended semantic variants:
@@ -213,24 +212,41 @@ export interface BadgeProps {
    * @default "primary"
    */
   variant?: KumoBadgeVariant;
+  /** Additional CSS classes merged via `cn()`. */
+  className?: string;
+  /** Content rendered inside the badge. */
+  children: ReactNode;
+}
+
+interface FilledBadgeProps extends BadgeBaseProps {
   /**
    * Visual appearance of the badge.
    * - `"filled"` — Filled background using the variant color (default)
    * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
-   *   `warning`, `error`, and `neutral` variants show a dot; other variants
-   *   render the badge without a dot.
+   *   `warning`, `error`, and `neutral` variants show a dot. Dot badges do not
+   *   accept icons.
    * @default "filled"
    */
-  appearance?: KumoBadgeAppearance;
-  /** Additional CSS classes merged via `cn()`. */
-  className?: string;
+  appearance?: "filled";
   /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
   icon?: Icon | ReactNode;
-  /** URL to navigate to. When provided, renders the badge as a link. */
-  href?: string;
-  /** Content rendered inside the badge. */
-  children: ReactNode;
 }
+
+interface DotBadgeProps extends BadgeBaseProps {
+  /**
+   * Visual appearance of the badge.
+   * - `"filled"` — Filled background using the variant color (default)
+   * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
+   *   `warning`, `error`, and `neutral` variants show a dot. Dot badges do not
+   *   accept icons.
+   * @default "filled"
+   */
+  appearance: "dot";
+  /** Dot badges use their status dot instead of an icon. */
+  icon?: never;
+}
+
+export type BadgeProps = FilledBadgeProps | DotBadgeProps;
 
 /**
  * Small status label for categorizing or highlighting content.
@@ -246,10 +262,8 @@ export function Badge({
   appearance = KUMO_BADGE_DEFAULT_VARIANTS.appearance,
   className,
   icon,
-  href,
   children,
 }: BadgeProps) {
-  const LinkComponent = useLinkComponent();
   // Crash-safe dot-color lookup via resolveVariant — unknown variants fall
   // back to "none" (no dot) instead of throwing.
   const dotColor =
@@ -260,14 +274,14 @@ export function Badge({
           KUMO_BADGE_DEFAULT_VARIANTS.dotColor,
         ).classes
       : "";
-  const badgeClassName = cn(
-    badgeVariants({ variant, appearance }),
-    icon && "pl-1.5",
-    href !== undefined && "hover:ring hover:ring-current",
-    className,
-  );
-  const content = (
-    <>
+  return (
+    <span
+      className={cn(
+        badgeVariants({ variant, appearance }),
+        icon && "pl-1.5",
+        className,
+      )}
+    >
       {dotColor ? (
         <span
           aria-hidden="true"
@@ -276,16 +290,6 @@ export function Badge({
       ) : null}
       {renderIconNode(icon)}
       {children}
-    </>
+    </span>
   );
-
-  if (href !== undefined) {
-    return (
-      <LinkComponent className={badgeClassName} href={href}>
-        {content}
-      </LinkComponent>
-    );
-  }
-
-  return <span className={badgeClassName}>{content}</span>;
 }

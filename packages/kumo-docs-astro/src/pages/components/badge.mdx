@@ -77,7 +77,7 @@ Use `appearance="dot"` for a subtle status indicator with a colored dot. Support
 
 ### With an icon
 
-Pass a Phosphor icon component or React element to `icon` to render it before the badge label.
+Filled badges accept a Phosphor icon component or React element through `icon`. Dot badges use their status dot and do not accept icons.
 
 <ComponentExample demo="BadgeIconDemo">
   <BadgeIconDemo client:visible />
@@ -85,7 +85,7 @@ Pass a Phosphor icon component or React element to `icon` to render it before th
 
 ### Linked badge
 
-Pass `href` to render a badge as a link. Linked badges use the link component configured by [`LinkProvider`](/components/link#framework-integration-linkprovider).
+Wrap a badge in [`Link`](/components/link) to make it navigable. The badge adds a ring when its ancestor link is hovered.
 
 <ComponentExample demo="BadgeLinkDemo">
   <BadgeLinkDemo client:visible />
