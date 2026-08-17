@@ -263,6 +263,7 @@ export function Badge({
   const badgeClassName = cn(
     badgeVariants({ variant, appearance }),
     icon && "pl-1.5",
+    href !== undefined && "hover:ring hover:ring-current",
     className,
   );
   const content = (
