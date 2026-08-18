@@ -179,7 +179,7 @@ export function HomeGrid() {
       name: "Toolbar",
       id: "toolbar",
       Component: (
-        <Toolbar className="w-[260px]">
+        <Toolbar>
           <Toolbar.Input
             aria-label="Search DNS records"
             placeholder="Search..."
