@@ -1,5 +1,17 @@
 # @cloudflare/kumo
 
+## 2.11.0
+
+### Minor Changes
+
+- aa6edff: Add icon support to filled Badge variants through the `icon` prop, add linked-badge hover styles, and use the base surface background for outline badges.
+
+### Patch Changes
+
+- bba0f5e: Allow users to select and copy LinkButton text while preserving Button text selection behavior.
+- c2c8d42: Update Table rows to use borderless, alternating background styling.
+- 0ad1926: Fix hydration mismatch in the Sidebar's `useIsMobile` hook on SSR frameworks like Next.js. The hook now uses `useSyncExternalStore` with a desktop `getServerSnapshot`, so the server-rendered HTML (desktop `<aside>`) hydrates cleanly on mobile viewports before switching to the mobile overlay.
+
 ## 2.10.0
 
 ### Minor Changes
