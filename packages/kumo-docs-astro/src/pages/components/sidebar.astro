@@ -9,6 +9,7 @@ import {
   SidebarBasicDemo,
   SidebarToggleDemo,
   SidebarLoadingDemo,
+  SidebarScrollToItemDemo,
   SidebarFullDemo,
   SidebarResizableDemo,
   SidebarRightDemo,
@@ -251,6 +252,26 @@ const { state, isPeeking } = useSidebar();
   </Sidebar.CollapsibleContent>
 </Sidebar.Collapsible>`}>
           <SidebarAutoScrollDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Scroll to Item</Heading>
+        <p>
+          Tag nav items with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code>, then call <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">useSidebar().scrollToItem(id, options)</code> to bring one into view.
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">align</code> is <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"start"</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"center"</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"end"</code>, or <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"auto"</code> (default — no-op if visible). <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">behavior</code> defaults to <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"auto"</code> (instant) so cross-app landings don't animate on entry; pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"smooth"</code> for in-app "jump to section" flows. Honors <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">prefers-reduced-motion</code>. Works correctly with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingViews</code> — items are resolved from a per-provider registry, not a DOM query.
+        </p>
+        <p>
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code> works in both usage patterns: on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.MenuButton</code> directly (the common case, which auto-wraps in a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code>), or on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.MenuItem</code> when you wrap a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Collapsible</code>. If you put <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code> on a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuButton</code> nested inside a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuItem</code>, it still works — the button itself becomes the scroll target.
+        </p>
+        <ComponentExample code={`<Sidebar.MenuButton itemId="zero-trust" href="/zt">
+  Zero Trust
+</Sidebar.MenuButton>
+
+// elsewhere:
+const { scrollToItem } = useSidebar();
+scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
+          <SidebarScrollToItemDemo client:load />
         </ComponentExample>
       </div>
 

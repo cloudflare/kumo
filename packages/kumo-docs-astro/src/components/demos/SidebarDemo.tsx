@@ -884,7 +884,107 @@ export function SidebarFullDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Mobile — navigation drawer with Escape to close
+// 9. scrollToItem — imperative scroll to a tagged nav item
+// ---------------------------------------------------------------------------
+
+const LONG_NAV_ITEMS = [
+  "Home",
+  "Analytics",
+  "Domains",
+  "SSL/TLS",
+  "Firewall",
+  "Caching",
+  "Workers",
+  "Pages",
+  "R2",
+  "KV",
+  "D1",
+  "AI Gateway",
+  "Queues",
+  "Zaraz",
+  "Turnstile",
+  "Load Balancing",
+  "Zero Trust",
+  "Access",
+  "Gateway",
+  "Tunnels",
+  "Logs",
+  "Notifications",
+  "Members",
+  "API tokens",
+  "Billing",
+  "Settings",
+] as const;
+
+const ANCHOR_ID_BY_LABEL: Record<string, string> = {
+  Home: "home",
+  Workers: "workers",
+  "Zero Trust": "zero-trust",
+  Settings: "settings",
+};
+
+function ScrollToItemControls() {
+  const { scrollToItem } = useSidebar();
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <p>Jump to any tagged item.</p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {(["home", "workers", "zero-trust", "settings"] as const).map((id) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() =>
+              scrollToItem(id, { align: "center", behavior: "smooth" })
+            }
+            className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+          >
+            Scroll to {id}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Imperative scroll via `useSidebar().scrollToItem(id, options)` targeting `itemId` props. */
+export function SidebarScrollToItemDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                {LONG_NAV_ITEMS.map((label, idx) => (
+                  <Sidebar.MenuButton
+                    key={label}
+                    icon={idx === 0 ? HouseIcon : GlobeIcon}
+                    active={idx === 0}
+                    itemId={ANCHOR_ID_BY_LABEL[label]}
+                  >
+                    {label}
+                  </Sidebar.MenuButton>
+                ))}
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <ScrollToItemControls />
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 10. Mobile — navigation drawer with Escape to close
 // ---------------------------------------------------------------------------
 
 function MobileToggleButton() {
@@ -951,7 +1051,7 @@ export function SidebarMobileDemo() {
   );
 }
 // ---------------------------------------------------------------------------
-// 10. Full-screen mobile — nav fills the viewport, route lives in breadcrumbs
+// 11. Full-screen mobile — nav fills the viewport, route lives in breadcrumbs
 // ---------------------------------------------------------------------------
 
 /** A node in the nav tree. Leaves are navigable; branches expand. */
