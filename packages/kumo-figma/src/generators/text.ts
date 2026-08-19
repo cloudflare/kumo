@@ -3,8 +3,8 @@ import { logComplete } from "../logger";
  * Text Component Generator
  *
  * Generates a single Text ComponentSet in Figma with properties:
- * - variant: heading1, heading2, heading3, body, secondary, success, error, mono, mono-secondary
- * - size: xs, sm, base, lg (only applies to body/secondary/success/error variants)
+ * - variant: heading, heading1, heading2, heading3, body, secondary, success, error, mono, mono-secondary
+ * - size: heading supports default/lg; body variants support xs/sm/base/lg
  *
  * Reads variant definitions from component-registry.json (the source of truth).
  *
@@ -14,7 +14,8 @@ import { logComplete } from "../logger";
  * Unlike Button or Badge, Text components are purely typographic - no backgrounds or borders.
  *
  * ### Variant Categories (derived from text.tsx source)
- * - Headings (heading1, heading2, heading3): Fixed sizes, semibold weight, no size prop
+ * - Heading: Semibold at 16px by default and 20px with size=lg
+ * - Deprecated headings (heading1, heading2, heading3): Fixed sizes
  * - Copy (body, secondary, success, error): Supports size variants
  * - Monospace (mono, mono-secondary): Special optical sizing (lg→base, default→sm)
  *
@@ -64,8 +65,16 @@ const TEXT_BASE_CLASS = "text-kumo-default";
  * Variant categories derived from text.tsx source code (lines 162-163)
  * These determine which variants support size and special optical sizing
  */
+const HEADING_VARIANT = "heading";
 const COPY_VARIANTS = ["body", "secondary", "success", "error"];
 const MONO_VARIANTS = ["mono", "mono-secondary"];
+
+/**
+ * Check if variant is the preferred heading variant (supports default/lg).
+ */
+function isHeadingVariant(variant: string): boolean {
+  return variant === HEADING_VARIANT;
+}
 
 /**
  * Check if variant is a copy variant (supports size)
@@ -110,13 +119,21 @@ async function createTextComponent(
 
   // Determine effective size classes based on variant type
   // From text.tsx lines 180-186:
+  // - Heading: variant classes provide 16px; lg overrides it to 20px
   // - Copy variants: use the size prop directly
   // - Mono variants: lg→base, default→sm (optical sizing)
-  // - Headings: no size classes
+  // - Deprecated headings: no additional size classes
   let effectiveSizeClasses = "";
   let sizeDesc = "";
 
-  if (isCopyVariant(variant) && size) {
+  if (isHeadingVariant(variant)) {
+    if (size === "lg") {
+      effectiveSizeClasses = "text-xl";
+      sizeDesc = "Large heading text";
+    } else {
+      sizeDesc = "Default heading text";
+    }
+  } else if (isCopyVariant(variant) && size) {
     effectiveSizeClasses = sizeProp.classes[size] || "";
     sizeDesc = sizeProp.descriptions[size] || "";
   } else if (isMonoVariant(variant)) {
@@ -129,7 +146,7 @@ async function createTextComponent(
       sizeDesc = "Default text (optically adjusted to small)";
     }
   }
-  // Headings: no size classes applied
+  // Deprecated headings: no additional size classes applied
 
   // Combine base + variant + size classes for parsing
   const combinedClasses =
@@ -247,7 +264,23 @@ export async function generateTextComponents(
       text: "variant=" + variant,
     });
 
-    if (isCopyVariant(variant)) {
+    if (isHeadingVariant(variant)) {
+      // Heading: generate the default 16px and large 20px combinations.
+      let currentX = labelColumnWidth;
+
+      const defaultComponent = await createTextComponent(variant, null);
+      defaultComponent.x = currentX;
+      defaultComponent.y = currentRow * rowHeight + headerRowHeight;
+      currentX = currentX + defaultComponent.width + componentGap;
+      components.push(defaultComponent);
+
+      const lgComponent = await createTextComponent(variant, "lg");
+      lgComponent.x = currentX;
+      lgComponent.y = currentRow * rowHeight + headerRowHeight;
+      components.push(lgComponent);
+
+      currentRow++;
+    } else if (isCopyVariant(variant)) {
       // Copy variants: generate all size combinations
       let currentX = labelColumnWidth;
       for (let j = 0; j < sizes.length; j++) {
@@ -287,7 +320,7 @@ export async function generateTextComponents(
 
       currentRow++;
     } else {
-      // Headings: no size variants (from text.tsx lines 125-129: size?: never)
+      // Deprecated headings retain their fixed sizes for compatibility.
       const component = await createTextComponent(variant, null);
       component.x = labelColumnWidth;
       component.y = currentRow * rowHeight + headerRowHeight;
@@ -466,6 +499,7 @@ export function getAllVariantData() {
     combinedClasses: string;
     parsed: ReturnType<typeof parseTailwindClasses>;
     description: string;
+    isHeadingVariant: boolean;
     isCopyVariant: boolean;
     isMonoVariant: boolean;
   }> = [];
@@ -473,10 +507,45 @@ export function getAllVariantData() {
   for (const variant of variantConfig.variants) {
     const variantClasses = variantConfig.variantClasses[variant] || "";
     const variantDesc = variantConfig.variantDescriptions[variant] || "";
+    const isHeading = isHeadingVariant(variant);
     const isCopy = isCopyVariant(variant);
     const isMono = isMonoVariant(variant);
 
-    if (isCopy) {
+    if (isHeading) {
+      const defaultCombined = `${TEXT_BASE_CLASS} ${variantClasses}`.trim();
+      const defaultParsed = parseTailwindClasses(defaultCombined);
+
+      variants.push({
+        variant,
+        size: null,
+        variantClasses,
+        sizeClasses: "",
+        combinedClasses: defaultCombined,
+        parsed: defaultParsed,
+        description: `${variantDesc}. Default heading text`,
+        isHeadingVariant: true,
+        isCopyVariant: false,
+        isMonoVariant: false,
+      });
+
+      const lgSizeClasses = "text-xl";
+      const lgCombined =
+        `${TEXT_BASE_CLASS} ${variantClasses} ${lgSizeClasses}`.trim();
+      const lgParsed = parseTailwindClasses(lgCombined);
+
+      variants.push({
+        variant,
+        size: "lg",
+        variantClasses,
+        sizeClasses: lgSizeClasses,
+        combinedClasses: lgCombined,
+        parsed: lgParsed,
+        description: `${variantDesc}. Large heading text`,
+        isHeadingVariant: true,
+        isCopyVariant: false,
+        isMonoVariant: false,
+      });
+    } else if (isCopy) {
       // Copy variants: all sizes
       for (const size of variantConfig.sizes) {
         const sizeClasses = variantConfig.sizeClasses[size] || "";
@@ -493,6 +562,7 @@ export function getAllVariantData() {
           combinedClasses,
           parsed,
           description: `${variantDesc}. ${sizeDesc}`,
+          isHeadingVariant: false,
           isCopyVariant: true,
           isMonoVariant: false,
         });
@@ -513,6 +583,7 @@ export function getAllVariantData() {
         combinedClasses: defaultCombined,
         parsed: defaultParsed,
         description: `${variantDesc}. Default text (optically adjusted to small)`,
+        isHeadingVariant: false,
         isCopyVariant: false,
         isMonoVariant: true,
       });
@@ -531,11 +602,12 @@ export function getAllVariantData() {
         combinedClasses: lgCombined,
         parsed: lgParsed,
         description: `${variantDesc}. Large text (optically adjusted to base)`,
+        isHeadingVariant: false,
         isCopyVariant: false,
         isMonoVariant: true,
       });
     } else {
-      // Headings: no size variants
+      // Deprecated headings retain their fixed sizes.
       const combinedClasses = `${TEXT_BASE_CLASS} ${variantClasses}`.trim();
       const parsed = parseTailwindClasses(combinedClasses);
 
@@ -547,6 +619,7 @@ export function getAllVariantData() {
         combinedClasses,
         parsed,
         description: variantDesc,
+        isHeadingVariant: false,
         isCopyVariant: false,
         isMonoVariant: false,
       });

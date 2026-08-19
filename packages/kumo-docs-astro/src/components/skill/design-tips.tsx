@@ -43,7 +43,7 @@ export const designTips = [
         exampleCode: `<Text>Content text</Text>`,
         jsx: (
           <LayerCard className="grid w-full gap-1 p-5">
-            <Text as="h3" variant="heading3">
+            <Text as="h3" variant="heading">
               API tokens
             </Text>
             <Text>Production token expires in 30 days.</Text>
@@ -55,7 +55,7 @@ export const designTips = [
         exampleCode: `<Text size="lg">Content text</Text>`,
         jsx: (
           <LayerCard className="grid w-full gap-1 p-5">
-            <Text as="h3" variant="heading3">
+            <Text as="h3" variant="heading">
               API tokens
             </Text>
             <Text size="lg">Production token expires in 30 days.</Text>
@@ -130,11 +130,11 @@ export const designTips = [
     examples: [
       {
         variant: "good",
-        exampleCode: `<Text as="h3" variant="heading3">Account settings</Text>
+        exampleCode: `<Text as="h3" variant="heading">Account settings</Text>
 <Text as="strong" bold>required</Text>`,
         jsx: (
           <div className="grid gap-1">
-            <Text as="h3" variant="heading3">
+            <Text as="h3" variant="heading">
               Account settings
             </Text>
             <Text>
@@ -178,7 +178,7 @@ export const designTips = [
         variant: "good",
         exampleCode: `<div className="grid gap-6">
   <div className="grid gap-1.5">
-    <Text as="h3">Web Analytics</Text>
+    <Text as="h3" variant="heading">Web Analytics</Text>
     <Text>Measure site traffic without changing your code.</Text>
   </div>
   <Button>Configure</Button>
@@ -187,7 +187,7 @@ export const designTips = [
           <LayerCard className="w-full p-5">
             <div className="grid gap-6">
               <div className="grid gap-1.5">
-                <Text as="h3" variant="heading3">
+                <Text as="h3" variant="heading">
                   Web Analytics
                 </Text>
                 <Text variant="secondary" DANGEROUS_className="text-pretty">
@@ -202,14 +202,14 @@ export const designTips = [
       {
         variant: "bad",
         exampleCode: `<div className="grid gap-4">
-  <Text as="h3">Web Analytics</Text>
+  <Text as="h3" variant="heading">Web Analytics</Text>
   <Text>Measure site traffic without changing your code.</Text>
   <Button>Configure</Button>
 </div>`,
         jsx: (
           <LayerCard className="w-full p-5">
             <div className="grid gap-4">
-              <Text as="h3" variant="heading3">
+              <Text as="h3" variant="heading">
                 Web Analytics
               </Text>
               <Text variant="secondary" DANGEROUS_className="text-pretty">
@@ -292,7 +292,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="w-full shadow-md ring ring-kumo-line">
             <LayerCard.Primary className="grid gap-1 p-5">
-              <Text as="h3" variant="heading3">
+              <Text as="h3" variant="heading">
                 Workers API
               </Text>
               <Text variant="secondary">Last deployed 4 minutes ago</Text>
@@ -306,7 +306,7 @@ export const designTips = [
         jsx: (
           <LayerCard className="w-full border border-kumo-line shadow-md ring-0">
             <LayerCard.Primary className="grid gap-1 p-5 ring-0">
-              <Text as="h3" variant="heading3">
+              <Text as="h3" variant="heading">
                 Workers API
               </Text>
               <Text variant="secondary">Last deployed 4 minutes ago</Text>
