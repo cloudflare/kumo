@@ -78,7 +78,7 @@ export default function Example() {
 Toolbar item components intentionally own grouped control presentation:
 
 - Every `Toolbar.*` control uses the `base` size by default.
-- The Toolbar `size` prop remains available for compatibility but is deprecated; omit it for the base size.
+- Set `size="sm"` for a compact 30px-high toolbar with medium corner radii.
 - `Toolbar.Button` always renders with quiet toolbar button styling.
 - `Toolbar.InputGroup` passes props directly to `InputGroup` with the resolved toolbar size.
 - Give Select `render={<Toolbar.Button />}` to compose its trigger into the toolbar.
@@ -133,11 +133,11 @@ inline addon or suffix.
   <ToolbarInputGroupDemo client:visible />
 </ComponentExample>
 
-### Deprecated sizing
+### Sizing
 
-The `size` prop still supports `xs`, `sm`, `base`, and `lg` for compatibility,
-but it is deprecated and will be removed in a future major release. Omit it to
-use the default `base` size.
+Use `size="sm"` for compact toolbars or omit `size` to use the default `base`
+size. The legacy `xs` and `lg` values are deprecated and remain available only
+for backwards compatibility.
 
 <ComponentExample demo="ToolbarSizesDemo">
   <ToolbarSizesDemo client:visible />
@@ -187,10 +187,10 @@ options instead.
       <td>Toolbar controls rendered as one grouped card.</td>
     </tr>
     <tr>
-      <td><code>size</code> <strong>Deprecated</strong></td>
+      <td><code>size</code></td>
       <td><code>&quot;xs&quot; | &quot;sm&quot; | &quot;base&quot; | &quot;lg&quot;</code></td>
       <td><code>&quot;base&quot;</code></td>
-      <td>Sets every supported item size. Omit this deprecated prop to use the default base size.</td>
+      <td>Sets every supported item size. Use <code>&quot;sm&quot;</code> for compact toolbars; <code>&quot;xs&quot;</code> and <code>&quot;lg&quot;</code> are deprecated compatibility values.</td>
     </tr>
     <tr>
       <td><code>className</code></td>

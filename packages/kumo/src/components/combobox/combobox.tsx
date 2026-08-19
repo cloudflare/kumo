@@ -55,7 +55,7 @@ export interface KumoComboboxVariantsProps {
   /**
    * Size of the combobox trigger. Matches Input component sizes.
    * - `"xs"` — Extra small for compact UIs (h-5 / 20px)
-   * - `"sm"` — Small for secondary fields (h-6.5 / 26px)
+   * - `"sm"` — Small for secondary fields (h-7.5 / 30px)
    * - `"base"` — Default size (h-9 / 36px)
    * - `"lg"` — Large for prominent fields (h-10 / 40px)
    * @default "base"
@@ -544,7 +544,7 @@ function Chip({
 // Map size to min-height class for TriggerMultipleWithInput
 const sizeToMinHeight: Record<KumoComboboxSize, string> = {
   xs: "min-h-5",
-  sm: "min-h-6.5",
+  sm: "min-h-7.5",
   base: "min-h-9",
   lg: "min-h-10",
 };

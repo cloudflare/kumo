@@ -33,7 +33,7 @@ export const KUMO_INPUT_GROUP_VARIANTS = {
       description: "Extra small size.",
     },
     sm: {
-      classes: "h-7 text-xs",
+      classes: "h-7.5 text-base",
       description: "Small size.",
     },
     base: {
