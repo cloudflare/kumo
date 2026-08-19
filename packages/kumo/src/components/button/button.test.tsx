@@ -73,6 +73,15 @@ describe("Button", () => {
     expect(className).not.toContain("bg-inherit");
   });
 
+  it("uses the standardized small control size", () => {
+    const classes = buttonVariants({ size: "sm" });
+    const compactClasses = buttonVariants({ size: "sm", shape: "square" });
+
+    expect(classes).toContain("h-7.5");
+    expect(classes).toContain("text-base");
+    expect(compactClasses).toContain("size-7.5");
+  });
+
   it("forwards ref to the <button> DOM node", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
