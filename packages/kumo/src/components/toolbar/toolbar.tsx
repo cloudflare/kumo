@@ -166,6 +166,7 @@ const Button = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
       <ToolbarBase.Button
         ref={ref}
         data-kumo-component="Toolbar.Button"
+        disabled={loading || disabled}
         className={cn(className, TOOLBAR_CONTROL_STYLES)}
         render={button}
         {...props}
