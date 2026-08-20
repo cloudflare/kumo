@@ -18,7 +18,7 @@ export const KUMO_CHECKBOX_VARIANTS = {
   variant: {
     default: {
       classes:
-        "[&:focus-within>span]:ring-kumo-focus [&:hover>span]:ring-kumo-hairline",
+        "[&:focus-within>span]:ring-kumo-focus [&:hover>span]:ring-kumo-line",
       description: "Default checkbox appearance",
     },
     error: {
@@ -270,9 +270,9 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         className={cn(
           "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-none",
           label && "mt-0.5",
-          variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
+          variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled &&
-            "hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
+            "hover:ring-kumo-line focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
           "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           disabled && "cursor-not-allowed opacity-50",
           className,
@@ -370,9 +370,9 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           onCheckedChange={onCheckedChange}
           className={cn(
             "peer relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2",
-            variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
+            variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
-              "group-hover:ring-kumo-hairline hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "group-hover:ring-kumo-line hover:ring-kumo-line focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "data-[checked]:bg-kumo-contrast data-[checked]:ring-kumo-contrast data-[indeterminate]:bg-kumo-contrast data-[indeterminate]:ring-kumo-contrast",
           )}
         >

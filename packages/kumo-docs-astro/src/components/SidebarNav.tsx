@@ -213,7 +213,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
     <>
       <button
         onClick={() => setSearchOpen(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
+        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-kumo-control px-3 py-2 text-sm text-kumo-subtle ring-1 ring-kumo-line transition-all hover:ring-kumo-line focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset"
       >
         <MagnifyingGlassIcon size={16} className="shrink-0" />
         <span>Search...</span>
@@ -236,7 +236,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         ))}
       </ul>
 
-      <div className="my-4 border-b border-kumo-hairline" />
+      <div className="my-4 border-b border-kumo-line" />
 
       <div className="mb-4">
         {/* Components Section */}
@@ -366,7 +366,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile header bar with hamburger */}
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-hairline bg-kumo-canvas px-3 md:px-6 lg:hidden",
+          "fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-kumo-line bg-kumo-canvas px-3 md:px-6 lg:hidden",
         )}
       >
         <Button
@@ -384,12 +384,12 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       {/* Mobile slide-out drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-hairline bg-kumo-canvas lg:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-kumo-line bg-kumo-canvas lg:hidden",
           "transition-transform duration-300 will-change-transform",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-hairline px-3">
+        <div className="flex h-12 flex-none items-center justify-between border-b border-kumo-line px-3">
           <h1 className="text-base font-medium">Kumo</h1>
           <Button
             variant="ghost"
@@ -414,10 +414,10 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-50 hidden w-12 bg-kumo-canvas lg:block",
-          "border-r border-kumo-hairline",
+          "border-r border-kumo-line",
         )}
       >
-        <div className="relative h-12 border-b border-kumo-hairline">
+        <div className="relative h-12 border-b border-kumo-line">
           <div className="absolute inset-0 grid place-items-center">
             <Button
               variant="ghost"
@@ -444,11 +444,11 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           "fixed inset-y-0 left-12 z-40 hidden w-64 flex-col bg-kumo-canvas lg:flex",
           "transition-transform duration-300 ease-out will-change-transform",
           sidebarOpen
-            ? "translate-x-0 border-r border-kumo-hairline"
+            ? "translate-x-0 border-r border-kumo-line"
             : "-translate-x-full",
         )}
       >
-        <div className="h-12 flex-none border-b border-kumo-hairline" />
+        <div className="h-12 flex-none border-b border-kumo-line" />
 
         <div
           ref={desktopScrollRef}

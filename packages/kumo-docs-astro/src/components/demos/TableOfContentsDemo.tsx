@@ -182,7 +182,7 @@ export function TableOfContentsScrollspyDemo() {
       </div>
       <div
         ref={setRoot}
-        className="h-64 flex-1 overflow-y-auto rounded-lg border border-kumo-hairline p-4"
+        className="h-64 flex-1 overflow-y-auto rounded-lg border border-kumo-line p-4"
       >
         {scrollspySections.map((section) => (
           <section key={section.id}>

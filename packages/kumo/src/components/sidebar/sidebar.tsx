@@ -2044,7 +2044,7 @@ const SidebarResizeHandle = forwardRef<
         "absolute inset-y-0 z-2 hidden w-3 cursor-col-resize sm:block",
         "after:absolute after:inset-y-0 after:w-0.5",
         "after:bg-transparent after:transition-colors",
-        "hover:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline active:after:bg-kumo-hairline",
+        "hover:after:bg-kumo-line focus-visible:after:bg-kumo-line active:after:bg-kumo-line",
         "focus:outline-none",
         side === "left" && "right-0 after:right-0",
         side === "right" && "left-0 after:left-0",

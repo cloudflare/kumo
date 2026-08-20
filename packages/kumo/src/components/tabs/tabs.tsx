@@ -195,7 +195,7 @@ export function Tabs({
       className={cn(
         "relative isolate min-w-0 font-medium",
         isSegmented &&
-          (isSm ? "rounded-md" : "rounded-lg") + " ring ring-kumo-hairline/70",
+          (isSm ? "rounded-md" : "rounded-lg") + " ring ring-kumo-line/70",
         className,
       )}
       onValueChange={(nextValue) => {
@@ -224,7 +224,7 @@ export function Tabs({
           isSegmented && "rounded-lg bg-kumo-recessed px-0.5",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
-          isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
+          isUnderline && "gap-4 border-b border-kumo-line pb-2",
           isUnderline && (isSm ? "h-6.5" : "h-7.5"),
           listClassName,
         )}

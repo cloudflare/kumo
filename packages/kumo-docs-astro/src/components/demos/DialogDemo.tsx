@@ -447,7 +447,7 @@ export function DialogSizesDemo() {
                     <th className="px-3 py-2">Last Deployed</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-kumo-hairline">
+                <tbody className="divide-y divide-kumo-line">
                   <tr>
                     <td className="px-3 py-2">api-gateway-prod</td>
                     <td className="px-3 py-2">us-east-1</td>

@@ -313,21 +313,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "oklch(14.5% 0 0 / 0.1)",
-          dark: "var(--color-kumo-neutral-750, oklch(32% 0 0))",
-        },
-      },
-    },
-    "kumo-hairline": {
-      newName: "",
-      theme: {
-        kumo: {
-          light: "var(--color-kumo-neutral-150, oklch(93.5% 0 0))",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
-        },
-        fedramp: {
-          light: "#c8d4e5",
-          dark: "#c8d4e5",
+          light: "rgb(0 0 0 / 0.1)",
+          dark: "rgb(255 255 255 / 0.1)",
         },
       },
     },

@@ -597,8 +597,8 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
       checked: ["bg-kumo-contrast", "text-kumo-inverse"],
       indeterminate: ["bg-kumo-contrast", "text-kumo-inverse"],
       error: ["ring-kumo-danger"],
-      hover: ["ring-kumo-hairline"],
-      focus: ["ring-kumo-hairline"],
+      hover: ["ring-kumo-line"],
+      focus: ["ring-kumo-line"],
       disabled: ["opacity-50", "cursor-not-allowed"],
     },
     icons: [
@@ -751,7 +751,7 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
     },
     states: {
       base: ["bg-kumo-control", "text-kumo-default", "ring-kumo-line"],
-      focus: ["ring-kumo-hairline"],
+      focus: ["ring-kumo-line"],
       error: ["ring-kumo-danger"],
       disabled: ["opacity-50", "text-kumo-subtle"],
     },

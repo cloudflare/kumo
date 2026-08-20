@@ -88,7 +88,7 @@ export const KUMO_TOAST_STYLING = {
     padding: 16,
     borderRadius: 8,
     background: "bg-kumo-base",
-    border: "ring-[0.3px] ring-kumo-hairline",
+    border: "ring-[0.3px] ring-kumo-line",
     shadow: "shadow-lg",
     gap: 4,
   },

@@ -119,7 +119,7 @@ function initialsFor(name: string) {
 }
 
 /**
- * Squircle avatar with a hairline ring, so it sits on the surface rather than
+ * Squircle avatar with a thin ring, so it sits on the surface rather than
  * floating. Muted neutral fill. Reads as an identity
  * affordance rather than decoration. Sized to the header row rather than to
  * iOS touch-target minimums — the whole row is generous, and an oversized mark

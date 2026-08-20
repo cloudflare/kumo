@@ -26,7 +26,7 @@ export type RadioGroupChangeEventDetails =
 export const KUMO_RADIO_VARIANTS = {
   variant: {
     default: {
-      classes: "ring-kumo-hairline",
+      classes: "ring-kumo-line",
       description: "Default radio appearance",
     },
     error: {
@@ -41,7 +41,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+        "rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
@@ -327,7 +327,7 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "group relative m-0 flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+          "group relative m-0 flex items-start gap-3 rounded-lg border border-kumo-line bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
           controlAtStart && "flex-row-reverse",
           variant === "error" &&
             "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
@@ -360,7 +360,7 @@ function _RadioItem<T = string>(
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
-              "group-hover:ring-kumo-hairline focus-visible:outline-offset-3",
+              "group-hover:ring-kumo-line focus-visible:outline-offset-3",
             !disabled &&
               variant === "error" &&
               "focus-visible:outline-offset-3",
@@ -402,7 +402,7 @@ function _RadioItem<T = string>(
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled &&
             variant !== "error" &&
-            "group-hover:ring-kumo-hairline focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
+            "group-hover:ring-kumo-line focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
           !disabled &&
             variant === "error" &&
             "focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",

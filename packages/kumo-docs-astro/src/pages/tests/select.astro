@@ -38,7 +38,7 @@ const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono o
           The onValueChange callback should receive <code class="bg-kumo-tint px-1 rounded">User | null</code>.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectStrictNullChecksDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`const [selected, setSelected] = useState<User | null>(null);
@@ -67,7 +67,7 @@ const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono o
           The placeholder shows when no value is selected.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectRenderValuePlaceholderDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`<Select<Country>
@@ -96,7 +96,7 @@ const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono o
           Auto-generates Select.Option elements.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectItemsArrayDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`const priorities: Priority[] = [
@@ -129,7 +129,7 @@ const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono o
           Supports <code class="bg-kumo-tint px-1 rounded">SelectItemDescriptor</code> for disabled options.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectItemsObjectMapDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`<Select
@@ -155,7 +155,7 @@ const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono o
           <code class="bg-kumo-tint px-1 rounded">renderValue</code> receives <code class="bg-kumo-tint px-1 rounded">T[]</code> instead of <code class="bg-kumo-tint px-1 rounded">T</code>.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectMultipleDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -186,7 +186,7 @@ const codeBlockClass = "mt-3 p-3 rounded-lg bg-kumo-recessed text-xs font-mono o
           Toggle between controlled (<code class="bg-kumo-tint px-1 rounded">value</code>) and uncontrolled (<code class="bg-kumo-tint px-1 rounded">defaultValue</code>) modes.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectControlledVsUncontrolledDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`// Controlled: you manage the state
@@ -212,7 +212,7 @@ const [value, setValue] = useState<string | null>(null);
           Using compound components for structured option lists.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectGroupedOptionsDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`<Select label="Category" placeholder="Select...">
@@ -238,7 +238,7 @@ const [value, setValue] = useState<string | null>(null);
           Auto-wraps with Field component when <code class="bg-kumo-tint px-1 rounded">label</code> is provided.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectFieldIntegrationDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`<Select
@@ -262,7 +262,7 @@ const [value, setValue] = useState<string | null>(null);
           All four sizes match Input component sizing.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectSizeVariantsDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`<Select size="xs" ... />  // Extra small: h-5 (20px)
@@ -279,7 +279,7 @@ const [value, setValue] = useState<string | null>(null);
           Shows skeleton and disables interaction while loading.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectLoadingStateDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`const [loading, setLoading] = useState(true);
@@ -300,7 +300,7 @@ const [value, setValue] = useState<string | null>(null);
           Individual options can be disabled via <code class="bg-kumo-tint px-1 rounded">SelectItemDescriptor</code> or <code class="bg-kumo-tint px-1 rounded">disabled</code> prop on Option.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectDisabledOptionsDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`// Via items prop with SelectItemDescriptor
@@ -326,7 +326,7 @@ const [value, setValue] = useState<string | null>(null);
           TypeScript infers types from usage when possible.
         </p>
       </div>
-      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+      <div class="p-4 rounded-lg border border-kumo-line bg-kumo-base">
         <SelectInferenceDemo client:visible />
       </div>
       <pre class={codeBlockClass}>{`// No explicit <T> - inferred from items/value

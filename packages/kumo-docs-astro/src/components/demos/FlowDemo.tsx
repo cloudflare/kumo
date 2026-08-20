@@ -11,7 +11,7 @@ const ExpandableNode = forwardRef<
     <li
       ref={ref}
       {...props}
-      className="overflow-hidden rounded-lg bg-kumo-base shadow ring ring-kumo-hairline"
+      className="overflow-hidden rounded-lg bg-kumo-base shadow ring ring-kumo-line"
     >
       <button
         type="button"
@@ -24,7 +24,7 @@ const ExpandableNode = forwardRef<
         />
       </button>
       {open && (
-        <div className="border-t border-kumo-hairline px-3 py-2 text-sm text-kumo-subtle">
+        <div className="border-t border-kumo-line px-3 py-2 text-sm text-kumo-subtle">
           {children}
         </div>
       )}
@@ -92,7 +92,7 @@ export function FlowCustomContentDemo() {
   return (
     <Flow>
       <Flow.Node
-        render={<li className="size-4 rounded-full bg-kumo-hairline" />}
+        render={<li className="size-4 rounded-full bg-kumo-line" />}
       />
       <Flow.Node
         render={
@@ -131,7 +131,7 @@ export function FlowAnchorDemo() {
       <Flow.Node>Load balancer</Flow.Node>
       <Flow.Node
         render={
-          <li className="rounded-lg bg-kumo-overlay shadow-none ring ring-kumo-hairline">
+          <li className="rounded-lg bg-kumo-overlay shadow-none ring ring-kumo-line">
             <Flow.Anchor
               type="end"
               render={
@@ -143,7 +143,7 @@ export function FlowAnchorDemo() {
             <Flow.Anchor
               type="start"
               render={
-                <div className="m-1.5 mt-0 rounded bg-kumo-base px-2 py-1.5 shadow ring ring-kumo-hairline">
+                <div className="m-1.5 mt-0 rounded bg-kumo-base px-2 py-1.5 shadow ring ring-kumo-line">
                   Bindings
                   <span className="ml-3 w-5 text-kumo-subtle">2</span>
                 </div>
@@ -165,12 +165,12 @@ export function FlowCenteredDemo() {
   return (
     <Flow align="center">
       <Flow.Node
-        render={<li className="size-4 rounded-full bg-kumo-hairline" />}
+        render={<li className="size-4 rounded-full bg-kumo-line" />}
       />
       <Flow.Node>my-worker</Flow.Node>
       <Flow.Node
         render={
-          <li className="rounded-md bg-kumo-base px-3 py-6 shadow ring ring-kumo-hairline">
+          <li className="rounded-md bg-kumo-base px-3 py-6 shadow ring ring-kumo-line">
             Taller node
           </li>
         }
@@ -182,7 +182,7 @@ export function FlowCenteredDemo() {
 /** Large flow diagram demonstrating panning */
 export function FlowPanningDemo() {
   return (
-    <Flow className="rounded-lg border border-kumo-hairline">
+    <Flow className="rounded-lg border border-kumo-line">
       <Flow.Node>Start</Flow.Node>
       <Flow.Node>Authenticate</Flow.Node>
       <Flow.Node>Validate</Flow.Node>

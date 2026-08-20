@@ -217,18 +217,18 @@ describe("extractStateClasses", () => {
   });
 
   it("extracts focus state", () => {
-    const classes = "ring-kumo-line focus:ring-kumo-hairline";
+    const classes = "ring-kumo-line focus:ring-kumo-line";
     expect(extractStateClasses(classes)).toEqual({
-      focus: "focus:ring-kumo-hairline",
+      focus: "focus:ring-kumo-line",
     });
   });
 
   it("extracts multiple states", () => {
     const classes =
-      "bg-kumo-base hover:bg-kumo-elevated focus:ring-kumo-hairline disabled:opacity-50";
+      "bg-kumo-base hover:bg-kumo-elevated focus:ring-kumo-line disabled:opacity-50";
     expect(extractStateClasses(classes)).toEqual({
       hover: "hover:bg-kumo-elevated",
-      focus: "focus:ring-kumo-hairline",
+      focus: "focus:ring-kumo-line",
       disabled: "disabled:opacity-50",
     });
   });

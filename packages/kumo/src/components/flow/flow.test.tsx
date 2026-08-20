@@ -197,7 +197,7 @@ describe("Flow", () => {
             render={
               <li
                 data-testid="custom-circle"
-                className="size-4 rounded-full bg-kumo-hairline"
+                className="size-4 rounded-full bg-kumo-line"
               />
             }
           />

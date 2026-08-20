@@ -500,7 +500,7 @@ function Group(props: ComboboxBase.Group.Props) {
   return (
     <ComboboxBase.Group
       {...props}
-      className="mt-2 border-t border-kumo-hairline pt-2 first:mt-0 first:border-t-0 first:pt-0"
+      className="mt-2 border-t border-kumo-line pt-2 first:mt-0 first:border-t-0 first:pt-0"
     />
   );
 }
@@ -520,7 +520,7 @@ function Chip({
       className={cn(
         "flex items-center gap-2.5", // Layout
         "h-6 pr-[3px] pl-2", // Dimensions
-        "rounded-sm ring-1 ring-kumo-hairline", // Border
+        "rounded-sm ring-1 ring-kumo-line", // Border
         "bg-kumo-overlay", // Background
         "text-sm", // Typography
       )}

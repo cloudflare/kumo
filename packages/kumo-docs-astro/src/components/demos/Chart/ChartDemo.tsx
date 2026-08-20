@@ -408,7 +408,7 @@ export function LegendDefaultDemo() {
     <div className="space-y-4">
       <h3 className="text-sm font-medium">Active State</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
         <ChartLegend.LargeItem
           name="Requests"
           color={ChartPalette.semantic("Neutral", isDarkMode)}
@@ -430,7 +430,7 @@ export function LegendDefaultDemo() {
 
       <h3 className="mt-12 text-sm font-medium">Inactive State</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
         <ChartLegend.LargeItem
           name="Requests"
           color={ChartPalette.semantic("Neutral", isDarkMode)}
@@ -455,7 +455,7 @@ export function LegendDefaultDemo() {
 
       <h3 className="mt-12 text-sm font-medium">Loading state</h3>
 
-      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-line">
         <ChartLegend.LargeItem loading />
       </div>
     </div>
@@ -688,7 +688,7 @@ export function ChartExampleDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="mb-2 flex gap-4 divide-x divide-kumo-hairline px-2">
+        <div className="mb-2 flex gap-4 divide-x divide-kumo-line px-2">
           <ChartLegend.LargeItem
             name="P99"
             color={ChartPalette.semantic("Attention", isDarkMode)}

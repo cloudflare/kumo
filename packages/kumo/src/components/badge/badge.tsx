@@ -91,7 +91,7 @@ export const KUMO_BADGE_VARIANTS = {
     },
     dot: {
       classes:
-        "gap-1.5 bg-transparent text-kumo-default ring ring-kumo-hairline",
+        "gap-1.5 bg-transparent text-kumo-default ring ring-kumo-line",
       description: "Outlined badge with a colored circle dot indicating status",
     },
   },

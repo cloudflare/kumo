@@ -271,7 +271,7 @@ const TableResizeHandle = forwardRef<
         "focus-visible:ring-2 focus-visible:ring-kumo-brand", // Consistent keyboard focus styling
       )}
     >
-      <span className="h-5 w-[2px] rounded bg-kumo-hairline" />
+      <span className="h-5 w-[2px] rounded bg-kumo-line" />
     </button>
   );
 });

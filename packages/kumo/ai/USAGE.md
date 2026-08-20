@@ -120,10 +120,9 @@ Use the solid token on icons, status dots, and progress fills. Banners and badge
 
 ### Borders & Rings
 
-| Token           | Purpose                                                                                                 |
-| --------------- | ------------------------------------------------------------------------------------------------------- |
-| `kumo-hairline` | A border/ring color to distinguish between flat surfaces where no shadow is present (i.e. `LayerCard`). |
-| `kumo-line`     | A thicker border/ring color that defines the edge of an elevated surface alongside a shadow.            |
+| Token       | Purpose                                                                                                              |
+| ----------- | -------------------------------------------------------------------------------------------------------------------- |
+| `kumo-line` | Border/ring color for all surface edges (10% black in light mode, 10% white in dark mode). Use for both flat surfaces (e.g. `LayerCard`) and elevated surfaces alongside a shadow. |
 
 ## Icons
 

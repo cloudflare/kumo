@@ -14,7 +14,7 @@ import { cn } from "../../utils/cn";
 const LAYER_CARD_SURFACE_CLASSES =
   "overflow-hidden rounded-lg bg-kumo-base shadow-xs ring ring-kumo-line";
 const LAYER_CARD_LAYERED_ROOT_CLASSES =
-  "flex w-full flex-col overflow-hidden rounded-lg bg-kumo-elevated text-base ring ring-kumo-hairline";
+  "flex w-full flex-col overflow-hidden rounded-lg bg-kumo-elevated text-base ring ring-kumo-line";
 const LAYER_CARD_SECONDARY_CLASSES =
   "-my-2 flex items-center gap-2 bg-kumo-elevated p-4 text-base font-medium text-kumo-subtle";
 const LAYER_CARD_PRIMARY_CLASSES =

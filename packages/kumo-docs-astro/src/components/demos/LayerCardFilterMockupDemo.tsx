@@ -70,7 +70,7 @@ export function LayerCardFilterSubrequestsDemo() {
           {filtered.map((row, i) => (
             <div
               key={row.origin}
-              className={`grid grid-cols-[1fr_auto_auto] items-center gap-x-4 px-1 py-2.5 ${i < filtered.length - 1 ? "border-b border-kumo-hairline" : ""}`}
+              className={`grid grid-cols-[1fr_auto_auto] items-center gap-x-4 px-1 py-2.5 ${i < filtered.length - 1 ? "border-b border-kumo-line" : ""}`}
             >
               <span className="truncate font-medium text-kumo-default">
                 {row.origin}
