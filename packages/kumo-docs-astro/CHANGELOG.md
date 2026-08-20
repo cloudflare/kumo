@@ -1,5 +1,21 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.18
+
+### Patch Changes
+
+- d66dbe1: - Adds a custom 404 page using a wireframe grid and animated dashed Kumo logo
+  - Adds an easter egg that reverses the logo animation direction
+  - Configures static assets to serve the custom 404 page
+- Updated dependencies [716e5b8]
+- Updated dependencies [d7a7a35]
+- Updated dependencies [0db4f66]
+- Updated dependencies [c64183b]
+- Updated dependencies [ef13cb4]
+- Updated dependencies [51d0f03]
+- Updated dependencies [d586bf3]
+  - @cloudflare/kumo@2.12.0
+
 ## 1.5.17
 
 ### Patch Changes
