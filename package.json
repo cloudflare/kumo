@@ -9,6 +9,10 @@
     "changeset": "tsx ci/scripts/ensure-changeset-config.ts && changeset",
     "clean": "pnpm -r exec rm -rf dist build .astro .wrangler node_modules",
     "dev": "pnpm codegen && pnpm --filter @cloudflare/kumo-docs-astro dev",
+    "evals": "node --env-file=.env.local ./node_modules/vitest/vitest.mjs run --config=vitest.evals.config.ts --reporter=vitest-evals/reporter --reporter=json --outputFile.json=evals/.generated/vitest-results.json",
+    "evals:select": "node --env-file=.env.local ./node_modules/vitest/vitest.mjs run --config=vitest.evals.config.ts evals/select.eval.ts --reporter=vitest-evals/reporter --reporter=json --outputFile.json=evals/.generated/vitest-results.json",
+    "evals:ci": "./node_modules/vitest/vitest.mjs run --config=vitest.evals.config.ts --reporter=vitest-evals/reporter --reporter=json --outputFile.json=evals/.generated/vitest-results.json",
+    "evals:ui": "vitest-evals serve evals/.generated/vitest-results.json",
     "format": "vp fmt --write",
     "format:check": "vp fmt --check",
     "lint": "pnpm --filter @cloudflare/kumo lint && vp lint packages/*/src",
@@ -29,6 +33,8 @@
     "version:beta": "./ci/versioning/version-beta.sh"
   },
   "devDependencies": {
+    "@babel/parser": "^7.29.2",
+    "@babel/types": "^7.29.0",
     "@changesets/cli": "2.29.7",
     "@octokit/rest": "22.0.1",
     "@oxlint/plugins": "catalog:",
@@ -39,7 +45,9 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:",
+    "vitest-evals": "0.16.1"
   },
   "devEngines": {
     "packageManager": {
