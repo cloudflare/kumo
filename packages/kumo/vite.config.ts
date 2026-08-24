@@ -372,7 +372,7 @@ export default defineConfig(({ command }) => ({
       dts: false,
       sourcemap: false,
       exports: false,
-      // Avoid bundling dependencies supplied by the installed package.
+      // Externalize installed dependencies; relative command imports stay bundled.
       deps: { neverBundle: true },
       outputOptions: {
         entryFileNames: "[name].js",
