@@ -130,7 +130,7 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 | Tool       | Version   | Notes                                                     |
 | ---------- | --------- | --------------------------------------------------------- |
 | Node       | ^24.12.0  | Engine constraint (`.node-version`)                       |
-| pnpm       | >=10.21.0 | Workspace manager                                         |
+| pnpm       | >=10.26.0 | Workspace manager                                         |
 | Vite+      | 0.2.2     | Unified toolchain (`vp` CLI): build, test, lint, fmt      |
 | TypeScript | 5.9.2     | Via pnpm catalog                                          |
 | Vite       | 8.x       | Bundled via vite-plus; library mode (kumo), docs server   |

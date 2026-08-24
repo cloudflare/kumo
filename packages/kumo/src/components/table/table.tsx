@@ -18,11 +18,12 @@ export const KUMO_TABLE_VARIANTS = {
   },
   variant: {
     default: {
-      classes: "",
+      classes:
+        "even:bg-kumo-tint [--kumo-table-row-bg:var(--color-kumo-base)] even:[--kumo-table-row-bg:var(--color-kumo-tint)]",
       description: "Default row variant",
     },
     selected: {
-      classes: "bg-kumo-tint",
+      classes: "bg-kumo-tint [--kumo-table-row-bg:var(--color-kumo-tint)]",
       description: "Selected row variant",
     },
   },
@@ -66,12 +67,19 @@ const stickyColumnClasses = (
     "before:pointer-events-none before:absolute before:inset-y-0 before:w-6";
 
   if (element === "cell") {
-    // Body cells always use kumo-base
+    // Body cells match their row, including striped and selected backgrounds
     const fade =
       side === "right"
-        ? "before:bg-gradient-to-r before:from-transparent before:to-kumo-base"
-        : "before:bg-gradient-to-l before:from-transparent before:to-kumo-base";
-    return cn(base, z, "bg-kumo-base", fadeBase, fadePosition, fade);
+        ? "before:bg-gradient-to-r before:from-transparent before:to-(--kumo-table-row-bg)"
+        : "before:bg-gradient-to-l before:from-transparent before:to-(--kumo-table-row-bg)";
+    return cn(
+      base,
+      z,
+      "bg-(--kumo-table-row-bg)",
+      fadeBase,
+      fadePosition,
+      fade,
+    );
   }
 
   // Header cells: use kumo-base by default, kumo-elevated when in compact header
@@ -94,7 +102,7 @@ export type KumoTableRowVariant = keyof typeof KUMO_TABLE_VARIANTS.variant;
 export type KumoTableLayout = keyof typeof KUMO_TABLE_VARIANTS.layout;
 
 /**
- * Table root — applies layout, borders, padding, and header styles.
+ * Table root — applies layout, padding, and header styles.
  *
  * @example
  * ```tsx
@@ -133,7 +141,6 @@ const TableRoot = forwardRef<
       layout,
       KUMO_TABLE_DEFAULT_VARIANTS.layout,
     ).classes,
-    "[&_td]:border-b [&_td]:border-kumo-fill [&_tr:last-child_td]:border-b-0", // Row border
     "[&_td]:p-3", // Cell padding
     "[&_th]:border-b [&_th]:border-kumo-fill [&_th]:p-3 [&_th]:text-base [&_th]:font-semibold", // Header styles
     "[&_th]:bg-kumo-base", // Header background color

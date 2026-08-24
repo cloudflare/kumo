@@ -18,27 +18,33 @@ import { Text } from "./text";
 // Positive cases — these MUST compile cleanly.
 // ---------------------------------------------------------------------------
 
-// Heading variant with required `as`.
+// Heading has no implied semantic element and supports an optional large size.
+const _headingDefault = <Text variant="heading">Decorative heading</Text>;
 const _headingH1 = (
-  <Text variant="heading1" as="h1">
-    Page Title
+  <Text variant="heading" size="lg" as="h1">
+    Page title
   </Text>
 );
 const _headingH2 = (
-  <Text variant="heading2" as="h2">
-    Section Title
-  </Text>
-);
-const _headingH3 = (
-  <Text variant="heading3" as="h3">
-    Subsection
+  <Text variant="heading" as="h2">
+    Section title
   </Text>
 );
 
-// Heading variant using `as="span"` for decorative (non-section) usage.
-const _decorativeHeading = (
-  <Text variant="heading1" as="span">
-    Big bold label
+// Deprecated heading variants remain available for backwards compatibility.
+const _deprecatedHeadingH1 = (
+  <Text variant="heading1" as="h1">
+    Legacy page title
+  </Text>
+);
+const _deprecatedHeadingH2 = (
+  <Text variant="heading2" as="h2">
+    Legacy section title
+  </Text>
+);
+const _deprecatedHeadingH3 = (
+  <Text variant="heading3" as="h3">
+    Legacy subsection
   </Text>
 );
 
@@ -90,7 +96,7 @@ const _small = (
 );
 const _time = <Text as="time">2026-04-27</Text>;
 const _headingAsLabel = (
-  <Text variant="heading2" as="label">
+  <Text variant="heading" as="label">
     Form heading
   </Text>
 );
@@ -101,25 +107,33 @@ const _headingAsLabel = (
 // tsc itself fails the typecheck with "Unused '@ts-expect-error' directive".
 // ---------------------------------------------------------------------------
 
-// Missing `as` on heading1 → type error.
-// @ts-expect-error — heading variants require `as`
+// Heading only supports its default size and `lg`.
+const _invalidHeadingSize = (
+  // @ts-expect-error — heading does not support body text sizes
+  <Text variant="heading" size="base">
+    Invalid
+  </Text>
+);
+
+// Deprecated heading variants continue to require `as`.
+// @ts-expect-error — deprecated heading variants require `as`
 const _missingAsH1 = <Text variant="heading1">Missing as</Text>;
 
-// Missing `as` on heading2 → type error.
-// @ts-expect-error — heading variants require `as`
+// @ts-expect-error — deprecated heading variants require `as`
 const _missingAsH2 = <Text variant="heading2">Missing as</Text>;
 
-// Missing `as` on heading3 → type error.
-// @ts-expect-error — heading variants require `as`
+// @ts-expect-error — deprecated heading variants require `as`
 const _missingAsH3 = <Text variant="heading3">Missing as</Text>;
 
 // Silence unused-variable warnings for all the sentinels above.
 // This file is never executed; it exists purely for type checking.
 export const __typeSpec = {
+  _headingDefault,
   _headingH1,
   _headingH2,
-  _headingH3,
-  _decorativeHeading,
+  _deprecatedHeadingH1,
+  _deprecatedHeadingH2,
+  _deprecatedHeadingH3,
   _bodyDefault,
   _bodyExplicit,
   _bodyInline,
@@ -141,6 +155,7 @@ export const __typeSpec = {
   _small,
   _time,
   _headingAsLabel,
+  _invalidHeadingSize,
   _missingAsH1,
   _missingAsH2,
   _missingAsH3,

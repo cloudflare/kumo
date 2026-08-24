@@ -59,3 +59,6 @@ packages/kumo/ai/schemas.ts
 # Vitest browser-mode artifacts (attachments, failure screenshots)
 .vitest-attachments/
 __screenshots__/
+
+# CI report artifacts
+ci/reports/

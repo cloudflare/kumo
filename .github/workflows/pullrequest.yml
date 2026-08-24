@@ -23,6 +23,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/install-dependencies
+      - name: Test changeset validation
+        run: vp exec tsx --test ci/utils/git-operations.test.ts
       - run: vp exec tsx ci/scripts/validate-kumo-changeset.ts
         env:
           NO_CHANGESET_REQUIRED: ${{ contains(github.event.pull_request.labels.*.name, 'no-changeset-required') }}
@@ -47,6 +49,30 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
           retention-days: 1
+
+  bundle-report:
+    needs: build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
+      - run: vp exec tsx ci/scripts/write-bundle-size-report.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-size-report
+          path: ci/reports
+          retention-days: 7
 
   format:
     timeout-minutes: 5
@@ -99,6 +125,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run typecheck
+      - run: vp run ci:typecheck
 
   test:
     needs: build
@@ -118,6 +145,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run --filter @cloudflare/kumo test
+      - run: vp run test:ci
 
   test-react-compatibility:
     needs: build

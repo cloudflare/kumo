@@ -361,21 +361,25 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
-    "kumo-tip-shadow": {
+    "kumo-arrow-edge": {
       newName: "",
+      description:
+        "Arrow border edge fill for popover/tooltip arrows (visible in light mode). Matches kumo-line so the arrow border aligns with the popup outline.",
       theme: {
         kumo: {
-          light: "var(--color-gray-200, oklch(92.8% 0.006 264.531))",
+          light: "oklch(14.5% 0 0 / 0.1)",
           dark: "transparent",
         },
       },
     },
-    "kumo-tip-stroke": {
+    "kumo-arrow-stroke": {
       newName: "",
+      description:
+        "Arrow border stroke fill for popover/tooltip arrows (visible in dark mode). Matches kumo-line so the arrow border aligns with the popup outline.",
       theme: {
         kumo: {
           light: "transparent",
-          dark: "var(--color-neutral-800, oklch(26.9% 0 0))",
+          dark: "var(--color-kumo-neutral-750, oklch(32% 0 0))",
         },
       },
     },

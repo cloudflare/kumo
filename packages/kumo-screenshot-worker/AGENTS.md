@@ -64,7 +64,7 @@ All requests require `X-API-Key: <API_KEY>` header.
 
 Returns `{ results: ScreenshotResult[] }` where each result has a base64-encoded `image` or an `error` string.
 
-**Limits:** max 50 pages per batch, max 64 KB per `css`/`js` action payload.
+**Limits:** max 50 pages per batch, max 64 KB per `css` action payload.
 
 ### Section Capture
 
@@ -72,10 +72,9 @@ When `captureSections: true`, the worker looks for elements with `data-vr-demo`,
 
 ## SECURITY NOTES
 
-- **URL validation**: all URLs are validated as `https://` (or `http://localhost`). Private IP ranges and cloud-metadata endpoints are blocked to prevent SSRF.
+- **URL validation**: all Browser Rendering targets must be `https://` and match the explicit Kumo docs allowlist (`kumo-ui.com`, `staging.kumo-ui.com`, and Kumo docs preview deployments). Do not replace this with a private-IP denylist; IP notation edge cases can bypass incomplete filters.
 - **Selector injection prevention**: `sectionSelector` from the request is passed as a parameter to `page.evaluate()`, never interpolated into eval strings.
-- **`action.js`**: executes arbitrary JavaScript in the browser context. This is intentional — callers are trusted via `API_KEY`. Never expose the worker without the auth check.
-- **CORS**: currently `*` (permissive). Acceptable for server-to-server use. Restrict to specific origins if the worker is ever called from a browser.
+- **CORS**: restricted to the same Kumo docs allowlist used for navigation targets.
 
 ## COMMANDS
 

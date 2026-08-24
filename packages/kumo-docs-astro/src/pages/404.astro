@@ -1,0 +1,284 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import Header from "../components/Header.astro";
+
+const title = "Page not found";
+
+const description =
+  "This page isn't available. It may have moved, been renamed, or been removed.";
+---
+
+<MainLayout title={title} description={description}>
+  <div class="not-found-page flex flex-col">
+    <Header />
+    <main class="flex flex-1 flex-col lg:pr-12">
+      <div
+        class="mx-auto flex w-full flex-1 flex-col lg:border-r lg:border-kumo-hairline"
+      >
+        <div
+          class="flex flex-col w-full h-full items-center justify-center @container/wireframe"
+        >
+          <div
+            class="group/row flex flex-col w-full items-center h-full not-last:border-dashed not-last:border-x-0 not-last:border-t-0 not-last:border-b not-last:border-kumo-hairline"
+          >
+            <div
+              class="flex border-dashed border-x border-y-0 border-kumo-hairline @max-2xl:items-center @2xl:items-end h-full p-6 @2xl:p-14 relative w-[calc(100%-2rem)] @2xl:w-[calc(100%-4rem)] max-w-5xl py-4 @2xl:py-6"
+            >
+              <div
+                class="flex justify-between w-full items-center group-not-last/row:[&::before,&::after]:absolute group-not-last/row:[&::before,&::after]:-bottom-1 group-not-last/row:[&::before,&::after]:size-1.75 group-not-last/row:[&::before,&::after]:rounded-[1.5px] group-not-last/row:[&::before,&::after]:z-10 group-not-last/row:[&::before,&::after]:ring-1 group-not-last/row:[&::before,&::after]:ring-kumo-line group-not-last/row:[&::before,&::after]:bg-kumo-canvas group-not-last/row:[&::before,&::after]:content-[''] group-not-last/row:after:-left-1 group-not-last/row:before:-right-1"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="group/row flex flex-col w-full items-center h-full not-last:border-dashed not-last:border-x-0 not-last:border-t-0 not-last:border-b not-last:border-kumo-hairline"
+          >
+            <div
+              class="flex border-dashed border-x border-y-0 border-kumo-hairline items-center h-full p-8 @2xl:p-12 relative w-[calc(100%-2rem)] @2xl:w-[calc(100%-4rem)] max-w-5xl gap-6 @2xl:gap-4 @2xl:flex-row flex-col"
+            >
+              <div
+                class="order-1 flex w-full flex-col gap-2 text-center @2xl:order-0 @2xl:gap-3 @2xl:text-left group-not-last/row:[&::before,&::after]:absolute group-not-last/row:[&::before,&::after]:-bottom-1 group-not-last/row:[&::before,&::after]:size-1.75 group-not-last/row:[&::before,&::after]:rounded-[1.5px] group-not-last/row:[&::before,&::after]:z-10 group-not-last/row:[&::before,&::after]:ring-1 group-not-last/row:[&::before,&::after]:ring-kumo-line group-not-last/row:[&::before,&::after]:bg-kumo-canvas group-not-last/row:[&::before,&::after]:content-[''] group-not-last/row:after:-left-1 group-not-last/row:before:-right-1"
+              >
+                <h1
+                  class="text-2xl font-semibold text-kumo-default @2xl:text-3xl"
+                >
+                  {title}
+                </h1>
+                <p
+                  class="max-w-prose text-lg leading-relaxed text-kumo-subtle"
+                >
+                  {description}
+                </p>
+              </div>
+              <div
+                class="flex w-full items-center justify-center @2xl:justify-end"
+              >
+                <button
+                  aria-label="Reverse logo animation"
+                  aria-pressed="false"
+                  class="not-found-logo-button"
+                  data-not-found-logo-toggle
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="size-30 shrink-0 @2xl:size-42.5"
+                    fill="none"
+                    focusable="false"
+                    height="120"
+                    viewBox="0 0 16 16"
+                    width="120"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g
+                      class="text-kumo-inactive stroke-current"
+                      transform="matrix(0.6666666666666666 0 0 0.6666666666666666 -5.333333333333333 -5.333333333333333)"
+                    >
+                      <path
+                        class="not-found-logo-path not-found-logo-path-forward"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M15.872 24.824L17.984 25.208C17.488 25.992 16.936 26.8 16.328 27.632C15.736 28.448 15.176 29.152 14.648 29.744L13.112 29.288C13.448 28.888 13.784 28.424 14.12 27.896C14.472 27.368 14.8 26.84 15.104 26.312C15.408 25.768 15.664 25.272 15.872 24.824Z"
+                      ></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M19.04 10.328H20.792V20.36H19.04V10.328Z"></path>
+                      <path
+                        class="not-found-logo-path not-found-logo-path-forward"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M22.544 26.696L24.056 25.904C24.712 26.304 25.392 26.76 26.096 27.272C26.816 27.784 27.488 28.304 28.112 28.832C28.736 29.344 29.248 29.816 29.648 30.248L28.04 31.112C27.672 30.68 27.184 30.2 26.576 29.672C25.968 29.16 25.312 28.64 24.608 28.112C23.904 27.584 23.216 27.112 22.544 26.696Z"
+                      ></path>
+                      <path
+                        class="not-found-logo-occlusion"
+                        stroke-dasharray="none"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.18"
+                        d="M9.272 24.488H30.728V25.928H9.272V24.488ZM10.592 28.76C11.936 28.728 13.512 28.696 15.32 28.664C17.144 28.632 19.08 28.592 21.128 28.544C23.192 28.48 25.248 28.424 27.296 28.376L27.224 29.816C25.24 29.88 23.24 29.952 21.224 30.032C19.208 30.112 17.304 30.176 15.512 30.224C13.72 30.272 12.136 30.32 10.76 30.368L10.592 28.76ZM11.144 9.776H28.832V11.216H11.144V9.776ZM9.824 12.944H30.2V18.128H28.52V14.36H11.456V18.128H9.824V12.944Z"
+                      ></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M12.032 21.368H27.92V22.784H12.032V21.368Z"></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M9.272 24.488H30.728V25.928H9.272V24.488Z"></path>
+                      <path
+                        class="not-found-logo-path not-found-logo-path-forward"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M10.592 28.76C11.936 28.728 13.512 28.696 15.32 28.664C17.144 28.632 19.08 28.592 21.128 28.544C23.192 28.48 25.248 28.424 27.296 28.376L27.224 29.816C25.24 29.88 23.24 29.952 21.224 30.032C19.208 30.112 17.304 30.176 15.512 30.224C13.72 30.272 12.136 30.32 10.76 30.368L10.592 28.76Z"
+                      ></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M11.144 9.776H28.832V11.216H11.144V9.776Z"></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M12.704 15.824H17.792V17.072H12.704V15.824Z"></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M12.2 18.584H17.768V19.832H12.2V18.584Z"></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M22.064 18.584H27.872V19.832H22.064V18.584Z"></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M22.064 15.824H27.224V17.072H22.064V15.824Z"></path>
+                      <path
+                        class="not-found-logo-path"
+                        stroke-dasharray="3.3333333333333335 3.3333333333333335"
+                        stroke-linecap="square"
+                        stroke-linejoin="miter"
+                        stroke-width="0.15"
+                        d="M9.824 12.944H30.2V18.128H28.52V14.36H11.456V18.128H9.824V12.944Z"
+                      ></path>
+                    </g>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="group/row flex flex-col w-full items-center h-full not-last:border-dashed not-last:border-x-0 not-last:border-t-0 not-last:border-b not-last:border-kumo-hairline"
+          >
+            <div
+              class="flex border-dashed border-x border-y-0 border-kumo-hairline items-center h-full p-6 @2xl:p-14 relative w-[calc(100%-2rem)] @2xl:w-[calc(100%-4rem)] max-w-5xl py-2"
+            >
+              <div
+                class="group-not-last/row:[&::before,&::after]:absolute group-not-last/row:[&::before,&::after]:-bottom-1 group-not-last/row:[&::before,&::after]:size-1.75 group-not-last/row:[&::before,&::after]:rounded-[1.5px] group-not-last/row:[&::before,&::after]:z-10 group-not-last/row:[&::before,&::after]:ring-1 group-not-last/row:[&::before,&::after]:ring-kumo-line group-not-last/row:[&::before,&::after]:bg-kumo-canvas group-not-last/row:[&::before,&::after]:content-[''] group-not-last/row:after:-left-1 group-not-last/row:before:-right-1"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</MainLayout>
+
+<style>
+  .not-found-page {
+    height: calc(100dvh - 3rem);
+  }
+
+  .not-found-logo-occlusion {
+    fill: var(--color-kumo-canvas);
+    stroke: var(--color-kumo-canvas);
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .not-found-logo-button {
+    display: flex;
+    appearance: none;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .not-found-logo-button:focus-visible {
+    outline: 2px solid var(--color-kumo-brand);
+    outline-offset: 2px;
+  }
+
+  .not-found-logo-path {
+    animation: not-found-dash-move-reverse 600ms linear infinite;
+    animation-direction: normal;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .not-found-logo-path-forward {
+    animation-name: not-found-dash-move;
+  }
+
+  .not-found-logo-button.is-reversed .not-found-logo-path {
+    animation-direction: reverse;
+  }
+
+  @keyframes not-found-dash-move {
+    to {
+      stroke-dashoffset: 6.666666666666667;
+    }
+  }
+
+  @keyframes not-found-dash-move-reverse {
+    to {
+      stroke-dashoffset: -6.666666666666667;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .not-found-page {
+      height: 100dvh;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .not-found-logo-path {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
+
+<script>
+  const kumoWindow = window as typeof window & {
+    __kumoNotFoundLogoInit?: boolean;
+  };
+
+  if (!kumoWindow.__kumoNotFoundLogoInit) {
+    kumoWindow.__kumoNotFoundLogoInit = true;
+
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+
+      const logoButton = event.target.closest<HTMLButtonElement>(
+        "[data-not-found-logo-toggle]",
+      );
+
+      if (!logoButton) return;
+
+      const isReversed = logoButton.classList.toggle("is-reversed");
+      logoButton.setAttribute("aria-pressed", String(isReversed));
+    });
+  }
+</script>

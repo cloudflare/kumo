@@ -20,7 +20,6 @@ import {
   LayerCard,
   Link,
   Loader,
-  MenuBar,
   Meter,
   Pagination,
   Popover,
@@ -40,15 +39,15 @@ import {
   useKumoToastManager,
 } from "@cloudflare/kumo";
 import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
+import { CommandPaletteBasicDemo } from "~/components/demos/CommandPaletteDemo";
 import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
-  TextBolderIcon,
-  TextItalicIcon,
   TranslateIcon,
   WarningIcon,
   WarningOctagonIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 
 const componentRoutes: Record<string, string> = {
@@ -76,7 +75,6 @@ const componentRoutes: Record<string, string> = {
   "layer-card": "/components/layer-card",
   link: "/components/link",
   loader: "/components/loader",
-  "menu-bar": "/components/menu-bar",
   meter: "/components/meter",
   pagination: "/components/pagination",
   popover: "/components/popover",
@@ -115,7 +113,6 @@ export function HomeGrid() {
   const [switchToggled, setSwitchToggled] = useState(true);
   const [checked, setChecked] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
-  const [menuBarActive, setMenuBarActive] = useState<number | undefined>(0);
   const [paginationPage, setPaginationPage] = useState(1);
   const [value, setValue] = useState<{ id: string; value: string } | null>(
     null,
@@ -177,7 +174,7 @@ export function HomeGrid() {
       name: "Toolbar",
       id: "toolbar",
       Component: (
-        <Toolbar className="w-[260px]">
+        <Toolbar>
           <Toolbar.Input
             aria-label="Search DNS records"
             placeholder="Search..."
@@ -269,10 +266,45 @@ export function HomeGrid() {
       id: "dialog",
       Component: (
         <Dialog.Root>
-          <Dialog.Trigger render={(p) => <Button {...p}>Click me!</Button>} />
-          <Dialog>
-            <Dialog.Title>Hello!</Dialog.Title>
-            <Dialog.Description>I'm a dialog.</Dialog.Description>
+          <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
+          <Dialog className="p-8">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <Dialog.Title className="text-2xl font-semibold">
+                Delete Resource?
+              </Dialog.Title>
+              <Dialog.Close
+                aria-label="Close"
+                render={(props) => (
+                  <Button
+                    {...props}
+                    variant="secondary"
+                    shape="square"
+                    icon={<XIcon />}
+                    aria-label="Close"
+                  />
+                )}
+              />
+            </div>
+            <Dialog.Description className="text-kumo-subtle">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Dialog.Description>
+            <div className="mt-8 flex justify-end gap-2">
+              <Dialog.Close
+                render={(props) => (
+                  <Button variant="secondary" {...props}>
+                    Cancel
+                  </Button>
+                )}
+              />
+              <Dialog.Close
+                render={(props) => (
+                  <Button variant="destructive" {...props}>
+                    Delete
+                  </Button>
+                )}
+              />
+            </div>
           </Dialog>
         </Dialog.Root>
       ),
@@ -472,29 +504,6 @@ export function HomeGrid() {
       ),
     },
     {
-      name: "MenuBar",
-      id: "menu-bar",
-      Component: (
-        <MenuBar
-          isActive={menuBarActive}
-          options={[
-            {
-              icon: <TextBolderIcon />,
-              onClick: () =>
-                setMenuBarActive(menuBarActive === 0 ? undefined : 0),
-              tooltip: "Bold",
-            },
-            {
-              icon: <TextItalicIcon />,
-              onClick: () =>
-                setMenuBarActive(menuBarActive === 1 ? undefined : 1),
-              tooltip: "Italic",
-            },
-          ]}
-        />
-      ),
-    },
-    {
       name: "DatePicker",
       id: "date-picker",
       Component: (
@@ -524,9 +533,7 @@ export function HomeGrid() {
     {
       name: "CommandPalette",
       id: "command-palette",
-      Component: (
-        <Button icon={MagnifyingGlassIcon}>Open Command Palette</Button>
-      ),
+      Component: <CommandPaletteBasicDemo />,
     },
     {
       name: "Flow",

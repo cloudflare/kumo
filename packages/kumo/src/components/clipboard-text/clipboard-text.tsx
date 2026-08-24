@@ -139,7 +139,7 @@ function AnchoredToasts() {
               toast={toast}
               className={cn(
                 "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-3 py-1.5 font-sans text-xs text-kumo-default",
-                "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
+                "shadow-lg outline outline-kumo-line",
                 updateKey > 0 && "animate-clipboard-toast-bump",
               )}
             >
@@ -354,7 +354,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
                   <Tooltip.Popup
                     className={cn(
                       "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-3 py-1.5 text-xs text-kumo-default",
-                      "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
+                      "shadow-md outline outline-kumo-line",
                     )}
                   >
                     {tooltipText}

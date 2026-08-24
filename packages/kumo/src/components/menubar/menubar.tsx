@@ -69,6 +69,8 @@ const MenuOption = ({
  *
  * Horizontal icon-button toolbar with keyboard navigation and tooltip labels.
  *
+ * @deprecated Use `Tabs` with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
+ *
  * @example
  * ```tsx
  * <MenuBar
@@ -96,6 +98,8 @@ type MenuBarProps = {
  *
  * Each option renders as a `<button>` with a Tooltip. The active option is
  * visually highlighted with an elevated background.
+ *
+ * @deprecated Use `Tabs` with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
  *
  * @example
  * ```tsx

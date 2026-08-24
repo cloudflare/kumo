@@ -1,10 +1,11 @@
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
+import type { Icon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Base styles applied to all badge variants. */
 export const KUMO_BADGE_BASE_STYLES =
-  "inline-flex w-fit flex-none shrink-0 items-center justify-self-start rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap";
+  "inline-flex w-fit flex-none shrink-0 items-center justify-self-start gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap [a:hover_&]:ring [a:hover_&]:ring-current";
 
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
@@ -44,8 +45,8 @@ export const KUMO_BADGE_VARIANTS = {
       description: "Indicates beta or experimental features",
     },
     outline: {
-      classes: "border border-kumo-fill bg-transparent text-kumo-default",
-      description: "Bordered badge with transparent background",
+      classes: "border border-kumo-fill bg-kumo-base text-kumo-default",
+      description: "Bordered badge with base background",
     },
 
     /** Other color token variants */
@@ -162,6 +163,24 @@ export function badgeVariants({
 // Legacy type alias for backwards compatibility
 export type BadgeVariant = KumoBadgeVariant;
 
+const renderIconNode = (IconComponent?: Icon | ReactNode) => {
+  if (!IconComponent) return null;
+  const Component = IconComponent as React.ComponentType<
+    Record<string, unknown>
+  >;
+  const icon = React.isValidElement(IconComponent) ? (
+    IconComponent
+  ) : (
+    <Component />
+  );
+
+  return (
+    <span className="flex h-lh w-3 shrink-0 items-center justify-center [&>svg]:size-3">
+      {icon}
+    </span>
+  );
+};
+
 /**
  * Badge component props.
  *
@@ -173,7 +192,7 @@ export type BadgeVariant = KumoBadgeVariant;
  * <Badge variant="success" appearance="dot">Healthy</Badge>
  * ```
  */
-export interface BadgeProps {
+interface BadgeBaseProps {
   /**
    * Color variant of the badge.
    * Recommended semantic variants:
@@ -188,25 +207,46 @@ export interface BadgeProps {
    * - `"red"`, `"orange"`, `"green"`, `"teal"`, `"blue"`, `"purple"`, `"neutral"`
    * - `"teal-subtle"`, `"neutral-subtle"`
    * - `"inverted"`
-   * - `"outline"` — Bordered badge with transparent background
+   * - `"outline"` — Bordered badge with the base background
    * - `"beta"` — Dashed-border badge for beta/experimental features
    * @default "primary"
    */
   variant?: KumoBadgeVariant;
-  /**
-   * Visual appearance of the badge.
-   * - `"filled"` — Filled background using the variant color (default)
-   * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
-   *   `warning`, `error`, and `neutral` variants show a dot; other variants
-   *   render the badge without a dot.
-   * @default "filled"
-   */
-  appearance?: KumoBadgeAppearance;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Content rendered inside the badge. */
   children: ReactNode;
 }
+
+interface FilledBadgeProps extends BadgeBaseProps {
+  /**
+   * Visual appearance of the badge.
+   * - `"filled"` — Filled background using the variant color (default)
+   * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
+   *   `warning`, `error`, and `neutral` variants show a dot. Dot badges do not
+   *   accept icons.
+   * @default "filled"
+   */
+  appearance?: "filled";
+  /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
+  icon?: Icon | ReactNode;
+}
+
+interface DotBadgeProps extends BadgeBaseProps {
+  /**
+   * Visual appearance of the badge.
+   * - `"filled"` — Filled background using the variant color (default)
+   * - `"dot"` — Outlined badge with a colored circle dot. Only `success`,
+   *   `warning`, `error`, and `neutral` variants show a dot. Dot badges do not
+   *   accept icons.
+   * @default "filled"
+   */
+  appearance: "dot";
+  /** Dot badges use their status dot instead of an icon. */
+  icon?: never;
+}
+
+export type BadgeProps = FilledBadgeProps | DotBadgeProps;
 
 /**
  * Small status label for categorizing or highlighting content.
@@ -221,6 +261,7 @@ export function Badge({
   variant = KUMO_BADGE_DEFAULT_VARIANTS.variant,
   appearance = KUMO_BADGE_DEFAULT_VARIANTS.appearance,
   className,
+  icon,
   children,
 }: BadgeProps) {
   // Crash-safe dot-color lookup via resolveVariant — unknown variants fall
@@ -233,15 +274,21 @@ export function Badge({
           KUMO_BADGE_DEFAULT_VARIANTS.dotColor,
         ).classes
       : "";
-
   return (
-    <span className={cn(badgeVariants({ variant, appearance }), className)}>
+    <span
+      className={cn(
+        badgeVariants({ variant, appearance }),
+        icon && "pl-1.5",
+        className,
+      )}
+    >
       {dotColor ? (
         <span
           aria-hidden="true"
           className={cn("size-1.75 shrink-0 rounded-full", dotColor)}
         />
       ) : null}
+      {renderIconNode(icon)}
       {children}
     </span>
   );

@@ -168,7 +168,9 @@ function Root<Value, Multiple extends boolean | undefined = false>({
 }) {
   const comboboxControl = (
     <ComboboxContext.Provider value={{ size, hasError: Boolean(error) }}>
-      <ComboboxBase.Root {...props}>{children}</ComboboxBase.Root>
+      <ComboboxBase.Root {...props} required={required}>
+        {children}
+      </ComboboxBase.Root>
     </ComboboxContext.Provider>
   );
 
@@ -204,6 +206,13 @@ function Content({
   sideOffset = 4,
   alignOffset,
   side,
+  anchor,
+  positionMethod,
+  collisionAvoidance,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  disableAnchorTracking,
   container: containerProp,
 }: PropsWithChildren<{
   className?: string;
@@ -211,6 +220,13 @@ function Content({
   alignOffset?: ComboboxBase.Positioner.Props["alignOffset"];
   side?: ComboboxBase.Positioner.Props["side"];
   sideOffset?: ComboboxBase.Positioner.Props["sideOffset"];
+  anchor?: ComboboxBase.Positioner.Props["anchor"];
+  positionMethod?: ComboboxBase.Positioner.Props["positionMethod"];
+  collisionAvoidance?: ComboboxBase.Positioner.Props["collisionAvoidance"];
+  collisionBoundary?: ComboboxBase.Positioner.Props["collisionBoundary"];
+  collisionPadding?: ComboboxBase.Positioner.Props["collisionPadding"];
+  sticky?: ComboboxBase.Positioner.Props["sticky"];
+  disableAnchorTracking?: ComboboxBase.Positioner.Props["disableAnchorTracking"];
   /**
    * Container element for the portal. Use this to render the combobox inside
    * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
@@ -229,6 +245,13 @@ function Content({
         sideOffset={sideOffset}
         alignOffset={alignOffset}
         side={side}
+        anchor={anchor}
+        positionMethod={positionMethod}
+        collisionAvoidance={collisionAvoidance}
+        collisionBoundary={collisionBoundary}
+        collisionPadding={collisionPadding}
+        sticky={sticky}
+        disableAnchorTracking={disableAnchorTracking}
       >
         <ComboboxBase.Popup
           className={cn(
@@ -259,8 +282,13 @@ const triggerValueIconStyles: Record<
 
 function TriggerValue({
   className,
+  render,
   ...props
-}: ComboboxBase.Value.Props & { className?: string }) {
+}: ComboboxBase.Value.Props & {
+  className?: string;
+  /** Replaces the trigger element while preserving Combobox behavior. */
+  render?: ComboboxBase.Trigger.Props["render"];
+}) {
   const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
@@ -268,6 +296,7 @@ function TriggerValue({
     <ComboboxBase.Trigger
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
+      render={render}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
@@ -341,7 +370,7 @@ function TriggerInput({
   return (
     <div
       className={cn(
-        "relative inline-block w-full max-w-xs",
+        "relative inline-block w-full",
         "has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
         props.className,
       )}
@@ -537,6 +566,9 @@ function TriggerMultipleWithInput<ValueType>({
   const { size, hasError } = useContext(ComboboxContext);
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
+  const renderTriggerInput = (className: string) => (
+    <ComboboxBase.Input placeholder={placeholder} className={className} />
+  );
 
   return (
     <ComboboxBase.Chips
@@ -550,12 +582,8 @@ function TriggerMultipleWithInput<ValueType>({
         className,
       )}
     >
-      {inputSide === "top" && (
-        <ComboboxBase.Input
-          placeholder={placeholder}
-          className="w-full border-0 bg-inherit px-2 py-1"
-        />
-      )}
+      {inputSide === "top" &&
+        renderTriggerInput("w-full border-0 bg-inherit px-2 py-1")}
       {/* Chips container */}
       <div className="flex flex-1 flex-wrap items-center gap-1.5">
         {/* Render chips from controlled value if provided */}
@@ -574,12 +602,10 @@ function TriggerMultipleWithInput<ValueType>({
             );
           }}
         </ComboboxBase.Value>
-        {inputSide === "right" && (
-          <ComboboxBase.Input
-            placeholder={placeholder}
-            className="min-w-[100px] flex-1 border-0 bg-inherit px-2 py-1"
-          />
-        )}
+        {inputSide === "right" &&
+          renderTriggerInput(
+            "min-w-[100px] flex-1 border-0 bg-inherit px-2 py-1",
+          )}
       </div>
     </ComboboxBase.Chips>
   );

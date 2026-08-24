@@ -426,7 +426,7 @@ function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
   return (
     <div
       className={cn(
-        "absolute inset-0 rounded-[11px] bg-kumo-base/90",
+        "absolute inset-0 rounded-xl bg-kumo-base/90",
         background,
       )}
     />

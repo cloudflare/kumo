@@ -1,5 +1,86 @@
 # @cloudflare/kumo
 
+## 2.12.0
+
+### Minor Changes
+
+- 716e5b8: Add the `Text` `heading` variant with a 16px semibold default and a 20px
+  `size="lg"` option. The variant defaults to a `span`, so callers choose heading
+  semantics explicitly with `as`. Deprecate the numbered `heading1`, `heading2`,
+  and `heading3` variants.
+
+### Patch Changes
+
+- d7a7a35: `Collapsible.DefaultTrigger` now uses `text-kumo-default` (neutral) with `font-medium` instead of the blue `text-kumo-link` color.
+- 0db4f66: deprecate `MenuBar` in favor of segmented `Tabs`
+
+  - mark the `MenuBar` component (and its exports) as `@deprecated`; it will be removed in a future release
+  - new usage should prefer `Tabs` with `variant="segmented"` (the default `Tabs` variant)
+  - the runtime behaviour of `MenuBar` is unchanged for existing consumers
+  - remove the `MenuBar` documentation page and demos from the docs site
+
+- c64183b: Fix Toast background clipping the ring outline at the corners — the inner background layer's radius (11px) was smaller than the root's `rounded-xl` (12px), painting over the ring at the corners. Matched them up.
+- ef13cb4: Restore disabled and loading state handling for `Toolbar.Button` so disabled
+  controls expose the correct semantics and cannot be activated.
+- 51d0f03: Normalize shadows and outlines on tip-style overlays (Popover, Tooltip, ClipboardText, Chart tooltip).
+
+  - Drop the `shadow-kumo-tip-shadow` color override so shadows use Tailwind's default translucent black instead of an opaque light-gray in light mode.
+  - Tune shadow sizes: Popover, Tooltip, ClipboardText tooltip, and Chart tooltip use `shadow-md`; ClipboardText's "Copied" toast keeps `shadow-lg` to match the Toast component.
+  - Switch these overlays from `outline-kumo-fill` to `outline-kumo-line`, matching every other floating surface (Dropdown, Select, Combobox, Dialog, etc.).
+  - Rename `kumo-tip-shadow` → `kumo-arrow-edge` and `kumo-tip-stroke` → `kumo-arrow-stroke`. The tokens draw the border on Popover/Tooltip arrow SVGs, not a box shadow. Both now resolve to `kumo-line`, so the arrow border aligns with the popup outline in both modes.
+
+- d586bf3: Add `scrollToItem(id, options?)` to `useSidebar()` for imperatively scrolling
+  a nav item into the sidebar viewport. Tag items with the new `itemId` prop on
+  `Sidebar.MenuButton` or `Sidebar.MenuItem`.
+
+  Options:
+
+  - `align`: `"start" | "center" | "end" | "auto"` (default `"auto"` — no-op if
+    the item is already visible; otherwise scroll the minimum distance).
+  - `behavior`: `"auto" | "smooth"` (default `"auto"` — instant, best for
+    cross-app landings so users don't watch the sidebar animate on entry).
+    `prefers-reduced-motion` forces `"auto"`.
+
+  Scrolls only the sidebar viewport (never the document) and works with
+  `Sidebar.SlidingViews`: items register with the provider via an internal
+  map, so `scrollToItem` walks up from the target to find its owning viewport
+  rather than querying the DOM.
+
+## 2.11.0
+
+### Minor Changes
+
+- aa6edff: Add icon support to filled Badge variants through the `icon` prop, add linked-badge hover styles, and use the base surface background for outline badges.
+
+### Patch Changes
+
+- bba0f5e: Allow users to select and copy LinkButton text while preserving Button text selection behavior.
+- c2c8d42: Update Table rows to use borderless, alternating background styling.
+- 0ad1926: Fix hydration mismatch in the Sidebar's `useIsMobile` hook on SSR frameworks like Next.js. The hook now uses `useSyncExternalStore` with a desktop `getServerSnapshot`, so the server-rendered HTML (desktop `<aside>`) hydrates cleanly on mobile viewports before switching to the mobile overlay.
+
+## 2.10.0
+
+### Minor Changes
+
+- 4b9a4dc: Allow Select and Combobox triggers to compose directly with `Toolbar.Button` and `Toolbar.Input` through their `render` props, adding grouped styling and arrow-key focus management while preserving regular `Select.*` and `Combobox.*` APIs.
+
+  Deprecate Toolbar's configurable `size` prop and size metadata exports. They remain functional for compatibility; omitting `size` continues to use the base size.
+
+### Patch Changes
+
+- 65db2e6: Forward link-specific props in Tabs and Sidebar so link-rendered tabs can opt out of native button semantics, and Sidebar link buttons preserve attributes like `aria-current`.
+- 0c58325: Expose all positioner props on Combobox.Content (`anchor`, `positionMethod`, `collisionAvoidance`, `collisionBoundary`, `collisionPadding`, `sticky`, `disableAnchorTracking`).
+- 528d5ff: Populate InputArea props in component registry so the docs API reference table renders correctly
+- 75c3b14: Fix Sidebar peeking state during SlidingViews transitions.
+- 1d9b588: Fix Tabs overflow controls when tabs are removed and the remaining tabs fit.
+
+## 2.9.2
+
+### Patch Changes
+
+- 188a82c: Remove the elevated chip styling from Tabs overflow scroll controls.
+- c5ad709: Constrain Tabs overflow controls to segmented tabs and focus the caret target.
+
 ## 2.9.1
 
 ### Patch Changes

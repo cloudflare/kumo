@@ -176,14 +176,11 @@
     oklch(0% 0 0 / 0.3)
   );
 
-  --color-kumo-tip-shadow: light-dark(
-    var(--color-gray-200, oklch(92.8% 0.006 264.531)),
-    transparent
-  );
+  --color-kumo-arrow-edge: light-dark(oklch(14.5% 0 0 / 0.1), transparent);
 
-  --color-kumo-tip-stroke: light-dark(
+  --color-kumo-arrow-stroke: light-dark(
     transparent,
-    var(--color-neutral-800, oklch(26.9% 0 0))
+    var(--color-kumo-neutral-750, oklch(32% 0 0))
   );
 
   --color-kumo-info-tint: light-dark(
@@ -341,8 +338,8 @@
     --color-kumo-focus: var(--color-kumo-neutral-950, oklch(15% 0 0));
     --color-kumo-shadow-edge: oklch(0% 0 0 / 0.12);
     --color-kumo-shadow-drop: oklch(0% 0 0 / 0.08);
-    --color-kumo-tip-shadow: var(--color-gray-200, oklch(92.8% 0.006 264.531));
-    --color-kumo-tip-stroke: transparent;
+    --color-kumo-arrow-edge: oklch(14.5% 0 0 / 0.1);
+    --color-kumo-arrow-stroke: transparent;
     --color-kumo-info-tint: oklch(93.2% 0.032 255.6 / 0.45);
     --color-kumo-info: var(--color-blue-500, oklch(68.5% 0.169 237.323));
     --color-kumo-warning-tint: oklch(93.1% 0.107 94.6 / 0.2);
@@ -427,8 +424,8 @@
     --color-kumo-focus: var(--color-kumo-neutral-150, oklch(93.5% 0 0));
     --color-kumo-shadow-edge: oklch(100% 0 0 / 0.1);
     --color-kumo-shadow-drop: oklch(0% 0 0 / 0.3);
-    --color-kumo-tip-shadow: transparent;
-    --color-kumo-tip-stroke: var(--color-neutral-800, oklch(26.9% 0 0));
+    --color-kumo-arrow-edge: transparent;
+    --color-kumo-arrow-stroke: var(--color-kumo-neutral-750, oklch(32% 0 0));
     --color-kumo-info-tint: oklch(38% 0.145 265.5 / 0.22);
     --color-kumo-info: var(--color-blue-500, oklch(68.5% 0.169 237.323));
     --color-kumo-warning-tint: oklch(35.3% 0.079 65 / 0.37);

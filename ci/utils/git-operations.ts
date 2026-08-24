@@ -1,4 +1,4 @@
-import { execSync, execFileSync } from "child_process";
+import { execFileSync } from "child_process";
 
 /**
  * Git operations utility for CI scripts
@@ -23,7 +23,7 @@ export interface ChangedFilesOptions {
  * exist as a local ref — especially for fork PRs. Falls back through
  * GITHUB_SHA → "HEAD" if the branch name doesn't resolve.
  */
-function resolveHeadRef(): string {
+function resolveHeadRef(cwd: string): string {
   const candidates = [
     process.env.GITHUB_HEAD_REF,
     process.env.GITHUB_SHA,
@@ -32,9 +32,10 @@ function resolveHeadRef(): string {
 
   for (const ref of candidates) {
     try {
-      execSync(`git rev-parse --verify ${ref}`, {
+      execFileSync("git", ["rev-parse", "--verify", ref], {
         encoding: "utf8",
         stdio: "pipe",
+        cwd,
       });
       return ref;
     } catch {
@@ -49,19 +50,24 @@ function resolveHeadRef(): string {
  * Gets the base and head refs for the current CI context
  * Uses GitHub Actions variables with fallback for shallow clones
  */
-export function getGitRefs(): GitRefs {
+export function getGitRefs(cwd = process.cwd()): GitRefs {
   // GitHub Actions provides these environment variables
   const baseRef = process.env.GITHUB_BASE_REF;
-  const headRef = resolveHeadRef();
+  const headRef = resolveHeadRef(cwd);
 
   // If baseRef exists (PR context), verify it's available
   if (baseRef) {
     try {
       // Fetch the base branch for comparison
-      execSync(`git fetch origin ${baseRef}:refs/remotes/origin/${baseRef}`, {
-        encoding: "utf8",
-        stdio: "pipe",
-      });
+      execFileSync(
+        "git",
+        ["fetch", "origin", `${baseRef}:refs/remotes/origin/${baseRef}`],
+        {
+          encoding: "utf8",
+          stdio: "pipe",
+          cwd,
+        },
+      );
       const fallbackRef = `origin/${baseRef}`;
       console.log(`Using base ref: ${fallbackRef}`);
       return { baseRef: fallbackRef, headRef: headRef };
@@ -75,9 +81,10 @@ export function getGitRefs(): GitRefs {
   if (!process.env.CI && !process.env.GITHUB_ACTIONS) {
     // First verify origin/main exists
     try {
-      execSync("git rev-parse --verify origin/main", {
+      execFileSync("git", ["rev-parse", "--verify", "origin/main"], {
         encoding: "utf8",
         stdio: "pipe",
+        cwd,
       });
     } catch {
       console.error(
@@ -89,10 +96,15 @@ export function getGitRefs(): GitRefs {
 
     // Try to find merge-base
     try {
-      const mergeBase = execSync("git merge-base origin/main HEAD", {
-        encoding: "utf8",
-        stdio: "pipe",
-      }).trim();
+      const mergeBase = execFileSync(
+        "git",
+        ["merge-base", "origin/main", "HEAD"],
+        {
+          encoding: "utf8",
+          stdio: "pipe",
+          cwd,
+        },
+      ).trim();
       console.log(
         `Using local fallback ref (merge-base): ${mergeBase.slice(0, 8)}`,
       );
@@ -115,20 +127,23 @@ export function getChangedFiles(
   options: ChangedFilesOptions = {},
 ): string[] | null {
   try {
-    const { baseRef, headRef } = getGitRefs();
+    const cwd = options.cwd || process.cwd();
+    const { baseRef, headRef } = getGitRefs(cwd);
 
     if (!baseRef) {
       console.warn("  Warning: Could not determine base ref for file changes");
       return null;
     }
 
-    // Use two-dot diff for shallow clones (no merge base needed)
-    // Two dots compares the tips directly: baseRef..headRef
-    const changedFiles = execSync(
-      `git diff --name-only ${baseRef}..${headRef}`,
+    // Match GitHub's pull request diff semantics. Comparing the tips directly
+    // would treat changes added to the base branch after the PR merge ref was
+    // created as changes in the PR.
+    const changedFiles = execFileSync(
+      "git",
+      ["diff", "--name-only", `${baseRef}...${headRef}`],
       {
         encoding: "utf8",
-        cwd: options.cwd || process.cwd(),
+        cwd,
       },
     ).trim();
 
@@ -177,7 +192,8 @@ export function getNewlyAddedFiles(
   options: ChangedFilesOptions = {},
 ): Array<{ status: string; path: string }> {
   try {
-    const { baseRef, headRef } = getGitRefs();
+    const cwd = options.cwd || process.cwd();
+    const { baseRef, headRef } = getGitRefs(cwd);
 
     if (!baseRef) {
       console.warn(
@@ -186,15 +202,14 @@ export function getNewlyAddedFiles(
       return [];
     }
 
-    // Use execFileSync with array arguments to prevent command injection
-    // This passes arguments directly to git without shell interpretation
-    // Use two-dot diff for shallow clones (no merge base needed)
+    // Use the merge base so changes added to the base branch after the PR
+    // merge ref was created are not attributed to the PR.
     const newFiles = execFileSync(
       "git",
-      ["diff", "--name-status", `${baseRef}..${headRef}`, "--", directory],
+      ["diff", "--name-status", `${baseRef}...${headRef}`, "--", directory],
       {
         encoding: "utf8",
-        cwd: options.cwd || process.cwd(),
+        cwd,
       },
     ).trim();
 

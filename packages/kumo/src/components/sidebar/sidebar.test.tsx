@@ -11,6 +11,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import {
   Sidebar,
@@ -479,6 +481,28 @@ describe("Sidebar.SlidingViews", () => {
     );
   }
 
+  function PeekingSlidingTest({ activeKey = "a" }: { activeKey?: string }) {
+    return (
+      <TestSidebar defaultOpen={false} peekable>
+        <StateReader />
+        <SidebarSlidingViews activeKey={activeKey}>
+          <SidebarSlidingView value="a">
+            <SidebarContent>
+              <button type="button" data-testid="view-a-button">
+                Go to B
+              </button>
+            </SidebarContent>
+          </SidebarSlidingView>
+          <SidebarSlidingView value="b">
+            <SidebarContent>
+              <button type="button">Go to A</button>
+            </SidebarContent>
+          </SidebarSlidingView>
+        </SidebarSlidingViews>
+      </TestSidebar>
+    );
+  }
+
   it("should show the active view", () => {
     render(<SlidingTest activeKey="a" />);
     const viewA = screen
@@ -509,6 +533,25 @@ describe("Sidebar.SlidingViews", () => {
       .closest("[data-sidebar='sliding-view']")!;
     expect(viewA.getAttribute("aria-hidden")).toBe("true");
     expect(viewB.getAttribute("aria-hidden")).toBe("false");
+  });
+
+  it("should keep peeking when a view change blurs the active item under the pointer", () => {
+    const { rerender } = render(<PeekingSlidingTest activeKey="a" />);
+
+    const peekZone = document.querySelector("[data-sidebar='peek-zone']")!;
+    fireEvent.mouseEnter(peekZone);
+
+    const activeButton = screen.getByTestId("view-a-button");
+    fireEvent.focus(activeButton);
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
+
+    rerender(<PeekingSlidingTest activeKey="b" />);
+    fireEvent.blur(activeButton, { relatedTarget: null });
+
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("peeking");
+
+    fireEvent.mouseLeave(peekZone);
+    expect(screen.getByTestId("state-reader").dataset.state).toBe("collapsed");
   });
 });
 
@@ -585,6 +628,25 @@ describe("Sidebar.MenuButton", () => {
     expect(link).toBeTruthy();
     expect(link!.getAttribute("href")).toBe("/home");
   });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton href="/tenants" active aria-current="true">
+              Tenants
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Tenants").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("true");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
+  });
 });
 
 describe("Sidebar.MenuSubButton", () => {
@@ -619,6 +681,29 @@ describe("Sidebar.MenuSubButton", () => {
     );
     const link = screen.getByText("External").closest("a");
     expect(link!.getAttribute("target")).toBe("_self");
+  });
+
+  it("should preserve extra link attributes when href provided", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuSubButton
+              href="/observability"
+              active
+              aria-current="page"
+            >
+              Observability
+            </SidebarMenuSubButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const link = screen.getByText("Observability").closest("a");
+    expect(link!.getAttribute("aria-current")).toBe("page");
+    expect(link!.getAttribute("data-active")).toBe("true");
+    expect(link!.getAttribute("data-kumo-part")).toBe("menu-sub-button-link");
   });
 });
 
@@ -798,5 +883,458 @@ describe("Sidebar.Loading", () => {
     expect(
       screen.getByRole("status").classList.contains("custom-loading"),
     ).toBe(true);
+  });
+});
+
+// ============================================================================
+// Mobile detection (useIsMobile) — SSR / hydration safety
+// ============================================================================
+//
+// useIsMobile must be SSR-safe: during server rendering and hydration it must
+// report desktop (getServerSnapshot), so the SSR HTML (desktop <aside>) can be
+// hydrated without a mismatch even on a mobile viewport, then switch to the
+// mobile overlay once the client subscribes to matchMedia.
+describe("Sidebar mobile detection (useIsMobile)", () => {
+  it("should render the desktop <aside> during SSR regardless of viewport", () => {
+    setMobileMatchMedia(true);
+
+    const html = renderToString(
+      <SidebarProvider mobileBreakpoint={768}>
+        <Sidebar>
+          <SidebarHeader>Header</SidebarHeader>
+        </Sidebar>
+      </SidebarProvider>,
+    );
+
+    expect(html).toContain("<aside");
+    expect(html).not.toContain("data-mobile");
+  });
+
+  it("should hydrate the SSR output without a hydration mismatch on a mobile viewport", () => {
+    setMobileMatchMedia(true);
+
+    const ui = (
+      <SidebarProvider mobileBreakpoint={768}>
+        <Sidebar>
+          <SidebarHeader>Header</SidebarHeader>
+        </Sidebar>
+      </SidebarProvider>
+    );
+
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(ui);
+
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    act(() => {
+      hydrateRoot(container, ui);
+    });
+
+    const hydrationErrors = errorSpy.mock.calls.filter((args) =>
+      /hydration|did not match|hydrate/i.test(args.map(String).join(" ")),
+    );
+    expect(hydrationErrors).toEqual([]);
+
+    errorSpy.mockRestore();
+  });
+
+  it("should render the mobile overlay on the client when the viewport matches", () => {
+    setMobileMatchMedia(true);
+
+    render(
+      <TestSidebar mobileBreakpoint={768}>
+        <SidebarHeader>Header</SidebarHeader>
+      </TestSidebar>,
+    );
+
+    expect(document.querySelector('[data-mobile="true"]')).not.toBeNull();
+  });
+
+  it("should render the desktop aside on the client on a desktop viewport", () => {
+    setMobileMatchMedia(false);
+
+    render(
+      <TestSidebar mobileBreakpoint={768}>
+        <SidebarHeader>Header</SidebarHeader>
+      </TestSidebar>,
+    );
+
+    expect(
+      document.querySelector('aside[data-sidebar="sidebar"]'),
+    ).not.toBeNull();
+    expect(document.querySelector('[data-mobile="true"]')).toBeNull();
+  });
+});
+
+// ============================================================================
+// Scroll restoration + imperative scrollToItem
+// ============================================================================
+
+function getViewport(): HTMLDivElement {
+  const v = document.querySelector<HTMLDivElement>('[data-sidebar="viewport"]');
+  if (!v) throw new Error("viewport not found");
+  return v;
+}
+
+function setViewportGeometry(
+  el: HTMLDivElement,
+  scrollHeight: number,
+  clientHeight: number,
+) {
+  Object.defineProperty(el, "scrollHeight", {
+    configurable: true,
+    value: scrollHeight,
+  });
+  Object.defineProperty(el, "clientHeight", {
+    configurable: true,
+    value: clientHeight,
+  });
+}
+
+function readScrollTop(el: HTMLDivElement): number {
+  return el.scrollTop;
+}
+
+describe("Sidebar scrollToItem", () => {
+  function findItem(id: string): HTMLElement {
+    const el = document.querySelector<HTMLElement>(
+      `[data-sidebar-item-id="${id}"]`,
+    );
+    if (!el) throw new Error(`Item not found: ${id}`);
+    return el;
+  }
+
+  // Assumes viewportRect.top = 0 and viewport.scrollTop = 0 at the moment
+  // scrollToItem runs — which is true for these tests but would silently
+  // produce wrong geometry if you stub the item AFTER pre-scrolling the
+  // viewport. Pair with `stubViewportOrigin` and don't move the viewport
+  // before calling.
+  function stubItemGeometry(
+    el: HTMLElement,
+    offsetTop: number,
+    height: number,
+  ) {
+    Object.defineProperty(el, "offsetTop", {
+      configurable: true,
+      value: offsetTop,
+    });
+    Object.defineProperty(el, "offsetHeight", {
+      configurable: true,
+      value: height,
+    });
+    Object.defineProperty(el, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({
+        top: offsetTop,
+        left: 0,
+        bottom: offsetTop + height,
+        right: 0,
+        width: 0,
+        height,
+        x: 0,
+        y: offsetTop,
+        toJSON: () => ({}),
+      }),
+    });
+  }
+
+  function stubViewportOrigin(viewport: HTMLDivElement) {
+    Object.defineProperty(viewport, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({
+        top: 0,
+        left: 0,
+        bottom: viewport.clientHeight,
+        right: 0,
+        width: 0,
+        height: viewport.clientHeight,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }),
+    });
+  }
+
+  it("scrolls the viewport so the target lands at the start", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("zero-trust", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="home">Home</SidebarMenuButton>
+            <SidebarMenuButton itemId="zero-trust">
+              Zero Trust
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("zero-trust"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(800);
+  });
+
+  it("centers the target when align is 'center'", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target", { align: "center" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(800 - (400 - 40) / 2);
+  });
+
+  it("does not scroll ancestors — only the viewport", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 800, 40);
+
+    // If we called scrollIntoView, ancestors would scroll too. This test
+    // fails loudly if we regress by dispatching a scrollIntoView.
+    const scrollIntoView = vi.fn();
+    HTMLElement.prototype.scrollIntoView =
+      scrollIntoView as unknown as typeof HTMLElement.prototype.scrollIntoView;
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    expect(readScrollTop(viewport)).toBe(800);
+  });
+
+  it("clamps to the viewport's max scroll range", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="target">Target</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 1000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("target"), 900, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(600);
+  });
+
+  it("is a no-op when the id doesn't match anything", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("nope")}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="real">Real</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 1000, 400);
+    stubViewportOrigin(viewport);
+    const before = readScrollTop(viewport);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(before);
+  });
+
+  it("MenuItem forwards itemId as data-sidebar-item-id", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem itemId="wrapped">
+              <SidebarMenuButton>Wrapped</SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    expect(
+      document.querySelector('li[data-sidebar-item-id="wrapped"]'),
+    ).toBeTruthy();
+  });
+
+  it("registers itemId on a MenuButton inside an explicit MenuItem", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("compute", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton itemId="compute">Compute</SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    const target = document.querySelector<HTMLElement>(
+      'button[data-sidebar-item-id="compute"]',
+    );
+    if (!target) throw new Error("expected button to carry itemId");
+    stubItemGeometry(target, 500, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(500);
+  });
+
+  it("scrolls the correct viewport when multiple are mounted (SlidingViews)", async () => {
+    function Ctrl() {
+      const { scrollToItem } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollToItem("target-b", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarSlidingViews activeKey="a">
+          <SidebarSlidingView value="a">
+            <SidebarContent>
+              <SidebarMenu>
+                <SidebarMenuButton itemId="target-a">A</SidebarMenuButton>
+              </SidebarMenu>
+            </SidebarContent>
+          </SidebarSlidingView>
+          <SidebarSlidingView value="b">
+            <SidebarContent>
+              <SidebarMenu>
+                <SidebarMenuButton itemId="target-b">B</SidebarMenuButton>
+              </SidebarMenu>
+            </SidebarContent>
+          </SidebarSlidingView>
+        </SidebarSlidingViews>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    // Both viewports are mounted at once — this is the SlidingViews bug that
+    // a `viewport.querySelector` implementation would fail: it would pick the
+    // first viewport in DOM order (view A) and miss `target-b` in view B.
+    const viewports = document.querySelectorAll<HTMLDivElement>(
+      '[data-sidebar="viewport"]',
+    );
+    expect(viewports.length).toBe(2);
+    const [viewportA, viewportB] = viewports as unknown as [
+      HTMLDivElement,
+      HTMLDivElement,
+    ];
+    setViewportGeometry(viewportA, 2000, 400);
+    setViewportGeometry(viewportB, 2000, 400);
+    stubViewportOrigin(viewportA);
+    stubViewportOrigin(viewportB);
+
+    stubItemGeometry(findItem("target-b"), 800, 40);
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+
+    // View B scrolled to the target; view A untouched.
+    expect(readScrollTop(viewportB)).toBe(800);
+    expect(readScrollTop(viewportA)).toBe(0);
   });
 });

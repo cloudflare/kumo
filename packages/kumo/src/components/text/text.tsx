@@ -12,17 +12,27 @@ import { resolveVariant } from "../../utils/resolve-variant";
 /** Text variant and size definitions mapping names to their Tailwind classes. */
 export const KUMO_TEXT_VARIANTS = {
   variant: {
+    heading: {
+      classes: "text-lg font-semibold",
+      description: "Heading text (16px by default, 20px at large size)",
+    },
+    /** @deprecated Use `heading` and set `size` and `as` explicitly. */
     heading1: {
       classes: "text-3xl font-semibold",
-      description: "Large heading for page titles",
+      description:
+        "Deprecated large heading for page titles; use heading instead",
     },
+    /** @deprecated Use `heading` and set `size` and `as` explicitly. */
     heading2: {
       classes: "text-2xl font-semibold",
-      description: "Medium heading for section titles",
+      description:
+        "Deprecated medium heading for section titles; use heading instead",
     },
+    /** @deprecated Use `heading` and set `size` and `as` explicitly. */
     heading3: {
       classes: "text-lg font-semibold",
-      description: "Small heading for subsections",
+      description:
+        "Deprecated small heading for subsections; use heading instead",
     },
     body: {
       classes: "text-kumo-default",
@@ -118,6 +128,50 @@ export const KUMO_TEXT_STYLING = {
 export type KumoTextVariant = keyof typeof KUMO_TEXT_VARIANTS.variant;
 export type KumoTextSize = keyof typeof KUMO_TEXT_VARIANTS.size;
 
+type Heading = "heading";
+type DeprecatedHeading = "heading1" | "heading2" | "heading3";
+type Copy = "body" | "secondary" | "success" | "error";
+type Monospace = "mono" | "mono-secondary";
+type TextSize = KumoTextSize;
+type TextVariant = KumoTextVariant;
+
+const DEPRECATED_HEADING_VARIANTS: readonly DeprecatedHeading[] = [
+  "heading1",
+  "heading2",
+  "heading3",
+];
+
+function isDeprecatedHeadingVariant(
+  variant: TextVariant,
+): variant is DeprecatedHeading {
+  return (DEPRECATED_HEADING_VARIANTS as readonly TextVariant[]).includes(
+    variant,
+  );
+}
+
+function resolveTextSizeClasses(variant: TextVariant, size: TextSize) {
+  if (variant === "heading") {
+    return size === "lg" ? "text-xl" : "";
+  }
+
+  if (isDeprecatedHeadingVariant(variant)) {
+    return "";
+  }
+
+  if (["mono", "mono-secondary"].includes(variant)) {
+    // Monospace fonts need to be 1pt smaller than body text to optically match.
+    return size === "lg"
+      ? KUMO_TEXT_VARIANTS.size.base.classes
+      : KUMO_TEXT_VARIANTS.size.sm.classes;
+  }
+
+  return resolveVariant(
+    KUMO_TEXT_VARIANTS.size,
+    size,
+    KUMO_TEXT_DEFAULT_VARIANTS.size,
+  ).classes;
+}
+
 export interface KumoTextVariantsProps {
   variant?: KumoTextVariant;
   size?: KumoTextSize;
@@ -133,20 +187,9 @@ export function textVariants({
       variant,
       KUMO_TEXT_DEFAULT_VARIANTS.variant,
     ).classes,
-    resolveVariant(
-      KUMO_TEXT_VARIANTS.size,
-      size,
-      KUMO_TEXT_DEFAULT_VARIANTS.size,
-    ).classes,
+    resolveTextSizeClasses(variant, size),
   );
 }
-
-// Legacy types for backwards compatibility
-type Heading = "heading1" | "heading2" | "heading3";
-type Copy = "body" | "secondary" | "success" | "error";
-type Monospace = "mono" | "mono-secondary";
-type TextSize = KumoTextSize;
-type TextVariant = KumoTextVariant;
 
 /** Valid HTML elements for the Text component's `as` prop. */
 export type TextElement =
@@ -203,28 +246,37 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
         ? {
             variant: Variant;
             bold?: never;
-            size?: never;
+            size?: "lg";
             truncate?: boolean;
             /**
-             * Required for heading variants. Pick the element that reflects
-             * this text's place in the document outline (`"h1"` for a page
-             * title, `"h2"` for a section title, etc.) or `"span"` for
-             * decorative heading-styled text that is NOT a section heading.
-             *
-             * Previously optional (defaulted to `<span>`), which silently
-             * excluded real section headings from the document outline.
-             * Making it required surfaces the decision at the type level.
+             * Optional element override. Defaults to `<span>`. Pass the
+             * appropriate heading element (`"h1"`–`"h6"`) when this text
+             * belongs in the document outline.
              */
-            as: TextElement;
+            as?: TextElement;
           }
-        : never);
+        : Variant extends DeprecatedHeading
+          ? {
+              variant: Variant;
+              bold?: never;
+              size?: never;
+              truncate?: boolean;
+              /**
+               * Required for deprecated heading variants. Pick the element
+               * that reflects this text's place in the document outline, or
+               * `"span"` for decorative heading-styled text.
+               */
+              as: TextElement;
+            }
+          : never);
 
 /**
  * Text component props.
  *
  * @example
  * ```tsx
- * <Text variant="heading1" as="h1">Page Title</Text>
+ * <Text variant="heading" size="lg" as="h1">Page Title</Text>
+ * <Text variant="heading">Decorative heading text</Text>
  * <Text variant="body">Default paragraph text.</Text>
  * <Text variant="secondary" size="sm">Muted helper text</Text>
  * <Text variant="error">Something went wrong</Text>
@@ -234,9 +286,10 @@ type TextPropsInternal<Variant extends TextVariant = "body"> = BaseTextProps &
 export interface TextProps {
   /**
    * Text style variant. Determines color, font, and weight.
-   * - `"heading1"` — Large page title (30px, semibold)
-   * - `"heading2"` — Section title (24px, semibold)
-   * - `"heading3"` — Subsection title (18px, semibold)
+   * - `"heading"` — Heading text (16px by default, 20px with `size="lg"`; semibold)
+   * - `"heading1"` — Deprecated; use `"heading"` (30px, semibold)
+   * - `"heading2"` — Deprecated; use `"heading"` (24px, semibold)
+   * - `"heading3"` — Deprecated; use `"heading"` (16px, semibold)
    * - `"body"` — Default body text
    * - `"secondary"` — Muted text for secondary information
    * - `"success"` — Success state text
@@ -247,11 +300,11 @@ export interface TextProps {
    */
   variant?: KumoTextVariant;
   /**
-   * Text size (only applies to body/secondary/success/error variants).
-   * - `"xs"` — 12px
-   * - `"sm"` — 14px
-   * - `"base"` — 16px
-   * - `"lg"` — 18px
+   * Text size. Supported values depend on the variant:
+   * - `"heading"` — 16px when omitted, or 20px with `"lg"`
+   * - Body variants — `"xs"` (12px), `"sm"` (13px), `"base"` (14px),
+   *   or `"lg"` (16px)
+   * - Monospace variants — 13px when omitted, or 14px with `"lg"`
    * @default "base"
    */
   size?: KumoTextSize;
@@ -265,10 +318,10 @@ export interface TextProps {
    * `"small"`, `"abbr"`, `"time"`), form-related (`"label"`, `"legend"`),
    * list/definition (`"dt"`, `"dd"`, `"li"`), and `"figcaption"`.
    *
-   * - **Required** for heading variants (`"heading1"`, `"heading2"`,
-   *   `"heading3"`) — pick the element that reflects this text's place in
-   *   the document outline, or `"span"` for decorative heading-styled text
-   *   that is not a section heading.
+   * - **Optional** for `"heading"` (defaults to `"span"`). Pass the heading
+   *   element that reflects this text's place in the document outline.
+   * - **Required** for deprecated heading variants (`"heading1"`,
+   *   `"heading2"`, `"heading3"`).
    * - **Optional** for body variants (defaults to `"p"`) and monospace
    *   variants (defaults to `"span"`).
    */
@@ -284,8 +337,8 @@ export interface TextProps {
  *
  * @example
  * ```tsx
- * <Text variant="heading1" as="h1">Page Title</Text>
- * <Text variant="heading2" as="h2">Section Title</Text>
+ * <Text variant="heading" size="lg" as="h1">Page Title</Text>
+ * <Text variant="heading" as="h2">Section Title</Text>
  * <Text>Default body text</Text>
  * ```
  */
@@ -304,16 +357,22 @@ function _Text<Variant extends TextVariant = "body">(
   ref: ForwardedRef<HTMLElement>,
 ) {
   const isCopy = ["body", "secondary", "success", "error"].includes(variant);
-  const isMono = ["mono", "mono-secondary"].includes(variant);
+  const isDeprecatedHeading = isDeprecatedHeadingVariant(variant);
 
-  // Heading variants no longer auto-select h1/h2/h3 to avoid coupling visual
-  // presentation to semantic HTML. Use the `as` prop to set the appropriate
-  // heading level for your document outline (e.g., as="h2").
+  if (process.env.NODE_ENV !== "production" && isDeprecatedHeading) {
+    console.warn(
+      `[Kumo Text]: variant="${variant}" is deprecated. Use variant="heading" and set size and as explicitly.`,
+    );
+  }
+
+  // Heading variants do not auto-select h1/h2/h3, keeping visual presentation
+  // separate from the document outline. Use `as` to opt into semantic HTML.
   const Component = useMemo(() => {
     if (as) return as;
     if (["mono", "mono-secondary"].includes(variant)) return "span";
-    // Headings and body text default to span; use `as` for semantic elements
-    if (["heading1", "heading2", "heading3"].includes(variant)) return "span";
+    if (variant === "heading" || isDeprecatedHeadingVariant(variant)) {
+      return "span";
+    }
     return "p";
   }, [variant, as]);
 
@@ -330,19 +389,8 @@ function _Text<Variant extends TextVariant = "body">(
           variant,
           KUMO_TEXT_DEFAULT_VARIANTS.variant,
         ).classes,
-        isCopy
-          ? resolveVariant(
-              KUMO_TEXT_VARIANTS.size,
-              size,
-              KUMO_TEXT_DEFAULT_VARIANTS.size,
-            ).classes
-          : "",
+        resolveTextSizeClasses(variant, size),
         isCopy && bold ? "font-medium" : "",
-        // Monospace fonts need to be 1pt smaller than body text to optically match
-        isMono &&
-          (size === "lg"
-            ? KUMO_TEXT_VARIANTS.size.base.classes
-            : KUMO_TEXT_VARIANTS.size.sm.classes),
         truncate && "min-w-0 truncate",
         DANGEROUS_className,
       )}

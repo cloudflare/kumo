@@ -1,0 +1,160 @@
+---
+import { Badge, Link, type BadgeVariant } from "@cloudflare/kumo";
+import { CheckCircleIcon } from "@phosphor-icons/react";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const variants = [
+  { value: "primary", label: "Primary" },
+  { value: "secondary", label: "Secondary" },
+  { value: "error", label: "Error" },
+  { value: "warning", label: "Warning" },
+  { value: "success", label: "Success" },
+  { value: "destructive", label: "Destructive" },
+  { value: "info", label: "Info" },
+  { value: "beta", label: "Beta" },
+  { value: "outline", label: "Outline" },
+  { value: "red", label: "Red" },
+  { value: "green", label: "Green" },
+  { value: "neutral", label: "Neutral" },
+  { value: "orange", label: "Orange" },
+  { value: "purple", label: "Purple" },
+  { value: "teal", label: "Teal" },
+  { value: "teal-subtle", label: "Teal subtle" },
+  { value: "blue", label: "Blue" },
+] satisfies Array<{ value: BadgeVariant; label: string }>;
+
+const dotVariants = [
+  { value: "success", label: "Success" },
+  { value: "warning", label: "Warning" },
+  { value: "error", label: "Error" },
+  { value: "neutral", label: "Neutral" },
+] satisfies Array<{ value: BadgeVariant; label: string }>;
+---
+
+<BaseLayout title="Badge test">
+  <main class="mx-auto mb-64 max-w-5xl space-y-12 p-6 md:p-12">
+    <header class="grid gap-2">
+      <h1 class="text-2xl font-semibold text-kumo-strong">Badge test</h1>
+      <p class="text-sm text-kumo-subtle">
+        Visual fixtures for badge variants and prop combinations. Press <kbd
+          class="rounded bg-kumo-tint px-1.5 py-0.5 text-xs">D</kbd
+        > to toggle dark mode, and hover linked badges to verify their rings.
+      </p>
+    </header>
+
+    <section
+      class="grid gap-4"
+      data-vr-demo
+      data-vr-section="filled-variants"
+      data-vr-title="Filled badge variants"
+    >
+      <div class="grid gap-1">
+        <h2 class="text-xl font-semibold text-kumo-default">
+          Filled variants
+        </h2>
+        <p class="text-sm text-kumo-subtle">
+          Every color variant rendered plain, with an icon, and inside a link.
+        </p>
+      </div>
+
+      <div
+        class="grid gap-3 rounded-lg border border-kumo-line bg-kumo-base px-5 py-4"
+      >
+        <div
+          class="hidden grid-cols-[8rem_repeat(3,minmax(0,1fr))] gap-4 border-b border-kumo-line pb-2 text-sm font-medium text-kumo-subtle md:grid"
+          aria-hidden="true"
+        >
+          <span>Variant</span>
+          <span>Plain</span>
+          <span>Icon</span>
+          <span>Linked</span>
+        </div>
+
+        {
+          variants.map(({ value, label }) => (
+            <div
+              class="grid items-center gap-3 border-b border-kumo-line pb-3 last:border-b-0 last:pb-0 md:grid-cols-[8rem_repeat(3,minmax(0,1fr))] md:gap-4"
+              id={`filled-${value}`}
+            >
+              <p class="text-sm font-medium text-kumo-default">{label}</p>
+              <Badge variant={value}>{label}</Badge>
+              <Badge icon={CheckCircleIcon} variant={value}>
+                {label}
+              </Badge>
+              <Link href={`#filled-${value}`} variant="plain">
+                <Badge variant={value}>{label}</Badge>
+              </Link>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section
+      class="grid gap-4"
+      data-vr-demo
+      data-vr-section="dot-variants"
+      data-vr-title="Dot badge variants"
+    >
+      <div class="grid gap-1">
+        <h2 class="text-xl font-semibold text-kumo-default">Dot variants</h2>
+        <p class="text-sm text-kumo-subtle">
+          Supported dot colors rendered plain and inside a link. Dot badges do
+          not accept icons.
+        </p>
+      </div>
+
+      <div
+        class="grid gap-3 rounded-lg border border-kumo-line bg-kumo-base px-5 py-4"
+      >
+        {
+          dotVariants.map(({ value, label }) => (
+            <div
+              class="flex flex-wrap items-center gap-4 border-b border-kumo-line pb-3 last:border-b-0 last:pb-0"
+              id={`dot-${value}`}
+            >
+              <Badge appearance="dot" variant={value}>
+                {label}
+              </Badge>
+              <Link href={`#dot-${value}`} variant="plain">
+                <Badge appearance="dot" variant={value}>
+                  {label}
+                </Badge>
+              </Link>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section
+      class="grid gap-4"
+      data-vr-demo
+      data-vr-section="content-combinations"
+      data-vr-title="Badge content combinations"
+    >
+      <div class="grid gap-1">
+        <h2 class="text-xl font-semibold text-kumo-default">
+          Content combinations
+        </h2>
+        <p class="text-sm text-kumo-subtle">
+          Default props, nested content, a custom class, and combined icon and
+          link treatments.
+        </p>
+      </div>
+
+      <div
+        class="flex flex-wrap items-center gap-4 rounded-lg border border-kumo-line bg-kumo-base px-5 py-4"
+      >
+        <Badge>Default</Badge>
+        <Badge variant="secondary"><span>Nested content</span></Badge>
+        <Badge className="px-3" variant="info">Custom padding</Badge>
+        <Link href="#content-combinations" variant="plain">
+          <Badge icon={CheckCircleIcon} variant="outline">
+            Linked with icon
+          </Badge>
+        </Link>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

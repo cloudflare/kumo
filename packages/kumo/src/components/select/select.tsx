@@ -207,6 +207,8 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * ```
      */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
+    /** Replaces the trigger element while preserving Select behavior. */
+    render?: SelectBase.Trigger.Props["render"];
     className?: string;
     /**
      * Data structure of items rendered in the popup.
@@ -278,6 +280,8 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 export interface SelectProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Replaces the trigger element while preserving Select behavior. */
+  render?: SelectBase.Trigger.Props["render"];
   /** Size of the select trigger. Matches Input component sizes. */
   size?: KumoSelectSize;
   /**
@@ -347,6 +351,7 @@ export interface SelectOptionProps {
 export function Select<T, Multiple extends boolean | undefined = false>({
   children,
   className,
+  render,
   renderValue,
   label,
   hideLabel,
@@ -443,48 +448,54 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     </SelectBase.Label>
   ) : null;
 
+  const selectTrigger = (
+    <SelectBase.Trigger
+      data-kumo-component="Select"
+      data-kumo-part="trigger"
+      render={render}
+      className={cn(
+        selectVariants({ size }),
+        props.disabled && "cursor-not-allowed opacity-50",
+        error &&
+          "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
+        className,
+      )}
+      aria-label={triggerAriaLabel}
+      aria-labelledby={triggerLabelledBy}
+    >
+      {loading ? (
+        <SkeletonLine className="w-32" />
+      ) : (
+        <SelectBase.Value
+          placeholder={placeholder}
+          className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
+        >
+          {valueChildrenFn}
+        </SelectBase.Value>
+      )}
+      <SelectBase.Icon
+        className={cn(
+          "flex shrink-0 items-center",
+          triggerIconStyles[size].className,
+        )}
+      >
+        <CaretUpDownIcon
+          size={triggerIconStyles[size].iconSize}
+          className="fill-current"
+        />
+      </SelectBase.Icon>
+    </SelectBase.Trigger>
+  );
+
   const selectControl = (
     <SelectBase.Root
       {...baseProps}
       items={normalizedItems}
       disabled={loading || props.disabled}
+      required={required}
     >
       {selectLabelNode}
-      <SelectBase.Trigger
-        data-kumo-component="Select"
-        data-kumo-part="trigger"
-        className={cn(
-          selectVariants({ size }),
-          props.disabled && "cursor-not-allowed opacity-50",
-          error &&
-            "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
-          className,
-        )}
-        aria-label={triggerAriaLabel}
-        aria-labelledby={triggerLabelledBy}
-      >
-        {loading ? (
-          <SkeletonLine className="w-32" />
-        ) : (
-          <SelectBase.Value
-            placeholder={placeholder}
-            className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
-          >
-            {valueChildrenFn}
-          </SelectBase.Value>
-        )}
-        <SelectBase.Icon
-          className={cn(
-            "flex shrink-0 items-center",
-            triggerIconStyles[size].className,
-          )}
-        >
-          <CaretUpDownIcon
-            size={triggerIconStyles[size].iconSize}
-            className="fill-current"
-          />
-        </SelectBase.Icon>
-      </SelectBase.Trigger>
+      {selectTrigger}
       <SelectBase.Portal container={container}>
         <SelectBase.Positioner>
           <SelectBase.Popup
