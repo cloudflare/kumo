@@ -75,6 +75,24 @@ export interface KumoSelectVariantsProps {
   size?: KumoSelectSize;
 }
 
+/** Base UI positioning controls forwarded to Select's popup. */
+type SelectPositionerProps = Pick<
+  SelectBase.Positioner.Props,
+  | "align"
+  | "alignItemWithTrigger"
+  | "alignOffset"
+  | "anchor"
+  | "arrowPadding"
+  | "collisionAvoidance"
+  | "collisionBoundary"
+  | "collisionPadding"
+  | "disableAnchorTracking"
+  | "positionMethod"
+  | "side"
+  | "sideOffset"
+  | "sticky"
+>;
+
 export function selectVariants({
   size = KUMO_SELECT_DEFAULT_VARIANTS.size,
 }: KumoSelectVariantsProps = {}) {
@@ -253,26 +271,8 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
-    /**
-     * Preferred side of the trigger to place the popup on. The popup still
-     * flips automatically when the preferred side lacks space.
-     * @default "bottom"
-     */
-    side?: SelectBase.Positioner.Props["side"];
-    /** Gap in px between the trigger and the popup. @default 4 */
-    sideOffset?: SelectBase.Positioner.Props["sideOffset"];
-    /** Alignment of the popup relative to the trigger. @default "start" */
-    align?: SelectBase.Positioner.Props["align"];
-    /** Additional offset along the alignment axis, in px. */
-    alignOffset?: SelectBase.Positioner.Props["alignOffset"];
-    /**
-     * When `true`, overlays the popup on the trigger so the selected option's
-     * text aligns with the trigger's value text, emulating a native `<select>`.
-     * Opt-in: Kumo anchors to `side` by default for predictable placement.
-     * @default false
-     */
-    alignItemWithTrigger?: boolean;
-  };
+  } &
+  SelectPositionerProps;
 
 /**
  * Select component props.
@@ -296,7 +296,7 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
  * </Select>
  * ```
  */
-export interface SelectProps {
+export interface SelectProps extends SelectPositionerProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Replaces the trigger element while preserving Select behavior. */
@@ -339,24 +339,6 @@ export interface SelectProps {
   description?: ReactNode;
   /** Error message string or validation error object with `match` key. */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
-  /**
-   * Preferred side of the trigger to place the popup on. The popup still flips
-   * automatically when the preferred side lacks space.
-   * @default "bottom"
-   */
-  side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end";
-  /** Gap in px between the trigger and the popup. @default 4 */
-  sideOffset?: number;
-  /** Alignment of the popup relative to the trigger. @default "start" */
-  align?: "start" | "center" | "end";
-  /** Additional offset along the alignment axis, in px. */
-  alignOffset?: number;
-  /**
-   * When `true`, overlays the popup on the trigger so the selected option's text
-   * aligns with the trigger's value text, emulating a native `<select>`.
-   * @default false
-   */
-  alignItemWithTrigger?: boolean;
 }
 
 /**
@@ -405,6 +387,14 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   align = "start",
   alignOffset,
   alignItemWithTrigger = false,
+  anchor,
+  arrowPadding,
+  positionMethod,
+  collisionAvoidance,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  disableAnchorTracking,
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
@@ -553,6 +543,14 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           align={align}
           alignOffset={alignOffset}
           alignItemWithTrigger={alignItemWithTrigger}
+          anchor={anchor}
+          arrowPadding={arrowPadding}
+          positionMethod={positionMethod}
+          collisionAvoidance={collisionAvoidance}
+          collisionBoundary={collisionBoundary}
+          collisionPadding={collisionPadding}
+          sticky={sticky}
+          disableAnchorTracking={disableAnchorTracking}
         >
           <SelectBase.Popup
             className={cn(
