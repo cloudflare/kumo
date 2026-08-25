@@ -24,6 +24,11 @@ side lacks space. Placement is configurable:
 | `alignOffset`          | —          | additional offset along the alignment axis                    |
 | `alignItemWithTrigger` | `false`    | opt back in to the native `<select>` overlay                  |
 
+The remaining Base UI Positioner controls are also forwarded unchanged:
+`anchor`, `arrowPadding`, `positionMethod`, `collisionAvoidance`,
+`collisionBoundary`, `collisionPadding`, `sticky`, and
+`disableAnchorTracking`.
+
 The popup also now tracks the trigger width via `min-w-(--anchor-width)` instead
 of `min-w-[calc(var(--anchor-width)+3px)]`, which existed to visually offset the
 old item-alignment shift.
