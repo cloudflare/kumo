@@ -16,13 +16,13 @@ The popup now prefers `bottom` placement and is offset from the trigger, with
 Base UI's collision avoidance still flipping it automatically when the preferred
 side lacks space. Placement is configurable:
 
-| prop | default | notes |
-| ---- | ------- | ----- |
-| `side` | `"bottom"` | preferred side; still flips automatically on collision |
-| `sideOffset` | `4` | gap between trigger and popup, matching Combobox/Autocomplete |
-| `align` | `"start"` | alignment along the trigger edge |
-| `alignOffset` | — | additional offset along the alignment axis |
-| `alignItemWithTrigger` | `false` | opt back in to the native `<select>` overlay |
+| prop                   | default    | notes                                                         |
+| ---------------------- | ---------- | ------------------------------------------------------------- |
+| `side`                 | `"bottom"` | preferred side; still flips automatically on collision        |
+| `sideOffset`           | `4`        | gap between trigger and popup, matching Combobox/Autocomplete |
+| `align`                | `"start"`  | alignment along the trigger edge                              |
+| `alignOffset`          | —          | additional offset along the alignment axis                    |
+| `alignItemWithTrigger` | `false`    | opt back in to the native `<select>` overlay                  |
 
 The popup also now tracks the trigger width via `min-w-(--anchor-width)` instead
 of `min-w-[calc(var(--anchor-width)+3px)]`, which existed to visually offset the
