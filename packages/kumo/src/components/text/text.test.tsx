@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 import { render } from "@testing-library/react";
-import { Text } from "./text";
+import { Text, textVariants } from "./text";
 
 describe("Text", () => {
   it("renders heading as a 16px semibold span by default", () => {
@@ -44,6 +44,50 @@ describe("Text", () => {
   it("renders body variant as <p> by default", () => {
     const { container } = render(<Text>Body copy</Text>);
     expect(container.querySelector("p")).toBeTruthy();
+  });
+
+  it("inherits line height for every body font size", () => {
+    expect(textVariants({ variant: "body", size: "xs" })).toContain(
+      "text-xs/[inherit]",
+    );
+    expect(textVariants({ variant: "body", size: "sm" })).toContain(
+      "text-sm/[inherit]",
+    );
+    expect(textVariants({ variant: "body", size: "base" })).toContain(
+      "text-base/[inherit]",
+    );
+    expect(textVariants({ variant: "body", size: "lg" })).toContain(
+      "text-lg/[inherit]",
+    );
+    expect(textVariants({ variant: "secondary" })).toContain(
+      "text-base/[inherit]",
+    );
+    expect(textVariants({ variant: "success" })).toContain(
+      "text-base/[inherit]",
+    );
+    expect(textVariants({ variant: "error" })).toContain("text-base/[inherit]");
+    expect(textVariants({ variant: "mono" })).toContain("text-sm/[inherit]");
+    expect(textVariants({ variant: "mono-secondary" })).toContain(
+      "text-sm/[inherit]",
+    );
+  });
+
+  it("keeps the configured line height for heading variants", () => {
+    expect(textVariants({ variant: "heading" }).split(" ")).toContain(
+      "text-lg",
+    );
+    expect(
+      textVariants({ variant: "heading", size: "lg" }).split(" "),
+    ).toContain("text-xl");
+    expect(textVariants({ variant: "heading1" }).split(" ")).toContain(
+      "text-3xl",
+    );
+    expect(textVariants({ variant: "heading2" }).split(" ")).toContain(
+      "text-2xl",
+    );
+    expect(textVariants({ variant: "heading3" }).split(" ")).toContain(
+      "text-lg",
+    );
   });
 
   it("body variant supports optional `as` override", () => {
