@@ -1,6 +1,6 @@
 import { Select as SelectBase } from "@base-ui/react/select";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
-import { createContext, forwardRef, useContext, useId } from "react";
+import { forwardRef, useId } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
@@ -94,61 +94,6 @@ const triggerIconStyles: Record<
   base: { iconSize: 16, className: "text-kumo-subtle" },
   lg: { iconSize: 18, className: "text-kumo-subtle" },
 };
-
-/**
- * Popup chrome scaled to the trigger `size`.
- *
- * `Select.Positioner` relies on Base UI's `alignItemWithTrigger`, which overlays
- * the popup so the selected option's text lands on top of the trigger's value
- * text. That only reads correctly when an option row is about as tall as the
- * trigger and indented to the same depth — Base UI shifts the popup to
- * compensate for any difference, so a mismatch visibly detaches the popup from
- * its anchor.
- *
- * Each entry therefore mirrors the matching `KUMO_INPUT_VARIANTS.size` trigger:
- * - row height (`text` line-height + `py` × 2) ≈ trigger `h-*`
- * - text indent (`mx` + `px`) === trigger `px-*`
- *
- * `base` is intentionally left at its historical values; it was already within
- * a few pixels and is the default every consumer inherits.
- */
-const selectSizeStyles: Record<
-  KumoInputSize,
-  { popup: string; option: string; groupLabel: string }
-> = {
-  // trigger: h-5 (20px), px-1.5 (6px), text-xs (12/16) → row 16+4=20, indent 2+4=6
-  xs: {
-    popup: "py-1",
-    option: "mx-0.5 gap-1 rounded-sm px-1 py-0.5 text-xs",
-    groupLabel: "px-1.5 py-0.5 text-xs",
-  },
-  // trigger: h-6.5 (26px), px-2 (8px), text-xs (12/16) → row 16+10=26, indent 4+4=8
-  sm: {
-    popup: "py-1",
-    option: "mx-1 gap-1.5 rounded-sm px-1 py-1.25 text-xs",
-    groupLabel: "px-2 py-1 text-xs",
-  },
-  // trigger: h-9 (36px), px-3 (12px), text-base (14/21) → row 21+12=33, indent 6+8=14
-  base: {
-    popup: "py-1.5",
-    option: "mx-1.5 gap-2 rounded px-2 py-1.5 text-base",
-    groupLabel: "px-3.5 py-1.5 text-sm",
-  },
-  // trigger: h-10 (40px), px-4 (16px), text-base (14/21) → row 21+16=37, indent 6+10=16
-  lg: {
-    popup: "py-1.5",
-    option: "mx-1.5 gap-2 rounded px-2.5 py-2 text-base",
-    groupLabel: "px-4 py-1.5 text-sm",
-  },
-};
-
-/**
- * Propagates the trigger `size` to `Select.Option` / `Select.GroupLabel`, which
- * render inside the portalled popup and so cannot inherit it via props.
- */
-const SelectSizeContext = createContext<KumoInputSize>(
-  KUMO_SELECT_DEFAULT_VARIANTS.size,
-);
 
 /**
  * Shape for items that carry extra metadata (disabled state, tooltip).
@@ -308,6 +253,25 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
+    /**
+     * Preferred side of the trigger to place the popup on. The popup still
+     * flips automatically when the preferred side lacks space.
+     * @default "bottom"
+     */
+    side?: SelectBase.Positioner.Props["side"];
+    /** Gap in px between the trigger and the popup. @default 4 */
+    sideOffset?: SelectBase.Positioner.Props["sideOffset"];
+    /** Alignment of the popup relative to the trigger. @default "start" */
+    align?: SelectBase.Positioner.Props["align"];
+    /** Additional offset along the alignment axis, in px. */
+    alignOffset?: SelectBase.Positioner.Props["alignOffset"];
+    /**
+     * When `true`, overlays the popup on the trigger so the selected option's
+     * text aligns with the trigger's value text, emulating a native `<select>`.
+     * Opt-in: Kumo anchors to `side` by default for predictable placement.
+     * @default false
+     */
+    alignItemWithTrigger?: boolean;
   };
 
 /**
@@ -375,6 +339,24 @@ export interface SelectProps {
   description?: ReactNode;
   /** Error message string or validation error object with `match` key. */
   error?: string | { message: ReactNode; match: FieldErrorMatch };
+  /**
+   * Preferred side of the trigger to place the popup on. The popup still flips
+   * automatically when the preferred side lacks space.
+   * @default "bottom"
+   */
+  side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end";
+  /** Gap in px between the trigger and the popup. @default 4 */
+  sideOffset?: number;
+  /** Alignment of the popup relative to the trigger. @default "start" */
+  align?: "start" | "center" | "end";
+  /** Additional offset along the alignment axis, in px. */
+  alignOffset?: number;
+  /**
+   * When `true`, overlays the popup on the trigger so the selected option's text
+   * aligns with the trigger's value text, emulating a native `<select>`.
+   * @default false
+   */
+  alignItemWithTrigger?: boolean;
 }
 
 /**
@@ -418,6 +400,11 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   error,
   required,
   container: containerProp,
+  side = "bottom",
+  sideOffset = 4,
+  align = "start",
+  alignOffset,
+  alignItemWithTrigger = false,
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
@@ -543,45 +530,49 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   );
 
   const selectControl = (
-    <SelectSizeContext.Provider value={size}>
-      <SelectBase.Root
-        {...baseProps}
-        items={normalizedItems}
-        disabled={loading || props.disabled}
-        required={required}
-      >
-        {selectLabelNode}
-        {selectTrigger}
-        <SelectBase.Portal container={container}>
-          {/*
-            `sideOffset` only applies to the fallback path. When
-            `alignItemWithTrigger` is active Base UI overlays the popup on the
-            trigger and discards the anchored styles, so this purely adds
-            breathing room when it falls back to anchoring below/above —
-            matching Combobox and Autocomplete.
-          */}
-          <SelectBase.Positioner sideOffset={4}>
-            <SelectBase.Popup
+    <SelectBase.Root
+      {...baseProps}
+      items={normalizedItems}
+      disabled={loading || props.disabled}
+      required={required}
+    >
+      {selectLabelNode}
+      {selectTrigger}
+      <SelectBase.Portal container={container}>
+        {/*
+          Anchor to `side` (default `bottom`) rather than Base UI's default
+          `alignItemWithTrigger`, which overlays the popup on the trigger to
+          emulate a native `<select>`. Collision avoidance still flips the popup
+          automatically when the preferred side lacks space, and consumers can
+          pin placement explicitly via `side` / `align`, or opt back into the
+          native overlay with `alignItemWithTrigger`.
+        */}
+        <SelectBase.Positioner
+          side={side}
+          sideOffset={sideOffset}
+          align={align}
+          alignOffset={alignOffset}
+          alignItemWithTrigger={alignItemWithTrigger}
+        >
+          <SelectBase.Popup
+            className={cn(
+              "flex flex-col",
+              "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
+              "rounded-lg shadow-lg ring ring-kumo-line",
+              "max-w-(--available-width) min-w-(--anchor-width) py-1.5",
+            )}
+          >
+            <SelectBase.List
               className={cn(
-                "flex flex-col",
-                "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
-                "rounded-lg shadow-lg ring ring-kumo-line",
-                "min-w-[calc(var(--anchor-width)+3px)]",
-                selectSizeStyles[size].popup,
+                "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-none",
               )}
             >
-              <SelectBase.List
-                className={cn(
-                  "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-none",
-                )}
-              >
-                {renderedChildren}
-              </SelectBase.List>
-            </SelectBase.Popup>
-          </SelectBase.Positioner>
-        </SelectBase.Portal>
-      </SelectBase.Root>
-    </SelectSizeContext.Provider>
+              {renderedChildren}
+            </SelectBase.List>
+          </SelectBase.Popup>
+        </SelectBase.Positioner>
+      </SelectBase.Portal>
+    </SelectBase.Root>
   );
 
   // Use Field wrapper when label is provided and not hidden
@@ -647,8 +638,6 @@ type OptionProps<T> = {
 };
 
 function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
-  const size = useContext(SelectSizeContext);
-
   return (
     <SelectBase.Item
       data-kumo-component="Select"
@@ -656,8 +645,7 @@ function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
       value={value}
       disabled={disabled}
       className={cn(
-        "group flex cursor-pointer items-center justify-between outline-none",
-        selectSizeStyles[size].option,
+        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base outline-none",
         "focus-visible:z-50 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
         "data-highlighted:bg-kumo-tint",
         "data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
@@ -722,22 +710,17 @@ type GroupLabelProps = {
  * ```
  */
 const GroupLabel = forwardRef<HTMLDivElement, GroupLabelProps>(
-  ({ children, className }, ref) => {
-    const size = useContext(SelectSizeContext);
-
-    return (
-      <SelectBase.GroupLabel
-        ref={ref}
-        className={cn(
-          "font-semibold text-kumo-subtle",
-          selectSizeStyles[size].groupLabel,
-          className,
-        )}
-      >
-        {children}
-      </SelectBase.GroupLabel>
-    );
-  },
+  ({ children, className }, ref) => (
+    <SelectBase.GroupLabel
+      ref={ref}
+      className={cn(
+        "px-3.5 py-1.5 text-sm font-semibold text-kumo-subtle",
+        className,
+      )}
+    >
+      {children}
+    </SelectBase.GroupLabel>
+  ),
 );
 GroupLabel.displayName = "Select.GroupLabel";
 
