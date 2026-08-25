@@ -271,8 +271,7 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
-  } &
-  SelectPositionerProps;
+  } & SelectPositionerProps;
 
 /**
  * Select component props.
