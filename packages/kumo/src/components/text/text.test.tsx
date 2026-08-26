@@ -1,8 +1,13 @@
-import { describe, expect, it, vi } from "vite-plus/test";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { render } from "@testing-library/react";
 import { Text, textVariants } from "./text";
 
 describe("Text", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
   it("renders heading as a 16px semibold span by default", () => {
     const { container } = render(<Text variant="heading">Heading</Text>);
     const heading = container.querySelector("span");
@@ -26,20 +31,39 @@ describe("Text", () => {
     expect(heading?.classList.contains("font-semibold")).toBe(true);
   });
 
-  it("warns when a deprecated heading variant is used", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it.each(["heading1", "heading2", "heading3"] as const)(
+    "warns in development when deprecated variant %s is used",
+    (variant) => {
+      vi.stubEnv("NODE_ENV", "development");
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    render(
-      <Text variant="heading1" as="h1">
-        Legacy heading
-      </Text>,
-    );
+      render(
+        <Text variant={variant} as="h1">
+          Legacy heading
+        </Text>,
+      );
 
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('variant="heading1" is deprecated'),
-    );
-    warn.mockRestore();
-  });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(`variant="${variant}" is deprecated`),
+      );
+    },
+  );
+
+  it.each(["heading1", "heading2", "heading3"] as const)(
+    "does not warn in production when deprecated variant %s is used",
+    (variant) => {
+      vi.stubEnv("NODE_ENV", "production");
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <Text variant={variant} as="h1">
+          Legacy heading
+        </Text>,
+      );
+
+      expect(warn).not.toHaveBeenCalled();
+    },
+  );
 
   it("renders body variant as <p> by default", () => {
     const { container } = render(<Text>Body copy</Text>);
