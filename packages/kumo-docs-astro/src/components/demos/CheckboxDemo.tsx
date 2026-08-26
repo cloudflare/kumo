@@ -113,27 +113,31 @@ export function CheckboxGroupErrorDemo() {
   const hasError = preferences.length === 0;
 
   return (
-    <Checkbox.Group
-      legend="Required preferences"
-      error={
-        hasError ? "Please select at least one notification method" : undefined
-      }
-      description={
-        hasError ? undefined : "At least one notification method selected"
-      }
-      value={preferences}
-      onValueChange={setPreferences}
-    >
-      <Checkbox.Item
-        value="email"
-        label="Email"
-        variant={hasError ? "error" : undefined}
-      />
-      <Checkbox.Item
-        value="sms"
-        label="SMS"
-        variant={hasError ? "error" : undefined}
-      />
-    </Checkbox.Group>
+    <div className="w-full max-w-xs">
+      <Checkbox.Group
+        legend="Required preferences"
+        error={
+          hasError
+            ? "Please select at least one notification method"
+            : undefined
+        }
+        description={
+          hasError ? undefined : "At least one notification method selected"
+        }
+        value={preferences}
+        onValueChange={setPreferences}
+      >
+        <Checkbox.Item
+          value="email"
+          label="Email"
+          variant={hasError ? "error" : undefined}
+        />
+        <Checkbox.Item
+          value="sms"
+          label="SMS"
+          variant={hasError ? "error" : undefined}
+        />
+      </Checkbox.Group>
+    </div>
   );
 }
