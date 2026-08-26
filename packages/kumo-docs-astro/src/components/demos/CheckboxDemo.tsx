@@ -109,12 +109,14 @@ export function CheckboxLegendCustomDemo() {
 }
 
 export function CheckboxGroupErrorDemo() {
+  const [preferences, setPreferences] = useState<string[]>([]);
+
   return (
     <Checkbox.Group
       legend="Required preferences"
       error="Please select at least one notification method"
-      value={[]}
-      onValueChange={() => {}}
+      value={preferences}
+      onValueChange={setPreferences}
     >
       <Checkbox.Item value="email" label="Email" variant="error" />
       <Checkbox.Item value="sms" label="SMS" variant="error" />
