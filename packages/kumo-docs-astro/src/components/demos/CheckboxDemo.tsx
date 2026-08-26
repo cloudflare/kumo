@@ -118,6 +118,9 @@ export function CheckboxGroupErrorDemo() {
       error={
         hasError ? "Please select at least one notification method" : undefined
       }
+      description={
+        hasError ? undefined : "At least one notification method selected"
+      }
       value={preferences}
       onValueChange={setPreferences}
     >
