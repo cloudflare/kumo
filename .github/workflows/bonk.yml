@@ -48,8 +48,7 @@ jobs:
           CLOUDFLARE_GATEWAY_ID: ${{ secrets.CF_AI_GATEWAY_NAME }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
           # Auto-approve tool calls in CI only, so Bonk doesn't get stuck on
-          # approval prompts. This is intentionally not in opencode.jsonc so
-          # local/interactive sessions keep their normal permission prompts.
+          # approval prompts. The model itself is registered in ./opencode.jsonc.
           OPENCODE_CONFIG_CONTENT: '{"permission":"allow"}'
         with:
           oidc_base_url: https://ask-bonk.cloudflare-exponent.workers.dev/auth
