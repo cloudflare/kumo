@@ -7,6 +7,11 @@ on:
     types: [created]
   pull_request_review:
     types: [submitted]
+  # TEMPORARY (remove before merge): lets us test the workflow from the PR
+  # branch itself. pull_request runs the branch's workflow definition, unlike
+  # issue_comment which always runs main's. Scoped to this branch only.
+  pull_request:
+    types: [opened, synchronize]
 
 concurrency:
   # intentionally hardcoded so that all Bonk workflows coexist peacefully
@@ -15,7 +20,11 @@ concurrency:
 
 jobs:
   bonk:
-    if: github.event.sender.type != 'Bot' && contains(github.event.comment.body, '/bonk') && !contains(github.event.comment.body, '/bigbonk')
+    # TEMPORARY (remove before merge): also run on pull_request events from this
+    # test branch so we can validate the config without the main-branch comment loop.
+    if: |
+      (github.event_name == 'pull_request' && github.head_ref == 'mrothenberg/bonk-fix-model-id') ||
+      (github.event.sender.type != 'Bot' && contains(github.event.comment.body, '/bonk') && !contains(github.event.comment.body, '/bigbonk'))
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -62,3 +71,6 @@ jobs:
           mentions: "/bonk"
           opencode_version: "1.17.7"
           permissions: write
+          # TEMPORARY (remove before merge): canned prompt for the pull_request
+          # test path, which has no triggering comment body.
+          prompt: ${{ github.event_name == 'pull_request' && 'Reply with a short pong to confirm the model works, then stop.' || '' }}
