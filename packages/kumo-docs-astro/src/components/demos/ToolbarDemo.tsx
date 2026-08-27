@@ -1,5 +1,6 @@
 import { Combobox, InputGroup, Select, Toolbar } from "@cloudflare/kumo";
 import {
+  BookOpenIcon,
   DownloadSimpleIcon,
   FunnelSimpleIcon,
   GearSixIcon,
@@ -76,6 +77,18 @@ export function ToolbarActionsDemo() {
   return (
     <Toolbar>
       <Toolbar.Button icon={UploadSimpleIcon}>Upload</Toolbar.Button>
+      <Toolbar.Button icon={DownloadSimpleIcon}>Download</Toolbar.Button>
+    </Toolbar>
+  );
+}
+
+/** Toolbar links use LinkButton for navigation with toolbar styling. */
+export function ToolbarLinksDemo() {
+  return (
+    <Toolbar>
+      <Toolbar.Link href="/components/button" icon={BookOpenIcon}>
+        Button documentation
+      </Toolbar.Link>
       <Toolbar.Button icon={DownloadSimpleIcon}>Download</Toolbar.Button>
     </Toolbar>
   );

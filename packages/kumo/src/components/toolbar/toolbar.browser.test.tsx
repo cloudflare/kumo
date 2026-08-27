@@ -76,6 +76,37 @@ describe("Toolbar.Button interactions", () => {
   });
 });
 
+describe("Toolbar.Link interactions", () => {
+  test("renders a LinkButton and participates in toolbar focus movement", async () => {
+    const { getByRole } = await render(
+      <Toolbar>
+        <Toolbar.Button>Before</Toolbar.Button>
+        <Toolbar.Link href="#docs" external>
+          Documentation
+        </Toolbar.Link>
+        <Toolbar.Button>After</Toolbar.Button>
+      </Toolbar>,
+    );
+
+    const before = getByRole("button", { name: "Before" });
+    const link = getByRole("link", { name: "Documentation" });
+    const after = getByRole("button", { name: "After" });
+
+    await expect
+      .element(link)
+      .toHaveAttribute("data-kumo-component", "Toolbar.Link");
+    await expect.element(link).toHaveAttribute("href", "#docs");
+    await expect.element(link).toHaveAttribute("target", "_blank");
+    await expect.element(link).toHaveAttribute("rel", "noopener noreferrer");
+
+    await before.click();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect.element(link).toHaveFocus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect.element(after).toHaveFocus();
+  });
+});
+
 describe("Toolbar popup control interactions", () => {
   test("Select opens and selects through a rendered Toolbar.Button", async () => {
     const { getByRole } = await render(
