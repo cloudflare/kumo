@@ -56,14 +56,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
           CLOUDFLARE_GATEWAY_ID: ${{ secrets.CF_AI_GATEWAY_NAME }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
-          # - permission:allow auto-approves tool calls in CI so Bonk doesn't
-          #   block on approval prompts.
-          # - small_model pins the lightweight/title model to the same gateway
-          #   model. opencode's default small_model for cloudflare-ai-gateway is
-          #   anthropic/claude-haiku-4.5, which this gateway stopped serving
-          #   (returns not_found_error) and which killed every run on the first
-          #   (title-generation) call before the main model was ever used.
-          OPENCODE_CONFIG_CONTENT: '{"permission":"allow","small_model":"cloudflare-ai-gateway/workers-ai/@cf/moonshotai/kimi-k2.6"}'
+          # Auto-approve tool calls in CI only, so Bonk doesn't get stuck on
+          # approval prompts. The model itself is registered in ./opencode.jsonc.
+          OPENCODE_CONFIG_CONTENT: '{"permission":"allow"}'
         with:
           oidc_base_url: https://ask-bonk.cloudflare-exponent.workers.dev/auth
           model: "cloudflare-ai-gateway/workers-ai/@cf/moonshotai/kimi-k2.6"
