@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Pagination } from "@cloudflare/kumo";
+import { useState } from 'react';
+import { Pagination } from '@cloudflare/kumo';
 
 export function PaginationBasicDemo() {
   const [page, setPage] = useState(1);
@@ -19,6 +19,21 @@ export function PaginationSimpleDemo() {
       perPage={10}
       totalCount={100}
       controls="simple"
+    />
+  );
+}
+
+/** Pagination for an API that reports whether another page exists, but not a total. */
+export function PaginationUnknownTotalDemo() {
+  const [page, setPage] = useState(1);
+  const hasNextPage = page < 3;
+
+  return (
+    <Pagination
+      text={() => `Page ${page}`}
+      page={page}
+      setPage={setPage}
+      hasNextPage={hasNextPage}
     />
   );
 }
@@ -84,7 +99,7 @@ export function PaginationPageSizeSelectorDemo() {
       <Pagination.Separator />
       <Pagination.PageSize
         value={perPage}
-        onChange={(size) => {
+        onChange={size => {
           setPerPage(size);
           setPage(1);
         }}
@@ -110,7 +125,7 @@ export function PaginationCustomPageSizeOptionsDemo() {
       <Pagination.Separator />
       <Pagination.PageSize
         value={perPage}
-        onChange={(size) => {
+        onChange={size => {
           setPerPage(size);
           setPage(1);
         }}
@@ -153,7 +168,7 @@ export function PaginationDropdownSelectorDemo() {
       <Pagination.Separator />
       <Pagination.PageSize
         value={perPage}
-        onChange={(size) => {
+        onChange={size => {
           setPerPage(size);
           setPage(1);
         }}
@@ -181,7 +196,7 @@ export function PaginationPageSizeRightDemo() {
         <Pagination.Separator />
         <Pagination.PageSize
           value={perPage}
-          onChange={(size) => {
+          onChange={size => {
             setPerPage(size);
             setPage(1);
           }}
@@ -202,19 +217,19 @@ export function PaginationI18nDemo() {
       perPage={10}
       totalCount={100}
       labels={{
-        firstPage: "Première page",
-        previousPage: "Page précédente",
-        nextPage: "Page suivante",
-        lastPage: "Dernière page",
-        pageNumber: "Numéro de page",
-        pageSize: "Taille de page",
+        firstPage: 'Première page',
+        previousPage: 'Page précédente',
+        nextPage: 'Page suivante',
+        lastPage: 'Dernière page',
+        pageNumber: 'Numéro de page',
+        pageSize: 'Taille de page'
       }}
     >
       <Pagination.Info>
         {({ pageShowingRange, totalCount }) => (
           <>
-            Affichage de{" "}
-            <span className="tabular-nums">{pageShowingRange}</span> sur{" "}
+            Affichage de{' '}
+            <span className="tabular-nums">{pageShowingRange}</span> sur{' '}
             <span className="tabular-nums">{totalCount}</span>
           </>
         )}
