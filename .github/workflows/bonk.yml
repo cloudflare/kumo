@@ -47,9 +47,14 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
           CLOUDFLARE_GATEWAY_ID: ${{ secrets.CF_AI_GATEWAY_NAME }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
+          # Registers the model with the cloudflare-ai-gateway provider (without
+          # this, opencode reports "Model not found") and auto-approves tool
+          # calls in CI so Bonk doesn't block on approval prompts.
+          OPENCODE_CONFIG_CONTENT: >-
+            {"permission":"allow","provider":{"cloudflare-ai-gateway":{"models":{"workers-ai/@cf/zai-org/glm-5.2":{"reasoning":true,"tool_call":true,"temperature":true,"limit":{"context":262144,"output":262144}}}}}}
         with:
           oidc_base_url: https://ask-bonk.cloudflare-exponent.workers.dev/auth
-          model: "cloudflare-ai-gateway/workers-ai/@cf/moonshotai/kimi-k2.7-code"
+          model: "cloudflare-ai-gateway/workers-ai/@cf/zai-org/glm-5.2"
           agent: kumo
           mentions: "/bonk"
           opencode_version: "1.18.23"
