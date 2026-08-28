@@ -14,6 +14,7 @@ import {
   ToolbarMixedControlsDemo,
   ToolbarInputGroupDemo,
   ToolbarActionsDemo,
+  ToolbarLinksDemo,
   ToolbarLabelsDemo,
   ToolbarSelectDemo,
   ToolbarComboboxDemo,
@@ -46,9 +47,9 @@ import {
 ## Usage
 
 Use `Toolbar` when multiple controls should read as one compact toolbar or
-filter card. Use `Toolbar.Button`, `Toolbar.Input`, and `Toolbar.InputGroup`
-directly. Compose Select and Combobox triggers with those toolbar controls
-through their `render` props.
+filter card. Use `Toolbar.Button`, `Toolbar.Link`, `Toolbar.Input`, and
+`Toolbar.InputGroup` directly. Compose Select and Combobox triggers with those
+toolbar controls through their `render` props.
 
 ```tsx
 import { InputGroup, Toolbar } from "@cloudflare/kumo";
@@ -80,6 +81,8 @@ Toolbar item components intentionally own grouped control presentation:
 - Every `Toolbar.*` control uses the `base` size by default.
 - The Toolbar `size` prop remains available for compatibility but is deprecated; omit it for the base size.
 - `Toolbar.Button` always renders with quiet toolbar button styling.
+- `Toolbar.Link` renders a `LinkButton` with quiet toolbar styling and
+  participates in arrow-key navigation.
 - `Toolbar.InputGroup` passes props directly to `InputGroup` with the resolved toolbar size.
 - Give Select `render={<Toolbar.Button />}` to compose its trigger into the toolbar.
 - Give `Combobox.TriggerInput` `render={<Toolbar.Input />}` for an editable toolbar combobox.
@@ -150,6 +153,15 @@ visually quiet and consistent.
 
 <ComponentExample demo="ToolbarActionsDemo">
   <ToolbarActionsDemo client:visible />
+</ComponentExample>
+
+### Links
+
+Use `Toolbar.Link` for navigation actions. It accepts `LinkButton` props except
+for `size` and `variant`, which are controlled by the Toolbar.
+
+<ComponentExample demo="ToolbarLinksDemo">
+  <ToolbarLinksDemo client:visible />
 </ComponentExample>
 
 ### Accessible Labels

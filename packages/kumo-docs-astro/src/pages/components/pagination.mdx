@@ -11,6 +11,7 @@ import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   PaginationBasicDemo,
   PaginationSimpleDemo,
+  PaginationUnknownTotalDemo,
   PaginationFullDemo,
   PaginationMidPageDemo,
   PaginationLargeDatasetDemo,
@@ -96,6 +97,42 @@ export default function Example() {
 </p>
 <ComponentExample demo="PaginationSimpleDemo">
   <PaginationSimpleDemo client:visible />
+</ComponentExample>
+
+### Unknown Totals
+
+<p>
+  Use `hasNextPage` when the data source does not return a total count. This is
+  common for cursor-based APIs, where calculating the total can be expensive or
+  unavailable. Set it from the response's next-page signal to keep Next enabled
+  only while another result set exists.
+</p>
+<p>
+  Without a total, users can only move sequentially, so Pagination hides the
+  first, last, and page-selector controls. The `page` value remains useful for
+  the UI, but your application is responsible for storing and sending the
+  cursor or continuation token for each request.
+</p>
+
+```tsx
+const [page, setPage] = useState(1);
+const { data } = useQuery({
+  queryKey: ["events", page],
+  queryFn: () => getEvents({ cursor: cursors[page - 1] }),
+});
+
+return (
+  <Pagination
+    page={page}
+    setPage={setPage}
+    hasNextPage={data.hasMore}
+    text={() => `Page ${page}`}
+  />
+);
+```
+
+<ComponentExample demo="PaginationUnknownTotalDemo">
+  <PaginationUnknownTotalDemo client:visible />
 </ComponentExample>
 
 ### Mid-Page State

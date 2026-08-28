@@ -7,7 +7,12 @@ import React, {
 import { Toolbar as ToolbarBase } from "@base-ui/react/toolbar";
 import type { InputState } from "@base-ui/react/input";
 import { cn } from "../../utils/cn";
-import { Button as KumoButton, type ButtonProps } from "../button/button";
+import {
+  Button as KumoButton,
+  LinkButton as KumoLinkButton,
+  type ButtonProps,
+  type LinkButtonProps,
+} from "../button/button";
 import { Input as KumoInput, type InputProps } from "../input/input";
 import { InputGroup } from "../input-group/input-group";
 
@@ -53,6 +58,8 @@ export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
 
 export type ToolbarButtonProps = Omit<ButtonProps, "size" | "variant"> &
   Pick<ToolbarBase.Button.Props, "focusableWhenDisabled">;
+
+export type ToolbarLinkProps = Omit<LinkButtonProps, "size" | "variant">;
 
 export type ToolbarInputProps = Omit<
   InputProps,
@@ -179,6 +186,35 @@ const Button = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
 
 Button.displayName = "Toolbar.Button";
 
+const Link = React.forwardRef<HTMLAnchorElement, ToolbarLinkProps>(
+  ({ children, className, shape, icon: IconComponent, ...props }, ref) => {
+    const toolbar = React.useContext(ToolbarSizeContext);
+    const resolvedShape =
+      shape ?? (children == null && IconComponent ? "square" : "base");
+
+    return (
+      <ToolbarBase.Link
+        ref={ref}
+        data-kumo-component="Toolbar.Link"
+        className={cn(className, TOOLBAR_CONTROL_STYLES)}
+        render={
+          <KumoLinkButton
+            icon={IconComponent}
+            shape={resolvedShape}
+            size={toolbar.size}
+            variant="ghost"
+          />
+        }
+        {...props}
+      >
+        {children}
+      </ToolbarBase.Link>
+    );
+  },
+);
+
+Link.displayName = "Toolbar.Link";
+
 const Input = React.forwardRef<HTMLInputElement, ToolbarInputProps>(
   ({ className, style, ...props }, ref) => {
     const toolbar = React.useContext(ToolbarSizeContext);
@@ -247,6 +283,7 @@ InputGroupRoot.displayName = "Toolbar.InputGroup";
 
 export const Toolbar = Object.assign(Root, {
   Button,
+  Link,
   Input,
   InputGroup: InputGroupRoot,
 });
