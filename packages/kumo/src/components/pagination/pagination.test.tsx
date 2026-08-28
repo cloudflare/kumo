@@ -3,27 +3,34 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Pagination } from "./pagination";
 
-function renderPagination({
-  page = 1,
-  perPage = 10,
-  totalCount = 100,
-  setPage = vi.fn(),
-  controls = "full" as const,
-  pageSelector,
-}: {
-  page?: number;
-  perPage?: number;
-  totalCount?: number;
-  setPage?: (page: number) => void;
-  controls?: "full" | "simple";
-  pageSelector?: "input" | "dropdown";
-} = {}) {
+function renderPagination(
+  options: {
+    page?: number;
+    perPage?: number;
+    totalCount?: number;
+    hasNextPage?: boolean;
+    setPage?: (page: number) => void;
+    controls?: "full" | "simple";
+    pageSelector?: "input" | "dropdown";
+  } = {},
+) {
+  const {
+    page = 1,
+    perPage = 10,
+    hasNextPage,
+    setPage = vi.fn(),
+    controls = "full" as const,
+    pageSelector,
+  } = options;
+  const totalCount = "totalCount" in options ? options.totalCount : 100;
+
   return render(
     <Pagination
       page={page}
       setPage={setPage}
       perPage={perPage}
       totalCount={totalCount}
+      hasNextPage={hasNextPage}
     >
       <Pagination.Info />
       <Pagination.Controls controls={controls} pageSelector={pageSelector} />
@@ -196,6 +203,42 @@ describe("Pagination", () => {
 
       expect(screen.getByLabelText("Previous page")).toBeTruthy();
       expect(screen.getByLabelText("Next page")).toBeTruthy();
+    });
+
+    it("uses hasNextPage when the total count is unknown", () => {
+      const setPage = vi.fn();
+      renderPagination({
+        page: 3,
+        totalCount: undefined,
+        hasNextPage: true,
+        controls: "simple",
+        setPage,
+      });
+
+      fireEvent.click(screen.getByLabelText("Next page"));
+
+      expect(setPage).toHaveBeenCalledWith(4);
+    });
+
+    it("disables next when an unknown-total list has no following page", () => {
+      renderPagination({
+        page: 3,
+        totalCount: undefined,
+        hasNextPage: false,
+        controls: "simple",
+      });
+
+      expect(screen.getByLabelText("Next page").hasAttribute("disabled")).toBe(
+        true,
+      );
+    });
+
+    it("limits unknown-total pagination to sequential controls", () => {
+      renderPagination({ totalCount: undefined, hasNextPage: true });
+
+      expect(screen.queryByLabelText("First page")).toBeNull();
+      expect(screen.queryByLabelText("Page number")).toBeNull();
+      expect(screen.queryByLabelText("Last page")).toBeNull();
     });
   });
 
