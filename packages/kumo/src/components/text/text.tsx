@@ -61,19 +61,19 @@ export const KUMO_TEXT_VARIANTS = {
   },
   size: {
     xs: {
-      classes: "text-xs",
+      classes: "text-xs/[inherit]",
       description: "Extra small text",
     },
     sm: {
-      classes: "text-sm",
+      classes: "text-sm/[inherit]",
       description: "Small text",
     },
     base: {
-      classes: "text-base",
+      classes: "text-base/[inherit]",
       description: "Default text size",
     },
     lg: {
-      classes: "text-lg",
+      classes: "text-lg/[inherit]",
       description: "Large text",
     },
   },

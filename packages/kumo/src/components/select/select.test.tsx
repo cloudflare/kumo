@@ -534,6 +534,35 @@ describe("Select", () => {
   });
 
   describe("popup structure", () => {
+    it("accepts Base UI positioner props", () => {
+      render(
+        <Select
+          aria-label="Select a country"
+          side="bottom"
+          sideOffset={() => 4}
+          align="start"
+          alignOffset={() => 0}
+          alignItemWithTrigger={false}
+          anchor={document.body}
+          arrowPadding={5}
+          positionMethod="fixed"
+          collisionAvoidance={{
+            side: "none",
+            align: "shift",
+            fallbackAxisSide: "none",
+          }}
+          collisionBoundary="clipping-ancestors"
+          collisionPadding={10}
+          sticky={false}
+          disableAnchorTracking={false}
+        >
+          <Select.Option value="af">Afghanistan</Select.Option>
+        </Select>,
+      );
+
+      expect(screen.getByRole("combobox")).toBeTruthy();
+    });
+
     it("opens a listbox popup from the trigger", async () => {
       render(
         <Select aria-label="Select a country">

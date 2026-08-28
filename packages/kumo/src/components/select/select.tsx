@@ -75,6 +75,24 @@ export interface KumoSelectVariantsProps {
   size?: KumoSelectSize;
 }
 
+/** Base UI positioning controls forwarded to Select's popup. */
+type SelectPositionerProps = Pick<
+  SelectBase.Positioner.Props,
+  | "align"
+  | "alignItemWithTrigger"
+  | "alignOffset"
+  | "anchor"
+  | "arrowPadding"
+  | "collisionAvoidance"
+  | "collisionBoundary"
+  | "collisionPadding"
+  | "disableAnchorTracking"
+  | "positionMethod"
+  | "side"
+  | "sideOffset"
+  | "sticky"
+>;
+
 export function selectVariants({
   size = KUMO_SELECT_DEFAULT_VARIANTS.size,
 }: KumoSelectVariantsProps = {}) {
@@ -253,7 +271,7 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
-  };
+  } & SelectPositionerProps;
 
 /**
  * Select component props.
@@ -277,7 +295,7 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
  * </Select>
  * ```
  */
-export interface SelectProps {
+export interface SelectProps extends SelectPositionerProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Replaces the trigger element while preserving Select behavior. */
@@ -363,6 +381,19 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   error,
   required,
   container: containerProp,
+  side = "bottom",
+  sideOffset = 4,
+  align = "start",
+  alignOffset,
+  alignItemWithTrigger = false,
+  anchor,
+  arrowPadding,
+  positionMethod,
+  collisionAvoidance,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  disableAnchorTracking,
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
@@ -497,13 +528,35 @@ export function Select<T, Multiple extends boolean | undefined = false>({
       {selectLabelNode}
       {selectTrigger}
       <SelectBase.Portal container={container}>
-        <SelectBase.Positioner>
+        {/*
+          Anchor to `side` (default `bottom`) rather than Base UI's default
+          `alignItemWithTrigger`, which overlays the popup on the trigger to
+          emulate a native `<select>`. Collision avoidance still flips the popup
+          automatically when the preferred side lacks space, and consumers can
+          pin placement explicitly via `side` / `align`, or opt back into the
+          native overlay with `alignItemWithTrigger`.
+        */}
+        <SelectBase.Positioner
+          side={side}
+          sideOffset={sideOffset}
+          align={align}
+          alignOffset={alignOffset}
+          alignItemWithTrigger={alignItemWithTrigger}
+          anchor={anchor}
+          arrowPadding={arrowPadding}
+          positionMethod={positionMethod}
+          collisionAvoidance={collisionAvoidance}
+          collisionBoundary={collisionBoundary}
+          collisionPadding={collisionPadding}
+          sticky={sticky}
+          disableAnchorTracking={disableAnchorTracking}
+        >
           <SelectBase.Popup
             className={cn(
               "flex flex-col",
               "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
               "rounded-lg shadow-lg ring ring-kumo-line",
-              "min-w-[calc(var(--anchor-width)+3px)] py-1.5",
+              "max-w-(--available-width) min-w-(--anchor-width) py-1.5",
             )}
           >
             <SelectBase.List
