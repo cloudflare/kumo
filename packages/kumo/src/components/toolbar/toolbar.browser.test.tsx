@@ -1,3 +1,4 @@
+import { GearSixIcon } from "@phosphor-icons/react";
 import { describe, expect, test, vi } from "vite-plus/test";
 import { userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
@@ -104,6 +105,24 @@ describe("Toolbar.Link interactions", () => {
     await expect.element(link).toHaveFocus();
     await userEvent.keyboard("{ArrowRight}");
     await expect.element(after).toHaveFocus();
+  });
+
+  test("uses a square shape for an icon-only link", async () => {
+    const { getByRole } = await render(
+      <Toolbar>
+        <Toolbar.Link
+          href="#settings"
+          icon={GearSixIcon}
+          aria-label="Settings"
+        />
+      </Toolbar>,
+    );
+
+    const link = getByRole("link", { name: "Settings" });
+    const className = (link.element() as HTMLAnchorElement).className;
+
+    expect(className).toContain("size-9");
+    expect(className).toContain("p-0");
   });
 });
 

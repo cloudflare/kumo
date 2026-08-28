@@ -187,15 +187,24 @@ const Button = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
 Button.displayName = "Toolbar.Button";
 
 const Link = React.forwardRef<HTMLAnchorElement, ToolbarLinkProps>(
-  ({ children, className, ...props }, ref) => {
+  ({ children, className, shape, icon: IconComponent, ...props }, ref) => {
     const toolbar = React.useContext(ToolbarSizeContext);
+    const resolvedShape =
+      shape ?? (children == null && IconComponent ? "square" : "base");
 
     return (
       <ToolbarBase.Link
         ref={ref}
         data-kumo-component="Toolbar.Link"
         className={cn(className, TOOLBAR_CONTROL_STYLES)}
-        render={<KumoLinkButton size={toolbar.size} variant="ghost" />}
+        render={
+          <KumoLinkButton
+            icon={IconComponent}
+            shape={resolvedShape}
+            size={toolbar.size}
+            variant="ghost"
+          />
+        }
         {...props}
       >
         {children}
