@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { useState } from "react";
+import { Input } from "../input/input";
 import { Select } from "./select";
 
 describe("Select", () => {
@@ -17,6 +18,57 @@ describe("Select", () => {
       expect(trigger?.className).toContain("h-5");
       expect(trigger?.className).toContain("px-1.5");
       expect(trigger?.className).toContain("text-xs");
+    });
+  });
+
+  describe("surface styling", () => {
+    it("uses the same default surface color as Input", () => {
+      render(
+        <>
+          <Input aria-label="Text field" />
+          <Select aria-label="Select field">
+            <Select.Option value="a">Option A</Select.Option>
+          </Select>
+        </>,
+      );
+
+      const inputClasses = screen.getByRole("textbox").className.split(" ");
+      const selectClasses = screen.getByRole("combobox").className.split(" ");
+      const inputSurface = inputClasses.find((className) =>
+        className.startsWith("bg-kumo-"),
+      );
+      const selectSurface = selectClasses.find((className) =>
+        className.startsWith("bg-kumo-"),
+      );
+
+      expect(selectSurface).toBe(inputSurface);
+    });
+
+    it("does not revert to the Button surface when open or disabled", () => {
+      render(
+        <Select aria-label="Pick one" disabled>
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.className).toContain("data-[state=open]:bg-kumo-control");
+      expect(trigger.className).toContain("disabled:bg-kumo-control/50");
+      expect(trigger.className).not.toContain("data-[state=open]:bg-kumo-base");
+      expect(trigger.className).not.toContain("disabled:bg-kumo-base/50");
+    });
+
+    it("allows className to override the default surface without important", () => {
+      render(
+        <Select aria-label="Pick one" className="bg-kumo-elevated">
+          <Select.Option value="a">Option A</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      const classes = trigger.className.split(" ");
+      expect(classes).toContain("bg-kumo-elevated");
+      expect(classes).not.toContain("bg-kumo-control");
     });
   });
 
@@ -597,6 +649,8 @@ describe("Select", () => {
       const popup = listbox.parentElement;
       expect(popup?.getAttribute("role")).toBe("presentation");
       expect(popup?.className).toContain("max-h-[var(--available-height)]");
+      expect(popup?.className).toContain("bg-kumo-base");
+      expect(popup?.className).not.toContain("bg-kumo-control");
       expect(popup?.className).not.toContain("overscroll");
     });
 

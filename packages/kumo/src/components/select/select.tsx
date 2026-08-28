@@ -31,7 +31,7 @@ export const KUMO_SELECT_STYLING = {
     height: 36, // h-9
     paddingX: 12, // px-3
     borderRadius: 8, // rounded-lg
-    background: "bg-kumo-elevated",
+    background: "bg-kumo-control",
     text: "text-color-surface",
     ring: "color-border",
     fontSize: 16, // text-base
@@ -46,7 +46,7 @@ export const KUMO_SELECT_STYLING = {
     check: { name: "ph-check", size: 20 },
   },
   popup: {
-    background: "bg-kumo-elevated",
+    background: "bg-kumo-base",
     ring: "border-kumo-line",
     borderRadius: 8, // rounded-lg
     padding: 6, // p-1.5
@@ -98,6 +98,7 @@ export function selectVariants({
 }: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants({ size }),
+    "bg-kumo-control disabled:bg-kumo-control/50 data-[state=open]:bg-kumo-control",
     "justify-between font-normal",
     "focus:opacity-100 focus:ring-kumo-focus/50 focus-visible:ring-inset *:in-focus:opacity-100",
   );
