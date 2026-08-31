@@ -399,16 +399,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       </button>
     );
 
-    if (title && (disabled || loading)) {
+    if (title) {
       return (
         <Tooltip content={title} render={<span className="inline-flex" />}>
           {button}
         </Tooltip>
       );
-    }
-
-    if (title) {
-      return <Tooltip content={title} render={button} />;
     }
 
     return button;
@@ -471,31 +467,33 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
   ) => {
     const LinkComponent = useLinkComponent();
     const emphasisStyle = getEmphasisStyle(variant);
+    const titleLabel = getTitleLabel(title);
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
       : {};
 
-    if (disabled) {
+    const linkButton = disabled ? (
       // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
-      return (
-        <Button
-          {...toDisabledButtonProps(props)}
-          className={cn("select-text", className)}
-          data-kumo-component="LinkButton"
-          disabled
-          icon={IconComponent}
-          shape={shape as "base"}
-          size={size}
-          style={style}
-          title={title}
-          variant={variant}
-        >
-          {children}
-        </Button>
-      );
-    }
-
-    const link = (
+      <Button
+        {...toDisabledButtonProps(props)}
+        aria-label={
+          props["aria-label"] ||
+          (!React.Children.count(children) && !props["aria-labelledby"]
+            ? titleLabel
+            : undefined)
+        }
+        className={cn("select-text", className)}
+        data-kumo-component="LinkButton"
+        disabled
+        icon={IconComponent}
+        shape={shape as "base"}
+        size={size}
+        style={style}
+        variant={variant}
+      >
+        {children}
+      </Button>
+    ) : (
       <LinkComponent
         ref={ref}
         data-kumo-component="LinkButton"
@@ -515,10 +513,14 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     );
 
     if (title) {
-      return <Tooltip content={title} render={link} />;
+      return (
+        <Tooltip content={title} render={<span className="inline-flex" />}>
+          {linkButton}
+        </Tooltip>
+      );
     }
 
-    return link;
+    return linkButton;
   },
 );
 
