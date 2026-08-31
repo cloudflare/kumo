@@ -1,9 +1,155 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { useState } from "react";
+import { Profiler, useState } from "react";
 import { Select } from "./select";
 
 describe("Select", () => {
+  describe("object-map items", () => {
+    it("does not notify Base UI item subscribers for equivalent maps", () => {
+      const onRender = vi.fn();
+      const renderSelect = () => (
+        <Profiler id="select" onRender={onRender}>
+          <Select
+            aria-label="Pick one"
+            value="apple"
+            items={{ apple: "Apple", banana: "Banana" }}
+          />
+        </Profiler>
+      );
+      const { rerender } = render(renderSelect());
+      onRender.mockClear();
+
+      rerender(renderSelect());
+
+      expect(onRender).toHaveBeenCalledTimes(1);
+    });
+
+    it("stabilizes equivalent inline descriptor maps", () => {
+      const onRender = vi.fn();
+      const renderSelect = () => (
+        <Profiler id="select" onRender={onRender}>
+          <Select
+            aria-label="Pick one"
+            value="apple"
+            items={{
+              apple: { label: "Apple", disabled: false },
+              banana: { label: "Banana", disabled: true },
+            }}
+          />
+        </Profiler>
+      );
+      const { rerender } = render(renderSelect());
+      onRender.mockClear();
+
+      rerender(renderSelect());
+
+      expect(onRender).toHaveBeenCalledTimes(1);
+    });
+
+    it("propagates key, label, and selected value changes", () => {
+      const { rerender } = render(
+        <Select
+          aria-label="Pick one"
+          value="apple"
+          items={{ apple: "Apple", banana: "Banana" }}
+        />,
+      );
+      const trigger = screen.getByRole("combobox");
+
+      rerender(
+        <Select
+          aria-label="Pick one"
+          value="apple"
+          items={{ apple: "Green Apple", banana: "Banana" }}
+        />,
+      );
+      expect(trigger.textContent).toContain("Green Apple");
+
+      rerender(
+        <Select
+          aria-label="Pick one"
+          value="pear"
+          items={{ pear: "Pear", banana: "Banana" }}
+        />,
+      );
+      expect(trigger.textContent).toContain("Pear");
+    });
+
+    it("propagates disabled metadata changes", async () => {
+      const { rerender } = render(
+        <Select
+          aria-label="Pick one"
+          items={{ apple: { label: "Apple", disabled: false } }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      expect(screen.getByRole("option").getAttribute("aria-disabled")).not.toBe(
+        "true",
+      );
+
+      rerender(
+        <Select
+          aria-label="Pick one"
+          items={{ apple: { label: "Apple", disabled: true } }}
+        />,
+      );
+      expect(screen.getByRole("option").getAttribute("aria-disabled")).toBe(
+        "true",
+      );
+    });
+
+    it("propagates order-only changes", async () => {
+      const { rerender } = render(
+        <Select
+          aria-label="Pick one"
+          items={{ apple: "Apple", banana: "Banana" }}
+        />,
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      expect(
+        screen.getAllByRole("option").map((option) => option.textContent),
+      ).toEqual(["Apple", "Banana"]);
+
+      rerender(
+        <Select
+          aria-label="Pick one"
+          items={{ banana: "Banana", apple: "Apple" }}
+        />,
+      );
+      expect(
+        screen.getAllByRole("option").map((option) => option.textContent),
+      ).toEqual(["Banana", "Apple"]);
+    });
+
+    it("preserves array item identity and ignores descriptor metadata", async () => {
+      const onRender = vi.fn();
+      const items = [{ value: "apple", label: "Apple", disabled: true }];
+      const renderSelect = () => (
+        <Profiler id="select" onRender={onRender}>
+          <Select aria-label="Pick one" value="apple" items={items} />
+        </Profiler>
+      );
+      const { rerender } = render(renderSelect());
+      onRender.mockClear();
+
+      rerender(renderSelect());
+      expect(onRender).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      expect(screen.getByRole("option").getAttribute("aria-disabled")).not.toBe(
+        "true",
+      );
+    });
+  });
+
   describe("size", () => {
     it("applies size classes to the trigger", () => {
       const { container } = render(
