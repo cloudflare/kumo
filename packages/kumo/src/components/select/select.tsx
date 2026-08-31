@@ -1,6 +1,6 @@
 import { Select as SelectBase } from "@base-ui/react/select";
 import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
-import { forwardRef, useId } from "react";
+import { forwardRef, useEffect, useId, useLayoutEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { buttonVariants } from "../button";
@@ -21,6 +21,11 @@ export const KUMO_SELECT_VARIANTS = {
 export const KUMO_SELECT_DEFAULT_VARIANTS = {
   size: "base",
 } as const;
+
+// useLayoutEffect warns when rendered with react-dom/server (React 18);
+// fall back to useEffect on the server where neither runs anyway.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * Select component styling metadata for Figma plugin code generation
@@ -141,6 +146,12 @@ function isItemDescriptor(
   return "label" in candidate && candidate.label !== undefined;
 }
 
+interface NormalizedSelectItem<T> {
+  label: ReactNode;
+  value: T;
+  disabled?: boolean;
+}
+
 /**
  * Normalizes items to array format for Base UI.
  * Object maps are converted to array format so Base UI can properly
@@ -150,15 +161,62 @@ function normalizeItems<T>(
   items:
     | Record<string, SelectItemValue>
     | ReadonlyArray<{ label: ReactNode; value: T }>,
-): ReadonlyArray<{ label: ReactNode; value: T }> {
+): ReadonlyArray<NormalizedSelectItem<T>> {
   if (Array.isArray(items)) {
     return items;
   }
   // Convert object map to array format
-  return Object.entries(items).map(([key, entry]) => ({
-    value: key as T,
-    label: isItemDescriptor(entry) ? entry.label : entry,
-  }));
+  return Object.entries(items).map(([key, entry]) => {
+    const descriptor = isItemDescriptor(entry);
+    return {
+      value: key as T,
+      label: descriptor ? entry.label : entry,
+      disabled: descriptor ? entry.disabled : undefined,
+    };
+  });
+}
+
+function useNormalizedItems<T>(
+  items:
+    | Record<string, SelectItemValue>
+    | ReadonlyArray<{ label: ReactNode; value: T }>
+    | undefined,
+): ReadonlyArray<NormalizedSelectItem<T>> | undefined {
+  const objectMapCache = useRef<
+    ReadonlyArray<NormalizedSelectItem<T>> | undefined
+  >(undefined);
+  let normalizedItems: ReadonlyArray<NormalizedSelectItem<T>> | undefined;
+
+  if (items === undefined) {
+    normalizedItems = undefined;
+  } else if (Array.isArray(items)) {
+    normalizedItems = items;
+  } else {
+    const nextItems = normalizeItems<T>(items);
+    const cached = objectMapCache.current;
+    const itemsAreEqual =
+      cached?.length === nextItems.length &&
+      cached.every((item, index) => {
+        const nextItem = nextItems[index];
+        return (
+          Object.is(item.value, nextItem.value) &&
+          Object.is(item.label, nextItem.label) &&
+          item.disabled === nextItem.disabled
+        );
+      });
+
+    normalizedItems = itemsAreEqual ? cached : nextItems;
+  }
+
+  const isObjectMap = items !== undefined && !Array.isArray(items);
+
+  useIsomorphicLayoutEffect(() => {
+    if (isObjectMap) {
+      objectMapCache.current = normalizedItems;
+    }
+  }, [isObjectMap, normalizedItems]);
+
+  return normalizedItems;
 }
 
 /**
@@ -167,40 +225,21 @@ function normalizeItems<T>(
  * Filters out null values (typically used for placeholders).
  */
 function renderOptionsFromItems<T>(
-  items:
-    | Record<string, SelectItemValue>
-    | ReadonlyArray<{ label: ReactNode; value: T }>,
+  normalizedItems: ReadonlyArray<NormalizedSelectItem<T>>,
+  isObjectMap: boolean,
 ): ReactNode {
-  const normalizedItems = normalizeItems(items);
-
-  // Build a lookup for disabled metadata from object-map items.
-  // Object-map keys are always strings (Record<string, ...>), so the lookup
-  // uses string keys. The array form ({ label, value }[]) does not support
-  // descriptors — consumers should use the children API for that case.
-  const disabledLookup = new Map<string, { disabled?: boolean }>();
-  if (!Array.isArray(items)) {
-    for (const [key, entry] of Object.entries(items)) {
-      if (isItemDescriptor(entry)) {
-        disabledLookup.set(key, { disabled: entry.disabled });
-      }
-    }
-  }
-
   // Filter out null values and render options
   return normalizedItems
     .filter((item) => item.value !== null)
     .map((item, index) => {
       const key =
         typeof item.value === "string" ? item.value : `option-${index}`;
-      // When items is an object-map, value is always a string key from
-      // Object.entries. When items is an array, disabledLookup is empty.
-      const meta =
-        typeof item.value === "string"
-          ? disabledLookup.get(item.value)
-          : undefined;
-
       return (
-        <Option key={key} value={item.value} disabled={meta?.disabled}>
+        <Option
+          key={key}
+          value={item.value}
+          disabled={isObjectMap ? item.disabled : undefined}
+        >
           {item.label}
         </Option>
       );
@@ -424,15 +463,16 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   const triggerAriaLabel =
     ariaLabel ?? (!triggerLabelledBy ? fallbackLabel : undefined);
 
-  // Normalize items to array format for Base UI compatibility
-  // This fixes placeholder not showing with object map items
-  const normalizedItems = props.items ? normalizeItems(props.items) : undefined;
+  // Keep equivalent object maps stable for Base UI's external store.
+  const normalizedItems = useNormalizedItems(props.items);
+  const hasObjectMapItems =
+    props.items !== undefined && !Array.isArray(props.items);
 
   // Auto-render children from items if no explicit children provided
   const renderedChildren = children
     ? children
-    : props.items
-      ? renderOptionsFromItems(props.items)
+    : normalizedItems
+      ? renderOptionsFromItems(normalizedItems, hasObjectMapItems)
       : null;
 
   // Wrap renderValue to handle null values properly:
