@@ -75,7 +75,7 @@ export const INPUT_GROUP_SIZE: Record<KumoInputSize, InputGroupSizeTokens> = {
     addonOuterStart: "pl-2",
     addonOuterEnd: "pr-2",
     addonButtonOuterStart: "pl-1",
-    addonButtonOuterEnd: "pr-1",
+    addonButtonOuterEnd: "pr-1.25",
     suffixPad: "pr-3",
     fontSize: "text-base",
     iconSize: 18,

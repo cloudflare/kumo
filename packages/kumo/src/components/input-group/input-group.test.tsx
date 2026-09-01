@@ -372,6 +372,25 @@ describe("InputGroup", () => {
       },
     );
 
+    it("gives a base end button equal horizontal and vertical insets", () => {
+      render(
+        <InputGroup label="Password">
+          <InputGroup.Input type="password" />
+          <InputGroup.Addon align="end">
+            <InputGroup.Button aria-label="Show password" />
+          </InputGroup.Addon>
+        </InputGroup>,
+      );
+
+      const button = screen.getByRole("button", { name: "Show password" });
+      const addon = button.closest("[data-slot=input-group-addon-end]")!;
+
+      // A base group is 36px tall and its compact button is 26px tall,
+      // leaving a 5px inset on the top and bottom.
+      expect(INPUT_GROUP_SIZE.base.addonButtonOuterEnd).toBe("pr-1.25");
+      expect(addon.className).toContain("pr-1.25");
+    });
+
     // Ensure all addonOuter tokens are static directional classes
     // (not symmetric px- that would need runtime string replacement)
     it("all addon tokens use static pl-/pr- classes (not px-)", () => {
