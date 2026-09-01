@@ -1,5 +1,10 @@
 import type * as echarts from "echarts/core";
-import type { ForwardedRef, ReactElement, RefAttributes } from "react";
+import type {
+  ForwardedRef,
+  PointerEvent as ReactPointerEvent,
+  ReactElement,
+  RefAttributes,
+} from "react";
 import {
   forwardRef,
   useCallback,
@@ -7,8 +12,19 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
-import { geoMercator } from "d3-geo";
+import {
+  geoArea,
+  geoContains,
+  geoDistance,
+  geoGraticule,
+  geoMercator,
+  geoOrthographic,
+  geoPath,
+  type GeoPermissibleObjects,
+} from "d3-geo";
+import { cn } from "../../utils/cn";
 import { Chart, type ChartEvents, type KumoChartOption } from "./EChart";
 import { ChartPalette } from "./Color";
 import { defaultValueFormat, escapeHtml } from "./tooltip-utils";
@@ -996,6 +1012,547 @@ export const ChoroplethMap = forwardRef(ChoroplethMapRoot) as (<T>(
 ) => ReactElement | null) & { displayName?: string };
 
 ChoroplethMap.displayName = "ChoroplethMap";
+
+export interface GlobeMapMarker {
+  /** Longitude in decimal degrees. */
+  longitude: number;
+  /** Latitude in decimal degrees. */
+  latitude: number;
+  /** Primary tooltip label. */
+  name: string;
+  /** Optional secondary tooltip text. */
+  description?: string;
+  /** Marker fill. Overrides `markerColor`. */
+  color?: string;
+  /** Marker radius in view-box pixels. Overrides `markerRadius`. */
+  radius?: number;
+}
+
+export interface GlobeMapProps<T> {
+  /** GeoJSON `FeatureCollection` rendered on the globe. */
+  geoJson: MapGeoJson;
+  /** Raw data rows joined to GeoJSON features. Optional for marker-only globes. */
+  data?: T[];
+  /** Region-key accessor (key of `T` or `(row) => string`). */
+  name?: MapAccessor<T, string>;
+  /** Value accessor — drives the region's fill colour. */
+  value?: MapAccessor<T, number>;
+  /** GeoJSON feature property to join on. Default: `"name"`. */
+  nameProperty?: string;
+  /** Sequential colour ramp (low → high). */
+  colorRange?: string[];
+  /** Lower bound of the colour scale. Default: data minimum. */
+  min?: number;
+  /** Upper bound of the colour scale. Default: data maximum. */
+  max?: number;
+  /** Fill for regions with no matching data row. */
+  noDataColor?: string;
+  /** Render no-data land as a solid fill or a field of dots. Default: `"solid"`. */
+  landStyle?: "solid" | "dotted";
+  /** Spacing between dot centers in the dotted land style. Default: `10`. */
+  landDotSpacing?: number;
+  /** Fill behind the land and graticule. Default: `"transparent"`. */
+  oceanColor?: string;
+  /** Geographic points drawn above the land. Back-facing points are clipped. */
+  markers?: GlobeMapMarker[];
+  /** Default marker fill. Defaults to the Kumo chart blue. */
+  markerColor?: string;
+  /** Default marker radius in view-box pixels. Default: `7`. */
+  markerRadius?: number;
+  /** Called when a visible marker is clicked. */
+  onMarkerClick?: (marker: GlobeMapMarker) => void;
+  /** Initial globe rotation as `[longitude, latitude, roll]`. */
+  rotation?: [number, number, number];
+  /** Allow pointer dragging to rotate the globe. Default: `true`. */
+  draggable?: boolean;
+  /** Draw latitude and longitude guides. Default: `false`. */
+  showGraticule?: boolean;
+  /** Show the Kumo-styled region tooltip. Default: `true`. */
+  showTooltip?: boolean;
+  /** Format the value in the default tooltip. */
+  valueFormat?: (value: number) => string;
+  /** Called as the pointer enters/leaves a region with data. */
+  onRegionHover?: (row: T | undefined) => void;
+  /** Called when a region with data is clicked. */
+  onRegionClick?: (row: T) => void;
+  /** Called after pointer dragging changes the globe rotation. */
+  onRotationChange?: (rotation: [number, number, number]) => void;
+  /** Accessible label for the visualization. Default: `"Interactive globe map"`. */
+  "aria-label"?: string;
+  /** Fixed component height. Otherwise the globe uses a square aspect ratio. */
+  height?: number;
+  className?: string;
+  isDarkMode?: boolean;
+}
+
+interface GlobeTooltip {
+  name: string;
+  detail: string;
+  x: number;
+  y: number;
+}
+
+const GLOBE_VIEWBOX_SIZE = 640;
+const GLOBE_PADDING = 18;
+const GLOBE_RADIUS = GLOBE_VIEWBOX_SIZE / 2 - GLOBE_PADDING;
+
+/**
+ * d3-geo uses spherical winding (small exterior rings run clockwise), while
+ * RFC 7946 GeoJSON commonly uses counter-clockwise exterior rings. In that
+ * case d3 interprets a country as the rest of the globe, painting over the
+ * ocean. Rewind polygon rings only when d3 reports the feature as larger than
+ * a hemisphere.
+ */
+function normalizeGlobeFeature(
+  feature: MapGeoJson["features"][number],
+): GeoPermissibleObjects {
+  const permissible = feature as unknown as GeoPermissibleObjects;
+  const geometry = feature.geometry;
+  if (!geometry || typeof geometry !== "object") return permissible;
+
+  const typedGeometry = geometry as Record<string, unknown>;
+  const coordinates = typedGeometry.coordinates;
+  if (!Array.isArray(coordinates)) return permissible;
+
+  const normalizePolygon = (polygon: unknown): unknown => {
+    if (!Array.isArray(polygon)) return polygon;
+    const polygonObject = {
+      type: "Polygon",
+      coordinates: polygon,
+    } as unknown as GeoPermissibleObjects;
+    if (geoArea(polygonObject) <= 2 * Math.PI) return polygon;
+    return polygon.map((ring) =>
+      Array.isArray(ring) ? [...ring].reverse() : ring,
+    );
+  };
+
+  // Check every MultiPolygon part independently. Rewinding the entire feature
+  // based on its aggregate area can invert otherwise-correct islands and create
+  // long antimeridian wedges (most visibly around Russia and Alaska).
+  const normalizedCoordinates =
+    typedGeometry.type === "Polygon"
+      ? normalizePolygon(coordinates)
+      : typedGeometry.type === "MultiPolygon"
+        ? coordinates.map(normalizePolygon)
+        : coordinates;
+
+  return {
+    ...feature,
+    geometry: { ...typedGeometry, coordinates: normalizedCoordinates },
+  } as unknown as GeoPermissibleObjects;
+}
+
+/**
+ * GlobeMap — an SVG orthographic globe with choropleth regions, geographic
+ * markers, or both. Unlike the ECharts map components, it uses d3-geo's stream
+ * clipping so land and markers on the back hemisphere are hidden correctly.
+ * Rendering is SVG-only and does not use WebGL.
+ */
+export function GlobeMap<T>({
+  geoJson,
+  data,
+  name,
+  value,
+  nameProperty = "name",
+  colorRange,
+  min,
+  max,
+  noDataColor,
+  landStyle = "solid",
+  landDotSpacing = 10,
+  oceanColor = "transparent",
+  markers = [],
+  markerColor,
+  markerRadius = 7,
+  onMarkerClick,
+  rotation = [-10, -20, 0],
+  draggable = true,
+  showGraticule = false,
+  showTooltip = true,
+  valueFormat = defaultValueFormat,
+  onRegionHover,
+  onRegionClick,
+  onRotationChange,
+  "aria-label": ariaLabel = "Interactive globe map",
+  height,
+  className,
+  isDarkMode,
+}: GlobeMapProps<T>) {
+  const [currentRotation, setCurrentRotation] = useState(rotation);
+  const [tooltip, setTooltip] = useState<GlobeTooltip | null>(null);
+  const didDragRef = useRef(false);
+  const dragRef = useRef<{
+    pointerId: number;
+    x: number;
+    y: number;
+    rotation: [number, number, number];
+  } | null>(null);
+
+  const rotationLongitude = rotation[0];
+  const rotationLatitude = rotation[1];
+  const rotationRoll = rotation[2];
+  useEffect(() => {
+    setCurrentRotation([rotationLongitude, rotationLatitude, rotationRoll]);
+  }, [rotationLongitude, rotationLatitude, rotationRoll]);
+
+  const palette = useMemo(
+    () => ChartPalette.mapColors(isDarkMode),
+    [isDarkMode],
+  );
+  const colors = colorRange ?? palette.scale;
+  const noData = noDataColor ?? palette.area;
+  const resolvedMarkerColor = markerColor ?? palette.bubble;
+
+  const rowsByName = useMemo(() => {
+    const rows = new Map<string, { row: T; value: number }>();
+    if (!data || name === undefined || value === undefined) return rows;
+    for (const row of data) {
+      rows.set(resolve(row, name), { row, value: resolve(row, value) });
+    }
+    return rows;
+  }, [data, name, value]);
+
+  const values = useMemo(
+    () => Array.from(rowsByName.values(), (entry) => entry.value),
+    [rowsByName],
+  );
+  const dataMin = values.length ? Math.min(...values) : 0;
+  const dataMax = values.length ? Math.max(...values) : 1;
+  const resolvedMin = min ?? dataMin;
+  const resolvedMax = max ?? (dataMax > dataMin ? dataMax : dataMin + 1);
+
+  const globeFeatures = useMemo(
+    () =>
+      geoJson.features.map((feature) => ({
+        feature,
+        geometry: normalizeGlobeFeature(feature),
+      })),
+    [geoJson],
+  );
+
+  const projection = useMemo(
+    () =>
+      geoOrthographic()
+        .translate([GLOBE_VIEWBOX_SIZE / 2, GLOBE_VIEWBOX_SIZE / 2])
+        .scale(GLOBE_RADIUS)
+        .rotate(currentRotation)
+        // Clip just inside the mathematical horizon. d3's default is 90° plus
+        // epsilon, which can leak resampled fragments from the hidden hemisphere
+        // into the visible globe for polygons near the antimeridian.
+        .clipAngle(89.999)
+        .precision(0.25),
+    [currentRotation],
+  );
+  const path = useMemo(() => geoPath(projection), [projection]);
+  const spherePath = path({ type: "Sphere" }) ?? undefined;
+  const graticulePath = path(geoGraticule().step([15, 10])()) ?? undefined;
+  const dottedLandCoordinates = useMemo(() => {
+    if (landStyle !== "dotted" || landDotSpacing <= 0) return [];
+
+    const coordinates: Array<[number, number]> = [];
+    const angularStep = (landDotSpacing / GLOBE_RADIUS) * (180 / Math.PI);
+    for (
+      let latitude = -90 + angularStep / 2;
+      latitude < 90;
+      latitude += angularStep
+    ) {
+      const longitudeStep =
+        angularStep / Math.max(Math.cos((latitude * Math.PI) / 180), 0.15);
+      for (
+        let longitude = -180 + longitudeStep / 2;
+        longitude < 180;
+        longitude += longitudeStep
+      ) {
+        const coordinate: [number, number] = [longitude, latitude];
+        if (
+          globeFeatures.some(({ geometry }) =>
+            geoContains(geometry, coordinate),
+          )
+        ) {
+          coordinates.push(coordinate);
+        }
+      }
+    }
+    return coordinates;
+  }, [globeFeatures, landDotSpacing, landStyle]);
+  const dottedLandPoints = useMemo(() => {
+    const center = projection.invert?.([
+      GLOBE_VIEWBOX_SIZE / 2,
+      GLOBE_VIEWBOX_SIZE / 2,
+    ]);
+    if (!center) return [];
+
+    const horizonInset = landDotSpacing / 2 / GLOBE_RADIUS;
+    return dottedLandCoordinates.flatMap<[number, number]>((coordinate) => {
+      if (geoDistance(center, coordinate) >= Math.PI / 2 - horizonInset) {
+        return [];
+      }
+      const point = projection(coordinate);
+      return point ? [point] : [];
+    });
+  }, [dottedLandCoordinates, landDotSpacing, projection]);
+
+  const fillForValue = useCallback(
+    (regionValue: number) => {
+      if (colors.length === 0) return noData;
+      const range = resolvedMax - resolvedMin;
+      const position = range > 0 ? (regionValue - resolvedMin) / range : 0;
+      const index = Math.round(
+        Math.max(0, Math.min(1, position)) * (colors.length - 1),
+      );
+      return colors[index];
+    },
+    [colors, noData, resolvedMax, resolvedMin],
+  );
+
+  const moveTooltip = useCallback(
+    (
+      event: ReactPointerEvent<SVGPathElement>,
+      tooltipName: string,
+      detail: string,
+    ) => {
+      if (!showTooltip) return;
+      const bounds =
+        event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+      if (!bounds) return;
+      setTooltip({
+        name: tooltipName,
+        detail,
+        x: event.clientX - bounds.left,
+        y: event.clientY - bounds.top,
+      });
+    },
+    [showTooltip],
+  );
+
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent<SVGSVGElement>) => {
+      if (!draggable) return;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      didDragRef.current = false;
+      dragRef.current = {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        rotation: currentRotation,
+      };
+      setTooltip(null);
+    },
+    [currentRotation, draggable],
+  );
+
+  const handlePointerMove = useCallback(
+    (event: ReactPointerEvent<SVGSVGElement>) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      const deltaX = event.clientX - drag.x;
+      const deltaY = event.clientY - drag.y;
+      if (Math.hypot(deltaX, deltaY) > 3) didDragRef.current = true;
+      const next: [number, number, number] = [
+        drag.rotation[0] + deltaX * 0.3,
+        Math.max(-90, Math.min(90, drag.rotation[1] - deltaY * 0.3)),
+        drag.rotation[2],
+      ];
+      setCurrentRotation(next);
+      onRotationChange?.(next);
+    },
+    [onRotationChange],
+  );
+
+  const handlePointerUp = useCallback(
+    (event: ReactPointerEvent<SVGSVGElement>) => {
+      if (dragRef.current?.pointerId !== event.pointerId) return;
+      dragRef.current = null;
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    },
+    [],
+  );
+
+  return (
+    <div
+      className={cn("relative w-full overflow-hidden", className)}
+      style={height === undefined ? { aspectRatio: "1" } : { height }}
+    >
+      <svg
+        role="img"
+        aria-label={ariaLabel}
+        viewBox={`0 0 ${GLOBE_VIEWBOX_SIZE} ${GLOBE_VIEWBOX_SIZE}`}
+        className={cn(
+          "block size-full touch-none select-none",
+          draggable && "cursor-grab active:cursor-grabbing",
+        )}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={() => {
+          if (!dragRef.current) setTooltip(null);
+        }}
+      >
+        <path
+          d={spherePath}
+          fill={oceanColor}
+          className="stroke-kumo-line"
+          strokeWidth={1.5}
+        />
+        {showGraticule ? (
+          <path
+            d={graticulePath}
+            fill="none"
+            className="stroke-kumo-line"
+            strokeWidth={0.75}
+          />
+        ) : null}
+        {landStyle === "dotted" ? (
+          <g data-land-style="dotted" className="pointer-events-none">
+            {dottedLandPoints.map(([x, y]) => (
+              <circle
+                key={`${x}-${y}`}
+                cx={x}
+                cy={y}
+                r={landDotSpacing * 0.28}
+                fill={noData}
+              />
+            ))}
+          </g>
+        ) : null}
+        <g>
+          {globeFeatures.map(({ feature, geometry }, index) => {
+            const property = feature.properties?.[nameProperty];
+            const regionName =
+              typeof property === "string" || typeof property === "number"
+                ? String(property)
+                : "";
+            const entry = rowsByName.get(regionName);
+            if (!entry && landStyle === "dotted") return null;
+            const featurePath = path(geometry);
+            if (!featurePath) return null;
+            return (
+              <path
+                key={feature.id ?? `${regionName}-${index}`}
+                d={featurePath}
+                fill={entry ? fillForValue(entry.value) : noData}
+                className={cn(
+                  "outline-none transition-opacity",
+                  landStyle === "solid" && "stroke-kumo-line",
+                  entry && "hover:opacity-80 focus-visible:opacity-80",
+                )}
+                strokeWidth={landStyle === "solid" ? 0.5 : 0}
+                tabIndex={entry ? 0 : undefined}
+                onPointerEnter={(event) => {
+                  if (!entry) return;
+                  onRegionHover?.(entry.row);
+                  moveTooltip(event, regionName, valueFormat(entry.value));
+                }}
+                onPointerMove={(event) => {
+                  if (entry && !dragRef.current) {
+                    moveTooltip(event, regionName, valueFormat(entry.value));
+                  }
+                }}
+                onPointerLeave={() => {
+                  if (!entry) return;
+                  onRegionHover?.(undefined);
+                  setTooltip(null);
+                }}
+                onFocus={(event) => {
+                  if (!entry || !showTooltip) return;
+                  onRegionHover?.(entry.row);
+                  const bounds =
+                    event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+                  if (!bounds) return;
+                  setTooltip({
+                    name: regionName,
+                    detail: valueFormat(entry.value),
+                    x: bounds.width / 2,
+                    y: bounds.height / 2,
+                  });
+                }}
+                onBlur={() => {
+                  if (entry) onRegionHover?.(undefined);
+                  setTooltip(null);
+                }}
+                onClick={() => {
+                  if (didDragRef.current) {
+                    didDragRef.current = false;
+                    return;
+                  }
+                  if (entry) onRegionClick?.(entry.row);
+                }}
+              />
+            );
+          })}
+        </g>
+        <g>
+          {markers.map((marker, index) => {
+            const markerPath = path.pointRadius(marker.radius ?? markerRadius)({
+              type: "Point",
+              coordinates: [marker.longitude, marker.latitude],
+            });
+            if (!markerPath) return null;
+            const detail =
+              marker.description ??
+              `${marker.latitude.toFixed(2)}, ${marker.longitude.toFixed(2)}`;
+            return (
+              <path
+                key={`${marker.name}-${index}`}
+                d={markerPath}
+                fill={marker.color ?? resolvedMarkerColor}
+                strokeWidth={2}
+                className="stroke-kumo-base outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80"
+                tabIndex={0}
+                onPointerEnter={(event) =>
+                  moveTooltip(event, marker.name, detail)
+                }
+                onPointerMove={(event) => {
+                  if (!dragRef.current) moveTooltip(event, marker.name, detail);
+                }}
+                onPointerLeave={() => setTooltip(null)}
+                onFocus={(event) => {
+                  if (!showTooltip) return;
+                  const bounds =
+                    event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+                  if (!bounds) return;
+                  setTooltip({
+                    name: marker.name,
+                    detail,
+                    x: bounds.width / 2,
+                    y: bounds.height / 2,
+                  });
+                }}
+                onBlur={() => setTooltip(null)}
+                onClick={() => {
+                  if (didDragRef.current) {
+                    didDragRef.current = false;
+                    return;
+                  }
+                  onMarkerClick?.(marker);
+                }}
+              />
+            );
+          })}
+        </g>
+        <path
+          d={spherePath}
+          fill="none"
+          className="pointer-events-none stroke-kumo-line"
+          strokeWidth={2}
+        />
+      </svg>
+      {tooltip ? (
+        <div
+          role="tooltip"
+          className="bg-kumo-base border-kumo-line text-kumo-default pointer-events-none absolute z-10 flex -translate-x-1/2 -translate-y-full flex-col gap-0.5 rounded-lg border px-2 py-1.5 text-xs shadow-lg"
+          style={{ left: tooltip.x, top: tooltip.y - 8 }}
+        >
+          <strong>{tooltip.name}</strong>
+          <span className="text-kumo-subtle">{tooltip.detail}</span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+GlobeMap.displayName = "GlobeMap";
 
 /** Register the GeoJSON with ECharts before the child Chart's setOption runs. */
 function useRegisterMap(

@@ -1,7 +1,7 @@
 import { createRef } from "react";
 import { render, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { BubbleMap, type MapGeoJson } from "./Maps";
+import { BubbleMap, GlobeMap, type MapGeoJson } from "./Maps";
 
 const createMockChart = () => ({
   setOption: vi.fn(),
@@ -32,6 +32,62 @@ const data = [
   { city: "San Francisco", lat: 37.77, lon: -122.42, requests: 10 },
   { city: "London", lat: 51.5, lon: -0.12, requests: 20 },
 ];
+
+describe("GlobeMap", () => {
+  it("renders an accessible SVG globe without ECharts", () => {
+    const globeGeoJson: MapGeoJson = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          id: "visible-region",
+          properties: { name: "Visible region" },
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              [
+                [-20, -10],
+                [20, -10],
+                [20, 10],
+                [-20, 10],
+                [-20, -10],
+              ],
+            ],
+          },
+        },
+      ],
+    };
+
+    const { getByRole } = render(
+      <GlobeMap
+        geoJson={globeGeoJson}
+        data={[{ country: "Visible region", requests: 10 }]}
+        name="country"
+        value="requests"
+        markers={[
+          {
+            name: "London",
+            description: "Availability location",
+            latitude: 51.5,
+            longitude: -0.12,
+          },
+        ]}
+        landStyle="dotted"
+        showGraticule
+        aria-label="Traffic globe"
+      />,
+    );
+
+    const globe = getByRole("img", { name: "Traffic globe" });
+    expect(globe.tagName).toBe("svg");
+    expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
+    expect(
+      globe.querySelectorAll('[data-land-style="dotted"] circle').length,
+    ).toBeGreaterThan(0);
+    expect(globe.querySelector("pattern")).toBeNull();
+    expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
+  });
+});
 
 describe("BubbleMap", () => {
   it("reuses the generated map name across remounts for the same GeoJSON", () => {
