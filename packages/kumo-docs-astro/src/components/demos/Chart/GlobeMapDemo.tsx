@@ -103,6 +103,7 @@ export function GlobeMapAvailabilityZonesDemo({ geoJson }: GlobeMapDemoProps) {
         showGraticule
         markerColor="var(--color-kumo-brand)"
         markerRadius={8}
+        autoRotate
         aria-label="Cloudflare availability locations"
         isDarkMode={isDarkMode}
       />
@@ -124,6 +125,7 @@ export function GlobeMapBasicDemo({ geoJson }: GlobeMapDemoProps) {
         name="country"
         value="requests"
         valueFormat={formatRequests}
+        autoRotate
         isDarkMode={isDarkMode}
       />
     </div>

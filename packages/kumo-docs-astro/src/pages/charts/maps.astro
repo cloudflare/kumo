@@ -195,6 +195,7 @@ export default function Example() {
   showGraticule
   markerColor="var(--color-kumo-brand)"
   markerRadius={8}
+  autoRotate
 />`}>
           <GlobeMapAvailabilityZonesDemo geoJson={geoJson} client:visible />
         </ComponentExample>
@@ -210,6 +211,7 @@ export default function Example() {
   data={countries}
   name="country"
   value="requests"
+  autoRotate
 />`}>
           <GlobeMapBasicDemo geoJson={geoJson} client:visible />
         </ComponentExample>

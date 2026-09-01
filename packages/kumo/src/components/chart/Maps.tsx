@@ -1066,6 +1066,10 @@ export interface GlobeMapProps<T> {
   rotation?: [number, number, number];
   /** Allow pointer dragging to rotate the globe. Default: `true`. */
   draggable?: boolean;
+  /** Continuously rotate the globe horizontally. Default: `false`. */
+  autoRotate?: boolean;
+  /** Horizontal auto-rotation speed in degrees per second. Default: `4`. */
+  autoRotateSpeed?: number;
   /** Draw latitude and longitude guides. Default: `false`. */
   showGraticule?: boolean;
   /** Show the Kumo-styled region tooltip. Default: `true`. */
@@ -1172,6 +1176,8 @@ export function GlobeMap<T>({
   onMarkerClick,
   rotation = [-10, -20, 0],
   draggable = true,
+  autoRotate = false,
+  autoRotateSpeed = 4,
   showGraticule = false,
   showTooltip = true,
   valueFormat = defaultValueFormat,
@@ -1186,6 +1192,8 @@ export function GlobeMap<T>({
   const [currentRotation, setCurrentRotation] = useState(rotation);
   const [tooltip, setTooltip] = useState<GlobeTooltip | null>(null);
   const didDragRef = useRef(false);
+  const autoRotateFrameRef = useRef<number | null>(null);
+  const autoRotateTimeRef = useRef<number | null>(null);
   const dragFrameRef = useRef<number | null>(null);
   const pendingRotationRef = useRef<[number, number, number] | null>(null);
   const dragRef = useRef<{
@@ -1348,6 +1356,34 @@ export function GlobeMap<T>({
     [showTooltip],
   );
 
+  const handleSvgRef = useCallback(
+    (node: SVGSVGElement | null) => {
+      if (autoRotateFrameRef.current !== null) {
+        cancelAnimationFrame(autoRotateFrameRef.current);
+        autoRotateFrameRef.current = null;
+      }
+      autoRotateTimeRef.current = null;
+      if (!node || !autoRotate) return;
+
+      const rotate = (time: number) => {
+        const previousTime = autoRotateTimeRef.current;
+        autoRotateTimeRef.current = time;
+        if (previousTime !== null && !dragRef.current) {
+          const deltaSeconds = Math.min((time - previousTime) / 1000, 0.1);
+          setCurrentRotation((current) => [
+            current[0] + autoRotateSpeed * deltaSeconds,
+            current[1],
+            current[2],
+          ]);
+        }
+        autoRotateFrameRef.current = requestAnimationFrame(rotate);
+      };
+
+      autoRotateFrameRef.current = requestAnimationFrame(rotate);
+    },
+    [autoRotate, autoRotateSpeed],
+  );
+
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<SVGSVGElement>) => {
       if (!draggable) return;
@@ -1412,6 +1448,7 @@ export function GlobeMap<T>({
       style={height === undefined ? { aspectRatio: "1" } : { height }}
     >
       <svg
+        ref={handleSvgRef}
         role="img"
         aria-label={ariaLabel}
         viewBox={`0 0 ${GLOBE_VIEWBOX_SIZE} ${GLOBE_VIEWBOX_SIZE}`}
