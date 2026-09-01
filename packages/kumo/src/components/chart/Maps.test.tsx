@@ -82,8 +82,9 @@ describe("GlobeMap", () => {
     expect(globe.tagName).toBe("svg");
     expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
     expect(
-      globe.querySelectorAll('[data-land-style="dotted"] circle').length,
-    ).toBeGreaterThan(0);
+      globe.querySelector('[data-land-style="dotted"]')?.getAttribute("d"),
+    ).toContain("a");
+    expect(globe.querySelectorAll("circle")).toHaveLength(0);
     expect(globe.querySelector("pattern")).toBeNull();
     expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
   });

@@ -16,6 +16,7 @@ import {
 } from "react";
 import {
   geoArea,
+  geoBounds,
   geoContains,
   geoDistance,
   geoGraticule,
@@ -1095,6 +1096,10 @@ interface GlobeTooltip {
 const GLOBE_VIEWBOX_SIZE = 640;
 const GLOBE_PADDING = 18;
 const GLOBE_RADIUS = GLOBE_VIEWBOX_SIZE / 2 - GLOBE_PADDING;
+const globeDotCoordinateCache = new WeakMap<
+  MapGeoJson,
+  Map<number, Array<[number, number]>>
+>();
 
 /**
  * d3-geo uses spherical winding (small exterior rings run clockwise), while
@@ -1181,19 +1186,14 @@ export function GlobeMap<T>({
   const [currentRotation, setCurrentRotation] = useState(rotation);
   const [tooltip, setTooltip] = useState<GlobeTooltip | null>(null);
   const didDragRef = useRef(false);
+  const dragFrameRef = useRef<number | null>(null);
+  const pendingRotationRef = useRef<[number, number, number] | null>(null);
   const dragRef = useRef<{
     pointerId: number;
     x: number;
     y: number;
     rotation: [number, number, number];
   } | null>(null);
-
-  const rotationLongitude = rotation[0];
-  const rotationLatitude = rotation[1];
-  const rotationRoll = rotation[2];
-  useEffect(() => {
-    setCurrentRotation([rotationLongitude, rotationLatitude, rotationRoll]);
-  }, [rotationLongitude, rotationLatitude, rotationRoll]);
 
   const palette = useMemo(
     () => ChartPalette.mapColors(isDarkMode),
@@ -1223,10 +1223,10 @@ export function GlobeMap<T>({
 
   const globeFeatures = useMemo(
     () =>
-      geoJson.features.map((feature) => ({
-        feature,
-        geometry: normalizeGlobeFeature(feature),
-      })),
+      geoJson.features.map((feature) => {
+        const geometry = normalizeGlobeFeature(feature);
+        return { feature, geometry, bounds: geoBounds(geometry) };
+      }),
     [geoJson],
   );
 
@@ -1249,6 +1249,9 @@ export function GlobeMap<T>({
   const dottedLandCoordinates = useMemo(() => {
     if (landStyle !== "dotted" || landDotSpacing <= 0) return [];
 
+    const cached = globeDotCoordinateCache.get(geoJson)?.get(landDotSpacing);
+    if (cached) return cached;
+
     const coordinates: Array<[number, number]> = [];
     const angularStep = (landDotSpacing / GLOBE_RADIUS) * (180 / Math.PI);
     for (
@@ -1265,31 +1268,51 @@ export function GlobeMap<T>({
       ) {
         const coordinate: [number, number] = [longitude, latitude];
         if (
-          globeFeatures.some(({ geometry }) =>
-            geoContains(geometry, coordinate),
-          )
+          globeFeatures.some(({ geometry, bounds }) => {
+            const [[west, south], [east, north]] = bounds;
+            if (latitude < south || latitude > north) return false;
+            const isWithinLongitude =
+              west <= east
+                ? longitude >= west && longitude <= east
+                : longitude >= west || longitude <= east;
+            return isWithinLongitude && geoContains(geometry, coordinate);
+          })
         ) {
           coordinates.push(coordinate);
         }
       }
     }
+    const cacheForGeoJson =
+      globeDotCoordinateCache.get(geoJson) ??
+      new Map<number, Array<[number, number]>>();
+    cacheForGeoJson.set(landDotSpacing, coordinates);
+    globeDotCoordinateCache.set(geoJson, cacheForGeoJson);
     return coordinates;
-  }, [globeFeatures, landDotSpacing, landStyle]);
-  const dottedLandPoints = useMemo(() => {
+  }, [geoJson, globeFeatures, landDotSpacing, landStyle]);
+  const dottedLandPath = useMemo(() => {
     const center = projection.invert?.([
       GLOBE_VIEWBOX_SIZE / 2,
       GLOBE_VIEWBOX_SIZE / 2,
     ]);
-    if (!center) return [];
+    if (!center) return undefined;
 
-    const horizonInset = landDotSpacing / 2 / GLOBE_RADIUS;
-    return dottedLandCoordinates.flatMap<[number, number]>((coordinate) => {
+    const radius = Number((landDotSpacing * 0.28).toFixed(2));
+    const horizonInset = radius / GLOBE_RADIUS;
+    const diameter = radius * 2;
+    const commands: string[] = [];
+    for (const coordinate of dottedLandCoordinates) {
       if (geoDistance(center, coordinate) >= Math.PI / 2 - horizonInset) {
-        return [];
+        continue;
       }
       const point = projection(coordinate);
-      return point ? [point] : [];
-    });
+      if (!point) continue;
+      const x = Number(point[0].toFixed(2));
+      const y = Number(point[1].toFixed(2));
+      commands.push(
+        `M${x - radius},${y}a${radius},${radius} 0 1,0 ${diameter},0a${radius},${radius} 0 1,0 -${diameter},0`,
+      );
+    }
+    return commands.join("") || undefined;
   }, [dottedLandCoordinates, landDotSpacing, projection]);
 
   const fillForValue = useCallback(
@@ -1341,6 +1364,15 @@ export function GlobeMap<T>({
     [currentRotation, draggable],
   );
 
+  const applyPendingRotation = useCallback(() => {
+    dragFrameRef.current = null;
+    const next = pendingRotationRef.current;
+    pendingRotationRef.current = null;
+    if (!next) return;
+    setCurrentRotation(next);
+    onRotationChange?.(next);
+  }, [onRotationChange]);
+
   const handlePointerMove = useCallback(
     (event: ReactPointerEvent<SVGSVGElement>) => {
       const drag = dragRef.current;
@@ -1348,15 +1380,16 @@ export function GlobeMap<T>({
       const deltaX = event.clientX - drag.x;
       const deltaY = event.clientY - drag.y;
       if (Math.hypot(deltaX, deltaY) > 3) didDragRef.current = true;
-      const next: [number, number, number] = [
+      pendingRotationRef.current = [
         drag.rotation[0] + deltaX * 0.3,
         Math.max(-90, Math.min(90, drag.rotation[1] - deltaY * 0.3)),
         drag.rotation[2],
       ];
-      setCurrentRotation(next);
-      onRotationChange?.(next);
+      if (dragFrameRef.current === null) {
+        dragFrameRef.current = requestAnimationFrame(applyPendingRotation);
+      }
     },
-    [onRotationChange],
+    [applyPendingRotation],
   );
 
   const handlePointerUp = useCallback(
@@ -1364,8 +1397,13 @@ export function GlobeMap<T>({
       if (dragRef.current?.pointerId !== event.pointerId) return;
       dragRef.current = null;
       event.currentTarget.releasePointerCapture(event.pointerId);
+      if (dragFrameRef.current !== null) {
+        cancelAnimationFrame(dragFrameRef.current);
+        dragFrameRef.current = null;
+      }
+      applyPendingRotation();
     },
-    [],
+    [applyPendingRotation],
   );
 
   return (
@@ -1404,17 +1442,12 @@ export function GlobeMap<T>({
           />
         ) : null}
         {landStyle === "dotted" ? (
-          <g data-land-style="dotted" className="pointer-events-none">
-            {dottedLandPoints.map(([x, y]) => (
-              <circle
-                key={`${x}-${y}`}
-                cx={x}
-                cy={y}
-                r={landDotSpacing * 0.28}
-                fill={noData}
-              />
-            ))}
-          </g>
+          <path
+            data-land-style="dotted"
+            d={dottedLandPath}
+            fill={noData}
+            className="pointer-events-none"
+          />
         ) : null}
         <g>
           {globeFeatures.map(({ feature, geometry }, index) => {
@@ -1433,7 +1466,7 @@ export function GlobeMap<T>({
                 d={featurePath}
                 fill={entry ? fillForValue(entry.value) : noData}
                 className={cn(
-                  "outline-none transition-opacity",
+                  "transition-opacity outline-none",
                   landStyle === "solid" && "stroke-kumo-line",
                   entry && "hover:opacity-80 focus-visible:opacity-80",
                 )}
@@ -1498,7 +1531,7 @@ export function GlobeMap<T>({
                 d={markerPath}
                 fill={marker.color ?? resolvedMarkerColor}
                 strokeWidth={2}
-                className="stroke-kumo-base outline-none transition-opacity hover:opacity-80 focus-visible:opacity-80"
+                className="stroke-kumo-base transition-opacity outline-none hover:opacity-80 focus-visible:opacity-80"
                 tabIndex={0}
                 onPointerEnter={(event) =>
                   moveTooltip(event, marker.name, detail)
@@ -1541,7 +1574,7 @@ export function GlobeMap<T>({
       {tooltip ? (
         <div
           role="tooltip"
-          className="bg-kumo-base border-kumo-line text-kumo-default pointer-events-none absolute z-10 flex -translate-x-1/2 -translate-y-full flex-col gap-0.5 rounded-lg border px-2 py-1.5 text-xs shadow-lg"
+          className="pointer-events-none absolute z-10 flex -translate-x-1/2 -translate-y-full flex-col gap-0.5 rounded-lg border border-kumo-line bg-kumo-base px-2 py-1.5 text-xs text-kumo-default shadow-lg"
           style={{ left: tooltip.x, top: tooltip.y - 8 }}
         >
           <strong>{tooltip.name}</strong>
