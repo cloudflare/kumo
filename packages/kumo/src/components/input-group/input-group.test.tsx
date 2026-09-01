@@ -372,6 +372,23 @@ describe("InputGroup", () => {
       },
     );
 
+    it("uses compact end spacing for a button in a large group", () => {
+      render(
+        <InputGroup size="lg" label="Search">
+          <InputGroup.Input />
+          <InputGroup.Addon align="end">
+            <InputGroup.Button aria-label="Clear" shape="square" />
+          </InputGroup.Addon>
+        </InputGroup>,
+      );
+
+      const button = screen.getByRole("button", { name: "Clear" });
+      const addon = button.closest("[data-slot=input-group-addon-end]")!;
+
+      expect(INPUT_GROUP_SIZE.lg.addonButtonOuterEnd).toBe("pr-0.5");
+      expect(addon.className).toContain("pr-0.5");
+    });
+
     // Ensure all addonOuter tokens are static directional classes
     // (not symmetric px- that would need runtime string replacement)
     it("all addon tokens use static pl-/pr- classes (not px-)", () => {
