@@ -1,5 +1,58 @@
 # @cloudflare/kumo
 
+## 2.13.0
+
+### Minor Changes
+
+- 4066307: Add unknown-total pagination support through `hasNextPage`.
+- f74936f: Add `Toolbar.Link`, which renders a `LinkButton` with toolbar sizing, styling, and keyboard navigation.
+
+### Patch Changes
+
+- d004940: Position dialogs near the top of the viewport instead of vertically centering them.
+- 8f0a1f0: Use the elevated surface color for even rows in the default Table variant.
+- 1ede8bf: fix(select): align the trigger surface with form controls
+
+  Select triggers now use `bg-kumo-control`, including their open and disabled
+  states, so they match Input, Combobox, and the rest of the form-control family.
+  Consumer background classes can still override the default without using
+  `!important`. The popup remains on the floating `bg-kumo-base` surface.
+
+- 8482c50: fix(select): anchor the popup below the trigger and expose placement props
+
+  `Select.Positioner` relied on Base UI's `alignItemWithTrigger` default (`true`),
+  which overlays the popup on the trigger so the selected option's text lands on
+  the trigger's value text, emulating a native `<select>`. Options always render at
+  `text-base`, so on `xs`/`sm` triggers the popup was much taller than its anchor,
+  and Base UI's compensating shift detached it from the trigger — on `xs` it
+  overhung by 12.5px above and 45.5px below and sat 8px to the left, covering
+  adjacent content.
+
+  The popup now prefers `bottom` placement and is offset from the trigger, with
+  Base UI's collision avoidance still flipping it automatically when the preferred
+  side lacks space. Placement is configurable:
+
+  | prop                   | default    | notes                                                         |
+  | ---------------------- | ---------- | ------------------------------------------------------------- |
+  | `side`                 | `"bottom"` | preferred side; still flips automatically on collision        |
+  | `sideOffset`           | `4`        | gap between trigger and popup, matching Combobox/Autocomplete |
+  | `align`                | `"start"`  | alignment along the trigger edge                              |
+  | `alignOffset`          | —          | additional offset along the alignment axis                    |
+  | `alignItemWithTrigger` | `false`    | opt back in to the native `<select>` overlay                  |
+
+  The remaining Base UI Positioner controls are also forwarded unchanged:
+  `anchor`, `arrowPadding`, `positionMethod`, `collisionAvoidance`,
+  `collisionBoundary`, `collisionPadding`, `sticky`, and
+  `disableAnchorTracking`.
+
+  The popup also now tracks the trigger width via `min-w-(--anchor-width)` instead
+  of `min-w-[calc(var(--anchor-width)+3px)]`, which existed to visually offset the
+  old item-alignment shift.
+
+- 7526a6a: Allow non-heading Text variants to inherit line height from their surrounding context.
+- b094a5a: Make `Combobox.Input` sit flush with the top and sides of `Combobox.Content` and remove its bottom corner rounding.
+- 20b7880: Reduce the trailing inset for buttons inside large InputGroup addons.
+
 ## 2.12.0
 
 ### Minor Changes

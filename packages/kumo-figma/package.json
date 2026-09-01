@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo-figma",
-  "version": "0.3.48",
+  "version": "0.3.49",
   "private": true,
   "description": "Figma plugin for generating Kumo UI Kit components",
   "license": "MIT",
