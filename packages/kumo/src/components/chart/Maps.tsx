@@ -1052,7 +1052,7 @@ export interface GlobeMapProps<T> {
   landStyle?: "solid" | "dotted";
   /** Spacing between dot centers in the dotted land style. Default: `10`. */
   landDotSpacing?: number;
-  /** Fill behind the land and graticule. Default: `"transparent"`. */
+  /** Fill behind the land and graticule. Default: the Kumo base surface. */
   oceanColor?: string;
   /** Geographic points drawn above the land. Back-facing points are clipped. */
   markers?: GlobeMapMarker[];
@@ -1169,7 +1169,7 @@ export function GlobeMap<T>({
   noDataColor,
   landStyle = "solid",
   landDotSpacing = 10,
-  oceanColor = "transparent",
+  oceanColor = "var(--color-kumo-base)",
   markers = [],
   markerColor,
   markerRadius = 7,

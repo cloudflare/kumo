@@ -125,6 +125,7 @@ export function GlobeMapBasicDemo({ geoJson }: GlobeMapDemoProps) {
         name="country"
         value="requests"
         valueFormat={formatRequests}
+        oceanColor="var(--color-kumo-base)"
         autoRotate
         isDarkMode={isDarkMode}
       />
