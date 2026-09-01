@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { ButtonGroup } from "./button-group";

@@ -23,6 +23,21 @@ export function PaginationSimpleDemo() {
   );
 }
 
+/** Pagination for an API that reports whether another page exists, but not a total. */
+export function PaginationUnknownTotalDemo() {
+  const [page, setPage] = useState(1);
+  const hasNextPage = page < 3;
+
+  return (
+    <Pagination
+      text={() => `Page ${page}`}
+      page={page}
+      setPage={setPage}
+      hasNextPage={hasNextPage}
+    />
+  );
+}
+
 export function PaginationFullDemo() {
   const [page, setPage] = useState(1);
 

@@ -11,7 +11,7 @@
  * table.tsx → component-registry.json → table.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getTableComponentConfig,
   getTableLayoutConfig,

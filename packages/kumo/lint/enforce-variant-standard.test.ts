@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { enforceVariantStandardRule } from "./enforce-variant-standard.js";
 
 /**
@@ -36,7 +36,7 @@ function createProgramNode() {
 /**
  * Helper to create a mock ExportNamedDeclaration node
  */
-function createExportDeclaration(exportName) {
+function createExportDeclaration(exportName: string) {
   return {
     type: "ExportNamedDeclaration",
     declaration: {

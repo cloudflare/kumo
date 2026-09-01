@@ -1,4 +1,10 @@
-import { Sidebar, useSidebar, DropdownMenu, type SidebarState } from "@cloudflare/kumo";
+import {
+  Sidebar,
+  useSidebar,
+  DropdownMenu,
+  Breadcrumbs,
+  type SidebarState,
+} from "@cloudflare/kumo";
 import {
   HouseIcon,
   GlobeIcon,
@@ -18,8 +24,11 @@ import {
   ArrowsLeftRightIcon,
   ArrowLeftIcon,
   MagnifyingGlassIcon,
+  ClockCounterClockwiseIcon,
+  FileMagnifyingGlassIcon,
+  ChartPieIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -35,7 +44,7 @@ function DemoContainer({ children }: { children: React.ReactNode }) {
 
 function DemoMain({ children }: { children?: React.ReactNode }) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-kumo-subtle text-base">
+    <main className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-base text-kumo-subtle">
       {children ?? "Main content area"}
     </main>
   );
@@ -43,9 +52,9 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
 
 function BrandLogo() {
   return (
-    <div className="flex w-full min-w-0 items-center gap-2 px-3 group-data-[state=collapsed]/sidebar:px-2 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)">
+    <div className="flex w-full min-w-0 items-center gap-2 px-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:px-2">
       <CubeIcon className="size-4 shrink-0 text-kumo-brand" weight="duotone" />
-      <span className="flex-1 text-sm font-semibold text-kumo-strong truncate">
+      <span className="flex-1 truncate text-sm font-semibold text-kumo-strong">
         Company
       </span>
     </div>
@@ -67,16 +76,16 @@ function AccountSwitcher() {
         render={
           <button
             type="button"
-            className="cursor-pointer flex w-full min-w-0 items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line outline-none transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)"
+            className="flex w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-kumo-default transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) outline-none hover:bg-kumo-tint focus-visible:ring-1 focus-visible:ring-kumo-line"
           >
             <active.icon
               className="size-4 shrink-0 text-kumo-brand"
               weight="duotone"
             />
-            <span className="flex flex-1 items-center min-w-0 text-left overflow-hidden">
+            <span className="flex min-w-0 flex-1 items-center overflow-hidden text-left">
               {active.name}
             </span>
-            <span className="shrink-0 overflow-hidden transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) w-4 group-data-[state=collapsed]/sidebar:w-0">
+            <span className="w-4 shrink-0 overflow-hidden transition-[width] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:w-0">
               <CaretUpDownIcon className="size-4 text-kumo-subtle" />
             </span>
           </button>
@@ -86,10 +95,81 @@ function AccountSwitcher() {
         {accounts.map((account) => (
           <DropdownMenu.Item
             key={account.id}
-            className="gap-2 cursor-pointer"
+            className="cursor-pointer gap-2"
             onClick={() => setActive(account)}
           >
             <account.icon className="size-4 text-kumo-brand" weight="duotone" />
+            {account.name}
+            {account.id === active.id && (
+              <CheckIcon className="ml-auto size-4" />
+            )}
+          </DropdownMenu.Item>
+        ))}
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+/** Initials from an account name: "Workers Prod" → "WP", "Company" → "CO". */
+function initialsFor(name: string) {
+  const words = name.trim().split(/\s+/);
+  return (
+    words.length > 1 ? words[0][0] + words[1][0] : name.slice(0, 2)
+  ).toUpperCase();
+}
+
+/**
+ * Squircle avatar with a hairline ring, so it sits on the surface rather than
+ * floating. Muted neutral fill. Reads as an identity
+ * affordance rather than decoration. Sized to the header row rather than to
+ * iOS touch-target minimums — the whole row is generous, and an oversized mark
+ * competes with the breadcrumb trail that should carry the emphasis.
+ */
+function AccountAvatar({ name, size = 28 }: { name: string; size?: number }) {
+  return (
+    <span
+      aria-hidden
+      style={{ width: size, height: size }}
+      className="flex shrink-0 items-center justify-center rounded-[30%] bg-kumo-control text-kumo-default shadow-xs ring ring-kumo-line"
+    >
+      <span
+        className="leading-none font-semibold tracking-tight"
+        style={{ fontSize: size * 0.4 }}
+      >
+        {initialsFor(name)}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Avatar account switcher. The account name lives one tap away in the dropdown,
+ * freeing the header row for the breadcrumb trail.
+ */
+function CompactAccountSwitcher() {
+  const [active, setActive] = useState(accounts[0]);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger
+        render={
+          <button
+            type="button"
+            aria-label={`Account: ${active.name}`}
+            className="shrink-0 cursor-pointer rounded-full transition-opacity outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-kumo-line"
+          >
+            <AccountAvatar name={active.name} />
+          </button>
+        }
+      />
+      <DropdownMenu.Content align="start">
+        {accounts.map((account) => (
+          <DropdownMenu.Item
+            key={account.id}
+            className="cursor-pointer gap-2"
+            onClick={() => setActive(account)}
+          >
+            <AccountAvatar name={account.name} size={20} />
             {account.name}
             {account.id === active.id && (
               <CheckIcon className="ml-auto size-4" />
@@ -109,7 +189,7 @@ function AccountSwitcher() {
 export function SidebarBasicDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Content>
             <Sidebar.Group>
@@ -208,7 +288,7 @@ function ToggleButton() {
 export function SidebarToggleDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -237,9 +317,62 @@ export function SidebarToggleDemo() {
         </Sidebar>
         <DemoMain>
           <ToggleButton />
-          <p>
-            Click the button or the sidebar trigger to toggle
-          </p>
+          <p>Click the button or the sidebar trigger to toggle</p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Loading — nav-item-shaped skeleton shown while nav resolves
+// ---------------------------------------------------------------------------
+
+/** Loading state: nav-item-shaped skeleton rows shown until the nav is ready. */
+export function SidebarLoadingDemo() {
+  const [loading, setLoading] = useState(true);
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          {loading ? (
+            <Sidebar.Loading />
+          ) : (
+            <Sidebar.Content>
+              <Sidebar.Group>
+                <Sidebar.Menu>
+                  <Sidebar.MenuButton icon={HouseIcon} active>
+                    Home
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={ChartBarIcon}>
+                    Analytics
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={CodeIcon}>
+                    Compute
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton icon={DatabaseIcon}>
+                    Storage
+                  </Sidebar.MenuButton>
+                </Sidebar.Menu>
+              </Sidebar.Group>
+            </Sidebar.Content>
+          )}
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <button
+            type="button"
+            onClick={() => setLoading((l) => !l)}
+            className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+          >
+            {loading ? "Show loaded nav" : "Show loading"}
+          </button>
+          <p>Toggle to compare the loading state with the loaded nav</p>
         </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>
@@ -254,13 +387,14 @@ export function SidebarToggleDemo() {
 export function SidebarResizableDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained
+      <Sidebar.Provider
+        contained
         defaultOpen
         resizable
         defaultWidth={240}
         minWidth={180}
         maxWidth={400}
-        className="min-h-0! h-full"
+        className="h-full min-h-0!"
       >
         <Sidebar>
           <Sidebar.Header>
@@ -302,7 +436,12 @@ export function SidebarResizableDemo() {
 export function SidebarRightDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen side="right" className="min-h-0! h-full">
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        side="right"
+        className="h-full min-h-0!"
+      >
         <DemoMain />
         <Sidebar>
           <Sidebar.Content>
@@ -350,7 +489,12 @@ function PeekStateIndicator() {
 export function SidebarPeekingDemo() {
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen peekable className="min-h-0! h-full">
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        peekable
+        className="h-full min-h-0!"
+      >
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -393,7 +537,7 @@ export function SidebarPeekingDemo() {
 export function SidebarAutoScrollDemo() {
   return (
     <div className="relative h-[420px] w-full overflow-hidden rounded-lg border border-kumo-line bg-kumo-base">
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <BrandLogo />
@@ -448,8 +592,12 @@ export function SidebarAutoScrollDemo() {
                     <Sidebar.CollapsibleContent>
                       <Sidebar.MenuSub>
                         <Sidebar.MenuSubButton>Overview</Sidebar.MenuSubButton>
-                        <Sidebar.MenuSubButton>Deployments</Sidebar.MenuSubButton>
-                        <Sidebar.MenuSubButton>Observability</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Deployments
+                        </Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>
+                          Observability
+                        </Sidebar.MenuSubButton>
                         <Sidebar.MenuSubButton>Settings</Sidebar.MenuSubButton>
                       </Sidebar.MenuSub>
                     </Sidebar.CollapsibleContent>
@@ -484,7 +632,7 @@ export function SidebarSlidingViewsDemo() {
 
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen className="min-h-0! h-full">
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
         <Sidebar>
           <Sidebar.Header>
             <button
@@ -492,7 +640,7 @@ export function SidebarSlidingViewsDemo() {
               onClick={() =>
                 setSurface((s) => (s === "account" ? "zone" : "account"))
               }
-              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-kumo-default hover:bg-kumo-tint transition-colors"
+              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint"
             >
               <ArrowsLeftRightIcon className="size-4 shrink-0 text-kumo-brand" />
               <span className="flex-1 text-left font-semibold text-kumo-strong">
@@ -555,9 +703,7 @@ export function SidebarSlidingViewsDemo() {
             <p className="font-medium text-kumo-default">
               Active: {surface === "account" ? "Account" : "Zone"} surface
             </p>
-            <p>
-              Click the header button to slide between views
-            </p>
+            <p>Click the header button to slide between views</p>
           </div>
         </DemoMain>
       </Sidebar.Provider>
@@ -575,7 +721,12 @@ export function SidebarFullDemo() {
 
   return (
     <DemoContainer>
-      <Sidebar.Provider contained defaultOpen peekable className="min-h-0! h-full">
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        peekable
+        className="h-full min-h-0!"
+      >
         <Sidebar>
           <Sidebar.Header>
             <AccountSwitcher />
@@ -591,7 +742,7 @@ export function SidebarFullDemo() {
                     <Sidebar.MenuButton
                       icon={MagnifyingGlassIcon}
                       tooltip="Search"
-                      className="ring ring-kumo-line group-data-[state=collapsed]/sidebar:ring-transparent mb-3 group-data-[state=collapsed]/sidebar:mb-0 transition-[margin] duration-(--sidebar-animation-duration)"
+                      className="mb-3 ring ring-kumo-line transition-[margin] duration-(--sidebar-animation-duration) group-data-[state=collapsed]/sidebar:mb-0 group-data-[state=collapsed]/sidebar:ring-transparent"
                     >
                       Quick search&hellip;
                     </Sidebar.MenuButton>
@@ -733,7 +884,107 @@ export function SidebarFullDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Mobile — navigation drawer with Escape to close
+// 9. scrollToItem — imperative scroll to a tagged nav item
+// ---------------------------------------------------------------------------
+
+const LONG_NAV_ITEMS = [
+  "Home",
+  "Analytics",
+  "Domains",
+  "SSL/TLS",
+  "Firewall",
+  "Caching",
+  "Workers",
+  "Pages",
+  "R2",
+  "KV",
+  "D1",
+  "AI Gateway",
+  "Queues",
+  "Zaraz",
+  "Turnstile",
+  "Load Balancing",
+  "Zero Trust",
+  "Access",
+  "Gateway",
+  "Tunnels",
+  "Logs",
+  "Notifications",
+  "Members",
+  "API tokens",
+  "Billing",
+  "Settings",
+] as const;
+
+const ANCHOR_ID_BY_LABEL: Record<string, string> = {
+  Home: "home",
+  Workers: "workers",
+  "Zero Trust": "zero-trust",
+  Settings: "settings",
+};
+
+function ScrollToItemControls() {
+  const { scrollToItem } = useSidebar();
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <p>Jump to any tagged item.</p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {(["home", "workers", "zero-trust", "settings"] as const).map((id) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() =>
+              scrollToItem(id, { align: "center", behavior: "smooth" })
+            }
+            className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+          >
+            Scroll to {id}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Imperative scroll via `useSidebar().scrollToItem(id, options)` targeting `itemId` props. */
+export function SidebarScrollToItemDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider contained defaultOpen className="h-full min-h-0!">
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.Menu>
+                {LONG_NAV_ITEMS.map((label, idx) => (
+                  <Sidebar.MenuButton
+                    key={label}
+                    icon={idx === 0 ? HouseIcon : GlobeIcon}
+                    active={idx === 0}
+                    itemId={ANCHOR_ID_BY_LABEL[label]}
+                  >
+                    {label}
+                  </Sidebar.MenuButton>
+                ))}
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <ScrollToItemControls />
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 10. Mobile — navigation drawer with Escape to close
 // ---------------------------------------------------------------------------
 
 function MobileToggleButton() {
@@ -777,9 +1028,7 @@ export function SidebarMobileDemo() {
             <Sidebar.Group>
               <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
               <Sidebar.Menu>
-                <Sidebar.MenuButton icon={CodeIcon}>
-                  Compute
-                </Sidebar.MenuButton>
+                <Sidebar.MenuButton icon={CodeIcon}>Compute</Sidebar.MenuButton>
                 <Sidebar.MenuButton icon={DatabaseIcon}>
                   Storage
                 </Sidebar.MenuButton>
@@ -798,6 +1047,347 @@ export function SidebarMobileDemo() {
           </p>
         </DemoMain>
       </Sidebar.Provider>
+    </div>
+  );
+}
+// ---------------------------------------------------------------------------
+// 11. Full-screen mobile — nav fills the viewport, route lives in breadcrumbs
+// ---------------------------------------------------------------------------
+
+/** A node in the nav tree. Leaves are navigable; branches expand. */
+interface NavNode {
+  label: string;
+  icon?: React.ElementType;
+  /** Small status pill, e.g. "Beta" / "New". */
+  badge?: string;
+  children?: NavNode[];
+}
+
+/** Status pill used beside nav labels. */
+function NavBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="ml-1.5 shrink-0 rounded-full border border-dashed border-kumo-line px-1.5 py-px text-[10px] font-medium text-kumo-subtle">
+      {children}
+    </span>
+  );
+}
+
+/** Quick search affordance pinned above the nav list. */
+function QuickSearch() {
+  return (
+    <button
+      type="button"
+      className="group flex h-8 w-full shrink-0 cursor-pointer items-center gap-2 overflow-x-clip rounded-lg border-0 bg-kumo-base px-3 text-left text-sm font-normal !text-kumo-default shadow-xs ring ring-kumo-line transition-[color,background,border,box-shadow] duration-250 select-none not-disabled:hover:bg-kumo-tint focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
+    >
+      <MagnifyingGlassIcon className="size-4 shrink-0" />
+      <span className="flex-1 text-left">Quick search...</span>
+      <kbd className="shrink-0 font-sans text-xs text-kumo-subtle">⌘K</kbd>
+    </button>
+  );
+}
+
+/**
+ * The nav tree. Breadcrumbs are derived from this, so the trail can never drift
+ * out of sync with the sidebar — selecting a leaf yields its full ancestry.
+ */
+const NAV_TREE: { group: string | null; items: NavNode[] }[] = [
+  {
+    group: null,
+    items: [
+      { label: "Account home", icon: HouseIcon },
+      { label: "Recents", icon: ClockCounterClockwiseIcon },
+      { label: "Domains", icon: GlobeIcon },
+    ],
+  },
+  {
+    group: "Observe",
+    items: [
+      {
+        label: "Investigate",
+        icon: FileMagnifyingGlassIcon,
+        children: [
+          { label: "Log Explorer" },
+          { label: "Trace", badge: "Beta" },
+          { label: "Logpush" },
+        ],
+      },
+      {
+        label: "Analytics",
+        icon: ChartPieIcon,
+        children: [
+          { label: "Dashboards", badge: "New" },
+          { label: "Account analytics" },
+          { label: "Web analytics" },
+        ],
+      },
+    ],
+  },
+  {
+    group: "Build",
+    items: [
+      {
+        label: "Compute",
+        icon: CodeIcon,
+        children: [
+          { label: "Workers & Pages" },
+          { label: "Observability" },
+          { label: "Workers for Platforms" },
+          { label: "Containers" },
+          { label: "Durable Objects" },
+          { label: "Queues" },
+          { label: "Workflows" },
+          { label: "Browser Run" },
+          { label: "VPC", badge: "Beta" },
+        ],
+      },
+      {
+        label: "Storage & Databases",
+        icon: DatabaseIcon,
+        children: [
+          { label: "R2 Object Storage" },
+          { label: "KV" },
+          { label: "D1 SQL Database" },
+          { label: "Hyperdrive" },
+        ],
+      },
+    ],
+  },
+  {
+    group: "Secure",
+    items: [
+      {
+        label: "Access",
+        icon: LockIcon,
+        children: [{ label: "Applications" }, { label: "Service Auth" }],
+      },
+      { label: "WAF", icon: ShieldCheckIcon },
+    ],
+  },
+];
+
+/**
+ * Renders a nav subtree. Branches are collapsible and auto-open when they are
+ * on the selected path; leaves select and close the nav.
+ */
+function NavSubtree({
+  nodes,
+  path,
+  selected,
+  onSelect,
+}: {
+  nodes: NavNode[];
+  path: string[];
+  selected: string[];
+  onSelect: (path: string[]) => void;
+}) {
+  return (
+    <Sidebar.MenuSub>
+      {nodes.map((node) => {
+        const nodePath = [...path, node.label];
+        const onSelectedPath = nodePath.every((p, i) => selected[i] === p);
+
+        if (!node.children) {
+          return (
+            <Sidebar.MenuSubItem key={node.label}>
+              <Sidebar.MenuSubButton
+                active={onSelectedPath && selected.length === nodePath.length}
+                onClick={() => onSelect(nodePath)}
+              >
+                {node.label}
+                {node.badge && <NavBadge>{node.badge}</NavBadge>}
+              </Sidebar.MenuSubButton>
+            </Sidebar.MenuSubItem>
+          );
+        }
+
+        return (
+          <Sidebar.MenuSubItem key={node.label}>
+            <Sidebar.Collapsible defaultOpen={onSelectedPath}>
+              <Sidebar.CollapsibleTrigger
+                render={
+                  <Sidebar.MenuSubButton>
+                    {node.label}
+                    <Sidebar.MenuChevron />
+                  </Sidebar.MenuSubButton>
+                }
+              />
+              <Sidebar.CollapsibleContent>
+                <NavSubtree
+                  nodes={node.children}
+                  path={nodePath}
+                  selected={selected}
+                  onSelect={onSelect}
+                />
+              </Sidebar.CollapsibleContent>
+            </Sidebar.Collapsible>
+          </Sidebar.MenuSubItem>
+        );
+      })}
+    </Sidebar.MenuSub>
+  );
+}
+
+/** Closes the mobile nav after a leaf is chosen, mirroring real navigation. */
+function NavTree({
+  selected,
+  onSelect,
+}: {
+  selected: string[];
+  onSelect: (path: string[]) => void;
+}) {
+  const { setOpenMobile } = useSidebar();
+  const select = (path: string[]) => {
+    onSelect(path);
+    setOpenMobile(false);
+  };
+
+  return (
+    <>
+      {NAV_TREE.map(({ group, items }) => (
+        <Sidebar.Group key={group ?? "root"}>
+          {group && <Sidebar.GroupLabel>{group}</Sidebar.GroupLabel>}
+          <Sidebar.Menu>
+            {items.map((node) => {
+              const nodePath = [node.label];
+              const onSelectedPath = selected[0] === node.label;
+
+              if (!node.children) {
+                return (
+                  <Sidebar.MenuButton
+                    key={node.label}
+                    icon={node.icon}
+                    active={onSelectedPath && selected.length === 1}
+                    onClick={() => select(nodePath)}
+                  >
+                    {node.label}
+                  </Sidebar.MenuButton>
+                );
+              }
+
+              return (
+                <Sidebar.MenuItem key={node.label}>
+                  <Sidebar.Collapsible defaultOpen={onSelectedPath}>
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={node.icon}>
+                          {node.label}
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <NavSubtree
+                        nodes={node.children}
+                        path={nodePath}
+                        selected={selected}
+                        onSelect={select}
+                      />
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+              );
+            })}
+          </Sidebar.Menu>
+        </Sidebar.Group>
+      ))}
+    </>
+  );
+}
+
+/**
+ * Full-screen mobile nav. The sheet covers the viewport instead of leaving a
+ * sliver of the page behind, so nav items get comfortable touch targets. The
+ * current route is carried by breadcrumbs derived from the nav tree itself.
+ */
+export function SidebarFullScreenMobileDemo() {
+  // Deep default selection, so the trail starts in a realistic overflow state.
+  const [selected, setSelected] = useState(["Analytics", "Account analytics"]);
+  // Narrower than the demo box, so overflow collapsing is visible without
+  // needing to resize the browser.
+  const [width, setWidth] = useState(390);
+
+  // Trail derived from the selection: ancestors collapse, leaf is current.
+  const ancestors = selected.slice(0, -1);
+  const current = selected[selected.length - 1];
+  // No overflow machinery: render the trail plainly and let the leaf truncate
+  // when it runs out of room. Simpler, and the route stays readable because it
+  // is the only thing allowed to shrink.
+  // No account crumb — the avatar to the left already carries it, and at phone
+  // widths every crumb spent on context is width taken from the actual route.
+  const trail = ancestors;
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Width control — stands in for resizing a real phone viewport. */}
+      <label className="flex items-center gap-3 text-sm text-kumo-subtle">
+        <span className="shrink-0">Viewport</span>
+        <input
+          type="range"
+          min={280}
+          max={720}
+          value={width}
+          onChange={(e) => setWidth(Number(e.target.value))}
+          className="flex-1 cursor-pointer"
+        />
+        <span className="w-14 shrink-0 text-right tabular-nums">{width}px</span>
+      </label>
+
+      <div
+        className="relative h-[540px] overflow-hidden rounded-lg border border-kumo-line bg-kumo-base"
+        style={{ width }}
+      >
+        <Sidebar.Provider contained mobileBreakpoint={9999} className="h-full">
+          <Sidebar fullScreenOnMobile>
+            {/* Single row: avatar, then the trail takes the rest of the width.
+                Mirrors the product header — account mark, then breadcrumbs. */}
+            <Sidebar.Header className="gap-2 px-3.5">
+              <CompactAccountSwitcher />
+              <div className="min-w-0 flex-1">
+                <Breadcrumbs size="sm">
+                  {trail.map((label) => (
+                    <Fragment key={label}>
+                      <Breadcrumbs.Link href="#">{label}</Breadcrumbs.Link>
+                      <Breadcrumbs.Separator />
+                    </Fragment>
+                  ))}
+                  <Breadcrumbs.Current>{current}</Breadcrumbs.Current>
+                </Breadcrumbs>
+              </div>
+              <Sidebar.Close />
+            </Sidebar.Header>
+            <Sidebar.Content>
+              <div className="pt-1 pb-2">
+                <QuickSearch />
+              </div>
+              <NavTree selected={selected} onSelect={setSelected} />
+            </Sidebar.Content>
+          </Sidebar>
+
+          <div className="flex min-w-0 flex-1 flex-col">
+            <header className="flex h-12 shrink-0 items-center gap-2 border-b border-kumo-line px-3">
+              <Sidebar.Trigger />
+              <div className="min-w-0 flex-1">
+                <Breadcrumbs size="sm">
+                  {trail.map((label) => (
+                    <Fragment key={label}>
+                      <Breadcrumbs.Link href="#">{label}</Breadcrumbs.Link>
+                      <Breadcrumbs.Separator />
+                    </Fragment>
+                  ))}
+                  <Breadcrumbs.Current>{current}</Breadcrumbs.Current>
+                </Breadcrumbs>
+              </div>
+            </header>
+            <DemoMain>
+              <p className="text-kumo-default">{current}</p>
+              <p className="text-sm text-kumo-subtle">
+                Drill into the nav — the trail is derived from the tree, so it
+                always matches where you are.
+              </p>
+            </DemoMain>
+          </div>
+        </Sidebar.Provider>
+      </div>
     </div>
   );
 }

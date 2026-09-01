@@ -5,7 +5,7 @@
  * Follows the structural + snapshot testing pattern from badge.test.ts.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getBreadcrumbsSizeConfig,
   getBreadcrumbsParsedSizeStyles,

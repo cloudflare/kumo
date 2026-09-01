@@ -182,7 +182,9 @@ export function deriveInheritedHtmlProps(): Set<string> {
   try {
     // Read tsconfig to get compiler options
     const configPath = join(rootDir, "tsconfig.json");
-    const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+    const configFile = ts.readConfigFile(configPath, (path) =>
+      ts.sys.readFile(path),
+    );
     const parsedConfig = ts.parseJsonConfigFileContent(
       configFile.config,
       ts.sys,

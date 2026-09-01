@@ -12,7 +12,7 @@
  * button.tsx → component-registry.json → link-button.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { parseTailwindClasses } from "../parsers/tailwind-to-figma";
 import {
   getLinkButtonVariantConfig,

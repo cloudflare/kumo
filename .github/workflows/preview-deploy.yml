@@ -225,7 +225,7 @@ jobs:
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ needs.deploy.outputs.preview_url }}
           SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
-        run: pnpm tsx ci/visual-regression/run-visual-regression.ts
+        run: vp exec tsx ci/visual-regression/run-visual-regression.ts
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v4

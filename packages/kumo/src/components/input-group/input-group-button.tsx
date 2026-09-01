@@ -149,6 +149,10 @@ export const Button = forwardRef<
         className={cn(
           // Ensure clicks register even when parent has pointer-events-none (e.g. disabled overlay)
           "pointer-events-auto",
+          // Suppress the base Button's drop shadow so InputGroup matches the flat
+          // appearance of the standalone Input (ghost already sets shadow-none,
+          // but secondary/primary/outline etc. inherit shadow-xs from Button base)
+          "shadow-none",
           // Suppress the base Button's non-visible focus ring in all modes
           "focus:ring-0",
           // Container-zone buttons: use a subtle ring as focus indicator
@@ -159,7 +163,7 @@ export const Button = forwardRef<
           // Individual mode: each button owns its own border and focus indicator
           isIndividual && [
             // Own border replaces the container's shared ring; force full height
-            "relative h-full! rounded-none ring-0 focus-visible:ring-0 border border-kumo-line",
+            "relative h-full! rounded-none border border-kumo-line ring-0 focus-visible:ring-0",
             "first:rounded-l-[inherit] last:rounded-r-[inherit]",
             // Negative margin (not border-l-0) so the border is still paintable on focus
             "not-first:-ml-px",

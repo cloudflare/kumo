@@ -111,7 +111,8 @@ function getRunStoragePrefix(): string {
   const prNumber =
     process.env.GITHUB_PR_NUMBER ?? process.env.PR_NUMBER ?? "local";
   const runId = process.env.GITHUB_RUN_ID ?? Date.now().toString();
-  const headSha = process.env.PR_HEAD_SHA ?? process.env.GITHUB_SHA ?? "unknown";
+  const headSha =
+    process.env.PR_HEAD_SHA ?? process.env.GITHUB_SHA ?? "unknown";
 
   return [
     "runs",

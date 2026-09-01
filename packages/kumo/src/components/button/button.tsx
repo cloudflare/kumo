@@ -133,7 +133,7 @@ export function buttonVariants({
     // Base styles
     "group flex w-max shrink-0 items-center font-medium select-none",
     "border-0 shadow-xs",
-    "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+    "focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
     // Disabled state
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
@@ -245,11 +245,17 @@ const renderButtonContent = (
   );
 };
 
+const getTitleLabel = (title: React.ReactNode) => {
+  if (typeof title === "string") return title;
+  if (typeof title === "number") return String(title);
+  return undefined;
+};
+
 /**
  * Button component props.
  *
  * Uses a discriminated union on `shape` so that icon-only buttons
- * (`shape="square"` or `shape="circle"`) require an `aria-label`.
+ * (`shape="square"` or `shape="circle"`) require an accessible name.
  *
  * @example
  * ```tsx
@@ -277,15 +283,37 @@ type ButtonWithTextProps = ButtonBaseProps & {
   variant?: KumoButtonVariant;
 };
 
-type IconOnlyButtonProps = ButtonBaseProps & {
-  shape: "square" | "circle";
-  size?: KumoButtonSize;
-  variant?: KumoButtonVariant;
-  /** Required for icon-only buttons to provide accessible label for screen readers */
-  "aria-label": string;
-};
+type IconOnlyButtonAccessibleNameProps =
+  | {
+      /** Required for icon-only buttons to provide an accessible label for screen readers. */
+      "aria-label": string;
+      "aria-labelledby"?: string;
+    }
+  | {
+      "aria-label"?: string;
+      /** References an element that provides the accessible label for screen readers. */
+      "aria-labelledby": string;
+    }
+  | {
+      /** Used as tooltip content and as a fallback accessible label when no children are provided. */
+      title: string | number;
+      "aria-label"?: string;
+      "aria-labelledby"?: string;
+    };
+
+type IconOnlyButtonProps = ButtonBaseProps &
+  IconOnlyButtonAccessibleNameProps & {
+    shape: "square" | "circle";
+    size?: KumoButtonSize;
+    variant?: KumoButtonVariant;
+  };
 
 export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
+
+export type RefreshButtonProps = Omit<
+  IconOnlyButtonProps,
+  "children" | "icon" | "shape"
+>;
 
 /**
  * LinkButton component props — renders an anchor styled as a button.
@@ -339,6 +367,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const { type, ...restProps } = props;
     const emphasisStyle = getEmphasisStyle(variant);
+    const titleLabel = getTitleLabel(title);
+    const buttonProps = {
+      ...restProps,
+      ...(!React.Children.count(children) &&
+        !restProps["aria-label"] &&
+        !restProps["aria-labelledby"] &&
+        titleLabel && { "aria-label": titleLabel }),
+    };
     const iconNode = loading ? (
       <Loader size={size === "lg" ? 16 : 14} />
     ) : (
@@ -357,7 +393,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading || disabled}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         type={type ?? "button"}
-        {...restProps}
+        {...buttonProps}
       >
         {renderButtonContent(variant, iconNode, children)}
       </button>
@@ -393,7 +429,7 @@ export const RefreshButton = ({
   "aria-label": ariaLabel = "Refresh",
   loading,
   ...props
-}: ButtonProps) => (
+}: RefreshButtonProps) => (
   <Button shape="square" aria-label={ariaLabel} {...props}>
     <ArrowsClockwise
       className={cn({
@@ -444,7 +480,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       return (
         <Button
           {...toDisabledButtonProps(props)}
-          className={className}
+          className={cn("select-text", className)}
           data-kumo-component="LinkButton"
           disabled
           icon={IconComponent}
@@ -459,18 +495,17 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       );
     }
 
-    return (
+    const link = (
       <LinkComponent
         ref={ref}
         data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({ variant, size, shape }),
-          "flex items-center no-underline!",
+          "flex items-center no-underline! select-text",
           className,
         )}
         href={href}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
-        title={title}
         to={typeof href === "string" ? href : undefined}
         {...externalProps}
         {...props}
@@ -478,6 +513,12 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         {renderButtonContent(variant, renderIconNode(IconComponent), children)}
       </LinkComponent>
     );
+
+    if (title) {
+      return <Tooltip content={title} render={link} />;
+    }
+
+    return link;
   },
 );
 

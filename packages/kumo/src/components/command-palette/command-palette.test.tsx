@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommandPalette } from "./command-palette";
@@ -51,22 +51,24 @@ const getSelectableItems = (groups: TestGroup[]) =>
 /**
  * Helper to render CommandPalette with common setup
  */
+type RootProps = React.ComponentProps<typeof CommandPalette.Root<TestItem>>;
+
 const renderCommandPalette = ({
   open = true,
-  onOpenChange = vi.fn(),
+  onOpenChange = vi.fn<NonNullable<RootProps["onOpenChange"]>>(),
   items = mockGroups,
   value = "",
-  onValueChange = vi.fn(),
-  onSelect = vi.fn(),
+  onValueChange = vi.fn<NonNullable<RootProps["onValueChange"]>>(),
+  onSelect = vi.fn<NonNullable<RootProps["onSelect"]>>(),
   showLoading = false,
   showEmpty = false,
 }: {
   open?: boolean;
-  onOpenChange?: ReturnType<typeof vi.fn>;
+  onOpenChange?: RootProps["onOpenChange"];
   items?: TestGroup[];
   value?: string;
-  onValueChange?: ReturnType<typeof vi.fn>;
-  onSelect?: ReturnType<typeof vi.fn>;
+  onValueChange?: RootProps["onValueChange"];
+  onSelect?: RootProps["onSelect"];
   showLoading?: boolean;
   showEmpty?: boolean;
 } = {}) => {
@@ -254,6 +256,21 @@ describe("CommandPalette", () => {
       renderCommandPalette();
 
       expect(screen.getByText("Use arrow keys to navigate")).toBeTruthy();
+    });
+  });
+
+  describe("Highlighted Text", () => {
+    it("uses a themed background for matching text", () => {
+      render(
+        <CommandPalette.HighlightedText
+          text="Autocomplete"
+          highlights={[[0, 3]]}
+        />,
+      );
+
+      const highlight = screen.getByText("Auto");
+      expect(highlight.tagName).toBe("MARK");
+      expect(highlight.className).toContain("bg-kumo-warning/50");
     });
   });
 

@@ -77,19 +77,20 @@ export interface CollapsibleTriggerProps extends BaseTriggerProps {
  * </Collapsible.Trigger>
  * ```
  */
-const CollapsibleTrigger = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <CollapsibleBase.Trigger
-        ref={ref}
-        data-kumo-component="Collapsible"
-        data-kumo-part="trigger"
-        className={cn("cursor-pointer", className)}
-        {...props}
-      />
-    );
-  },
-);
+const CollapsibleTrigger = forwardRef<
+  HTMLButtonElement,
+  CollapsibleTriggerProps
+>(({ className, ...props }, ref) => {
+  return (
+    <CollapsibleBase.Trigger
+      ref={ref}
+      data-kumo-component="Collapsible"
+      data-kumo-part="trigger"
+      className={cn("cursor-pointer", className)}
+      {...props}
+    />
+  );
+});
 
 CollapsibleTrigger.displayName = "Collapsible.Trigger";
 
@@ -116,13 +117,7 @@ export interface CollapsiblePanelProps extends BasePanelProps {
  */
 const CollapsiblePanel = forwardRef<HTMLDivElement, CollapsiblePanelProps>(
   ({ className, ...props }, ref) => {
-    return (
-      <CollapsibleBase.Panel
-        ref={ref}
-        className={className}
-        {...props}
-      />
-    );
+    return <CollapsibleBase.Panel ref={ref} className={className} {...props} />;
   },
 );
 
@@ -164,14 +159,21 @@ const CollapsibleDefaultTrigger = forwardRef<
       data-kumo-part="default-trigger"
       className={cn(
         // Defensive resets to prevent global button styles from polluting the trigger
-        "bg-transparent border-none shadow-none p-0 m-0",
+        "m-0 border-none bg-transparent p-0 shadow-none",
         // Base styles for the trigger
-        "flex cursor-pointer items-center gap-1 text-sm text-kumo-link select-none",
+        "flex cursor-pointer items-center gap-1 text-base font-medium text-kumo-default select-none",
         className,
       )}
     >
-      {children}{" "}
-      <CaretDownIcon className="h-4 w-4 transition-transform [[data-panel-open]_&]:rotate-180" />
+      <span>{children}</span>
+      <span className="inline-grid w-4 shrink-0 place-items-center">
+        <CaretDownIcon
+          aria-hidden
+          size={12}
+          weight="bold"
+          className="block size-3 origin-center transition-transform duration-100 ease-out [[data-panel-open]_&]:rotate-180"
+        />
+      </span>
     </CollapsibleBase.Trigger>
   );
 });
@@ -210,10 +212,15 @@ const CollapsibleDefaultPanel = forwardRef<
   return (
     <CollapsibleBase.Panel
       ref={ref}
-      className={cn("my-2 space-y-4 border-l-2 border-kumo-fill pl-4", className)}
+      className={cn(
+        "h-[var(--collapsible-panel-height)] overflow-hidden transition-[height,opacity] duration-100 ease-out data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0 [&[hidden]:not([hidden='until-found'])]:hidden",
+        className,
+      )}
       {...props}
     >
-      {children}
+      <div className="my-2 space-y-4 border-l-2 border-kumo-fill py-1 pr-1 pl-4">
+        {children}
+      </div>
     </CollapsibleBase.Panel>
   );
 });

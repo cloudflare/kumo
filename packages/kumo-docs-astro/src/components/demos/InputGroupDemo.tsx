@@ -173,7 +173,7 @@ export function InputGroupKbdDemo() {
       </InputGroup.Addon>
       <InputGroup.Input placeholder="Search..." aria-label="Search" />
       <InputGroup.Addon align="end">
-        <kbd className="bg-none! border-none!">⌘K</kbd>
+        <kbd className="border-none! bg-none!">⌘K</kbd>
       </InputGroup.Addon>
     </InputGroup>
   );

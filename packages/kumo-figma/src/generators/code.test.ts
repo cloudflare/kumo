@@ -16,7 +16,7 @@
  * Tests will FAIL until implementation is complete (~60% failure rate expected).
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { parseTailwindClasses } from "../parsers/tailwind-to-figma";
 import { getAllVariantData, getBaseStyles, getLangConfig } from "./code";
 

@@ -49,12 +49,7 @@ enum ChartSemanticDarkColors {
 }
 
 export type ChartSemanticColorName =
-  | "Attention"
-  | "Warning"
-  | "Success"
-  | "Neutral"
-  | "Disabled"
-  | "Skeleton";
+  "Attention" | "Warning" | "Success" | "Neutral" | "Disabled" | "Skeleton";
 
 /**
  * Sequential color palettes for light mode with the colour in position #2 of the array as the base.

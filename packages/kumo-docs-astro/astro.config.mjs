@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
+import { unified } from "@astrojs/markdown-remark";
 import tailwindcss from "@tailwindcss/vite";
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
@@ -73,7 +74,7 @@ const kumoSrc = resolve(__dirname, "../kumo/src");
 // https://astro.build/config
 export default defineConfig({
   integrations: [
-    mdx({ remarkPlugins: [remarkHeadingComponents] }),
+    mdx(),
     react(),
     sitemap(),
     markdownPages({ passthroughPaths: ["/skill.md"] }),
@@ -87,6 +88,7 @@ export default defineConfig({
     defaultStrategy: "hover",
   },
   markdown: {
+    processor: unified({ remarkPlugins: [remarkHeadingComponents] }),
     shikiConfig: {
       themes: {
         light: "github-light",
@@ -103,13 +105,9 @@ export default defineConfig({
       // IMPORTANT: Must come BEFORE tailwindcss() so CSS @import statements
       // like `@import "@cloudflare/kumo/styles"` are aliased to source files
       // before Tailwind processes them.
-      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
       ...(isDev ? [kumoHmrPlugin()] : []),
-      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @tailwindcss/vite (Vite 7)
       tailwindcss(),
-      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
       kumoColorsPlugin(),
-      // @ts-expect-error - Vite version mismatch between Astro (Vite 6) and @cloudflare/kumo (Vite 7)
       kumoRegistryPlugin(),
     ],
 

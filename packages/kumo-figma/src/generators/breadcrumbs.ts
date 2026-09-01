@@ -295,7 +295,7 @@ async function createSeparatorIcon(
 
     separatorFrame.appendChild(svgNode);
   } catch (error) {
-    logWarn(`Failed to create separator icon: ${error}`);
+    logWarn(`Failed to create separator icon: ${String(error)}`);
     // Fallback: create a simple text chevron
     const fallbackText = await createTextNode(">", 16, 400);
     separatorFrame.appendChild(fallbackText);

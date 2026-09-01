@@ -3,7 +3,7 @@
  */
 import { useState } from "react";
 import { Select } from "../src/components/select/select";
-import { expectTypeOf } from "vitest";
+import { expectTypeOf } from "vite-plus/test";
 
 interface Tunnel {
   id: string;
@@ -27,7 +27,9 @@ function VerifyInferredTypes() {
         return t.name;
       }}
     >
-      <Select.Option value={{ id: "1", name: "Tunnel 1" }}>Tunnel 1</Select.Option>
+      <Select.Option value={{ id: "1", name: "Tunnel 1" }}>
+        Tunnel 1
+      </Select.Option>
     </Select>
   );
 }

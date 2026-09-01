@@ -10,10 +10,7 @@ import {
  * Supports HTMLElement, ShadowRoot, or a ref to either.
  */
 export type PortalContainer =
-  | HTMLElement
-  | ShadowRoot
-  | null
-  | RefObject<HTMLElement | ShadowRoot | null>;
+  HTMLElement | ShadowRoot | null | RefObject<HTMLElement | ShadowRoot | null>;
 
 const PortalContainerContext = createContext<PortalContainer>(null);
 

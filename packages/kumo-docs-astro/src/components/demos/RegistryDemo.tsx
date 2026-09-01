@@ -59,7 +59,9 @@ const ComponentCard: FC<{
       >
         <div>
           <h3 className="font-semibold text-kumo-default">{component.name}</h3>
-          <p className="mt-1 text-sm text-kumo-subtle">{component.description}</p>
+          <p className="mt-1 text-sm text-kumo-subtle">
+            {component.description}
+          </p>
         </div>
         <span className="ml-4 text-kumo-subtle">{isExpanded ? "−" : "+"}</span>
       </button>
@@ -194,7 +196,9 @@ export const ComponentRegistryView: FC = () => {
         </div>
         <div className="rounded-lg border border-kumo-hairline bg-kumo-base px-4 py-2">
           <span className="text-kumo-subtle">v</span>
-          <span className="font-semibold text-kumo-default">{registry.version}</span>
+          <span className="font-semibold text-kumo-default">
+            {registry.version}
+          </span>
         </div>
       </div>
 

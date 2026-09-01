@@ -41,7 +41,7 @@ function DemoWrapper({
 }) {
   return (
     <div className="relative">
-      <div className="absolute top-0 bottom-0 right-full mr-2 border-r-2 border-kumo-fill flex items-center pr-2 text-sm">
+      <div className="absolute top-0 right-full bottom-0 mr-2 flex items-center border-r-2 border-kumo-fill pr-2 text-sm">
         {label}
       </div>
       {children}

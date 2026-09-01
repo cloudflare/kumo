@@ -11,7 +11,7 @@ const ExpandableNode = forwardRef<
     <li
       ref={ref}
       {...props}
-      className="rounded-lg shadow bg-kumo-base ring ring-kumo-hairline overflow-hidden"
+      className="overflow-hidden rounded-lg bg-kumo-base shadow ring ring-kumo-hairline"
     >
       <button
         type="button"
@@ -92,11 +92,11 @@ export function FlowCustomContentDemo() {
   return (
     <Flow>
       <Flow.Node
-        render={<li className="rounded-full size-4 bg-kumo-hairline" />}
+        render={<li className="size-4 rounded-full bg-kumo-hairline" />}
       />
       <Flow.Node
         render={
-          <li className="bg-kumo-contrast text-kumo-inverse rounded-lg font-medium py-2 px-3">
+          <li className="rounded-lg bg-kumo-contrast px-3 py-2 font-medium text-kumo-inverse">
             my-worker
           </li>
         }
@@ -131,11 +131,11 @@ export function FlowAnchorDemo() {
       <Flow.Node>Load balancer</Flow.Node>
       <Flow.Node
         render={
-          <li className="shadow-none rounded-lg ring ring-kumo-hairline bg-kumo-overlay">
+          <li className="rounded-lg bg-kumo-overlay shadow-none ring ring-kumo-hairline">
             <Flow.Anchor
               type="end"
               render={
-                <div className="text-kumo-subtle h-10 flex items-center px-2.5">
+                <div className="flex h-10 items-center px-2.5 text-kumo-subtle">
                   my-worker
                 </div>
               }
@@ -143,9 +143,9 @@ export function FlowAnchorDemo() {
             <Flow.Anchor
               type="start"
               render={
-                <div className="bg-kumo-base rounded ring ring-kumo-hairline shadow px-2 py-1.5 m-1.5 mt-0">
+                <div className="m-1.5 mt-0 rounded bg-kumo-base px-2 py-1.5 shadow ring ring-kumo-hairline">
                   Bindings
-                  <span className="text-kumo-subtle w-5 ml-3">2</span>
+                  <span className="ml-3 w-5 text-kumo-subtle">2</span>
                 </div>
               }
             />
@@ -165,12 +165,12 @@ export function FlowCenteredDemo() {
   return (
     <Flow align="center">
       <Flow.Node
-        render={<li className="rounded-full size-4 bg-kumo-hairline" />}
+        render={<li className="size-4 rounded-full bg-kumo-hairline" />}
       />
       <Flow.Node>my-worker</Flow.Node>
       <Flow.Node
         render={
-          <li className="py-6 px-3 rounded-md shadow bg-kumo-base ring ring-kumo-hairline">
+          <li className="rounded-md bg-kumo-base px-3 py-6 shadow ring ring-kumo-hairline">
             Taller node
           </li>
         }
@@ -276,7 +276,7 @@ export function FlowDynamicNodeDemo() {
       <button
         type="button"
         onClick={() => setShowMiddle((v) => !v)}
-        className="rounded-md px-3 py-1.5 text-sm font-medium ring ring-kumo-line bg-kumo-elevated hover:bg-kumo-base text-kumo-default transition-colors"
+        className="rounded-md bg-kumo-elevated px-3 py-1.5 text-sm font-medium text-kumo-default ring ring-kumo-line transition-colors hover:bg-kumo-base"
       >
         {showMiddle ? "Remove middle node" : "Add middle node"}
       </button>

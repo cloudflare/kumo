@@ -1,5 +1,194 @@
 # @cloudflare/kumo
 
+## 2.12.0
+
+### Minor Changes
+
+- 716e5b8: Add the `Text` `heading` variant with a 16px semibold default and a 20px
+  `size="lg"` option. The variant defaults to a `span`, so callers choose heading
+  semantics explicitly with `as`. Deprecate the numbered `heading1`, `heading2`,
+  and `heading3` variants.
+
+### Patch Changes
+
+- d7a7a35: `Collapsible.DefaultTrigger` now uses `text-kumo-default` (neutral) with `font-medium` instead of the blue `text-kumo-link` color.
+- 0db4f66: deprecate `MenuBar` in favor of segmented `Tabs`
+
+  - mark the `MenuBar` component (and its exports) as `@deprecated`; it will be removed in a future release
+  - new usage should prefer `Tabs` with `variant="segmented"` (the default `Tabs` variant)
+  - the runtime behaviour of `MenuBar` is unchanged for existing consumers
+  - remove the `MenuBar` documentation page and demos from the docs site
+
+- c64183b: Fix Toast background clipping the ring outline at the corners — the inner background layer's radius (11px) was smaller than the root's `rounded-xl` (12px), painting over the ring at the corners. Matched them up.
+- ef13cb4: Restore disabled and loading state handling for `Toolbar.Button` so disabled
+  controls expose the correct semantics and cannot be activated.
+- 51d0f03: Normalize shadows and outlines on tip-style overlays (Popover, Tooltip, ClipboardText, Chart tooltip).
+
+  - Drop the `shadow-kumo-tip-shadow` color override so shadows use Tailwind's default translucent black instead of an opaque light-gray in light mode.
+  - Tune shadow sizes: Popover, Tooltip, ClipboardText tooltip, and Chart tooltip use `shadow-md`; ClipboardText's "Copied" toast keeps `shadow-lg` to match the Toast component.
+  - Switch these overlays from `outline-kumo-fill` to `outline-kumo-line`, matching every other floating surface (Dropdown, Select, Combobox, Dialog, etc.).
+  - Rename `kumo-tip-shadow` → `kumo-arrow-edge` and `kumo-tip-stroke` → `kumo-arrow-stroke`. The tokens draw the border on Popover/Tooltip arrow SVGs, not a box shadow. Both now resolve to `kumo-line`, so the arrow border aligns with the popup outline in both modes.
+
+- d586bf3: Add `scrollToItem(id, options?)` to `useSidebar()` for imperatively scrolling
+  a nav item into the sidebar viewport. Tag items with the new `itemId` prop on
+  `Sidebar.MenuButton` or `Sidebar.MenuItem`.
+
+  Options:
+
+  - `align`: `"start" | "center" | "end" | "auto"` (default `"auto"` — no-op if
+    the item is already visible; otherwise scroll the minimum distance).
+  - `behavior`: `"auto" | "smooth"` (default `"auto"` — instant, best for
+    cross-app landings so users don't watch the sidebar animate on entry).
+    `prefers-reduced-motion` forces `"auto"`.
+
+  Scrolls only the sidebar viewport (never the document) and works with
+  `Sidebar.SlidingViews`: items register with the provider via an internal
+  map, so `scrollToItem` walks up from the target to find its owning viewport
+  rather than querying the DOM.
+
+## 2.11.0
+
+### Minor Changes
+
+- aa6edff: Add icon support to filled Badge variants through the `icon` prop, add linked-badge hover styles, and use the base surface background for outline badges.
+
+### Patch Changes
+
+- bba0f5e: Allow users to select and copy LinkButton text while preserving Button text selection behavior.
+- c2c8d42: Update Table rows to use borderless, alternating background styling.
+- 0ad1926: Fix hydration mismatch in the Sidebar's `useIsMobile` hook on SSR frameworks like Next.js. The hook now uses `useSyncExternalStore` with a desktop `getServerSnapshot`, so the server-rendered HTML (desktop `<aside>`) hydrates cleanly on mobile viewports before switching to the mobile overlay.
+
+## 2.10.0
+
+### Minor Changes
+
+- 4b9a4dc: Allow Select and Combobox triggers to compose directly with `Toolbar.Button` and `Toolbar.Input` through their `render` props, adding grouped styling and arrow-key focus management while preserving regular `Select.*` and `Combobox.*` APIs.
+
+  Deprecate Toolbar's configurable `size` prop and size metadata exports. They remain functional for compatibility; omitting `size` continues to use the base size.
+
+### Patch Changes
+
+- 65db2e6: Forward link-specific props in Tabs and Sidebar so link-rendered tabs can opt out of native button semantics, and Sidebar link buttons preserve attributes like `aria-current`.
+- 0c58325: Expose all positioner props on Combobox.Content (`anchor`, `positionMethod`, `collisionAvoidance`, `collisionBoundary`, `collisionPadding`, `sticky`, `disableAnchorTracking`).
+- 528d5ff: Populate InputArea props in component registry so the docs API reference table renders correctly
+- 75c3b14: Fix Sidebar peeking state during SlidingViews transitions.
+- 1d9b588: Fix Tabs overflow controls when tabs are removed and the remaining tabs fit.
+
+## 2.9.2
+
+### Patch Changes
+
+- 188a82c: Remove the elevated chip styling from Tabs overflow scroll controls.
+- c5ad709: Constrain Tabs overflow controls to segmented tabs and focus the caret target.
+
+## 2.9.1
+
+### Patch Changes
+
+- ff76f30: Update the default collapsible trigger and panel styling.
+
+  `Collapsible.DefaultPanel` now uses an inner content wrapper so the outer panel can animate height smoothly while clipping overflow during the transition. Consumers applying custom layout or spacing classes directly to `DefaultPanel` may need to move those styles to their content, or use `Collapsible.Panel` for a fully custom layout.
+
+- 7468623: Fix `initCatalog` so it actually loads the validation schemas.
+
+  Previously it triggered a synchronous validation whose "schemas not loaded" error was swallowed, so `await initCatalog(catalog)` could resolve while `hasComponent`, `componentNames`, and the other synchronous catalog APIs still reported no components. It now awaits `loadSchemas()` directly.
+
+  A failed schema load is also no longer cached: retrying `initCatalog` (or `loadSchemas`) after a transient failure now re-attempts the import instead of returning the stale rejection.
+
+- d7639f2: Fix Shiki highlighter lifecycle in `ShikiProvider` and `CodeHighlighted`.
+
+  `ShikiProvider` no longer re-creates the highlighter when a parent rerender passes an equivalent inline `languages` array — initialization is keyed on the normalized language set. Highlighters are now disposed on unmount and when the engine or language set changes, instead of leaking. `CodeHighlighted` memoizes the highlighted HTML so unrelated rerenders (such as copy-button state changes) no longer re-highlight unchanged code, and initialization errors are logged once instead of on every render. Reinitializing after a failed initialization now clears the stale error state instead of showing it during the retry.
+
+- c599590: Reset the Tabs overflow control background so host button styles do not show through the scrim gradient.
+
+## 2.9.0
+
+### Minor Changes
+
+- ff8ad54: Improves Banner contrast and CTA colors, adds compact sizing, and keeps components that consume the updated status tokens visually balanced.
+
+  - Updated status tokens to improve contrast between Banner backgrounds, text, and CTAs.
+  - Rebalanced Badge status tints, Toast backgrounds, and Command Palette search highlights to correspond with the updated tokens.
+  - Added a new `Banner.Action` CTA compound that builds on `Button` with banner-specific accent styling. It supports `primary` (filled), `secondary` (accent-hued outline on a transparent background), and `ghost` variants.
+  - Added a `size` prop to `Banner` (`"base"` | `"sm"`); the compact `"sm"` size suits dialogs and other tight spaces and sets its `Banner.Action` children to the `xs` size.
+
+- f919182: Improve chart loading states with a static, reduced-motion-aware `TimeseriesChart` skeleton (line and bar variants matching `type`) and a new `loading` prop for `ChartLegend.SmallItem` and `ChartLegend.LargeItem`.
+- 535d579: Add a `disabled` prop to `LinkButton`. When disabled, it renders a real disabled `<button>` (dropping anchor-only attributes and event handlers) and supports `title` tooltips explaining why the action is unavailable.
+
+  Also removes stale Storybook references from the README and drops `.stories.tsx` generation from the component scaffolder, since Storybook is no longer set up in this repo.
+
+- aae94f1: `LinkButton` now wraps in a Kumo `Tooltip` when a `title` is provided, matching `Button`'s behavior. Previously an enabled `LinkButton` only set a native `title` attribute; it now surfaces the same styled tooltip on hover and focus.
+- 9e083d2: Add `fullScreenOnMobile` prop to `Sidebar`. When set, the mobile navigation
+  sheet expands to the full viewport instead of leaving a sliver of the page
+  visible, giving nav items comfortable touch targets. The backdrop is suppressed
+  and the divider border dropped, since neither has anything to separate. Defaults
+  to `false`.
+
+  Also adds `Sidebar.Close`, a ghost button that dismisses the mobile sheet. It is
+  intended for `Sidebar.Header` in full-screen mobile layouts where the backdrop is
+  hidden and there is no adjacent page content to tap.
+
+  Also fixes `Breadcrumbs.Link` shrinking alongside the current crumb. Flexbox
+  distributed truncation across every crumb, turning the trail into unreadable
+  stubs; ancestors now hold their width so only the current page truncates.
+
+- 51aa44c: Add `Sidebar.Loading`, a nav loading skeleton so apps stop hand-rolling their own. It renders nav-item-shaped placeholder rows (icon + label) grouped like the real nav, composed from `SkeletonLine` and matching the `Sidebar.MenuButton` box model so there's no layout shift when the real nav swaps in. Collapse-aware (icon squares only when collapsed) and exposes `role="status"` with a configurable `label`.
+- 86ee08c: Add `useTableOfContentsActiveId` hook for `TableOfContents` scroll tracking.
+
+  The `TableOfContents` component is presentational, so consumers had to wire up their own scroll-position tracking. This adds a shared hook: pass the section ids (in document order) and it returns the active section id plus a `selectSection` action for click handling.
+
+  ```tsx
+  const { activeId, selectSection } = useTableOfContentsActiveId({
+    ids: headings.map((h) => h.slug),
+    offset: HEADER_HEIGHT,
+  });
+  ```
+
+  - Highlights the topmost section actually in view (via `IntersectionObserver`), offset by an optional fixed-header `offset`; supports custom scroll containers via `root`.
+  - Handles `location.hash` deep links on load and `hashchange` automatically (opt out with `trackHash: false`).
+  - `selectSection` pins a clicked section until scrolling settles, so short sections stay highlighted after a jump. Works on browsers without `scrollend` support.
+  - SSR-safe: all DOM access happens in effects, so it renders under Astro/Next SSR (`activeId` is `null` on the server).
+
+  The docs site "On this page" table of contents now consumes this hook instead of its own bespoke observer.
+
+- 87d1ebc: Ship unminified `dist` output without sourcemaps or declaration maps
+
+  Consumers' bundlers minify (and tree-shake) the library code anyway, so
+  pre-minifying only obscured the shipped modules, and the declaration maps
+  pointed at source files that aren't published. The package shrinks from
+  ~13.9 MB to ~6.5 MB unpacked, and the code in `node_modules` is now
+  readable. No API or behavior changes; final application bundle sizes are
+  effectively unchanged.
+
+### Patch Changes
+
+- fc5e222: Use a string or numeric Button title as the fallback accessible label when the button has no text children.
+- 8e71b38: Bump Prettier 3.6.2 → 3.9.5 and reformat (Prettier changed e.g. interface heritage-clause wrapping). No functional changes.
+- 2a463f7: Prevent TimeseriesChart tooltips from following the cursor outside the chart after a browser context menu interaction.
+- 0f0c44d: ClipboardText: keep the check icon until the last copy click settles, and bump the anchored "Copied" toast (without stacking) when the button is pressed again while it's open.
+- b171c71: Render Kumo Link actions inline in compact Banners while keeping CTA actions trailing.
+- 4f0ed75: Fix purple badge token fallback colors to use purple OKLCH values.
+- 5efe6dd: Add a lint rule that verifies custom components used with `Flow.Node`'s `render` prop forward refs and spread received props.
+- 32b2168: Keep TimeseriesChart brush-to-zoom active after replacing ECharts options.
+- b0870e1: Remove the subtle `shadow-xs` drop shadow from `InputGroup` `Root` and from nested `InputGroup.Button`, so the component matches the flat appearance of the standalone `Input` and other form controls (previously non-ghost button variants still had the base Button's `shadow-xs`).
+- 34e1672: Bundle the library with vp pack (tsdown) instead of Vite lib mode; declarations are now bundled per entry and export types paths follow the import paths
+- 2575f9c: Use muted chart colors for timeseries axes and horizontal gridlines.
+- 7c33107: One-time repo-wide format with the repo's own Prettier 3.6.2 (formatting was never enforced; drift accumulated). No functional changes.
+- ee6e569: Set default `text-base` and `text-lg` line heights to 1.5.
+- 927d19f: Remove inert Tailwind classes surfaced by class sorting: `ring` alongside `ring-2` (overridden — later stylesheet rule wins) and bare `outline` in three places (no such utility in Tailwind v4; `outline-1` already applies the default solid style). No visual changes.
+- 924f07a: Split Base UI across fine-grained chunks instead of one `vendor-base-ui` chunk
+
+  Components now pull in only the Base UI modules they actually use, improving
+  consumer tree-shaking: a single-Button app bundle drops from ~173 KB to
+  ~129 KB minified (~57 KB to ~44 KB gzipped) compared to 2.8.0.
+
+- 7ef8c46: Add clearer edge affordances when Tabs overflow horizontally.
+- 86afc2b: Show Button title tooltips when the button is disabled or loading.
+- 5516c22: Fix command palette match highlight contrast in dark mode.
+- 24149b9: Normalize Tailwind class strings via Oxfmt class sorting (`sortTailwindcss`, canonical Tailwind order, duplicates removed). No functional changes.
+- 8de0551: Migrate the toolchain to Vite+ (`vp`): the library now builds with Vite 8 on Rolldown, tests run through `vp test` (Vitest), and linting/formatting run through `vp lint` (Oxlint) / `vp fmt` (Oxfmt, replacing Prettier). No API changes; published output is functionally identical, though entry files are now re-export facades whose source maps live in the shared chunks, and `use-sync-external-store` is now an explicit dependency instead of being bundled (bundling it left CJS `require("react")` calls that broke importing the package directly in Node).
+- 60f5bfa: Enable full type-checking in `vp check` / `vp lint` (typeAware + typeCheck) and fix the type issues it surfaced in files `tsc --noEmit` never covered. Only runtime-visible change: the CLI entrypoint explicitly voids its `main()` promise.
+
 ## 2.8.0
 
 ### Minor Changes

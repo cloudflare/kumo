@@ -279,7 +279,7 @@ const List = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative min-h-0 flex-1 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 scroll-py-2 ring-1 ring-kumo-hairline",
+        "relative min-h-0 flex-1 scroll-py-2 overflow-y-auto rounded-b-lg bg-kumo-base px-2 py-2 ring-1 ring-kumo-hairline",
         className,
       )}
     >
@@ -452,7 +452,7 @@ function HighlightedText({
     parts.push(
       <mark
         key={`highlight-${i}`}
-        className="rounded-sm fill-kumo-warning/15 text-kumo-default"
+        className="rounded-sm bg-kumo-warning/50 text-kumo-default"
       >
         {text.slice(start, end + 1)}
       </mark>,
@@ -758,7 +758,7 @@ function PanelInput({
       <Autocomplete.Input
         placeholder={placeholder}
         className={cn(
-          "flex-1 border-none bg-transparent text-base kumo-input-placeholder",
+          "kumo-input-placeholder flex-1 border-none bg-transparent text-base",
           "outline-none",
           className,
         )}

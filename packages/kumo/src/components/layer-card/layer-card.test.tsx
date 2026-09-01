@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { render } from "@testing-library/react";
 import { LayerCard } from "./layer-card";
 

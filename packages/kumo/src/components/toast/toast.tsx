@@ -127,7 +127,11 @@ export function toastVariants({
     // Base styles for toast root
     "rounded-xl ring ring-kumo-line bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
-    resolveVariant(KUMO_TOAST_VARIANTS.variant, variant, KUMO_TOAST_DEFAULT_VARIANTS.variant).classes,
+    resolveVariant(
+      KUMO_TOAST_VARIANTS.variant,
+      variant,
+      KUMO_TOAST_DEFAULT_VARIANTS.variant,
+    ).classes,
   );
 }
 
@@ -209,8 +213,7 @@ function wrapManagerMethods<
     add: (options: KumoToastManagerAddOptions<any>) => {
       if (options.id) {
         const toasts = (manager as any).toasts as
-          | Array<ToastObject<any>>
-          | undefined;
+          Array<ToastObject<any>> | undefined;
 
         if (toasts) {
           const existingToast = toasts.find((toast) => toast.id === options.id);
@@ -422,14 +425,21 @@ function ToastBackground({ variant }: { variant?: KumoToastVariant }) {
   const background = variant && TOAST_BACKGROUND_CLASSES[variant];
   return (
     <div
-      className={cn("absolute inset-0 rounded-[11px] bg-kumo-base/90", background)}
+      className={cn(
+        "absolute inset-0 rounded-xl bg-kumo-base/90",
+        background,
+      )}
     />
   );
 }
 
 function ToastIcon({ variant }: { variant?: KumoToastVariant }) {
   if (!variant || variant === "default") return null;
-  const variantConfig = resolveVariant(KUMO_TOAST_VARIANTS.variant, variant, KUMO_TOAST_DEFAULT_VARIANTS.variant);
+  const variantConfig = resolveVariant(
+    KUMO_TOAST_VARIANTS.variant,
+    variant,
+    KUMO_TOAST_DEFAULT_VARIANTS.variant,
+  );
   if (!("icon" in variantConfig)) return null;
   const Icon = variantConfig.icon;
   return (

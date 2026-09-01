@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type MouseEvent,
@@ -45,6 +46,19 @@ export const KUMO_TABS_STYLING = {
   },
 } as const;
 
+/** Labels for internationalization of Tabs component. */
+export interface TabsLabels {
+  /** Aria label for the button that scrolls to earlier tabs. @default "Scroll tabs left" */
+  scrollStart?: string;
+  /** Aria label for the button that scrolls to later tabs. @default "Scroll tabs right" */
+  scrollEnd?: string;
+}
+
+const DEFAULT_LABELS: Required<TabsLabels> = {
+  scrollStart: "Scroll tabs left",
+  scrollEnd: "Scroll tabs right",
+};
+
 // Derived types from KUMO_TABS_VARIANTS
 export interface KumoTabsVariantsProps {
   /**
@@ -76,6 +90,11 @@ export type TabsItem = {
    * When using a function, it receives the props to spread on the element and the tab's state.
    */
   render?: TabsTab.Props["render"];
+  /**
+   * Whether the rendered tab is a native button. Set to `false` when `render` produces a non-button element, such as a link.
+   * @default true
+   */
+  nativeButton?: TabsTab.Props["nativeButton"];
 };
 
 /**
@@ -113,6 +132,8 @@ export type TabsProps = KumoTabsVariantsProps & {
   listClassName?: string;
   /** Additional CSS classes for the indicator element. */
   indicatorClassName?: string;
+  /** Labels for internationalization of aria-labels. All labels have English defaults. */
+  labels?: TabsLabels;
 };
 
 /**
@@ -138,6 +159,7 @@ export function Tabs({
   className,
   listClassName,
   indicatorClassName,
+  labels: labelsProp,
   variant = KUMO_TABS_DEFAULT_VARIANTS.variant,
   size = KUMO_TABS_DEFAULT_VARIANTS.size,
 }: TabsProps) {
@@ -157,7 +179,14 @@ export function Tabs({
   const isSegmented = variant === "segmented";
   const isUnderline = variant === "underline";
   const isSm = size === "sm";
-  const { ref: listRef, isOverflowing } = useOverflowDetect(isSegmented);
+  const labels = { ...DEFAULT_LABELS, ...labelsProp };
+  const overflowWatchKey = items.map((item) => item.value).join("|");
+  const {
+    ref: listRef,
+    isOverflowing,
+    canScrollStart,
+    canScrollEnd,
+  } = useOverflowDetect(true, overflowWatchKey);
   const bindDrag = useHorizontalDragScroll(listRef, isOverflowing);
 
   return (
@@ -187,11 +216,12 @@ export function Tabs({
         ref={listRef}
         activateOnFocus={activateOnFocus}
         data-overflowing={isOverflowing ? "" : undefined}
+        data-overflow-start={canScrollStart ? "" : undefined}
+        data-overflow-end={canScrollEnd ? "" : undefined}
         {...bindDrag()}
         className={cn(
-          "relative flex min-w-0 shrink items-stretch",
-          isSegmented &&
-            "kumo-tabs-list overflow-x-auto rounded-lg bg-kumo-recessed px-0.5 [--scroll-fade-width:3rem] scroll-px-(--scroll-fade-width)",
+          "kumo-tabs-list relative flex min-w-0 shrink scroll-px-(--scroll-fade-width) items-stretch overflow-x-auto overflow-y-hidden [--scroll-fade-width:3rem]",
+          isSegmented && "rounded-lg bg-kumo-recessed px-0.5",
           isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
           isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
@@ -206,6 +236,7 @@ export function Tabs({
             data-kumo-part="tab"
             value={tab.value}
             render={tab.render}
+            nativeButton={tab.nativeButton}
             onClick={(e) => {
               e.currentTarget.scrollIntoView({
                 behavior: "smooth",
@@ -214,16 +245,16 @@ export function Tabs({
               });
             }}
             className={cn(
-              "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
               isOverflowing
                 ? "cursor-grab active:cursor-grabbing"
                 : "cursor-pointer",
               isSm ? "text-xs" : "text-base",
               isSegmented &&
-                "my-0.5 text-kumo-subtle hover:text-kumo-default aria-selected:text-kumo-default focus-visible:ring-inset",
-              isSegmented && (isSm ? "px-2 rounded-sm" : "px-2.5 rounded-md"),
+                "my-0.5 text-kumo-subtle hover:text-kumo-default focus-visible:ring-inset aria-selected:text-kumo-default",
+              isSegmented && (isSm ? "rounded-sm px-2" : "rounded-md px-2.5"),
               isUnderline &&
-                "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:hover:bg-kumo-tint aria-selected:font-medium aria-selected:text-kumo-default",
+                "text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default aria-selected:font-medium aria-selected:text-kumo-default aria-selected:hover:bg-kumo-tint",
               isUnderline && (isSm ? "px-1.5 py-2.5" : "px-2 py-3"),
               tab.className,
             )}
@@ -236,7 +267,7 @@ export function Tabs({
             <div
               {...props}
               className={cn(
-                "absolute z-1 left-0",
+                "absolute left-0 z-1",
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
                 "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&
@@ -251,8 +282,138 @@ export function Tabs({
           )}
         />
       </TabsPrimitive.List>
+      {isSegmented && (
+        <>
+          <TabsOverflowControl
+            side="start"
+            visible={canScrollStart}
+            variant={variant}
+            size={size}
+            label={labels.scrollStart}
+            onClick={() => scrollTabs(listRef, "start")}
+          />
+          <TabsOverflowControl
+            side="end"
+            visible={canScrollEnd}
+            variant={variant}
+            size={size}
+            label={labels.scrollEnd}
+            onClick={() => scrollTabs(listRef, "end")}
+          />
+        </>
+      )}
     </TabsPrimitive.Root>
   );
+}
+
+function TabsOverflowControl({
+  side,
+  visible,
+  variant,
+  size,
+  label,
+  onClick,
+}: {
+  side: "start" | "end";
+  visible: boolean;
+  variant: NonNullable<TabsProps["variant"]>;
+  size: NonNullable<TabsProps["size"]>;
+  label: string;
+  onClick: () => void;
+}) {
+  const isStart = side === "start";
+  const isSegmented = variant === "segmented";
+
+  return (
+    <button
+      type="button"
+      data-kumo-component="Tabs"
+      data-kumo-part="overflow-control"
+      data-side={side}
+      aria-label={label}
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
+      onClick={onClick}
+      className={cn(
+        "absolute inset-y-0 z-3 flex items-center border-0 bg-transparent p-0 transition-opacity duration-150 focus:outline-none focus-visible:[&>span]:ring-2 focus-visible:[&>span]:ring-kumo-brand",
+        isStart
+          ? "left-0 justify-start bg-linear-to-r"
+          : "right-0 justify-end bg-linear-to-l",
+        visible
+          ? "pointer-events-auto opacity-100"
+          : "pointer-events-none opacity-0",
+        isSegmented
+          ? "from-kumo-recessed via-kumo-recessed/95 to-transparent"
+          : "from-kumo-base via-kumo-base/95 to-transparent",
+        isSegmented && (size === "sm" ? "w-8 rounded-md" : "w-10 rounded-lg"),
+        !isSegmented && "w-8",
+      )}
+    >
+      <span
+        className={cn(
+          "flex items-center justify-center text-kumo-subtle transition-colors hover:text-kumo-default",
+          size === "sm" ? "size-5" : "size-6",
+          isSegmented
+            ? size === "sm"
+              ? "rounded-sm"
+              : "rounded-md"
+            : "rounded",
+          isStart ? "ml-1" : "mr-1",
+        )}
+      >
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          className="size-3.5"
+          aria-hidden="true"
+        >
+          <path
+            d={
+              isStart
+                ? "M9.25 4.25L5.75 8L9.25 11.75"
+                : "M6.75 4.25L10.25 8L6.75 11.75"
+            }
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </span>
+    </button>
+  );
+}
+
+function scrollTabs(
+  ref: React.RefObject<HTMLElement | null>,
+  direction: "start" | "end",
+) {
+  const el = ref.current;
+  if (!el) return;
+
+  const tabEls = Array.from(
+    el.querySelectorAll<HTMLElement>('[data-kumo-part="tab"]'),
+  );
+  const distance = getTabsScrollSize(el.clientWidth, tabEls);
+
+  el.scrollBy({
+    left: direction === "start" ? -distance : distance,
+    behavior: "smooth",
+  });
+}
+
+function getTabsScrollSize(containerWidth: number, tabs: HTMLElement[]) {
+  let totalWidth = 0;
+
+  for (const tab of tabs) {
+    const tabWidth = tab.offsetWidth;
+    if (totalWidth + tabWidth > containerWidth) {
+      return totalWidth || containerWidth;
+    }
+    totalWidth += tabWidth;
+  }
+
+  return Math.max(80, Math.floor(containerWidth * 0.8));
 }
 
 // ─── Horizontal drag-to-scroll ────────────────────────────────────────
@@ -347,23 +508,67 @@ function useHorizontalDragScroll(
  * Returns a ref to attach and a boolean for conditional rendering.
  * The `data-overflowing` attribute drives the scroll-fade CSS.
  */
-function useOverflowDetect(enabled: boolean) {
+function useOverflowDetect(enabled: boolean, watchKey: string) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [overflowState, setOverflowState] = useState({
+    isOverflowing: false,
+    canScrollStart: false,
+    canScrollEnd: false,
+  });
+
+  useLayoutEffect(() => {
+    if (!enabled) return;
+    const el = ref.current;
+    if (!el) return;
+
+    setOverflowState((prevState) => getNextOverflowState(el, prevState));
+  }, [enabled, watchKey]);
 
   useEffect(() => {
     if (!enabled) return;
     const el = ref.current;
     if (!el) return;
 
-    const check = () => setIsOverflowing(el.scrollWidth > el.clientWidth);
+    const check = () => {
+      setOverflowState((prevState) => getNextOverflowState(el, prevState));
+    };
 
     const ro = new ResizeObserver(check);
     ro.observe(el);
+    const mo = new MutationObserver(check);
+    mo.observe(el, { childList: true, characterData: true, subtree: true });
+    el.addEventListener("scroll", check, { passive: true });
     check();
 
-    return () => ro.disconnect();
+    return () => {
+      ro.disconnect();
+      mo.disconnect();
+      el.removeEventListener("scroll", check);
+    };
   }, [enabled]);
 
-  return { ref, isOverflowing };
+  return { ref, ...overflowState };
+}
+
+function getNextOverflowState(
+  el: HTMLElement,
+  prevState: {
+    isOverflowing: boolean;
+    canScrollStart: boolean;
+    canScrollEnd: boolean;
+  },
+) {
+  const maxScrollLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+  const scrollLeft = Math.min(Math.max(0, el.scrollLeft), maxScrollLeft);
+  const nextState = {
+    isOverflowing: maxScrollLeft > 1,
+    canScrollStart: scrollLeft > 1,
+    canScrollEnd: maxScrollLeft - scrollLeft > 1,
+  };
+
+  return prevState.isOverflowing === nextState.isOverflowing &&
+    prevState.canScrollStart === nextState.canScrollStart &&
+    prevState.canScrollEnd === nextState.canScrollEnd
+    ? prevState
+    : nextState;
 }

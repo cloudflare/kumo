@@ -5,6 +5,7 @@ import { validateDescription } from "./validate-pr-description.ts";
 const NO_LABELS = "[]";
 const NO_FILES = "[]";
 const WITH_CHANGESET = '[".changeset/some-change.md"]';
+const WITH_KUMO_CHANGE = '["packages/kumo/src/index.ts"]';
 
 describe("validateDescription", () => {
   describe("Reviews section", () => {
@@ -263,15 +264,36 @@ describe("validateDescription", () => {
       assert.deepStrictEqual(errors, []);
     });
 
-    it("fails when changeset is missing", () => {
+    it("fails when a Kumo change is missing a changeset", () => {
       const body = `
 - Reviews
 - [x] bonk has reviewed the change
 - Tests
 - [x] Tests included/updated
       `;
-      const errors = validateDescription("Test PR", body, NO_LABELS, NO_FILES);
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        NO_LABELS,
+        WITH_KUMO_CHANGE,
+      );
       assert.ok(errors.some((e) => e.includes("changeset")));
+    });
+
+    it("passes without a changeset when Kumo is unchanged", () => {
+      const body = `
+- Reviews
+- [x] bonk has reviewed the change
+- Tests
+- [x] Tests included/updated
+      `;
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        NO_LABELS,
+        '["ci/utils/git-operations.ts"]',
+      );
+      assert.deepStrictEqual(errors, []);
     });
 
     it("passes when no-changeset-required label is applied", () => {
@@ -282,7 +304,12 @@ describe("validateDescription", () => {
 - [x] Tests included/updated
       `;
       const labels = '["no-changeset-required"]';
-      const errors = validateDescription("Test PR", body, labels, NO_FILES);
+      const errors = validateDescription(
+        "Test PR",
+        body,
+        labels,
+        WITH_KUMO_CHANGE,
+      );
       assert.deepStrictEqual(errors, []);
     });
   });

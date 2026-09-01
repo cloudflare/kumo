@@ -194,11 +194,7 @@ export function parseTailwindClasses(classes: string): ParsedStyles {
     );
     if (stateMatch) {
       const state = stateMatch[1] as
-        | "hover"
-        | "focus"
-        | "active"
-        | "disabled"
-        | "pressed";
+        "hover" | "focus" | "active" | "disabled" | "pressed";
       const stateClass = stateMatch[2];
 
       // Parse the state class recursively

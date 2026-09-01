@@ -21,6 +21,18 @@ export interface CreatePullRequestOptions {
   description: string;
 }
 
+export interface PRCommentSummary {
+  readonly id: number;
+  readonly body: string | null;
+  readonly authorLogin: string | null;
+}
+
+export interface PRCommentClient {
+  listComments(): Promise<readonly PRCommentSummary[]>;
+  createComment(body: string): Promise<void>;
+  updateComment(commentId: number, body: string): Promise<void>;
+}
+
 /**
  * Create a pull request using GitHub API
  */
@@ -61,4 +73,69 @@ export async function postPRComment(
     issue_number: prNumber,
     body,
   });
+}
+
+/** Create or update a bot comment identified by a stable marker. */
+export async function upsertPRCommentWithClient(
+  client: PRCommentClient,
+  marker: string,
+  content: string,
+): Promise<void> {
+  const body = `${marker}\n${content}`;
+  const comments = await client.listComments();
+  const existing = comments.find(
+    (comment) =>
+      comment.authorLogin === "github-actions[bot]" &&
+      comment.body?.startsWith(marker),
+  );
+
+  if (existing) {
+    await client.updateComment(existing.id, body);
+    return;
+  }
+
+  await client.createComment(body);
+}
+
+/** Create or update the GitHub Actions bot comment identified by a marker. */
+export async function upsertPRComment(
+  token: string,
+  prNumber: number,
+  marker: string,
+  content: string,
+): Promise<void> {
+  const octokit = new Octokit({ auth: token });
+  const client: PRCommentClient = {
+    async listComments() {
+      const comments = await octokit.paginate(octokit.issues.listComments, {
+        owner: GITHUB_REPO_OWNER,
+        repo: GITHUB_REPO_NAME,
+        issue_number: prNumber,
+        per_page: 100,
+      });
+      return comments.map((comment) => ({
+        id: comment.id,
+        body: comment.body ?? null,
+        authorLogin: comment.user?.login ?? null,
+      }));
+    },
+    async createComment(body) {
+      await octokit.issues.createComment({
+        owner: GITHUB_REPO_OWNER,
+        repo: GITHUB_REPO_NAME,
+        issue_number: prNumber,
+        body,
+      });
+    },
+    async updateComment(commentId, body) {
+      await octokit.issues.updateComment({
+        owner: GITHUB_REPO_OWNER,
+        repo: GITHUB_REPO_NAME,
+        comment_id: commentId,
+        body,
+      });
+    },
+  };
+
+  await upsertPRCommentWithClient(client, marker, content);
 }

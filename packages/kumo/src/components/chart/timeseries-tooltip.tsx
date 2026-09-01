@@ -48,7 +48,7 @@ export const TooltipContent = memo(function TooltipContent({
 
   return (
     <>
-      <div className="text-xs font-semibold text-kumo-default mb-1">
+      <div className="mb-1 text-xs font-semibold text-kumo-default">
         {formatTimestamp(state.ts)}
       </div>
       <SeriesTooltipRows
@@ -72,7 +72,7 @@ function MarkerTooltipContent({
   return (
     <>
       {state.markers.length === 1 && (
-        <div className="text-xs font-semibold text-kumo-default mb-1">
+        <div className="mb-1 text-xs font-semibold text-kumo-default">
           {formatTimestamp(state.markers[0].timestamp)}
         </div>
       )}
@@ -81,7 +81,7 @@ function MarkerTooltipContent({
           <div key={`${marker.timestamp}-${marker.label}-${index}`}>
             <div className="flex items-center gap-2 text-xs text-kumo-default">
               <span
-                className="w-3 h-3 rounded-full shrink-0"
+                className="h-3 w-3 shrink-0 rounded-full"
                 style={{ backgroundColor: marker.color ?? state.color }}
               />
               <span className="font-medium">
@@ -94,7 +94,7 @@ function MarkerTooltipContent({
               )}
             </div>
             {marker.description && (
-              <div className="text-xs text-kumo-default mt-0.5 ml-5">
+              <div className="mt-0.5 ml-5 text-xs text-kumo-default">
                 {marker.description}
               </div>
             )}
@@ -102,7 +102,7 @@ function MarkerTooltipContent({
         ))}
       </div>
       {state.rows.length > 0 && (
-        <div className="border-t border-kumo-line mt-2 pt-2">
+        <div className="mt-2 border-t border-kumo-line pt-2">
           <SeriesTooltipRows
             rows={state.rows}
             hiddenCount={state.hiddenCount}
@@ -130,19 +130,19 @@ function SeriesTooltipRows({
           key={row.name}
           className="flex items-center justify-between gap-4 py-0.5"
         >
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
             <span
-              className="w-3 h-3 rounded-full shrink-0"
+              className="h-3 w-3 shrink-0 rounded-full"
               style={{ backgroundColor: row.color }}
             />
             <span
-              className="text-xs font-medium text-kumo-default truncate"
+              className="truncate text-xs font-medium text-kumo-default"
               title={row.name}
             >
               {row.name}
             </span>
           </div>
-          <span className="text-xs font-semibold text-kumo-default shrink-0">
+          <span className="shrink-0 text-xs font-semibold text-kumo-default">
             {formatValue
               ? formatValue(row.value)
               : formatDefaultValue(row.value)}
@@ -150,7 +150,7 @@ function SeriesTooltipRows({
         </div>
       ))}
       {hiddenCount > 0 && (
-        <div className="text-xs text-kumo-subtle mt-1">+{hiddenCount} more</div>
+        <div className="mt-1 text-xs text-kumo-subtle">+{hiddenCount} more</div>
       )}
     </>
   );

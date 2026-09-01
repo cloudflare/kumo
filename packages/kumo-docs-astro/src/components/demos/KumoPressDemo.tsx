@@ -586,7 +586,7 @@ export function KumoPressDemo() {
                           />
                           <Table.Cell>
                             <div className="flex flex-col gap-0.5">
-                              <span className="font-medium text-kumo-link hover:underline cursor-pointer">
+                              <span className="cursor-pointer font-medium text-kumo-link hover:underline">
                                 {post.title}
                               </span>
                               {post.status !== "published" && (
@@ -599,7 +599,7 @@ export function KumoPressDemo() {
                             </div>
                           </Table.Cell>
                           <Table.Cell>
-                            <span className="text-kumo-link cursor-pointer hover:underline">
+                            <span className="cursor-pointer text-kumo-link hover:underline">
                               {post.author}
                             </span>
                           </Table.Cell>
@@ -608,7 +608,7 @@ export function KumoPressDemo() {
                               {post.categories.map((cat) => (
                                 <span
                                   key={cat}
-                                  className="text-kumo-link cursor-pointer text-xs hover:underline"
+                                  className="cursor-pointer text-xs text-kumo-link hover:underline"
                                 >
                                   {cat}
                                 </span>
@@ -621,7 +621,7 @@ export function KumoPressDemo() {
                                 post.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="text-kumo-link cursor-pointer text-xs hover:underline"
+                                    className="cursor-pointer text-xs text-kumo-link hover:underline"
                                   >
                                     {tag}
                                   </span>
@@ -723,7 +723,7 @@ export function KumoPressDemo() {
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <LayerCard>
                 <LayerCard.Primary className="p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-kumo-subtle">
+                  <div className="text-xs font-medium tracking-wide text-kumo-subtle uppercase">
                     Published
                   </div>
                   <div className="mt-1 text-2xl font-bold text-kumo-default">
@@ -733,7 +733,7 @@ export function KumoPressDemo() {
               </LayerCard>
               <LayerCard>
                 <LayerCard.Primary className="p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-kumo-subtle">
+                  <div className="text-xs font-medium tracking-wide text-kumo-subtle uppercase">
                     Drafts
                   </div>
                   <div className="mt-1 text-2xl font-bold text-kumo-default">
@@ -743,7 +743,7 @@ export function KumoPressDemo() {
               </LayerCard>
               <LayerCard>
                 <LayerCard.Primary className="p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-kumo-subtle">
+                  <div className="text-xs font-medium tracking-wide text-kumo-subtle uppercase">
                     Total Comments
                   </div>
                   <div className="mt-1 text-2xl font-bold text-kumo-default">
@@ -753,7 +753,7 @@ export function KumoPressDemo() {
               </LayerCard>
               <LayerCard>
                 <LayerCard.Primary className="p-4">
-                  <div className="text-xs font-medium uppercase tracking-wide text-kumo-subtle">
+                  <div className="text-xs font-medium tracking-wide text-kumo-subtle uppercase">
                     Categories
                   </div>
                   <div className="mt-1 text-2xl font-bold text-kumo-default">

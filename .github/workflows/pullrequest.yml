@@ -2,6 +2,7 @@ name: Pull Request
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths-ignore:
       - "*.md"
       - ".changeset/**"
@@ -22,7 +23,11 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/install-dependencies
-      - run: pnpm tsx ci/scripts/validate-kumo-changeset.ts
+      - name: Test changeset validation
+        run: vp exec tsx --test ci/utils/git-operations.test.ts
+      - run: vp exec tsx ci/scripts/validate-kumo-changeset.ts
+        env:
+          NO_CHANGESET_REQUIRED: ${{ contains(github.event.pull_request.labels.*.name, 'no-changeset-required') }}
 
   build:
     timeout-minutes: 5
@@ -32,7 +37,8 @@ jobs:
         with:
           fetch-depth: 1
       - uses: ./.github/actions/install-dependencies
-      - run: pnpm --filter @cloudflare/kumo build
+      - uses: ./.github/actions/vite-task-cache
+      - run: vp run build:kumo
       - uses: actions/upload-artifact@v4
         with:
           name: kumo-dist
@@ -43,6 +49,40 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
           retention-days: 1
+
+  bundle-report:
+    needs: build
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-dist
+          path: packages/kumo/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: kumo-ai
+          path: packages/kumo/ai
+      - run: vp exec tsx ci/scripts/write-bundle-size-report.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-size-report
+          path: ci/reports
+          retention-days: 7
+
+  format:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - run: vp run format:check
 
   lint:
     needs: build
@@ -61,7 +101,11 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
-      - run: pnpm lint
+      - uses: ./.github/actions/vite-task-cache
+      # kumo-figma imports generated JSON data; type-aware lint needs it
+      - run: vp run gen:figma-data
+      - run: vp run --filter @cloudflare/kumo lint:oxlint
+      - run: vp lint packages/*/src
 
   typecheck:
     needs: build
@@ -80,7 +124,8 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
-      - run: pnpm typecheck
+      - run: vp run typecheck
+      - run: vp run ci:typecheck
 
   test:
     needs: build
@@ -99,7 +144,8 @@ jobs:
         with:
           name: kumo-ai
           path: packages/kumo/ai
-      - run: pnpm --filter @cloudflare/kumo test
+      - run: vp run --filter @cloudflare/kumo test
+      - run: vp run test:ci
 
   test-react-compatibility:
     needs: build
@@ -122,12 +168,12 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - name: Install React ${{ matrix.react-version }} test dependencies
         run: |
-          pnpm pkg set \
+          npm pkg set \
             "pnpm.overrides.react=${{ matrix.react-version }}" \
             "pnpm.overrides.react-dom=${{ matrix.react-version }}" \
             "pnpm.overrides.@types/react=${{ matrix.types-react-version }}" \
             "pnpm.overrides.@types/react-dom=${{ matrix.types-react-dom-version }}"
-          pnpm install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
+          vp install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
       - uses: actions/download-artifact@v4
         with:
           name: kumo-dist
@@ -138,7 +184,8 @@ jobs:
           path: packages/kumo/ai
       - name: Verify React test versions
         run: |
-          pnpm --filter @cloudflare/kumo exec node -e "if (require('react/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
-          pnpm --filter @cloudflare/kumo exec node -e "if (require('react-dom/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
-      - run: pnpm --filter @cloudflare/kumo typecheck
-      - run: pnpm --filter @cloudflare/kumo test
+          cd packages/kumo
+          node -e "if (require('react/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
+          node -e "if (require('react-dom/package.json').version !== '${{ matrix.react-version }}') process.exit(1)"
+      - run: vp run --filter @cloudflare/kumo typecheck
+      - run: vp run --filter @cloudflare/kumo test

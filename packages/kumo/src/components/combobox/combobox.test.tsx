@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import {
   Combobox,
   KUMO_COMBOBOX_VARIANTS,
@@ -38,6 +38,37 @@ describe("Combobox", () => {
 
   it("renders a combobox input with placeholder text", () => {
     renderComboboxWithInput();
+    expect(screen.getByPlaceholderText("Pick a fruit…")).toBeTruthy();
+  });
+
+  it("accepts positioner props on content", () => {
+    render(
+      <Combobox items={fruits}>
+        <Combobox.TriggerInput placeholder="Pick a fruit…" />
+        <Combobox.Content
+          side="bottom"
+          positionMethod="fixed"
+          collisionAvoidance={{
+            side: "none",
+            align: "shift",
+            fallbackAxisSide: "none",
+          }}
+          collisionBoundary="clipping-ancestors"
+          collisionPadding={10}
+          sticky={false}
+          disableAnchorTracking={false}
+        >
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>,
+    );
+
     expect(screen.getByPlaceholderText("Pick a fruit…")).toBeTruthy();
   });
 

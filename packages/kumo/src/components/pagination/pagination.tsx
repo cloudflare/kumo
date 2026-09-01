@@ -94,7 +94,11 @@ export function paginationVariants({
 }: KumoPaginationVariantsProps = {}) {
   return cn(
     "flex items-center justify-between gap-2",
-    resolveVariant(KUMO_PAGINATION_VARIANTS.controls, controls, KUMO_PAGINATION_DEFAULT_VARIANTS.controls).classes,
+    resolveVariant(
+      KUMO_PAGINATION_VARIANTS.controls,
+      controls,
+      KUMO_PAGINATION_DEFAULT_VARIANTS.controls,
+    ).classes,
   );
 }
 
@@ -106,6 +110,7 @@ interface PaginationContextValue {
   page: number;
   perPage?: number;
   totalCount?: number;
+  hasNextPage?: boolean;
   maxPage: number;
   pageShowingRange: string;
   setPage: (page: number) => void;
@@ -243,17 +248,31 @@ function PaginationControls({
   pageSelector = "input",
   className,
 }: PaginationControlsProps) {
-  const { page, maxPage, setPage, editingPage, setEditingPage, labels } =
-    usePaginationContext();
+  const {
+    page,
+    totalCount,
+    hasNextPage,
+    maxPage,
+    setPage,
+    editingPage,
+    setEditingPage,
+    labels,
+  } = usePaginationContext();
+  const hasKnownTotal = totalCount != null;
+  const isUnknownTotal = !hasKnownTotal && hasNextPage !== undefined;
+  const showFullControls = controls === "full" && !isUnknownTotal;
+  const isNextDisabled = hasKnownTotal
+    ? page === maxPage
+    : hasNextPage !== true;
 
   return (
     <div
       data-slot="pagination-controls"
-      className={cn("grow flex flex-col items-end", className)}
+      className={cn("flex grow flex-col items-end", className)}
     >
       <nav aria-label={labels.navigation}>
         <InputGroup>
-          {controls === "full" && (
+          {showFullControls && (
             <InputGroup.Button
               variant="secondary"
               aria-label={labels.firstPage}
@@ -278,7 +297,7 @@ function PaginationControls({
           >
             <CaretLeftIcon size={16} />
           </InputGroup.Button>
-          {controls === "full" &&
+          {showFullControls &&
             (pageSelector === "dropdown" ? (
               <Select
                 aria-label={labels.pageNumber}
@@ -327,16 +346,18 @@ function PaginationControls({
           <InputGroup.Button
             variant="secondary"
             aria-label={labels.nextPage}
-            disabled={page === maxPage}
+            disabled={isNextDisabled}
             onClick={() => {
-              const nextPage = Math.min(page + 1, maxPage);
+              const nextPage = hasKnownTotal
+                ? Math.min(page + 1, maxPage)
+                : page + 1;
               setPage(nextPage);
               setEditingPage(nextPage);
             }}
           >
             <CaretRightIcon size={16} />
           </InputGroup.Button>
-          {controls === "full" && (
+          {showFullControls && (
             <InputGroup.Button
               variant="secondary"
               aria-label={labels.lastPage}
@@ -394,6 +415,11 @@ interface PaginationBaseProps {
   perPage?: number;
   /** Total number of items across all pages. */
   totalCount?: number;
+  /**
+   * Whether another page exists when the total count is unknown. Ignored when
+   * `totalCount` is provided. Unknown totals use sequential controls only.
+   */
+  hasNextPage?: boolean;
   /** Additional CSS classes for the container */
   className?: string;
   /**
@@ -514,6 +540,7 @@ function PaginationRoot(props: PaginationProps) {
     page = 1,
     perPage,
     totalCount,
+    hasNextPage,
     setPage,
     children,
     className,
@@ -556,6 +583,7 @@ function PaginationRoot(props: PaginationProps) {
     page,
     perPage,
     totalCount,
+    hasNextPage,
     maxPage,
     pageShowingRange,
     setPage,
@@ -570,7 +598,7 @@ function PaginationRoot(props: PaginationProps) {
       <PaginationContext.Provider value={contextValue}>
         <div
           data-slot="pagination"
-          className={cn("flex items-center gap-2 w-full", className)}
+          className={cn("flex w-full items-center gap-2", className)}
         >
           {children}
         </div>
@@ -597,7 +625,7 @@ function PaginationRoot(props: PaginationProps) {
     <PaginationContext.Provider value={contextValue}>
       <div
         data-slot="pagination"
-        className={cn("flex items-center gap-2 w-full", className)}
+        className={cn("flex w-full items-center gap-2", className)}
       >
         <div
           aria-live="polite"

@@ -34,7 +34,7 @@ const currentPath = Astro.url.pathname;
         }
 
         restore();
-        window.addEventListener("astro:after-swap", restore);
+        document.addEventListener("astro:after-swap", restore);
       })();
     </script>
 

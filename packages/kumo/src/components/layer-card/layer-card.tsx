@@ -92,37 +92,50 @@ export type LayerCardSectionProps = ComponentPropsWithoutRef<"div">;
  * </LayerCard>
  * ```
  */
-const LayerCardRoot = forwardRef<HTMLDivElement, LayerCardProps>(function LayerCard(
-  { children, className, render, ...props },
-  ref,
-) {
-  const hasStructuredLayers = hasLayerCardSections(children);
+const LayerCardRoot = forwardRef<HTMLDivElement, LayerCardProps>(
+  function LayerCard({ children, className, render, ...props }, ref) {
+    const hasStructuredLayers = hasLayerCardSections(children);
 
-  const defaultProps: useRender.ElementProps<"div"> = {
-    className: cn(
-      hasStructuredLayers ? LAYER_CARD_LAYERED_ROOT_CLASSES : layerCardVariants(),
-      className,
-    ),
-  };
+    const defaultProps: useRender.ElementProps<"div"> = {
+      className: cn(
+        hasStructuredLayers
+          ? LAYER_CARD_LAYERED_ROOT_CLASSES
+          : layerCardVariants(),
+        className,
+      ),
+    };
 
-  return useRender({
-    defaultTagName: "div",
-    render,
-    ref,
-    props: mergeProps<"div">(defaultProps, props, { children }),
-  });
-});
+    return useRender({
+      defaultTagName: "div",
+      render,
+      ref,
+      props: mergeProps<"div">(defaultProps, props, { children }),
+    });
+  },
+);
 
 function LayerCardSecondary({
   children,
   className,
   ...props
 }: LayerCardSectionProps) {
-  return <div className={cn(LAYER_CARD_SECONDARY_CLASSES, className)} {...props}>{children}</div>;
+  return (
+    <div className={cn(LAYER_CARD_SECONDARY_CLASSES, className)} {...props}>
+      {children}
+    </div>
+  );
 }
 
-function LayerCardPrimary({ children, className, ...props }: LayerCardSectionProps) {
-  return <div className={cn(LAYER_CARD_PRIMARY_CLASSES, className)} {...props}>{children}</div>;
+function LayerCardPrimary({
+  children,
+  className,
+  ...props
+}: LayerCardSectionProps) {
+  return (
+    <div className={cn(LAYER_CARD_PRIMARY_CLASSES, className)} {...props}>
+      {children}
+    </div>
+  );
 }
 
 LayerCardRoot.displayName = "LayerCard";

@@ -4,6 +4,7 @@ import type {
   PointerEventHandler,
 } from "react";
 import { cn } from "../../utils";
+import { SkeletonLine } from "../loader";
 
 const onInteractiveKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
   if (event.key !== "Enter" && event.key !== " ") return;
@@ -11,8 +12,8 @@ const onInteractiveKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
   event.currentTarget.click();
 };
 
-/** Shared props for both legend item variants */
-interface LegendItemProps {
+/** Content props shared by both legend item variants when data is present */
+interface LegendItemContentProps {
   /** Series name shown as a label */
   name: string;
   /** Hex color string for the series indicator dot */
@@ -29,9 +30,22 @@ interface LegendItemProps {
   onPointerLeave?: PointerEventHandler<HTMLDivElement>;
   /** Fired when the legend item is clicked — useful for toggling series visibility */
   onClick?: MouseEventHandler<HTMLDivElement>;
-  /** Optional className to customize legend item presentation */
-  className?: string;
 }
+
+/**
+ * Legend item props. When `loading` is `true`, the item renders skeleton
+ * placeholders (you typically have no data yet); otherwise pass `name`,
+ * `color`, and `value`.
+ */
+type LegendItemProps = {
+  className?: string;
+} & (
+  | ({
+      /** When `true`, renders animated skeleton placeholders instead of content */
+      loading: true;
+    } & Partial<LegendItemContentProps>)
+  | ({ loading?: boolean } & LegendItemContentProps)
+);
 
 /**
  * Large legend item — stacked layout with a colored dot + series name on top
@@ -44,18 +58,34 @@ function LargeItem({
   name,
   unit,
   inactive,
+  loading,
   onPointerEnter,
   onPointerLeave,
   onClick,
   className,
 }: LegendItemProps) {
+  if (loading) {
+    return (
+      <div
+        aria-hidden="true"
+        className={cn("inline-flex min-w-42 flex-col gap-2 py-2", className)}
+      >
+        <div className="flex items-center gap-2">
+          <span className="inline-block size-2 rounded-full bg-kumo-fill" />
+          <SkeletonLine className="h-3 w-[8ch]" />
+        </div>
+        <SkeletonLine className="h-5 w-[5ch]" />
+      </div>
+    );
+  }
+
   return (
     <div
       // oxlint-disable-next-line prefer-tag-over-role
       role="button"
       tabIndex={onClick ? 0 : -1}
       className={cn(
-        "inline-flex flex-col gap-2 min-w-42 py-2",
+        "inline-flex min-w-42 flex-col gap-2 py-2",
         { "cursor-pointer": !!onClick },
         className,
       )}
@@ -66,7 +96,7 @@ function LargeItem({
     >
       <div className="flex items-center gap-2">
         <span
-          className={cn("size-2 rounded-full inline-block", {
+          className={cn("inline-block size-2 rounded-full", {
             "opacity-50": inactive,
           })}
           style={{ backgroundColor: color }}
@@ -77,7 +107,7 @@ function LargeItem({
       </div>
       <div className="flex items-baseline gap-0.5">
         <span
-          className={cn("text-lg font-medium leading-none", {
+          className={cn("text-lg leading-none font-medium", {
             "opacity-50": inactive,
           })}
         >
@@ -85,7 +115,7 @@ function LargeItem({
         </span>
         {unit && (
           <span
-            className={cn("text-xs text-kumo-subtle leading-none", {
+            className={cn("text-xs leading-none text-kumo-subtle", {
               "opacity-50": inactive,
             })}
           >
@@ -106,18 +136,32 @@ function SmallItem({
   value,
   name,
   inactive,
+  loading,
   onPointerEnter,
   onPointerLeave,
   onClick,
   className,
 }: LegendItemProps) {
+  if (loading) {
+    return (
+      <div
+        aria-hidden="true"
+        className={cn("inline-flex h-4 items-center gap-2", className)}
+      >
+        <span className="inline-block size-2 rounded-full bg-kumo-fill" />
+        <SkeletonLine className="h-3 w-[5ch]" />
+        <SkeletonLine className="h-3 w-[3ch]" />
+      </div>
+    );
+  }
+
   return (
     <div
       // oxlint-disable-next-line prefer-tag-over-role
       role="button"
       tabIndex={onClick ? 0 : -1}
       className={cn(
-        "inline-flex items-center gap-2",
+        "inline-flex h-4 items-center gap-2",
         { "cursor-pointer": !!onClick },
         className,
       )}
@@ -127,7 +171,7 @@ function SmallItem({
       onKeyDown={onClick ? onInteractiveKeyDown : undefined}
     >
       <span
-        className={cn("size-2 rounded-full inline-block", {
+        className={cn("inline-block size-2 rounded-full", {
           "opacity-50": inactive,
         })}
         style={{ backgroundColor: color }}
@@ -150,6 +194,9 @@ function SmallItem({
  * ```tsx
  * <ChartLegend.SmallItem name="Requests" color="#086FFF" value="1,234" />
  * <ChartLegend.LargeItem name="Latency" color="#CF7EE9" value="42" unit="ms" inactive />
+ *
+ * // While data is loading, render skeleton placeholders:
+ * <ChartLegend.SmallItem loading />
  * ```
  */
 export const ChartLegend = {

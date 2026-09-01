@@ -12,7 +12,7 @@
  * Generator uses hardcoded SIZE_CONFIG, VARIANT_CONFIG, STATE_STYLES
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getInputAreaSizeConfig,
   getInputAreaVariantConfig,

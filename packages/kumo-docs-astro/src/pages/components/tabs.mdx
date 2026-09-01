@@ -15,6 +15,8 @@ import {
   TabsSmDemo,
   TabsControlledDemo,
   TabsManyDemo,
+  TabsOverflowDemo,
+  TabsDynamicCountDemo,
 } from "~/components/demos/TabsDemo";
 
 {/* Hero Demo */}
@@ -118,6 +120,28 @@ export default function Example() {
   <TabsManyDemo client:visible />
 </ComponentExample>
 
+### Horizontal Overflow
+
+<p>
+  When segmented tabs overflow their container, scroll buttons appear at the
+  clipped edge. Use them, horizontal scrolling, or mouse drag to reveal
+  off-screen tabs.
+</p>
+<ComponentExample demo="TabsOverflowDemo">
+  <TabsOverflowDemo client:visible />
+</ComponentExample>
+
+### Dynamic Tab Count
+
+<p>
+  This example toggles between an overflowing tab set and the production-like
+  seven-tab set. When the extra tabs disappear, the end overflow control should
+  hide once the remaining tabs fit.
+</p>
+<ComponentExample demo="TabsDynamicCountDemo">
+  <TabsDynamicCountDemo client:visible />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* API Reference */}
@@ -153,6 +177,16 @@ export default function Example() {
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono text-xs">className</td>
         <td class="px-4 py-3 font-mono text-xs">string</td>
+        <td class="px-4 py-3 font-mono text-xs">No</td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">render</td>
+        <td class="px-4 py-3 font-mono text-xs">TabsTab.Props["render"]</td>
+        <td class="px-4 py-3 font-mono text-xs">No</td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">nativeButton</td>
+        <td class="px-4 py-3 font-mono text-xs">boolean</td>
         <td class="px-4 py-3 font-mono text-xs">No</td>
       </tr>
     </tbody>

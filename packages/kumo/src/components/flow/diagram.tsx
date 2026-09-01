@@ -369,7 +369,7 @@ export function FlowDiagram({
     <FlowStateContext.Provider value={flowStateContextValue}>
       <motion.div
         ref={wrapperRef}
-        className={cn("grow overflow-hidden isolate group", className)}
+        className={cn("group isolate grow overflow-hidden", className)}
         style={{
           paddingTop: padding.y,
           paddingBottom: padding.y,
@@ -384,7 +384,7 @@ export function FlowDiagram({
         <motion.div
           data-testid="flow-contents"
           ref={contentRef}
-          className="mx-auto relative"
+          className="relative mx-auto"
           style={{
             x,
             y,
@@ -393,7 +393,7 @@ export function FlowDiagram({
           }}
         >
           <FlowNodeList>{children}</FlowNodeList>
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="pointer-events-none absolute inset-0">
             <FlowConnectors
               edges={edges}
               nodePositions={nodePositions}
@@ -405,7 +405,7 @@ export function FlowDiagram({
 
         {/* Vertical scrollbar */}
         {canScrollY && (
-          <div className="absolute right-1 top-1 bottom-1 w-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
+          <div className="absolute top-1 right-1 bottom-1 w-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
             <motion.div
               className="absolute w-full rounded-full bg-kumo-fill"
               style={{
@@ -418,7 +418,7 @@ export function FlowDiagram({
 
         {/* Horizontal scrollbar */}
         {canScrollX && (
-          <div className="absolute bottom-1 left-1 right-1 h-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
+          <div className="absolute right-1 bottom-1 left-1 h-1.5 rounded-full bg-kumo-hairline/50 opacity-0 group-hover:opacity-100">
             <motion.div
               className="absolute h-full rounded-full bg-kumo-fill"
               style={{

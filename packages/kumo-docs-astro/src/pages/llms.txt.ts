@@ -22,7 +22,6 @@ const titleOverrides: Record<string, string> = {
   "code-highlighted": "CodeHighlighted",
   "input-area": "InputArea",
   "input-group": "InputGroup",
-  "menu-bar": "MenuBar",
   "resource-list": "Resource List",
   "table-of-contents": "Table of Contents",
 };

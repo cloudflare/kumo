@@ -1,5 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TableOfContents as TOC } from "@cloudflare/kumo";
+import { useEffect, useMemo, useState } from "react";
+import {
+  TableOfContents as TOC,
+  useTableOfContentsActiveId,
+} from "@cloudflare/kumo";
 import { CaretDownIcon } from "@phosphor-icons/react";
 
 export interface TocHeading {
@@ -78,91 +81,32 @@ export function TableOfContents({
     return scrapeHeadings();
   }, [headingsProp, hasMounted]);
 
-  const [activeId, setActiveId] = useState<string>(headings[0]?.slug ?? "");
-
-  // When a TOC link is clicked we temporarily suppress the observer so the
-  // active state doesn't flicker as the page scrolls to the target heading.
-  const suppressObserverRef = useRef(false);
-  const suppressTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  // Clean up the suppression timer on unmount.
-  useEffect(() => () => clearTimeout(suppressTimerRef.current), []);
-
-  const handleClick = useCallback((slug: string) => {
-    setActiveId(slug);
-    suppressObserverRef.current = true;
-    clearTimeout(suppressTimerRef.current);
-    suppressTimerRef.current = setTimeout(() => {
-      suppressObserverRef.current = false;
-    }, 1000);
-  }, []);
-
-  // Callback ref: wire up the IntersectionObserver when the <nav> mounts.
-  const navRef = useCallback(
-    (node: HTMLElement | null) => {
-      if (!node || headings.length === 0) return;
-
-      const elements = headings
-        .map((h) => document.getElementById(h.slug))
-        .filter((el): el is HTMLElement => el !== null);
-
-      if (elements.length === 0) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (suppressObserverRef.current) return;
-
-          const visible = entries
-            .filter((e) => e.isIntersecting)
-            .toSorted(
-              (a, b) =>
-                (a.target as HTMLElement).offsetTop -
-                (b.target as HTMLElement).offsetTop,
-            );
-
-          if (visible.length > 0) {
-            setActiveId(visible[0].target.id);
-            return;
-          }
-
-          // No headings visible -- clamp to first or last based on scroll position.
-          const first = document.getElementById(headings[0].slug);
-          const last = document.getElementById(headings.at(-1)!.slug);
-
-          if (first && window.scrollY < first.offsetTop) {
-            setActiveId(headings[0].slug);
-          } else if (last && window.scrollY >= last.offsetTop) {
-            setActiveId(headings.at(-1)!.slug);
-          }
-        },
-        { rootMargin: "-10% 0px -70% 0px", threshold: [0, 1] },
-      );
-
-      for (const el of elements) observer.observe(el);
-
-      // Disconnect when the node unmounts (React will call the ref with null).
-      return () => observer.disconnect();
-    },
-    [headings],
-  );
+  // Scroll tracking + hash deep-linking via the shared kumo hook. It
+  // highlights the topmost heading in view (offset by the fixed header) and
+  // pins a clicked heading until the smooth scroll settles, so short trailing
+  // sections stay reachable.
+  const { activeId, selectSection } = useTableOfContentsActiveId({
+    ids: headings.map((h) => h.slug),
+    offset: 96, // sticky header height (top-24)
+  });
 
   if (headings.length === 0) return null;
 
   // Compact jump menu for smaller screens
   if (layout === "select") {
     return (
-      <nav aria-label="Table of contents" ref={navRef} className="relative">
+      <nav aria-label="Table of contents" className="relative">
         <select
           aria-label="Jump to section"
-          value={activeId}
+          value={activeId ?? headings[0]?.slug ?? ""}
           onChange={(e) => {
             const slug = e.target.value;
-            handleClick(slug);
+            selectSection(slug);
             document
               .getElementById(slug)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="w-full appearance-none text-base p-4 md:px-6 lg:px-12"
+          className="w-full appearance-none p-4 text-base md:px-6 lg:px-12"
         >
           {groupHeadings(headings).map((group) => (
             <optgroup key={group.h2.slug} label={group.h2.text}>
@@ -179,7 +123,7 @@ export function TableOfContents({
         <CaretDownIcon
           size={16}
           weight="bold"
-          className="pointer-events-none absolute right-4.5 md:right-6 lg:right-12 top-1/2 -translate-y-1/2 text-kumo-subtle"
+          className="pointer-events-none absolute top-1/2 right-4.5 -translate-y-1/2 text-kumo-subtle md:right-6 lg:right-12"
         />
       </nav>
     );
@@ -189,7 +133,7 @@ export function TableOfContents({
   return (
     <TOC>
       <TOC.Title>On this page</TOC.Title>
-      <TOC.List ref={navRef}>
+      <TOC.List>
         {groupHeadings(headings).map((group) => {
           if (group.h3s.length === 0) {
             return (
@@ -197,8 +141,8 @@ export function TableOfContents({
                 key={group.h2.slug}
                 href={`#${group.h2.slug}`}
                 active={activeId === group.h2.slug}
-                onClick={() => handleClick(group.h2.slug)}
-                className="overflow-visible whitespace-pre-wrap text-pretty"
+                onClick={() => selectSection(group.h2.slug)}
+                className="overflow-visible text-pretty whitespace-pre-wrap"
               >
                 {group.h2.text}
               </TOC.Item>
@@ -210,15 +154,15 @@ export function TableOfContents({
               label={group.h2.text}
               href={`#${group.h2.slug}`}
               active={activeId === group.h2.slug}
-              onClick={() => handleClick(group.h2.slug)}
+              onClick={() => selectSection(group.h2.slug)}
             >
               {group.h3s.map((h3) => (
                 <TOC.Item
                   key={h3.slug}
                   href={`#${h3.slug}`}
                   active={activeId === h3.slug}
-                  onClick={() => handleClick(h3.slug)}
-                  className="overflow-visible whitespace-pre-wrap text-pretty"
+                  onClick={() => selectSection(h3.slug)}
+                  className="overflow-visible text-pretty whitespace-pre-wrap"
                 >
                   {h3.text}
                 </TOC.Item>

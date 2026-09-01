@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 

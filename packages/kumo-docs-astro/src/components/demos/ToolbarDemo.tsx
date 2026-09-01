@@ -1,5 +1,6 @@
-import { InputGroup, Toolbar } from "@cloudflare/kumo";
+import { Combobox, InputGroup, Select, Toolbar } from "@cloudflare/kumo";
 import {
+  BookOpenIcon,
   DownloadSimpleIcon,
   FunnelSimpleIcon,
   GearSixIcon,
@@ -23,7 +24,7 @@ export function ToolbarDemo() {
   );
 }
 
-/** Toolbar locks supported item sizes to the toolbar size. */
+/** @deprecated Toolbar size customization remains for compatibility. */
 export function ToolbarSizesDemo() {
   return (
     <div className="grid gap-3">
@@ -31,7 +32,10 @@ export function ToolbarSizesDemo() {
         <div key={size} className="flex items-center gap-3">
           <span className="w-10 text-sm text-kumo-subtle">{size}</span>
           <Toolbar size={size} className="w-fit">
-            <Toolbar.Input aria-label={`${size} search`} placeholder="Search..." />
+            <Toolbar.Input
+              aria-label={`${size} search`}
+              placeholder="Search..."
+            />
             <Toolbar.Button>Apply</Toolbar.Button>
           </Toolbar>
         </div>
@@ -78,12 +82,73 @@ export function ToolbarActionsDemo() {
   );
 }
 
+/** Toolbar links use LinkButton for navigation with toolbar styling. */
+export function ToolbarLinksDemo() {
+  return (
+    <Toolbar>
+      <Toolbar.Link href="/components/button" icon={BookOpenIcon}>
+        Button documentation
+      </Toolbar.Link>
+      <Toolbar.Button icon={DownloadSimpleIcon}>Download</Toolbar.Button>
+    </Toolbar>
+  );
+}
+
 /** Toolbar items use aria-label for compact accessible names. */
 export function ToolbarLabelsDemo() {
   return (
     <Toolbar className="w-full max-w-lg">
-      <Toolbar.Input aria-label="Search records" className="flex-1" placeholder="Search" />
+      <Toolbar.Input
+        aria-label="Search records"
+        className="flex-1"
+        placeholder="Search"
+      />
       <Toolbar.Button icon={MagnifyingGlassIcon} aria-label="Search" />
+    </Toolbar>
+  );
+}
+
+/** Select composes its trigger with Toolbar.Button. */
+export function ToolbarSelectDemo() {
+  return (
+    <Toolbar>
+      <Toolbar.Button icon={FunnelSimpleIcon}>Filter</Toolbar.Button>
+      <Select
+        aria-label="Sort records"
+        defaultValue="name"
+        items={{ name: "Name", created: "Created date", status: "Status" }}
+        render={<Toolbar.Button />}
+      />
+      <Toolbar.Button icon={GearSixIcon} aria-label="View settings" />
+    </Toolbar>
+  );
+}
+
+const toolbarComboboxItems = ["All records", "Active", "Paused", "Failed"];
+
+/** Combobox composes its editable trigger with Toolbar.Input. */
+export function ToolbarComboboxDemo() {
+  return (
+    <Toolbar className="w-full max-w-md">
+      <Toolbar.Button icon={FunnelSimpleIcon}>Status</Toolbar.Button>
+      <Combobox items={toolbarComboboxItems}>
+        <Combobox.TriggerInput
+          aria-label="Filter status"
+          className="flex-1"
+          placeholder="Filter status…"
+          render={<Toolbar.Input />}
+        />
+        <Combobox.Content>
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+          <Combobox.Empty>No matching statuses.</Combobox.Empty>
+        </Combobox.Content>
+      </Combobox>
     </Toolbar>
   );
 }

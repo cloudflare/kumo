@@ -1,4 +1,5 @@
-import { defineRule } from "oxlint";
+import { defineRule } from "@oxlint/plugins";
+
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";

@@ -1,0 +1,14 @@
+name: "Vite Task cache"
+description: "Restore and save the Vite Task cache."
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v6
+      with:
+        path: node_modules/.vite/task-cache
+        # The per-run key never pre-exists, so every successful job saves.
+        # The prefix restore falls back to the newest prior cache.
+        key: vite-task-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          vite-task-${{ runner.os }}-${{ runner.arch }}-

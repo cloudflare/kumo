@@ -1,6 +1,6 @@
 import { createRef } from "react";
 import { render, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { BubbleMap, type MapGeoJson } from "./Maps";
 
 const createMockChart = () => ({

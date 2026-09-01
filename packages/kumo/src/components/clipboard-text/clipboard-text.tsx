@@ -1,5 +1,5 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { forwardRef, useCallback, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { Toast } from "@base-ui/react/toast";
 import { Tooltip } from "@base-ui/react/tooltip";
 import { Button } from "../button";
@@ -7,8 +7,10 @@ import { inputVariants } from "../input";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 
-// Create a toast manager for anchored "Copied" toasts
+// External manager — same-id re-adds update + reset timeout in Base UI's store
 const clipboardToastManager = Toast.createToastManager();
+
+const COPIED_FEEDBACK_MS = 1500;
 
 /** ClipboardText size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_CLIPBOARD_TEXT_VARIANTS = {
@@ -66,7 +68,11 @@ export function clipboardTextVariants({
     // Base styles
     "flex items-center overflow-hidden bg-kumo-base px-0 font-mono",
     // Apply size styles from KUMO_CLIPBOARD_TEXT_VARIANTS
-    resolveVariant(KUMO_CLIPBOARD_TEXT_VARIANTS.size, size, KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(
+      KUMO_CLIPBOARD_TEXT_VARIANTS.size,
+      size,
+      KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
+    ).classes,
   );
 }
 
@@ -123,19 +129,25 @@ function AnchoredToasts() {
   const { toasts } = Toast.useToastManager();
   return (
     <Toast.Viewport className="pointer-events-none fixed inset-0 isolate">
-      {toasts.map((toast) => (
-        <Toast.Positioner key={toast.id} toast={toast} className="absolute">
-          <Toast.Root
-            toast={toast}
-            className={cn(
-              "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-3 py-1.5 text-xs text-kumo-default font-sans",
-              "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
-            )}
-          >
-            <Toast.Description />
-          </Toast.Root>
-        </Toast.Positioner>
-      ))}
+      {toasts.map((toast) => {
+        const updateKey = toast.updateKey ?? 0;
+        return (
+          <Toast.Positioner key={toast.id} toast={toast} className="absolute">
+            {/* key forces a fresh animation instance on every bump */}
+            <Toast.Root
+              key={updateKey}
+              toast={toast}
+              className={cn(
+                "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-3 py-1.5 font-sans text-xs text-kumo-default",
+                "shadow-lg outline outline-kumo-line",
+                updateKey > 0 && "animate-clipboard-toast-bump",
+              )}
+            >
+              <Toast.Description />
+            </Toast.Root>
+          </Toast.Positioner>
+        );
+      })}
     </Toast.Viewport>
   );
 }
@@ -177,7 +189,13 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
   ) => {
     const [copied, setCopied] = useState(false);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const sizeConfig = resolveVariant(KUMO_CLIPBOARD_TEXT_VARIANTS.size, size, KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size);
+    const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const toastIdRef = useRef<string | null>(null);
+    const sizeConfig = resolveVariant(
+      KUMO_CLIPBOARD_TEXT_VARIANTS.size,
+      size,
+      KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
+    );
 
     // Destructure tooltip config with defaults
     const {
@@ -185,6 +203,24 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
       copiedText = "Copied",
       side: tooltipSide = "top",
     } = tooltip ?? {};
+
+    useEffect(() => {
+      return () => {
+        if (resetTimeoutRef.current !== null) {
+          clearTimeout(resetTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    const scheduleCopiedReset = useCallback(() => {
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+      }
+      resetTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+        resetTimeoutRef.current = null;
+      }, COPIED_FEEDBACK_MS);
+    }, []);
 
     const copyToClipboard = useCallback(async () => {
       try {
@@ -222,28 +258,38 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
 
         // Show anchored toast if tooltip mode is enabled
         if (tooltip) {
-          clipboardToastManager.add({
+          toastIdRef.current = clipboardToastManager.add({
+            id: toastIdRef.current ?? undefined,
             description: copiedText,
             positionerProps: {
               anchor: buttonRef.current,
               side: tooltipSide,
               sideOffset: 8,
             },
-            timeout: 1500,
+            timeout: COPIED_FEEDBACK_MS,
             onClose() {
+              toastIdRef.current = null;
               setCopied(false);
             },
           });
         } else {
-          // Reset copied state after delay when no tooltip
-          setTimeout(() => setCopied(false), 1500);
+          // Keep check icon visible; only reset after the last click settles
+          scheduleCopiedReset();
         }
 
         onCopy?.();
       } catch (error) {
         console.warn("Clipboard copy failed", error);
       }
-    }, [text, onCopy, tooltip, copiedText, tooltipSide]);
+    }, [
+      text,
+      textToCopy,
+      onCopy,
+      tooltip,
+      copiedText,
+      tooltipSide,
+      scheduleCopiedReset,
+    ]);
 
     const copyButton = (
       <Button
@@ -251,9 +297,9 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
         size={sizeConfig.buttonSize}
         variant="ghost"
         className={cn(
-          "rounded-l-none rounded-r-[inherit] border-l! border-kumo-line! px-3 relative isolate overflow-hidden transition-all duration-200",
-          "focus:ring-inset focus:ring-kumo-focus/50",
-          "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand",
+          "relative isolate overflow-hidden rounded-l-none rounded-r-[inherit] border-l! border-kumo-line! px-3 transition-all duration-200",
+          "focus:ring-kumo-focus/50 focus:ring-inset",
+          "focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
         )}
         onClick={copyToClipboard}
         aria-label={copyAction}
@@ -308,7 +354,7 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
                   <Tooltip.Popup
                     className={cn(
                       "flex origin-[var(--transform-origin)] flex-col rounded-md bg-kumo-base px-3 py-1.5 text-xs text-kumo-default",
-                      "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill",
+                      "shadow-md outline outline-kumo-line",
                     )}
                   >
                     {tooltipText}

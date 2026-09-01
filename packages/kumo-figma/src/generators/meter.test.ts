@@ -16,7 +16,7 @@
  * creates predetermined fill level examples for Figma.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getMeterFillLevelConfig,
   getMeterDimensionsConfig,

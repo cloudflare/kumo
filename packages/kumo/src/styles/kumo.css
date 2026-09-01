@@ -49,11 +49,9 @@
     [role="checkbox"],
     [role="radio"],
     [role="switch"]
-  ):where([data-kumo-component], [data-kumo-part]):where(
-    :not(:disabled)
-  ):where(:not([disabled])):where(:not([aria-disabled="true"])):where(
-    :not([data-disabled])
-  ) {
+  ):where([data-kumo-component], [data-kumo-part]):where(:not(:disabled)):where(
+    :not([disabled])
+  ):where(:not([aria-disabled="true"])):where(:not([data-disabled])) {
   cursor: pointer;
 }
 

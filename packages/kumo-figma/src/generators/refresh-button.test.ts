@@ -14,7 +14,7 @@
  * but only generates the "secondary" variant (default) with square shape.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { parseTailwindClasses } from "../parsers/tailwind-to-figma";
 import { FALLBACK_VALUES } from "./shared";
 

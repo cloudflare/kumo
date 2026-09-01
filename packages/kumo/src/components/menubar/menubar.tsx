@@ -48,7 +48,7 @@ const MenuOption = ({
       data-kumo-part="option"
       aria-label={tooltip}
       className={cn(
-        "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed first:rounded-l-lg last:rounded-r-lg transition-colors focus:z-3 focus:outline-none focus:ring-kumo-focus/50 focus-visible:z-3 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed transition-colors first:rounded-l-lg last:rounded-r-lg focus:z-3 focus:ring-kumo-focus/50 focus:outline-none focus-visible:z-3 focus-visible:ring-2 focus-visible:ring-kumo-brand",
         {
           "z-2 bg-kumo-base shadow-xs transition-colors": isActive === id,
         },
@@ -68,6 +68,8 @@ const MenuOption = ({
  * MenuBar component props.
  *
  * Horizontal icon-button toolbar with keyboard navigation and tooltip labels.
+ *
+ * @deprecated Use `Tabs` with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
  *
  * @example
  * ```tsx
@@ -97,6 +99,8 @@ type MenuBarProps = {
  * Each option renders as a `<button>` with a Tooltip. The active option is
  * visually highlighted with an elevated background.
  *
+ * @deprecated Use `Tabs` with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
+ *
  * @example
  * ```tsx
  * <MenuBar
@@ -121,7 +125,7 @@ export const MenuBar = ({
   return (
     <nav
       className={cn(
-        "isolate flex rounded-lg ring ring-kumo-line bg-kumo-recessed pl-px shadow-xs transition-colors",
+        "isolate flex rounded-lg bg-kumo-recessed pl-px shadow-xs ring ring-kumo-line transition-colors",
         className,
       )}
       ref={menuRef}

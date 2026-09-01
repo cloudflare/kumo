@@ -50,7 +50,11 @@ export function breadcrumbsVariants({
 }: KumoBreadcrumbsVariantsProps = {}) {
   return cn(
     "group mr-4 flex min-w-0 grow items-center overflow-hidden whitespace-nowrap",
-    resolveVariant(KUMO_BREADCRUMBS_VARIANTS.size, size, KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(
+      KUMO_BREADCRUMBS_VARIANTS.size,
+      size,
+      KUMO_BREADCRUMBS_DEFAULT_VARIANTS.size,
+    ).classes,
   );
 }
 
@@ -71,10 +75,13 @@ const Link = ({
       data-kumo-component="Breadcrumbs"
       data-kumo-part="link"
       to={href}
-      className="flex min-w-0 max-w-full items-center gap-1 text-kumo-subtle no-underline"
+      // Ancestors do not shrink. Letting every crumb truncate proportionally
+      // turns the whole trail into unreadable stubs ("Com… › Anal… › Acco…");
+      // the current page is the only crumb allowed to give up width.
+      className="flex shrink-0 items-center gap-1 whitespace-nowrap text-kumo-subtle no-underline"
     >
       {!!icon && <span className="flex shrink-0 items-center">{icon}</span>}
-      <span className="truncate">{children}</span>
+      <span>{children}</span>
     </LinkComponent>
   );
 };
@@ -100,7 +107,7 @@ function Current({
 
   return (
     <div
-      className="flex min-w-0 max-w-full items-center gap-1 font-medium"
+      className="flex max-w-full min-w-0 items-center gap-1 font-medium"
       aria-current="page"
     >
       {icon && <span className="flex shrink-0 items-center">{icon}</span>}
@@ -191,8 +198,7 @@ function Clipboard({ text }: { text: string }) {
  * ```
  */
 export interface BreadcrumbsProps
-  extends PropsWithChildren,
-    KumoBreadcrumbsVariantsProps {
+  extends PropsWithChildren, KumoBreadcrumbsVariantsProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
 }

@@ -15,6 +15,7 @@ import {
   CollapsibleMultipleDemo,
   CollapsibleCustomTriggerDemo,
   CollapsibleKeepMountedDemo,
+  CollapsibleFormDemo,
   CollapsibleAccordionDemo,
 } from "~/components/demos/CollapsibleDemo";
 
@@ -124,6 +125,14 @@ Use `keepMounted` on `DefaultPanel` (or `Panel`) to preserve internal state — 
 
 <ComponentExample demo="CollapsibleKeepMountedDemo">
   <CollapsibleKeepMountedDemo client:load />
+</ComponentExample>
+
+### Form Content
+
+Use `DefaultPanel` with form controls to verify focus rings have enough room inside the animated panel:
+
+<ComponentExample demo="CollapsibleFormDemo">
+  <CollapsibleFormDemo client:load />
 </ComponentExample>
 
 ### Accordion Pattern

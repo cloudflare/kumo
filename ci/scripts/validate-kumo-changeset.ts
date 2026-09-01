@@ -42,6 +42,13 @@ function main() {
     return;
   }
 
+  if (process.env.NO_CHANGESET_REQUIRED === "true") {
+    console.log(
+      "Detected no-changeset-required label; skipping changeset validation.",
+    );
+    return;
+  }
+
   // Skip validation on Changesets release PRs. The `changesets/action` bot
   // opens these PRs from a `changeset-release/<target>` branch and, by
   // design, their diff modifies `packages/kumo/` (version bump + CHANGELOG)

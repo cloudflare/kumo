@@ -149,6 +149,19 @@ export function ButtonLinkAsButtonDemo() {
   );
 }
 
+/** Demonstrates a title tooltip on an enabled LinkButton. */
+export function ButtonLinkTooltipDemo() {
+  return (
+    <LinkButton
+      href="/components/link"
+      variant="secondary"
+      title="Opens the Link component docs"
+    >
+      Read Link docs
+    </LinkButton>
+  );
+}
+
 /** Demonstrates the disabled LinkButton, including a title tooltip explaining why. */
 export function ButtonDisabledLinkDemo() {
   return (

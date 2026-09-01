@@ -114,7 +114,10 @@ export interface UseShikiHighlighterResult {
    * Accepts language aliases (e.g., 'js', 'ts', 'sh') which are automatically
    * normalized to their canonical SupportedLanguage names.
    */
-  highlight: (code: string, lang: LanguageInput | (string & {})) => string | null;
+  highlight: (
+    code: string,
+    lang: LanguageInput | (string & {}),
+  ) => string | null;
 
   /** True while Shiki is loading */
   isLoading: boolean;

@@ -61,7 +61,7 @@ export const Addon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
             : "input-group-addon-end"
         }
         className={cn(
-          "relative z-[1] pointer-events-none flex shrink-0 items-center gap-1.5",
+          "pointer-events-none relative z-[1] flex shrink-0 items-center gap-1.5",
           "text-kumo-subtle",
           tokens.fontSize,
           "*:pointer-events-auto",

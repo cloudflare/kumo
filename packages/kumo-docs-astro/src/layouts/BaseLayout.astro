@@ -41,7 +41,18 @@ const buildDate =
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/favicon.svg"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/favicon-white.svg"
+      media="(prefers-color-scheme: dark)"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -64,21 +75,38 @@ const buildDate =
       // must be re-applied after each view-transition swap because the <html>
       // attributes are replaced during navigation.
       (function () {
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+
         function setTheme(theme) {
+          const resolvedTheme =
+            theme === "system"
+              ? systemTheme.matches
+                ? "dark"
+                : "light"
+              : theme;
+
           localStorage.setItem("theme", theme);
-          document.documentElement.setAttribute("data-mode", theme);
+          document.documentElement.setAttribute("data-mode", resolvedTheme);
           window.dispatchEvent(
-            new CustomEvent("kumo:theme-change", { detail: { theme } }),
+            new CustomEvent("kumo:theme-change", {
+              detail: { theme, resolvedTheme },
+            }),
           );
         }
 
         function applyStoredTheme() {
           const stored = localStorage.getItem("theme");
-          if (stored) {
-            document.documentElement.setAttribute("data-mode", stored);
-          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            document.documentElement.setAttribute("data-mode", "dark");
-          }
+          const theme = ["light", "dark", "system"].includes(stored)
+            ? stored
+            : "system";
+          const resolvedTheme =
+            theme === "system"
+              ? systemTheme.matches
+                ? "dark"
+                : "light"
+              : theme;
+
+          document.documentElement.setAttribute("data-mode", resolvedTheme);
         }
 
         // Apply on this (initial or freshly-swapped) document immediately.
@@ -91,6 +119,10 @@ const buildDate =
           // Reapply theme before each swap paints, so there's no light flash.
           document.addEventListener("astro:before-swap", applyStoredTheme);
           document.addEventListener("astro:after-swap", applyStoredTheme);
+          systemTheme.addEventListener("change", function () {
+            const stored = localStorage.getItem("theme");
+            if (!stored || stored === "system") setTheme("system");
+          });
 
           document.addEventListener("keydown", function (event) {
             if (event.defaultPrevented || event.repeat) return;
@@ -107,8 +139,14 @@ const buildDate =
             }
 
             event.preventDefault();
-            const current = document.documentElement.getAttribute("data-mode");
-            setTheme(current === "dark" ? "light" : "dark");
+            const current = localStorage.getItem("theme");
+            const nextTheme =
+              current === "light"
+                ? "dark"
+                : current === "dark"
+                  ? "system"
+                  : "light";
+            setTheme(nextTheme);
           });
         }
       })();

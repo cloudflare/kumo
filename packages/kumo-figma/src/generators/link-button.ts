@@ -25,7 +25,6 @@ import {
   createColumnHeaders,
   setWhiteTextColor,
   bindTextColorToVariable,
-  
   SECTION_PADDING,
   SECTION_GAP,
   SECTION_TITLE,

@@ -55,8 +55,7 @@ function useTextareaAutoResize({
     const style = window.getComputedStyle(textarea);
     const borders =
       parsePx(style.borderTopWidth) + parsePx(style.borderBottomWidth);
-    const padding =
-      parsePx(style.paddingTop) + parsePx(style.paddingBottom);
+    const padding = parsePx(style.paddingTop) + parsePx(style.paddingBottom);
     const isBorderBox = style.boxSizing === "border-box";
 
     // Collapsing to `auto` lets scrollHeight report the true content height
@@ -228,7 +227,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       inputVariants({ size, variant, focusIndicator: true }),
       "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
       autoResize &&
-        "w-full field-sizing-content resize-none scroll-pb-2 [scrollbar-color:var(--color-kumo-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-track]:my-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-kumo-line [&::-webkit-scrollbar-corner]:bg-transparent",
+        "field-sizing-content w-full resize-none scroll-pb-2 [scrollbar-color:var(--color-kumo-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-corner]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-kumo-line [&::-webkit-scrollbar-track]:my-2",
       className,
     );
 

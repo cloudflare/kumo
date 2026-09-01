@@ -15,7 +15,7 @@
  * provides Figma-specific metadata (dimensions, icons, state tokens).
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   CHECKBOX_VARIANTS_EXPORT,
   CHECKBOX_STATES_EXPORT,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { readFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -59,7 +59,7 @@ describe("Primitives Export", () => {
       const primitivesExport = packageJson.exports["./primitives"];
       expect(primitivesExport).toHaveProperty("types");
       expect(primitivesExport).toHaveProperty("import");
-      expect(primitivesExport.types).toBe("./dist/src/primitives/index.d.ts");
+      expect(primitivesExport.types).toBe("./dist/primitives.d.ts");
       expect(primitivesExport.import).toBe("./dist/primitives.js");
     });
   });
@@ -125,10 +125,13 @@ describe("Primitives Export", () => {
 
     it("should keep OTPFieldPreview as a compatibility alias", async () => {
       const barrelPrimitives = await import("../../src/primitives/index.ts");
-      const otpFieldPrimitives = await import("../../src/primitives/otp-field.ts");
+      const otpFieldPrimitives =
+        await import("../../src/primitives/otp-field.ts");
 
       expect(barrelPrimitives.OTPFieldPreview).toBe(barrelPrimitives.OTPField);
-      expect(otpFieldPrimitives.OTPFieldPreview).toBe(otpFieldPrimitives.OTPField);
+      expect(otpFieldPrimitives.OTPFieldPreview).toBe(
+        otpFieldPrimitives.OTPField,
+      );
     });
 
     it("should re-export all non-excluded base-ui exports", () => {
@@ -289,7 +292,7 @@ describe("Primitives Export", () => {
 
         if (!exportValue) continue;
 
-        const expectedTypes = `./dist/src/primitives/${exportName}.d.ts`;
+        const expectedTypes = `./dist/primitives/${exportName}.d.ts`;
         const expectedImport = `./dist/primitives/${exportName}.js`;
 
         if (

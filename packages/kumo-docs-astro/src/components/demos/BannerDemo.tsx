@@ -174,7 +174,7 @@ export function BannerWithActionDemo() {
 /** Banner with multiple action buttons. */
 export function BannerWithActionsDemo() {
   return (
-    <div className="space-y-3 w-full">
+    <div className="w-full space-y-3">
       <Banner
         icon={<Warning weight="fill" />}
         variant="error"

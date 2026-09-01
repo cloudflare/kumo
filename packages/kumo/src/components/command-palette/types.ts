@@ -167,11 +167,10 @@ export interface CommandPaletteResultItemProps<T = unknown> {
  * Extends standard HTML input attributes so you can pass props like
  * `autoComplete`, `autoCorrect`, `autoCapitalize`, `spellCheck`, `data-*`, etc.
  */
-export interface CommandPaletteInputProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    "children" | "defaultValue" | "defaultChecked" | "color"
-  > {
+export interface CommandPaletteInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "children" | "defaultValue" | "defaultChecked" | "color"
+> {
   /** Optional leading content (e.g., back button) */
   leading?: ReactNode;
   /** Optional trailing content (e.g., Esc button) */

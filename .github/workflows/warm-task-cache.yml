@@ -1,0 +1,25 @@
+# PRs can only restore caches created on their base branch, so warm main's
+# cache after every push.
+name: Warm Task Cache
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  warm:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+      - uses: ./.github/actions/vite-task-cache
+      - run: vp run gen:figma-data
+      # Pulls in the rest of the chain via task dependencies.
+      - run: vp run build:docs

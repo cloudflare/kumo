@@ -201,7 +201,9 @@ function getColorsForTheme(theme: string): ColorsByCategory {
   }
 
   // Build sorted component groups with display names from the registry
-  const componentGroups: ComponentColorGroup[] = [...componentTokenMap.entries()]
+  const componentGroups: ComponentColorGroup[] = [
+    ...componentTokenMap.entries(),
+  ]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([comp, tokens]) => {
       // Find the proper-cased name from the registry
@@ -210,7 +212,8 @@ function getColorsForTheme(theme: string): ColorsByCategory {
       );
       return {
         component: comp,
-        displayName: registryName ?? comp.charAt(0).toUpperCase() + comp.slice(1),
+        displayName:
+          registryName ?? comp.charAt(0).toUpperCase() + comp.slice(1),
         tokens,
       };
     });
@@ -329,7 +332,7 @@ export const TailwindColorTokens: FC = () => {
 
 export function StatusBannerDemo() {
   return (
-    <div className="flex items-center gap-2 p-4 rounded-lg bg-kumo-danger-tint/70">
+    <div className="flex items-center gap-2 rounded-lg bg-kumo-danger-tint/70 p-4">
       <WarningIcon weight="fill" className="fill-kumo-danger" />
       <span className="text-sm text-kumo-danger">Something went wrong.</span>
     </div>

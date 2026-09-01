@@ -138,5 +138,4 @@ export default function (plop) {
       return actions;
     },
   });
-
 }

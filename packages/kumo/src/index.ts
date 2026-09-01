@@ -15,7 +15,7 @@
  * - **Feedback:** Banner, Loader, Toast
  * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
  * - **Layout:** Grid, Surface
- * - **Navigation:** CommandPalette, MenuBar, Pagination, Tabs
+ * - **Navigation:** CommandPalette, MenuBar (deprecated), Pagination, Tabs
  * - **Overlay:** Dialog, DropdownMenu, Popover, Tooltip
  * - **Other:** Label, Link
  *
@@ -59,6 +59,7 @@ export {
   type ToolbarProps,
   type ToolbarSize,
   type ToolbarButtonProps,
+  type ToolbarLinkProps,
   type ToolbarInputProps,
   type ToolbarInputGroupProps,
 } from "./components/toolbar";
@@ -126,6 +127,9 @@ export {
   type DeleteResourceProps,
 } from "./blocks/delete-resource";
 export { Loader, SkeletonLine } from "./components/loader";
+/**
+ * @deprecated Use {@link Tabs} with `variant="segmented"` instead. `MenuBar` will be removed in a future release.
+ */
 export { MenuBar, useMenuNavigation } from "./components/menubar";
 export { Meter } from "./components/meter";
 export { Pagination } from "./components/pagination";
@@ -280,6 +284,7 @@ export {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarLoading,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -310,6 +315,9 @@ export {
   type SidebarContextValue,
   type SidebarProviderProps,
   type SidebarRootProps,
+  type SidebarScrollAlign,
+  type SidebarScrollToItemOptions,
+  type SidebarMenuItemProps,
   type SidebarMenuButtonSize,
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
@@ -324,6 +332,9 @@ export {
   KUMO_TABLE_OF_CONTENTS_VARIANTS,
   KUMO_TABLE_OF_CONTENTS_DEFAULT_VARIANTS,
   type KumoTableOfContentsState,
+  useTableOfContentsActiveId,
+  type UseTableOfContentsActiveIdOptions,
+  type UseTableOfContentsActiveIdResult,
 } from "./components/table-of-contents";
 export {
   ButtonGroup,

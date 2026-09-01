@@ -8,6 +8,8 @@ import PropsTable from "../../components/docs/PropsTable.astro";
 import {
   SidebarBasicDemo,
   SidebarToggleDemo,
+  SidebarLoadingDemo,
+  SidebarScrollToItemDemo,
   SidebarFullDemo,
   SidebarResizableDemo,
   SidebarRightDemo,
@@ -15,6 +17,7 @@ import {
   SidebarAutoScrollDemo,
   SidebarSlidingViewsDemo,
   SidebarMobileDemo,
+  SidebarFullScreenMobileDemo,
 } from "../../components/demos/SidebarDemo";
 ---
 
@@ -151,6 +154,24 @@ const { toggleSidebar } = useSidebar();`}>
       </div>
 
       <div>
+        <Heading level={3}>Loading</Heading>
+        <p>
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Loading</code> shows nav-item-shaped skeleton rows in place of the nav content while routes and permissions resolve. When collapsed only the icon squares remain. Honours reduced-motion.
+        </p>
+        <ComponentExample code={`<Sidebar>
+  <Sidebar.Header>…</Sidebar.Header>
+  {isLoading ? (
+    <Sidebar.Loading />
+  ) : (
+    <Sidebar.Content>…</Sidebar.Content>
+  )}
+  <Sidebar.Footer>…</Sidebar.Footer>
+</Sidebar>`}>
+          <SidebarLoadingDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
         <Heading level={3}>Resizable</Heading>
         <p>
           Drag the edge to resize. Dragging below <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">minWidth</code> collapses; dragging outward from collapsed expands.
@@ -231,6 +252,26 @@ const { state, isPeeking } = useSidebar();
   </Sidebar.CollapsibleContent>
 </Sidebar.Collapsible>`}>
           <SidebarAutoScrollDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Scroll to Item</Heading>
+        <p>
+          Tag nav items with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code>, then call <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">useSidebar().scrollToItem(id, options)</code> to bring one into view.
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">align</code> is <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"start"</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"center"</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"end"</code>, or <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"auto"</code> (default — no-op if visible). <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">behavior</code> defaults to <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"auto"</code> (instant) so cross-app landings don't animate on entry; pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"smooth"</code> for in-app "jump to section" flows. Honors <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">prefers-reduced-motion</code>. Works correctly with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingViews</code> — items are resolved from a per-provider registry, not a DOM query.
+        </p>
+        <p>
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code> works in both usage patterns: on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.MenuButton</code> directly (the common case, which auto-wraps in a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">&lt;li&gt;</code>), or on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.MenuItem</code> when you wrap a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Collapsible</code>. If you put <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code> on a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuButton</code> nested inside a <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">MenuItem</code>, it still works — the button itself becomes the scroll target.
+        </p>
+        <ComponentExample code={`<Sidebar.MenuButton itemId="zero-trust" href="/zt">
+  Zero Trust
+</Sidebar.MenuButton>
+
+// elsewhere:
+const { scrollToItem } = useSidebar();
+scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
+          <SidebarScrollToItemDemo client:load />
         </ComponentExample>
       </div>
 
@@ -316,6 +357,35 @@ const { state, isPeeking } = useSidebar();
   </Sidebar>
 </Sidebar.Provider>`}>
           <SidebarMobileDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Full-screen mobile</Heading>
+        <p>
+          Pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">fullScreenOnMobile</code> to have the drawer cover the whole viewport instead of leaving a sliver of the page visible.
+          Nav items get comfortable touch targets, and the backdrop is suppressed since nothing shows behind the sheet.
+          Add <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Close</code> inside the header so the sheet can be dismissed from within the nav.
+          Pair it with breadcrumbs in the page header so the current route stays visible once the nav is closed.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider mobileBreakpoint={9999}>
+  <Sidebar fullScreenOnMobile>
+    <Sidebar.Header>
+      <Sidebar.Close />
+    </Sidebar.Header>
+    <Sidebar.Content>...</Sidebar.Content>
+  </Sidebar>
+
+  <header>
+    <Sidebar.Trigger />
+    <Breadcrumbs size="sm">
+      <Breadcrumbs.Link href="/">Company</Breadcrumbs.Link>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Current>Analytics</Breadcrumbs.Current>
+    </Breadcrumbs>
+  </header>
+</Sidebar.Provider>`}>
+          <SidebarFullScreenMobileDemo client:load />
         </ComponentExample>
       </div>
 

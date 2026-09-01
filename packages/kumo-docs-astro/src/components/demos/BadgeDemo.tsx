@@ -1,4 +1,5 @@
-import { Badge } from "@cloudflare/kumo";
+import { Badge, Link } from "@cloudflare/kumo";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 
 export function BadgeSemanticVariantsDemo() {
   return (
@@ -38,13 +39,37 @@ export function BadgeInSentenceDemo() {
   );
 }
 
+export function BadgeIconDemo() {
+  return (
+    <Badge icon={CheckCircleIcon} variant="success">
+      Verified
+    </Badge>
+  );
+}
+
+export function BadgeLinkDemo() {
+  return (
+    <Link href="/changelog" variant="plain">
+      <Badge variant="outline">View changelog</Badge>
+    </Link>
+  );
+}
+
 export function BadgeDotDemo() {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Badge variant="success" appearance="dot">Healthy</Badge>
-      <Badge variant="warning" appearance="dot">Warning</Badge>
-      <Badge variant="error" appearance="dot">Error</Badge>
-      <Badge variant="neutral" appearance="dot">Neutral</Badge>
+      <Badge variant="success" appearance="dot">
+        Healthy
+      </Badge>
+      <Badge variant="warning" appearance="dot">
+        Warning
+      </Badge>
+      <Badge variant="error" appearance="dot">
+        Error
+      </Badge>
+      <Badge variant="neutral" appearance="dot">
+        Neutral
+      </Badge>
     </div>
   );
 }

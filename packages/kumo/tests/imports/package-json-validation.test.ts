@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { discoverComponents, getComponentsWithExports } from "./test-utils";
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
@@ -25,9 +25,7 @@ describe("Package.json Validation", () => {
           console.error(`   - ${name}`);
           console.error(`     Add this to package.json exports:`);
           console.error(`     "./components/${name}": {`);
-          console.error(
-            `       "types": "./dist/src/components/${name}/index.d.ts",`,
-          );
+          console.error(`       "types": "./dist/components/${name}.d.ts",`);
           console.error(`       "import": "./dist/components/${name}.js"`);
           console.error(`     }`);
         });
@@ -71,7 +69,7 @@ describe("Package.json Validation", () => {
         });
 
         it("should have correct types path", () => {
-          const expectedTypesPath = `./dist/src/components/${componentName}/index.d.ts`;
+          const expectedTypesPath = `./dist/components/${componentName}.d.ts`;
           expect(exportConfig.types).toBe(expectedTypesPath);
         });
 
@@ -135,9 +133,10 @@ describe("Package.json Validation", () => {
       expect(packageJson).toHaveProperty("name");
       expect(packageJson).toHaveProperty("version");
       expect(packageJson).toHaveProperty("type");
-      expect(packageJson).toHaveProperty("main");
-      expect(packageJson).toHaveProperty("module");
       expect(packageJson).toHaveProperty("types");
+      // ESM-only: resolvers use "exports"; legacy main/module are omitted.
+      expect(packageJson).not.toHaveProperty("main");
+      expect(packageJson).not.toHaveProperty("module");
       expect(packageJson).toHaveProperty("exports");
       expect(packageJson).toHaveProperty("files");
     });

@@ -31,7 +31,7 @@ export const KUMO_SELECT_STYLING = {
     height: 36, // h-9
     paddingX: 12, // px-3
     borderRadius: 8, // rounded-lg
-    background: "bg-kumo-elevated",
+    background: "bg-kumo-control",
     text: "text-color-surface",
     ring: "color-border",
     fontSize: 16, // text-base
@@ -46,7 +46,7 @@ export const KUMO_SELECT_STYLING = {
     check: { name: "ph-check", size: 20 },
   },
   popup: {
-    background: "bg-kumo-elevated",
+    background: "bg-kumo-base",
     ring: "border-kumo-line",
     borderRadius: 8, // rounded-lg
     padding: 6, // p-1.5
@@ -75,11 +75,30 @@ export interface KumoSelectVariantsProps {
   size?: KumoSelectSize;
 }
 
+/** Base UI positioning controls forwarded to Select's popup. */
+type SelectPositionerProps = Pick<
+  SelectBase.Positioner.Props,
+  | "align"
+  | "alignItemWithTrigger"
+  | "alignOffset"
+  | "anchor"
+  | "arrowPadding"
+  | "collisionAvoidance"
+  | "collisionBoundary"
+  | "collisionPadding"
+  | "disableAnchorTracking"
+  | "positionMethod"
+  | "side"
+  | "sideOffset"
+  | "sticky"
+>;
+
 export function selectVariants({
   size = KUMO_SELECT_DEFAULT_VARIANTS.size,
 }: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants({ size }),
+    "bg-kumo-control disabled:bg-kumo-control/50 data-[state=open]:bg-kumo-control",
     "justify-between font-normal",
     "focus:opacity-100 focus:ring-kumo-focus/50 focus-visible:ring-inset *:in-focus:opacity-100",
   );
@@ -207,6 +226,8 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * ```
      */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
+    /** Replaces the trigger element while preserving Select behavior. */
+    render?: SelectBase.Trigger.Props["render"];
     className?: string;
     /**
      * Data structure of items rendered in the popup.
@@ -251,7 +272,7 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * @default document.body (or KumoPortalProvider container if set)
      */
     container?: PortalContainer;
-  };
+  } & SelectPositionerProps;
 
 /**
  * Select component props.
@@ -275,9 +296,11 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
  * </Select>
  * ```
  */
-export interface SelectProps {
+export interface SelectProps extends SelectPositionerProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
+  /** Replaces the trigger element while preserving Select behavior. */
+  render?: SelectBase.Trigger.Props["render"];
   /** Size of the select trigger. Matches Input component sizes. */
   size?: KumoSelectSize;
   /**
@@ -347,6 +370,7 @@ export interface SelectOptionProps {
 export function Select<T, Multiple extends boolean | undefined = false>({
   children,
   className,
+  render,
   renderValue,
   label,
   hideLabel,
@@ -358,6 +382,19 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   error,
   required,
   container: containerProp,
+  side = "bottom",
+  sideOffset = 4,
+  align = "start",
+  alignOffset,
+  alignItemWithTrigger = false,
+  anchor,
+  arrowPadding,
+  positionMethod,
+  collisionAvoidance,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  disableAnchorTracking,
   ...props
 }: SelectPropsGeneric<T, Multiple> & { required?: boolean }) {
   const labelId = useId();
@@ -432,7 +469,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // hover/focus coupling that a native <label> (from Field) would cause.
   const showOptional = required === false;
   const selectLabelNode = label ? (
-    <SelectBase.Label className="m-0 select-none text-base font-medium text-kumo-default">
+    <SelectBase.Label className="m-0 text-base font-medium text-kumo-default select-none">
       <Label
         showOptional={showOptional}
         tooltip={hideLabel ? undefined : labelTooltip}
@@ -443,61 +480,89 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     </SelectBase.Label>
   ) : null;
 
+  const selectTrigger = (
+    <SelectBase.Trigger
+      data-kumo-component="Select"
+      data-kumo-part="trigger"
+      render={render}
+      className={cn(
+        selectVariants({ size }),
+        props.disabled && "cursor-not-allowed opacity-50",
+        error &&
+          "!ring-kumo-danger focus:ring-[1.5px] focus:ring-kumo-danger/50",
+        className,
+      )}
+      aria-label={triggerAriaLabel}
+      aria-labelledby={triggerLabelledBy}
+    >
+      {loading ? (
+        <SkeletonLine className="w-32" />
+      ) : (
+        <SelectBase.Value
+          placeholder={placeholder}
+          className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
+        >
+          {valueChildrenFn}
+        </SelectBase.Value>
+      )}
+      <SelectBase.Icon
+        className={cn(
+          "flex shrink-0 items-center",
+          triggerIconStyles[size].className,
+        )}
+      >
+        <CaretUpDownIcon
+          size={triggerIconStyles[size].iconSize}
+          className="fill-current"
+        />
+      </SelectBase.Icon>
+    </SelectBase.Trigger>
+  );
+
   const selectControl = (
     <SelectBase.Root
       {...baseProps}
       items={normalizedItems}
       disabled={loading || props.disabled}
+      required={required}
     >
       {selectLabelNode}
-      <SelectBase.Trigger
-        data-kumo-component="Select"
-        data-kumo-part="trigger"
-        className={cn(
-          selectVariants({ size }),
-          props.disabled && "cursor-not-allowed opacity-50",
-          error &&
-            "!ring-kumo-danger focus:ring-kumo-danger/50 focus:ring-[1.5px]",
-          className,
-        )}
-        aria-label={triggerAriaLabel}
-        aria-labelledby={triggerLabelledBy}
-      >
-        {loading ? (
-          <SkeletonLine className="w-32" />
-        ) : (
-          <SelectBase.Value
-            placeholder={placeholder}
-            className="min-w-0 truncate data-[placeholder]:text-kumo-placeholder"
-          >
-            {valueChildrenFn}
-          </SelectBase.Value>
-        )}
-        <SelectBase.Icon
-          className={cn(
-            "flex shrink-0 items-center",
-            triggerIconStyles[size].className,
-          )}
-        >
-          <CaretUpDownIcon
-            size={triggerIconStyles[size].iconSize}
-            className="fill-current"
-          />
-        </SelectBase.Icon>
-      </SelectBase.Trigger>
+      {selectTrigger}
       <SelectBase.Portal container={container}>
-        <SelectBase.Positioner>
+        {/*
+          Anchor to `side` (default `bottom`) rather than Base UI's default
+          `alignItemWithTrigger`, which overlays the popup on the trigger to
+          emulate a native `<select>`. Collision avoidance still flips the popup
+          automatically when the preferred side lacks space, and consumers can
+          pin placement explicitly via `side` / `align`, or opt back into the
+          native overlay with `alignItemWithTrigger`.
+        */}
+        <SelectBase.Positioner
+          side={side}
+          sideOffset={sideOffset}
+          align={align}
+          alignOffset={alignOffset}
+          alignItemWithTrigger={alignItemWithTrigger}
+          anchor={anchor}
+          arrowPadding={arrowPadding}
+          positionMethod={positionMethod}
+          collisionAvoidance={collisionAvoidance}
+          collisionBoundary={collisionBoundary}
+          collisionPadding={collisionPadding}
+          sticky={sticky}
+          disableAnchorTracking={disableAnchorTracking}
+        >
           <SelectBase.Popup
             className={cn(
               "flex flex-col",
               "max-h-[var(--available-height)] bg-kumo-base text-kumo-default",
               "rounded-lg shadow-lg ring ring-kumo-line",
-              "min-w-[calc(var(--anchor-width)+3px)] py-1.5",
+              "max-w-(--available-width) min-w-(--anchor-width) py-1.5",
             )}
           >
             <SelectBase.List
               className={cn(
-                "min-h-0 flex-1 overflow-y-auto overscroll-none scroll-pt-2 scroll-pb-2",
+                "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-none",
               )}
             >
               {renderedChildren}

@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  BarChartDemo,
+  BasicLineChartDemo,
+  LoadingBarChartDemo,
+  LoadingChartDemo,
+  LoadingToggleChartDemo,
+} from "../../components/demos/Chart/ChartDemo";
+---
+
+<BaseLayout title="Timeseries Chart Test">
+  <main class="mx-auto mb-64 max-w-3xl space-y-12 p-6 md:p-12">
+    <header>
+      <h1 class="text-2xl font-semibold text-kumo-strong">
+        Timeseries chart test
+      </h1>
+      <p class="mt-2 text-kumo-subtle">
+        Test fixtures for the primary timeseries chart states. Press <kbd
+          class="rounded bg-kumo-tint px-1.5 py-0.5 text-xs">D</kbd
+        > to toggle dark mode.
+      </p>
+    </header>
+
+    <section class="space-y-3">
+      <h2 class="text-xl font-semibold text-kumo-default">Basic line</h2>
+      <div class="rounded-lg border border-kumo-hairline bg-kumo-base p-4">
+        <BasicLineChartDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-xl font-semibold text-kumo-default">Stacked bar</h2>
+      <div class="rounded-lg border border-kumo-hairline bg-kumo-base p-4">
+        <BarChartDemo client:visible />
+      </div>
+    </section>
+
+
+    <section class="space-y-3">
+      <h2 class="text-xl font-semibold text-kumo-default">Loading (line)</h2>
+      <div class="rounded-lg border border-kumo-hairline bg-kumo-base p-4">
+        <LoadingChartDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-xl font-semibold text-kumo-default">Loading (bar)</h2>
+      <div class="rounded-lg border border-kumo-hairline bg-kumo-base p-4">
+        <LoadingBarChartDemo client:visible />
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        Loading toggle
+      </h2>
+      <div class="rounded-lg border border-kumo-hairline bg-kumo-base p-4">
+        <LoadingToggleChartDemo client:visible />
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>

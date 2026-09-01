@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 import { Combobox } from "./combobox";
 
@@ -195,7 +195,7 @@ describe("Combobox Playwright Interactions", () => {
       // NOTE: There's also a Clear button before the Trigger button!
       // The order in DOM is: input, [Clear button], Trigger button
       const adjacentButton =
-        input.parentElement?.querySelector("input + button");
+        input.parentElement?.querySelector<HTMLButtonElement>("input + button");
 
       expect(
         adjacentButton,

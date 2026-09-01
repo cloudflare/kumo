@@ -89,8 +89,7 @@ export type CloudflareLogoVariant =
 export type CloudflareLogoColor =
   keyof typeof KUMO_CLOUDFLARE_LOGO_VARIANTS.color;
 
-export interface CloudflareLogoProps
-  extends React.SVGAttributes<SVGSVGElement> {
+export interface CloudflareLogoProps extends React.SVGAttributes<SVGSVGElement> {
   /**
    * Logo variant
    * - `glyph`: Cloud icon only
@@ -214,8 +213,7 @@ CloudflareLogo.displayName = "CloudflareLogo";
 // PoweredByCloudflare Component
 // =============================================================================
 
-export interface PoweredByCloudflareProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface PoweredByCloudflareProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   /**
    * Color scheme for the logo and text
    * @default "color"
@@ -264,10 +262,11 @@ export const PoweredByCloudflare = forwardRef<
         rel="noopener noreferrer"
         className={cn(
           // Base badge styles
-          "inline-flex items-center gap-2 rounded-lg py-2 pl-2.5 pr-3 text-sm font-medium",
-          "ring-1 ring-inset transition-all hover:shadow-sm",
+          "inline-flex items-center gap-2 rounded-lg py-2 pr-3 pl-2.5 text-sm font-medium",
+          "ring-1 transition-all ring-inset hover:shadow-sm",
           // Color variants using semantic tokens
-          color === "color" && "bg-kumo-base text-kumo-default ring-kumo-hairline",
+          color === "color" &&
+            "bg-kumo-base text-kumo-default ring-kumo-hairline",
           color === "black" && "bg-white text-black ring-black/20",
           color === "white" && "bg-black text-white ring-white/20",
           className,

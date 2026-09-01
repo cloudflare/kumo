@@ -1,0 +1,16 @@
+# Changeset validation before push (ported from lefthook).
+# Skip hooks entirely: VITE_GIT_HOOKS=0 git push   (or git push --no-verify)
+
+# Skip on main (matches lefthook `skip: ref: main`)
+branch=$(git symbolic-ref --quiet --short HEAD || true)
+if [ "$branch" = "main" ]; then
+  exit 0
+fi
+
+# Skip during merge/rebase (matches lefthook `skip: [merge, rebase]`)
+gitdir=$(git rev-parse --git-dir)
+if [ -d "$gitdir/rebase-merge" ] || [ -d "$gitdir/rebase-apply" ] || [ -f "$gitdir/MERGE_HEAD" ]; then
+  exit 0
+fi
+
+pnpm tsx ci/scripts/validate-kumo-changeset.ts

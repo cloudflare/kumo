@@ -1,25 +1,22 @@
 name: "Install Dependencies"
-description: "Install pnpm, Node.js, and project dependencies"
+description: "Install Vite+ (vp), Node.js, and project dependencies"
 
 inputs:
   filter:
-    description: "pnpm --filter value to scope install (e.g. '@cloudflare/kumo'). Omit for all packages."
+    description: "--filter value to scope install (e.g. '@cloudflare/kumo'). Omit for all packages."
     required: false
 
 runs:
   using: "composite"
   steps:
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
+    - name: Setup Vite+
+      uses: voidzero-dev/setup-vp@250f29ce396baf5e8f24498e17c0dfdebabc26eb # v1
       with:
-        version: 10.22.0
-
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 24
-        cache: "pnpm"
+        # Same pin as local dev (vp env); replaces the hardcoded node-version.
+        node-version-file: .node-version
         registry-url: "https://registry.npmjs.org"
+        cache: true
+        run-install: false
 
     - name: Cache node_modules
       uses: actions/cache@v4
@@ -33,7 +30,7 @@ runs:
       shell: bash
       run: |
         if [ -n "${{ inputs.filter }}" ]; then
-          pnpm install --frozen-lockfile --filter "${{ inputs.filter }}"
+          vp install --frozen-lockfile --filter "${{ inputs.filter }}"
         else
-          pnpm install --frozen-lockfile
+          vp install --frozen-lockfile
         fi

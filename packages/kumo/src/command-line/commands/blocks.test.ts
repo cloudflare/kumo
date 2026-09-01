@@ -3,7 +3,7 @@
  * Tests block listing functionality and registry integration
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 

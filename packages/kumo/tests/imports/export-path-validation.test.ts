@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { existsSync } from "fs";
+import { describe, it, expect } from "vite-plus/test";
+import { existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { readFileSync } from "fs";
@@ -84,7 +84,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
 
           // Check if paths follow expected patterns
           // JS files should be in dist/[category]/[name].js
-          // Type files should be in dist/src/[category]/[name]/index.d.ts
+          // Type files sit next to their entry: dist/[category]/[name].d.ts
 
           const jsMatch = importPath.match(/^\.\/dist\/([^/]+)\/(.+)\.js$/);
           const tsMatch = typesPath.match(
@@ -147,8 +147,8 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       expect(missingFiles).toEqual([]);
     });
 
-    it("should have all primitive .d.ts files in dist/src/primitives/", () => {
-      const typesDir = join(__dirname, "../../dist/src/primitives");
+    it("should have all primitive .d.ts files in dist/primitives/", () => {
+      const typesDir = join(__dirname, "../../dist/primitives");
       const primitiveExports = Object.keys(packageJson.exports).filter((key) =>
         key.startsWith("./primitives/"),
       );
@@ -164,9 +164,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       }
 
       if (missingFiles.length > 0) {
-        console.error(
-          "\n❌ Missing primitive type files in dist/src/primitives/:",
-        );
+        console.error("\n❌ Missing primitive type files in dist/primitives/:");
         missingFiles.forEach((f) => console.error(`   - ${f}`));
       }
 
@@ -175,7 +173,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
 
     it("should have barrel export files", () => {
       const barrelJs = join(__dirname, "../../dist/primitives.js");
-      const barrelDts = join(__dirname, "../../dist/src/primitives/index.d.ts");
+      const barrelDts = join(__dirname, "../../dist/primitives.d.ts");
 
       expect(existsSync(barrelJs)).toBe(true);
       expect(existsSync(barrelDts)).toBe(true);
@@ -223,31 +221,24 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       expect(hasChunkFiles).toBe(true);
     });
 
-    it("should have source maps for primitives", () => {
-      const primitivesDir = join(__dirname, "../../dist/primitives");
-      const primitiveExports = Object.keys(packageJson.exports).filter((key) =>
-        key.startsWith("./primitives/"),
-      );
-
-      const missingMaps: string[] = [];
-      for (const exportKey of primitiveExports) {
-        const primitiveName = exportKey.replace("./primitives/", "");
-        const mapPath = join(primitivesDir, `${primitiveName}.js.map`);
-
-        if (!existsSync(mapPath)) {
-          missingMaps.push(`${primitiveName}.js.map`);
+    it("should not ship source maps or declaration maps", () => {
+      // The dist is intentionally unminified with no maps: consumers' bundlers
+      // minify anyway, and declaration maps would point at unpublished ../src.
+      const distDir = join(__dirname, "../../dist");
+      const mapFiles: string[] = [];
+      const walk = (dir: string) => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+          const fullPath = join(dir, entry.name);
+          if (entry.isDirectory()) {
+            walk(fullPath);
+          } else if (entry.name.endsWith(".map")) {
+            mapFiles.push(fullPath);
+          }
         }
-      }
+      };
+      walk(distDir);
 
-      // Source maps are nice-to-have, just warn if missing
-      if (missingMaps.length > 0) {
-        console.warn(
-          `\n⚠️  ${missingMaps.length} primitive source maps missing`,
-        );
-      }
-
-      // We expect source maps in production builds
-      expect(missingMaps.length).toBeLessThan(primitiveExports.length / 2);
+      expect(mapFiles).toEqual([]);
     });
 
     it("primitive JS files should import from bundled chunks", async () => {
@@ -255,7 +246,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       const content = readFileSync(sliderJs, "utf-8");
 
       // Should import from bundled chunk files (e.g., index.parts-*.js), not external packages
-      expect(content).toMatch(/from\s+["']\.\.\/.+\.js["']/);
+      expect(content).toMatch(/from\s*["']\.\.\/.+\.js["']/);
 
       // Should NOT import directly from @base-ui-components (would indicate externalization)
       expect(content).not.toMatch(/from\s+['"]@base-ui-components\/react/);
@@ -275,7 +266,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       if (hasPreserveModules) {
         // With preserveModules, build output is flattened
         // JS: dist/components/button.js
-        // Types: dist/src/components/button/index.d.ts (from vite-plugin-dts)
+        // Types: dist/components/button.d.ts (bundled per entry by vp pack)
 
         const exports = packageJson.exports;
         const mismatches: string[] = [];
@@ -302,7 +293,7 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
 
           // Expected paths with preserveModules
           const expectedImport = `./dist/${category}/${name}.js`;
-          const expectedTypes = `./dist/src/${category}/${name}/index.d.ts`;
+          const expectedTypes = `./dist/${category}/${name}.d.ts`;
 
           if (exportConfig.import !== expectedImport) {
             mismatches.push(

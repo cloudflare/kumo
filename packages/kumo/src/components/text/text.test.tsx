@@ -1,20 +1,93 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { render } from "@testing-library/react";
-import { Text } from "./text";
+import { Text, textVariants } from "./text";
 
 describe("Text", () => {
-  it("renders heading variant with the required `as` element", () => {
+  it("renders heading as a 16px semibold span by default", () => {
+    const { container } = render(<Text variant="heading">Heading</Text>);
+    const heading = container.querySelector("span");
+
+    expect(heading).toBeTruthy();
+    expect(heading?.classList.contains("text-lg")).toBe(true);
+    expect(heading?.classList.contains("font-semibold")).toBe(true);
+    expect(container.querySelector("h1, h2, h3, h4, h5, h6")).toBeNull();
+  });
+
+  it("renders a large heading at 20px using the requested element", () => {
     const { container } = render(
-      <Text variant="heading1" as="h1">
-        Page Title
+      <Text variant="heading" size="lg" as="h2">
+        Section title
       </Text>,
     );
-    expect(container.querySelector("h1")).toBeTruthy();
+    const heading = container.querySelector("h2");
+
+    expect(heading).toBeTruthy();
+    expect(heading?.classList.contains("text-xl")).toBe(true);
+    expect(heading?.classList.contains("font-semibold")).toBe(true);
+  });
+
+  it("warns when a deprecated heading variant is used", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    render(
+      <Text variant="heading1" as="h1">
+        Legacy heading
+      </Text>,
+    );
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('variant="heading1" is deprecated'),
+    );
+    warn.mockRestore();
   });
 
   it("renders body variant as <p> by default", () => {
     const { container } = render(<Text>Body copy</Text>);
     expect(container.querySelector("p")).toBeTruthy();
+  });
+
+  it("inherits line height for every body font size", () => {
+    expect(textVariants({ variant: "body", size: "xs" })).toContain(
+      "text-xs/[inherit]",
+    );
+    expect(textVariants({ variant: "body", size: "sm" })).toContain(
+      "text-sm/[inherit]",
+    );
+    expect(textVariants({ variant: "body", size: "base" })).toContain(
+      "text-base/[inherit]",
+    );
+    expect(textVariants({ variant: "body", size: "lg" })).toContain(
+      "text-lg/[inherit]",
+    );
+    expect(textVariants({ variant: "secondary" })).toContain(
+      "text-base/[inherit]",
+    );
+    expect(textVariants({ variant: "success" })).toContain(
+      "text-base/[inherit]",
+    );
+    expect(textVariants({ variant: "error" })).toContain("text-base/[inherit]");
+    expect(textVariants({ variant: "mono" })).toContain("text-sm/[inherit]");
+    expect(textVariants({ variant: "mono-secondary" })).toContain(
+      "text-sm/[inherit]",
+    );
+  });
+
+  it("keeps the configured line height for heading variants", () => {
+    expect(textVariants({ variant: "heading" }).split(" ")).toContain(
+      "text-lg",
+    );
+    expect(
+      textVariants({ variant: "heading", size: "lg" }).split(" "),
+    ).toContain("text-xl");
+    expect(textVariants({ variant: "heading1" }).split(" ")).toContain(
+      "text-3xl",
+    );
+    expect(textVariants({ variant: "heading2" }).split(" ")).toContain(
+      "text-2xl",
+    );
+    expect(textVariants({ variant: "heading3" }).split(" ")).toContain(
+      "text-lg",
+    );
   });
 
   it("body variant supports optional `as` override", () => {
@@ -27,10 +100,10 @@ describe("Text", () => {
     expect(container.querySelector("p")).toBeNull();
   });
 
-  it("allows heading variants to opt out of semantic heading via as='span'", () => {
+  it("allows heading to opt out of semantic heading via as='span'", () => {
     const { container } = render(
-      <Text variant="heading2" as="span">
-        Decorative big text
+      <Text variant="heading" as="span">
+        Decorative heading text
       </Text>,
     );
     expect(container.querySelector("span")).toBeTruthy();

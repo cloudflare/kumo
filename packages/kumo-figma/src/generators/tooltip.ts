@@ -56,7 +56,7 @@ const ARROW_HEIGHT = 10;
  * Tooltip styling - read from React component
  * Matches the actual Tooltip.Popup styles from tooltip.tsx:
  * "rounded-md bg-kumo-base px-2.5 py-1.5 text-sm text-kumo-default"
- * "shadow-lg shadow-kumo-tip-shadow outline outline-kumo-fill"
+ * "shadow-lg outline outline-kumo-fill"
  */
 const tooltipComponent = registry.components.Tooltip;
 
@@ -72,8 +72,8 @@ const TOOLTIP_TEXT_WEIGHT = FALLBACK_VALUES.fontWeight.normal; // font-normal fr
  *
  * The React component uses an SVG with 3 paths:
  * 1. ArrowFill - The main arrow body (fill-kumo-base)
- * 2. ArrowOuterStroke - Border visible in light mode (fill-kumo-tip-shadow)
- * 3. ArrowInnerStroke - Border stroke (fill-kumo-tip-stroke) - matches tooltip outline
+ * 2. ArrowOuterStroke - Border visible in light mode (fill-kumo-arrow-edge)
+ * 3. ArrowInnerStroke - Border stroke (fill-kumo-arrow-stroke) - matches tooltip outline
  *
  * Uses figma.createNodeFromSvg() to import the exact SVG from the React component,
  * then binds semantic color variables to each path.
@@ -108,7 +108,7 @@ function createTooltipArrow(): FrameNode {
   svgNode.name = "Arrow";
 
   // Find the vector children and bind variables to them
-  // The SVG creates a frame with vector children in order: fill, tip-shadow, tip-stroke
+  // The SVG creates a frame with vector children in order: fill, arrow-edge, arrow-stroke
   const children = svgNode.children;
 
   if (children.length >= 3) {
@@ -134,13 +134,13 @@ function createTooltipArrow(): FrameNode {
       }
     }
 
-    // Second path: Arrow Tip Shadow (fill-kumo-tip-shadow)
-    const arrowTipShadow = children[1];
-    if (arrowTipShadow.type === "VECTOR") {
-      arrowTipShadow.name = "Arrow Tip Shadow";
-      const tipShadowVar = getVariableByName(VAR_NAMES.color.tipShadow);
-      if (tipShadowVar) {
-        const variable = figma.variables.getVariableById(tipShadowVar.id);
+    // Second path: Arrow Edge (fill-kumo-arrow-edge)
+    const arrowEdge = children[1];
+    if (arrowEdge.type === "VECTOR") {
+      arrowEdge.name = "Arrow Edge";
+      const arrowEdgeVar = getVariableByName(VAR_NAMES.color.arrowEdge);
+      if (arrowEdgeVar) {
+        const variable = figma.variables.getVariableById(arrowEdgeVar.id);
         if (variable) {
           let fill: SolidPaint = {
             type: "SOLID",
@@ -151,18 +151,18 @@ function createTooltipArrow(): FrameNode {
             "color",
             variable,
           );
-          arrowTipShadow.fills = [fill];
+          arrowEdge.fills = [fill];
         }
       }
     }
 
-    // Third path: Arrow Stroke (fill-kumo-tip-stroke)
+    // Third path: Arrow Stroke (fill-kumo-arrow-stroke)
     const arrowStroke = children[2];
     if (arrowStroke.type === "VECTOR") {
       arrowStroke.name = "Arrow Stroke";
-      const tipStrokeVar = getVariableByName(VAR_NAMES.color.tipStroke);
-      if (tipStrokeVar) {
-        const variable = figma.variables.getVariableById(tipStrokeVar.id);
+      const arrowStrokeVar = getVariableByName(VAR_NAMES.color.arrowStroke);
+      if (arrowStrokeVar) {
+        const variable = figma.variables.getVariableById(arrowStrokeVar.id);
         if (variable) {
           let fill: SolidPaint = {
             type: "SOLID",
@@ -407,11 +407,11 @@ export function getTooltipStylingConfig() {
     arrow: {
       // Arrow matches React component's ArrowSvg with 3 paths:
       // - fill-kumo-base: main arrow body
-      // - fill-kumo-tip-shadow: outer stroke (light mode)
-      // - fill-kumo-tip-stroke: border stroke (matches outline-kumo-fill)
+      // - fill-kumo-arrow-edge: outer stroke (light mode)
+      // - fill-kumo-arrow-stroke: border stroke (matches outline-kumo-fill)
       fill: "fill-kumo-base",
-      tipShadow: "fill-kumo-tip-shadow",
-      tipStroke: "fill-kumo-tip-stroke",
+      arrowEdge: "fill-kumo-arrow-edge",
+      arrowStroke: "fill-kumo-arrow-stroke",
       width: ARROW_WIDTH,
       height: ARROW_HEIGHT,
     },

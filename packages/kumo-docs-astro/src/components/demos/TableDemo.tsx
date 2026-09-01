@@ -280,12 +280,8 @@ export function TableCompactStickyDemo() {
               <Table.Cell className="whitespace-nowrap">
                 {row.subject}
               </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.from}
-              </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.date}
-              </Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.from}</Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.date}</Table.Cell>
               <Table.Cell className="whitespace-nowrap">
                 {row.tags ? (
                   <div className="inline-flex gap-1">
@@ -358,12 +354,8 @@ export function TableStickyColumnDemo() {
               <Table.Cell className="whitespace-nowrap">
                 {row.subject}
               </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.from}
-              </Table.Cell>
-              <Table.Cell className="whitespace-nowrap">
-                {row.date}
-              </Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.from}</Table.Cell>
+              <Table.Cell className="whitespace-nowrap">{row.date}</Table.Cell>
               <Table.Cell className="whitespace-nowrap">
                 {row.tags ? (
                   <div className="inline-flex gap-1">

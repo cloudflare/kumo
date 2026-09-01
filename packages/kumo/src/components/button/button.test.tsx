@@ -1,5 +1,5 @@
 import React from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Plus } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
@@ -59,6 +59,13 @@ describe("Button", () => {
     expect(button.hasAttribute("disabled")).toBe(true);
   });
 
+  it("prevents text selection", () => {
+    render(<Button>Save</Button>);
+    const button = screen.getByRole("button");
+    expect(button.classList.contains("select-none")).toBe(true);
+    expect(button.classList.contains("select-text")).toBe(false);
+  });
+
   it("forwards ref to the <button> DOM node", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
@@ -111,6 +118,32 @@ describe("Button", () => {
     const button = screen.getByRole("button", { name: "Save" });
     // title is intercepted by Tooltip wrapper, not set as native attribute
     expect(button.getAttribute("title")).toBeNull();
+  });
+
+  it("uses title as the accessible name when there are no children", () => {
+    render(<Button shape="square" icon={Plus} title="Remove" />);
+
+    const button = screen.getByRole("button", { name: "Remove" });
+    expect(button.getAttribute("aria-label")).toBe("Remove");
+    expect(button.getAttribute("title")).toBeNull();
+  });
+
+  it("does not override explicit accessible names with title", () => {
+    render(
+      <>
+        <Button aria-label="Delete" shape="square" icon={Plus} title="Remove" />
+        <span id="archive-label">Archive</span>
+        <Button
+          aria-labelledby="archive-label"
+          shape="square"
+          icon={Plus}
+          title="Move"
+        />
+      </>,
+    );
+
+    expect(screen.getByRole("button", { name: "Delete" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Archive" })).toBeTruthy();
   });
 
   it("uses an enabled tooltip trigger around a disabled button", () => {
@@ -181,6 +214,13 @@ describe("LinkButton", () => {
     expect(link.getAttribute("href")).toBe("/home");
   });
 
+  it("allows text selection", () => {
+    render(<LinkButton href="/home">Home</LinkButton>);
+    const link = screen.getByRole("link");
+    expect(link.classList.contains("select-text")).toBe(true);
+    expect(link.classList.contains("select-none")).toBe(false);
+  });
+
   it("external sets target='_blank' and rel='noopener noreferrer'", () => {
     render(
       <LinkButton href="https://example.com" external>
@@ -200,6 +240,18 @@ describe("LinkButton", () => {
       </LinkButton>,
     );
     expect(ref.current).toBe(screen.getByRole("link"));
+  });
+
+  it("title prop wraps the anchor in a Tooltip and removes the native title attribute", () => {
+    render(
+      <LinkButton href="/home" title="Go to the home page">
+        Home
+      </LinkButton>,
+    );
+    const link = screen.getByRole("link", { name: "Home" });
+    // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
+    expect(link.getAttribute("title")).toBeNull();
+    expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
   });
 
   describe("disabled", () => {
@@ -243,6 +295,17 @@ describe("LinkButton", () => {
       );
       const button = screen.getByRole("button", { name: "Home" });
       expect(button.getAttribute("data-kumo-component")).toBe("LinkButton");
+    });
+
+    it("allows text selection", () => {
+      render(
+        <LinkButton href="/home" disabled>
+          Home
+        </LinkButton>,
+      );
+      const button = screen.getByRole("button", { name: "Home" });
+      expect(button.classList.contains("select-text")).toBe(true);
+      expect(button.classList.contains("select-none")).toBe(false);
     });
 
     it("wraps a title in an enabled tooltip trigger around the disabled button", () => {

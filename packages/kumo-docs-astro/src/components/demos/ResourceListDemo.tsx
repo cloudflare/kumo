@@ -25,9 +25,7 @@ function ResourceListPage({
   className,
 }: ResourceListPageProps) {
   return (
-    <div
-      className={`min-h-[400px] w-full bg-kumo-overlay ${className || ""}`}
-    >
+    <div className={`min-h-[400px] w-full bg-kumo-overlay ${className || ""}`}>
       <div className="mx-auto flex max-w-[1400px] flex-col p-6 md:gap-4 md:p-8">
         <div className="flex flex-col">
           <div className="mb-1.5 flex items-center gap-1.5">

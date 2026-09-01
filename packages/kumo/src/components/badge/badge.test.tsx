@@ -1,10 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
-import {
-  Badge,
-  badgeVariants,
-  KUMO_BADGE_VARIANTS,
-} from "./badge";
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import { Badge, badgeVariants, KUMO_BADGE_VARIANTS } from "./badge";
 
 describe("Badge", () => {
   it("renders children as text content", () => {
@@ -22,6 +19,22 @@ describe("Badge", () => {
     render(<Badge className="my-custom">Tag</Badge>);
     const el = screen.getByText("Tag");
     expect(el.className).toContain("my-custom");
+  });
+
+  it("shows a ring when an ancestor link is hovered", () => {
+    render(
+      <a href="/docs">
+        <Badge>Docs</Badge>
+      </a>,
+    );
+    const badge = screen.getByText("Docs");
+    expect(badge.classList.contains("[a:hover_&]:ring")).toBe(true);
+    expect(badge.classList.contains("[a:hover_&]:ring-current")).toBe(true);
+  });
+
+  it("renders an icon", () => {
+    render(<Badge icon={ArrowRightIcon}>Next</Badge>);
+    expect(screen.getByText("Next").querySelector("svg")).toBeTruthy();
   });
 
   describe("filled appearance (default)", () => {
@@ -82,10 +95,9 @@ describe("Badge", () => {
         const badge = screen.getByText(variant).closest("span")!;
         const dot = badge.querySelector("[aria-hidden='true']");
         expect(dot, `dot should exist for variant="${variant}"`).toBeTruthy();
-        expect(
-          dot!.className,
-          `dot class for variant="${variant}"`,
-        ).toContain(expected);
+        expect(dot!.className, `dot class for variant="${variant}"`).toContain(
+          expected,
+        );
         unmount();
       }
     });
@@ -173,10 +185,9 @@ describe("KUMO_BADGE_VARIANTS", () => {
         entries as Record<string, { classes: string; description: string }>,
       )) {
         expect(entry.classes, `${dim}.${key}.classes`).toBeDefined();
-        expect(
-          typeof entry.description,
-          `${dim}.${key}.description`,
-        ).toBe("string");
+        expect(typeof entry.description, `${dim}.${key}.description`).toBe(
+          "string",
+        );
       }
     }
   });

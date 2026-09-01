@@ -49,10 +49,16 @@ export async function loadSchemas(): Promise<SchemasModule> {
   if (schemasModule) return schemasModule;
   if (schemasLoadPromise) return schemasLoadPromise;
 
-  schemasLoadPromise = import("../../ai/schemas").then((mod: unknown) => {
-    schemasModule = mod as unknown as SchemasModule;
-    return schemasModule;
-  });
+  schemasLoadPromise = import("../../ai/schemas")
+    .then((mod: unknown) => {
+      schemasModule = mod as unknown as SchemasModule;
+      return schemasModule;
+    })
+    .catch((err: unknown) => {
+      // Failures are usually transient — don't cache them, so retries work
+      schemasLoadPromise = null;
+      throw err;
+    });
 
   return schemasLoadPromise;
 }
@@ -276,7 +282,6 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
  * Initialize the catalog by loading schemas.
  * Call this before using synchronous validation methods.
  */
-export async function initCatalog(catalog: KumoCatalog): Promise<void> {
-  // Trigger a validation to load schemas
-  catalog.validateTree({});
+export async function initCatalog(_catalog?: KumoCatalog): Promise<void> {
+  await loadSchemas();
 }

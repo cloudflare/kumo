@@ -2,23 +2,24 @@
   "name": "@cloudflare/kumo-screenshot-worker",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "description": "Cloudflare Worker for capturing screenshots of Kumo docs pages (visual regression testing)",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "cf-typegen": "wrangler types",
-    "lint": "oxlint src/"
+    "lint": "vp lint src/"
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^1.0.0",
     "hono": "^4.12.16"
   },
   "devDependencies": {
-    "oxlint": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
     "wrangler": "catalog:"
   }
 }

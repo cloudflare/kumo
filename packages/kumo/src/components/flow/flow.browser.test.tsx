@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { forwardRef, useState, type ReactNode } from "react";
@@ -368,7 +368,7 @@ const ExpandableNode = forwardRef<
     <li
       ref={ref}
       {...props}
-      className="rounded-lg bg-kumo-base ring ring-kumo-hairline overflow-hidden"
+      className="overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-hairline"
     >
       <button
         type="button"

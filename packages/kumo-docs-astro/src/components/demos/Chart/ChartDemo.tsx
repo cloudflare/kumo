@@ -5,6 +5,7 @@ import {
   ChartLegend,
   LayerCard,
   Select,
+  Switch,
 } from "@cloudflare/kumo";
 import * as echarts from "echarts/core";
 import type { EChartsOption } from "echarts";
@@ -427,7 +428,7 @@ export function LegendDefaultDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium mt-12">Inactive State</h3>
+      <h3 className="mt-12 text-sm font-medium">Inactive State</h3>
 
       <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
         <ChartLegend.LargeItem
@@ -450,6 +451,12 @@ export function LegendDefaultDemo() {
           value="128"
           inactive
         />
+      </div>
+
+      <h3 className="mt-12 text-sm font-medium">Loading state</h3>
+
+      <div className="flex flex-wrap gap-4 divide-x divide-kumo-hairline">
+        <ChartLegend.LargeItem loading />
       </div>
     </div>
   );
@@ -484,7 +491,7 @@ export function LegendCompactDemo() {
         />
       </div>
 
-      <h3 className="text-sm font-medium mt-12">Inactive State</h3>
+      <h3 className="mt-12 text-sm font-medium">Inactive State</h3>
       <div className="flex flex-wrap gap-4">
         <ChartLegend.SmallItem
           name="Requests"
@@ -506,6 +513,12 @@ export function LegendCompactDemo() {
           value="128"
           inactive
         />
+      </div>
+
+      <h3 className="mt-12 text-sm font-medium">Loading state</h3>
+
+      <div className="flex flex-wrap gap-4">
+        <ChartLegend.SmallItem loading />
       </div>
     </div>
   );
@@ -547,13 +560,12 @@ export function BarChartDemo() {
 }
 
 /**
- * Timeseries chart in loading state, showing the animated sine-wave skeleton.
- * Loads for 5 seconds then reveals the real chart. A button restarts the cycle.
+ * Line timeseries chart in loading state, showing the calm area-shaped skeleton.
  */
 export function LoadingChartDemo() {
   const isDarkMode = useIsDarkMode();
   return (
-    <div className="flex flex-col flex-1 w-full">
+    <div className="flex w-full flex-1 flex-col">
       <TimeseriesChart
         echarts={echarts}
         isDarkMode={isDarkMode}
@@ -561,6 +573,83 @@ export function LoadingChartDemo() {
         yAxisName="Count"
         data={[]}
         loading
+      />
+    </div>
+  );
+}
+
+/**
+ * Bar timeseries chart in loading state, showing the bar-shaped skeleton that
+ * matches the chart's `type="bar"` output.
+ */
+export function LoadingBarChartDemo() {
+  const isDarkMode = useIsDarkMode();
+  return (
+    <div className="flex w-full flex-1 flex-col">
+      <TimeseriesChart
+        echarts={echarts}
+        isDarkMode={isDarkMode}
+        type="bar"
+        xAxisName="Time (UTC)"
+        yAxisName="Count"
+        data={[]}
+        loading
+      />
+    </div>
+  );
+}
+
+/**
+ * Timeseries chart with a Switch to toggle between the loading skeleton and the
+ * real chart, plus a small legend. Useful for comparing the two states directly.
+ */
+export function LoadingToggleChartDemo() {
+  const isDarkMode = useIsDarkMode();
+  const [loading, setLoading] = useState(true);
+
+  const data = useMemo(
+    () => [
+      {
+        name: "Requests",
+        data: buildSeriesData(0, 50, 60_000, 1),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+      {
+        name: "Errors",
+        data: buildSeriesData(1, 50, 60_000, 0.3),
+        color: ChartPalette.semantic("Attention", isDarkMode),
+      },
+    ],
+    [isDarkMode],
+  );
+
+  return (
+    <div className="flex w-full flex-1 flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-wrap gap-4">
+          {data.map((series) => (
+            <ChartLegend.SmallItem
+              loading={loading}
+              key={series.name}
+              name={series.name}
+              color={series.color}
+              value={Math.round(series.data.at(-1)?.[1] ?? 0).toLocaleString()}
+            />
+          ))}
+        </div>
+        <Switch
+          label="Loading"
+          checked={loading}
+          onCheckedChange={setLoading}
+        />
+      </div>
+      <TimeseriesChart
+        echarts={echarts}
+        isDarkMode={isDarkMode}
+        xAxisName="Time (UTC)"
+        yAxisName="Count"
+        data={loading ? [] : data}
+        loading={loading}
       />
     </div>
   );
@@ -599,7 +688,7 @@ export function ChartExampleDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-hairline gap-4 px-2 mb-2">
+        <div className="mb-2 flex gap-4 divide-x divide-kumo-hairline px-2">
           <ChartLegend.LargeItem
             name="P99"
             color={ChartPalette.semantic("Attention", isDarkMode)}
@@ -690,7 +779,7 @@ export function LegendHighlightDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line px-2 mb-2">
+        <div className="mb-2 flex divide-x divide-kumo-line px-2">
           {series.map((s) => (
             <ChartLegend.LargeItem
               key={s.name}
@@ -816,7 +905,7 @@ export function LegendOnClickDemo() {
     <LayerCard>
       <LayerCard.Secondary>Read latency</LayerCard.Secondary>
       <LayerCard.Primary>
-        <div className="flex divide-x divide-kumo-line px-2 mb-2">
+        <div className="mb-2 flex divide-x divide-kumo-line px-2">
           {series.map((s) => (
             <ChartLegend.LargeItem
               key={s.name}

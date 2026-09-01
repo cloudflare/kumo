@@ -55,8 +55,8 @@ export const VAR_NAMES = {
     brandHover: "color-kumo-brand-hover",
     line: "color-kumo-line",
     ring: "color-kumo-hairline",
-    tipShadow: "color-kumo-tip-shadow",
-    tipStroke: "color-kumo-tip-stroke",
+    arrowEdge: "color-kumo-arrow-edge",
+    arrowStroke: "color-kumo-arrow-stroke",
     info: "color-kumo-info",
     infoTint: "color-kumo-info-tint",
     warning: "color-kumo-warning",
@@ -485,8 +485,7 @@ export type AutoLayoutConfig = {
   counterAxisAlignItems?: "MIN" | "CENTER" | "MAX";
   /** Padding (all sides equal, or {top, right, bottom, left}) */
   padding?:
-    | number
-    | { top: number; right: number; bottom: number; left: number };
+    number | { top: number; right: number; bottom: number; left: number };
   /** Gap between child elements */
   itemSpacing?: number;
   /** Primary axis sizing behavior */

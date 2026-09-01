@@ -271,7 +271,7 @@ export function AutocompleteControlledDemo() {
   const [value, setValue] = useState("");
 
   return (
-    <div className="flex flex-col gap-3 w-80">
+    <div className="flex w-80 flex-col gap-3">
       <Autocomplete
         items={fruits}
         value={value}
@@ -290,7 +290,7 @@ export function AutocompleteControlledDemo() {
       </Autocomplete>
       {value && (
         <p className="text-sm text-kumo-subtle">
-          Value: <span className="text-kumo-default font-medium">{value}</span>
+          Value: <span className="font-medium text-kumo-default">{value}</span>
         </p>
       )}
     </div>

@@ -71,8 +71,16 @@ export function switchVariants({
   size = KUMO_SWITCH_DEFAULT_VARIANTS.size,
   variant = KUMO_SWITCH_DEFAULT_VARIANTS.variant,
 }: KumoSwitchVariantsProps = {}) {
-  const sizeConfig = resolveVariant(KUMO_SWITCH_VARIANTS.size, size, KUMO_SWITCH_DEFAULT_VARIANTS.size);
-  const variantConfig = resolveVariant(KUMO_SWITCH_VARIANTS.variant, variant, KUMO_SWITCH_DEFAULT_VARIANTS.variant);
+  const sizeConfig = resolveVariant(
+    KUMO_SWITCH_VARIANTS.size,
+    size,
+    KUMO_SWITCH_DEFAULT_VARIANTS.size,
+  );
+  const variantConfig = resolveVariant(
+    KUMO_SWITCH_VARIANTS.variant,
+    variant,
+    KUMO_SWITCH_DEFAULT_VARIANTS.variant,
+  );
   return cn(sizeConfig.classes, variantConfig.classes);
 }
 
@@ -283,7 +291,7 @@ const SwitchBase = forwardRef<HTMLButtonElement, SwitchProps>(
               : "bg-kumo-base dark:bg-neutral-850";
 
           const trackClassName = cn(
-            "relative inline-flex items-center ring cursor-pointer border-none p-0",
+            "relative inline-flex cursor-pointer items-center border-none p-0 ring",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             "transition-colors duration-150 ease-out motion-reduce:transition-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
@@ -373,7 +381,7 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
         data-kumo-component="Switch"
         data-kumo-part="item-label"
         className={cn(
-          "m-0 relative inline-flex items-center gap-2",
+          "relative m-0 inline-flex items-center gap-2",
           // Control first (default): switch before label
           // Label first: label before switch using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
@@ -436,8 +444,8 @@ const SwitchItem = forwardRef<HTMLButtonElement, SwitchItemProps>(
                 : "bg-kumo-base dark:bg-neutral-850";
 
             const trackClassName = cn(
-              "relative inline-flex items-center ring cursor-pointer border-none p-0",
-              "focus:outline-none focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative inline-flex cursor-pointer items-center border-none p-0 ring",
+              "focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
               "transition-colors duration-150 ease-out motion-reduce:transition-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
               s.track,

@@ -98,6 +98,14 @@ git checkout -b <new-branch-name>
 git push origin <new-branch-name>
 ```
 
+### Global Vite+ CLI (optional)
+
+Everything in this repo works through `pnpm` scripts. The `vp` binary ships with the local `vite-plus` dependency, and git hooks resolve it from `node_modules/.bin` automatically.
+
+[Installing the global CLI](https://viteplus.dev/) is **optional but recommended**. It adds bare `vp <command>` usage such as `vp install` and managed Node.js versions (`vp env`) if enabled.
+
+Without it, use `pnpm vp <command>` for direct commands, and `.nvmrc` / `.node-version` with your own version manager for Node.
+
 ### Install dependencies
 
 This repository is setup as a [mono-repo](https://pnpm.io/workspaces) of workspaces. The workspaces are stored in the [`packages`](https://github.com/cloudflare/kumo/tree/main/packages) directory.
@@ -151,7 +159,7 @@ Remember that this change is specific to the current project and will not affect
 
 ### Linting
 
-The code is checked for linting errors by [ESLint](https://eslint.org/).
+The code is checked for linting errors by [Oxlint](https://oxc.rs/docs/guide/usage/linter.html), run through [Vite+](https://viteplus.dev/) (`vp lint`). Lint configuration lives in the `lint` block of the root and per-package `vite.config.ts` files.
 
 - Run the linting checks
 
@@ -159,17 +167,17 @@ The code is checked for linting errors by [ESLint](https://eslint.org/).
   pnpm run lint
   ```
 
-- The repository has a recommended VS Code plugin to run ESLint checks while editing source code, providing immediate feedback.
-
 ### Formatting
 
-The code is checked for formatting errors by [Prettier](https://prettier.io/).
+The code is formatted by [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html), run through Vite+ (`vp fmt`). Formatting configuration lives in the `fmt` block of the root `vite.config.ts`.
 
-- Use the following command to run prettier on the codebase
+- Use the following command to format the codebase
 
   ```sh
   pnpm run format
   ```
+
+- You can also run `pnpm vp check` to format, lint, and validate in one pass (`--fix` applies fixes). If you have the [global Vite+ CLI](#global-vite-cli-optional) installed, plain `vp check` does the same.
 
 ### Testing
 

@@ -302,9 +302,9 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
         "A function that returns a ReactNode to format the selected value in the trigger. Required when using object values. Use `placeholder` for the empty state.",
     },
     items: {
-      type: 'Record<string, string> | Array<{ label: ReactNode; value: T }>',
+      type: "Record<string, string> | Array<{ label: ReactNode; value: T }>",
       description:
-        "Data structure of items rendered in the popup. Accepts a plain object map (`{ key: \"Label\" }`) or an array of `{ label, value }` for object/complex values.",
+        'Data structure of items rendered in the popup. Accepts a plain object map (`{ key: "Label" }`) or an array of `{ label, value }` for object/complex values.',
     },
     isItemEqualToValue: {
       type: "(item: T, value: T) => boolean",
@@ -473,8 +473,7 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
   "DropdownMenu.RadioGroup": {
     value: {
       type: "any",
-      description:
-        "The controlled value of the currently selected radio item.",
+      description: "The controlled value of the currently selected radio item.",
     },
     defaultValue: {
       type: "any",

@@ -47,6 +47,20 @@ export function createTurndownService(): TurndownService {
   return turndown;
 }
 
+/** GFM table rows are single-line; multi-line or block cell markup would break the export. */
+export function normalizeTableWhitespace(html: string): string {
+  return html.replace(/<table[\s\S]*?<\/table>/gi, (table) =>
+    table
+      // Block elements in cells would break single-line GFM rows.
+      .replace(/<\/?(?:p|div)[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      // Spacing between inline elements is content; only structural/edge whitespace is insignificant.
+      .replace(/\s*(<\/?(?:table|thead|tbody|tr)\b[^>]*>)\s*/g, "$1")
+      .replace(/(<(?:td|th)\b[^>]*>)\s+/g, "$1")
+      .replace(/\s+(<\/(?:td|th)>)/g, "$1"),
+  );
+}
+
 /**
  * Extract page metadata and content from a full HTML page string
  * and convert to a well-structured Markdown document.
@@ -104,7 +118,9 @@ export function htmlToMarkdown(html: string): string {
   // Extract and convert <main> content
   const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
   const content = mainMatch ? mainMatch[1] : html;
-  const mainMarkdown = turndown.turndown(content).trim();
+  const mainMarkdown = turndown
+    .turndown(normalizeTableWhitespace(content))
+    .trim();
 
   if (mainMarkdown) {
     parts.push(mainMarkdown);

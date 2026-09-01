@@ -18,6 +18,7 @@ import {
   LegendHighlightDemo,
   LegendOnClickDemo,
   LoadingChartDemo,
+  LoadingBarChartDemo,
   TimeRangeSelectionChartDemo,
   TooltipFollowCursorDemo,
   TooltipBoundaryDemo,
@@ -211,12 +212,19 @@ import {
 ## Loading State
 
 <p>
-  Set <code>loading</code> to <code>true</code> to display an animated sine-wave
-  skeleton while data is being fetched. The chart canvas is hidden until loading
-  completes; swap back to <code>loading={`{false}`}</code> to reveal the chart.
+  Set <code>loading</code> to <code>true</code> to show a skeleton that matches
+  the chart's <code>type</code> while data loads.
 </p>
+
+### Line
 
   <ComponentExample demo="LoadingChartDemo">
     <LoadingChartDemo client:only="react" />
+  </ComponentExample>
+
+### Bar
+
+  <ComponentExample demo="LoadingBarChartDemo">
+    <LoadingBarChartDemo client:only="react" />
   </ComponentExample>
 </ComponentSection>

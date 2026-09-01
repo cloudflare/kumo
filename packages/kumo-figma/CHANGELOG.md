@@ -1,5 +1,93 @@
 # @cloudflare/figma-plugin
 
+## 0.3.48
+
+### Patch Changes
+
+- Updated dependencies [716e5b8]
+- Updated dependencies [d7a7a35]
+- Updated dependencies [0db4f66]
+- Updated dependencies [c64183b]
+- Updated dependencies [ef13cb4]
+- Updated dependencies [51d0f03]
+- Updated dependencies [d586bf3]
+  - @cloudflare/kumo@2.12.0
+
+## 0.3.47
+
+### Patch Changes
+
+- Updated dependencies [bba0f5e]
+- Updated dependencies [aa6edff]
+- Updated dependencies [c2c8d42]
+- Updated dependencies [0ad1926]
+  - @cloudflare/kumo@2.11.0
+
+## 0.3.46
+
+### Patch Changes
+
+- Updated dependencies [4b9a4dc]
+- Updated dependencies [65db2e6]
+- Updated dependencies [0c58325]
+- Updated dependencies [528d5ff]
+- Updated dependencies [75c3b14]
+- Updated dependencies [1d9b588]
+  - @cloudflare/kumo@2.10.0
+
+## 0.3.45
+
+### Patch Changes
+
+- Updated dependencies [188a82c]
+- Updated dependencies [c5ad709]
+  - @cloudflare/kumo@2.9.2
+
+## 0.3.44
+
+### Patch Changes
+
+- Updated dependencies [ff76f30]
+- Updated dependencies [7468623]
+- Updated dependencies [d7639f2]
+- Updated dependencies [c599590]
+  - @cloudflare/kumo@2.9.1
+
+## 0.3.43
+
+### Patch Changes
+
+- Updated dependencies [ff8ad54]
+- Updated dependencies [fc5e222]
+- Updated dependencies [8e71b38]
+- Updated dependencies [2a463f7]
+- Updated dependencies [f919182]
+- Updated dependencies [0f0c44d]
+- Updated dependencies [b171c71]
+- Updated dependencies [4f0ed75]
+- Updated dependencies [5efe6dd]
+- Updated dependencies [32b2168]
+- Updated dependencies [b0870e1]
+- Updated dependencies [34e1672]
+- Updated dependencies [535d579]
+- Updated dependencies [aae94f1]
+- Updated dependencies [2575f9c]
+- Updated dependencies [7c33107]
+- Updated dependencies [ee6e569]
+- Updated dependencies [927d19f]
+- Updated dependencies [9e083d2]
+- Updated dependencies [51aa44c]
+- Updated dependencies [924f07a]
+- Updated dependencies [7ef8c46]
+- Updated dependencies [86afc2b]
+- Updated dependencies [5516c22]
+- Updated dependencies [86ee08c]
+- Updated dependencies [87d1ebc]
+- Updated dependencies [24149b9]
+- Updated dependencies [8de0551]
+- Updated dependencies [60f5bfa]
+  - @cloudflare/kumo@2.9.0
+
 ## 0.3.42
 
 ### Patch Changes

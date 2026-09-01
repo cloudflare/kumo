@@ -44,7 +44,11 @@ export function emptyVariants({
 }: KumoEmptyVariantsProps = {}) {
   return cn(
     "flex w-full flex-col items-center rounded-xl border border-kumo-fill bg-kumo-control text-kumo-default",
-    resolveVariant(KUMO_EMPTY_VARIANTS.size, size, KUMO_EMPTY_DEFAULT_VARIANTS.size).classes,
+    resolveVariant(
+      KUMO_EMPTY_VARIANTS.size,
+      size,
+      KUMO_EMPTY_DEFAULT_VARIANTS.size,
+    ).classes,
   );
 }
 
@@ -132,7 +136,10 @@ export function Empty({
             }}
           >
             {emptyStateCopied ? (
-              <CheckIcon size={16} className="animate-bounce-in text-kumo-success" />
+              <CheckIcon
+                size={16}
+                className="animate-bounce-in text-kumo-success"
+              />
             ) : (
               <CopyIcon
                 size={16}

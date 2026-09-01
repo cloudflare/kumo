@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 
 // Test the detection logic directly by importing and testing the pattern matching
 // Note: We can't easily test oxlint rules in isolation, so we test the core logic

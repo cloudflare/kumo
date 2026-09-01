@@ -1,13 +1,16 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import type { Icon, IconProps } from "@phosphor-icons/react";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { InputGroup } from "./input-group";
 import { INPUT_GROUP_SIZE, detectFocusMode } from "./context";
 import type { KumoInputSize } from "../input/input";
 
-const MockIcon = (props: { size?: number }) => (
-  <svg data-testid="mock-icon" data-size={props.size ?? "none"} />
+const MockIcon: Icon = React.forwardRef<SVGSVGElement, IconProps>(
+  ({ size }, ref) => (
+    <svg ref={ref} data-testid="mock-icon" data-size={size ?? "none"} />
+  ),
 );
 
 const FakeButton = (props: {
@@ -369,6 +372,23 @@ describe("InputGroup", () => {
       },
     );
 
+    it("uses compact end spacing for a button in a large group", () => {
+      render(
+        <InputGroup size="lg" label="Search">
+          <InputGroup.Input />
+          <InputGroup.Addon align="end">
+            <InputGroup.Button aria-label="Clear" shape="square" />
+          </InputGroup.Addon>
+        </InputGroup>,
+      );
+
+      const button = screen.getByRole("button", { name: "Clear" });
+      const addon = button.closest("[data-slot=input-group-addon-end]")!;
+
+      expect(INPUT_GROUP_SIZE.lg.addonButtonOuterEnd).toBe("pr-0.5");
+      expect(addon.className).toContain("pr-0.5");
+    });
+
     // Ensure all addonOuter tokens are static directional classes
     // (not symmetric px- that would need runtime string replacement)
     it("all addon tokens use static pl-/pr- classes (not px-)", () => {
@@ -648,6 +668,7 @@ describe("InputGroup", () => {
 
       render(
         <InputGroup>
+          {/* @ts-expect-error -- deliberately misplaced prop to assert the dev warning */}
           <InputGroup.Input disabled aria-label="Test" />
         </InputGroup>,
       );
@@ -699,7 +720,10 @@ describe("InputGroup", () => {
     it("does not warn for misplaced props when Input is used standalone (no context)", () => {
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-      render(<InputGroup.Input disabled aria-label="Standalone" />);
+      render(
+        // @ts-expect-error -- deliberately misplaced prop to assert the dev warning
+        <InputGroup.Input disabled aria-label="Standalone" />,
+      );
 
       const calls = warnSpy.mock.calls.map((c) => c[0]);
       // Should warn about being outside InputGroup, but NOT about disabled being misplaced
@@ -829,7 +853,7 @@ describe("InputGroup", () => {
   describe("stratus backward compatibility", () => {
     it("supports legacy search bar pattern with Label", () => {
       render(
-        <InputGroup className="bg-kumo-base flex-1">
+        <InputGroup className="flex-1 bg-kumo-base">
           <InputGroup.Label>
             <svg data-testid="search-icon" />
           </InputGroup.Label>

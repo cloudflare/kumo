@@ -11,7 +11,7 @@
  * pagination.tsx → component-registry.json → pagination.ts (generator) → Figma
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   getPaginationDimensionsConfig,
   getPaginationStateConfig,
