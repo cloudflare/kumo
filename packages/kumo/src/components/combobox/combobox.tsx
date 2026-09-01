@@ -462,7 +462,7 @@ function Input(props: ComboboxBase.Input.Props) {
       {...props}
       className={cn(
         inputVariants(),
-        "mx-1.5 w-[calc(100%-0.75rem)] shrink-0 first:mb-2",
+        "mx-0 -mt-1.5 w-full shrink-0 rounded-b-none first:mb-2",
         props.className,
       )}
     />
