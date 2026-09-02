@@ -1,10 +1,73 @@
 import { defineConfig } from "vite-plus";
+import type { PackUserConfig } from "vite-plus/pack";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-import { readdirSync, writeFileSync } from "fs";
+import { readFileSync, readdirSync, writeFileSync } from "fs";
+import { execFileSync } from "child_process";
+import { createRequire } from "module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+function getPackageAssetConfig(): Pick<PackUserConfig, "copy" | "plugins"> {
+  const require = createRequire(import.meta.url);
+  const stylesDir = resolve(__dirname, "src/styles");
+  const distStylesDir = resolve(__dirname, "dist/styles");
+  const blocksDir = resolve(__dirname, "src/blocks");
+  const distBlocksDir = resolve(__dirname, "dist/blocks-source");
+  const standaloneCssInput = resolve(stylesDir, "kumo-standalone.css");
+  const standaloneCssOutput = resolve(distStylesDir, "kumo-standalone.css");
+  const tailwindPackagePath = require.resolve("@tailwindcss/cli/package.json");
+  const tailwindPackage = JSON.parse(
+    readFileSync(tailwindPackagePath, "utf-8"),
+  ) as {
+    bin: { tailwindcss: string };
+  };
+  const tailwindCliPath = resolve(
+    dirname(tailwindPackagePath),
+    tailwindPackage.bin.tailwindcss,
+  );
+  const cssAssets = [
+    "kumo.css",
+    "kumo-binding.css",
+    "theme-kumo.css",
+    "theme-fedramp.css",
+  ].map((file) => resolve(stylesDir, file));
+  const blockSources = readdirSync(blocksDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => ({
+      from: resolve(blocksDir, entry.name, "*.tsx"),
+      to: resolve(distBlocksDir, entry.name),
+    }));
+
+  return {
+    // Asset changes should rebuild the small CLI graph, not the browser library.
+    plugins: [
+      {
+        name: "kumo:standalone-css",
+        buildStart() {
+          this.addWatchFile(standaloneCssInput);
+        },
+        writeBundle() {
+          // The Vite plugin requires resolver internals unavailable to vp pack.
+          execFileSync(
+            process.execPath,
+            [
+              tailwindCliPath,
+              "-i",
+              standaloneCssInput,
+              "-o",
+              standaloneCssOutput,
+              "--minify",
+            ],
+            { cwd: __dirname, stdio: "inherit" },
+          );
+        },
+      },
+    ],
+    copy: [{ from: cssAssets, to: distStylesDir }, ...blockSources],
+  };
+}
 
 // Dynamically discover primitive files
 function getPrimitiveEntries() {
@@ -141,7 +204,7 @@ const packEntries = {
   ),
 };
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   lint: {
     jsPlugins: [
       "./lint/kumo-plugin.js",
@@ -295,6 +358,28 @@ export default defineConfig({
       },
     },
     {
+      // Extra entries would duplicate commands already imported by cli.ts.
+      entry: {
+        cli: resolve(__dirname, "src/command-line/cli.ts"),
+      },
+      format: "esm",
+      platform: "node",
+      // Preserve the existing Node compatibility floor.
+      target: "node18",
+      // Limit cleaning because other builds share dist.
+      outDir: "dist/command-line",
+      clean: true,
+      dts: false,
+      sourcemap: false,
+      exports: false,
+      // Externalize installed dependencies; relative command imports stay bundled.
+      deps: { neverBundle: true },
+      outputOptions: {
+        entryFileNames: "[name].js",
+      },
+      ...(command === "build" ? getPackageAssetConfig() : {}),
+    },
+    {
       entry: packEntries,
       format: "esm",
       platform: "browser",
@@ -318,4 +403,4 @@ export default defineConfig({
       publint: true,
     },
   ],
-});
+}));

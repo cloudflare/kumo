@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vite-plus/test";
-import { existsSync, readdirSync } from "fs";
+import { existsSync, readFileSync, readdirSync } from "fs";
+import { spawnSync } from "child_process";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -239,6 +239,78 @@ describe.skipIf(!isBuilt)("Export Path Validation (Post-Build)", () => {
       walk(distDir);
 
       expect(mapFiles).toEqual([]);
+    });
+
+    it("should ship one CLI bundle that the package bin can launch", () => {
+      const packageDir = join(__dirname, "../..");
+      const cliDir = join(packageDir, "dist/command-line");
+      const cliPath = join(cliDir, "cli.js");
+      const binPath = join(
+        packageDir,
+        packageJson.bin.kumo.replace(/^\.\//, ""),
+      );
+
+      expect(readdirSync(cliDir).sort()).toEqual(["cli.js"]);
+      expect(readFileSync(cliPath, "utf-8")).toMatch(
+        /^#!\/usr\/bin\/env node\n/,
+      );
+
+      const result = spawnSync(process.execPath, [binPath, "help"], {
+        cwd: packageDir,
+        encoding: "utf-8",
+      });
+
+      expect(result.status).toBe(0);
+      expect(result.stderr).toBe("");
+      expect(result.stdout).toContain(
+        "Kumo CLI - Component registry and blocks distribution",
+      );
+    });
+
+    it("should ship raw and compiled CSS assets", () => {
+      const packageDir = join(__dirname, "../..");
+      const sourceDir = join(packageDir, "src/styles");
+      const outputDir = join(packageDir, "dist/styles");
+      const rawFiles = [
+        "kumo.css",
+        "kumo-binding.css",
+        "theme-kumo.css",
+        "theme-fedramp.css",
+      ];
+
+      for (const file of rawFiles) {
+        expect(readFileSync(join(outputDir, file), "utf-8")).toBe(
+          readFileSync(join(sourceDir, file), "utf-8"),
+        );
+      }
+
+      const standaloneCss = readFileSync(
+        join(outputDir, "kumo-standalone.css"),
+        "utf-8",
+      );
+      expect(standaloneCss).not.toContain('@import "tailwindcss"');
+      expect(standaloneCss).toContain("--color-kumo-base");
+    });
+
+    it("should ship block sources used by the CLI", () => {
+      const packageDir = join(__dirname, "../..");
+      const sourceDir = join(packageDir, "src/blocks");
+      const outputDir = join(packageDir, "dist/blocks-source");
+
+      for (const block of readdirSync(sourceDir, { withFileTypes: true })) {
+        if (!block.isDirectory()) continue;
+
+        const blockDir = join(sourceDir, block.name);
+        const files = readdirSync(blockDir).filter((file) =>
+          file.endsWith(".tsx"),
+        );
+
+        for (const file of files) {
+          expect(readFileSync(join(outputDir, block.name, file), "utf-8")).toBe(
+            readFileSync(join(blockDir, file), "utf-8"),
+          );
+        }
+      }
     });
 
     it("primitive JS files should import from bundled chunks", async () => {

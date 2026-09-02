@@ -429,7 +429,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run build && pnpm run test:unit",
-    "build": "pnpm run codegen:registry && tsx scripts/css-build.ts && vp pack && tsx src/command-line/build-cli.ts",
+    "build": "pnpm run codegen:registry && vp pack",
     "dev": "vp pack --watch",
     "new:component": "plop component",
     "clean": "rm -rf dist",
@@ -479,7 +479,6 @@
     "@vitejs/plugin-react": "~6.0.3",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/ui": "catalog:",
-    "esbuild": "0.27.2",
     "glob": "13.0.0",
     "happy-dom": "catalog:",
     "playwright": "catalog:",
