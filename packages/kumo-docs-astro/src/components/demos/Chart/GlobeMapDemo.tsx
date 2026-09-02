@@ -1,13 +1,5 @@
-import {
-  GlobeMap,
-  type GlobeMapMarker,
-  type MapGeoJson,
-} from "@cloudflare/kumo";
+import { GlobeMap, type GlobeMapMarker } from "@cloudflare/kumo";
 import { useIsDarkMode } from "~/lib/use-is-dark-mode";
-
-interface GlobeMapDemoProps {
-  geoJson: MapGeoJson | null;
-}
 
 const cloudflareAvailabilityLocations: GlobeMapMarker[] = [
   {
@@ -61,18 +53,15 @@ const cloudflareAvailabilityLocations: GlobeMapMarker[] = [
 ];
 
 /** Illustrative Cloudflare network locations on a draggable SVG globe. */
-export function GlobeMapAvailabilityZonesDemo({ geoJson }: GlobeMapDemoProps) {
+export function GlobeMapAvailabilityZonesDemo() {
   const isDarkMode = useIsDarkMode();
-
-  if (!geoJson) return null;
 
   return (
     <div className="mx-auto max-w-xl">
       <GlobeMap
-        geoJson={geoJson}
         markers={cloudflareAvailabilityLocations}
         landColor="var(--text-color-kumo-inactive)"
-        landDotSpacing={11}
+        landDotSpacing={8}
         oceanColor="transparent"
         showGraticule
         markerColor="var(--color-kumo-brand)"

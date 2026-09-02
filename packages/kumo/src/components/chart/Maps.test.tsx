@@ -1,7 +1,8 @@
 import { createRef } from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { BubbleMap, GlobeMap, type MapGeoJson } from "./Maps";
+import { GlobeMap } from "./GlobeMap";
+import { BubbleMap, type MapGeoJson } from "./Maps";
 
 const createMockChart = () => ({
   setOption: vi.fn(),
@@ -35,33 +36,9 @@ const data = [
 
 describe("GlobeMap", () => {
   it("renders an accessible SVG globe without ECharts", () => {
-    const globeGeoJson: MapGeoJson = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          id: "visible-region",
-          properties: { name: "Visible region" },
-          geometry: {
-            type: "Polygon",
-            coordinates: [
-              [
-                [-20, -10],
-                [20, -10],
-                [20, 10],
-                [-20, 10],
-                [-20, -10],
-              ],
-            ],
-          },
-        },
-      ],
-    };
-
     const onMarkerClick = vi.fn();
     const { getByLabelText, getByRole } = render(
       <GlobeMap
-        geoJson={globeGeoJson}
         markers={[
           {
             name: "London",
@@ -80,9 +57,11 @@ describe("GlobeMap", () => {
     expect(globe.tagName).toBe("svg");
     expect(globe.getAttribute("role")).toBeNull();
     expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
-    expect(
-      globe.querySelector('[data-land-style="dotted"]')?.getAttribute("d"),
-    ).toContain("a");
+    const landPath = globe
+      .querySelector('[data-land-style="dotted"]')
+      ?.getAttribute("d");
+    expect(landPath).toContain("a");
+    expect(landPath?.match(/M/g)?.length).toBeGreaterThan(1_000);
     expect(globe.querySelectorAll("circle")).toHaveLength(0);
     expect(globe.querySelector("pattern")).toBeNull();
     expect(globe.querySelector("mask")).not.toBeNull();
@@ -98,6 +77,25 @@ describe("GlobeMap", () => {
     expect(onMarkerClick).toHaveBeenCalledWith(
       expect.objectContaining({ name: "London" }),
     );
+  });
+
+  it("updates rotation while dragging", async () => {
+    const onRotationChange = vi.fn();
+    const { getByLabelText } = render(
+      <GlobeMap
+        aria-label="Draggable globe"
+        onRotationChange={onRotationChange}
+      />,
+    );
+    const globe = getByLabelText("Draggable globe");
+    const land = globe.querySelector('[data-land-style="dotted"]');
+    const initialPath = land?.getAttribute("d");
+
+    fireEvent.pointerDown(globe, { pointerId: 1, clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(globe, { pointerId: 1, clientX: 140, clientY: 100 });
+
+    await waitFor(() => expect(land?.getAttribute("d")).not.toBe(initialPath));
+    expect(onRotationChange).toHaveBeenCalledWith([2, -20, 0]);
   });
 });
 

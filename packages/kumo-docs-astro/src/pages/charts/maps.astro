@@ -68,7 +68,7 @@ try {
   <ComponentSection>
     <Heading level={2}>Installation</Heading>
     <p class="mb-4 text-kumo-subtle">
-      <code class="text-kumo-default">BubbleMap</code> and <code class="text-kumo-default">ChoroplethMap</code> require <code class="text-kumo-default">echarts</code> as a peer dependency. <code class="text-kumo-default">GlobeMap</code> renders directly to SVG and does not use WebGL or require ECharts. Consumers provide the GeoJSON feature collection; map components do not fetch map data or use map tiles.
+      <code class="text-kumo-default">BubbleMap</code> and <code class="text-kumo-default">ChoroplethMap</code> require <code class="text-kumo-default">echarts</code> as a peer dependency. <code class="text-kumo-default">GlobeMap</code> renders a built-in Natural Earth land mask directly to SVG and does not use WebGL or require ECharts. Planar map consumers provide GeoJSON; map components do not fetch map data or use map tiles.
     </p>
     <CodeBlock code={`npm install echarts`} lang="bash" />
 
@@ -183,17 +183,16 @@ export default function Example() {
           Plot geographic markers without WebGL. Dotted neutral land, a transparent ocean, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe to reveal points on the hidden hemisphere.
         </p>
         <ComponentExample code={`<GlobeMap
-  geoJson={geoJson}
   markers={cloudflareAvailabilityLocations}
   landColor="var(--text-color-kumo-inactive)"
-  landDotSpacing={11}
+  landDotSpacing={8}
   oceanColor="transparent"
   showGraticule
   markerColor="var(--color-kumo-brand)"
   markerRadius={8}
   autoRotate
 />`}>
-          <GlobeMapAvailabilityZonesDemo geoJson={geoJson} client:visible />
+          <GlobeMapAvailabilityZonesDemo client:visible />
         </ComponentExample>
       </div>
 

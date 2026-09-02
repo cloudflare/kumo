@@ -24,15 +24,13 @@ export {
 export {
   BubbleMap,
   ChoroplethMap,
-  GlobeMap,
   type MapGeoJson,
   type MapProjection,
   type MapAccessor,
   type MapStyle,
   type BubbleMapProps,
   type ChoroplethMapProps,
-  type GlobeMapProps,
-  type GlobeMapMarker,
 } from "./Maps";
+export { GlobeMap, type GlobeMapProps, type GlobeMapMarker } from "./GlobeMap";
 // Re-export color utilities for consumers who need to match chart colors outside of a chart instance
 export { ChartPalette } from "./Color";
