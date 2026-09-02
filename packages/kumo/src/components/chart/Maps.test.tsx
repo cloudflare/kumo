@@ -1,5 +1,5 @@
 import { createRef } from "react";
-import { render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { BubbleMap, GlobeMap, type MapGeoJson } from "./Maps";
 
@@ -58,7 +58,9 @@ describe("GlobeMap", () => {
       ],
     };
 
-    const { getByRole } = render(
+    const onRegionClick = vi.fn();
+    const onMarkerClick = vi.fn();
+    const { getByLabelText, getByRole } = render(
       <GlobeMap
         geoJson={globeGeoJson}
         data={[{ country: "Visible region", requests: 10 }]}
@@ -74,12 +76,15 @@ describe("GlobeMap", () => {
         ]}
         landStyle="dotted"
         showGraticule
+        onRegionClick={onRegionClick}
+        onMarkerClick={onMarkerClick}
         aria-label="Traffic globe"
       />,
     );
 
-    const globe = getByRole("img", { name: "Traffic globe" });
+    const globe = getByLabelText("Traffic globe");
     expect(globe.tagName).toBe("svg");
+    expect(globe.getAttribute("role")).toBeNull();
     expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
     expect(
       globe.querySelector('[data-land-style="dotted"]')?.getAttribute("d"),
@@ -87,6 +92,21 @@ describe("GlobeMap", () => {
     expect(globe.querySelectorAll("circle")).toHaveLength(0);
     expect(globe.querySelector("pattern")).toBeNull();
     expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
+
+    fireEvent.keyDown(getByRole("button", { name: "Visible region: 10" }), {
+      key: " ",
+    });
+    fireEvent.keyDown(
+      getByRole("button", { name: "London: Availability location" }),
+      { key: "Enter" },
+    );
+    expect(onRegionClick).toHaveBeenCalledWith({
+      country: "Visible region",
+      requests: 10,
+    });
+    expect(onMarkerClick).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "London" }),
+    );
   });
 });
 

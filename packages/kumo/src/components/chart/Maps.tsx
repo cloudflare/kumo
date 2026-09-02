@@ -1449,7 +1449,6 @@ export function GlobeMap<T>({
     >
       <svg
         ref={handleSvgRef}
-        role="img"
         aria-label={ariaLabel}
         viewBox={`0 0 ${GLOBE_VIEWBOX_SIZE} ${GLOBE_VIEWBOX_SIZE}`}
         className={cn(
@@ -1497,6 +1496,13 @@ export function GlobeMap<T>({
             if (!entry && landStyle === "dotted") return null;
             const featurePath = path(geometry);
             if (!featurePath) return null;
+            const activateRegion = () => {
+              if (didDragRef.current) {
+                didDragRef.current = false;
+                return;
+              }
+              if (entry) onRegionClick?.(entry.row);
+            };
             return (
               <path
                 key={feature.id ?? `${regionName}-${index}`}
@@ -1508,6 +1514,12 @@ export function GlobeMap<T>({
                   entry && "hover:opacity-80 focus-visible:opacity-80",
                 )}
                 strokeWidth={landStyle === "solid" ? 0.5 : 0}
+                role={entry ? "button" : undefined}
+                aria-label={
+                  entry
+                    ? `${regionName}: ${valueFormat(entry.value)}`
+                    : undefined
+                }
                 tabIndex={entry ? 0 : undefined}
                 onPointerEnter={(event) => {
                   if (!entry) return;
@@ -1541,12 +1553,11 @@ export function GlobeMap<T>({
                   if (entry) onRegionHover?.(undefined);
                   setTooltip(null);
                 }}
-                onClick={() => {
-                  if (didDragRef.current) {
-                    didDragRef.current = false;
-                    return;
-                  }
-                  if (entry) onRegionClick?.(entry.row);
+                onClick={activateRegion}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") return;
+                  event.preventDefault();
+                  activateRegion();
                 }}
               />
             );
@@ -1562,6 +1573,13 @@ export function GlobeMap<T>({
             const detail =
               marker.description ??
               `${marker.latitude.toFixed(2)}, ${marker.longitude.toFixed(2)}`;
+            const activateMarker = () => {
+              if (didDragRef.current) {
+                didDragRef.current = false;
+                return;
+              }
+              onMarkerClick?.(marker);
+            };
             return (
               <path
                 key={`${marker.name}-${index}`}
@@ -1569,6 +1587,8 @@ export function GlobeMap<T>({
                 fill={marker.color ?? resolvedMarkerColor}
                 strokeWidth={2}
                 className="stroke-kumo-base transition-opacity outline-none hover:opacity-80 focus-visible:opacity-80"
+                role="button"
+                aria-label={`${marker.name}: ${detail}`}
                 tabIndex={0}
                 onPointerEnter={(event) =>
                   moveTooltip(event, marker.name, detail)
@@ -1590,12 +1610,11 @@ export function GlobeMap<T>({
                   });
                 }}
                 onBlur={() => setTooltip(null)}
-                onClick={() => {
-                  if (didDragRef.current) {
-                    didDragRef.current = false;
-                    return;
-                  }
-                  onMarkerClick?.(marker);
+                onClick={activateMarker}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") return;
+                  event.preventDefault();
+                  activateMarker();
                 }}
               />
             );
