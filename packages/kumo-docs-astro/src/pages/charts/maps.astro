@@ -10,10 +10,7 @@ import {
   BubbleMapCloudflareLocationsDemo,
 } from "~/components/demos/Chart/BubbleMapDemo";
 import { ChoroplethMapBasicDemo } from "~/components/demos/Chart/ChoroplethMapDemo";
-import {
-  GlobeMapAvailabilityZonesDemo,
-  GlobeMapBasicDemo,
-} from "~/components/demos/Chart/GlobeMapDemo";
+import { GlobeMapAvailabilityZonesDemo } from "~/components/demos/Chart/GlobeMapDemo";
 import type { MapGeoJson } from "@cloudflare/kumo";
 
 const WORLD_GEO_JSON_URL =
@@ -188,8 +185,7 @@ export default function Example() {
         <ComponentExample code={`<GlobeMap
   geoJson={geoJson}
   markers={cloudflareAvailabilityLocations}
-  noDataColor="var(--text-color-kumo-inactive)"
-  landStyle="dotted"
+  landColor="var(--text-color-kumo-inactive)"
   landDotSpacing={11}
   oceanColor="transparent"
   showGraticule
@@ -198,23 +194,6 @@ export default function Example() {
   autoRotate
 />`}>
           <GlobeMapAvailabilityZonesDemo geoJson={geoJson} client:visible />
-        </ComponentExample>
-      </div>
-
-      <div>
-        <Heading level={3}>Globe Map</Heading>
-        <p class="mb-4 text-kumo-subtle">
-          Render the same GeoJSON as a clipped orthographic SVG globe. Drag to rotate it; land on the hidden hemisphere is clipped without WebGL.
-        </p>
-        <ComponentExample code={`<GlobeMap
-  geoJson={geoJson}
-  data={countries}
-  name="country"
-  value="requests"
-  oceanColor="var(--color-kumo-base)"
-  autoRotate
-/>`}>
-          <GlobeMapBasicDemo geoJson={geoJson} client:visible />
         </ComponentExample>
       </div>
 

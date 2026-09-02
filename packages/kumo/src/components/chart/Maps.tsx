@@ -9,6 +9,7 @@ import {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -18,7 +19,6 @@ import {
   geoArea,
   geoBounds,
   geoContains,
-  geoDistance,
   geoGraticule,
   geoMercator,
   geoOrthographic,
@@ -1029,28 +1029,12 @@ export interface GlobeMapMarker {
   radius?: number;
 }
 
-export interface GlobeMapProps<T> {
-  /** GeoJSON `FeatureCollection` rendered on the globe. */
+export interface GlobeMapProps {
+  /** GeoJSON `FeatureCollection` used to determine dotted land coverage. */
   geoJson: MapGeoJson;
-  /** Raw data rows joined to GeoJSON features. Optional for marker-only globes. */
-  data?: T[];
-  /** Region-key accessor (key of `T` or `(row) => string`). */
-  name?: MapAccessor<T, string>;
-  /** Value accessor — drives the region's fill colour. */
-  value?: MapAccessor<T, number>;
-  /** GeoJSON feature property to join on. Default: `"name"`. */
-  nameProperty?: string;
-  /** Sequential colour ramp (low → high). */
-  colorRange?: string[];
-  /** Lower bound of the colour scale. Default: data minimum. */
-  min?: number;
-  /** Upper bound of the colour scale. Default: data maximum. */
-  max?: number;
-  /** Fill for regions with no matching data row. */
-  noDataColor?: string;
-  /** Render no-data land as a solid fill or a field of dots. Default: `"solid"`. */
-  landStyle?: "solid" | "dotted";
-  /** Spacing between dot centers in the dotted land style. Default: `10`. */
+  /** Fill for the dotted land. Defaults to the neutral Kumo map area color. */
+  landColor?: string;
+  /** Spacing between land-dot centers in view-box pixels. Default: `10`. */
   landDotSpacing?: number;
   /** Fill behind the land and graticule. Default: the Kumo base surface. */
   oceanColor?: string;
@@ -1072,14 +1056,8 @@ export interface GlobeMapProps<T> {
   autoRotateSpeed?: number;
   /** Draw latitude and longitude guides. Default: `false`. */
   showGraticule?: boolean;
-  /** Show the Kumo-styled region tooltip. Default: `true`. */
+  /** Show the Kumo-styled marker tooltip. Default: `true`. */
   showTooltip?: boolean;
-  /** Format the value in the default tooltip. */
-  valueFormat?: (value: number) => string;
-  /** Called as the pointer enters/leaves a region with data. */
-  onRegionHover?: (row: T | undefined) => void;
-  /** Called when a region with data is clicked. */
-  onRegionClick?: (row: T) => void;
   /** Called after pointer dragging changes the globe rotation. */
   onRotationChange?: (rotation: [number, number, number]) => void;
   /** Accessible label for the visualization. Default: `"Interactive globe map"`. */
@@ -1100,9 +1078,15 @@ interface GlobeTooltip {
 const GLOBE_VIEWBOX_SIZE = 640;
 const GLOBE_PADDING = 18;
 const GLOBE_RADIUS = GLOBE_VIEWBOX_SIZE / 2 - GLOBE_PADDING;
+interface GlobeLandDot {
+  x: number;
+  y: number;
+  z: number;
+}
+
 const globeDotCoordinateCache = new WeakMap<
   MapGeoJson,
-  Map<number, Array<[number, number]>>
+  Map<number, GlobeLandDot[]>
 >();
 
 /**
@@ -1152,22 +1136,13 @@ function normalizeGlobeFeature(
 }
 
 /**
- * GlobeMap — an SVG orthographic globe with choropleth regions, geographic
- * markers, or both. Unlike the ECharts map components, it uses d3-geo's stream
- * clipping so land and markers on the back hemisphere are hidden correctly.
- * Rendering is SVG-only and does not use WebGL.
+ * GlobeMap — an SVG orthographic globe with dotted land and geographic
+ * markers. Land boundaries are used only for dot placement and are never
+ * drawn. Rendering is SVG-only and does not use WebGL.
  */
-export function GlobeMap<T>({
+export function GlobeMap({
   geoJson,
-  data,
-  name,
-  value,
-  nameProperty = "name",
-  colorRange,
-  min,
-  max,
-  noDataColor,
-  landStyle = "solid",
+  landColor,
   landDotSpacing = 10,
   oceanColor = "var(--color-kumo-base)",
   markers = [],
@@ -1180,19 +1155,18 @@ export function GlobeMap<T>({
   autoRotateSpeed = 4,
   showGraticule = false,
   showTooltip = true,
-  valueFormat = defaultValueFormat,
-  onRegionHover,
-  onRegionClick,
   onRotationChange,
   "aria-label": ariaLabel = "Interactive globe map",
   height,
   className,
   isDarkMode,
-}: GlobeMapProps<T>) {
+}: GlobeMapProps) {
   const [currentRotation, setCurrentRotation] = useState(rotation);
+  const fadeMaskId = `kumo-globe-fade-${useId().replaceAll(":", "")}`;
   const [tooltip, setTooltip] = useState<GlobeTooltip | null>(null);
   const didDragRef = useRef(false);
   const autoRotateFrameRef = useRef<number | null>(null);
+  const autoRotateObserverRef = useRef<IntersectionObserver | null>(null);
   const autoRotateTimeRef = useRef<number | null>(null);
   const dragFrameRef = useRef<number | null>(null);
   const pendingRotationRef = useRef<[number, number, number] | null>(null);
@@ -1207,33 +1181,14 @@ export function GlobeMap<T>({
     () => ChartPalette.mapColors(isDarkMode),
     [isDarkMode],
   );
-  const colors = colorRange ?? palette.scale;
-  const noData = noDataColor ?? palette.area;
+  const resolvedLandColor = landColor ?? palette.area;
   const resolvedMarkerColor = markerColor ?? palette.bubble;
-
-  const rowsByName = useMemo(() => {
-    const rows = new Map<string, { row: T; value: number }>();
-    if (!data || name === undefined || value === undefined) return rows;
-    for (const row of data) {
-      rows.set(resolve(row, name), { row, value: resolve(row, value) });
-    }
-    return rows;
-  }, [data, name, value]);
-
-  const values = useMemo(
-    () => Array.from(rowsByName.values(), (entry) => entry.value),
-    [rowsByName],
-  );
-  const dataMin = values.length ? Math.min(...values) : 0;
-  const dataMax = values.length ? Math.max(...values) : 1;
-  const resolvedMin = min ?? dataMin;
-  const resolvedMax = max ?? (dataMax > dataMin ? dataMax : dataMin + 1);
 
   const globeFeatures = useMemo(
     () =>
       geoJson.features.map((feature) => {
         const geometry = normalizeGlobeFeature(feature);
-        return { feature, geometry, bounds: geoBounds(geometry) };
+        return { geometry, bounds: geoBounds(geometry) };
       }),
     [geoJson],
   );
@@ -1255,12 +1210,12 @@ export function GlobeMap<T>({
   const spherePath = path({ type: "Sphere" }) ?? undefined;
   const graticulePath = path(geoGraticule().step([15, 10])()) ?? undefined;
   const dottedLandCoordinates = useMemo(() => {
-    if (landStyle !== "dotted" || landDotSpacing <= 0) return [];
+    if (landDotSpacing <= 0) return [];
 
     const cached = globeDotCoordinateCache.get(geoJson)?.get(landDotSpacing);
     if (cached) return cached;
 
-    const coordinates: Array<[number, number]> = [];
+    const coordinates: GlobeLandDot[] = [];
     const angularStep = (landDotSpacing / GLOBE_RADIUS) * (180 / Math.PI);
     for (
       let latitude = -90 + angularStep / 2;
@@ -1286,55 +1241,60 @@ export function GlobeMap<T>({
             return isWithinLongitude && geoContains(geometry, coordinate);
           })
         ) {
-          coordinates.push(coordinate);
+          const longitudeRadians = (longitude * Math.PI) / 180;
+          const latitudeRadians = (latitude * Math.PI) / 180;
+          const cosLatitude = Math.cos(latitudeRadians);
+          coordinates.push({
+            x: Math.cos(longitudeRadians) * cosLatitude,
+            y: Math.sin(longitudeRadians) * cosLatitude,
+            z: Math.sin(latitudeRadians),
+          });
         }
       }
     }
     const cacheForGeoJson =
-      globeDotCoordinateCache.get(geoJson) ??
-      new Map<number, Array<[number, number]>>();
+      globeDotCoordinateCache.get(geoJson) ?? new Map<number, GlobeLandDot[]>();
     cacheForGeoJson.set(landDotSpacing, coordinates);
     globeDotCoordinateCache.set(geoJson, cacheForGeoJson);
     return coordinates;
-  }, [geoJson, globeFeatures, landDotSpacing, landStyle]);
+  }, [geoJson, globeFeatures, landDotSpacing]);
   const dottedLandPath = useMemo(() => {
-    const center = projection.invert?.([
-      GLOBE_VIEWBOX_SIZE / 2,
-      GLOBE_VIEWBOX_SIZE / 2,
-    ]);
-    if (!center) return undefined;
-
     const radius = Number((landDotSpacing * 0.28).toFixed(2));
-    const horizonInset = radius / GLOBE_RADIUS;
     const diameter = radius * 2;
+    const [longitude, latitude, roll] = currentRotation.map(
+      (degrees) => (degrees * Math.PI) / 180,
+    );
+    const cosLongitude = Math.cos(longitude);
+    const sinLongitude = Math.sin(longitude);
+    const cosLatitude = Math.cos(latitude);
+    const sinLatitude = Math.sin(latitude);
+    const cosRoll = Math.cos(roll);
+    const sinRoll = Math.sin(roll);
     const commands: string[] = [];
-    for (const coordinate of dottedLandCoordinates) {
-      if (geoDistance(center, coordinate) >= Math.PI / 2 - horizonInset) {
-        continue;
-      }
-      const point = projection(coordinate);
-      if (!point) continue;
-      const x = Number(point[0].toFixed(2));
-      const y = Number(point[1].toFixed(2));
+
+    // This is algebraically equivalent to d3's spherical rotation followed by
+    // its orthographic projection, without function calls or allocations per dot.
+    for (const dot of dottedLandCoordinates) {
+      const rotatedX = dot.x * cosLongitude - dot.y * sinLongitude;
+      const rotatedY = dot.y * cosLongitude + dot.x * sinLongitude;
+      const latitudeAxis = dot.z * cosLatitude + rotatedX * sinLatitude;
+      const depth = rotatedX * cosLatitude - dot.z * sinLatitude;
+      if (depth <= 0) continue;
+
+      const projectedX = rotatedY * cosRoll - latitudeAxis * sinRoll;
+      const projectedY = latitudeAxis * cosRoll + rotatedY * sinRoll;
+      const x = Number(
+        (GLOBE_VIEWBOX_SIZE / 2 + GLOBE_RADIUS * projectedX).toFixed(2),
+      );
+      const y = Number(
+        (GLOBE_VIEWBOX_SIZE / 2 - GLOBE_RADIUS * projectedY).toFixed(2),
+      );
       commands.push(
         `M${x - radius},${y}a${radius},${radius} 0 1,0 ${diameter},0a${radius},${radius} 0 1,0 -${diameter},0`,
       );
     }
     return commands.join("") || undefined;
-  }, [dottedLandCoordinates, landDotSpacing, projection]);
-
-  const fillForValue = useCallback(
-    (regionValue: number) => {
-      if (colors.length === 0) return noData;
-      const range = resolvedMax - resolvedMin;
-      const position = range > 0 ? (regionValue - resolvedMin) / range : 0;
-      const index = Math.round(
-        Math.max(0, Math.min(1, position)) * (colors.length - 1),
-      );
-      return colors[index];
-    },
-    [colors, noData, resolvedMax, resolvedMin],
-  );
+  }, [currentRotation, dottedLandCoordinates, landDotSpacing]);
 
   const moveTooltip = useCallback(
     (
@@ -1362,6 +1322,8 @@ export function GlobeMap<T>({
         cancelAnimationFrame(autoRotateFrameRef.current);
         autoRotateFrameRef.current = null;
       }
+      autoRotateObserverRef.current?.disconnect();
+      autoRotateObserverRef.current = null;
       autoRotateTimeRef.current = null;
       if (!node || !autoRotate) return;
 
@@ -1378,8 +1340,27 @@ export function GlobeMap<T>({
         }
         autoRotateFrameRef.current = requestAnimationFrame(rotate);
       };
+      const start = () => {
+        if (autoRotateFrameRef.current !== null) return;
+        autoRotateTimeRef.current = null;
+        autoRotateFrameRef.current = requestAnimationFrame(rotate);
+      };
+      const stop = () => {
+        if (autoRotateFrameRef.current === null) return;
+        cancelAnimationFrame(autoRotateFrameRef.current);
+        autoRotateFrameRef.current = null;
+        autoRotateTimeRef.current = null;
+      };
 
-      autoRotateFrameRef.current = requestAnimationFrame(rotate);
+      if (typeof IntersectionObserver === "undefined") {
+        start();
+        return;
+      }
+      autoRotateObserverRef.current = new IntersectionObserver(([entry]) => {
+        if (entry?.isIntersecting) start();
+        else stop();
+      });
+      autoRotateObserverRef.current.observe(node);
     },
     [autoRotate, autoRotateSpeed],
   );
@@ -1463,6 +1444,28 @@ export function GlobeMap<T>({
           if (!dragRef.current) setTooltip(null);
         }}
       >
+        <defs>
+          <radialGradient
+            id={`${fadeMaskId}-gradient`}
+            gradientUnits="userSpaceOnUse"
+            cx={GLOBE_VIEWBOX_SIZE / 2}
+            cy={GLOBE_VIEWBOX_SIZE / 2}
+            r={GLOBE_RADIUS}
+          >
+            <stop offset="82%" stopColor="white" />
+            <stop offset="100%" stopColor="black" />
+          </radialGradient>
+          <mask
+            id={fadeMaskId}
+            maskUnits="userSpaceOnUse"
+            x={0}
+            y={0}
+            width={GLOBE_VIEWBOX_SIZE}
+            height={GLOBE_VIEWBOX_SIZE}
+          >
+            <path d={spherePath} fill={`url(#${fadeMaskId}-gradient)`} />
+          </mask>
+        </defs>
         <path
           d={spherePath}
           fill={oceanColor}
@@ -1477,92 +1480,13 @@ export function GlobeMap<T>({
             strokeWidth={0.75}
           />
         ) : null}
-        {landStyle === "dotted" ? (
-          <path
-            data-land-style="dotted"
-            d={dottedLandPath}
-            fill={noData}
-            className="pointer-events-none"
-          />
-        ) : null}
-        <g>
-          {globeFeatures.map(({ feature, geometry }, index) => {
-            const property = feature.properties?.[nameProperty];
-            const regionName =
-              typeof property === "string" || typeof property === "number"
-                ? String(property)
-                : "";
-            const entry = rowsByName.get(regionName);
-            if (!entry && landStyle === "dotted") return null;
-            const featurePath = path(geometry);
-            if (!featurePath) return null;
-            const activateRegion = () => {
-              if (didDragRef.current) {
-                didDragRef.current = false;
-                return;
-              }
-              if (entry) onRegionClick?.(entry.row);
-            };
-            return (
-              <path
-                key={feature.id ?? `${regionName}-${index}`}
-                d={featurePath}
-                fill={entry ? fillForValue(entry.value) : noData}
-                className={cn(
-                  "transition-opacity outline-none",
-                  landStyle === "solid" && "stroke-kumo-line",
-                  entry && "hover:opacity-80 focus-visible:opacity-80",
-                )}
-                strokeWidth={landStyle === "solid" ? 0.5 : 0}
-                role={entry ? "button" : undefined}
-                aria-label={
-                  entry
-                    ? `${regionName}: ${valueFormat(entry.value)}`
-                    : undefined
-                }
-                tabIndex={entry ? 0 : undefined}
-                onPointerEnter={(event) => {
-                  if (!entry) return;
-                  onRegionHover?.(entry.row);
-                  moveTooltip(event, regionName, valueFormat(entry.value));
-                }}
-                onPointerMove={(event) => {
-                  if (entry && !dragRef.current) {
-                    moveTooltip(event, regionName, valueFormat(entry.value));
-                  }
-                }}
-                onPointerLeave={() => {
-                  if (!entry) return;
-                  onRegionHover?.(undefined);
-                  setTooltip(null);
-                }}
-                onFocus={(event) => {
-                  if (!entry || !showTooltip) return;
-                  onRegionHover?.(entry.row);
-                  const bounds =
-                    event.currentTarget.ownerSVGElement?.getBoundingClientRect();
-                  if (!bounds) return;
-                  setTooltip({
-                    name: regionName,
-                    detail: valueFormat(entry.value),
-                    x: bounds.width / 2,
-                    y: bounds.height / 2,
-                  });
-                }}
-                onBlur={() => {
-                  if (entry) onRegionHover?.(undefined);
-                  setTooltip(null);
-                }}
-                onClick={activateRegion}
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter" && event.key !== " ") return;
-                  event.preventDefault();
-                  activateRegion();
-                }}
-              />
-            );
-          })}
-        </g>
+        <path
+          data-land-style="dotted"
+          d={dottedLandPath}
+          fill={resolvedLandColor}
+          mask={`url(#${fadeMaskId})`}
+          className="pointer-events-none"
+        />
         <g>
           {markers.map((marker, index) => {
             const markerPath = path.pointRadius(marker.radius ?? markerRadius)({
@@ -1585,6 +1509,7 @@ export function GlobeMap<T>({
                 key={`${marker.name}-${index}`}
                 d={markerPath}
                 fill={marker.color ?? resolvedMarkerColor}
+                mask={`url(#${fadeMaskId})`}
                 strokeWidth={2}
                 className="stroke-kumo-base transition-opacity outline-none hover:opacity-80 focus-visible:opacity-80"
                 role="button"

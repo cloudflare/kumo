@@ -58,14 +58,10 @@ describe("GlobeMap", () => {
       ],
     };
 
-    const onRegionClick = vi.fn();
     const onMarkerClick = vi.fn();
     const { getByLabelText, getByRole } = render(
       <GlobeMap
         geoJson={globeGeoJson}
-        data={[{ country: "Visible region", requests: 10 }]}
-        name="country"
-        value="requests"
         markers={[
           {
             name: "London",
@@ -74,9 +70,7 @@ describe("GlobeMap", () => {
             longitude: -0.12,
           },
         ]}
-        landStyle="dotted"
         showGraticule
-        onRegionClick={onRegionClick}
         onMarkerClick={onMarkerClick}
         aria-label="Traffic globe"
       />,
@@ -91,19 +85,16 @@ describe("GlobeMap", () => {
     ).toContain("a");
     expect(globe.querySelectorAll("circle")).toHaveLength(0);
     expect(globe.querySelector("pattern")).toBeNull();
+    expect(globe.querySelector("mask")).not.toBeNull();
+    expect(
+      globe.querySelector('[data-land-style="dotted"]')?.getAttribute("mask"),
+    ).toMatch(/^url\(#kumo-globe-fade-/);
     expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
 
-    fireEvent.keyDown(getByRole("button", { name: "Visible region: 10" }), {
-      key: " ",
-    });
     fireEvent.keyDown(
       getByRole("button", { name: "London: Availability location" }),
       { key: "Enter" },
     );
-    expect(onRegionClick).toHaveBeenCalledWith({
-      country: "Visible region",
-      requests: 10,
-    });
     expect(onMarkerClick).toHaveBeenCalledWith(
       expect.objectContaining({ name: "London" }),
     );

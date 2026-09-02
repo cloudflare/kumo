@@ -9,31 +9,6 @@ interface GlobeMapDemoProps {
   geoJson: MapGeoJson | null;
 }
 
-interface CountryTraffic {
-  country: string;
-  requests: number;
-}
-
-const countries: CountryTraffic[] = [
-  { country: "United States of America", requests: 4200 },
-  { country: "Germany", requests: 3100 },
-  { country: "United Kingdom", requests: 2800 },
-  { country: "Japan", requests: 2500 },
-  { country: "France", requests: 2200 },
-  { country: "Brazil", requests: 1700 },
-  { country: "India", requests: 1500 },
-  { country: "Canada", requests: 1300 },
-  { country: "Australia", requests: 1100 },
-  { country: "Spain", requests: 900 },
-  { country: "Netherlands", requests: 700 },
-  { country: "Mexico", requests: 600 },
-  { country: "Argentina", requests: 420 },
-  { country: "Nigeria", requests: 300 },
-  { country: "South Africa", requests: 220 },
-];
-
-const formatRequests = (value: number) => `${value.toLocaleString()} requests`;
-
 const cloudflareAvailabilityLocations: GlobeMapMarker[] = [
   {
     name: "SFO",
@@ -96,8 +71,7 @@ export function GlobeMapAvailabilityZonesDemo({ geoJson }: GlobeMapDemoProps) {
       <GlobeMap
         geoJson={geoJson}
         markers={cloudflareAvailabilityLocations}
-        noDataColor="var(--text-color-kumo-inactive)"
-        landStyle="dotted"
+        landColor="var(--text-color-kumo-inactive)"
         landDotSpacing={11}
         oceanColor="transparent"
         showGraticule
@@ -105,28 +79,6 @@ export function GlobeMapAvailabilityZonesDemo({ geoJson }: GlobeMapDemoProps) {
         markerRadius={8}
         autoRotate
         aria-label="Cloudflare availability locations"
-        isDarkMode={isDarkMode}
-      />
-    </div>
-  );
-}
-
-/** An SVG globe with drag-to-rotate interaction and no WebGL dependency. */
-export function GlobeMapBasicDemo({ geoJson }: GlobeMapDemoProps) {
-  const isDarkMode = useIsDarkMode();
-
-  if (!geoJson) return null;
-
-  return (
-    <div className="mx-auto max-w-xl">
-      <GlobeMap<CountryTraffic>
-        geoJson={geoJson}
-        data={countries}
-        name="country"
-        value="requests"
-        valueFormat={formatRequests}
-        oceanColor="var(--color-kumo-base)"
-        autoRotate
         isDarkMode={isDarkMode}
       />
     </div>
