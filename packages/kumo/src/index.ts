@@ -255,6 +255,7 @@ export {
   ChartLegend,
   BubbleMap,
   ChoroplethMap,
+  GlobeMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
@@ -266,6 +267,8 @@ export {
   type MapStyle,
   type BubbleMapProps,
   type ChoroplethMapProps,
+  type GlobeMapProps,
+  type GlobeMapMarker,
 } from "./components/chart";
 export {
   Autocomplete,
