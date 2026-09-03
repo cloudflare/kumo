@@ -27,7 +27,7 @@ Typical order: primary demo, installation, usage, examples, and props.
 | Demo implementation | `../../components/demos/{Name}Demo.tsx`        | Export name must match `demo`    |
 | Example frame       | `../../components/docs/ComponentExample.astro` | Code and VR metadata             |
 | Props rendering     | `../../components/docs/PropsTable.astro`       | Registry-backed; not handwritten |
-| Source API          | `../../../kumo/src/components/{name}/`         | Component implementation         |
+| Source API          | `../../../../kumo/src/components/{name}/`      | Component implementation         |
 
 ## CONVENTIONS
 
