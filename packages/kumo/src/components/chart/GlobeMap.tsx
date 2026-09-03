@@ -3,6 +3,7 @@ import {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -140,6 +141,7 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
   ) {
     const [rotation, setRotation] = useState(initialRotation);
     const [tooltip, setTooltip] = useState<GlobeTooltip | null>(null);
+    const sphereClipId = useId();
     const rotationRef = useRef(rotation);
     const svgRef = useRef<SVGSVGElement | null>(null);
     const dragRef = useRef<{
@@ -305,6 +307,11 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
             if (!dragRef.current) setTooltip(null);
           }}
         >
+          <defs>
+            <clipPath id={sphereClipId}>
+              <path d={path({ type: "Sphere" }) ?? undefined} />
+            </clipPath>
+          </defs>
           <path
             d={path({ type: "Sphere" }) ?? undefined}
             fill={oceanColor}
@@ -327,6 +334,7 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
             strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
+            clipPath={`url(#${sphereClipId})`}
             className="pointer-events-none"
           />
           {markers.map((marker, index) => {

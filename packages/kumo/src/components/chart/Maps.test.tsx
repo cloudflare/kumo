@@ -63,6 +63,14 @@ describe("GlobeMap", () => {
       ?.getAttribute("d");
     expect(landPath).toContain("L");
     expect(landPath?.match(/M/g)?.length).toBeGreaterThan(100);
+    const sphereClip = globe.querySelector("clipPath");
+    expect(sphereClip).not.toBeNull();
+    expect(landPath).toBeTruthy();
+    expect(
+      globe
+        .querySelector('[data-land-style="hatched"]')
+        ?.getAttribute("clip-path"),
+    ).toBe(`url(#${sphereClip?.id})`);
     expect(globe.querySelectorAll("circle")).toHaveLength(1);
     expect(globe.querySelector("pattern")).toBeNull();
     expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
