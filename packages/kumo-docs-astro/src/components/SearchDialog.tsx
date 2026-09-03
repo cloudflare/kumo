@@ -42,6 +42,7 @@ const CHART_COMPONENT_URLS: Record<string, string> = {
   TimeseriesChart: "/charts/timeseries",
   BubbleMap: "/charts/maps#bubble-map",
   ChoroplethMap: "/charts/maps#choropleth-map",
+  GlobeMap: "/charts/maps#cloudflare-availability-locations",
 };
 
 /**
