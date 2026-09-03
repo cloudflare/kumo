@@ -10,7 +10,7 @@ import {
   BubbleMapCloudflareLocationsDemo,
 } from "~/components/demos/Chart/BubbleMapDemo";
 import { ChoroplethMapBasicDemo } from "~/components/demos/Chart/ChoroplethMapDemo";
-import { GlobeMapComparisonDemo } from "~/components/demos/Chart/GlobeMapDemo";
+import { GlobeMapAvailabilityZonesDemo } from "~/components/demos/Chart/GlobeMapDemo";
 import type { MapGeoJson } from "@cloudflare/kumo";
 
 const WORLD_GEO_JSON_URL =
@@ -180,7 +180,7 @@ export default function Example() {
       <div>
         <Heading level={3}>Cloudflare Availability Locations</Heading>
         <p class="mb-4 text-kumo-subtle">
-          Plot geographic markers without WebGL. Dotted neutral land, a transparent ocean, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe to reveal points on the hidden hemisphere.
+          Plot geographic markers without WebGL. Hatched neutral land, a transparent ocean, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe to reveal points on the hidden hemisphere.
         </p>
         <ComponentExample code={`<GlobeMap
   markers={cloudflareAvailabilityLocations}
@@ -192,7 +192,7 @@ export default function Example() {
   markerRadius={8}
   autoRotate
 />`}>
-          <GlobeMapComparisonDemo client:visible />
+          <GlobeMapAvailabilityZonesDemo client:visible />
         </ComponentExample>
       </div>
 
