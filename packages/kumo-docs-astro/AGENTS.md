@@ -33,7 +33,7 @@ kumo-docs-astro/
 
 | Task                    | Location                               | Notes                                           |
 | ----------------------- | -------------------------------------- | ----------------------------------------------- |
-| Component reference     | `src/pages/components/`                | Mostly MDX; see child guide                     |
+| Component reference     | `src/pages/components/`                | MDX joins demos, props, and VR metadata         |
 | Demo behavior           | `src/components/demos/`                | Also feeds registry metadata                    |
 | Page chrome             | `src/layouts/`                         | `BaseLayout` -> `MainLayout` -> document layout |
 | Navigation              | `src/components/SidebarNav.tsx`        | Route lists are manual                          |
@@ -64,6 +64,9 @@ the package output, while development aliases Kumo imports to source for HMR.
 ## CONVENTIONS
 
 - Use `~/*` for package-local imports; it maps to `src/*`.
+- Standard component pages use `MdxDocLayout`, then present the primary demo,
+  installation, usage, examples, and registry-backed props.
+- Give visual-regression examples stable `vrSection` slugs and `vrTitle` values.
 - Use semantic Kumo tokens only. Raw Tailwind colors and `dark:` variants fail lint.
 - Compose Kumo component classes with established package patterns; do not bypass
   `kumo/no-cross-package-imports`.
@@ -80,6 +83,8 @@ the package output, while development aliases Kumo imports to source for HMR.
 ## ANTI-PATTERNS
 
 - Do not edit `dist/`, `.astro/`, or `public/skill.md`; builds regenerate them.
+- Do not put `AGENTS.md` or other non-route Markdown under `src/pages/`. Astro
+  treats Markdown there as a route and emits unwanted build output.
 - Do not treat blocks in `src/components/kumo/` as package exports. They are
   installed source owned by the docs site.
 - Do not add a route without updating the applicable list in `SidebarNav.tsx`.
