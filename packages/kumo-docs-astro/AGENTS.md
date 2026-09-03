@@ -1,104 +1,114 @@
-# Docs Site (`@cloudflare/kumo-docs-astro`)
+# KUMO DOCS KNOWLEDGE BASE
 
-Astro documentation site for Kumo. React islands architecture. Deployed to Cloudflare Workers at `kumo-ui.com`.
+**Generated:** 2026-09-03 | **Commit:** 9b4eb70 | **Branch:** rozenmd/test-preview
 
-**Parent:** See [root AGENTS.md](../../AGENTS.md) for monorepo context.
+## OVERVIEW
+
+Astro documentation site for `@cloudflare/kumo`. Static output uses React islands,
+MDX reference pages, Tailwind v4, and Cloudflare Workers static assets.
+
+**Parent:** See [root AGENTS.md](../../AGENTS.md) for monorepo-wide rules.
 
 ## STRUCTURE
 
-```
+```text
 kumo-docs-astro/
 ├── src/
-│   ├── pages/
-│   │   ├── index.astro              # Homepage (HomeGrid showcase)
-│   │   ├── components/{name}.astro  # 38 component doc pages
-│   │   ├── blocks/{name}.astro      # 2 block doc pages
-│   │   └── api/                     # JSON endpoints (version, component-registry)
 │   ├── components/
-│   │   ├── demos/                   # 49 files: *Demo.tsx (feed into registry!)
-│   │   ├── docs/                    # Doc components (PropsTable, CodeBlock, etc.)
-│   │   └── kumo/                    # Installed blocks (via CLI, not package imports)
-│   ├── layouts/                     # BaseLayout → MainLayout → DocLayout
-│   ├── lib/
-│   │   ├── vite-plugin-kumo-colors.ts    # virtual:kumo-colors
-│   │   ├── vite-plugin-kumo-registry.ts  # virtual:kumo-registry
-│   │   ├── vite-plugin-kumo-hmr.ts       # Dev-only: rewires @cloudflare/kumo → source
-│   │   └── component-registry.ts         # Server-side registry access
-│   └── styles/global.css            # Tailwind entry + @source to kumo dist
-├── scripts/
-│   └── extract-demo-examples.ts     # Parses demos → dist/demo-metadata.json
-├── astro.config.mjs                 # React + Tailwind + 3 custom Vite plugins
-└── wrangler.jsonc                   # CF Workers deployment (static assets)
+│   │   ├── demos/       # Executable examples; registry codegen input
+│   │   ├── docs/        # MDX/Astro documentation building blocks
+│   │   ├── kumo/        # CLI-installed blocks owned by this site
+│   │   └── skill/       # Interactive design-skill content
+│   ├── layouts/         # Base shell, navigation, and document layouts
+│   ├── lib/             # Vite plugins, Markdown conversion, registry access
+│   ├── pages/           # File-based routes and API/static text endpoints
+│   └── styles/global.css
+├── scripts/             # Demo metadata and design-skill generators
+├── astro.config.mjs     # Astro, MDX, React, Tailwind, and custom plugins
+├── vite.config.ts       # Type-aware lint rules
+└── wrangler.jsonc       # Static-assets Worker routes and environments
 ```
 
 ## WHERE TO LOOK
 
-| Task               | Location                                        | Notes                              |
-| ------------------ | ----------------------------------------------- | ---------------------------------- |
-| Component doc page | `src/pages/components/{name}.astro`             | Uses DocLayout + ComponentExample  |
-| Demo examples      | `src/components/demos/{Name}Demo.tsx`           | Naming is load-bearing (see below) |
-| Props table        | `src/components/docs/PropsTable.astro`          | Server-rendered from registry      |
-| Layout/nav         | `src/layouts/`, `src/components/SidebarNav.tsx` | Nav items are hard-coded           |
-| Color tokens page  | `src/pages/colors.astro` + `ColorsDemo.tsx`     | Uses `virtual:kumo-colors`         |
-| Registry viewer    | `src/pages/registry.astro` + `RegistryDemo.tsx` | Uses `virtual:kumo-registry`       |
-| Installed blocks   | `src/components/kumo/{block}/`                  | Installed via `kumo add`, not pkg  |
+| Task                    | Location                               | Notes                                           |
+| ----------------------- | -------------------------------------- | ----------------------------------------------- |
+| Component reference     | `src/pages/components/`                | MDX joins demos, props, and VR metadata         |
+| Demo behavior           | `src/components/demos/`                | Also feeds registry metadata                    |
+| Page chrome             | `src/layouts/`                         | `BaseLayout` -> `MainLayout` -> document layout |
+| Navigation              | `src/components/SidebarNav.tsx`        | Route lists are manual                          |
+| Docs building blocks    | `src/components/docs/`                 | Examples, props, code, headings, TOC            |
+| Registry data           | `src/lib/component-registry.ts`        | Server-side access                              |
+| Client registry         | `src/lib/vite-plugin-kumo-registry.ts` | Provides `virtual:kumo-registry`                |
+| Development HMR         | `src/lib/vite-plugin-kumo-hmr.ts`      | Rewrites Kumo imports to source                 |
+| Demo extraction         | `scripts/extract-demo-examples.ts`     | Writes `dist/demo-metadata.json`                |
+| Design skill generation | `scripts/generate-design-skill.mjs`    | Writes `public/skill.md`                        |
+| Worker deployment       | `wrangler.jsonc`                       | `dist` assets; production and staging routes    |
+
+## DATA FLOW
+
+```text
+src/components/demos/*Demo.tsx
+  -> codegen:demos
+  -> dist/demo-metadata.json
+  -> Kumo component-registry codegen
+
+src/components/skill/*
+  -> generate-design-skill
+  -> public/skill.md
+```
+
+`vp run build:docs` builds `@cloudflare/kumo` first. Production Astro builds use
+the package output, while development aliases Kumo imports to source for HMR.
 
 ## CONVENTIONS
 
-### Demo File Naming (CRITICAL)
-
-Demo extraction relies on exact naming:
-
-- **File**: `{Component}Demo.tsx` (e.g., `ButtonDemo.tsx`)
-- **Exports**: Functions ending in `Demo` suffix (e.g., `export function ButtonPrimaryDemo()`)
-- **Both forms work**: `export function FooDemo()` and `export const FooDemo = () =>`
-- **JSDoc** on demos becomes the `description` field in metadata
-
-Wrong naming = function not extracted = missing from component registry.
-
-### Hydration Directives
-
-| Directive             | When                                         |
-| --------------------- | -------------------------------------------- |
-| `client:visible`      | Most component demos (lazy)                  |
-| `client:load`         | Interactive: Dialog, Search, Toast, Registry |
-| `client:only="react"` | SSR mismatch: ThemeToggle, HomeGrid          |
-| `client:idle`         | Low priority: CopyPageButton                 |
-
-### Two Registry Access Patterns
-
-- **Server-side** (`.astro` files): Import from `~/lib/component-registry.ts`
-- **Client-side** (React demos): Use `virtual:kumo-registry` Vite module
-- Do NOT mix them.
-
-### Page Template
-
-Pattern: `DocLayout` (title, sourceFile) → `ComponentSection` → `ComponentExample` → `<DemoComponent client:visible />`
-
-Imports: `~/layouts/DocLayout.astro`, `~/components/docs/ComponentExample.astro`, `~/components/demos/{Name}Demo`
-
-### Visual Regression
-
-`ComponentExample` supports `vrSection` and `vrTitle` props for screenshot targeting by visual regression tests.
+- Use `~/*` for package-local imports; it maps to `src/*`.
+- Standard component pages use `MdxDocLayout`, then present the primary demo,
+  installation, usage, examples, and registry-backed props.
+- Give visual-regression examples stable `vrSection` slugs and `vrTitle` values.
+- Use semantic Kumo tokens only. Raw Tailwind colors and `dark:` variants fail lint.
+- Compose Kumo component classes with established package patterns; do not bypass
+  `kumo/no-cross-package-imports`.
+- Server-side Astro code imports `~/lib/component-registry.ts`. React islands use
+  `virtual:kumo-registry`.
+- Choose hydration by behavior: `client:visible` for ordinary demos,
+  `client:load` for immediately interactive UI, and `client:only="react"` only for
+  known SSR mismatches.
+- Keep `@cloudflare/kumo/styles` before Tailwind imports. Keep the Kumo `@source`
+  directive so Tailwind discovers package classes.
+- View transitions persist parts of the page shell. Browser state that follows
+  navigation must listen for Astro lifecycle events.
 
 ## ANTI-PATTERNS
 
-| Pattern                             | Why                             | Instead                                  |
-| ----------------------------------- | ------------------------------- | ---------------------------------------- |
-| Demo function without `Demo` suffix | Won't be extracted for registry | Always suffix with `Demo`                |
-| Manually updating PropsTable        | Data comes from registry        | Registry auto-generated at build time    |
-| Forgetting `@source` in global.css  | Tailwind misses kumo classes    | Keep `@source "../../../kumo/dist/**/*"` |
-| Using system `prefers-color-scheme` | Site uses `data-mode` attribute | Use ThemeToggle / `localStorage.theme`   |
+- Do not edit `dist/`, `.astro/`, or `public/skill.md`; builds regenerate them.
+- Do not put `AGENTS.md` or other non-route Markdown under `src/pages/`. Astro
+  treats Markdown there as a route and emits unwanted build output.
+- Do not treat blocks in `src/components/kumo/` as package exports. They are
+  installed source owned by the docs site.
+- Do not add a route without updating the applicable list in `SidebarNav.tsx`.
+- Do not import the server registry module into hydrated React components.
+- Do not assume `astro preview` models Cloudflare routing; deployment serves
+  `dist` through the static-assets Worker configuration.
+
+## COMMANDS
+
+```bash
+pnpm --filter @cloudflare/kumo-docs-astro dev
+pnpm --filter @cloudflare/kumo-docs-astro build
+pnpm --filter @cloudflare/kumo-docs-astro test
+pnpm --filter @cloudflare/kumo-docs-astro typecheck
+pnpm --filter @cloudflare/kumo-docs-astro lint
+pnpm vp run build:docs
+```
 
 ## NOTES
 
-- **Build order**: `codegen:demos` runs first in `build` script; produces `dist/demo-metadata.json` consumed by kumo registry codegen
-- **`dist/` is gitignored**: If `dist/demo-metadata.json` is missing, `codegen:registry` produces incomplete output
-- **SidebarNav is manual**: Adding a component page requires updating `SidebarNav.tsx` arrays (`staticPages`, `componentItems`, `chartItems`, `blockItems`)
-- **HomeGrid is manual**: New components need adding to the showcase grid + `componentRoutes`
-- **Search uses CommandPalette**: Client-side search powered by component registry API; works in dev mode without build step
-- **BaseLayout has blocking inline script**: Reads `localStorage.theme` synchronously to prevent dark mode FOUC
-- **`global.css`**: `@custom-variant dark` overrides Tailwind dark to match `[data-mode="dark"]`
-- **HMR plugin dev-only**: In development, `@cloudflare/kumo` imports are rewritten to source for instant HMR
-- **Dual theme code blocks**: Shiki uses github-light/vesper themes, switches via `[data-mode]` CSS
-- **Installed blocks**: `src/components/kumo/page-header/` and `resource-list/` are blocks installed via `kumo add`
+- `dist/demo-metadata.json` is a build intermediate but is also consumed across
+  packages. Missing it produces incomplete component registry data.
+- Build metadata in `astro.config.mjs` reads both package versions and Git state,
+  then injects constants used by the site shell and version endpoint.
+- Preview URLs require Wrangler to run with this directory as its project root,
+  or with an explicit path to this `wrangler.jsonc`.
+- Docs-only changes do not normally require a changeset.
