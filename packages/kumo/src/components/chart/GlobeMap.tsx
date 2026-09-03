@@ -301,6 +301,7 @@ export function GlobeMap({
           />
         ) : null}
         <path
+          data-land-style="hatched"
           d={landHatchPath}
           fill="none"
           stroke={resolvedLandColor}

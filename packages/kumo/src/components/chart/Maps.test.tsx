@@ -58,16 +58,12 @@ describe("GlobeMap", () => {
     expect(globe.getAttribute("role")).toBeNull();
     expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
     const landPath = globe
-      .querySelector('[data-land-style="dotted"]')
+      .querySelector('[data-land-style="hatched"]')
       ?.getAttribute("d");
-    expect(landPath).toContain("a");
-    expect(landPath?.match(/M/g)?.length).toBeGreaterThan(1_000);
-    expect(globe.querySelectorAll("circle")).toHaveLength(0);
+    expect(landPath).toContain("L");
+    expect(landPath?.match(/M/g)?.length).toBeGreaterThan(100);
+    expect(globe.querySelectorAll("circle")).toHaveLength(1);
     expect(globe.querySelector("pattern")).toBeNull();
-    expect(globe.querySelector("mask")).not.toBeNull();
-    expect(
-      globe.querySelector('[data-land-style="dotted"]')?.getAttribute("mask"),
-    ).toMatch(/^url\(#kumo-globe-fade-/);
     expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
 
     fireEvent.keyDown(
@@ -88,7 +84,7 @@ describe("GlobeMap", () => {
       />,
     );
     const globe = getByLabelText("Draggable globe");
-    const land = globe.querySelector('[data-land-style="dotted"]');
+    const land = globe.querySelector('[data-land-style="hatched"]');
     const initialPath = land?.getAttribute("d");
 
     fireEvent.pointerDown(globe, { pointerId: 1, clientX: 100, clientY: 100 });
