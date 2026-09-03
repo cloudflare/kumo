@@ -35,6 +35,10 @@ const packEntries = {
   "components/badge": resolve(__dirname, "src/components/badge/index.ts"),
   "components/banner": resolve(__dirname, "src/components/banner/index.ts"),
   "components/button": resolve(__dirname, "src/components/button/index.ts"),
+  "components/button-group": resolve(
+    __dirname,
+    "src/components/button-group/index.ts",
+  ),
   "components/date-range-picker": resolve(
     __dirname,
     "src/components/date-range-picker/index.ts",
