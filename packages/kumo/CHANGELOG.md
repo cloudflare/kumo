@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 2.13.1
+
+### Patch Changes
+
+- 7d5241d: Allow default Tooltip trigger children to control their line height, preventing inherited text from being clipped.
+
 ## 2.13.0
 
 ### Minor Changes
