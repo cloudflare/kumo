@@ -72,13 +72,6 @@ interface GlobeLandDot {
   z: number;
 }
 
-interface GlobeScreenDot {
-  projectedX: number;
-  projectedY: number;
-  depth: number;
-  command: string;
-}
-
 interface GlobeRotationTransform {
   cosLongitude: number;
   sinLongitude: number;
@@ -89,7 +82,7 @@ interface GlobeRotationTransform {
 }
 
 const GLOBE_SPHERE_PATH = `M${GLOBE_VIEWBOX_SIZE / 2 - GLOBE_RADIUS},${GLOBE_VIEWBOX_SIZE / 2}a${GLOBE_RADIUS},${GLOBE_RADIUS} 0 1,0 ${GLOBE_RADIUS * 2},0a${GLOBE_RADIUS},${GLOBE_RADIUS} 0 1,0 -${GLOBE_RADIUS * 2},0`;
-const globeDotCoordinateCache = new Map<number, GlobeScreenDot[]>();
+const globeDotCoordinateCache = new Map<number, GlobeLandDot[]>();
 
 function toCartesian(longitude: number, latitude: number): GlobeLandDot {
   const longitudeRadians = (longitude * Math.PI) / 180;
@@ -201,32 +194,22 @@ function createGraticulePath(
 }
 
 function createDottedLandPath(
-  dots: GlobeScreenDot[],
-  rotation: [number, number, number],
+  dots: GlobeLandDot[],
+  transform: GlobeRotationTransform,
+  radius: number,
 ): string | undefined {
-  const {
-    cosLongitude,
-    sinLongitude,
-    cosLatitude,
-    sinLatitude,
-    cosRoll,
-    sinRoll,
-  } = createRotationTransform(rotation);
+  const projected: [number, number, number] = [0, 0, 0];
+  const diameter = radius * 2;
   const commands: string[] = [];
 
-  // Keep a stable screen-space lattice and inverse-project each point into the
-  // rotating land mask. Only membership changes; dot geometry never moves.
   for (const dot of dots) {
-    const rotatedY = dot.projectedX * cosRoll + dot.projectedY * sinRoll;
-    const latitudeAxis = dot.projectedY * cosRoll - dot.projectedX * sinRoll;
-    const rotatedX = dot.depth * cosLatitude + latitudeAxis * sinLatitude;
-    const worldZ = latitudeAxis * cosLatitude - dot.depth * sinLatitude;
-    const worldX = rotatedX * cosLongitude + rotatedY * sinLongitude;
-    const worldY = rotatedY * cosLongitude - rotatedX * sinLongitude;
-    const longitude = (Math.atan2(worldY, worldX) * 180) / Math.PI;
-    const latitude =
-      (Math.asin(Math.max(-1, Math.min(1, worldZ))) * 180) / Math.PI;
-    if (isCanonicalLand(longitude, latitude)) commands.push(dot.command);
+    projectVector(dot, transform, projected);
+    if (projected[2] <= 0) continue;
+    const x = Number(projected[0].toFixed(2));
+    const y = Number(projected[1].toFixed(2));
+    commands.push(
+      `M${x - radius},${y}a${radius},${radius} 0 1,0 ${diameter},0a${radius},${radius} 0 1,0 -${diameter},0`,
+    );
   }
   return commands.join("") || undefined;
 }
@@ -314,31 +297,34 @@ export function GlobeMap({
     const cached = globeDotCoordinateCache.get(landDotSpacing);
     if (cached) return cached;
 
-    const dots: GlobeScreenDot[] = [];
+    const dots: GlobeLandDot[] = [];
+    const geographicSpacing = Math.max(1, Math.round(landDotSpacing * 0.3));
     const radius = Number((landDotSpacing * 0.28).toFixed(2));
-    const diameter = radius * 2;
-    const start = GLOBE_VIEWBOX_SIZE / 2 - GLOBE_RADIUS;
-    const end = GLOBE_VIEWBOX_SIZE / 2 + GLOBE_RADIUS;
-    for (let y = start + landDotSpacing / 2; y < end; y += landDotSpacing) {
-      for (let x = start + landDotSpacing / 2; x < end; x += landDotSpacing) {
-        const projectedX = (x - GLOBE_VIEWBOX_SIZE / 2) / GLOBE_RADIUS;
-        const projectedY = (GLOBE_VIEWBOX_SIZE / 2 - y) / GLOBE_RADIUS;
-        const squaredDistance =
-          projectedX * projectedX + projectedY * projectedY;
-        if (squaredDistance >= 1) continue;
-        dots.push({
-          projectedX,
-          projectedY,
-          depth: Math.sqrt(1 - squaredDistance),
-          command: `M${x - radius},${y}a${radius},${radius} 0 1,0 ${diameter},0a${radius},${radius} 0 1,0 -${diameter},0`,
-        });
+    for (
+      let latitude = -90 + geographicSpacing / 2;
+      latitude < 90;
+      latitude += geographicSpacing
+    ) {
+      for (
+        let longitude = -180 + geographicSpacing / 2;
+        longitude < 180;
+        longitude += geographicSpacing
+      ) {
+        if (isCanonicalLand(longitude, latitude)) {
+          dots.push(toCartesian(longitude, latitude));
+        }
       }
     }
     globeDotCoordinateCache.set(landDotSpacing, dots);
     return dots;
   }, [landDotSpacing]);
   const dottedLandPath = useMemo(
-    () => createDottedLandPath(dottedLandDots, currentRotationRef.current),
+    () =>
+      createDottedLandPath(
+        dottedLandDots,
+        currentRotationTransform,
+        Number((landDotSpacing * 0.28).toFixed(2)),
+      ),
     [dottedLandDots, landDotSpacing],
   );
 
@@ -346,7 +332,11 @@ export function GlobeMap({
     (nextRotation: [number, number, number]) => {
       currentRotationRef.current = nextRotation;
 
-      const nextLandPath = createDottedLandPath(dottedLandDots, nextRotation);
+      const nextLandPath = createDottedLandPath(
+        dottedLandDots,
+        createRotationTransform(nextRotation),
+        Number((landDotSpacing * 0.28).toFixed(2)),
+      );
       if (nextLandPath) landPathRef.current?.setAttribute("d", nextLandPath);
       else landPathRef.current?.removeAttribute("d");
 

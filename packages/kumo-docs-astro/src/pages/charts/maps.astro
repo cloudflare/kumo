@@ -10,7 +10,7 @@ import {
   BubbleMapCloudflareLocationsDemo,
 } from "~/components/demos/Chart/BubbleMapDemo";
 import { ChoroplethMapBasicDemo } from "~/components/demos/Chart/ChoroplethMapDemo";
-import { GlobeMapAvailabilityZonesDemo } from "~/components/demos/Chart/GlobeMapDemo";
+import { GlobeMapComparisonDemo } from "~/components/demos/Chart/GlobeMapDemo";
 import type { MapGeoJson } from "@cloudflare/kumo";
 
 const WORLD_GEO_JSON_URL =
@@ -192,7 +192,7 @@ export default function Example() {
   markerRadius={8}
   autoRotate
 />`}>
-          <GlobeMapAvailabilityZonesDemo client:visible />
+          <GlobeMapComparisonDemo client:visible />
         </ComponentExample>
       </div>
 

@@ -104,10 +104,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: npm:@voidzero-dev/vite-plus-core@0.2.6
-        version: '@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)'
+        version: '@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)'
       vite-plus:
         specifier: 'catalog:'
-        version: 0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(happy-dom@20.8.9)(jiti@2.7.0)(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)
+        version: 0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.27.2)(happy-dom@20.8.9)(jiti@2.7.0)(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)
 
   packages/kumo:
     dependencies:
@@ -277,6 +277,9 @@ importers:
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
+      d3-geo:
+        specifier: ^3.1.1
+        version: 3.1.1
       echarts:
         specifier: ^6.0.0
         version: 6.0.0
@@ -314,6 +317,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))
+      '@types/d3-geo':
+        specifier: ^3.1.0
+        version: 3.1.0
       '@types/mdast':
         specifier: 4.0.4
         version: 4.0.4
@@ -380,10 +386,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: npm:@voidzero-dev/vite-plus-core@0.2.6
-        version: '@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)'
+        version: '@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)'
       vite-plus:
         specifier: 'catalog:'
-        version: 0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.27.2)(happy-dom@20.8.9)(jiti@2.7.0)(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)
+        version: 0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(esbuild@0.28.1)(happy-dom@20.8.9)(jiti@2.7.0)(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0)
       vitest:
         specifier: 4.1.10
         version: 4.1.10(@types/node@22.19.1)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/browser-preview@4.1.10)(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.27.2)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(happy-dom@20.8.9)(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))
@@ -819,31 +825,31 @@ packages:
         optional: true
 
   '@cloudflare/workerd-darwin-64@1.20260430.1':
-    resolution: {integrity: sha512-ADohZUHf7NBvPp2PdZig2Opxx+hDkk3ve7jrTne3JRx9kDSB73zc4LzcEeEN8LKkbAcqZmvfRJfpChSlusu0lA==}
+    resolution: {integrity: sha512-ADohZUHf7NBvPp2PdZig2Opxx+hDkk3ve7jrTne3JRx9kDSB73zc4LzcEeEN8LKkbAcqZmvfRJfpChSlusu0lA==, tarball: https://registry.npmjs.org/@cloudflare/workerd-darwin-64/-/workerd-darwin-64-1.20260430.1.tgz}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [darwin]
 
   '@cloudflare/workerd-darwin-arm64@1.20260430.1':
-    resolution: {integrity: sha512-/DoYC/1wHs+YRZzzqSQg1/EHB4hiv1yV5U8FnmapRRIzVaPtnt+ApeOXeMrIdKidgKOI8TqQzgBU8xbIM7Cl4Q==}
+    resolution: {integrity: sha512-/DoYC/1wHs+YRZzzqSQg1/EHB4hiv1yV5U8FnmapRRIzVaPtnt+ApeOXeMrIdKidgKOI8TqQzgBU8xbIM7Cl4Q==, tarball: https://registry.npmjs.org/@cloudflare/workerd-darwin-arm64/-/workerd-darwin-arm64-1.20260430.1.tgz}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [darwin]
 
   '@cloudflare/workerd-linux-64@1.20260430.1':
-    resolution: {integrity: sha512-koJhBWvEVZPKCVFtMLp2iMHlYr+lFCF47wGbnlKdHVlemV0zTxJEyHI8aLlrhPLhBmOmYLp46rXw09/qJkRIhQ==}
+    resolution: {integrity: sha512-koJhBWvEVZPKCVFtMLp2iMHlYr+lFCF47wGbnlKdHVlemV0zTxJEyHI8aLlrhPLhBmOmYLp46rXw09/qJkRIhQ==, tarball: https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20260430.1.tgz}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [linux]
 
   '@cloudflare/workerd-linux-arm64@1.20260430.1':
-    resolution: {integrity: sha512-hMdapNAzNQZDXGGkg4Slydc3fRJP5FUZLJVVcZCW/+imhhJro9Z1rv5n/wfR+txKoSWhTYR8eOp8Pyi2bzLzlw==}
+    resolution: {integrity: sha512-hMdapNAzNQZDXGGkg4Slydc3fRJP5FUZLJVVcZCW/+imhhJro9Z1rv5n/wfR+txKoSWhTYR8eOp8Pyi2bzLzlw==, tarball: https://registry.npmjs.org/@cloudflare/workerd-linux-arm64/-/workerd-linux-arm64-1.20260430.1.tgz}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [linux]
 
   '@cloudflare/workerd-windows-64@1.20260430.1':
-    resolution: {integrity: sha512-jS3ffixjb5USOwz4frw4WzCz0HrjVxkgyU3WiYb06N7hBAfN6eOrveAJ4QRef0+suK4V1vQFoB1oKdRBsXe9Dw==}
+    resolution: {integrity: sha512-jS3ffixjb5USOwz4frw4WzCz0HrjVxkgyU3WiYb06N7hBAfN6eOrveAJ4QRef0+suK4V1vQFoB1oKdRBsXe9Dw==, tarball: https://registry.npmjs.org/@cloudflare/workerd-windows-64/-/workerd-windows-64-1.20260430.1.tgz}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
@@ -8391,7 +8397,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@types/node@22.19.1)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/browser-preview@4.1.10)(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@22.19.1)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(happy-dom@20.8.9)(msw@2.12.3(@types/node@22.19.1)(typescript@5.9.3))
+      vitest: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(msw@2.12.3(@types/node@24.13.3)(typescript@5.9.3))(playwright@1.57.0)(vitest@4.1.10))(@vitest/browser-preview@4.1.10)(@vitest/ui@4.1.10(vitest@4.1.10))(@voidzero-dev/vite-plus-core@0.2.6(@arethetypeswrong/core@0.18.5)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(publint@0.3.21)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.9.0))(happy-dom@20.8.9)(msw@2.12.3(@types/node@24.13.3)(typescript@5.9.3))
 
   '@vitest/utils@4.1.10':
     dependencies:
