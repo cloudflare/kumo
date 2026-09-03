@@ -1,5 +1,6 @@
 import { createRef } from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { GlobeMap } from "./GlobeMap";
 import { BubbleMap, type MapGeoJson } from "./Maps";
@@ -92,6 +93,22 @@ describe("GlobeMap", () => {
 
     await waitFor(() => expect(land?.getAttribute("d")).not.toBe(initialPath));
     expect(onRotationChange).toHaveBeenCalledWith([2, -20, 0]);
+  });
+
+  it("calls onMarkerClick when a marker is clicked", async () => {
+    const user = userEvent.setup();
+    const onMarkerClick = vi.fn();
+    const { getByRole } = render(
+      <GlobeMap
+        markers={[{ name: "London", latitude: 51.5, longitude: -0.12 }]}
+        onMarkerClick={onMarkerClick}
+      />,
+    );
+
+    await user.click(getByRole("button", { name: /London:/ }));
+    expect(onMarkerClick).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "London" }),
+    );
   });
 });
 
