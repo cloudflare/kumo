@@ -216,6 +216,10 @@
       "types": "./dist/components/tabs.d.ts",
       "import": "./dist/components/tabs.js"
     },
+    "./components/tag-input": {
+      "types": "./dist/components/tag-input.d.ts",
+      "import": "./dist/components/tag-input.js"
+    },
     "./components/text": {
       "types": "./dist/components/text.d.ts",
       "import": "./dist/components/text.js"

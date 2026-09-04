@@ -336,6 +336,11 @@ export {
   type UseTableOfContentsActiveIdOptions,
   type UseTableOfContentsActiveIdResult,
 } from "./components/table-of-contents";
+export {
+  TagInput,
+  type TagInputLabels,
+  type TagInputProps,
+} from "./components/tag-input";
 // PLOP_INJECT_EXPORT
 
 // Utils
