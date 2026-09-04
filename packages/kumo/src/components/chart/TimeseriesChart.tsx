@@ -9,7 +9,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
@@ -95,11 +94,11 @@ export interface TimeseriesChartProps {
    */
   tooltipValueFormat?: (value: number) => string;
   /**
-   * Footer content rendered below the series rows in the tooltip.
+   * Footer text rendered below the series rows in the tooltip.
    * Intended for brief context such as data freshness or aggregation details.
    * Available for every `TimeseriesChart` configuration.
    */
-  tooltipFooter?: ReactNode;
+  tooltipFooter?: string;
   /**
    * Controls which series are shown in the tooltip.
    * - `"all"` — show all series at the hovered timestamp (default)
