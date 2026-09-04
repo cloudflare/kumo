@@ -259,6 +259,7 @@ const { state, isPeeking } = useSidebar();
         <Heading level={3}>Scroll to Item</Heading>
         <p>
           Tag nav items with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">itemId</code>, then call <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">useSidebar().scrollToItem(id, options)</code> to bring one into view.
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">scrollItemIntoView(id, options)</code> to preserve the current position when the item is already fully visible.
           <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">align</code> is <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"start"</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"center"</code>, <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"end"</code>, or <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"auto"</code> (default — no-op if visible). <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">behavior</code> defaults to <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"auto"</code> (instant) so cross-app landings don't animate on entry; pass <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"smooth"</code> for in-app "jump to section" flows. Honors <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">prefers-reduced-motion</code>. Works correctly with <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.SlidingViews</code> — items are resolved from a per-provider registry, not a DOM query.
         </p>
         <p>
