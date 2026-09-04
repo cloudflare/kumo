@@ -1,4 +1,5 @@
 import { XIcon } from "@phosphor-icons/react";
+import { Field as FieldBase } from "@base-ui/react/field";
 import {
   forwardRef,
   useId,
@@ -151,6 +152,43 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
       "flex w-fit max-w-full shrink-0 items-center gap-2.5 rounded-sm bg-kumo-overlay ring-1 ring-kumo-hairline",
       "h-6 py-0 pr-[3px] pl-2 text-sm",
     );
+    const input = (controlProps?: ComponentPropsWithoutRef<"input">) => (
+      <input
+        {...controlProps}
+        {...inputProps}
+        ref={(node) => {
+          inputRef.current = node;
+          if (typeof forwardedRef === "function") forwardedRef(node);
+          else if (forwardedRef) forwardedRef.current = node;
+        }}
+        aria-invalid={Boolean(fieldError)}
+        aria-label={
+          inputProps["aria-label"] ??
+          (typeof label === "string" ? label : "Add tag")
+        }
+        className={cn(
+          "min-w-32 flex-1 bg-transparent outline-none",
+          "px-1 py-0.5",
+        )}
+        disabled={disabled}
+        autoComplete={autoComplete}
+        id={controlProps?.id ?? id ?? inputId}
+        placeholder={placeholder}
+        value={inputValue}
+        onBlur={(event) => {
+          onBlur?.(event);
+          if (!event.defaultPrevented) commit(inputValue);
+        }}
+        onChange={(event) => {
+          setInputValue(event.target.value);
+          setMessage(undefined);
+          onChange?.(event);
+        }}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+      />
+    );
+    const hasField = Boolean(label || description || fieldError);
     const control = (
       <div
         className={cn(
@@ -179,42 +217,14 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
             />
           </span>
         ))}
-        <input
-          {...inputProps}
-          ref={(node) => {
-            inputRef.current = node;
-            if (typeof forwardedRef === "function") forwardedRef(node);
-            else if (forwardedRef) forwardedRef.current = node;
-          }}
-          aria-invalid={Boolean(fieldError)}
-          aria-label={
-            inputProps["aria-label"] ??
-            (typeof label === "string" ? label : "Add tag")
-          }
-          className={cn(
-            "min-w-32 flex-1 bg-transparent outline-none",
-            "px-1 py-0.5",
-          )}
-          disabled={disabled}
-          autoComplete={autoComplete}
-          id={id ?? inputId}
-          placeholder={placeholder}
-          value={inputValue}
-          onBlur={(event) => {
-            onBlur?.(event);
-            if (!event.defaultPrevented) commit(inputValue);
-          }}
-          onChange={(event) => {
-            setInputValue(event.target.value);
-            setMessage(undefined);
-            onChange?.(event);
-          }}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-        />
+        {hasField ? (
+          <FieldBase.Control render={(controlProps) => input(controlProps)} />
+        ) : (
+          input()
+        )}
       </div>
     );
-    if (label || description || fieldError) {
+    if (hasField) {
       return (
         <Field
           label={label ?? ""}

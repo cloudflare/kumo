@@ -35,4 +35,10 @@ describe("TagInput", () => {
         .getAttribute("disabled"),
     ).not.toBeNull();
   });
+
+  it("associates its label with the input", () => {
+    render(<TagInput label="Tags" />);
+    const input = screen.getByLabelText("Tags");
+    expect(screen.getByText("Tags").closest("label")?.htmlFor).toBe(input.id);
+  });
 });
