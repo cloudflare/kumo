@@ -1,4 +1,5 @@
 import { memo, type ReactNode } from "react";
+import { Text } from "../text";
 import type { TimeseriesMarker } from "./timeseries-markers";
 
 export interface TooltipRow {
@@ -61,7 +62,9 @@ export const TooltipContent = memo(function TooltipContent({
         </>
       )}
       {hasFooter && (
-        <div className="mt-1 text-xs text-kumo-subtle">{footer}</div>
+        <Text variant="secondary" size="xs" DANGEROUS_className="mt-1">
+          {footer}
+        </Text>
       )}
     </>
   );
