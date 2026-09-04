@@ -26,4 +26,13 @@ describe("TagInput", () => {
     expect(screen.getByText('"invalid" is not valid.')).toBeTruthy();
     expect(screen.getByText("valid@example.com")).toBeTruthy();
   });
+
+  it("disables tag removal when disabled", () => {
+    render(<TagInput aria-label="Tags" defaultValue={["one"]} disabled />);
+    expect(
+      screen
+        .getByRole("button", { name: "Remove one" })
+        .getAttribute("disabled"),
+    ).not.toBeNull();
+  });
 });

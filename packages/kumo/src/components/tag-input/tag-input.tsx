@@ -171,6 +171,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
               shape="square"
               size="xs"
               variant="ghost"
+              disabled={disabled}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() =>
                 setValues(values.filter((value) => value !== item))
