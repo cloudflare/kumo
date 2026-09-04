@@ -1,0 +1,29 @@
+---
+import { TagInputPrototype } from "../components/prototypes/TagInputPrototype";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Tag input prototype"
+  description="An interactive prototype for a creatable tag input."
+>
+  <main class="mx-auto grid min-h-screen w-full max-w-3xl content-center gap-10 p-6 md:p-12">
+    <header class="grid gap-3">
+      <p class="text-sm font-medium tracking-wide text-kumo-subtle uppercase">
+        Component prototype
+      </p>
+      <h1 class="text-3xl font-semibold tracking-tight text-kumo-strong md:text-4xl">
+        Tag input
+      </h1>
+      <p class="max-w-2xl text-base text-kumo-subtle">
+        A creatable multi-value input that keeps editing quick without losing validation feedback.
+      </p>
+    </header>
+    <section class="rounded-xl border border-kumo-line bg-kumo-base p-5 shadow-sm md:p-7">
+      <TagInputPrototype client:load />
+    </section>
+    <p class="text-sm text-kumo-subtle">
+      Press Enter, comma, or Tab to commit. Backspace removes the last tag when the input is empty.
+    </p>
+  </main>
+</BaseLayout>
