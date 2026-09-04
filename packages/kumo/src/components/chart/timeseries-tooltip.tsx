@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import { memo } from "react";
 import { Text } from "../text";
 import type { TimeseriesMarker } from "./timeseries-markers";
 
@@ -30,7 +30,7 @@ export interface TooltipContentProps {
   state: TooltipState;
   formatValue?: (v: number) => string;
   formatTimestamp: (ts: number | string | Date) => string;
-  footer?: ReactNode;
+  footer?: string;
 }
 
 export const TooltipContent = memo(function TooltipContent({
@@ -39,8 +39,6 @@ export const TooltipContent = memo(function TooltipContent({
   formatTimestamp,
   footer,
 }: TooltipContentProps) {
-  const hasFooter = footer != null && typeof footer !== "boolean";
-
   return (
     <>
       {state.type === "marker" ? (
@@ -61,7 +59,7 @@ export const TooltipContent = memo(function TooltipContent({
           />
         </>
       )}
-      {hasFooter && (
+      {footer && (
         <Text variant="secondary" size="xs" DANGEROUS_className="mt-1">
           {footer}
         </Text>

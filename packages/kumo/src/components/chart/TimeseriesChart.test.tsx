@@ -24,12 +24,12 @@ const createMockEcharts = (mockChart = createMockChart()) => ({
 });
 
 describe("TimeseriesChart", () => {
-  it("does not reserve footer space for boolean React nodes", () => {
+  it("does not reserve footer space for an empty string", () => {
     const { container } = render(
       <TooltipContent
         state={{ type: "series", ts: 1, rows: [], hiddenCount: 0 }}
         formatTimestamp={() => "Now"}
-        footer={false}
+        footer=""
       />,
     );
 
@@ -122,7 +122,7 @@ describe("TimeseriesChart", () => {
           },
         ]}
         markers={[marker]}
-        tooltipFooter={<span>Five-minute rolling window</span>}
+        tooltipFooter="Five-minute rolling window"
       />,
     );
 
@@ -138,7 +138,7 @@ describe("TimeseriesChart", () => {
     expect(
       row.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
-    expect(footer.parentElement?.className).toContain("text-kumo-subtle");
+    expect(footer.className).toContain("text-kumo-subtle");
 
     const mouseover = mockChart.on.mock.calls.find(
       (call) => call[0] === "mouseover",

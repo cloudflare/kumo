@@ -2,4 +2,4 @@
 "@cloudflare/kumo": minor
 ---
 
-Add support for footer content below `TimeseriesChart` tooltip values.
+Add support for footer text below `TimeseriesChart` tooltip values.
