@@ -1093,6 +1093,8 @@ describe("Sidebar scrollToItem", () => {
     ["preserves a visible item", 100, 0, 0],
     ["start-aligns an item below the viewport", 800, 0, 800],
     ["start-aligns an item above the viewport", -400, 500, 100],
+    ["start-aligns an item clipped below the viewport", 380, 0, 380],
+    ["start-aligns an item clipped above the viewport", -20, 500, 480],
   ])("%s", async (_, itemTop, initialScrollTop, expectedScrollTop) => {
     function Ctrl() {
       const { scrollItemIntoView } = useSidebar();
