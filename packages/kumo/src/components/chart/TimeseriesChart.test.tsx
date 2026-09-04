@@ -8,6 +8,7 @@ import {
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { TimeseriesChart } from "./TimeseriesChart";
+import { TooltipContent } from "./timeseries-tooltip";
 
 const createMockChart = () => ({
   setOption: vi.fn(),
@@ -23,6 +24,18 @@ const createMockEcharts = (mockChart = createMockChart()) => ({
 });
 
 describe("TimeseriesChart", () => {
+  it("does not reserve footer space for boolean React nodes", () => {
+    const { container } = render(
+      <TooltipContent
+        state={{ type: "series", ts: 1, rows: [], hiddenCount: 0 }}
+        formatTimestamp={() => "Now"}
+        footer={false}
+      />,
+    );
+
+    expect(container.querySelector(".text-kumo-subtle")).toBeNull();
+  });
+
   it("server-renders without browser globals", () => {
     const mockEcharts = createMockEcharts();
     const originalWindow = globalThis.window;
@@ -91,6 +104,63 @@ describe("TimeseriesChart", () => {
     fireEvent.mouseMove(window, { clientX: 101, clientY: 50 });
 
     expect(screen.queryByText("Requests")).toBeNull();
+  });
+
+  it("renders supplemental content below series values in every tooltip", async () => {
+    const mockChart = createMockChart();
+    const mockEcharts = createMockEcharts(mockChart);
+    const marker = { timestamp: 1, label: "Deployment" };
+
+    render(
+      <TimeseriesChart
+        echarts={mockEcharts as any}
+        data={[
+          {
+            name: "Requests",
+            color: "#4290F0",
+            data: [[1, 10]],
+          },
+        ]}
+        markers={[marker]}
+        tooltipFooter={<span>Five-minute rolling window</span>}
+      />,
+    );
+
+    const updateAxisPointer = mockChart.on.mock.calls.find(
+      (call) => call[0] === "updateaxispointer",
+    )?.[1];
+    expect(updateAxisPointer).toBeTypeOf("function");
+
+    await act(() => updateAxisPointer({ axesInfo: [{ value: 1 }] }));
+
+    const row = await screen.findByText("Requests");
+    const footer = screen.getByText("Five-minute rolling window");
+    expect(
+      row.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(footer.parentElement?.className).toContain("text-kumo-subtle");
+
+    const mouseover = mockChart.on.mock.calls.find(
+      (call) => call[0] === "mouseover",
+    )?.[1];
+    expect(mouseover).toBeTypeOf("function");
+
+    await act(() =>
+      mouseover({
+        componentType: "markLine",
+        data: { tooltip: { marker: { ...marker, markers: [marker] } } },
+      }),
+    );
+
+    expect(await screen.findByText("Deployment")).not.toBeNull();
+    expect(screen.getByText("Five-minute rolling window")).not.toBeNull();
+    expect(
+      screen
+        .getByText("Requests")
+        .compareDocumentPosition(
+          screen.getByText("Five-minute rolling window"),
+        ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("reactivates brush-to-zoom after a notMerge option update", async () => {

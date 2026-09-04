@@ -720,6 +720,7 @@ export function ChartExampleDemo() {
           isDarkMode={isDarkMode}
           data={data}
           height={300}
+          tooltipFooter="Percentiles use a five-minute rolling window."
         />
       </LayerCard.Primary>
     </LayerCard>

@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ReactNode,
 } from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Chart, ChartEvents, KumoChartOption } from "./EChart";
@@ -93,6 +94,12 @@ export interface TimeseriesChartProps {
    * deprecated `yAxisTickLabelFormat` prop.
    */
   tooltipValueFormat?: (value: number) => string;
+  /**
+   * Footer content rendered below the series rows in the tooltip.
+   * Intended for brief context such as data freshness or aggregation details.
+   * Available for every `TimeseriesChart` configuration.
+   */
+  tooltipFooter?: ReactNode;
   /**
    * Controls which series are shown in the tooltip.
    * - `"all"` — show all series at the hovered timestamp (default)
@@ -235,6 +242,7 @@ export const TimeseriesChart = forwardRef<
     yAxisName,
     yAxisTickCount,
     tooltipValueFormat,
+    tooltipFooter,
     onTimeRangeChange,
     height = 350,
     incomplete,
@@ -767,6 +775,7 @@ export const TimeseriesChart = forwardRef<
                 state={tooltipState}
                 formatValue={formatFn}
                 formatTimestamp={formatTimestamp}
+                footer={tooltipFooter}
               />
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>
