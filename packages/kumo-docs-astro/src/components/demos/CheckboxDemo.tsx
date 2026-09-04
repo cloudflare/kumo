@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Checkbox } from "@cloudflare/kumo";
+import { Badge, Checkbox } from "@cloudflare/kumo";
+import { ChatCircleTextIcon, EnvelopeIcon } from "@phosphor-icons/react";
 
 export function CheckboxBasicDemo() {
   const [checked, setChecked] = useState(false);
@@ -75,6 +76,112 @@ export function CheckboxGroupDemo() {
       <Checkbox.Item value="sms" label="SMS notifications" />
       <Checkbox.Item value="push" label="Push notifications" />
     </Checkbox.Group>
+  );
+}
+
+export function CheckboxBorderedGroupDemo() {
+  const [notifications, setNotifications] = useState<string[]>(["email"]);
+  const [alertCategories, setAlertCategories] = useState<string[]>([
+    "security",
+    "performance",
+  ]);
+  const [exportContents, setExportContents] = useState<string[]>([
+    "configuration",
+    "analytics",
+  ]);
+  const [permissions, setPermissions] = useState<string[]>(["read", "edit"]);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <Checkbox.Group
+        legend="Notifications"
+        appearance="bordered"
+        orientation="horizontal"
+        value={notifications}
+        onValueChange={setNotifications}
+      >
+        <Checkbox.Item
+          value="email"
+          label={
+            <span className="flex items-center gap-2">
+              <EnvelopeIcon
+                size={18}
+                className="text-kumo-subtle"
+                aria-hidden
+              />
+              Email
+            </span>
+          }
+        />
+        <Checkbox.Item
+          value="sms"
+          label={
+            <span className="flex items-center gap-2">
+              <ChatCircleTextIcon
+                size={18}
+                className="text-kumo-subtle"
+                aria-hidden
+              />
+              SMS
+            </span>
+          }
+        />
+      </Checkbox.Group>
+      <Checkbox.Group
+        legend="Alert categories (control first)"
+        appearance="bordered"
+        controlFirst
+        value={alertCategories}
+        onValueChange={setAlertCategories}
+      >
+        <Checkbox.Item value="security" label="Security" />
+        <Checkbox.Item value="performance" label="Performance" />
+        <Checkbox.Item
+          value="reliability"
+          label={
+            <span className="flex flex-wrap items-center gap-2">
+              Reliability
+              <Badge variant="neutral">Beta</Badge>
+            </span>
+          }
+        />
+        <Checkbox.Item value="billing" label="Billing (unavailable)" disabled />
+      </Checkbox.Group>
+      <Checkbox.Group
+        legend="Export contents"
+        description="Long labels should wrap without moving or shrinking the controls."
+        appearance="bordered"
+        orientation="horizontal"
+        value={exportContents}
+        onValueChange={setExportContents}
+      >
+        <Checkbox.Item
+          value="configuration"
+          label="Account and zone configuration settings"
+        />
+        <Checkbox.Item
+          value="analytics"
+          label="Historical analytics and event data"
+        />
+        <Checkbox.Item
+          value="members"
+          label="Member profiles, roles, and access policies"
+        />
+      </Checkbox.Group>
+      <Checkbox.Group
+        legend="Team permissions"
+        appearance="bordered"
+        controlFirst
+        value={permissions}
+        onValueChange={setPermissions}
+      >
+        <Checkbox.Item value="read" label="View resources" />
+        <Checkbox.Item value="edit" label="Create and edit resources" />
+        <Checkbox.Item value="deploy" label="Deploy to production" />
+        <Checkbox.Item value="members" label="Manage team members" />
+        <Checkbox.Item value="billing" label="Manage billing" disabled />
+      </Checkbox.Group>
+    </div>
   );
 }
 
