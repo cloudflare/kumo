@@ -172,6 +172,14 @@ export interface SidebarContextValue {
    * @param options.behavior — `"auto"` for instant, `"smooth"` for animated (default `"auto"`)
    */
   scrollToItem: (id: string, options?: SidebarScrollToItemOptions) => void;
+  /**
+   * Scroll a tagged nav item only when it is outside its sidebar viewport.
+   * Explicit alignment controls where an offscreen item lands.
+   */
+  scrollItemIntoView: (
+    id: string,
+    options?: SidebarScrollToItemOptions,
+  ) => void;
 }
 
 /**
@@ -443,6 +451,27 @@ function SidebarProvider({
     [],
   );
 
+  const scrollItemIntoView = useCallback(
+    (id: string, options: SidebarScrollToItemOptions = {}) => {
+      const target = itemsRef.current.get(id);
+      if (!target) return;
+      const viewport = target.closest<HTMLElement>('[data-sidebar="viewport"]');
+      if (!viewport) return;
+
+      const targetRect = target.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+      if (
+        targetRect.top >= viewportRect.top &&
+        targetRect.bottom <= viewportRect.bottom
+      ) {
+        return;
+      }
+
+      scrollToItem(id, options);
+    },
+    [scrollToItem],
+  );
+
   // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
   // either stable (props, setters) or derived from state that triggers re-render
   const contextValue = useMemo<SidebarContextValue>(
@@ -472,6 +501,7 @@ function SidebarProvider({
       animationDuration,
       registerItem,
       scrollToItem,
+      scrollItemIntoView,
     }),
     [state, open, openMobile, isMobile, width, isResizing, isPeeking],
   );

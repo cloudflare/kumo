@@ -1089,6 +1089,47 @@ describe("Sidebar scrollToItem", () => {
     expect(readScrollTop(viewport)).toBe(800);
   });
 
+  it.each([
+    ["preserves a visible item", 100, 0, 0],
+    ["start-aligns an item below the viewport", 800, 0, 800],
+    ["start-aligns an item above the viewport", -400, 500, 100],
+    ["start-aligns an item clipped below the viewport", 380, 0, 380],
+    ["start-aligns an item clipped above the viewport", -20, 500, 480],
+  ])("%s", async (_, itemTop, initialScrollTop, expectedScrollTop) => {
+    function Ctrl() {
+      const { scrollItemIntoView } = useSidebar();
+      return (
+        <button
+          type="button"
+          data-testid="ctrl"
+          onClick={() => scrollItemIntoView("zero-trust", { align: "start" })}
+        />
+      );
+    }
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton itemId="zero-trust">
+              Zero Trust
+            </SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+        <Ctrl />
+      </TestSidebar>,
+    );
+
+    const viewport = getViewport();
+    setViewportGeometry(viewport, 2000, 400);
+    stubViewportOrigin(viewport);
+    stubItemGeometry(findItem("zero-trust"), itemTop, 40);
+    viewport.scrollTop = initialScrollTop;
+
+    await userEvent.click(screen.getByTestId("ctrl"));
+    expect(readScrollTop(viewport)).toBe(expectedScrollTop);
+  });
+
   it("centers the target when align is 'center'", async () => {
     function Ctrl() {
       const { scrollToItem } = useSidebar();
