@@ -550,12 +550,13 @@ export function HomeGrid() {
       id: "link",
       Component: (
         <div className="flex flex-col gap-2 text-sm">
-          <Link href="#">Default link</Link>
-          <Link href="#" variant="current">
-            Current color link
-          </Link>
-          <Link href="#" variant="plain">
-            Plain link
+          <Link href="#">Inline link</Link>
+          <Link
+            href="https://cloudflare.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            External link <Link.ExternalIcon />
           </Link>
         </div>
       ),

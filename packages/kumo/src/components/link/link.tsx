@@ -38,31 +38,27 @@ const ExternalIcon = (props: SVGProps<SVGSVGElement>) => (
 
 ExternalIcon.displayName = "Link.ExternalIcon";
 
-/** Link variant definitions mapping variant names to their Tailwind classes. */
+/**
+ * Link variant definitions.
+ *
+ * Link intentionally exposes a single visual style: an underlined anchor that
+ * inherits color from its parent text (typically rendering as the default
+ * foreground color, e.g. black on light mode). This keeps links consistent
+ * across the product and avoids competing "brand blue" link colors.
+ */
 export const KUMO_LINK_VARIANTS = {
   variant: {
-    inline: {
-      classes:
-        // text-kumo-link provides defensive color that won't be overridden by global `a` styles
-        "text-kumo-link underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors",
-      description: "Inline text link that flows with content",
-    },
-    current: {
+    default: {
       classes:
         "text-current underline underline-offset-[0.15em] decoration-[0.0625em] link-current transition-colors",
-      description: "Link that inherits color from parent text",
-    },
-    plain: {
-      classes:
-        // text-kumo-link provides defensive color that won't be overridden by global `a` styles
-        "text-kumo-link hover:text-kumo-link/70 transition-colors",
-      description: "Link without underline decoration",
+      description:
+        "Underlined link that inherits color from parent text (default foreground)",
     },
   },
 } as const;
 
 export const KUMO_LINK_DEFAULT_VARIANTS = {
-  variant: "inline",
+  variant: "default",
 } as const;
 
 export type KumoLinkVariant = keyof typeof KUMO_LINK_VARIANTS.variant;
@@ -70,10 +66,11 @@ export type KumoLinkVariant = keyof typeof KUMO_LINK_VARIANTS.variant;
 export interface KumoLinkVariantsProps {
   /**
    * Visual style of the link.
-   * - `"inline"` — Inline text link that flows with content
-   * - `"current"` — Link that inherits color from parent text
-   * - `"plain"` — Link without underline decoration
-   * @default "inline"
+   *
+   * Link currently exposes a single `"default"` variant: an underlined anchor
+   * that inherits the surrounding text color. The prop is retained so the
+   * component conforms to the Kumo variant standard and remains extensible.
+   * @default "default"
    */
   variant?: KumoLinkVariant;
 }
@@ -124,6 +121,10 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  * accessibility. Routing behavior belongs in the application layer, via
  * either the `render` prop or a `LinkProvider`.
  *
+ * Visually, Link renders as an underlined anchor that inherits its color from
+ * the surrounding text. There is a single `variant` (`"default"`) — Kumo does
+ * not ship a distinct "brand blue" link style.
+ *
  * - Without `render`: renders via LinkProvider (default `<a>` or configured component)
  * - With `render`: merges props onto the provided element with proper ref/event handling
  *
@@ -141,9 +142,7 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  *
  * @example Composition with React Router via render prop
  * ```tsx
- * <Link render={<RouterLink to="/dashboard" />} variant="inline">
- *   Dashboard
- * </Link>
+ * <Link render={<RouterLink to="/dashboard" />}>Dashboard</Link>
  * ```
  *
  * @example Composition via LinkProvider (recommended for app-wide routing)
@@ -159,7 +158,7 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  * ```
  */
 const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
-  { className, variant = "inline", render, ...props },
+  { className, variant = "default", render, ...props },
   ref,
 ) {
   const LinkComponent = useLinkComponent();
