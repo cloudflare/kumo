@@ -192,6 +192,9 @@ export default defineConfig({
       platform: "browser",
       outDir: "dist",
       dts: false,
+      // Published artifacts are production builds. Define NODE_ENV explicitly
+      // so Rolldown removes development-only warnings and their message strings.
+      define: { "process.env.NODE_ENV": '"production"' },
       // The dts pass emits declarations this pass can't see — pair them by
       // co-location; asset entries aren't chunks, so re-attach them here.
       exports: {
