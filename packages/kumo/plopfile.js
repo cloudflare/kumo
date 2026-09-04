@@ -80,9 +80,9 @@ export default function (plop) {
           // Create the new export entry
           // Note: With preserveModules: true in vite.config.ts:
           // - JS files are flat: dist/components/[name].js
-          // - Type files are nested: dist/src/components/[name]/index.d.ts
+          // - Type files are flat: dist/components/[name].d.ts
           const newExport = {
-            types: `./dist/src/components/${kebabName}/index.d.ts`,
+            types: `./dist/components/${kebabName}.d.ts`,
             import: `./dist/components/${kebabName}.js`,
           };
 

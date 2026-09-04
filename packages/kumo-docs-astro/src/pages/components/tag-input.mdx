@@ -1,0 +1,61 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Tag Input"
+description: "A creatable multi-value input for values that do not come from a predefined option list."
+sourceFile: "components/tag-input"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  TagInputDemo,
+  TagInputUnrestrictedDemo,
+  TagInputLimitedDemo,
+} from "~/components/demos/TagInputDemo";
+
+<ComponentSection><ComponentExample demo="TagInputDemo"><TagInputDemo client:load /></ComponentExample></ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+<CodeBlock code={`import { TagInput } from "@cloudflare/kumo";`} lang="tsx" />
+
+## Usage
+
+```tsx
+const [tags, setTags] = useState<string[]>([]);
+
+<TagInput
+  label="Labels"
+  value={tags}
+  onValueChange={setTags}
+  placeholder="Add a label"
+/>
+```
+</ComponentSection>
+
+<ComponentSection>
+
+## Examples
+
+### Unrestricted values
+<ComponentExample demo="TagInputUnrestrictedDemo"><TagInputUnrestrictedDemo client:load /></ComponentExample>
+
+### Maximum values
+<ComponentExample demo="TagInputLimitedDemo"><TagInputLimitedDemo client:load /></ComponentExample>
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Behavior
+
+Press Enter, comma, or Tab to create a tag. Blur also commits the current value. Pasting comma- or newline-separated text creates each value synchronously. Duplicate values are ignored.
+
+## API Reference
+
+<PropsTable component="TagInput" />
+</ComponentSection>
