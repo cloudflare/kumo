@@ -1,5 +1,6 @@
 import { XIcon } from "@phosphor-icons/react";
 import {
+  useRef,
   useState,
   type ClipboardEvent,
   type KeyboardEvent,
@@ -97,6 +98,7 @@ function TagInput({
   const [values, setValues] = useState(defaultValues);
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState<string>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const commit = (rawValue: string) => {
     const result = commitText({
@@ -158,7 +160,7 @@ function TagInput({
         className="flex min-h-10 flex-wrap items-center gap-1.5 rounded-lg bg-kumo-control px-2 py-1.5 ring ring-kumo-line focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) {
-            event.currentTarget.querySelector("input")?.focus();
+            inputRef.current?.focus();
           }
         }}
       >
@@ -188,6 +190,7 @@ function TagInput({
           aria-label={`Add a tag to ${label}`}
           className="min-w-32 flex-1 bg-transparent px-1 py-0.5 text-sm text-kumo-default outline-none placeholder:text-kumo-subtle"
           placeholder={values.length === 0 ? placeholder : undefined}
+          ref={inputRef}
           value={inputValue}
           onBlur={() => commit(inputValue)}
           onChange={(event) => {
