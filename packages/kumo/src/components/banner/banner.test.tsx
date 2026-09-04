@@ -139,11 +139,28 @@ describe("Banner", () => {
     expect(className).toContain("px-3");
     expect(className).toContain("py-2");
     expect(className).toContain("text-sm");
-    // Compact banners align everything on one centered row.
-    expect(className).toContain("items-center");
+    // Compact banners align icons to the first text line when content wraps.
+    expect(className).toContain("items-start");
     // Base-size spacing/alignment must not leak in.
     expect(className).not.toContain("px-4");
-    expect(className).not.toContain("items-start");
+  });
+
+  it("aligns icons to the first text line without shrinking", () => {
+    render(
+      <Banner
+        size="sm"
+        icon={<svg data-testid="icon" className="custom-icon" />}
+        description="A DNS record already exists in this zone and may wrap onto multiple lines."
+      />,
+    );
+
+    const icon = screen.getByTestId("icon");
+    const iconClassName = icon.getAttribute("class") ?? "";
+    expect(iconClassName).toContain("size-[1em]");
+    expect(iconClassName).toContain("flex-none");
+    expect(iconClassName).toContain("custom-icon");
+    expect(icon.parentElement?.className).toContain("h-[1lh]");
+    expect(icon.parentElement?.className).toContain("flex-none");
   });
 
   it("defaults Banner.Action children to xs in an sm banner", () => {
