@@ -20,6 +20,7 @@ import {
   LoadingChartDemo,
   LoadingBarChartDemo,
   TimeRangeSelectionChartDemo,
+  ChartExampleDemo,
   TooltipFollowCursorDemo,
   TooltipBoundaryDemo,
 } from "~/components/demos/Chart/ChartDemo";
@@ -126,6 +127,22 @@ import {
 
   <ComponentExample demo="TimeRangeSelectionChartDemo">
     <TimeRangeSelectionChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Tooltip footer
+
+<p>
+  Use the <code>tooltipFooter</code> prop to add brief supporting text below
+  the values in standard series tooltips. It works with every timeseries chart
+  configuration, including line, bar, gradient, threshold, and custom-axis
+  charts.
+</p>
+
+  <ComponentExample demo="ChartExampleDemo">
+    <ChartExampleDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

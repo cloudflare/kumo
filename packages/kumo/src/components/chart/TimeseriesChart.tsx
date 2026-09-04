@@ -94,6 +94,12 @@ export interface TimeseriesChartProps {
    */
   tooltipValueFormat?: (value: number) => string;
   /**
+   * Footer text rendered below the series rows in the tooltip.
+   * Intended for brief context such as data freshness or aggregation details.
+   * Available for every `TimeseriesChart` configuration.
+   */
+  tooltipFooter?: string;
+  /**
    * Controls which series are shown in the tooltip.
    * - `"all"` — show all series at the hovered timestamp (default)
    * - `"single"` — show only the series whose value is closest to the cursor
@@ -235,6 +241,7 @@ export const TimeseriesChart = forwardRef<
     yAxisName,
     yAxisTickCount,
     tooltipValueFormat,
+    tooltipFooter,
     onTimeRangeChange,
     height = 350,
     incomplete,
@@ -767,6 +774,7 @@ export const TimeseriesChart = forwardRef<
                 state={tooltipState}
                 formatValue={formatFn}
                 formatTimestamp={formatTimestamp}
+                footer={tooltipFooter}
               />
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>
