@@ -1,0 +1,25 @@
+packages/kumo/src/components/tag-input/index.ts
+  s_6fe57826d9b03c::t_e882df28064fd6 1
+packages/kumo/src/components/tag-input/tag-input.test.tsx
+  s_6fe57826d9b03c::t_dba3340fed7b51 9-11,17-25
+packages/kumo/src/components/tag-input/tag-input.tsx
+  s_6fe57826d9b03c::t_b9683b184642ba 19,56-59,147-148,166
+packages/kumo/src/index.ts
+  s_6fe57826d9b03c::t_f909b098c1809d 339
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "77456c0ef26bac98d891629be99c6aaf6bc1dc81",
+  "prompts": {},
+  "sessions": {
+    "s_6fe57826d9b03c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f92a6da74ffejqBAZbzNnn9eUs",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
