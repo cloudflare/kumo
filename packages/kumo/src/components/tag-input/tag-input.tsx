@@ -16,10 +16,7 @@ import {
   type FieldErrorMatch,
 } from "../field/field";
 import { cn } from "../../utils/cn";
-import {
-  inputVariants,
-  type KumoInputVariant,
-} from "../input/input";
+import { inputVariants, type KumoInputVariant } from "../input/input";
 
 export const KUMO_TAG_INPUT_VARIANTS = {
   variant: {
@@ -56,7 +53,10 @@ export interface TagInputProps extends NativeInputProps {
 }
 
 function splitValues(value: string) {
-  return value.split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
+  return value
+    .split(/[\n,]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
@@ -144,7 +144,8 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
       commit(text);
     };
 
-    const fieldError = normalizeFieldError(error) ?? normalizeFieldError(message);
+    const fieldError =
+      normalizeFieldError(error) ?? normalizeFieldError(message);
     const inputVariant = variant ?? (fieldError ? "error" : "default");
     const chipClassName = cn(
       "flex w-fit max-w-full shrink-0 items-center gap-2.5 rounded-sm bg-kumo-overlay ring-1 ring-kumo-hairline",
@@ -162,10 +163,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
         )}
       >
         {values.map((item) => (
-          <span
-            key={item}
-            className={cn(chipClassName, "text-kumo-default")}
-          >
+          <span key={item} className={cn(chipClassName, "text-kumo-default")}>
             <span className="truncate">{item}</span>
             <Button
               aria-label={`Remove ${item}`}
