@@ -3,7 +3,7 @@ import type { Icon, IconProps } from "@phosphor-icons/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { InputGroup } from "./input-group";
+import { InputGroup, KUMO_INPUT_GROUP_VARIANTS } from "./input-group";
 import { INPUT_GROUP_SIZE, detectFocusMode } from "./context";
 import type { KumoInputSize } from "../input/input";
 
@@ -322,6 +322,12 @@ describe("InputGroup", () => {
   });
 
   describe("size variants", () => {
+    it("uses the standardized small control size", () => {
+      expect(KUMO_INPUT_GROUP_VARIANTS.size.sm.classes).toContain("h-7.5");
+      expect(KUMO_INPUT_GROUP_VARIANTS.size.sm.classes).toContain("text-base");
+      expect(INPUT_GROUP_SIZE.sm.fontSize).toBe("text-base");
+    });
+
     it("applies size to input", () => {
       const { rerender } = render(
         <InputGroup size="sm" label="Small">

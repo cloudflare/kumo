@@ -16,42 +16,49 @@ import {
 import { Input as KumoInput, type InputProps } from "../input/input";
 import { InputGroup } from "../input-group/input-group";
 
-/** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
+/** Toolbar size variant definitions. */
 export const KUMO_TOOLBAR_VARIANTS = {
   size: {
+    /** @deprecated Use `"sm"` for compact toolbars. */
     xs: {
       classes: "text-xs",
-      description: "Extra small toolbar for compact UIs",
+      description: "Deprecated extra small toolbar size",
     },
     sm: {
-      classes: "text-xs",
+      classes: "rounded-md text-base",
       description: "Small toolbar for secondary controls",
     },
     base: {
       classes: "text-base",
       description: "Default toolbar size",
     },
+    /** @deprecated Use `"base"` for the default toolbar size. */
     lg: {
       classes: "text-base",
-      description: "Large toolbar for prominent controls",
+      description: "Deprecated large toolbar size",
     },
   },
 } as const;
 
-/** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
+/** Default Toolbar variants. */
 export const KUMO_TOOLBAR_DEFAULT_VARIANTS = {
   size: "base",
 } as const;
 
-/** @deprecated Toolbar size customization is deprecated. Omit `size` to use the default base size. */
+/**
+ * Toolbar size. `"sm"` and `"base"` are supported; `"xs"` and `"lg"` are
+ * deprecated compatibility values.
+ */
 export type ToolbarSize = keyof typeof KUMO_TOOLBAR_VARIANTS.size;
 
 export interface ToolbarProps extends Omit<ToolbarBase.Root.Props, "children"> {
   /** Toolbar controls rendered as one grouped card. */
   children: React.ReactNode;
   /**
-   * Locks every toolbar item to this size.
-   * @deprecated Omit this prop to use the default base size. Toolbar size customization will be removed in a future major release.
+   * Locks every toolbar item to this size. Use `"sm"` for compact toolbars or
+   * `"base"` for the default size. `"xs"` and `"lg"` are deprecated and
+   * remain available only for backwards compatibility.
+   * @default "base"
    */
   size?: ToolbarSize;
 }
@@ -112,7 +119,7 @@ const Root = React.forwardRef<HTMLDivElement, ToolbarProps>(
         data-kumo-component="Toolbar"
         className={cn(
           "inline-flex w-fit items-stretch rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line",
-          "[&>*:first-child]:rounded-l-lg [&>*:not([aria-hidden='true']):not([type='hidden']):not(:has(~_:not([aria-hidden='true']):not([type='hidden'])))]:rounded-r-lg",
+          "[&>*:first-child]:rounded-l-[inherit] [&>*:not([aria-hidden='true']):not([type='hidden']):not(:has(~_:not([aria-hidden='true']):not([type='hidden'])))]:rounded-r-[inherit]",
           "[&>*_[data-kumo-toolbar-input]:focus]:rounded-[inherit]",
           "[&>*:not([aria-hidden='true']):not(:first-child)]:border-l [&>*:not([aria-hidden='true']):not(:first-child)]:border-kumo-line",
           KUMO_TOOLBAR_VARIANTS.size[size].classes,
