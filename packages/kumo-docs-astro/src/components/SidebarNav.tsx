@@ -100,6 +100,12 @@ const blockItems: NavItem[] = [
   { label: "Delete Resource", href: "/blocks/delete-resource" },
 ];
 
+// AI Blocks are specialized blocks for AI-related UI patterns
+const aiBlockItems: NavItem[] = [
+  { label: "Prompt Input", href: "/ai-blocks/prompt-input" },
+  { label: "Decision Menu", href: "/ai-blocks/decision-menu" },
+];
+
 // Build info injected via Vite define in astro.config.mjs
 declare const __DOCS_VERSION__: string;
 declare const __BUILD_COMMIT__: string;
@@ -119,6 +125,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
   const [componentsOpen, setComponentsOpen] = useState(true);
   const [chartsOpen, setChartsOpen] = useState(true);
   const [blocksOpen, setBlocksOpen] = useState(true);
+  const [aiBlocksOpen, setAiBlocksOpen] = useState(true);
 
   // The sidebar is persisted across view-transition navigations
   // (`transition:persist`), so the `currentPath` prop is only correct for the
@@ -317,7 +324,7 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
         </ul>
       </div>
 
-      <div>
+      <div className="mb-4">
         {/* Blocks Section */}
         <button
           type="button"
@@ -340,6 +347,47 @@ export function SidebarNav({ currentPath }: SidebarNavProps) {
           )}
         >
           {blockItems.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                onMouseDown={preventPointerFocus}
+                className={cn(
+                  LI_STYLE,
+                  "pl-4",
+                  activePath === normalizePathname(item.href) &&
+                    LI_ACTIVE_STYLE,
+                )}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        {/* AI Blocks Section */}
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between rounded-lg px-2 py-2 text-sm font-medium text-kumo-default transition-colors hover:bg-kumo-tint focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-kumo-brand"
+          onClick={() => setAiBlocksOpen(!aiBlocksOpen)}
+        >
+          <span>AI Blocks</span>
+          <CaretDownIcon
+            size={12}
+            className={cn(
+              "text-kumo-subtle transition-transform duration-200",
+              !aiBlocksOpen && "-rotate-90",
+            )}
+          />
+        </button>
+        <ul
+          className={cn(
+            "mt-1 flex flex-col gap-px overflow-y-hidden overflow-x-visible transition-all duration-300 ease-in-out",
+            aiBlocksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          {aiBlockItems.map((item) => (
             <li key={item.href}>
               <a
                 href={item.href}
