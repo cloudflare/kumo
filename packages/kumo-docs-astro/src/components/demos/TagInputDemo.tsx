@@ -38,3 +38,20 @@ export function TagInputLimitedDemo() {
     />
   );
 }
+
+export function TagInputLocalizationDemo() {
+  return (
+    <TagInput
+      defaultValue={["uno"]}
+      label="Etiquetas"
+      labels={{
+        input: "Agregar etiqueta",
+        removeValue: (value) => `Eliminar ${value}`,
+        invalidValue: (value) => `${value} no es valido.`,
+        maxValuesReached: (maxValues) => `Maximo de ${maxValues} etiquetas.`,
+      }}
+      maxValues={3}
+      placeholder="Agregar una etiqueta"
+    />
+  );
+}

@@ -41,4 +41,24 @@ describe("TagInput", () => {
     const input = screen.getByLabelText("Tags");
     expect(screen.getByText("Tags").closest("label")?.htmlFor).toBe(input.id);
   });
+
+  it("uses translated labels for generated feedback and controls", () => {
+    render(
+      <TagInput
+        aria-label="Etiquetas"
+        defaultValue={["uno"]}
+        labels={{
+          invalidValue: (value) => `${value} no es valido.`,
+          removeValue: (value) => `Eliminar ${value}`,
+        }}
+        validateValue={() => false}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("Etiquetas"), {
+      target: { value: "dos" },
+    });
+    fireEvent.keyDown(screen.getByLabelText("Etiquetas"), { key: "Enter" });
+    expect(screen.getByText("dos no es valido.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Eliminar uno" })).toBeTruthy();
+  });
 });

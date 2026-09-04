@@ -34,6 +34,25 @@ export const KUMO_TAG_INPUT_STYLING = {
   baseClasses: "flex flex-wrap items-center",
 } as const;
 
+/** Labels for TagInput feedback and controls. Override these for localization. */
+export interface TagInputLabels {
+  /** Accessible name used when neither `label` nor `aria-label` is provided. */
+  input?: string;
+  /** Accessible name for a tag's remove button. */
+  removeValue?: (value: string) => string;
+  /** Validation feedback shown when `validateValue` rejects a value. */
+  invalidValue?: (value: string) => string;
+  /** Feedback shown when adding a tag would exceed `maxValues`. */
+  maxValuesReached?: (maxValues: number) => string;
+}
+
+const DEFAULT_LABELS: Required<TagInputLabels> = {
+  input: "Add tag",
+  removeValue: (value) => `Remove ${value}`,
+  invalidValue: (value) => `"${value}" is not valid.`,
+  maxValuesReached: (maxValues) => `Limit of ${maxValues} tags reached.`,
+};
+
 type NativeInputProps = Omit<
   ComponentPropsWithoutRef<"input">,
   "defaultValue" | "disabled" | "size" | "value"
@@ -45,6 +64,8 @@ export interface TagInputProps extends NativeInputProps {
   onValueChange?: (value: string[]) => void;
   validateValue?: (value: string, acceptedValues: string[]) => boolean;
   maxValues?: number;
+  /** Translated labels for generated input, action, and validation text. */
+  labels?: TagInputLabels;
   label?: ReactNode;
   labelTooltip?: ReactNode;
   description?: ReactNode;
@@ -68,6 +89,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
       onValueChange,
       validateValue,
       maxValues,
+      labels,
       label,
       labelTooltip,
       description,
@@ -104,15 +126,21 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
       for (let index = 0; index < entries.length; index += 1) {
         const entry = entries[index];
         if (nextValues.includes(entry)) continue;
-        if (maxValues && nextValues.length >= maxValues) {
+        if (maxValues !== undefined && nextValues.length >= maxValues) {
           setInputValue(entries.slice(index).join(", "));
-          setMessage(`Limit of ${maxValues} tags reached.`);
+          setMessage(
+            (labels?.maxValuesReached ?? DEFAULT_LABELS.maxValuesReached)(
+              maxValues,
+            ),
+          );
           setValues(nextValues);
           return false;
         }
         if (validateValue && !validateValue(entry, nextValues)) {
           setInputValue(entries.slice(index).join(", "));
-          setMessage(`"${entry}" is not valid.`);
+          setMessage(
+            (labels?.invalidValue ?? DEFAULT_LABELS.invalidValue)(entry),
+          );
           setValues(nextValues);
           return false;
         }
@@ -164,7 +192,9 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
         aria-invalid={Boolean(fieldError)}
         aria-label={
           inputProps["aria-label"] ??
-          (typeof label === "string" ? label : "Add tag")
+          (typeof label === "string"
+            ? label
+            : (labels?.input ?? DEFAULT_LABELS.input))
         }
         className={cn(
           "min-w-32 flex-1 bg-transparent outline-none",
@@ -204,7 +234,9 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
           <span key={item} className={cn(chipClassName, "text-kumo-default")}>
             <span className="truncate">{item}</span>
             <Button
-              aria-label={`Remove ${item}`}
+              aria-label={(labels?.removeValue ?? DEFAULT_LABELS.removeValue)(
+                item,
+              )}
               icon={<XIcon size={10} />}
               shape="square"
               size="xs"
