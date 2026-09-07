@@ -1,0 +1,19 @@
+.github/workflows/preview.yml
+  s_dc1e2b0c2bfff3::t_e681e26fe0030e 28,43-44,51,131,133,135-137,139-142,162,164,199,207,261-263,275
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c676901344d1b83946733a26d463218025ab27ac",
+  "prompts": {},
+  "sessions": {
+    "s_dc1e2b0c2bfff3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07c7b-f96e-7c82-a612-bd5edaca455c",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
