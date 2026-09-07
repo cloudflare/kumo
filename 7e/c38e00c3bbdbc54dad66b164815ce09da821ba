@@ -1,0 +1,25 @@
+.github/workflows/validate-pr-description.yml
+  s_dc1e2b0c2bfff3::t_76924d173b1055 19,28,44,46,48,59,61
+ci/scripts/validate-kumo-changeset.ts
+  s_dc1e2b0c2bfff3::t_e6fef92b611343 10
+ci/tsconfig.json
+  s_dc1e2b0c2bfff3::t_a8ce076d12b648 10-11
+ci/utils/git-operations.test.ts
+  s_dc1e2b0c2bfff3::t_d3358e392d6d1d 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7ec38e00c3bbdbc54dad66b164815ce09da821ba",
+  "prompts": {},
+  "sessions": {
+    "s_dc1e2b0c2bfff3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07c7b-f96e-7c82-a612-bd5edaca455c",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
