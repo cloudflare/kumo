@@ -49,6 +49,11 @@ describe("TagInput", () => {
     expect(ref.current).toBe(screen.getByLabelText("Tags"));
   });
 
+  it("resets the native input border", () => {
+    render(<TagInput aria-label="Tags" />);
+    expect(screen.getByLabelText("Tags").classList).toContain("border-0");
+  });
+
   it("uses translated labels for generated feedback and controls", () => {
     render(
       <TagInput

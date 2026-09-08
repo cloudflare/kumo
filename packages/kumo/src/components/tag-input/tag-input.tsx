@@ -191,7 +191,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
             : (labels?.input ?? DEFAULT_LABELS.input))
         }
         className={cn(
-          "min-w-32 flex-1 bg-transparent outline-none",
+          "min-w-32 flex-1 border-0 bg-transparent outline-none",
           "px-1 py-0.5",
         )}
         disabled={disabled}
