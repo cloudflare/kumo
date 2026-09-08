@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { useState } from "react";
+import { createRef, useState } from "react";
 import { Input } from "../input/input";
 import { Select } from "./select";
 
@@ -523,10 +523,12 @@ describe("Select", () => {
     });
 
     it("renders Select.Separator as a visual divider", async () => {
+      const separatorRef = createRef<HTMLDivElement>();
+
       render(
         <Select aria-label="Pick one">
           <Select.Option value="a">Option A</Select.Option>
-          <Select.Separator />
+          <Select.Separator ref={separatorRef} />
           <Select.Option value="b">Option B</Select.Option>
         </Select>,
       );
@@ -535,20 +537,20 @@ describe("Select", () => {
         fireEvent.click(screen.getByRole("combobox"));
       });
 
-      // Separator is inside the portaled popup; query from document.
-      const separator = document.querySelector(".bg-kumo-hairline");
-      expect(separator).toBeTruthy();
-      expect(separator?.className).toContain("bg-kumo-hairline");
+      expect(separatorRef.current).toBeTruthy();
+      expect(separatorRef.current?.className).toContain("bg-kumo-hairline");
     });
 
     it("renders multiple groups with separators", async () => {
+      const separatorRef = createRef<HTMLDivElement>();
+
       render(
         <Select aria-label="Pick a food">
           <Select.Group>
             <Select.GroupLabel>Fruits</Select.GroupLabel>
             <Select.Option value="apple">Apple</Select.Option>
           </Select.Group>
-          <Select.Separator />
+          <Select.Separator ref={separatorRef} />
           <Select.Group>
             <Select.GroupLabel>Vegetables</Select.GroupLabel>
             <Select.Option value="carrot">Carrot</Select.Option>
@@ -565,10 +567,7 @@ describe("Select", () => {
 
       expect(screen.getByText("Fruits")).toBeTruthy();
       expect(screen.getByText("Vegetables")).toBeTruthy();
-
-      // Separator is inside the portaled popup; query from document.
-      const separator = document.querySelector(".bg-kumo-hairline");
-      expect(separator).toBeTruthy();
+      expect(separatorRef.current).toBeTruthy();
     });
   });
 
