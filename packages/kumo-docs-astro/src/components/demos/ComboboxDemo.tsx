@@ -136,6 +136,11 @@ const databases: DatabaseItem[] = [
   { value: "turso", label: "Turso" },
 ];
 
+const databaseItems = Combobox.createItems(databases, {
+  getValue: (database) => database.value,
+  getLabel: (database) => database.label,
+});
+
 // Basic demo with TriggerInput
 export function ComboboxDemo() {
   const [value, setValue] = useState<string | null>("Apple");
@@ -153,6 +158,37 @@ export function ComboboxDemo() {
           {(item: string) => (
             <Combobox.Item key={item} value={item}>
               {item}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
+  );
+}
+
+/** Demonstrates deriving Combobox values and labels from application objects. */
+export function ComboboxCreateItemsDemo() {
+  const [value, setValue] = useState<DatabaseItem | null>(null);
+
+  return (
+    <Combobox
+      value={value}
+      onValueChange={(nextValue) =>
+        setValue(nextValue as DatabaseItem | null)
+      }
+      items={databaseItems}
+    >
+      <Combobox.TriggerValue
+        className="w-[240px]"
+        placeholder="Select a database"
+      />
+      <Combobox.Content>
+        <Combobox.Input placeholder="Search databases" />
+        <Combobox.Empty>No databases found.</Combobox.Empty>
+        <Combobox.List>
+          {(database: DatabaseItem) => (
+            <Combobox.Item key={database.value} value={database}>
+              {database.label}
             </Combobox.Item>
           )}
         </Combobox.List>

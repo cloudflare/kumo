@@ -672,4 +672,5 @@ export const Combobox = Object.assign(Root, {
 
   // Filtering
   useFilter: ComboboxBase.useFilter,
+  createItems: ComboboxBase.createItems,
 });

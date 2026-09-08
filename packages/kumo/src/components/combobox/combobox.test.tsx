@@ -31,6 +31,33 @@ function renderComboboxWithInput(
 describe("Combobox", () => {
   // Rendering
 
+  it("creates item collections from application data", () => {
+    const collection = Combobox.createItems(
+      [{ id: "apple", label: "Apple" }],
+      {
+        getValue: (fruit) => fruit.id,
+        getLabel: (fruit) => fruit.label,
+      },
+    );
+
+    render(
+      <Combobox items={collection}>
+        <Combobox.TriggerInput placeholder="Pick a fruit" />
+        <Combobox.Content>
+          <Combobox.List>
+            {(fruit) => (
+              <Combobox.Item key={fruit.id} value={fruit}>
+                {fruit.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>,
+    );
+
+    expect(screen.getByRole("combobox")).toBeTruthy();
+  });
+
   it("renders without crashing", () => {
     renderComboboxWithInput();
     expect(screen.getByRole("combobox")).toBeTruthy();

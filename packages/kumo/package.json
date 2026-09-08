@@ -457,7 +457,7 @@
     "test:browser": "vp test --config=vitest.browser.config.ts"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
+    "@base-ui/react": "^1.8.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "cnfast": "^0.0.8",

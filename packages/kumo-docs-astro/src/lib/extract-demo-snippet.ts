@@ -54,8 +54,8 @@ function collectIdentifierReferences(node: ts.Node): Set<string> {
 }
 
 /**
- * Extracts a named export function from a demo source file,
- * prepended with only the import statements that the function actually uses.
+ * Extracts a named export function and its local function dependencies from a
+ * demo source file, prepended with only the import statements they use.
  *
  * Uses the TypeScript compiler API for robust AST-based analysis.
  */
@@ -79,8 +79,8 @@ export function extractDemoSnippet(
     namespaceImport: string | null;
   }> = [];
 
+  const functions = new Map<string, ts.FunctionDeclaration>();
   let targetFunctionNode: ts.FunctionDeclaration | null = null;
-  let targetFunctionText: string | null = null;
 
   for (const statement of sourceFile.statements) {
     if (ts.isImportDeclaration(statement)) {
@@ -123,19 +123,43 @@ export function extractDemoSnippet(
 
     if (
       ts.isFunctionDeclaration(statement) &&
-      statement.name?.text === functionName
+      statement.name
     ) {
-      targetFunctionNode = statement;
-      targetFunctionText = source.slice(statement.pos, statement.end).trim();
+      functions.set(statement.name.text, statement);
+      if (statement.name.text === functionName) {
+        targetFunctionNode = statement;
+      }
     }
   }
 
-  if (!targetFunctionNode || !targetFunctionText) {
+  if (!targetFunctionNode) {
     return `// Could not find function "${functionName}"`;
   }
 
-  // Use AST to find all identifier references in the function
-  const usedIdentifiers = collectIdentifierReferences(targetFunctionNode);
+  const snippetFunctions = new Set<ts.FunctionDeclaration>([
+    targetFunctionNode,
+  ]);
+  const pendingFunctions = [targetFunctionNode];
+  const usedIdentifiers = new Set<string>();
+
+  // Include local helper components referenced by the exported demo so the
+  // displayed code contains the actual interaction implementation.
+  while (pendingFunctions.length > 0) {
+    const current = pendingFunctions.pop()!;
+    for (const identifier of collectIdentifierReferences(current)) {
+      usedIdentifiers.add(identifier);
+      const helper = functions.get(identifier);
+      if (helper && !snippetFunctions.has(helper)) {
+        snippetFunctions.add(helper);
+        pendingFunctions.push(helper);
+      }
+    }
+  }
+
+  const snippetText = [...snippetFunctions]
+    .sort((a, b) => a.pos - b.pos)
+    .map((statement) => source.slice(statement.pos, statement.end).trim())
+    .join("\n\n");
 
   // Rebuild imports with only the used specifiers
   const usedImports: string[] = [];
@@ -176,6 +200,6 @@ export function extractDemoSnippet(
   const importBlock = usedImports.join("\n");
 
   return importBlock
-    ? `${importBlock}\n\n${targetFunctionText}`
-    : targetFunctionText;
+    ? `${importBlock}\n\n${snippetText}`
+    : snippetText;
 }

@@ -535,8 +535,8 @@ describe("Select", () => {
         fireEvent.click(screen.getByRole("combobox"));
       });
 
-      // Separator is inside the portaled popup — query from document
-      const separator = document.querySelector('[role="separator"]');
+      // Separator is inside the portaled popup; query from document.
+      const separator = document.querySelector(".bg-kumo-hairline");
       expect(separator).toBeTruthy();
       expect(separator?.className).toContain("bg-kumo-hairline");
     });
@@ -566,8 +566,8 @@ describe("Select", () => {
       expect(screen.getByText("Fruits")).toBeTruthy();
       expect(screen.getByText("Vegetables")).toBeTruthy();
 
-      // Separator is inside the portaled popup — query from document
-      const separator = document.querySelector('[role="separator"]');
+      // Separator is inside the portaled popup; query from document.
+      const separator = document.querySelector(".bg-kumo-hairline");
       expect(separator).toBeTruthy();
     });
   });

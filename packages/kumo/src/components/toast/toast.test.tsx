@@ -43,6 +43,26 @@ describe("Toasty", () => {
     expect(await screen.findByText("from outside")).toBeTruthy();
   });
 
+  it("updates toasts from their current state", async () => {
+    const mgr = createKumoToastManager();
+
+    render(
+      <Toasty toastManager={mgr}>
+        <div />
+      </Toasty>,
+    );
+
+    act(() => {
+      const id = mgr.add({ title: "Saving" });
+      mgr.update(id, (toast) => {
+        expect(toast.title).toBe("Saving");
+        return { title: "Saving complete" };
+      });
+    });
+
+    expect(await screen.findByText("Saving complete")).toBeTruthy();
+  });
+
   // Duplicate ids dispatched through an external manager must not
   // produce duplicate DOM nodes. (The exact merge semantics — replace vs
   // bump — are owned by `wrapManagerMethods` / base-ui and tested

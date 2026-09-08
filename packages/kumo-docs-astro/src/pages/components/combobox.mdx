@@ -23,6 +23,7 @@ import {
   ComboboxSizesDemo,
   ComboboxSizesSearchableInsideDemo,
   ComboboxCustomTriggerDemo,
+  ComboboxCreateItemsDemo,
 } from "~/components/demos/ComboboxDemo";
 
 {/* Hero Demo */}
@@ -134,6 +135,20 @@ export default function Example() {
   <ComponentExample demo="ComboboxSearchableSelectDemo">
     <ComboboxSearchableSelectDemo client:load />
   </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+### Object Item Collections
+
+<p>
+  Derive stable values and labels from application objects with
+  `Combobox.createItems()`.
+</p>
+<ComponentExample demo="ComboboxCreateItemsDemo">
+  <ComboboxCreateItemsDemo client:load />
+</ComponentExample>
+
 </ComponentSection>
 
 <ComponentSection>
@@ -258,6 +273,60 @@ function LanguagePicker() {
 
 <ComponentSection>
 
+## Object Item Collections
+
+<p>
+  Use `Combobox.createItems()` when items are application objects rather than
+  primitive values. It derives stable selection values and labels while keeping
+  the source object available to the list renderer.
+</p>
+
+```tsx
+import { useState } from "react";
+import { Combobox } from "@cloudflare/kumo";
+
+type Fruit = { id: string; label: string };
+
+const fruits = Combobox.createItems<Fruit>(
+  [
+    { id: "apple", label: "Apple" },
+    { id: "banana", label: "Banana" },
+  ],
+  {
+    getValue: (fruit) => fruit.id,
+    getLabel: (fruit) => fruit.label,
+  },
+);
+
+function FruitPicker() {
+  const [value, setValue] = useState<Fruit | null>(null);
+
+  return (
+    <Combobox items={fruits} value={value} onValueChange={setValue}>
+      <Combobox.TriggerInput placeholder="Select a fruit" />
+      <Combobox.Content>
+        <Combobox.List>
+          {(fruit) => (
+            <Combobox.Item key={fruit.id} value={fruit}>
+              {fruit.label}
+            </Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Content>
+    </Combobox>
+  );
+}
+```
+
+<p>
+  Create static collections at module scope. For data that changes at runtime,
+  memoize `Combobox.createItems()` with the source data as its dependency.
+</p>
+
+</ComponentSection>
+
+<ComponentSection>
+
 ## Customizing Dropdown Height
 
 <p>
@@ -313,5 +382,6 @@ function LanguagePicker() {
     <li>`Combobox.Collection` - Items container within a group</li>
     <li>`Combobox.Chip` - Selected item chip</li>
     <li>`Combobox.Empty` - Empty state message</li>
+    <li>`Combobox.createItems` - Collection helper for object items</li>
   </ul>
 </ComponentSection>
