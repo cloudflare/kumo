@@ -1,0 +1,27 @@
+packages/kumo-docs-astro/src/components/demos/ComboboxDemo.tsx
+  s_0ca6b33c18eaa5::t_0fcfee157988e5 176
+packages/kumo-docs-astro/src/lib/extract-demo-snippet.ts
+  s_0ca6b33c18eaa5::t_cf57cb04b773aa 124,199
+packages/kumo/src/components/combobox/combobox.test.tsx
+  s_0ca6b33c18eaa5::t_4700d8f3e35a33 35-38
+packages/kumo/src/primitives/index.ts
+  s_0ca6b33c18eaa5::t_01d51411ce1952 40-43
+packages/kumo/src/primitives/otp-field.ts
+  s_0ca6b33c18eaa5::t_872b42b7068419 14-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4800a1d269e7036c470c44dea244ea4dfda8b080",
+  "prompts": {},
+  "sessions": {
+    "s_0ca6b33c18eaa5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f7d7ceb08ffeMNKh2Gt0kQkwzJ",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
