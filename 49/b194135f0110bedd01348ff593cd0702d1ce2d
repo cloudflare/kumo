@@ -1,0 +1,21 @@
+.github/workflows/bonk.yml
+  s_6bf954310ffe9a::t_b56cc504866ae5 44-62,69
+.opencode/agents/kumo.md
+  s_6bf954310ffe9a::t_f4722e404af15e 34-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "49b194135f0110bedd01348ff593cd0702d1ce2d",
+  "prompts": {},
+  "sessions": {
+    "s_6bf954310ffe9a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f7e5d2ee3ffeFKts2b0STmVgB4",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
