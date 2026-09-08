@@ -76,6 +76,10 @@
       "types": "./dist/components/button.d.ts",
       "import": "./dist/components/button.js"
     },
+    "./components/button-group": {
+      "types": "./dist/components/button-group.d.ts",
+      "import": "./dist/components/button-group.js"
+    },
     "./components/chart": {
       "types": "./dist/components/chart.d.ts",
       "import": "./dist/components/chart.js"
