@@ -60,9 +60,11 @@ export const TooltipContent = memo(function TooltipContent({
         </>
       )}
       {footer && (
-        <Text variant="secondary" size="xs" DANGEROUS_className="mt-1">
-          {footer}
-        </Text>
+        <div className="mt-1">
+          <Text variant="secondary" size="xs">
+            {footer}
+          </Text>
+        </div>
       )}
     </>
   );
