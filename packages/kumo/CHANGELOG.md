@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 2.13.2
+
+### Patch Changes
+
+- 36fc155: Add `scrollItemIntoView()` to preserve the position of visible sidebar items while honoring alignment for offscreen items.
+
 ## 2.13.1
 
 ### Patch Changes
