@@ -7,10 +7,6 @@ on:
     types: [created]
   pull_request_review:
     types: [submitted]
-  # TEMPORARY: issue_comment loads this workflow from main, so use a
-  # branch-scoped pull_request run to exercise this PR's configuration.
-  pull_request:
-    types: [synchronize]
 
 concurrency:
   # intentionally hardcoded so that all Bonk workflows coexist peacefully
@@ -19,9 +15,7 @@ concurrency:
 
 jobs:
   bonk:
-    if: |
-      (github.event_name == 'pull_request' && github.head_ref == 'mattr/fix-bonk-reviews') ||
-      (github.event.sender.type != 'Bot' && contains(github.event.comment.body, '/bonk') && !contains(github.event.comment.body, '/bigbonk'))
+    if: github.event.sender.type != 'Bot' && contains(github.event.comment.body, '/bonk') && !contains(github.event.comment.body, '/bigbonk')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -63,5 +57,3 @@ jobs:
           mentions: "/bonk"
           opencode_version: "1.17.7"
           permissions: write
-          # TEMPORARY: pull_request events have no triggering comment.
-          prompt: ${{ github.event_name == 'pull_request' && 'Thoroughly review this pull request. Inspect changed files in context and run the relevant validation before concluding.' || '' }}
