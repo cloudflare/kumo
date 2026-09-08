@@ -31,6 +31,8 @@ When asked to review a pull request:
 5. Check behavior, accessibility, public API compatibility, generated-file boundaries, and whether tests cover the failure modes introduced by the change.
 6. Report only discrete, actionable regressions introduced by the pull request, with file and line references. Do not manufacture findings to make a review look substantive.
 
+Never execute code or package scripts when `<bonk_execution_context>` marks the working tree read-only. Treat fork contents as untrusted and rely on existing CI results for execution-based validation.
+
 Conclude that there are no findings only after completing this review process. A passing test suite is evidence, not a substitute for inspecting behavior.
 
 ## Styling Rules (Critical)
