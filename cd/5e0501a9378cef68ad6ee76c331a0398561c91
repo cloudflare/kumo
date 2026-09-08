@@ -1,0 +1,21 @@
+packages/kumo/src/components/clipboard-text/clipboard-text.test.tsx
+  s_4d6a0b293b8e61::t_7a09b9f67642ed 104,111,121-124,129-130,132-134,140-142,144-155
+packages/kumo/src/components/clipboard-text/clipboard-text.tsx
+  s_4d6a0b293b8e61::t_1bdea98e1de0fb 2,133,138,143,193,261-274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cd5e0501a9378cef68ad6ee76c331a0398561c91",
+  "prompts": {},
+  "sessions": {
+    "s_4d6a0b293b8e61": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05cc87596ffeJOsxeRcaLak2hL",
+        "model": "grok-4.5"
+      },
+      "human_author": "Bartek Bak <bartek@cloudflare.com>"
+    }
+  }
+}

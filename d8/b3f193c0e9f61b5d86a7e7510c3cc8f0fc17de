@@ -1,0 +1,19 @@
+packages/kumo/src/styles/kumo-binding.css
+  s_4d6a0b293b8e61::t_6e84e87d2d9592 196-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d8b3f193c0e9f61b5d86a7e7510c3cc8f0fc17de",
+  "prompts": {},
+  "sessions": {
+    "s_4d6a0b293b8e61": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05cc87596ffeJOsxeRcaLak2hL",
+        "model": "grok-4.5"
+      },
+      "human_author": "Bartek Bak <bartek@cloudflare.com>"
+    }
+  }
+}
