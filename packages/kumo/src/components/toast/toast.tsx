@@ -1,7 +1,8 @@
 import {
   Toast,
-  ToastManagerAddOptions,
-  ToastObject,
+  type ToastManager,
+  type ToastManagerAddOptions,
+  type ToastObject,
 } from "@base-ui/react/toast";
 import type React from "react";
 import { cn } from "../../utils/cn";
@@ -139,7 +140,7 @@ export function toastVariants({
  * Toasty component props.
  *
  * Wrap your app with `<Toasty>` to enable toast notifications.
- * Use `Toast.useToastManager().notify(…)` to create toasts.
+ * Use `Toast.useToastManager().add(…)` to create toasts.
  *
  * @example
  * ```tsx
@@ -150,7 +151,7 @@ export function toastVariants({
  *
  * // 2. Show a toast from any child component
  * const toasts = Toast.useToastManager();
- * toasts.notify({ title: "Saved", description: "Changes saved successfully." });
+ * toasts.add({ title: "Saved", description: "Changes saved successfully." });
  * ```
  *
  * @example Dispatching toasts from non-React-component code
@@ -204,38 +205,76 @@ export type KumoToastOptions<Data extends object> = ToastObject<Data> &
 export type KumoToastManagerAddOptions<Data extends object> =
   ToastManagerAddOptions<Data> & KumoToastOptionsBase;
 
-function wrapManagerMethods<
-  T extends { add: Function; update: Function; promise: Function },
->(manager: T) {
+type KumoToastManagerMethods = {
+  add: <Data extends object = any>(
+    options: KumoToastManagerAddOptions<Data>,
+  ) => string;
+  update: <Data extends object = any>(
+    id: string,
+    options: Partial<KumoToastManagerAddOptions<Data>>,
+  ) => void;
+  promise: <Value, Data extends object = any>(
+    promise: Promise<Value>,
+    options: {
+      loading: KumoToastManagerAddOptions<Data>;
+      success:
+        | KumoToastManagerAddOptions<Data>
+        | ((data: Value) => KumoToastManagerAddOptions<Data>);
+      error:
+        | KumoToastManagerAddOptions<Data>
+        | ((error: Error) => KumoToastManagerAddOptions<Data>);
+    },
+  ) => Promise<Value>;
+};
+
+type BaseToastManagerMethods = Pick<
+  ToastManager,
+  keyof KumoToastManagerMethods
+>;
+
+type WrappedToastManager<Manager extends BaseToastManagerMethods> = Manager &
+  KumoToastManagerMethods;
+
+function wrapManagerMethods<Manager extends BaseToastManagerMethods>(
+  manager: Manager,
+): WrappedToastManager<Manager> {
   return {
     ...manager,
 
-    add: (options: KumoToastManagerAddOptions<any>) => {
-      if (options.id) {
+    add: <Data extends object = any>(
+      options: KumoToastManagerAddOptions<Data>,
+    ): string => {
+      const id = options.id;
+
+      if (id) {
         const toasts = (manager as any).toasts as
           Array<ToastObject<any>> | undefined;
 
         if (toasts) {
-          const existingToast = toasts.find((toast) => toast.id === options.id);
+          const existingToast = toasts.find((toast) => toast.id === id);
 
           // If toast exists and is not exiting, trigger bump and prevent duplicate
           if (existingToast && existingToast.transitionStatus !== "ending") {
             // Reset animation by disabling then re-enabling
-            manager.update(options.id, { bump: false });
+            const resetBump: Partial<KumoToastManagerAddOptions<Data>> = {
+              bump: false,
+            };
+            manager.update(id, resetBump);
             requestAnimationFrame(() => {
-              manager.update(options.id, {
+              const restartBump: Partial<KumoToastManagerAddOptions<Data>> = {
                 bump: true,
                 ...(options.timeout !== undefined && {
                   timeout: options.timeout,
                 }),
-              });
+              };
+              manager.update(id, restartBump);
             });
-            return options.id;
+            return id;
           }
 
           // If toast exists and is exiting, let it finish - don't add duplicate
           if (existingToast && existingToast.transitionStatus === "ending") {
-            return options.id;
+            return id;
           }
         }
       }
@@ -245,33 +284,36 @@ function wrapManagerMethods<
       });
     },
 
-    update: (id: string, options: Partial<KumoToastManagerAddOptions<any>>) => {
+    update: <Data extends object = any>(
+      id: string,
+      options: Partial<KumoToastManagerAddOptions<Data>>,
+    ): void => {
       return manager.update(id, {
         ...options,
       });
     },
 
-    promise: <T,>(
-      promise: Promise<T>,
+    promise: <Value, Data extends object = any>(
+      promise: Promise<Value>,
       options: {
-        loading: KumoToastManagerAddOptions<any>;
+        loading: KumoToastManagerAddOptions<Data>;
         success:
-          | KumoToastManagerAddOptions<any>
-          | ((data: T) => KumoToastManagerAddOptions<any>);
+          | KumoToastManagerAddOptions<Data>
+          | ((data: Value) => KumoToastManagerAddOptions<Data>);
         error:
-          | KumoToastManagerAddOptions<any>
-          | ((error: Error) => KumoToastManagerAddOptions<any>);
+          | KumoToastManagerAddOptions<Data>
+          | ((error: Error) => KumoToastManagerAddOptions<Data>);
       },
-    ) => {
+    ): Promise<Value> => {
       return manager.promise(promise, {
         loading: { ...options.loading },
         success:
           typeof options.success === "function"
-            ? (data: T) => ({
+            ? (data: Value) => ({
                 ...(
                   options.success as (
-                    data: T,
-                  ) => KumoToastManagerAddOptions<any>
+                    data: Value,
+                  ) => KumoToastManagerAddOptions<Data>
                 )(data),
               })
             : { ...options.success },
@@ -281,7 +323,7 @@ function wrapManagerMethods<
                 ...(
                   options.error as (
                     error: Error,
-                  ) => KumoToastManagerAddOptions<any>
+                  ) => KumoToastManagerAddOptions<Data>
                 )(error),
               })
             : { ...options.error },

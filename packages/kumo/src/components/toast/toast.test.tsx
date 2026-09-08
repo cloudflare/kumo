@@ -4,6 +4,26 @@ import { useEffect } from "react";
 import { Toasty, createKumoToastManager, useKumoToastManager } from "./toast";
 
 describe("Toasty", () => {
+  it("preserves toast manager return values", async () => {
+    const mgr = createKumoToastManager();
+
+    const id = mgr.add({ id: "return-types", title: "Created" });
+    expect(id).toBe("return-types");
+
+    const updateResult = mgr.update(id, { title: "Updated" });
+    expect(updateResult).toBeUndefined();
+
+    const sourcePromise = Promise.resolve({ status: "complete" });
+    const returnedPromise = mgr.promise(sourcePromise, {
+      loading: { title: "Loading" },
+      success: (result) => ({ title: result.status }),
+      error: { title: "Failed" },
+    });
+
+    expect(returnedPromise).toBe(sourcePromise);
+    await expect(returnedPromise).resolves.toEqual({ status: "complete" });
+  });
+
   // Regression guard: existing callers that don't pass `toastManager`
   // must continue to work via the in-tree `useKumoToastManager` hook.
   it("renders without a toastManager prop and accepts in-tree dispatch", async () => {

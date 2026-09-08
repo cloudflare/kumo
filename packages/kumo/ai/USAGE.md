@@ -68,7 +68,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Table`            | Display    | Data table with selection             | `.Header`, `.Head`, `.Body`, `.Row`, `.Cell`, `.Footer`, `.CheckCell`, `.CheckHead`, `.ResizeHandle`; `layout`: auto, fixed    |
 | `Tabs`             | Navigation | Tabbed navigation                     | `tabs: { value, label, render? }[]`; `variant`: segmented, underline; `value`, `onValueChange`                                 |
 | `Text`             | Display    | Themed text with semantic variants    | `variant`: heading1, heading2, heading3, body, secondary, success, error, mono, mono-secondary; `size`: xs, sm, base, lg; `as` |
-| `Toast` / `Toasty` | Feedback   | Toast notification system             | Wrap app with `<Toasty>`, use `Toast.useToastManager().notify()`                                                               |
+| `Toast` / `Toasty` | Feedback   | Toast notification system             | Wrap app with `<Toasty>`, use `Toast.useToastManager().add()`                                                                  |
 | `Tooltip`          | Overlay    | Hover/focus tooltip                   | `content`, `side`, `align`, `asChild`                                                                                          |
 
 ## Semantic Token Reference
