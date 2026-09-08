@@ -3,8 +3,6 @@ import { Field as FieldBase } from "@base-ui/react/field";
 import {
   forwardRef,
   useId,
-  useImperativeHandle,
-  useRef,
   useState,
   type ClipboardEvent,
   type ComponentPropsWithoutRef,
@@ -112,11 +110,8 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
     const [inputValue, setInputValue] = useState("");
     const [message, setMessage] = useState<string>();
-    const inputRef = useRef<HTMLInputElement>(null);
     const inputId = useId();
     const values = value ?? uncontrolledValue;
-
-    useImperativeHandle(forwardedRef, () => inputRef.current!, []);
 
     const setValues = (nextValue: string[]) => {
       if (value === undefined) setUncontrolledValue(nextValue);
@@ -187,9 +182,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
       <input
         {...controlProps}
         {...inputProps}
-        ref={(node) => {
-          inputRef.current = node;
-        }}
+        ref={forwardedRef}
         aria-invalid={Boolean(fieldError)}
         aria-label={
           inputProps["aria-label"] ??

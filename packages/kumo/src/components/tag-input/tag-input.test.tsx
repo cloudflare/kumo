@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { createRef } from "react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { TagInput } from "./tag-input";
 
@@ -40,6 +41,12 @@ describe("TagInput", () => {
     render(<TagInput label="Tags" />);
     const input = screen.getByLabelText("Tags");
     expect(screen.getByText("Tags").closest("label")?.htmlFor).toBe(input.id);
+  });
+
+  it("forwards its ref to the input", () => {
+    const ref = createRef<HTMLInputElement>();
+    render(<TagInput ref={ref} aria-label="Tags" />);
+    expect(ref.current).toBe(screen.getByLabelText("Tags"));
   });
 
   it("uses translated labels for generated feedback and controls", () => {
