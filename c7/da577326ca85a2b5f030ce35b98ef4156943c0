@@ -1,0 +1,19 @@
+packages/kumo/src/components/chart/timeseries-tooltip.tsx
+  s_6565702c77ad07::t_20714f15e3a8bf 63-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c7da577326ca85a2b5f030ce35b98ef4156943c0",
+  "prompts": {},
+  "sessions": {
+    "s_6565702c77ad07": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f7d4a27e7ffeaegj25x6WQiNsS",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
