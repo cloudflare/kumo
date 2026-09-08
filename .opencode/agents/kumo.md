@@ -1,5 +1,6 @@
 ---
 description: Use when working on Kumo component library, docs site, or Figma plugin
+mode: primary
 color: "#F6821F"
 ---
 
@@ -18,6 +19,19 @@ pnpm --filter @cloudflare/kumo doc Button
 ```
 
 The registry at `packages/kumo/ai/component-registry.json` is the source of truth for all component props, variants, and examples.
+
+## Code Reviews
+
+When asked to review a pull request:
+
+1. Read the repository and affected package `AGENTS.md` files.
+2. Inspect the complete diff and read every changed source file in context.
+3. Trace changed APIs to their callers and tests; do not infer correctness from a small diff alone.
+4. Run the narrowest relevant tests plus `pnpm lint` and `pnpm typecheck` when the environment permits.
+5. Check behavior, accessibility, public API compatibility, generated-file boundaries, and whether tests cover the failure modes introduced by the change.
+6. Report only discrete, actionable regressions introduced by the pull request, with file and line references. Do not manufacture findings to make a review look substantive.
+
+Conclude that there are no findings only after completing this review process. A passing test suite is evidence, not a substitute for inspecting behavior.
 
 ## Styling Rules (Critical)
 
