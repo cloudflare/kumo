@@ -32,13 +32,10 @@ describe("Combobox", () => {
   // Rendering
 
   it("creates item collections from application data", () => {
-    const collection = Combobox.createItems(
-      [{ id: "apple", label: "Apple" }],
-      {
-        getValue: (fruit) => fruit.id,
-        getLabel: (fruit) => fruit.label,
-      },
-    );
+    const collection = Combobox.createItems([{ id: "apple", label: "Apple" }], {
+      getValue: (fruit) => fruit.id,
+      getLabel: (fruit) => fruit.label,
+    });
 
     render(
       <Combobox items={collection}>

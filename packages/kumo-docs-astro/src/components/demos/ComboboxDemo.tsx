@@ -173,9 +173,7 @@ export function ComboboxCreateItemsDemo() {
   return (
     <Combobox
       value={value}
-      onValueChange={(nextValue) =>
-        setValue(nextValue as DatabaseItem | null)
-      }
+      onValueChange={(nextValue) => setValue(nextValue as DatabaseItem | null)}
       items={databaseItems}
     >
       <Combobox.TriggerValue

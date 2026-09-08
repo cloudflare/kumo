@@ -121,10 +121,7 @@ export function extractDemoSnippet(
       });
     }
 
-    if (
-      ts.isFunctionDeclaration(statement) &&
-      statement.name
-    ) {
+    if (ts.isFunctionDeclaration(statement) && statement.name) {
       functions.set(statement.name.text, statement);
       if (statement.name.text === functionName) {
         targetFunctionNode = statement;
@@ -199,7 +196,5 @@ export function extractDemoSnippet(
 
   const importBlock = usedImports.join("\n");
 
-  return importBlock
-    ? `${importBlock}\n\n${snippetText}`
-    : snippetText;
+  return importBlock ? `${importBlock}\n\n${snippetText}` : snippetText;
 }
