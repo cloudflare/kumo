@@ -34,7 +34,7 @@ catalog:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.6
   vite-plugin-dts: ^4.3.0
   vite-tsconfig-paths: ^5.1.4
-  vitest: 4.1.10
+  vitest: 4.1.11
   wrangler: 4.127.1
   vite-plus: 0.2.6
   "@vitest/browser-playwright": 4.1.10
