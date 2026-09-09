@@ -1,0 +1,21 @@
+ci/visual-regression/pull-request-files.ts
+  s_a7d8469f4c6c22::t_a330c95f9062df 1-62
+ci/visual-regression/run-visual-regression.ts
+  s_a7d8469f4c6c22::t_42757dddd69681 2,16,72,74-88,92,513,515,519
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cb0a88db5126657443b8c8d56b96ebfce8ded1c8",
+  "prompts": {},
+  "sessions": {
+    "s_a7d8469f4c6c22": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f79b36213ffebI65s5PHUaLwg3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
