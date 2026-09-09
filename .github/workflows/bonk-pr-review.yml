@@ -1,0 +1,73 @@
+name: New PR Review
+
+on:
+  pull_request:
+    types: [opened]
+
+concurrency:
+  group: bonk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  review:
+    # Automatic reviews are for human-authored, same-repository PRs.
+    if: |
+      github.event.pull_request.user.type != 'Bot' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref != 'changeset-release/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      id-token: write
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Check PR author has repository write access
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          PERMISSION=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$PR_AUTHOR/permission" --jq .permission)
+          case "$PERMISSION" in
+            admin|maintain|write) ;;
+            *) echo "::error::PR author must have repository write access"; exit 1 ;;
+          esac
+
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 30
+          persist-credentials: false
+
+      - name: Load review prompt
+        id: prompt
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          DELIMITER=$(openssl rand -hex 16)
+          {
+            echo "value<<$DELIMITER"
+            echo "You are reviewing PR #$PR_NUMBER on $GITHUB_REPOSITORY."
+            echo
+            cat .github/bonk_reviewer.md
+            echo "$DELIMITER"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run Bonk review
+        uses: ask-bonk/ask-bonk/github@5d4fe8f4a557afb1b73ec8c0ffcf60359a28865f # main
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_AI_GATEWAY_ACCOUNT_ID }}
+          CLOUDFLARE_GATEWAY_ID: ${{ secrets.CF_AI_GATEWAY_NAME }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_AI_GATEWAY_TOKEN }}
+          OPENCODE_CONFIG_CONTENT: '{"permission":{"external_directory":{"/home/runner/work/**":"allow"},"edit":"deny","question":"deny","doom_loop":"deny"}}'
+        with:
+          oidc_base_url: https://ask-bonk.cloudflare-exponent.workers.dev/auth
+          model: "cloudflare-ai-gateway/openai/gpt-5.6-terra"
+          variant: "high"
+          forks: "false"
+          permissions: write
+          opencode_dev: true
+          opencode_version: "latest"
+          token_permissions: "NO_PUSH"
+          prompt: ${{ steps.prompt.outputs.value }}
