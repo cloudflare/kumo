@@ -1,0 +1,62 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Layer Dialog"
+description: "A strict responsive dialog composition with a sticky title inside its scrollable body."
+sourceFile: "components/layer-dialog"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import { LayerDialogActionDemo, LayerDialogAlertDemo, LayerDialogCancelDemo, LayerDialogCleanupDemo, LayerDialogInformationalDemo, LayerDialogPendingDemo, LayerDialogTopAlignDemo } from "~/components/demos/LayerDialogDemo";
+
+<ComponentSection>
+## Composition rules
+`LayerDialog` chooses its dismissal UI automatically:
+
+- Without `Actions`: show an X in the title and no footer.
+- With `Actions`: remove the X and show a footer with **Close** or **Cancel** and one primary action.
+
+Consumers cannot mix these layouts or add more primary actions. Use the X for read-only content, `Actions` when the user must commit a change, and `LayerDialog.Alert` for destructive or critical confirmations.
+</ComponentSection>
+
+<ComponentSection>
+## Informational dialog
+`Title` always lives in the bordered body surface. Its padded title rectangle remains visible while the body scrolls, gains a bottom border after scrolling, and has the sole automatic X dismissal action. The content edge mask signals overflow.
+<ComponentExample demo="LayerDialogInformationalDemo"><LayerDialogInformationalDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Standard action
+Adding `Actions` selects a fixed footer with exactly one Kumo primary action and an automatic **Close** button. Consumers cannot add custom footer controls, change button variants/sizes, or add extra CTAs.
+<ComponentExample demo="LayerDialogActionDemo"><LayerDialogActionDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Cancellation wording
+Use `dismissLabel="cancel"` only when the workflow has an explicit cancellation outcome. The component continues to own its copy, handler, placement, and styling.
+<ComponentExample demo="LayerDialogCancelDemo"><LayerDialogCancelDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Confirmation and destructive actions
+`LayerDialog.Alert` supplies `role="alertdialog"`, an automatic **Cancel**, no X, a destructive primary action, and blocks backdrop, Escape, and swipe dismissal.
+<ComponentExample demo="LayerDialogAlertDemo"><LayerDialogAlertDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Pending work
+`dismissDisabled` blocks every dismissal method together while asynchronous work is in flight. The single primary action owns its separate loading or disabled state.
+<ComponentExample demo="LayerDialogPendingDemo"><LayerDialogPendingDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Cleanup
+Put cleanup in `onOpenChange`, rather than in a dismissal click handler, so it runs for X, Close, Escape, backdrop, and swipe.
+<ComponentExample demo="LayerDialogCleanupDemo"><LayerDialogCleanupDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Desktop placement
+Desktop dialogs center by default. Use the narrow `verticalAlign="top"` override only when its content benefits from top alignment; mobile remains a bottom sheet.
+<ComponentExample demo="LayerDialogTopAlignDemo"><LayerDialogTopAlignDemo client:load /></ComponentExample>
+</ComponentSection>

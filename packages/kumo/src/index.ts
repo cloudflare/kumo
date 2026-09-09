@@ -341,6 +341,14 @@ export {
   type TagInputLabels,
   type TagInputProps,
 } from "./components/tag-input";
+export {
+  LayerDialog,
+  type LayerDialogActionsProps,
+  type LayerDialogContentProps,
+  type LayerDialogPrimaryProps,
+  type LayerDialogRootProps,
+  type KumoLayerDialogVerticalAlign,
+} from "./components/layer-dialog";
 // PLOP_INJECT_EXPORT
 
 // Utils

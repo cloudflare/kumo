@@ -156,6 +156,10 @@
       "types": "./dist/components/layer-card.d.ts",
       "import": "./dist/components/layer-card.js"
     },
+    "./components/layer-dialog": {
+      "types": "./dist/components/layer-dialog.d.ts",
+      "import": "./dist/components/layer-dialog.js"
+    },
     "./components/link": {
       "types": "./dist/components/link.d.ts",
       "import": "./dist/components/link.js"
