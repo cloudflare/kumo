@@ -69,4 +69,21 @@ describe("LayerDialog", () => {
     unmount();
     outsideButton.remove();
   });
+
+  it("keeps the alert dismissal label set to Cancel", () => {
+    const { getByRole, queryByRole } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions dismissLabel="close">
+            <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    expect(getByRole("button", { name: "Cancel" })).toBeDefined();
+    expect(queryByRole("button", { name: "Close" })).toBeNull();
+  });
 });

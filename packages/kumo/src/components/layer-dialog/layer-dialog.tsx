@@ -352,7 +352,7 @@ const LayerDialogActions = Object.assign(
   }: LayerDialogActionsProps) {
     const dismissDisabled = useContext(DismissDisabledContext);
     const isAlert = useContext(AlertContext);
-    const label = dismissLabel ?? (isAlert ? "cancel" : "close");
+    const label = isAlert ? "cancel" : (dismissLabel ?? "close");
 
     if (!isValidElement(children) || children.type !== LayerDialogPrimary) {
       throw new Error(
