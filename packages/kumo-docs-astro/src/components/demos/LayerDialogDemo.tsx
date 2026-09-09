@@ -273,9 +273,7 @@ export function LayerDialogSizeDemo() {
       </div>
       <LayerDialog.Root open={open} onOpenChange={setOpen}>
         <LayerDialog.Content size={size}>
-          <LayerDialog.Title>
-            Review deployment configuration
-          </LayerDialog.Title>
+          <LayerDialog.Title>Review deployment configuration</LayerDialog.Title>
           <LayerDialog.Body>
             <Text variant="secondary">
               Confirm the service details and routing configuration before this
