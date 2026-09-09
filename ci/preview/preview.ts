@@ -98,11 +98,9 @@ async function githubRequest(
 function getPullMetadata(value: unknown, name: string) {
   const pull = requireRecord(value, name);
   const head = requireRecord(pull.head, `${name}.head`);
-  const base = requireRecord(pull.base, `${name}.base`);
   return {
     number: requireNumber(pull.number, `${name}.number`),
     headSha: requireString(head.sha, `${name}.head.sha`),
-    baseRef: requireString(base.ref, `${name}.base.ref`),
   };
 }
 
@@ -210,7 +208,6 @@ async function resolveInternalPreview(): Promise<void> {
     preview_url: getWorkerPreviewUrl(detailsUrl),
     pr_number: pull.number.toString(),
     head_sha: headSha,
-    base_ref: currentPull.baseRef,
   });
 }
 
@@ -227,7 +224,6 @@ async function resolveForkPreview(): Promise<void> {
     writeOutputs({
       pr_number: pull.number.toString(),
       head_sha: pull.headSha,
-      base_ref: pull.baseRef,
     });
     return;
   }
@@ -272,7 +268,6 @@ async function resolveForkPreview(): Promise<void> {
   writeOutputs({
     pr_number: pull.number.toString(),
     head_sha: pull.headSha,
-    base_ref: pull.baseRef,
   });
 }
 

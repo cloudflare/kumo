@@ -16,11 +16,7 @@ on:
         required: true
         type: string
       head_sha:
-        description: Pull request head commit used for changed-file detection
-        required: true
-        type: string
-      base_ref:
-        description: Pull request base branch
+        description: Pull request head commit used for screenshot storage
         required: true
         type: string
       artifact_name:
@@ -29,7 +25,7 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -58,17 +54,11 @@ jobs:
           PREVIEW_COMMIT: ${{ inputs.preview_commit }}
         run: vp exec tsx ci/preview/preview.ts verify
 
-      - name: Fetch PR head for git diff
-        env:
-          PR_HEAD_SHA: ${{ inputs.head_sha }}
-        run: git fetch --depth=1 origin "$PR_HEAD_SHA"
-
       - name: Run Visual Regression
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ inputs.pr_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_BASE_REF: ${{ inputs.base_ref }}
           PR_HEAD_SHA: ${{ inputs.head_sha }}
           BEFORE_URL: "https://kumo-ui.com"
           AFTER_URL: ${{ inputs.preview_url }}

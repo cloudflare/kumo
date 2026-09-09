@@ -24,7 +24,7 @@
     "release:production": "bash ci/versioning/release-production.sh",
     "kumo": "node packages/kumo/dist/command-line/cli.js",
     "test": "pnpm --filter @cloudflare/kumo test",
-    "test:ci": "tsx --test ci/preview/*.test.ts ci/reporters/*.test.ts ci/utils/*.test.ts",
+    "test:ci": "tsx --test ci/preview/*.test.ts ci/reporters/*.test.ts ci/utils/*.test.ts ci/visual-regression/*.test.ts",
     "test:watch": "pnpm --filter @cloudflare/kumo test:watch",
     "typecheck": "pnpm -r typecheck",
     "version": "changeset version",

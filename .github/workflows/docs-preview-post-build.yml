@@ -29,7 +29,8 @@ on:
     types: [completed]
 
 permissions:
-  contents: write
+  actions: read
+  contents: read
   pull-requests: write
 
 jobs:
@@ -52,7 +53,6 @@ jobs:
       preview_url: ${{ steps.deploy.outputs.preview_url }}
       pr_number: ${{ steps.metadata.outputs.pr_number }}
       head_sha: ${{ steps.metadata.outputs.head_sha }}
-      base_ref: ${{ steps.metadata.outputs.base_ref }}
       preview_commit: ${{ steps.preview.outputs.preview_commit }}
     steps:
       # Always check out wrangler config from main — never from the fork's SHA.
@@ -124,7 +124,6 @@ jobs:
       preview_commit: ${{ needs.deploy.outputs.preview_commit }}
       pr_number: ${{ needs.deploy.outputs.pr_number }}
       head_sha: ${{ needs.deploy.outputs.head_sha }}
-      base_ref: ${{ needs.deploy.outputs.base_ref }}
       artifact_name: visual-regression-screenshots-fork
     secrets: inherit
 
@@ -143,7 +142,6 @@ jobs:
       preview_url: ${{ steps.metadata.outputs.preview_url }}
       pr_number: ${{ steps.metadata.outputs.pr_number }}
       head_sha: ${{ steps.metadata.outputs.head_sha }}
-      base_ref: ${{ steps.metadata.outputs.base_ref }}
     steps:
       - name: Checkout preview tooling from main
         uses: actions/checkout@v4
@@ -177,6 +175,5 @@ jobs:
       preview_commit: ${{ needs.resolve_internal_preview.outputs.head_sha }}
       pr_number: ${{ needs.resolve_internal_preview.outputs.pr_number }}
       head_sha: ${{ needs.resolve_internal_preview.outputs.head_sha }}
-      base_ref: ${{ needs.resolve_internal_preview.outputs.base_ref }}
       artifact_name: visual-regression-screenshots
     secrets: inherit
