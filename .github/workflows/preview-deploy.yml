@@ -1,9 +1,11 @@
-# Deploys docs preview for fork PRs via workflow_run.
+# Handles privileged work after docs previews are ready.
 #
-# Security model: fork code runs in the untrusted pull_request context
-# (preview.yml docs-build job) and produces a static HTML artifact.
-# This workflow runs in the base repo context with secrets, but NEVER
-# checks out or executes fork code — it only deploys the built artifact.
+# Fork PRs use workflow_run. Fork code runs in the untrusted pull_request
+# context and produces a static HTML artifact. This workflow deploys that
+# artifact, but never checks out or executes fork code with secrets.
+#
+# Internal PRs use Worker Builds. The trusted Cloudflare check_run event starts
+# visual regression after the Worker preview is ready.
 #
 # IMPORTANT: ALL checkouts in this workflow use ref: main (or no ref, which
 # also defaults to main via the workflow_run base context). The wrangler.jsonc
@@ -17,13 +19,13 @@
 # changes are captured via the deployed preview URL (AFTER_URL), not via
 # executing the fork's copy of the script.
 #
-# For internal PRs, deployment happens directly in preview.yml (docs-deploy job).
-
-name: Preview Deploy (Forks)
+name: Preview Post-Deploy
 
 on:
   workflow_run:
     workflows: ["Preview"]
+    types: [completed]
+  check_run:
     types: [completed]
 
 permissions:
@@ -31,7 +33,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: preview-deploy-${{ github.event.workflow_run.id }}
+  group: preview-post-deploy-${{ github.event.check_run.pull_requests[0].number || github.event.workflow_run.id || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -40,7 +42,7 @@ jobs:
     # Only run for:
     # 1. Successful workflow runs
     # 2. Pull request events (not push)
-    # 3. Fork PRs only (internal PRs deploy in preview.yml directly)
+    # 3. Fork PRs only (Worker Builds deploy internal PRs)
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'pull_request' &&
@@ -232,5 +234,136 @@ jobs:
         if: always()
         with:
           name: visual-regression-screenshots-fork
+          path: ci/visual-regression/screenshots/
+          retention-days: 7
+
+  visual-regression-internal:
+    name: Visual Regression
+    if: >-
+      github.event_name == 'check_run' &&
+      github.event.check_run.name == 'Workers Builds: kumo-docs' &&
+      github.event.check_run.app.slug == 'cloudflare-workers-and-pages' &&
+      github.event.check_run.conclusion == 'success' &&
+      github.event.check_run.pull_requests[0].number != null
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Resolve and verify preview
+        id: metadata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const checkRun = context.payload.check_run;
+            const pull = checkRun.pull_requests[0];
+            const headSha = checkRun.head_sha;
+
+            if (pull.head.sha !== headSha) {
+              core.setFailed('The check run and pull request head SHAs differ.');
+              return;
+            }
+
+            const { data: currentPull } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pull.number,
+            });
+
+            if (currentPull.state !== 'open' || currentPull.head.sha !== headSha) {
+              core.notice(`Skipping stale preview check for ${headSha}.`);
+              core.setOutput('current', 'false');
+              return;
+            }
+
+            const detailsUrl = new URL(checkRun.details_url);
+            const pathMatch = detailsUrl.pathname.match(
+              /^\/[^/]+\/workers\/services\/view\/kumo-docs\/production\/previews\/([a-z0-9-]+)$/,
+            );
+
+            if (detailsUrl.hostname !== 'dash.cloudflare.com' || !pathMatch) {
+              core.setFailed(`Unexpected Worker Builds URL: ${checkRun.details_url}`);
+              return;
+            }
+
+            const previewUrl = `https://${pathMatch[1]}-kumo-docs.design-engineering.workers.dev`;
+            let lastError = 'Preview verification did not run.';
+
+            for (let attempt = 1; attempt <= 6; attempt += 1) {
+              try {
+                const response = await fetch(
+                  `${previewUrl}/api/version?sha=${headSha}`,
+                  { headers: { 'Cache-Control': 'no-cache' } },
+                );
+
+                if (!response.ok) {
+                  lastError = `Preview returned HTTP ${response.status}.`;
+                } else {
+                  const version = await response.json();
+                  const previewCommit = version?.commit;
+
+                  if (typeof previewCommit !== 'string') {
+                    lastError = 'Preview returned invalid version metadata.';
+                  } else if (headSha.startsWith(previewCommit)) {
+                    core.setOutput('current', 'true');
+                    core.setOutput('preview_url', previewUrl);
+                    core.setOutput('pr_number', pull.number.toString());
+                    core.setOutput('head_sha', headSha);
+                    core.setOutput('base_ref', currentPull.base.ref);
+                    return;
+                  } else {
+                    lastError = `Preview serves ${previewCommit}, expected ${headSha}.`;
+                  }
+                }
+              } catch (error) {
+                lastError = error instanceof Error ? error.message : String(error);
+              }
+
+              if (attempt < 6) {
+                await new Promise((resolve) => setTimeout(resolve, 5_000));
+              }
+            }
+
+            core.setFailed(`Could not verify Worker preview: ${lastError}`);
+
+      # The workflow and all executed code come from main. The PR SHA is fetched
+      # only so the trusted script can inspect changed file names.
+      - name: Checkout VR script from main
+        if: steps.metadata.outputs.current == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: |
+            ci/visual-regression
+            .github/actions/install-dependencies
+
+      - name: Fetch PR head for git diff
+        if: steps.metadata.outputs.current == 'true'
+        env:
+          PR_HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
+        run: git fetch --depth=1 origin "$PR_HEAD_SHA"
+
+      - name: Install Dependencies
+        if: steps.metadata.outputs.current == 'true'
+        uses: ./.github/actions/install-dependencies
+        with:
+          filter: "@cloudflare/kumo..."
+
+      - name: Run Visual Regression
+        if: steps.metadata.outputs.current == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BASE_REF: ${{ steps.metadata.outputs.base_ref }}
+          PR_HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
+          BEFORE_URL: "https://kumo-ui.com"
+          AFTER_URL: ${{ steps.metadata.outputs.preview_url }}
+          SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
+        run: vp exec tsx ci/visual-regression/run-visual-regression.ts
+
+      - name: Upload Screenshots
+        if: always() && steps.metadata.outputs.current == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-screenshots
           path: ci/visual-regression/screenshots/
           retention-days: 7

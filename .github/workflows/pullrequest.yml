@@ -145,6 +145,7 @@ jobs:
           name: kumo-ai
           path: packages/kumo/ai
       - run: vp run --filter @cloudflare/kumo test
+      - run: vp run --filter @cloudflare/kumo-docs-astro test
       - run: vp run test:ci
 
   test-react-compatibility:
