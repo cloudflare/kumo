@@ -218,7 +218,7 @@ function LayerDialogContent({
       <DrawerBase.Backdrop className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200" />
       <DrawerBase.Viewport
         className={cn(
-          "fixed inset-0 flex items-end justify-center",
+          "fixed inset-0 flex items-end justify-center sm:px-4",
           KUMO_LAYER_DIALOG_VARIANTS.verticalAlign[verticalAlign].classes,
         )}
         data-base-ui-swipe-ignore={
@@ -232,7 +232,7 @@ function LayerDialogContent({
             KUMO_LAYER_DIALOG_VARIANTS.size[size].classes,
           )}
         >
-          <LayerCard className="shadow-m flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 max-sm:shadow-xs max-sm:ring-0 sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl">
+          <LayerCard className="shadow-m flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl">
             {!isDesktop && !isAlert && (
               <div aria-hidden className="flex justify-center pt-1.5 pb-3">
                 <div className="h-1 w-10 rounded-full bg-kumo-fill" />

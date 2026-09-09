@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Button, Input, LayerDialog, Text } from "@cloudflare/kumo";
+import {
+  Button,
+  Input,
+  LayerDialog,
+  Text,
+  type KumoLayerDialogSize,
+} from "@cloudflare/kumo";
 
 function LongContent() {
   return (
@@ -249,31 +255,46 @@ export function LayerDialogTopAlignDemo() {
 }
 
 export function LayerDialogSizeDemo() {
+  const [open, setOpen] = useState(false);
+  const [size, setSize] = useState<KumoLayerDialogSize>("base");
+
+  const openAtSize = (nextSize: KumoLayerDialogSize) => {
+    setSize(nextSize);
+    setOpen(true);
+  };
+
   return (
-    <LayerDialog.Root>
-      <LayerDialog.Trigger
-        render={(props) => <Button {...props}>Review configuration</Button>}
-      />
-      <LayerDialog.Content size="lg">
-        <LayerDialog.Title>Review deployment configuration</LayerDialog.Title>
-        <LayerDialog.Body>
-          <Text variant="secondary">
-            Confirm the service details and routing configuration before this
-            deployment is created.
-          </Text>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
-            <Input label="Service name" defaultValue="production-api" />
-            <Input label="Environment" defaultValue="Production" />
-            <Input label="Hostname" defaultValue="api.example.com" />
-            <Input label="Compatibility date" defaultValue="2026-09-09" />
-          </div>
-        </LayerDialog.Body>
-        <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary>
-            Create deployment
-          </LayerDialog.Actions.Primary>
-        </LayerDialog.Actions>
-      </LayerDialog.Content>
-    </LayerDialog.Root>
+    <>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => openAtSize("sm")}>Small</Button>
+        <Button onClick={() => openAtSize("base")}>Default</Button>
+        <Button onClick={() => openAtSize("lg")}>Large</Button>
+        <Button onClick={() => openAtSize("xl")}>Extra large</Button>
+      </div>
+      <LayerDialog.Root open={open} onOpenChange={setOpen}>
+        <LayerDialog.Content size={size}>
+          <LayerDialog.Title>
+            Review deployment configuration
+          </LayerDialog.Title>
+          <LayerDialog.Body>
+            <Text variant="secondary">
+              Confirm the service details and routing configuration before this
+              deployment is created.
+            </Text>
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              <Input label="Service name" defaultValue="production-api" />
+              <Input label="Environment" defaultValue="Production" />
+              <Input label="Hostname" defaultValue="api.example.com" />
+              <Input label="Compatibility date" defaultValue="2026-09-09" />
+            </div>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary>
+              Create deployment
+            </LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>
+    </>
   );
 }
