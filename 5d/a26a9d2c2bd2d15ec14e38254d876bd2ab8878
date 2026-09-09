@@ -1,0 +1,21 @@
+ci/AGENTS.md
+  s_a7d8469f4c6c22::t_93faefd1633a44 82-91,108
+ci/preview/preview.ts
+  s_a7d8469f4c6c22::t_b004d7a25a98a9 1-448
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5da26a9d2c2bd2d15ec14e38254d876bd2ab8878",
+  "prompts": {},
+  "sessions": {
+    "s_a7d8469f4c6c22": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f79b36213ffebI65s5PHUaLwg3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
