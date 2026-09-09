@@ -18,6 +18,10 @@ import { Button } from "../button/button";
 import { LayerCard } from "../layer-card/layer-card";
 import { Text } from "../text/text";
 import { cn } from "../../utils/cn";
+import {
+  usePortalContainer,
+  type PortalContainer,
+} from "../../utils/portal-provider";
 
 export const KUMO_LAYER_DIALOG_VARIANTS = {
   verticalAlign: {
@@ -81,6 +85,7 @@ function LayerDialogRoot({
     ...props,
     disablePointerDismissal:
       disablePointerDismissal || dismissDisabled || isAlert,
+    modal: isAlert ? true : props.modal,
     onOpenChange: handleOpenChange,
   };
 
@@ -118,14 +123,22 @@ LayerDialogTrigger.displayName = "LayerDialog.Trigger";
 
 export interface LayerDialogContentProps {
   children: ReactNode;
+  /**
+   * Container element for the portal. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
   /** Desktop-only positioning. Mobile dialogs always remain bottom sheets. */
   verticalAlign?: KumoLayerDialogVerticalAlign;
 }
 
 function LayerDialogContent({
   children,
+  container: containerProp,
   verticalAlign = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.verticalAlign,
 }: LayerDialogContentProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
   const isDesktop = useContext(DesktopContext);
   const dismissDisabled = useContext(DismissDisabledContext);
   const isAlert = useContext(AlertContext);
@@ -178,7 +191,7 @@ function LayerDialogContent({
   );
 
   return (
-    <DrawerBase.Portal>
+    <DrawerBase.Portal container={container}>
       <DrawerBase.Backdrop className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200" />
       <DrawerBase.Viewport
         className={cn(
@@ -218,7 +231,7 @@ export interface LayerDialogTitleProps {
 
 function LayerDialogTitle({ children }: LayerDialogTitleProps) {
   const title = (props: ComponentPropsWithoutRef<"h2">) => (
-    <Text {...props} as="h2" variant="heading3">
+    <Text {...props} as="h2" variant="heading">
       {children}
     </Text>
   );
