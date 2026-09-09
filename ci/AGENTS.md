@@ -88,7 +88,7 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 | `docs-preview-post-build.yml` | workflow_run, check_run          | Deploy fork docs; start visual regression    |
 | `visual-regression.yml`       | workflow_call                    | Verify preview and compare screenshots       |
 | `bonk.yml`                    | issue_comment, pr_review_comment | AI agent (`@ask-bonk`) via CF AI Gateway     |
-| `reviewer.yml`                | pr_review_comment                | AI code review (`/review` command)           |
+| `bonk-pr-review.yml`          | pull_request:opened              | Automatic Bonk review with a no-push token   |
 
 ## ANTI-PATTERNS
 
@@ -104,6 +104,7 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 - **`DRY_RUN=true`**: Production release script gates all destructive operations; logs what would happen
 - **Hardcoded repo**: `github-api.ts` uses `owner: "cloudflare", repo: "kumo"`
 - **Required secrets**: `NPM_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `GITHUB_TOKEN`, `FIGMA_TOKEN` (optional)
+- **Bonk authentication**: `github.token` for repository write-access checks; `CF_AI_GATEWAY_ACCOUNT_ID`, `CF_AI_GATEWAY_NAME`, and `CF_AI_GATEWAY_TOKEN` for AI Gateway
 - **Visual regression**: Creates ephemeral `vr-screenshots-{pr}-{runId}` branches for diff images
 - **Fork PR security**: `docs-preview-post-build.yml` handles fork PRs via `workflow_run` (no secrets in fork context)
 - **Composite action**: `.github/actions/install-dependencies/action.yml` installs pnpm 10.34.0, Node 24, with optional filter
