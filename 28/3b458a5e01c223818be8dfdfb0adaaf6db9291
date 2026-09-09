@@ -1,0 +1,21 @@
+.github/workflows/pullrequest.yml
+  s_f30a1d97af67b0::t_1babdc8178cffe 5
+.github/workflows/validate-changeset.yml
+  s_f30a1d97af67b0::t_c27e08ac0530ad 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "283b458a5e01c223818be8dfdfb0adaaf6db9291",
+  "prompts": {},
+  "sessions": {
+    "s_f30a1d97af67b0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08748-7849-7c83-b79e-d02392c76206",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
