@@ -56,6 +56,9 @@ jobs:
             echo '```'
             echo ""
             echo "This is your task. Read it carefully and act on it."
+            echo ""
+            echo 'For PR review requests, after checkout, read and follow .github/bonk_reviewer.md from the current PR head, including its final-response Review notes expander. Historical versions read while inspecting the diff are not the active instructions.'
+            echo 'Apply those review instructions only in review mode; requests to implement a change still require implementation.'
             echo "$DELIMITER"
           } >> "$GITHUB_OUTPUT"
 
