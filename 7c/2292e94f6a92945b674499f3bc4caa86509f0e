@@ -1,0 +1,23 @@
+.github/bonk_reviewer.md
+  s_9e6bcbb7540f49::t_e01601fa3ea032 1-62
+.github/workflows/bonk-pr-review.yml
+  s_9e6bcbb7540f49::t_5c56c704aa3177 1,4-5,8,12-17,22,26-35,37-38,40-41,43-55,57-58,63,66-68,70-73
+.github/workflows/bonk.yml
+  s_9e6bcbb7540f49::t_c893c44c46446f 18-20,29-39,41,44,58,65-66,69-70,72-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7c2292e94f6a92945b674499f3bc4caa86509f0e",
+  "prompts": {},
+  "sessions": {
+    "s_9e6bcbb7540f49": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a086b7-bc3a-7cf1-8ab6-bc74fa0cea00",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
