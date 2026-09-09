@@ -1,7 +1,11 @@
 import { render, within } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import { KumoPortalProvider } from "../../utils/portal-provider";
-import { LayerDialog } from "./layer-dialog";
+import {
+  KUMO_LAYER_DIALOG_DEFAULT_VARIANTS,
+  KUMO_LAYER_DIALOG_VARIANTS,
+  LayerDialog,
+} from "./layer-dialog";
 
 describe("LayerDialog", () => {
   it("exports its strict compound component slots", () => {
@@ -11,6 +15,17 @@ describe("LayerDialog", () => {
     expect(LayerDialog.Title).toBeDefined();
     expect(LayerDialog.Body).toBeDefined();
     expect(LayerDialog.Actions).toBeDefined();
+  });
+
+  it("uses a larger constrained desktop width by default", () => {
+    expect(KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.size).toBe("base");
+    expect(KUMO_LAYER_DIALOG_VARIANTS.size.base.classes).toBe("sm:max-w-xl");
+    expect(Object.keys(KUMO_LAYER_DIALOG_VARIANTS.size)).toEqual([
+      "sm",
+      "base",
+      "lg",
+      "xl",
+    ]);
   });
 
   it("requires explicit actions for alert dialogs", () => {

@@ -247,3 +247,33 @@ export function LayerDialogTopAlignDemo() {
     </LayerDialog.Root>
   );
 }
+
+export function LayerDialogSizeDemo() {
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Review configuration</Button>}
+      />
+      <LayerDialog.Content size="lg">
+        <LayerDialog.Title>Review deployment configuration</LayerDialog.Title>
+        <LayerDialog.Body>
+          <Text variant="secondary">
+            Confirm the service details and routing configuration before this
+            deployment is created.
+          </Text>
+          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+            <Input label="Service name" defaultValue="production-api" />
+            <Input label="Environment" defaultValue="Production" />
+            <Input label="Hostname" defaultValue="api.example.com" />
+            <Input label="Compatibility date" defaultValue="2026-09-09" />
+          </div>
+        </LayerDialog.Body>
+        <LayerDialog.Actions>
+          <LayerDialog.Actions.Primary>
+            Create deployment
+          </LayerDialog.Actions.Primary>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}

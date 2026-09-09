@@ -347,6 +347,7 @@ export {
   type LayerDialogContentProps,
   type LayerDialogPrimaryProps,
   type LayerDialogRootProps,
+  type KumoLayerDialogSize,
   type KumoLayerDialogVerticalAlign,
 } from "./components/layer-dialog";
 // PLOP_INJECT_EXPORT

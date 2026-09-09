@@ -24,6 +24,24 @@ import {
 } from "../../utils/portal-provider";
 
 export const KUMO_LAYER_DIALOG_VARIANTS = {
+  size: {
+    sm: {
+      classes: "sm:max-w-md",
+      description: "Compact desktop dialog width (448px)",
+    },
+    base: {
+      classes: "sm:max-w-xl",
+      description: "Default desktop dialog width (576px)",
+    },
+    lg: {
+      classes: "sm:max-w-2xl",
+      description: "Large desktop dialog width (672px)",
+    },
+    xl: {
+      classes: "sm:max-w-3xl",
+      description: "Extra large desktop dialog width (768px)",
+    },
+  },
   verticalAlign: {
     top: {
       classes: "sm:items-start sm:pt-16",
@@ -37,9 +55,11 @@ export const KUMO_LAYER_DIALOG_VARIANTS = {
 } as const;
 
 export const KUMO_LAYER_DIALOG_DEFAULT_VARIANTS = {
+  size: "base",
   verticalAlign: "center",
 } as const;
 
+export type KumoLayerDialogSize = keyof typeof KUMO_LAYER_DIALOG_VARIANTS.size;
 export type KumoLayerDialogVerticalAlign =
   keyof typeof KUMO_LAYER_DIALOG_VARIANTS.verticalAlign;
 
@@ -128,6 +148,8 @@ export interface LayerDialogContentProps {
    * @default document.body (or KumoPortalProvider container if set)
    */
   container?: PortalContainer;
+  /** Desktop-only width. Mobile dialogs always remain full-width. */
+  size?: KumoLayerDialogSize;
   /** Desktop-only positioning. Mobile dialogs always remain bottom sheets. */
   verticalAlign?: KumoLayerDialogVerticalAlign;
 }
@@ -135,6 +157,7 @@ export interface LayerDialogContentProps {
 function LayerDialogContent({
   children,
   container: containerProp,
+  size = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.size,
   verticalAlign = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.verticalAlign,
 }: LayerDialogContentProps) {
   const contextContainer = usePortalContainer();
@@ -204,7 +227,10 @@ function LayerDialogContent({
       >
         <DrawerBase.Popup
           render={isAlert ? <div role="alertdialog" /> : <div />}
-          className="fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-[calc(100dvh-3rem)] sm:max-w-md sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0"
+          className={cn(
+            "fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-[calc(100dvh-3rem)] sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0",
+            KUMO_LAYER_DIALOG_VARIANTS.size[size].classes,
+          )}
         >
           <LayerCard className="shadow-m flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 max-sm:shadow-xs max-sm:ring-0 sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl">
             {!isDesktop && !isAlert && (

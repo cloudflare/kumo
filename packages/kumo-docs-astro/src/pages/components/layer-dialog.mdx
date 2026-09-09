@@ -7,7 +7,7 @@ sourceFile: "components/layer-dialog"
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import { LayerDialogActionDemo, LayerDialogAlertDemo, LayerDialogCancelDemo, LayerDialogCleanupDemo, LayerDialogInformationalDemo, LayerDialogPendingDemo, LayerDialogTopAlignDemo } from "~/components/demos/LayerDialogDemo";
+import { LayerDialogActionDemo, LayerDialogAlertDemo, LayerDialogCancelDemo, LayerDialogCleanupDemo, LayerDialogInformationalDemo, LayerDialogPendingDemo, LayerDialogSizeDemo, LayerDialogTopAlignDemo } from "~/components/demos/LayerDialogDemo";
 
 <ComponentSection>
 ## Composition rules
@@ -53,6 +53,12 @@ Use `dismissLabel="cancel"` only when the workflow has an explicit cancellation 
 ## Cleanup
 Put cleanup in `onOpenChange`, rather than in a dismissal click handler, so it runs for X, Close, Escape, backdrop, and swipe.
 <ComponentExample demo="LayerDialogCleanupDemo"><LayerDialogCleanupDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Desktop width
+Desktop dialogs use `size="base"` (576px) by default. Use `sm` (448px), `lg` (672px), or `xl` (768px) when the content needs a different width. Mobile dialogs remain full-width at every size.
+<ComponentExample demo="LayerDialogSizeDemo"><LayerDialogSizeDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
