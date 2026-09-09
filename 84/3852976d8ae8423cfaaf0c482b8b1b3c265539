@@ -1,0 +1,19 @@
+.github/actions/vite-task-cache/action.yml
+  s_dc1e2b0c2bfff3::t_5e57a0717f6a84 7-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "843852976d8ae8423cfaaf0c482b8b1b3c265539",
+  "prompts": {},
+  "sessions": {
+    "s_dc1e2b0c2bfff3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07c7b-f96e-7c82-a612-bd5edaca455c",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}

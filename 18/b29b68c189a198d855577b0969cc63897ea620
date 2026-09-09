@@ -1,0 +1,23 @@
+.github/actions/install-wrangler/action.yml
+  s_dc1e2b0c2bfff3::t_b6643663f38471 1-27
+.github/workflows/preview-deploy.yml
+  s_dc1e2b0c2bfff3::t_86a3479be44328 61-63,108
+.github/workflows/preview.yml
+  s_dc1e2b0c2bfff3::t_f65415dce60143 147-152,173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "18b29b68c189a198d855577b0969cc63897ea620",
+  "prompts": {},
+  "sessions": {
+    "s_dc1e2b0c2bfff3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07c7b-f96e-7c82-a612-bd5edaca455c",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}

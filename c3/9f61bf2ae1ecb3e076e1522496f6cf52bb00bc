@@ -1,0 +1,19 @@
+.github/workflows/bonk.yml
+  s_b73548f22f5c40::t_086260732338fe 59-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c39f61bf2ae1ecb3e076e1522496f6cf52bb00bc",
+  "prompts": {},
+  "sessions": {
+    "s_b73548f22f5c40": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0870b-9696-79b1-a4a2-4f6fb3f80d55",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
