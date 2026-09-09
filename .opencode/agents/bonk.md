@@ -90,18 +90,11 @@ Implementation mode ends with code changes on the branch, or with a precise bloc
 Use review mode only when the user asked for review or suggestions without asking for code changes.
 
 - Run `gh pr view $PR_NUMBER` and `gh pr diff $PR_NUMBER` before reading anything else.
+- Read `.github/bonk_reviewer.md` from the checked-out PR head and follow it as the authoritative instructions for review behavior, inline feedback, and final response format. Use the current PR version, not a historical or base-branch version inspected as part of the diff.
 - Read the full modified files, not just the diff, to understand context.
 - Check for a changeset: changes to the published `packages/kumo/` library require one in `.changeset/`. Docs changesets are optional; the Figma plugin is not published to npm.
 - Check test coverage: new behaviors should have tests. Regression tests are expected for bug fixes.
-- Post your review with `gh pr review $PR_NUMBER`.
-  - Use `REQUEST_CHANGES` for blocking issues.
-  - Use `COMMENT` for suggestions and non-blocking concerns.
-  - Use `APPROVE` if the PR is clean.
-- Be specific: point to exact lines and explain why they matter.
-- Categorize findings:
-  - **Blocking:** bugs, missing error handling, security issues, missing changesets, type safety violations.
-  - **Non-blocking:** style, naming, clarity, minor improvements.
-  - **Pre-existing / out of scope:** issues not introduced by the PR.
+- Return the final response for the Bonk runner to publish, including the collapsed review notes required by `.github/bonk_reviewer.md`, even when the result is `LGTM!`.
 
 Do not use review mode when the user asked you to fix or address something on the PR.
 </review>
