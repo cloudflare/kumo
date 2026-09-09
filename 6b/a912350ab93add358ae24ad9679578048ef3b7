@@ -1,0 +1,19 @@
+.github/bonk_reviewer.md
+  s_b73548f22f5c40::t_1488e37ff5bd3a 18,28-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6ba912350ab93add358ae24ad9679578048ef3b7",
+  "prompts": {},
+  "sessions": {
+    "s_b73548f22f5c40": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0870b-9696-79b1-a4a2-4f6fb3f80d55",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
