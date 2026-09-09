@@ -1,0 +1,19 @@
+ci/scripts/validate-kumo-changeset.ts
+  s_a7d8469f4c6c22::t_18b6ff9fd714c5 6,20,154-159,161,163,170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7e52e0493196557bd7474118d448c2fa12c3f9a4",
+  "prompts": {},
+  "sessions": {
+    "s_a7d8469f4c6c22": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f79b36213ffebI65s5PHUaLwg3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
