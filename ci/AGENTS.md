@@ -79,14 +79,16 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 
 ## GITHUB WORKFLOWS
 
-| Workflow             | Trigger                          | Purpose                                          |
-| -------------------- | -------------------------------- | ------------------------------------------------ |
-| `release.yml`        | push:main                        | changesets/action (Version PR or publish)        |
-| `pullrequest.yml`    | pull_request, push:opencode/\*\* | Build, lint, typecheck, test                     |
-| `preview.yml`        | pull_request, push:opencode/\*\* | pkg-pr-new, docs build/deploy, visual regression |
-| `preview-deploy.yml` | workflow_run(Preview)            | Fork PR docs deploy (security boundary)          |
-| `bonk.yml`           | issue_comment, pr_review_comment | AI agent (`@ask-bonk`) via CF AI Gateway         |
-| `reviewer.yml`       | pr_review_comment                | AI code review (`/review` command)               |
+| Workflow                      | Trigger                          | Purpose                                      |
+| ----------------------------- | -------------------------------- | -------------------------------------------- |
+| `release.yml`                 | push:main                        | changesets/action (Version PR or publish)    |
+| `pullrequest.yml`             | pull_request, push:opencode/\*\* | Build, lint, typecheck, test                 |
+| `docs-pr.yml`                 | pull_request                     | Build and test docs; upload preview artifact |
+| `package-preview-pr.yml`      | pull_request, push:opencode/\*\* | Publish package preview with pkg-pr-new      |
+| `docs-preview-post-build.yml` | workflow_run, check_run          | Deploy fork docs; start visual regression    |
+| `visual-regression.yml`       | workflow_call                    | Verify preview and compare screenshots       |
+| `bonk.yml`                    | issue_comment, pr_review_comment | AI agent (`@ask-bonk`) via CF AI Gateway     |
+| `reviewer.yml`                | pr_review_comment                | AI code review (`/review` command)           |
 
 ## ANTI-PATTERNS
 
@@ -103,5 +105,5 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 - **Hardcoded repo**: `github-api.ts` uses `owner: "cloudflare", repo: "kumo"`
 - **Required secrets**: `NPM_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `GITHUB_TOKEN`, `FIGMA_TOKEN` (optional)
 - **Visual regression**: Creates ephemeral `vr-screenshots-{pr}-{runId}` branches for diff images
-- **Fork PR security**: `preview-deploy.yml` handles fork PRs via `workflow_run` (no secrets in fork context)
+- **Fork PR security**: `docs-preview-post-build.yml` handles fork PRs via `workflow_run` (no secrets in fork context)
 - **Composite action**: `.github/actions/install-dependencies/action.yml` installs pnpm 10.34.0, Node 24, with optional filter

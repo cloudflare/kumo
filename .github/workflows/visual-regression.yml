@@ -1,0 +1,84 @@
+name: Visual Regression (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      preview_url:
+        description: Deployed docs preview URL
+        required: true
+        type: string
+      preview_commit:
+        description: Commit embedded in the deployed docs build
+        required: true
+        type: string
+      pr_number:
+        description: Pull request number
+        required: true
+        type: string
+      head_sha:
+        description: Pull request head commit used for changed-file detection
+        required: true
+        type: string
+      base_ref:
+        description: Pull request base branch
+        required: true
+        type: string
+      artifact_name:
+        description: Screenshot artifact name
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  run:
+    name: Visual Regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout VR script from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: |
+            ci/preview
+            ci/visual-regression
+            .github/actions/install-dependencies
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          filter: kumo-workspace
+
+      - name: Verify preview
+        env:
+          PREVIEW_URL: ${{ inputs.preview_url }}
+          PREVIEW_COMMIT: ${{ inputs.preview_commit }}
+        run: vp exec tsx ci/preview/preview.ts verify
+
+      - name: Fetch PR head for git diff
+        env:
+          PR_HEAD_SHA: ${{ inputs.head_sha }}
+        run: git fetch --depth=1 origin "$PR_HEAD_SHA"
+
+      - name: Run Visual Regression
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_NUMBER: ${{ inputs.pr_number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BASE_REF: ${{ inputs.base_ref }}
+          PR_HEAD_SHA: ${{ inputs.head_sha }}
+          BEFORE_URL: "https://kumo-ui.com"
+          AFTER_URL: ${{ inputs.preview_url }}
+          SCREENSHOT_API_KEY: ${{ secrets.SCREENSHOT_API_KEY }}
+        run: vp exec tsx ci/visual-regression/run-visual-regression.ts
+
+      - name: Upload Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ci/visual-regression/screenshots/
+          retention-days: 7

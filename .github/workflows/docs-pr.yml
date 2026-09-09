@@ -1,0 +1,43 @@
+name: Docs Checks (PR)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Docs Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          filter: "@cloudflare/kumo-docs-astro..."
+
+      - uses: ./.github/actions/vite-task-cache
+
+      - name: Build docs
+        run: vp run build:docs
+
+      - name: Test docs
+        run: vp run --filter @cloudflare/kumo-docs-astro test
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-preview-dist
+          path: packages/kumo-docs-astro/dist/
+          include-hidden-files: true
+          retention-days: 1
