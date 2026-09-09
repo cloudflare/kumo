@@ -1,0 +1,31 @@
+.github/opencode.json
+  s_9e6bcbb7540f49::t_6aa6c0d6c9cf52 11-13,25-26
+.github/workflows/bonk-pr-review.yml
+  s_9e6bcbb7540f49::t_9a56ef2c54bd20 9,11-12,15-17,45-47,49,52
+.github/workflows/bonk.yml
+  s_9e6bcbb7540f49::t_8ef2246a9248b6 10,15,17,24,27,29,32,41-60,68,74-75,78
+.gitignore
+  s_9e6bcbb7540f49::t_60b026c42d17c2 54-57
+.opencode/agents/bonk.md
+  s_9e6bcbb7540f49::t_1880d5b0f58126 1-209
+AGENTS.md
+  s_9e6bcbb7540f49::t_0e4e06a47cd934 162
+ci/AGENTS.md
+  s_9e6bcbb7540f49::t_2f7653eae87ea3 91,107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "98a3d73e42dc42be6cec16c964cdaf5b6085d00c",
+  "prompts": {},
+  "sessions": {
+    "s_9e6bcbb7540f49": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a086b7-bc3a-7cf1-8ab6-bc74fa0cea00",
+        "model": "unknown"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
