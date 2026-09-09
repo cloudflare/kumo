@@ -1,0 +1,23 @@
+packages/kumo-docs-astro/src/components/demos/ToastDemo.tsx
+  s_501fb11380791b::t_71263ff062ac00 29-65
+packages/kumo-docs-astro/src/lib/extract-demo-snippet.ts
+  s_501fb11380791b::t_27e3a42a0c37fb 57-58,82,126,128-131,135,139-162,203-204
+packages/kumo-docs-astro/src/pages/components/toast.mdx
+  s_501fb11380791b::t_6da4d7caf02990 23,161-170,239-243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f4efe4301f3c6875ad73c5af0608f87606c078fa",
+  "prompts": {},
+  "sessions": {
+    "s_501fb11380791b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f7d73788dffe60twzKatvRpdY1",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
