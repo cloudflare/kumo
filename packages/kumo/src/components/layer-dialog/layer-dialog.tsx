@@ -378,7 +378,7 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
       </div>
       <ScrollAreaBase.Root className="relative flex min-h-0 flex-1 flex-col">
         <ScrollAreaBase.Viewport
-          className="min-h-0 flex-1 overscroll-contain [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
+          className="min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
           onScroll={handleScroll}
         >
           <ScrollAreaBase.Content className="px-4 pb-4">
