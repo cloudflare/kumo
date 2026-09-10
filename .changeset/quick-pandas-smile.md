@@ -2,4 +2,4 @@
 "@cloudflare/kumo": patch
 ---
 
-Update formatting for Vite+ 0.2.7.
+Update formatting for Vite+ 0.3.1.
