@@ -153,12 +153,23 @@ jobs:
           fetch-depth: 1
       - uses: ./.github/actions/install-dependencies
       - name: Install React ${{ matrix.react-version }} test dependencies
+        env:
+          REACT_VERSION: ${{ matrix.react-version }}
+          TYPES_REACT_VERSION: ${{ matrix.types-react-version }}
+          TYPES_REACT_DOM_VERSION: ${{ matrix.types-react-dom-version }}
         run: |
-          npm pkg set \
-            "pnpm.overrides.react=${{ matrix.react-version }}" \
-            "pnpm.overrides.react-dom=${{ matrix.react-version }}" \
-            "pnpm.overrides.@types/react=${{ matrix.types-react-version }}" \
-            "pnpm.overrides.@types/react-dom=${{ matrix.types-react-dom-version }}"
+          overrides="$(vp pm config get overrides --json)"
+          overrides="$(OVERRIDES="$overrides" node -e '
+            const overrides = JSON.parse(process.env.OVERRIDES ?? "{}");
+            Object.assign(overrides, {
+              react: process.env.REACT_VERSION,
+              "react-dom": process.env.REACT_VERSION,
+              "@types/react": process.env.TYPES_REACT_VERSION,
+              "@types/react-dom": process.env.TYPES_REACT_DOM_VERSION,
+            });
+            process.stdout.write(JSON.stringify(overrides));
+          ')"
+          vp pm config set --location=project --json overrides "$overrides"
           vp install --no-frozen-lockfile --ignore-scripts --filter "@cloudflare/kumo..."
       - uses: actions/download-artifact@v4
         with:

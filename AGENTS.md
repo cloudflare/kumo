@@ -127,19 +127,19 @@ Cross-package dependency: registry codegen requires docs demo metadata. Run `cod
 
 ## TOOLCHAIN
 
-| Tool       | Version   | Notes                                                     |
-| ---------- | --------- | --------------------------------------------------------- |
-| Node       | ^24.12.0  | Engine constraint (`.node-version`)                       |
-| pnpm       | >=10.26.0 | Workspace manager                                         |
-| Vite+      | 0.2.2     | Unified toolchain (`vp` CLI): build, test, lint, fmt      |
-| TypeScript | 5.9.2     | Via pnpm catalog                                          |
-| Vite       | 8.x       | Bundled via vite-plus; library mode (kumo), docs server   |
-| Tailwind   | 4.1.17    | v4 with `light-dark()` tokens                             |
-| Oxlint     | bundled   | Via `vp lint`; config in vite.config.ts + custom JS rules |
-| Oxfmt      | bundled   | Via `vp fmt`; replaced Prettier                           |
-| Vitest     | bundled   | Via `vp test`; happy-dom env, v8 coverage                 |
-| Changesets | latest    | Version management                                        |
-| Astro      | 7.x       | Docs framework                                            |
+| Tool       | Version  | Notes                                                     |
+| ---------- | -------- | --------------------------------------------------------- |
+| Node       | ^24.12.0 | Engine constraint (`.node-version`)                       |
+| pnpm       | ^12.3.4  | Workspace manager                                         |
+| Vite+      | 0.3.1    | Unified toolchain (`vp` CLI): build, test, lint, fmt      |
+| TypeScript | 5.9.2    | Via pnpm catalog                                          |
+| Vite       | 8.x      | Bundled via vite-plus; library mode (kumo), docs server   |
+| Tailwind   | 4.1.17   | v4 with `light-dark()` tokens                             |
+| Oxlint     | bundled  | Via `vp lint`; config in vite.config.ts + custom JS rules |
+| Oxfmt      | bundled  | Via `vp fmt`; replaced Prettier                           |
+| Vitest     | bundled  | Via `vp test`; happy-dom env, v8 coverage                 |
+| Changesets | latest   | Version management                                        |
+| Astro      | 7.x      | Docs framework                                            |
 
 Lint/format/test config lives in `vite.config.ts` (root and per-package) — there
 are no `.oxlintrc.json` / `.prettierrc` files. `vp check` runs format + lint.
