@@ -7,7 +7,7 @@ importers:
     configDependencies: {}
     packageManagerDependencies:
       pnpm:
-        specifier: ^12.3.4
+        specifier: 12.3.4
         version: 12.3.4
 
 packages:
