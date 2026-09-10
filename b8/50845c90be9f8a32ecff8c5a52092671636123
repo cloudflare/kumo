@@ -1,0 +1,19 @@
+pnpm-lock.yaml
+  s_b9c312f4c95fa4::t_fde2eac0c90dab 9-11,13,62-66,98-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b850845c90be9f8a32ecff8c5a52092671636123",
+  "prompts": {},
+  "sessions": {
+    "s_b9c312f4c95fa4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f7479a11bffeMz5ELaUucXhOJP",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Max Rozen <3822106+rozenmd@users.noreply.github.com>"
+    }
+  }
+}
