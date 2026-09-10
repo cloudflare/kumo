@@ -168,6 +168,7 @@ export function LayerDialogAlertDemo() {
           <LayerDialog.Actions.Primary
             disabled={confirmation !== workerName}
             onClick={() => undefined}
+            variant="destructive"
           >
             Delete Worker
           </LayerDialog.Actions.Primary>

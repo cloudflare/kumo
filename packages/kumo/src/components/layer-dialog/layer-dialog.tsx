@@ -470,7 +470,15 @@ export type LayerDialogPrimaryProps = Omit<
 > & {
   children: ReactNode;
   loading?: boolean;
+  /**
+   * Visual emphasis of the primary action. Use `destructive` when confirming
+   * an irreversible action such as a delete.
+   * @default "primary"
+   */
+  variant?: KumoLayerDialogPrimaryVariant;
 };
+
+export type KumoLayerDialogPrimaryVariant = "primary" | "destructive";
 
 export interface LayerDialogActionsProps {
   children: ReactElement<LayerDialogPrimaryProps>;
@@ -481,16 +489,11 @@ export interface LayerDialogActionsProps {
 function LayerDialogPrimary({
   children,
   loading,
+  variant = "primary",
   ...props
 }: LayerDialogPrimaryProps) {
-  const isAlert = useContext(AlertContext);
-
   return (
-    <Button
-      {...props}
-      loading={loading}
-      variant={isAlert ? "destructive" : "primary"}
-    >
+    <Button {...props} loading={loading} variant={variant}>
       {children}
     </Button>
   );

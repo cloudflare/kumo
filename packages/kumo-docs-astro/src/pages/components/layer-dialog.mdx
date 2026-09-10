@@ -103,7 +103,7 @@ Consumers cannot mix these layouts or add more primary actions. Use the X for re
 
 <ComponentSection>
 ## Standard action
-Adding `Actions` selects a fixed footer with exactly one Kumo primary action and an automatic **Close** button. Consumers cannot add custom footer controls, change button variants/sizes, or add extra CTAs.
+Adding `Actions` selects a fixed footer with exactly one Kumo primary action and an automatic **Close** button. Consumers cannot add custom footer controls, change button sizes, or add extra CTAs. The primary action accepts `variant="primary"` (default) or `variant="destructive"`.
 <ComponentExample demo="LayerDialogActionDemo"><LayerDialogActionDemo client:load /></ComponentExample>
 </ComponentSection>
 
@@ -115,7 +115,9 @@ Use `dismissLabel="cancel"` only when the workflow has an explicit cancellation 
 
 <ComponentSection>
 ## Confirmation and destructive actions
-`LayerDialog.Alert` follows Base UI's alert dialog: it supplies `role="alertdialog"`, an automatic **Cancel**, no X, a destructive primary action, is always modal, and blocks backdrop and swipe dismissal. Escape still cancels, matching the ARIA alert dialog pattern.
+`LayerDialog.Alert` follows Base UI's alert dialog: it supplies `role="alertdialog"`, an automatic **Cancel**, no X, is always modal, and blocks backdrop and swipe dismissal. Escape still cancels, matching the ARIA alert dialog pattern.
+Pass `variant="destructive"` to the primary action when the confirmation is irreversible. Alerts that confirm a non-destructive but critical step keep the default primary styling.
+
 <ComponentExample demo="LayerDialogAlertDemo"><LayerDialogAlertDemo client:load /></ComponentExample>
 </ComponentSection>
 
@@ -228,5 +230,43 @@ Height is derived from content and capped by the viewport. Following Base UI's i
   `LayerDialog.Actions.Primary`.
 </p>
 <PropsTable component="LayerDialog.Actions" />
+
+### LayerDialog.Actions.Primary
+
+<p>
+  The single primary action. Renders a Kumo `Button` and accepts standard
+  button attributes such as `onClick`, `disabled`, and `type`.
+</p>
+<div class="mb-4 overflow-hidden rounded-lg border border-kumo-hairline">
+  <table class="w-full text-sm">
+    <thead class="bg-kumo-elevated">
+      <tr>
+        <th class="px-4 py-2 text-left font-medium">Prop</th>
+        <th class="px-4 py-2 text-left font-medium">Type</th>
+        <th class="px-4 py-2 text-left font-medium">Default</th>
+        <th class="px-4 py-2 text-left font-medium">Description</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-kumo-hairline">
+      <tr>
+        <td class="px-4 py-2 font-mono text-xs">variant</td>
+        <td class="px-4 py-2 font-mono text-xs">"primary" | "destructive"</td>
+        <td class="px-4 py-2 font-mono text-xs">"primary"</td>
+        <td class="px-4 py-2 text-kumo-subtle">
+          Visual emphasis of the action. Use `destructive` when confirming an
+          irreversible action such as a delete.
+        </td>
+      </tr>
+      <tr>
+        <td class="px-4 py-2 font-mono text-xs">loading</td>
+        <td class="px-4 py-2 font-mono text-xs">boolean</td>
+        <td class="px-4 py-2 font-mono text-xs">false</td>
+        <td class="px-4 py-2 text-kumo-subtle">
+          Shows a spinner and disables the action while work is pending.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 </ComponentSection>

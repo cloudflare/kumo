@@ -365,6 +365,44 @@ describe("LayerDialog dismissal", () => {
     expect(collapsible.className).toContain("grid-rows-[1fr]");
   });
 
+  it("keeps the primary action neutral unless destructive is requested", () => {
+    // Button variants share classes and differ by the inline emphasis token.
+    const emphasisToken = (button: HTMLElement) =>
+      button.style.getPropertyValue("--kumo-button-emphasis-gradient-end");
+
+    const { getByRole, rerender } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Deploy to production</LayerDialog.Title>
+          <LayerDialog.Body>Traffic switches immediately.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary>Deploy</LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+    expect(emphasisToken(getByRole("button", { name: "Deploy" }))).toBe(
+      "var(--color-kumo-brand)",
+    );
+
+    rerender(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete resource</LayerDialog.Title>
+          <LayerDialog.Body>This cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary variant="destructive">
+              Delete
+            </LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+    expect(emphasisToken(getByRole("button", { name: "Delete" }))).toBe(
+      "var(--color-kumo-danger)",
+    );
+  });
+
   it("describes the popup with its body when no Description is given", () => {
     const { getByRole } = render(
       <LayerDialog.Alert open>
