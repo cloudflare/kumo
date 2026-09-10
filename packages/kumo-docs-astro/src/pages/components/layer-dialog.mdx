@@ -109,7 +109,7 @@ Adding `Actions` selects a fixed footer with exactly one Kumo primary action and
 
 <ComponentSection>
 ## Cancellation wording
-Use `dismissLabel="cancel"` only when the workflow has an explicit cancellation outcome. The component continues to own its copy, handler, placement, and styling.
+Use `dismissLabel="Cancel"` only when the workflow has an explicit cancellation outcome. The component continues to own the button's handler, placement, and styling.
 <ComponentExample demo="LayerDialogCancelDemo"><LayerDialogCancelDemo client:load /></ComponentExample>
 </ComponentSection>
 
@@ -134,6 +134,19 @@ Put cleanup in `onOpenChange`, rather than in a dismissal click handler, so it r
 </ComponentSection>
 
 <ComponentSection>
+## Localization
+
+The dialog renders two strings of its own. Everything else comes from your content, so translating a dialog means passing two props:
+
+- `closeLabel` on `Content` names the automatic X button for assistive technology. Default: "Close dialog".
+- `dismissLabel` on `Actions` is the footer button's text. Default: "Close", or "Cancel" inside an `Alert`.
+
+```tsx
+<LayerDialog.Content closeLabel="Dialog schließen">
+  ...
+  <LayerDialog.Actions dismissLabel="Abbrechen">
+```
+
 ## Desktop width
 Desktop dialogs use `size="base"` (576px) by default. Use `sm` (448px), `lg` (672px), or `xl` (768px) when the content needs a different width. Mobile dialogs remain full-width at every size.
 <ComponentExample demo="LayerDialogSizeDemo"><LayerDialogSizeDemo client:load /></ComponentExample>

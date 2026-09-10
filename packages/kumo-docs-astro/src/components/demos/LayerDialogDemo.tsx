@@ -113,7 +113,7 @@ export function LayerDialogCancelDemo() {
             />
           </div>
         </LayerDialog.Body>
-        <LayerDialog.Actions dismissLabel="cancel">
+        <LayerDialog.Actions dismissLabel="Cancel">
           <LayerDialog.Actions.Primary
             disabled={!email || !name}
             onClick={() => undefined}

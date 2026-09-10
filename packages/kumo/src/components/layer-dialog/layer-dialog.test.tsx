@@ -158,13 +158,13 @@ describe("LayerDialog", () => {
     outsideButton.remove();
   });
 
-  it("keeps the alert dismissal label set to Cancel", () => {
+  it("defaults the alert dismissal label to Cancel", () => {
     const { getByRole, queryByRole } = render(
       <LayerDialog.Alert open>
         <LayerDialog.Content>
           <LayerDialog.Title>Delete resource</LayerDialog.Title>
           <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
-          <LayerDialog.Actions dismissLabel="close">
+          <LayerDialog.Actions>
             <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
           </LayerDialog.Actions>
         </LayerDialog.Content>
@@ -401,6 +401,33 @@ describe("LayerDialog dismissal", () => {
     expect(emphasisToken(getByRole("button", { name: "Delete" }))).toBe(
       "var(--color-kumo-danger)",
     );
+  });
+
+  it("takes translated text for the two strings it renders itself", () => {
+    const { getByRole, rerender } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content closeLabel="Dialog schließen">
+          <LayerDialog.Title>Einstellungen</LayerDialog.Title>
+          <LayerDialog.Body>Inhalt</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+    expect(getByRole("button", { name: "Dialog schließen" })).toBeDefined();
+
+    rerender(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Löschen</LayerDialog.Title>
+          <LayerDialog.Body>Unwiderruflich.</LayerDialog.Body>
+          <LayerDialog.Actions dismissLabel="Abbrechen">
+            <LayerDialog.Actions.Primary variant="destructive">
+              Löschen
+            </LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+    expect(getByRole("button", { name: "Abbrechen" })).toBeDefined();
   });
 
   it("describes the popup with its body when no Description is given", () => {

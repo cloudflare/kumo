@@ -77,12 +77,14 @@ interface BodySlots {
   title: ReactNode;
   description: ReactNode;
   showCloseButton: boolean;
+  closeLabel: string;
 }
 
 const BodySlotsContext = createContext<BodySlots>({
   title: null,
   description: null,
   showCloseButton: false,
+  closeLabel: "",
 });
 
 type RootProps = ComponentPropsWithoutRef<typeof DrawerBase.Root>;
@@ -192,6 +194,12 @@ export interface LayerDialogContentProps {
   size?: KumoLayerDialogSize;
   /** Desktop-only positioning. Mobile dialogs always remain bottom sheets. */
   verticalAlign?: KumoLayerDialogVerticalAlign;
+  /**
+   * Accessible name of the automatic X button. Translate it for
+   * non-English products.
+   * @default "Close dialog"
+   */
+  closeLabel?: string;
 }
 
 type SlotType =
@@ -209,6 +217,7 @@ function collectSlot(children: ReactNode[], type: SlotType) {
 
 function LayerDialogContent({
   children,
+  closeLabel = "Close dialog",
   container: containerProp,
   size = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.size,
   verticalAlign = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.verticalAlign,
@@ -262,6 +271,7 @@ function LayerDialogContent({
     title: title.element,
     description: description.element ?? null,
     showCloseButton: actions.count === 0,
+    closeLabel,
   };
 
   return (
@@ -360,7 +370,8 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
   const [condensed, setCondensed] = useState(false);
   const descriptionClipRef = useRef<HTMLDivElement>(null);
   const dismissDisabled = useContext(DismissDisabledContext);
-  const { title, description, showCloseButton } = useContext(BodySlotsContext);
+  const { title, description, showCloseButton, closeLabel } =
+    useContext(BodySlotsContext);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
@@ -423,7 +434,9 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
             </div>
           )}
         </div>
-        {showCloseButton && <LayerDialogIconClose disabled={dismissDisabled} />}
+        {showCloseButton && (
+          <LayerDialogIconClose disabled={dismissDisabled} label={closeLabel} />
+        )}
       </div>
       <ScrollAreaBase.Root className="relative flex min-h-0 flex-1 flex-col">
         <ScrollAreaBase.Viewport
@@ -448,11 +461,17 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
 
 LayerDialogBody.displayName = "LayerDialog.Body";
 
-function LayerDialogIconClose({ disabled }: { disabled: boolean }) {
+function LayerDialogIconClose({
+  disabled,
+  label,
+}: {
+  disabled: boolean;
+  label: string;
+}) {
   const close = (closeProps: ComponentPropsWithoutRef<"button">) => (
     <Button
       {...closeProps}
-      aria-label="Close dialog"
+      aria-label={label}
       disabled={disabled}
       icon={X}
       shape="square"
@@ -482,8 +501,13 @@ export type KumoLayerDialogPrimaryVariant = "primary" | "destructive";
 
 export interface LayerDialogActionsProps {
   children: ReactElement<LayerDialogPrimaryProps>;
-  /** Use cancellation wording for a workflow that has an explicit cancel outcome. */
-  dismissLabel?: "close" | "cancel";
+  /**
+   * Text of the automatic dismiss button. Say "Cancel" only when the
+   * workflow has a real cancel outcome. Translate it for non-English
+   * products.
+   * @default "Close" ("Cancel" inside LayerDialog.Alert)
+   */
+  dismissLabel?: string;
 }
 
 function LayerDialogPrimary({
@@ -508,7 +532,7 @@ const LayerDialogActions = Object.assign(
   }: LayerDialogActionsProps) {
     const dismissDisabled = useContext(DismissDisabledContext);
     const isAlert = useContext(AlertContext);
-    const label = isAlert ? "cancel" : (dismissLabel ?? "close");
+    const label = dismissLabel ?? (isAlert ? "Cancel" : "Close");
 
     if (!isValidElement(children) || children.type !== LayerDialogPrimary) {
       throw new Error(
@@ -534,11 +558,11 @@ function LayerDialogDismiss({
   label,
 }: {
   disabled: boolean;
-  label: "close" | "cancel";
+  label: string;
 }) {
   const close = (closeProps: ComponentPropsWithoutRef<"button">) => (
     <Button {...closeProps} disabled={disabled} variant="ghost">
-      {label === "cancel" ? "Cancel" : "Close"}
+      {label}
     </Button>
   );
 
