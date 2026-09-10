@@ -334,9 +334,7 @@ describe("LayerDialog dismissal", () => {
 
     expect(getAllByRole("alertdialog", { hidden: true })).toHaveLength(1);
     expect(getByRole("dialog", { hidden: true })).toBeDefined();
-    expect(
-      getByRole("button", { hidden: true, name: "Close" }),
-    ).toBeDefined();
+    expect(getByRole("button", { hidden: true, name: "Close" })).toBeDefined();
   });
 
   it("describes the popup with its Description slot when present", () => {
