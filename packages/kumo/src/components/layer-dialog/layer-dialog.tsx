@@ -3,6 +3,7 @@ import {
   createContext,
   isValidElement,
   useContext,
+  useRef,
   useState,
   type ComponentPropsWithoutRef,
   type ReactElement,
@@ -349,13 +350,38 @@ export interface LayerDialogBodyProps {
   children: ReactNode;
 }
 
+/** Scroll distance before the header shows its divider and condenses. */
+const SCROLL_THRESHOLD = 8;
+/** Overflow that must remain after the description collapses (see handleScroll). */
+const CONDENSE_MIN_OVERFLOW = 16;
+
 function LayerDialogBody({ children }: LayerDialogBodyProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [condensed, setCondensed] = useState(false);
+  const descriptionClipRef = useRef<HTMLDivElement>(null);
   const dismissDisabled = useContext(DismissDisabledContext);
   const { title, description, showCloseButton } = useContext(BodySlotsContext);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    setHasScrolled(event.currentTarget.scrollTop > 8);
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    const scrolled = scrollTop > SCROLL_THRESHOLD;
+    setHasScrolled(scrolled);
+
+    if (!scrolled) {
+      setCondensed(false);
+      return;
+    }
+    if (condensed) return;
+
+    // Collapsing the description hands its height to the viewport, which
+    // shrinks the scroll range. If the content only barely overflows, that
+    // shrink would clamp scrollTop back under the threshold and re-expand the
+    // description, so only condense when enough overflow survives the collapse.
+    // Scroll events fire after layout, so this offsetHeight read is free.
+    const descriptionHeight = descriptionClipRef.current?.offsetHeight ?? 0;
+    const overflowAfterCollapse =
+      scrollHeight - clientHeight - descriptionHeight;
+    if (overflowAfterCollapse > CONDENSE_MIN_OVERFLOW) setCondensed(true);
   };
 
   // Without an explicit Description slot, the body copy describes the dialog
@@ -376,9 +402,26 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
             : "border-b border-transparent",
         )}
       >
-        <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex min-w-0 flex-col">
           {title}
-          {description}
+          {description && (
+            // grid-template-rows 1fr -> 0fr animates an auto-height row, which
+            // plain height cannot. The description stays in the DOM so
+            // aria-describedby keeps working while it is clipped.
+            <div
+              className={cn(
+                "grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none",
+                condensed
+                  ? "grid-rows-[0fr] opacity-0"
+                  : "grid-rows-[1fr] opacity-100",
+              )}
+              data-condensed={condensed || undefined}
+            >
+              <div ref={descriptionClipRef} className="min-h-0 overflow-hidden">
+                <div className="pt-1">{description}</div>
+              </div>
+            </div>
+          )}
         </div>
         {showCloseButton && <LayerDialogIconClose disabled={dismissDisabled} />}
       </div>

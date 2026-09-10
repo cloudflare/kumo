@@ -285,7 +285,84 @@ describe("LayerDialog dismissal", () => {
     const title = document.getElementById(
       popup.getAttribute("aria-labelledby")!,
     );
-    expect(description?.parentElement).toBe(title?.parentElement);
+    expect(title?.parentElement?.contains(description)).toBe(true);
+  });
+
+  it("condenses the description on scroll only when enough overflow survives", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Audit log</LayerDialog.Title>
+          <LayerDialog.Description>Long list below.</LayerDialog.Description>
+          <LayerDialog.Body>Entries</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const popup = getByRole("dialog");
+    const description = document.getElementById(
+      popup.getAttribute("aria-describedby")!,
+    )!;
+    const collapsible = description.closest("[class*='grid-rows-']")!;
+    const clip = collapsible.firstElementChild as HTMLElement;
+    const viewport = popup.querySelector<HTMLElement>(
+      "[role='presentation'][style*='overflow']",
+    )!;
+
+    // jsdom has no layout, so stub the geometry the scroll handler reads.
+    const setGeometry = (
+      scrollTop: number,
+      scrollHeight: number,
+      clientHeight: number,
+    ) => {
+      Object.defineProperty(viewport, "scrollTop", {
+        configurable: true,
+        value: scrollTop,
+      });
+      Object.defineProperty(viewport, "scrollHeight", {
+        configurable: true,
+        value: scrollHeight,
+      });
+      Object.defineProperty(viewport, "clientHeight", {
+        configurable: true,
+        value: clientHeight,
+      });
+    };
+    Object.defineProperty(clip, "offsetHeight", {
+      configurable: true,
+      value: 24,
+    });
+
+    // Barely overflowing: collapsing a 24px description would leave only
+    // 6px of scroll range, which clamps scrollTop under the threshold and
+    // would re-expand the description in a loop. Stay expanded.
+    setGeometry(40, 330, 300);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[1fr]");
+    expect(collapsible.hasAttribute("data-condensed")).toBe(false);
+
+    // Plenty of overflow: condense, and keep the description in the DOM so
+    // aria-describedby still resolves.
+    setGeometry(40, 900, 300);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[0fr]");
+    expect(collapsible.getAttribute("data-condensed")).toBe("true");
+    expect(popup.getAttribute("aria-describedby")).toBe(description.id);
+
+    // Once condensed, any scroll past the threshold keeps it condensed even
+    // if the measured clip height is now 0 mid-transition.
+    Object.defineProperty(clip, "offsetHeight", {
+      configurable: true,
+      value: 0,
+    });
+    setGeometry(20, 900, 324);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[0fr]");
+
+    // Scrolling back to the top expands again.
+    setGeometry(0, 900, 324);
+    fireEvent.scroll(viewport);
+    expect(collapsible.className).toContain("grid-rows-[1fr]");
   });
 
   it("describes the popup with its body when no Description is given", () => {
