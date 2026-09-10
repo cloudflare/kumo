@@ -35,6 +35,35 @@ describe("LayerDialog", () => {
     ]);
   });
 
+  it("derives the desktop height cap from viewport padding, not a hardcoded calc", () => {
+    // Every alignment must reserve vertical padding on the viewport, and the
+    // popup must fill that padded box. A hardcoded `calc(100dvh - Nrem)` on
+    // the popup can drift from the alignment padding and overflow the screen.
+    for (const config of Object.values(
+      KUMO_LAYER_DIALOG_VARIANTS.verticalAlign,
+    )) {
+      expect(config.classes).toMatch(/sm:(py|pb)-\d/);
+    }
+
+    const { getByRole, unmount } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content verticalAlign="top">
+          <LayerDialog.Title>Tall</LayerDialog.Title>
+          <LayerDialog.Body>Body</LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const popup = getByRole("dialog");
+    const viewport = popup.parentElement!;
+    expect(viewport.className).toContain("sm:pt-16");
+    expect(viewport.className).toContain("sm:pb-6");
+    expect(popup.className).toContain("sm:max-h-full");
+    expect(popup.className).not.toMatch(/sm:max-h-\[calc/);
+    expect(popup.firstElementChild?.className).toContain("sm:max-h-full");
+    unmount();
+  });
+
   it("falls back to default variants for unknown size and alignment", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 

@@ -44,11 +44,11 @@ export const KUMO_LAYER_DIALOG_VARIANTS = {
   },
   verticalAlign: {
     top: {
-      classes: "sm:items-start sm:pt-16",
+      classes: "sm:items-start sm:pt-16 sm:pb-6",
       description: "Align the desktop dialog near the top of the viewport",
     },
     center: {
-      classes: "sm:items-center",
+      classes: "sm:items-center sm:py-6",
       description: "Center the desktop dialog vertically",
     },
   },
@@ -266,6 +266,12 @@ function LayerDialogContent({
   return (
     <DrawerBase.Portal container={container}>
       <DrawerBase.Backdrop className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200" />
+      {/*
+        Desktop sizing contract: the viewport owns the vertical breathing room
+        (via the verticalAlign variant) and the popup fills it with
+        `max-h-full`, so the cap can never drift from the alignment padding.
+        Mobile sheets are bottom-anchored and capped at 85dvh instead.
+      */}
       <DrawerBase.Viewport
         className={cn(
           "fixed inset-0 flex items-end justify-center sm:px-4",
@@ -278,11 +284,11 @@ function LayerDialogContent({
         <DrawerBase.Popup
           render={isAlert ? <div role="alertdialog" /> : <div />}
           className={cn(
-            "fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-[calc(100dvh-3rem)] sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0",
+            "fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-full sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0",
             sizeConfig.classes,
           )}
         >
-          <LayerCard className="flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 shadow-[0_20px_25px_-5px_rgb(0_0_0/0.03),0_8px_10px_-6px_rgb(0_0_0/0.03)] max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl">
+          <LayerCard className="flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 shadow-[0_20px_25px_-5px_rgb(0_0_0/0.03),0_8px_10px_-6px_rgb(0_0_0/0.03)] max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-full sm:rounded-xl">
             {!isDesktop && !isAlert && (
               <div aria-hidden className="flex justify-center pt-1.5 pb-3">
                 <div className="h-1 w-10 rounded-full bg-kumo-fill" />

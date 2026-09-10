@@ -15,6 +15,7 @@ import {
   LayerDialogCancelDemo,
   LayerDialogCleanupDemo,
   LayerDialogInformationalDemo,
+  LayerDialogMaxHeightDemo,
   LayerDialogPendingDemo,
   LayerDialogSizeDemo,
   LayerDialogTopAlignDemo,
@@ -140,6 +141,12 @@ Desktop dialogs use `size="base"` (576px) by default. Use `sm` (448px), `lg` (67
 ## Desktop placement
 Desktop dialogs center by default. Use the narrow `verticalAlign="top"` override only when its content benefits from top alignment; mobile remains a bottom sheet.
 <ComponentExample demo="LayerDialogTopAlignDemo"><LayerDialogTopAlignDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Maximum height
+Height is derived from content and capped by the viewport. Following Base UI's inside-scroll pattern, the viewport reserves the vertical breathing room for each placement and the popup fills it, so a top-aligned dialog can never extend past the bottom edge. Past the cap, only the body scrolls while the title frame and actions stay pinned. Mobile sheets cap at 85% of the viewport instead. There are no height props: consumers control height only through the content they render.
+<ComponentExample demo="LayerDialogMaxHeightDemo"><LayerDialogMaxHeightDemo client:load /></ComponentExample>
 </ComponentSection>
 
 {/* API Reference */}

@@ -5,6 +5,7 @@ import {
   LayerDialog,
   Text,
   type KumoLayerDialogSize,
+  type KumoLayerDialogVerticalAlign,
 } from "@cloudflare/kumo";
 
 function LongContent() {
@@ -250,6 +251,52 @@ export function LayerDialogTopAlignDemo() {
         </LayerDialog.Body>
       </LayerDialog.Content>
     </LayerDialog.Root>
+  );
+}
+
+export function LayerDialogMaxHeightDemo() {
+  const [verticalAlign, setVerticalAlign] =
+    useState<KumoLayerDialogVerticalAlign>("center");
+  const [open, setOpen] = useState(false);
+
+  const openAt = (align: KumoLayerDialogVerticalAlign) => {
+    setVerticalAlign(align);
+    setOpen(true);
+  };
+
+  return (
+    <>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => openAt("center")}>Centered, tall content</Button>
+        <Button onClick={() => openAt("top")}>Top-aligned, tall content</Button>
+      </div>
+      <LayerDialog.Root open={open} onOpenChange={setOpen}>
+        <LayerDialog.Content verticalAlign={verticalAlign}>
+          <LayerDialog.Title>Audit log</LayerDialog.Title>
+          <LayerDialog.Description>
+            The dialog grows with its content until it reaches the viewport cap,
+            then only the body scrolls.
+          </LayerDialog.Description>
+          <LayerDialog.Body>
+            <ol className="flex flex-col gap-2">
+              {Array.from({ length: 40 }, (_, index) => (
+                <li
+                  key={index}
+                  className="rounded-lg border border-kumo-line px-3 py-2 text-kumo-subtle"
+                >
+                  Entry {index + 1}
+                </li>
+              ))}
+            </ol>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary>
+              Export log
+            </LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>
+    </>
   );
 }
 
