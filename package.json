@@ -47,7 +47,7 @@
     "packageManager": {
       "name": "pnpm",
       "onFail": "warn",
-      "version": ">=10.26.0"
+      "version": "^12.3.4"
     },
     "runtime": {
       "name": "node",
@@ -56,7 +56,7 @@
   },
   "engines": {
     "node": "^24.12.0",
-    "pnpm": ">=10.26.0"
+    "pnpm": "^12.3.4"
   },
-  "packageManager": "pnpm@10.34.0"
+  "packageManager": "pnpm@12.3.4"
 }

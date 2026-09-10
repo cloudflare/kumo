@@ -107,4 +107,4 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 - **Bonk authentication**: `github.token` for repository write-access checks; `CF_AI_GATEWAY_ACCOUNT_ID`, `CF_AI_GATEWAY_NAME`, and `CF_AI_GATEWAY_TOKEN` for AI Gateway
 - **Visual regression**: Creates ephemeral `vr-screenshots-{pr}-{runId}` branches for diff images
 - **Fork PR security**: `docs-preview-post-build.yml` handles fork PRs via `workflow_run` (no secrets in fork context)
-- **Composite action**: `.github/actions/install-dependencies/action.yml` installs pnpm 10.34.0, Node 24, with optional filter
+- **Composite action**: `.github/actions/install-dependencies/action.yml` installs pnpm 12.3.4, Node 24, with optional filter
