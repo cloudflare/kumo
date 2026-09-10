@@ -109,7 +109,9 @@ Adding `Actions` selects a fixed footer with exactly one Kumo primary action and
 
 <ComponentSection>
 ## Cancellation wording
-Use `dismissLabel="Cancel"` only when the workflow has an explicit cancellation outcome. The component continues to own the button's handler, placement, and styling.
+When `LayerDialog.Actions` is present, LayerDialog renders a secondary button that dismisses the dialog. Its default label is "Close", or "Cancel" for `LayerDialog.Alert`.
+
+Use `dismissLabel` only when this dialog needs more specific wording, such as "Keep editing" or "Discard changes". The label does not change the button's behavior: it always closes the dialog.
 <ComponentExample demo="LayerDialogCancelDemo"><LayerDialogCancelDemo client:load /></ComponentExample>
 </ComponentSection>
 
@@ -136,16 +138,22 @@ Put cleanup in `onOpenChange`, rather than in a dismissal click handler, so it r
 <ComponentSection>
 ## Localization
 
-The dialog renders two strings of its own. Everything else comes from your content, so translating a dialog means passing two props:
+The dialog renders two strings of its own. Configure their application-wide defaults with `KumoLocaleProvider`:
 
-- `closeLabel` on `Content` names the automatic X button for assistive technology. Default: "Close dialog".
-- `dismissLabel` on `Actions` is the footer button's text. Default: "Close", or "Cancel" inside an `Alert`.
+- `layerDialog.close` is used for the automatic X button and the default footer dismiss button. Default: "Close".
+- `layerDialog.cancel` is used for the default footer dismiss button inside an `Alert`.
 
 ```tsx
-<LayerDialog.Content closeLabel="Dialog schließen">
-  ...
-  <LayerDialog.Actions dismissLabel="Abbrechen">
+<KumoLocaleProvider
+  translations={{
+    layerDialog: { close: "Schließen", cancel: "Abbrechen" },
+  }}
+>
+  <App />
+</KumoLocaleProvider>
 ```
+
+Use `closeLabel` on `Content` or `dismissLabel` on `Actions` when one dialog needs custom copy; explicit props override provider defaults.
 
 ## Desktop width
 Desktop dialogs use `size="base"` (576px) by default. Use `sm` (448px), `lg` (672px), or `xl` (768px) when the content needs a different width. Mobile dialogs remain full-width at every size.

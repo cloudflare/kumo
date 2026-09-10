@@ -368,6 +368,12 @@ export {
   KumoPortalProvider,
   type PortalContainer,
 } from "./utils/portal-provider";
+export {
+  KumoLocaleProvider,
+  type KumoLocaleProviderProps,
+  type KumoTranslations,
+  type KumoTranslationsPartial,
+} from "./utils/locale-provider";
 
 // Registry types (for consuming packages to type registry JSON)
 export type {

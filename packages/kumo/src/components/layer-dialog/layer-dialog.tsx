@@ -23,6 +23,7 @@ import {
   usePortalContainer,
   type PortalContainer,
 } from "../../utils/portal-provider";
+import { useKumoLocale } from "../../utils/locale-provider";
 
 export const KUMO_LAYER_DIALOG_VARIANTS = {
   size: {
@@ -195,9 +196,9 @@ export interface LayerDialogContentProps {
   /** Desktop-only positioning. Mobile dialogs always remain bottom sheets. */
   verticalAlign?: KumoLayerDialogVerticalAlign;
   /**
-   * Accessible name of the automatic X button. Translate it for
-   * non-English products.
-   * @default "Close dialog"
+   * Accessible name of the automatic X button. Overrides the `close`
+   * translation from KumoLocaleProvider.
+   * @default "Close"
    */
   closeLabel?: string;
 }
@@ -217,11 +218,12 @@ function collectSlot(children: ReactNode[], type: SlotType) {
 
 function LayerDialogContent({
   children,
-  closeLabel = "Close dialog",
+  closeLabel,
   container: containerProp,
   size = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.size,
   verticalAlign = KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.verticalAlign,
 }: LayerDialogContentProps) {
+  const { layerDialog } = useKumoLocale();
   const contextContainer = usePortalContainer();
   const container = containerProp ?? contextContainer ?? undefined;
   const isDesktop = useContext(DesktopContext);
@@ -271,7 +273,7 @@ function LayerDialogContent({
     title: title.element,
     description: description.element ?? null,
     showCloseButton: actions.count === 0,
-    closeLabel,
+    closeLabel: closeLabel ?? layerDialog.close,
   };
 
   return (
@@ -532,7 +534,9 @@ const LayerDialogActions = Object.assign(
   }: LayerDialogActionsProps) {
     const dismissDisabled = useContext(DismissDisabledContext);
     const isAlert = useContext(AlertContext);
-    const label = dismissLabel ?? (isAlert ? "Cancel" : "Close");
+    const { layerDialog } = useKumoLocale();
+    const label =
+      dismissLabel ?? (isAlert ? layerDialog.cancel : layerDialog.close);
 
     if (!isValidElement(children) || children.type !== LayerDialogPrimary) {
       throw new Error(

@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { KumoPortalProvider } from "../../utils/portal-provider";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 import {
   KUMO_LAYER_DIALOG_DEFAULT_VARIANTS,
   KUMO_LAYER_DIALOG_VARIANTS,
@@ -174,6 +175,82 @@ describe("LayerDialog", () => {
     expect(getByRole("button", { name: "Cancel" })).toBeDefined();
     expect(queryByRole("button", { name: "Close" })).toBeNull();
   });
+
+  it("uses provider translations for generated dismissal copy", () => {
+    const closeDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Information</LayerDialog.Title>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoLocaleProvider>,
+    );
+
+    expect(closeDialog.getByRole("button", { name: "Fermer" })).toBeDefined();
+    closeDialog.unmount();
+
+    const alertDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Alert open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Delete resource</LayerDialog.Title>
+            <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+            <LayerDialog.Actions>
+              <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Alert>
+      </KumoLocaleProvider>,
+    );
+
+    expect(alertDialog.getByRole("button", { name: "Annuler" })).toBeDefined();
+  });
+
+  it("lets explicit labels override provider translations", () => {
+    const closeDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Root open>
+          <LayerDialog.Content closeLabel="Dismiss dialog">
+            <LayerDialog.Title>Information</LayerDialog.Title>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoLocaleProvider>,
+    );
+
+    expect(
+      closeDialog.getByRole("button", { name: "Dismiss dialog" }),
+    ).toBeDefined();
+    closeDialog.unmount();
+
+    const actionsDialog = render(
+      <KumoLocaleProvider
+        translations={{ layerDialog: { close: "Fermer", cancel: "Annuler" } }}
+      >
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Information</LayerDialog.Title>
+            <LayerDialog.Body>Body</LayerDialog.Body>
+            <LayerDialog.Actions dismissLabel="Keep editing">
+              <LayerDialog.Actions.Primary>Save</LayerDialog.Actions.Primary>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      </KumoLocaleProvider>,
+    );
+
+    expect(
+      actionsDialog.getByRole("button", { name: "Keep editing" }),
+    ).toBeDefined();
+  });
 });
 
 describe("LayerDialog dismissal", () => {
@@ -258,7 +335,7 @@ describe("LayerDialog dismissal", () => {
     expect(getAllByRole("alertdialog", { hidden: true })).toHaveLength(1);
     expect(getByRole("dialog", { hidden: true })).toBeDefined();
     expect(
-      getByRole("button", { hidden: true, name: "Close dialog" }),
+      getByRole("button", { hidden: true, name: "Close" }),
     ).toBeDefined();
   });
 
