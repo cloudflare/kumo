@@ -326,7 +326,12 @@ export interface LayerDialogTitleProps {
 
 function LayerDialogTitle({ children }: LayerDialogTitleProps) {
   const title = (props: ComponentPropsWithoutRef<"h2">) => (
-    <Text {...props} as="h2" variant="heading">
+    <Text
+      {...props}
+      as="h2"
+      variant="heading"
+      DANGEROUS_className="font-medium"
+    >
       {children}
     </Text>
   );
@@ -360,13 +365,12 @@ export interface LayerDialogBodyProps {
   children: ReactNode;
 }
 
-/** Scroll distance before the header shows its divider and condenses. */
+/** Scroll distance before the header description condenses. */
 const SCROLL_THRESHOLD = 8;
 /** Overflow that must remain after the description collapses (see handleScroll). */
 const CONDENSE_MIN_OVERFLOW = 16;
 
 function LayerDialogBody({ children }: LayerDialogBodyProps) {
-  const [hasScrolled, setHasScrolled] = useState(false);
   const [condensed, setCondensed] = useState(false);
   const descriptionClipRef = useRef<HTMLDivElement>(null);
   const dismissDisabled = useContext(DismissDisabledContext);
@@ -376,7 +380,6 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
     const scrolled = scrollTop > SCROLL_THRESHOLD;
-    setHasScrolled(scrolled);
 
     if (!scrolled) {
       setCondensed(false);
@@ -404,15 +407,8 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
   );
 
   return (
-    <LayerCard.Primary className="min-h-0 flex-1 !gap-0 overflow-hidden border border-kumo-line !p-0 !ring-0">
-      <div
-        className={cn(
-          "z-10 flex shrink-0 items-start justify-between gap-4 bg-kumo-base px-4 py-4 transition-[border-color]",
-          hasScrolled
-            ? "border-b border-kumo-line"
-            : "border-b border-transparent",
-        )}
-      >
+    <LayerCard.Primary className="min-h-0 flex-1 gap-0 p-0">
+      <div className="z-10 flex shrink-0 items-start justify-between gap-4 rounded-t-lg bg-kumo-base px-4.5 py-4">
         <div className="flex min-w-0 flex-col">
           {title}
           {description && (
@@ -443,7 +439,7 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
           className="min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
           onScroll={handleScroll}
         >
-          <ScrollAreaBase.Content className="px-4 pb-4">
+          <ScrollAreaBase.Content className="px-5 pb-5">
             {content}
           </ScrollAreaBase.Content>
         </ScrollAreaBase.Viewport>
@@ -472,8 +468,9 @@ function LayerDialogIconClose({
     <Button
       {...closeProps}
       aria-label={label}
+      className="-mt-1.5 -mr-1.5 rounded-lg"
       disabled={disabled}
-      icon={X}
+      icon={<X size={15} />}
       shape="square"
       size="sm"
       variant="ghost"
@@ -541,7 +538,7 @@ const LayerDialogActions = Object.assign(
     }
 
     return (
-      <div className="flex w-full shrink-0 items-center justify-between gap-2 pt-2 pb-1">
+      <div className="flex w-full shrink-0 items-center justify-between gap-2 pt-1.75">
         <LayerDialogDismiss disabled={dismissDisabled} label={label} />
         {children}
       </div>
@@ -561,7 +558,12 @@ function LayerDialogDismiss({
   label: string;
 }) {
   const close = (closeProps: ComponentPropsWithoutRef<"button">) => (
-    <Button {...closeProps} disabled={disabled} variant="ghost">
+    <Button
+      {...closeProps}
+      className="hover:bg-kumo-fill/50"
+      disabled={disabled}
+      variant="ghost"
+    >
       {label}
     </Button>
   );

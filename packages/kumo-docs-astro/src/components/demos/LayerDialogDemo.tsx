@@ -142,7 +142,10 @@ export function LayerDialogAlertDemo() {
       <LayerDialog.Content>
         <LayerDialog.Title>Delete Worker</LayerDialog.Title>
         <LayerDialog.Description>
-          Deleting <strong className="text-kumo-default">{workerName}</strong>{" "}
+          Deleting{" "}
+          <strong className="font-medium text-kumo-default">
+            {workerName}
+          </strong>{" "}
           is permanent.
         </LayerDialog.Description>
         <LayerDialog.Body>
@@ -155,7 +158,11 @@ export function LayerDialogAlertDemo() {
             <Input
               label={
                 <>
-                  Type <strong>{workerName}</strong> to confirm
+                  Type{" "}
+                  <strong className="font-medium text-kumo-default">
+                    {workerName}
+                  </strong>{" "}
+                  to confirm
                 </>
               }
               onChange={(event) => setConfirmation(event.target.value)}
