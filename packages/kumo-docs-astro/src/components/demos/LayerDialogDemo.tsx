@@ -9,21 +9,16 @@ import {
 
 function LongContent() {
   return (
-    <>
-      <Text variant="secondary">
-        Browse available shortcuts without changing a setting.
-      </Text>
-      <div className="mt-6 rounded-lg border border-kumo-line p-4 text-kumo-subtle">
+    <div className="flex flex-col gap-5">
+      <div className="rounded-lg border border-kumo-line p-4 text-kumo-subtle">
         Navigation and command shortcuts
       </div>
-      <div className="mt-6">
-        <Text variant="secondary">
-          The title frame stays visible, receives a divider once content
-          scrolls, and the scroll mask indicates more content below.
-        </Text>
-      </div>
+      <Text variant="secondary">
+        The title frame stays visible, receives a divider once content scrolls,
+        and the scroll mask indicates more content below.
+      </Text>
       <div className="h-96" />
-    </>
+    </div>
   );
 }
 
@@ -35,6 +30,9 @@ export function LayerDialogInformationalDemo() {
       />
       <LayerDialog.Content>
         <LayerDialog.Title>Keyboard shortcuts</LayerDialog.Title>
+        <LayerDialog.Description>
+          Browse available shortcuts without changing a setting.
+        </LayerDialog.Description>
         <LayerDialog.Body>
           <LongContent />
         </LayerDialog.Body>
@@ -54,11 +52,11 @@ export function LayerDialogActionDemo() {
       />
       <LayerDialog.Content>
         <LayerDialog.Title>Configure custom hostname</LayerDialog.Title>
+        <LayerDialog.Description>
+          Route requests for this hostname to your Worker.
+        </LayerDialog.Description>
         <LayerDialog.Body>
-          <Text variant="secondary">
-            Route requests for this hostname to your Worker.
-          </Text>
-          <div className="mt-6 flex flex-col gap-5">
+          <div className="flex flex-col gap-5">
             <Input
               label="Hostname"
               onChange={(event) => setHostname(event.target.value)}
@@ -95,12 +93,12 @@ export function LayerDialogCancelDemo() {
       />
       <LayerDialog.Content>
         <LayerDialog.Title>Edit profile</LayerDialog.Title>
+        <LayerDialog.Description>
+          Update the profile information shown to your teammates. Changes are
+          not saved until you confirm.
+        </LayerDialog.Description>
         <LayerDialog.Body>
-          <Text variant="secondary">
-            Update the profile information shown to your teammates. Changes are
-            not saved until you confirm.
-          </Text>
-          <div className="mt-6 flex flex-col gap-5">
+          <div className="flex flex-col gap-5">
             <Input
               label="Display name"
               onChange={(event) => setName(event.target.value)}
@@ -142,20 +140,17 @@ export function LayerDialogAlertDemo() {
       />
       <LayerDialog.Content>
         <LayerDialog.Title>Delete Worker</LayerDialog.Title>
+        <LayerDialog.Description>
+          Deleting <strong className="text-kumo-default">{workerName}</strong>{" "}
+          is permanent.
+        </LayerDialog.Description>
         <LayerDialog.Body>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              <Text variant="secondary">
-                Deleting{" "}
-                <strong className="text-kumo-default">{workerName}</strong> is
-                permanent.
-              </Text>
-              <Text variant="secondary">
-                This deletes the Worker, deployments, and configuration. If this
-                Worker consumes Queues, those connections are removed first.
-                Queues, D1 databases, and messages stay in your account.
-              </Text>
-            </div>
+          <div className="flex flex-col gap-5">
+            <Text variant="secondary">
+              This deletes the Worker, deployments, and configuration. If this
+              Worker consumes Queues, those connections are removed first.
+              Queues, D1 databases, and messages stay in your account.
+            </Text>
             <Input
               label={
                 <>
@@ -190,10 +185,14 @@ export function LayerDialogPendingDemo() {
       />
       <LayerDialog.Content>
         <LayerDialog.Title>Save a setting</LayerDialog.Title>
+        <LayerDialog.Description>
+          While saving, Close, Escape, backdrop, and mobile swipe dismissals are
+          blocked together.
+        </LayerDialog.Description>
         <LayerDialog.Body>
           <Text variant="secondary">
-            While saving, Close, Escape, backdrop, and mobile swipe dismissals
-            are blocked together.
+            Programmatic closes still work, so a successful save can dismiss the
+            dialog through `actionsRef` or a controlled `open` prop.
           </Text>
         </LayerDialog.Body>
         <LayerDialog.Actions>
@@ -274,12 +273,12 @@ export function LayerDialogSizeDemo() {
       <LayerDialog.Root open={open} onOpenChange={setOpen}>
         <LayerDialog.Content size={size}>
           <LayerDialog.Title>Review deployment configuration</LayerDialog.Title>
+          <LayerDialog.Description>
+            Confirm the service details and routing configuration before this
+            deployment is created.
+          </LayerDialog.Description>
           <LayerDialog.Body>
-            <Text variant="secondary">
-              Confirm the service details and routing configuration before this
-              deployment is created.
-            </Text>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2">
               <Input label="Service name" defaultValue="production-api" />
               <Input label="Environment" defaultValue="Production" />
               <Input label="Hostname" defaultValue="api.example.com" />

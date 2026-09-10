@@ -3,25 +3,100 @@ layout: ~/layouts/MdxDocLayout.astro
 title: "Layer Dialog"
 description: "A strict responsive dialog composition with a sticky title inside its scrollable body."
 sourceFile: "components/layer-dialog"
+baseUIComponent: "drawer"
 ---
 
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
-import { LayerDialogActionDemo, LayerDialogAlertDemo, LayerDialogCancelDemo, LayerDialogCleanupDemo, LayerDialogInformationalDemo, LayerDialogPendingDemo, LayerDialogSizeDemo, LayerDialogTopAlignDemo } from "~/components/demos/LayerDialogDemo";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  LayerDialogActionDemo,
+  LayerDialogAlertDemo,
+  LayerDialogCancelDemo,
+  LayerDialogCleanupDemo,
+  LayerDialogInformationalDemo,
+  LayerDialogPendingDemo,
+  LayerDialogSizeDemo,
+  LayerDialogTopAlignDemo,
+} from "~/components/demos/LayerDialogDemo";
+
+{/* Hero Demo */}
+
+<ComponentSection>
+  <ComponentExample demo="LayerDialogActionDemo">
+    <LayerDialogActionDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { LayerDialog } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";
+```
+
+</ComponentSection>
+
+{/* Usage */}
+
+<ComponentSection>
+
+## Usage
+
+```tsx
+import { Button, LayerDialog } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Open settings</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Configure custom hostname</LayerDialog.Title>
+        <LayerDialog.Description>
+          Route requests for this hostname to your Worker.
+        </LayerDialog.Description>
+        <LayerDialog.Body>{/* form fields */}</LayerDialog.Body>
+        <LayerDialog.Actions>
+          <LayerDialog.Actions.Primary onClick={save}>
+            Save hostname
+          </LayerDialog.Actions.Primary>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+```
+
+</ComponentSection>
 
 <ComponentSection>
 ## Composition rules
-`LayerDialog` chooses its dismissal UI automatically:
+`LayerDialog.Content` accepts exactly one `Title`, one `Body`, an optional `Description`, and an optional `Actions`. It chooses its dismissal UI automatically:
 
-- Without `Actions`: show an X in the title and no footer.
+- Without `Actions`: show an X in the title frame and no footer.
 - With `Actions`: remove the X and show a footer with **Close** or **Cancel** and one primary action.
 
 Consumers cannot mix these layouts or add more primary actions. Use the X for read-only content, `Actions` when the user must commit a change, and `LayerDialog.Alert` for destructive or critical confirmations.
+
+`Description` renders directly beneath the title inside the sticky title frame and becomes the dialog's accessible description. Without one, the body copy describes the dialog instead.
 </ComponentSection>
 
 <ComponentSection>
 ## Informational dialog
-`Title` always lives in the bordered body surface. Its padded title rectangle remains visible while the body scrolls, gains a bottom border after scrolling, and has the sole automatic X dismissal action. The content edge mask signals overflow.
+`Title` and `Description` always live in the bordered body surface. The title frame remains visible while the body scrolls, gains a bottom border after scrolling, and has the sole automatic X dismissal action. The content edge mask signals overflow.
 <ComponentExample demo="LayerDialogInformationalDemo"><LayerDialogInformationalDemo client:load /></ComponentExample>
 </ComponentSection>
 
@@ -39,13 +114,13 @@ Use `dismissLabel="cancel"` only when the workflow has an explicit cancellation 
 
 <ComponentSection>
 ## Confirmation and destructive actions
-`LayerDialog.Alert` supplies `role="alertdialog"`, an automatic **Cancel**, no X, a destructive primary action, and blocks backdrop, Escape, and swipe dismissal.
+`LayerDialog.Alert` follows Base UI's alert dialog: it supplies `role="alertdialog"`, an automatic **Cancel**, no X, a destructive primary action, is always modal, and blocks backdrop and swipe dismissal. Escape still cancels, matching the ARIA alert dialog pattern.
 <ComponentExample demo="LayerDialogAlertDemo"><LayerDialogAlertDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
 ## Pending work
-`dismissDisabled` blocks every dismissal method together while asynchronous work is in flight. The single primary action owns its separate loading or disabled state.
+`dismissDisabled` blocks every user-initiated dismissal together while asynchronous work is in flight. Programmatic closes, through `actionsRef.current.close()` or a controlled `open` prop, still work so a successful action can dismiss the dialog. The single primary action owns its separate loading or disabled state.
 <ComponentExample demo="LayerDialogPendingDemo"><LayerDialogPendingDemo client:load /></ComponentExample>
 </ComponentSection>
 
@@ -65,4 +140,86 @@ Desktop dialogs use `size="base"` (576px) by default. Use `sm` (448px), `lg` (67
 ## Desktop placement
 Desktop dialogs center by default. Use the narrow `verticalAlign="top"` override only when its content benefits from top alignment; mobile remains a bottom sheet.
 <ComponentExample demo="LayerDialogTopAlignDemo"><LayerDialogTopAlignDemo client:load /></ComponentExample>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+### LayerDialog.Root
+
+<p>
+  Controls the open state. Accepts every Base UI Drawer root prop, including
+  `open`, `defaultOpen`, `onOpenChange`, `modal`, and `actionsRef`. Doesn't
+  render its own HTML element.
+</p>
+<div class="mb-4 overflow-hidden rounded-lg border border-kumo-hairline">
+  <table class="w-full text-sm">
+    <thead class="bg-kumo-elevated">
+      <tr>
+        <th class="px-4 py-2 text-left font-medium">Prop</th>
+        <th class="px-4 py-2 text-left font-medium">Type</th>
+        <th class="px-4 py-2 text-left font-medium">Default</th>
+        <th class="px-4 py-2 text-left font-medium">Description</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-kumo-hairline">
+      <tr>
+        <td class="px-4 py-2 font-mono text-xs">dismissDisabled</td>
+        <td class="px-4 py-2 font-mono text-xs">boolean</td>
+        <td class="px-4 py-2 font-mono text-xs">false</td>
+        <td class="px-4 py-2 text-kumo-subtle">
+          Blocks X, Close, Escape, backdrop, and swipe dismissal while work is
+          pending. Programmatic closes are never blocked.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### LayerDialog.Alert
+
+<p>
+  Same props as `LayerDialog.Root`. Forces `modal`, blocks pointer dismissal,
+  renders `role="alertdialog"`, and requires `LayerDialog.Actions`.
+</p>
+
+### LayerDialog.Trigger
+
+<p>A button that opens the dialog when clicked.</p>
+<PropsTable component="LayerDialog.Trigger" />
+
+### LayerDialog.Content
+
+<p>Portals the backdrop and popup and validates the composition.</p>
+<PropsTable component="LayerDialog.Content" />
+
+### LayerDialog.Title
+
+<p>A heading that labels the dialog for accessibility.</p>
+<PropsTable component="LayerDialog.Title" />
+
+### LayerDialog.Description
+
+<p>
+  Optional supporting copy beneath the title. Becomes the dialog's accessible
+  description.
+</p>
+<PropsTable component="LayerDialog.Description" />
+
+### LayerDialog.Body
+
+<p>The scrollable content region.</p>
+<PropsTable component="LayerDialog.Body" />
+
+### LayerDialog.Actions
+
+<p>
+  A footer with an automatic dismiss button and exactly one
+  `LayerDialog.Actions.Primary`.
+</p>
+<PropsTable component="LayerDialog.Actions" />
+
 </ComponentSection>

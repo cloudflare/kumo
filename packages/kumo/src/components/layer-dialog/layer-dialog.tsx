@@ -1,6 +1,5 @@
 import {
   Children,
-  cloneElement,
   createContext,
   isValidElement,
   useContext,
@@ -18,6 +17,7 @@ import { Button } from "../button/button";
 import { LayerCard } from "../layer-card/layer-card";
 import { Text } from "../text/text";
 import { cn } from "../../utils/cn";
+import { resolveVariant } from "../../utils/resolve-variant";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -67,6 +67,23 @@ const DesktopContext = createContext(false);
 const DismissDisabledContext = createContext(false);
 const AlertContext = createContext(false);
 
+/**
+ * Slots that `LayerDialog.Content` hands to `LayerDialog.Body` so the title
+ * frame, optional description, and automatic X render inside the body surface.
+ * Private on purpose: consumers compose these as siblings, never as Body props.
+ */
+interface BodySlots {
+  title: ReactNode;
+  description: ReactNode;
+  showCloseButton: boolean;
+}
+
+const BodySlotsContext = createContext<BodySlots>({
+  title: null,
+  description: null,
+  showCloseButton: false,
+});
+
 type RootProps = ComponentPropsWithoutRef<typeof DrawerBase.Root>;
 
 export type LayerDialogRootProps = RootProps & {
@@ -74,17 +91,34 @@ export type LayerDialogRootProps = RootProps & {
   dismissDisabled?: boolean;
 };
 
-function LayerDialogRoot({
+/** Props for `LayerDialog` / `LayerDialog.Root`. */
+export type LayerDialogProps = LayerDialogRootProps;
+
+/**
+ * Close reasons that originate from the user. Programmatic closes
+ * (`actionsRef.current.close()`, controlled `open` changes) are never blocked.
+ */
+const USER_DISMISSAL_REASONS: ReadonlySet<string> = new Set([
+  "close-press",
+  "close-watcher",
+  "escape-key",
+  "outside-press",
+  "swipe",
+  "trigger-press",
+]);
+
+function LayerDialogRootImpl({
+  alert,
   children,
   dismissDisabled = false,
   onOpenChange,
   disablePointerDismissal,
+  modal,
   ...props
-}: LayerDialogRootProps) {
+}: LayerDialogRootProps & { alert: boolean }) {
   const isDesktop = useMediaQuery("(min-width: 640px)", {
     defaultMatches: false,
   });
-  const isAlert = useContext(AlertContext);
 
   const handleOpenChange: NonNullable<RootProps["onOpenChange"]> = (
     open,
@@ -92,7 +126,8 @@ function LayerDialogRoot({
   ) => {
     if (
       !open &&
-      (dismissDisabled || (isAlert && eventDetails.reason !== "close-press"))
+      dismissDisabled &&
+      USER_DISMISSAL_REASONS.has(eventDetails.reason)
     ) {
       eventDetails.cancel();
       return;
@@ -101,32 +136,36 @@ function LayerDialogRoot({
     onOpenChange?.(open, eventDetails);
   };
 
+  // Mirrors Base UI's AlertDialog.Root: alerts are always modal and never
+  // dismiss on outside press, while Escape still closes them.
   const rootProps = {
     ...props,
     disablePointerDismissal:
-      disablePointerDismissal || dismissDisabled || isAlert,
-    modal: isAlert ? true : props.modal,
+      alert || dismissDisabled || disablePointerDismissal,
+    modal: alert ? true : modal,
     onOpenChange: handleOpenChange,
   };
 
   return (
-    <DesktopContext.Provider value={isDesktop}>
-      <DismissDisabledContext.Provider value={dismissDisabled}>
-        <DrawerBase.Root {...rootProps}>{children}</DrawerBase.Root>
-      </DismissDisabledContext.Provider>
-    </DesktopContext.Provider>
+    <AlertContext.Provider value={alert}>
+      <DesktopContext.Provider value={isDesktop}>
+        <DismissDisabledContext.Provider value={dismissDisabled}>
+          <DrawerBase.Root {...rootProps}>{children}</DrawerBase.Root>
+        </DismissDisabledContext.Provider>
+      </DesktopContext.Provider>
+    </AlertContext.Provider>
   );
+}
+
+function LayerDialogRoot(props: LayerDialogRootProps) {
+  return <LayerDialogRootImpl {...props} alert={false} />;
 }
 
 LayerDialogRoot.displayName = "LayerDialog.Root";
 
 /** A confirmation dialog that requires the user to choose an explicit action. */
 function LayerDialogAlert(props: LayerDialogRootProps) {
-  return (
-    <AlertContext.Provider value>
-      <LayerDialogRoot {...props} />
-    </AlertContext.Provider>
-  );
+  return <LayerDialogRootImpl {...props} alert />;
 }
 
 LayerDialogAlert.displayName = "LayerDialog.Alert";
@@ -154,6 +193,19 @@ export interface LayerDialogContentProps {
   verticalAlign?: KumoLayerDialogVerticalAlign;
 }
 
+type SlotType =
+  | typeof LayerDialogTitle
+  | typeof LayerDialogDescription
+  | typeof LayerDialogBody
+  | typeof LayerDialogActions;
+
+function collectSlot(children: ReactNode[], type: SlotType) {
+  const matches = children.filter(
+    (child) => isValidElement(child) && child.type === type,
+  );
+  return { element: matches[0], count: matches.length };
+}
+
 function LayerDialogContent({
   children,
   container: containerProp,
@@ -166,52 +218,50 @@ function LayerDialogContent({
   const dismissDisabled = useContext(DismissDisabledContext);
   const isAlert = useContext(AlertContext);
   const childArray = Children.toArray(children);
-  const title = childArray.find(
-    (child) => isValidElement(child) && child.type === LayerDialogTitle,
-  );
-  const body = childArray.find(
-    (child) => isValidElement(child) && child.type === LayerDialogBody,
-  );
-  const actions = childArray.find(
-    (child) => isValidElement(child) && child.type === LayerDialogActions,
-  );
-  const titleCount = childArray.filter(
-    (child) => isValidElement(child) && child.type === LayerDialogTitle,
-  ).length;
-  const bodyCount = childArray.filter(
-    (child) => isValidElement(child) && child.type === LayerDialogBody,
-  ).length;
-  const actionsCount = childArray.filter(
-    (child) => isValidElement(child) && child.type === LayerDialogActions,
-  ).length;
+  const title = collectSlot(childArray, LayerDialogTitle);
+  const description = collectSlot(childArray, LayerDialogDescription);
+  const body = collectSlot(childArray, LayerDialogBody);
+  const actions = collectSlot(childArray, LayerDialogActions);
   const hasInvalidChildren = childArray.some(
     (child) =>
       !isValidElement(child) ||
       (child.type !== LayerDialogTitle &&
+        child.type !== LayerDialogDescription &&
         child.type !== LayerDialogBody &&
         child.type !== LayerDialogActions),
   );
 
   if (
     hasInvalidChildren ||
-    !title ||
-    !body ||
-    (isAlert && !actions) ||
-    titleCount !== 1 ||
-    bodyCount !== 1 ||
-    actionsCount > 1
+    title.count !== 1 ||
+    body.count !== 1 ||
+    description.count > 1 ||
+    actions.count > 1 ||
+    (isAlert && actions.count !== 1)
   ) {
     throw new Error(
       isAlert
-        ? "LayerDialog.Alert requires exactly one direct LayerDialog.Title, LayerDialog.Body, and LayerDialog.Actions."
-        : "LayerDialog.Content requires exactly one direct LayerDialog.Title and LayerDialog.Body, with an optional direct LayerDialog.Actions.",
+        ? "LayerDialog.Alert requires exactly one direct LayerDialog.Title, LayerDialog.Body, and LayerDialog.Actions, with an optional direct LayerDialog.Description."
+        : "LayerDialog.Content requires exactly one direct LayerDialog.Title and LayerDialog.Body, with an optional direct LayerDialog.Description and LayerDialog.Actions.",
     );
   }
 
-  const renderedBody = cloneElement(
-    body as ReactElement<LayerDialogBodyProps>,
-    { title, showCloseButton: !actions },
+  const sizeConfig = resolveVariant(
+    KUMO_LAYER_DIALOG_VARIANTS.size,
+    size,
+    KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.size,
   );
+  const verticalAlignConfig = resolveVariant(
+    KUMO_LAYER_DIALOG_VARIANTS.verticalAlign,
+    verticalAlign,
+    KUMO_LAYER_DIALOG_DEFAULT_VARIANTS.verticalAlign,
+  );
+
+  const bodySlots: BodySlots = {
+    title: title.element,
+    description: description.element ?? null,
+    showCloseButton: actions.count === 0,
+  };
 
   return (
     <DrawerBase.Portal container={container}>
@@ -219,7 +269,7 @@ function LayerDialogContent({
       <DrawerBase.Viewport
         className={cn(
           "fixed inset-0 flex items-end justify-center sm:px-4",
-          KUMO_LAYER_DIALOG_VARIANTS.verticalAlign[verticalAlign].classes,
+          verticalAlignConfig.classes,
         )}
         data-base-ui-swipe-ignore={
           isDesktop || dismissDisabled || isAlert ? "" : undefined
@@ -229,18 +279,20 @@ function LayerDialogContent({
           render={isAlert ? <div role="alertdialog" /> : <div />}
           className={cn(
             "fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-[calc(100dvh-3rem)] sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0",
-            KUMO_LAYER_DIALOG_VARIANTS.size[size].classes,
+            sizeConfig.classes,
           )}
         >
-          <LayerCard className="shadow-m flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl">
+          <LayerCard className="flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 shadow-[0_20px_25px_-5px_rgb(0_0_0/0.03),0_8px_10px_-6px_rgb(0_0_0/0.03)] max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl">
             {!isDesktop && !isAlert && (
               <div aria-hidden className="flex justify-center pt-1.5 pb-3">
                 <div className="h-1 w-10 rounded-full bg-kumo-fill" />
               </div>
             )}
             <DrawerBase.Content className="flex min-h-0 flex-col overflow-visible">
-              {renderedBody}
-              {actions}
+              <BodySlotsContext.Provider value={bodySlots}>
+                {body.element}
+              </BodySlotsContext.Provider>
+              {actions.element}
             </DrawerBase.Content>
           </LayerCard>
         </DrawerBase.Popup>
@@ -267,35 +319,61 @@ function LayerDialogTitle({ children }: LayerDialogTitleProps) {
 
 LayerDialogTitle.displayName = "LayerDialog.Title";
 
-export interface LayerDialogBodyProps {
+export interface LayerDialogDescriptionProps {
   children: ReactNode;
-  title?: ReactNode;
-  showCloseButton?: boolean;
 }
 
-function LayerDialogBody({
-  children,
-  title,
-  showCloseButton = false,
-}: LayerDialogBodyProps) {
+/**
+ * Optional supporting copy rendered directly beneath the title inside the
+ * sticky title frame. Also becomes the dialog's accessible description.
+ */
+function LayerDialogDescription({ children }: LayerDialogDescriptionProps) {
+  const description = (props: ComponentPropsWithoutRef<"p">) => (
+    <Text {...props} as="p" variant="secondary">
+      {children}
+    </Text>
+  );
+
+  return <DrawerBase.Description render={description} />;
+}
+
+LayerDialogDescription.displayName = "LayerDialog.Description";
+
+export interface LayerDialogBodyProps {
+  children: ReactNode;
+}
+
+function LayerDialogBody({ children }: LayerDialogBodyProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
   const dismissDisabled = useContext(DismissDisabledContext);
+  const { title, description, showCloseButton } = useContext(BodySlotsContext);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     setHasScrolled(event.currentTarget.scrollTop > 8);
   };
 
+  // Without an explicit Description slot, the body copy describes the dialog
+  // so assistive tech still announces the consequence text for alerts.
+  const content = description ? (
+    children
+  ) : (
+    <DrawerBase.Description render={<div />}>{children}</DrawerBase.Description>
+  );
+
   return (
     <LayerCard.Primary className="min-h-0 flex-1 !gap-0 overflow-hidden border border-kumo-line !p-0 !ring-0">
       <div
         className={cn(
-          "z-10 flex shrink-0 items-center justify-between gap-4 bg-kumo-base px-4 py-4 transition-[border-color]",
+          "z-10 flex shrink-0 items-start justify-between gap-4 bg-kumo-base px-4 py-4 transition-[border-color]",
           hasScrolled
             ? "border-b border-kumo-line"
             : "border-b border-transparent",
         )}
       >
-        <div className="min-w-0">{title}</div>
+        <div className="flex min-w-0 flex-col gap-1">
+          {title}
+          {description}
+        </div>
         {showCloseButton && <LayerDialogIconClose disabled={dismissDisabled} />}
       </div>
       <ScrollAreaBase.Root className="relative flex min-h-0 flex-1 flex-col">
@@ -304,7 +382,7 @@ function LayerDialogBody({
           onScroll={handleScroll}
         >
           <ScrollAreaBase.Content className="px-4 pb-4">
-            {children}
+            {content}
           </ScrollAreaBase.Content>
         </ScrollAreaBase.Viewport>
         <ScrollAreaBase.Scrollbar
@@ -421,6 +499,7 @@ const LayerDialog = Object.assign(LayerDialogRoot, {
   Trigger: LayerDialogTrigger,
   Content: LayerDialogContent,
   Title: LayerDialogTitle,
+  Description: LayerDialogDescription,
   Body: LayerDialogBody,
   Actions: LayerDialogActions,
 });
@@ -432,6 +511,7 @@ export {
   LayerDialogTrigger,
   LayerDialogContent,
   LayerDialogTitle,
+  LayerDialogDescription,
   LayerDialogBody,
   LayerDialogActions,
 };
