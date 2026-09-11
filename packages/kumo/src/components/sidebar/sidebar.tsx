@@ -96,9 +96,66 @@ const SIDEBAR_WIDTH = "16.25rem";
 const SIDEBAR_WIDTH_ICON = "57px";
 const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
+const TRANSITION_FALLBACK_GRACE_MS = 50;
 const MOBILE_BREAKPOINT = 768;
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function useOpenChangeComplete(
+  open: boolean,
+  duration: number,
+  onComplete?: (open: boolean) => void,
+) {
+  const enabled = onComplete !== undefined;
+  const callbackRef = useRef(onComplete);
+  const durationRef = useRef(duration);
+  const previousOpenRef = useRef(open);
+  const previousEnabledRef = useRef(enabled);
+  const pendingOpenRef = useRef<boolean | undefined>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  callbackRef.current = onComplete;
+  durationRef.current = duration;
+
+  const complete = useCallback(() => {
+    const pendingOpen = pendingOpenRef.current;
+    if (pendingOpen === undefined) return;
+
+    pendingOpenRef.current = undefined;
+    clearTimeout(timeoutRef.current);
+    callbackRef.current?.(pendingOpen);
+  }, []);
+
+  useEffect(() => {
+    const openChanged = previousOpenRef.current !== open;
+    const wasEnabled = previousEnabledRef.current;
+    previousOpenRef.current = open;
+    previousEnabledRef.current = enabled;
+    if (!enabled) {
+      pendingOpenRef.current = undefined;
+      clearTimeout(timeoutRef.current);
+      return;
+    }
+    if (!wasEnabled || !openChanged) return;
+
+    pendingOpenRef.current = open;
+    if (
+      durationRef.current === 0 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      complete();
+      return;
+    }
+    timeoutRef.current = setTimeout(
+      complete,
+      durationRef.current + TRANSITION_FALLBACK_GRACE_MS,
+    );
+    return () => clearTimeout(timeoutRef.current);
+  }, [complete, enabled, open]);
+
+  return complete;
+}
 
 // ============================================================================
 // Mobile detection hook
@@ -235,6 +292,8 @@ export interface SidebarProviderProps {
   open?: boolean;
   /** Callback when open state changes (controlled mode). */
   onOpenChange?: (open: boolean) => void;
+  /** Callback after the sidebar finishes its open or close transition. */
+  onOpenChangeComplete?: (open: boolean) => void;
   /** Sidebar layout variant. @default "sidebar" */
   variant?: SidebarVariant;
   /** Which side the sidebar is on. @default "left" */
@@ -301,6 +360,7 @@ function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  onOpenChangeComplete,
   variant = KUMO_SIDEBAR_DEFAULT_VARIANTS.variant,
   side = KUMO_SIDEBAR_DEFAULT_VARIANTS.side,
   collapsible = KUMO_SIDEBAR_DEFAULT_VARIANTS.collapsible,
@@ -511,12 +571,40 @@ function SidebarProvider({
     [state, open, openMobile, isMobile, width, isResizing, isPeeking],
   );
 
+  const completeDesktopOpenChange = useOpenChangeComplete(
+    open,
+    animationDuration,
+    isMobile ? undefined : onOpenChangeComplete,
+  );
+  const completeMobileOpenChange = useOpenChangeComplete(
+    openMobile,
+    animationDuration,
+    isMobile ? onOpenChangeComplete : undefined,
+  );
+  const completeOpenChange = isMobile
+    ? completeMobileOpenChange
+    : completeDesktopOpenChange;
+  const transitionProperty = isMobile ? "transform" : "width";
+  const handleOpenTransitionEnd = useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
+      if (
+        target.dataset.sidebar === "sidebar" &&
+        event.propertyName === transitionProperty
+      ) {
+        completeOpenChange();
+      }
+    },
+    [completeOpenChange, transitionProperty],
+  );
+
   return (
     <SidebarContext.Provider value={contextValue}>
       <div
         data-sidebar-wrapper=""
         data-state={state}
         data-side={side}
+        onTransitionEnd={handleOpenTransitionEnd}
         style={
           {
             "--sidebar-width": sidebarWidthValue,
@@ -2121,6 +2209,8 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
   open?: boolean;
   /** Callback when open state changes. */
   onOpenChange?: (open: boolean) => void;
+  /** Callback after the content finishes its open or close transition. */
+  onOpenChangeComplete?: (open: boolean) => void;
   /** Scroll the expanded content into view after opening. @default false */
   autoScrollOnOpen?: boolean;
 }
@@ -2153,13 +2243,16 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       defaultOpen = false,
       open: openProp,
       onOpenChange,
+      onOpenChangeComplete,
       autoScrollOnOpen = false,
       className,
       children,
+      onTransitionEnd,
       ...props
     },
     ref,
   ) => {
+    const { animationDuration } = useSidebar();
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
     const isOpen = openProp ?? internalOpen;
     const contentId = useId();
@@ -2213,6 +2306,24 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       [onOpenChange],
     );
 
+    const completeOpenChange = useOpenChangeComplete(
+      isOpen,
+      animationDuration,
+      onOpenChangeComplete,
+    );
+    const handleOpenTransitionEnd = useCallback(
+      (event: React.TransitionEvent<HTMLDivElement>) => {
+        onTransitionEnd?.(event);
+        if (
+          (event.target as HTMLElement).id === contentId &&
+          event.propertyName === "grid-template-rows"
+        ) {
+          completeOpenChange();
+        }
+      },
+      [completeOpenChange, contentId, onTransitionEnd],
+    );
+
     return (
       <SidebarCollapseContext.Provider value={contextValue}>
         <div
@@ -2221,6 +2332,7 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
           className={cn("min-w-0", className)}
           onFocus={handleFocusIn}
           onBlur={handleFocusOut}
+          onTransitionEnd={handleOpenTransitionEnd}
           {...props}
         >
           {children}
