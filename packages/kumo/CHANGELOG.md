@@ -1,5 +1,20 @@
 # @cloudflare/kumo
 
+## 2.14.0
+
+### Minor Changes
+
+- da41be5: Update the bundled Base UI dependency to version 1.8.0 and expose its Combobox item collection and functional Toast update APIs.
+- cd119ab: Add the TagInput component for creating and removing free-form values.
+- 77489b5: Add an optional `yAxisMinInterval` prop to `TimeseriesChart` for discrete data.
+- 6989681: Add support for footer text below `TimeseriesChart` tooltip values.
+- 06321ce: Add a strict responsive LayerDialog component with automatic dismissal composition, alert-dialog semantics, mobile drawer behavior, and application-wide defaults for its built-in close and cancel copy through `KumoLocaleProvider`.
+
+### Patch Changes
+
+- 6e7bd82: Update formatting for Vite+ 0.3.1.
+- 78d05b6: Use the up/down double chevron in Combobox value and input triggers to match Select.
+
 ## 2.13.2
 
 ### Patch Changes
