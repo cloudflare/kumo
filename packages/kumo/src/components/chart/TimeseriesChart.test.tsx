@@ -24,6 +24,49 @@ const createMockEcharts = (mockChart = createMockChart()) => ({
 });
 
 describe("TimeseriesChart", () => {
+  it("leaves the y-axis interval unconstrained by default", async () => {
+    const mockChart = createMockChart();
+
+    render(
+      <TimeseriesChart
+        echarts={createMockEcharts(mockChart) as any}
+        data={[]}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(mockChart.setOption).toHaveBeenCalledWith(
+        expect.objectContaining({
+          yAxis: expect.not.objectContaining({
+            minInterval: expect.anything(),
+          }),
+        }),
+        expect.anything(),
+      ),
+    );
+  });
+
+  it("passes yAxisMinInterval to ECharts", async () => {
+    const mockChart = createMockChart();
+
+    render(
+      <TimeseriesChart
+        echarts={createMockEcharts(mockChart) as any}
+        data={[]}
+        yAxisMinInterval={1}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(mockChart.setOption).toHaveBeenCalledWith(
+        expect.objectContaining({
+          yAxis: expect.objectContaining({ minInterval: 1 }),
+        }),
+        expect.anything(),
+      ),
+    );
+  });
+
   it("does not reserve footer space for an empty string", () => {
     const { container } = render(
       <TooltipContent
