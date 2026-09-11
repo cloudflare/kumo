@@ -65,6 +65,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   tabs: "Navigation",
   // Overlay
   dialog: "Overlay",
+  "layer-dialog": "Overlay",
   dropdown: "Overlay",
   popover: "Overlay",
   tooltip: "Overlay",
