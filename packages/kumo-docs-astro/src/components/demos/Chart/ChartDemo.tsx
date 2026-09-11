@@ -117,21 +117,21 @@ export function BasicLineChartDemo() {
 export function IntegerYAxisChartDemo() {
   const isDarkMode = useIsDarkMode();
 
-  const data = useMemo(
-    () => [
+  const data = useMemo(() => {
+    const end = Date.now();
+    const values = [0, 1, 3, 2, 5, 4, 7, 3, 6, 2, 4, 1];
+
+    return [
       {
         name: "Requests",
-        data: buildSeriesData(0, 12, 60_000, 0.1).map(
-          ([timestamp, value]): [number, number] => [
-            timestamp,
-            Math.round(value),
-          ],
-        ),
+        data: values.map((value, index): [number, number] => [
+          end - (values.length - index - 1) * 60_000,
+          value,
+        ]),
         color: ChartPalette.semantic("Neutral", isDarkMode),
       },
-    ],
-    [isDarkMode],
-  );
+    ];
+  }, [isDarkMode]);
 
   return (
     <TimeseriesChart
