@@ -147,13 +147,13 @@ jobs:
         working-directory: packages/kumo
         run: vp exec playwright install --with-deps chromium
       - name: Run visual contracts
-        run: vp run --filter @cloudflare/kumo test:visual-contracts --update
+        run: vp run --filter @cloudflare/kumo test:visual-contracts
       - name: Upload visual-contract artifacts
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: visual-contract-baselines
-          path: packages/kumo/src/components/**/__screenshots__/
+          name: visual-contract-artifacts
+          path: packages/kumo/.vitest-attachments/
           if-no-files-found: ignore
           retention-days: 7
 
