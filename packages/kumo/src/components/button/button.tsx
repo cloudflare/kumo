@@ -58,7 +58,7 @@ export const KUMO_BUTTON_VARIANTS = {
       description: "Default button style for most actions",
     },
     ghost: {
-      classes: "text-kumo-default hover:bg-kumo-tint shadow-none bg-inherit",
+      classes: "text-kumo-default hover:bg-kumo-tint shadow-none",
       description: "Minimal button with no background",
     },
     destructive: {
