@@ -345,7 +345,8 @@ BannerRoot.displayName = "Banner";
  * Full-width message bar with an optional trailing CTA slot.
  *
  * `Banner.Action` is an accent-aware CTA button
- * (`variant="primary" | "secondary" | "ghost"`).
+ * (`variant="secondary" | "primary" | "ghost"`, defaulting to the quiet
+ * `"secondary"` treatment).
  */
 export const Banner = Object.assign(BannerRoot, {
   Action: BannerAction,
