@@ -39,6 +39,17 @@ export const THEME_CONFIG: ThemeConfig = {
         },
       },
     },
+    "kumo-button-emphasis": {
+      newName: "",
+      description:
+        "Foreground color for primary and destructive Button emphasis backgrounds",
+      theme: {
+        kumo: {
+          light: "var(--color-white, #fff)",
+          dark: "var(--color-white, #fff)",
+        },
+      },
+    },
     "kumo-strong": {
       newName: "",
       theme: {
