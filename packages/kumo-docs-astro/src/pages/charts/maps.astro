@@ -10,6 +10,7 @@ import {
   BubbleMapCloudflareLocationsDemo,
 } from "~/components/demos/Chart/BubbleMapDemo";
 import { ChoroplethMapBasicDemo } from "~/components/demos/Chart/ChoroplethMapDemo";
+import { GlobeMapAvailabilityZonesDemo } from "~/components/demos/Chart/GlobeMapDemo";
 import type { MapGeoJson } from "@cloudflare/kumo";
 
 const WORLD_GEO_JSON_URL =
@@ -67,15 +68,15 @@ try {
   <ComponentSection>
     <Heading level={2}>Installation</Heading>
     <p class="mb-4 text-kumo-subtle">
-      <code class="text-kumo-default">BubbleMap</code> and <code class="text-kumo-default">ChoroplethMap</code> require <code class="text-kumo-default">echarts</code> as a peer dependency. Consumers provide the GeoJSON feature collection; map components do not fetch map data or use map tiles.
+      <code class="text-kumo-default">BubbleMap</code> and <code class="text-kumo-default">ChoroplethMap</code> require <code class="text-kumo-default">echarts</code> as a peer dependency. <code class="text-kumo-default">GlobeMap</code> renders a built-in Natural Earth land mask directly to SVG and does not use WebGL or require ECharts. Planar map consumers provide GeoJSON; map components do not fetch map data or use map tiles.
     </p>
     <CodeBlock code={`npm install echarts`} lang="bash" />
 
     <Heading level={3} class="mb-2 mt-6 text-lg">Barrel</Heading>
-    <CodeBlock code={`import { BubbleMap, ChoroplethMap } from "@cloudflare/kumo";`} lang="tsx" />
+    <CodeBlock code={`import { BubbleMap, ChoroplethMap, GlobeMap } from "@cloudflare/kumo";`} lang="tsx" />
     <Heading level={3} class="mb-2 mt-4 text-lg">Granular</Heading>
     <CodeBlock
-      code={`import { BubbleMap, ChoroplethMap } from "@cloudflare/kumo/components/chart";`}
+      code={`import { BubbleMap, ChoroplethMap, GlobeMap } from "@cloudflare/kumo/components/chart";`}
       lang="tsx"
     />
   </ComponentSection>
@@ -177,6 +178,25 @@ export default function Example() {
       </div>
 
       <div>
+        <Heading level={3}>Cloudflare Availability Locations</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Plot geographic markers without WebGL. Hatched neutral land, a transparent ocean, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe to reveal points on the hidden hemisphere.
+        </p>
+        <ComponentExample code={`<GlobeMap
+  markers={cloudflareAvailabilityLocations}
+  landColor="var(--text-color-kumo-inactive)"
+  landDotSpacing={8}
+  oceanColor="transparent"
+  showGraticule
+  markerColor="var(--color-kumo-brand)"
+  markerRadius={8}
+  autoRotate
+/>`}>
+          <GlobeMapAvailabilityZonesDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
         <Heading level={3}>Custom Tooltips</Heading>
         <p class="mb-4 text-kumo-subtle">
           Provide <code class="text-kumo-default">tooltipFormatter</code> when the default name/value tooltip is not enough. The formatter returns HTML rendered by ECharts, so escape user-provided values.
@@ -206,5 +226,7 @@ export default function Example() {
     <PropsTable component="BubbleMap" />
     <Heading level={3} class="mb-2 mt-6 text-lg">ChoroplethMap</Heading>
     <PropsTable component="ChoroplethMap" />
+    <Heading level={3} class="mb-2 mt-6 text-lg">GlobeMap</Heading>
+    <PropsTable component="GlobeMap" />
   </ComponentSection>
 </DocLayout>

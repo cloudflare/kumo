@@ -1,6 +1,8 @@
 import { createRef } from "react";
-import { render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vite-plus/test";
+import { GlobeMap } from "./GlobeMap";
 import { BubbleMap, type MapGeoJson } from "./Maps";
 
 const createMockChart = () => ({
@@ -32,6 +34,91 @@ const data = [
   { city: "San Francisco", lat: 37.77, lon: -122.42, requests: 10 },
   { city: "London", lat: 51.5, lon: -0.12, requests: 20 },
 ];
+
+describe("GlobeMap", () => {
+  it("renders an accessible SVG globe without ECharts", () => {
+    const onMarkerClick = vi.fn();
+    const { getByLabelText, getByRole } = render(
+      <GlobeMap
+        markers={[
+          {
+            name: "London",
+            description: "Availability location",
+            latitude: 51.5,
+            longitude: -0.12,
+          },
+        ]}
+        showGraticule
+        onMarkerClick={onMarkerClick}
+        aria-label="Traffic globe"
+      />,
+    );
+
+    const globe = getByLabelText("Traffic globe");
+    expect(globe.tagName).toBe("svg");
+    expect(globe.getAttribute("role")).toBeNull();
+    expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
+    const landPath = globe
+      .querySelector('[data-land-style="hatched"]')
+      ?.getAttribute("d");
+    expect(landPath).toContain("L");
+    expect(landPath?.match(/M/g)?.length).toBeGreaterThan(100);
+    const sphereClip = globe.querySelector("clipPath");
+    expect(sphereClip).not.toBeNull();
+    expect(landPath).toBeTruthy();
+    expect(
+      globe
+        .querySelector('[data-land-style="hatched"]')
+        ?.getAttribute("clip-path"),
+    ).toBe(`url(#${sphereClip?.id})`);
+    expect(globe.querySelectorAll("circle")).toHaveLength(1);
+    expect(globe.querySelector("pattern")).toBeNull();
+    expect(globe.querySelector(".stroke-kumo-base")).not.toBeNull();
+
+    fireEvent.keyDown(
+      getByRole("button", { name: "London: Availability location" }),
+      { key: "Enter" },
+    );
+    expect(onMarkerClick).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "London" }),
+    );
+  });
+
+  it("updates rotation while dragging", async () => {
+    const onRotationChange = vi.fn();
+    const { getByLabelText } = render(
+      <GlobeMap
+        aria-label="Draggable globe"
+        onRotationChange={onRotationChange}
+      />,
+    );
+    const globe = getByLabelText("Draggable globe");
+    const land = globe.querySelector('[data-land-style="hatched"]');
+    const initialPath = land?.getAttribute("d");
+
+    fireEvent.pointerDown(globe, { pointerId: 1, clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(globe, { pointerId: 1, clientX: 140, clientY: 100 });
+
+    await waitFor(() => expect(land?.getAttribute("d")).not.toBe(initialPath));
+    expect(onRotationChange).toHaveBeenCalledWith([2, -20, 0]);
+  });
+
+  it("calls onMarkerClick when a marker is clicked", async () => {
+    const user = userEvent.setup();
+    const onMarkerClick = vi.fn();
+    const { getByRole } = render(
+      <GlobeMap
+        markers={[{ name: "London", latitude: 51.5, longitude: -0.12 }]}
+        onMarkerClick={onMarkerClick}
+      />,
+    );
+
+    await user.click(getByRole("button", { name: /London:/ }));
+    expect(onMarkerClick).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "London" }),
+    );
+  });
+});
 
 describe("BubbleMap", () => {
   it("reuses the generated map name across remounts for the same GeoJSON", () => {
