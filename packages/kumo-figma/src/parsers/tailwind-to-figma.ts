@@ -255,7 +255,7 @@ export function parseTailwindClasses(classes: string): ParsedStyles {
       continue;
     }
 
-    // Height: h-5, h-6.5, h-9, h-10
+    // Height: h-5, h-7.5, h-9, h-10
     const heightMatch = cls.match(/^h-(\d+\.?\d*)$/);
     if (heightMatch) {
       result.height = getOrDefault(
@@ -266,7 +266,7 @@ export function parseTailwindClasses(classes: string): ParsedStyles {
       continue;
     }
 
-    // Size (width and height): size-3.5, size-6.5, size-9, size-10
+    // Size (width and height): size-3.5, size-7.5, size-9, size-10
     const sizeMatch = cls.match(/^size-(\d+\.?\d*)$/);
     if (sizeMatch) {
       const size = getOrDefault(

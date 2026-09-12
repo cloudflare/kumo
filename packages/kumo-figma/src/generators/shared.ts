@@ -437,7 +437,7 @@ export const FALLBACK_VALUES = {
   buttonCompactSize: {
     /** Extra small compact button (size-3.5) */
     xs: themeData.computed.buttonCompactSize.xs,
-    /** Small compact button (size-6.5) */
+    /** Small compact button (size-7.5) */
     sm: themeData.computed.buttonCompactSize.sm,
     /** Base compact button (size-9) */
     base: themeData.computed.buttonCompactSize.base,

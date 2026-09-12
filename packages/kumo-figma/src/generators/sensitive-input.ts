@@ -127,9 +127,9 @@ function getSizeConfigFromRegistry(size: string): {
       borderRadius: BORDER_RADIUS.xs,
     },
     sm: {
-      height: 26,
+      height: 30,
       paddingX: 8,
-      fontSize: 12,
+      fontSize: 14,
       borderRadius: BORDER_RADIUS.md,
     },
     base: {

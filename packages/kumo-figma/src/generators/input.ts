@@ -85,7 +85,7 @@ function getSizeConfigFromRegistry(size: string) {
     { height: number; paddingX: number; fontSize: number; borderRadius: number }
   > = {
     xs: { height: 20, paddingX: 6, fontSize: 12, borderRadius: 2 },
-    sm: { height: 26, paddingX: 8, fontSize: 12, borderRadius: 6 },
+    sm: { height: 30, paddingX: 8, fontSize: 14, borderRadius: 6 },
     base: { height: 36, paddingX: 12, fontSize: 16, borderRadius: 8 },
     lg: { height: 40, paddingX: 16, fontSize: 16, borderRadius: 8 },
   };
