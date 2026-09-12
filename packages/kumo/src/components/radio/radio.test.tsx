@@ -101,6 +101,66 @@ describe("Radio", () => {
   it("exports KUMO_RADIO_VARIANTS with appearance axis", () => {
     expect(KUMO_RADIO_VARIANTS.appearance.default).toBeDefined();
     expect(KUMO_RADIO_VARIANTS.appearance.card).toBeDefined();
+    expect(KUMO_RADIO_VARIANTS.appearance.bordered).toBeDefined();
     expect(KUMO_RADIO_DEFAULT_VARIANTS.appearance).toBe("default");
+  });
+
+  it.each([
+    ["vertical", "border-t"],
+    ["horizontal", "border-l"],
+  ] as const)(
+    "renders a bordered %s group with shared dividers",
+    (orientation, dividerClass) => {
+      const { container } = render(
+        <Radio.Group
+          legend="Scope"
+          appearance="bordered"
+          orientation={orientation}
+          defaultValue="all"
+        >
+          <Radio.Item label="All traffic" value="all" />
+          <Radio.Item label="Previews only" value="previews" />
+        </Radio.Group>,
+      );
+
+      const group = container.querySelector('[data-kumo-part="group-items"]');
+      const item = container.querySelector('[data-kumo-part="item-label"]');
+
+      expect(group?.className).toContain("rounded-lg");
+      expect(group?.className).toContain(dividerClass);
+      expect(item?.className).toContain("flex-1");
+      expect(item?.className).toContain("flex-row-reverse");
+      expect(item?.className).toContain("bg-kumo-elevated");
+      expect(
+        item?.querySelector('[data-kumo-part="item-content"]')?.className,
+      ).toContain("leading-5");
+    },
+  );
+
+  it("supports controlPosition='start' on bordered appearance", () => {
+    const { container } = render(
+      <Radio.Group appearance="bordered" controlPosition="start">
+        <Radio.Item label="All traffic" value="all" />
+      </Radio.Group>,
+    );
+
+    expect(
+      container.querySelector('[data-kumo-part="item-label"]')?.className,
+    ).not.toContain("flex-row-reverse");
+  });
+
+  it("dims only content for disabled bordered items", () => {
+    const { container } = render(
+      <Radio.Group appearance="bordered">
+        <Radio.Item label="Unavailable" value="unavailable" disabled />
+      </Radio.Group>,
+    );
+
+    const itemClassName = container.querySelector(
+      '[data-kumo-part="item-label"]',
+    )?.className;
+
+    expect(itemClassName).toContain("[&>*]:opacity-50");
+    expect(itemClassName?.split(" ")).not.toContain("opacity-50");
   });
 });

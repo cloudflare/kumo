@@ -6,6 +6,8 @@ export {
   type CheckboxProps,
   type CheckboxLegendProps,
   type CheckboxGroupProps,
+  type CheckboxGroupAppearance,
+  type CheckboxGroupOrientation,
   type CheckboxItemProps,
   type KumoCheckboxVariant,
   type CheckboxVariant,

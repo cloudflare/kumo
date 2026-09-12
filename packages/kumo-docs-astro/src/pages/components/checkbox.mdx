@@ -19,6 +19,7 @@ import {
   CheckboxDisabledDemo,
   CheckboxErrorDemo,
   CheckboxGroupDemo,
+  CheckboxBorderedGroupDemo,
   CheckboxGroupErrorDemo,
   CheckboxLegendSrOnlyDemo,
   CheckboxLegendCustomDemo,
@@ -126,6 +127,19 @@ export default function Example() {
 </p>
 <ComponentExample demo="CheckboxGroupDemo">
   <CheckboxGroupDemo client:visible />
+</ComponentExample>
+
+### Bordered Checkbox Group
+
+<p>
+  Use `appearance="bordered"` to place checkbox options in one contiguous
+  surface with shared dividers. Set `orientation="horizontal"` for a
+  side-by-side layout; groups are vertical by default. Bordered groups place
+  controls at the end unless `controlFirst` is set. The examples below also
+  cover long wrapping text, disabled options, and larger option sets.
+</p>
+<ComponentExample demo="CheckboxBorderedGroupDemo">
+  <CheckboxBorderedGroupDemo client:visible />
 </ComponentExample>
 
 ### Checkbox Group with Error

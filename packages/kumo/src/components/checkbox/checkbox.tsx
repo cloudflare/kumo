@@ -60,9 +60,19 @@ export function checkboxVariants({
 // Legacy type alias for backwards compatibility
 export type CheckboxVariant = KumoCheckboxVariant;
 
-// Context for passing controlFirst from Group to Items
-const CheckboxGroupContext = createContext<{ controlFirst: boolean }>({
+/** Visual treatment for items within a checkbox group. */
+export type CheckboxGroupAppearance = "default" | "bordered";
+
+/** Layout direction for items within a checkbox group. */
+export type CheckboxGroupOrientation = "vertical" | "horizontal";
+
+// Context for passing group layout options to Items.
+const CheckboxGroupContext = createContext<{
+  controlFirst: boolean;
+  appearance: CheckboxGroupAppearance;
+}>({
   controlFirst: true,
+  appearance: "default",
 });
 
 /**
@@ -196,7 +206,11 @@ export interface CheckboxGroupProps {
   allValues?: string[];
   /** Whether all checkboxes in the group are disabled */
   disabled?: boolean;
-  /** When true (default), checkbox appears before label. When false, label appears before checkbox. */
+  /** Layout direction of the checkbox items. */
+  orientation?: CheckboxGroupOrientation;
+  /** Visual treatment applied to the group. */
+  appearance?: CheckboxGroupAppearance;
+  /** When true, checkbox appears before label. When false, label appears before checkbox. Defaults to true for default appearance and false for bordered appearance. */
   controlFirst?: boolean;
   /** Additional CSS classes */
   className?: string;
@@ -208,8 +222,8 @@ export interface CheckboxGroupProps {
 export type CheckboxItemProps = {
   /** Visual variant: "default" or "error" for validation failures */
   variant?: CheckboxVariant;
-  /** Label text displayed next to checkbox */
-  label: string;
+  /** Label content displayed next to checkbox */
+  label: ReactNode;
   /** Value of the checkbox (required when used in Checkbox.Group) */
   value?: string;
   /** Additional CSS classes for the label wrapper */
@@ -343,7 +357,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
     },
     ref,
   ) => {
-    const { controlFirst } = useContext(CheckboxGroupContext);
+    const { controlFirst, appearance } = useContext(CheckboxGroupContext);
+    const isBordered = appearance === "bordered";
 
     return (
       <label
@@ -351,10 +366,16 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
         data-kumo-part="item-label"
         className={cn(
           "relative m-0 inline-flex items-start gap-2",
+          isBordered && "w-full flex-1 p-3 transition-colors",
           // Control first (default): checkbox before label
           // Label first: label before checkbox using flex-row-reverse
           !controlFirst && "flex-row-reverse justify-end",
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+          disabled
+            ? cn(
+                "cursor-not-allowed",
+                isBordered ? "[&>*]:opacity-50" : "opacity-50",
+              )
+            : cn("cursor-pointer", isBordered && "hover:bg-kumo-elevated"),
           className,
         )}
       >
@@ -390,7 +411,15 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             )}
           />
         </BaseCheckbox.Root>
-        <span className="text-base text-kumo-default">{label}</span>
+        <span
+          data-kumo-part="item-content"
+          className={cn(
+            "text-base text-kumo-default",
+            isBordered && "flex-1 leading-5 text-pretty",
+          )}
+        >
+          {label}
+        </span>
       </label>
     );
   },
@@ -422,11 +451,17 @@ function CheckboxGroup({
   onValueChange,
   allValues,
   disabled,
-  controlFirst = true,
+  orientation = "vertical",
+  appearance = "default",
+  controlFirst,
   className,
 }: CheckboxGroupProps) {
+  const effectiveControlFirst = controlFirst ?? appearance === "default";
+
   return (
-    <CheckboxGroupContext.Provider value={{ controlFirst }}>
+    <CheckboxGroupContext.Provider
+      value={{ controlFirst: effectiveControlFirst, appearance }}
+    >
       <BaseCheckboxGroup
         defaultValue={defaultValue}
         value={value}
@@ -440,7 +475,24 @@ function CheckboxGroup({
               {legend}
             </Fieldset.Legend>
           )}
-          <div className="flex flex-col gap-2">{children}</div>
+          <div
+            data-kumo-component="Checkbox"
+            data-kumo-part="group-items"
+            className={cn(
+              appearance === "bordered"
+                ? cn(
+                    "overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base",
+                    orientation === "vertical"
+                      ? "flex flex-col [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-t [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-kumo-line"
+                      : "flex flex-row [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-l [&>[data-kumo-part=item-label]+[data-kumo-part=item-label]]:border-kumo-line",
+                  )
+                : orientation === "vertical"
+                  ? "flex flex-col gap-2"
+                  : "flex flex-row flex-wrap gap-2",
+            )}
+          >
+            {children}
+          </div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
           {description && (
             <p className="text-sm text-kumo-subtle">{description}</p>

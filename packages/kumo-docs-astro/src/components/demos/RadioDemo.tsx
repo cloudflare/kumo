@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { Badge, Radio } from "@cloudflare/kumo";
+import {
+  GitBranchIcon,
+  GlobeIcon,
+  ShieldCheckIcon,
+} from "@phosphor-icons/react";
 
 /** Shows a basic controlled radio group */
 export function RadioBasicDemo() {
@@ -43,6 +48,103 @@ export function RadioHorizontalDemo() {
       <Radio.Item label="Medium" value="md" />
       <Radio.Item label="Large" value="lg" />
     </Radio.Group>
+  );
+}
+
+/** Shows bordered radio groups in horizontal and vertical layouts */
+export function RadioBorderedDemo() {
+  const [scope, setScope] = useState("all");
+  const [environment, setEnvironment] = useState("production");
+  const [routingMode, setRoutingMode] = useState("smart");
+  const [securityLevel, setSecurityLevel] = useState("balanced");
+
+  return (
+    <div className="flex flex-col gap-8">
+      <Radio.Group
+        legend="Scope"
+        appearance="bordered"
+        orientation="horizontal"
+        value={scope}
+        onValueChange={setScope}
+      >
+        <Radio.Item
+          label={
+            <span className="flex items-center gap-2">
+              <GlobeIcon size={18} className="text-kumo-subtle" />
+              All traffic
+            </span>
+          }
+          value="all"
+        />
+        <Radio.Item
+          label={
+            <span className="flex items-center gap-2">
+              <GitBranchIcon size={18} className="text-kumo-subtle" />
+              Previews only
+            </span>
+          }
+          value="previews"
+        />
+      </Radio.Group>
+      <Radio.Group
+        legend="Environment (control first)"
+        appearance="bordered"
+        controlPosition="start"
+        value={environment}
+        onValueChange={setEnvironment}
+      >
+        <Radio.Item label="Production" value="production" />
+        <Radio.Item label="Staging" value="staging" />
+        <Radio.Item label="Development" value="development" />
+        <Radio.Item
+          label="Local preview (unavailable)"
+          value="local"
+          disabled
+        />
+      </Radio.Group>
+      <Radio.Group
+        legend="Request routing"
+        description="Long labels should wrap without moving or shrinking the controls."
+        appearance="bordered"
+        orientation="horizontal"
+        value={routingMode}
+        onValueChange={setRoutingMode}
+      >
+        <Radio.Item
+          label="Route to the nearest healthy origin"
+          value="nearest"
+        />
+        <Radio.Item
+          label="Automatically balance latency and availability"
+          value="smart"
+        />
+        <Radio.Item
+          label="Always use the designated primary origin"
+          value="primary"
+        />
+      </Radio.Group>
+      <Radio.Group
+        legend="Security level"
+        appearance="bordered"
+        controlPosition="start"
+        value={securityLevel}
+        onValueChange={setSecurityLevel}
+      >
+        <Radio.Item label="Essential" value="essential" />
+        <Radio.Item
+          label={
+            <span className="flex items-center gap-2">
+              <ShieldCheckIcon size={18} className="text-kumo-subtle" />
+              Balanced (recommended)
+              <Badge variant="primary">Default</Badge>
+            </span>
+          }
+          value="balanced"
+        />
+        <Radio.Item label="Strict" value="strict" />
+        <Radio.Item label="Maximum" value="maximum" />
+      </Radio.Group>
+    </div>
   );
 }
 
