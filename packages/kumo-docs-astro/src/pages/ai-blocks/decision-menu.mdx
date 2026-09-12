@@ -1,0 +1,116 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Decision Menu"
+description: "A card-based action menu for AI-driven decisions with keyboard navigation and status indicators."
+sourceFile: "blocks/decision-menu"
+---
+
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  DecisionMenuDemo,
+  DecisionMenuStatusDemo,
+} from "~/components/demos/DecisionMenuDemo";
+
+{/* Decision Menu */}
+
+<ComponentSection>
+
+## Decision Menu
+
+<p>
+  A card-based menu for presenting AI-driven decisions to the user. Options are
+  selectable via click or keyboard — press <code>1</code>–<code>9</code> to jump
+  to an option by position, <code>Enter</code> to confirm, or <code>Esc</code> to
+  cancel. Clicking an already-selected option also confirms it.
+</p>
+
+<ComponentExample demo="DecisionMenuDemo">
+  <DecisionMenuDemo client:load />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Status Indicators */}
+
+<ComponentSection>
+
+## Status Indicators
+
+<p>
+  After a decision is submitted, the footer transitions to a status indicator
+  showing the outcome. Four states are supported: <code>loading</code>,{" "}
+  <code>done</code>, <code>cancelled</code>, and <code>failed</code>. The failed
+  state supports an expandable description for error details.
+</p>
+
+<ComponentExample demo="DecisionMenuStatusDemo">
+  <DecisionMenuStatusDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Keyboard controls */}
+
+<ComponentSection>
+
+## Keyboard Controls
+
+| Key | Action |
+|-----|--------|
+| `1`–`9` | Jump to option by position |
+| `Enter` | Confirm the selected option |
+| `Esc` | Cancel — deselects all options |
+| `↑` `↓` | Navigate between options (native radio behavior) |
+
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+  <p>
+    DecisionMenu is an <strong>AI block</strong> — a CLI-installed component that
+    you own and can customize.
+  </p>
+  <div class="space-y-4">
+    <div>
+      <p>**1. Initialize Kumo config (first time only)**</p>
+
+```bash
+npx @cloudflare/kumo init
+```
+
+</div>
+<div>
+<p>**2. Install the block**</p>
+
+```bash
+npx @cloudflare/kumo add DecisionMenu
+```
+
+</div>
+<div>
+<p>**3. Import from your local path**</p>
+
+```tsx
+import { DecisionMenu } from "./components/kumo/decision-menu/decision-menu";
+```
+
+    </div>
+
+  </div>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="DecisionMenu" />
+
+</ComponentSection>
