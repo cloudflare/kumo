@@ -163,19 +163,13 @@ Or with Tailwind:
 </div>
 ```
 
-This creates a separate stacking context for your app's content, so portaled popups always appear on top regardless of the `z-index` values used inside your layout.
+This creates a separate stacking context for your app's content, so portaled popups always appear on top regardless of the `z-index` values used inside your layout. Apply it to the element that wraps your app's content, not to `<body>` — isolating the body would put the portals inside the same stacking context and defeat the purpose.
 
 <Callout type="info">
   If you find yourself reaching for `z-index` to get a Kumo popup to show above
   your own UI, that's a sign something is off. The fix is almost always
   isolating your app root as shown above, not raising the popup's `z-index` or
   targeting Base UI's internal data attributes.
-</Callout>
-
-<Callout type="warning">
-  **Important:** Apply `isolation: isolate` to the element that wraps your app's
-  content — not to `<body>` or the portal container itself. Isolating the body
-  would put the portals inside the same stacking context and defeat the purpose.
 </Callout>
 
 ## Usage Example
