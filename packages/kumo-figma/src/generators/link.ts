@@ -4,10 +4,9 @@
  * Generates a single Link ComponentSet in Figma with variant property.
  * Reads variant definitions from component-registry.json (the source of truth).
  *
- * Link is a text-only component with three variants:
- * - inline: Default underlined link (text-primary) with semi-transparent underline
- * - current: Inherits color from parent (text-current) with semi-transparent underline
- * - plain: No underline decoration (text-primary)
+ * Link is a text-only component with a single visual style:
+ * - default: Underlined link that inherits color from parent text
+ *   (text-current) with semi-transparent underline
  *
  * Underline opacity (from .link-current CSS class in kumo-binding.css):
  * - Light mode: 35% opacity
@@ -90,11 +89,11 @@ export function getLinkParsedVariantStyles(variant: string) {
     variant,
     classes,
     description: variantProp.descriptions[variant] || "",
-    // Link uses text-primary or text-current classes
     hasUnderline: classes.includes("underline"),
     // Check if variant uses link-current class (has semi-transparent underline)
     hasLinkCurrentClass: classes.includes("link-current"),
-    textColor: classes.includes("text-current") ? "current" : "primary",
+    // Link always renders in the surrounding text color (text-current)
+    textColor: classes.includes("text-current") ? "current" : "default",
   };
 }
 
@@ -128,11 +127,12 @@ export function getAllLinkVariantData() {
 /**
  * Create a single Link component with the specified variant
  *
- * For variants with underlines (inline, current), we create a custom underline
- * as a separate line element to support the semi-transparent opacity that
- * matches the CSS implementation (.link-current class).
+ * Link renders an underlined text node that inherits its color from the
+ * surrounding text. The underline is created as a separate line element so
+ * we can preserve the semi-transparent opacity from the CSS `.link-current`
+ * class.
  *
- * @param variant - The variant name (inline, current, plain)
+ * @param variant - The variant name (currently only "default")
  * @param mode - Color mode for underline opacity (light = 35%, dark = 65%)
  */
 async function createLinkComponent(
@@ -161,15 +161,8 @@ async function createLinkComponent(
   const textNode = await createTextNode("Link text", FONT_SIZE.base, 400);
   textNode.name = "Label";
 
-  // Get the appropriate text color variable
-  let textColorVar;
-  if (variantData.textColor === "current") {
-    // For "current" variant, use default text color in Figma demo
-    textColorVar = getVariableByName(VAR_NAMES.text.default);
-  } else {
-    // For inline and plain, use link/brand color
-    textColorVar = getVariableByName(VAR_NAMES.text.link);
-  }
+  // Link inherits parent color; use the default text variable for the Figma preview.
+  const textColorVar = getVariableByName(VAR_NAMES.text.default);
 
   // Apply text color
   if (textColorVar) {
@@ -234,6 +227,10 @@ async function createLinkComponent(
  * Creates a single "Link" ComponentSet with variants derived from
  * component-registry.json. Creates both light and dark mode sections.
  *
+ * `figma.combineAsVariants` requires at least two components. Link currently
+ * ships a single variant, so when only one variant exists we fall back to
+ * placing the bare component in each section without combining.
+ *
  * @param page - Target page for components
  * @param startY - Y position to start placing the section
  * @returns The Y position after this section (for next section placement)
@@ -275,15 +272,18 @@ export async function generateLinkComponents(
     components.push(component);
   }
 
-  // Combine all variants into a single ComponentSet
-  const componentSet = figma.combineAsVariants(components, page);
-  componentSet.name = "Link";
-  componentSet.description =
-    "Link component with variant styles for navigation";
+  // Combine variants into a single ComponentSet. `combineAsVariants` requires
+  // 2+ components; with a single variant we keep the bare component.
+  const primary: ComponentNode | ComponentSetNode =
+    components.length > 1
+      ? figma.combineAsVariants(components, page)
+      : components[0];
+  primary.name = "Link";
+  primary.description = "Link component with variant styles for navigation";
 
   // Calculate content dimensions (add label column width)
-  const contentWidth = componentSet.width + labelColumnWidth;
-  const contentHeight = componentSet.height;
+  const contentWidth = primary.width + labelColumnWidth;
+  const contentHeight = primary.height;
 
   // Content Y offset to make room for title inside frame
   const contentYOffset = SECTION_TITLE.height;
@@ -302,10 +302,10 @@ export async function generateLinkComponents(
     contentHeight + SECTION_PADDING * 2 + contentYOffset,
   );
 
-  // Move ComponentSet into light section frame
-  lightSection.frame.appendChild(componentSet);
-  componentSet.x = SECTION_PADDING + labelColumnWidth;
-  componentSet.y = SECTION_PADDING + contentYOffset;
+  // Move primary node into light section frame
+  lightSection.frame.appendChild(primary);
+  primary.x = SECTION_PADDING + labelColumnWidth;
+  primary.y = SECTION_PADDING + contentYOffset;
 
   // Add row labels to light section
   for (const label of rowLabels) {

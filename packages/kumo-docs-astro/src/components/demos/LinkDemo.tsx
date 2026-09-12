@@ -2,13 +2,14 @@ import { Link } from "@cloudflare/kumo";
 
 export function LinkBasicDemo() {
   return (
-    <div className="grid gap-x-6 gap-y-4 text-base md:grid-cols-3">
-      <Link href="#">Default inline link</Link>
-      <Link href="#" variant="current">
-        Current color link
-      </Link>
-      <Link href="#" variant="plain">
-        Plain inline link
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-base">
+      <Link href="#">Underlined inline link</Link>
+      <Link
+        href="https://cloudflare.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        External link <Link.ExternalIcon />
       </Link>
     </div>
   );
@@ -37,14 +38,11 @@ export function LinkExternalDemo() {
   );
 }
 
-export function LinkCurrentVariantDemo() {
+export function LinkColorInheritanceDemo() {
   return (
     <p className="text-base text-kumo-danger">
-      This error message contains a{" "}
-      <Link href="#" variant="current">
-        link
-      </Link>{" "}
-      that inherits the red color from its parent.
+      This error message contains a <Link href="#">link</Link> that inherits
+      the red color from its parent.
     </p>
   );
 }
@@ -62,7 +60,7 @@ const CustomRouterLink = ({
 export function LinkRenderDemo() {
   return (
     <div className="flex flex-col gap-x-6 gap-y-4 text-base md:flex-row">
-      <Link render={<CustomRouterLink href="/dashboard" />} variant="inline">
+      <Link render={<CustomRouterLink href="/dashboard" />}>
         Dashboard (via render)
       </Link>
       <Link
@@ -73,7 +71,6 @@ export function LinkRenderDemo() {
             rel="noopener noreferrer"
           />
         }
-        variant="inline"
       >
         Cloudflare Docs <Link.ExternalIcon />
       </Link>
