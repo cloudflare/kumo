@@ -16,7 +16,7 @@ export function EmptyDemo() {
       description="Get started by installing your first package."
       commandLine="npm install @cloudflare/kumo"
       contents={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-2">
           <Button icon={<CodeIcon />}>See examples</Button>
           <Button icon={<GlobeIcon />} variant="primary">
             View documentation
@@ -79,7 +79,7 @@ export function EmptyWithActionsDemo() {
       title="No connection"
       description="Unable to connect to the server. Please check your connection and try again."
       contents={
-        <div className="flex gap-2">
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-2">
           <Button variant="primary">Retry</Button>
           <Button variant="secondary">Go Back</Button>
         </div>
