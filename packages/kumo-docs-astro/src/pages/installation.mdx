@@ -142,6 +142,42 @@ import "@cloudflare/kumo/styles/standalone";
 
 The standalone build includes all Tailwind utilities and Kumo component styles pre-compiled. No Tailwind configuration needed!
 
+## Isolate Your App Root
+
+Kumo's floating components (`Select`, `Combobox`, `Dropdown`, `Popover`, `Tooltip`, `Dialog`, and others) render their popups in a portal at the end of `document.body`. Because Kumo doesn't apply a `z-index` to these popups, any positive `z-index` in your own layout (a sticky header, for example) can paint above an open popup.
+
+To prevent this, add `isolation: isolate` to your application's root element, as [Base UI recommends](https://base-ui.com/react/overview/quick-start#portals):
+
+```css
+/* The element that wraps your entire app, e.g. #root or #app */
+.root {
+  isolation: isolate;
+}
+```
+
+Or with Tailwind:
+
+```tsx
+<div id="root" className="isolate">
+  {/* Your app */}
+</div>
+```
+
+This creates a separate stacking context for your app's content, so portaled popups always appear on top regardless of the `z-index` values used inside your layout.
+
+<Callout type="info">
+  If you find yourself reaching for `z-index` to get a Kumo popup to show above
+  your own UI, that's a sign something is off. The fix is almost always
+  isolating your app root as shown above, not raising the popup's `z-index` or
+  targeting Base UI's internal data attributes.
+</Callout>
+
+<Callout type="warning">
+  **Important:** Apply `isolation: isolate` to the element that wraps your app's
+  content — not to `<body>` or the portal container itself. Isolating the body
+  would put the portals inside the same stacking context and defeat the purpose.
+</Callout>
+
 ## Usage Example
 
 Here's a complete example of using Kumo components with Tailwind CSS:
