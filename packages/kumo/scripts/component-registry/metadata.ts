@@ -630,21 +630,21 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
       base: "bg-kumo-control text-kumo-default ring ring-kumo-line",
       sizes: {
         xs: "h-5 gap-1 rounded-sm px-1.5 text-xs",
-        sm: "h-6.5 gap-1 rounded-md px-2 text-xs",
+        sm: "h-7.5 gap-1 rounded-md px-2 text-base",
         base: "h-9 gap-1.5 rounded-lg px-3 text-base",
         lg: "h-10 gap-2 rounded-lg px-4 text-base",
       },
     },
     sizeVariants: {
       sm: {
-        height: 26,
-        classes: "text-xs",
+        height: 30,
+        classes: "text-base",
         buttonSize: "sm",
         dimensions: {
           paddingX: 8,
           gap: 1,
           borderRadius: 6,
-          fontSize: 12,
+          fontSize: 14,
         },
       },
       base: {
@@ -722,11 +722,11 @@ export const COMPONENT_STYLING_METADATA: Record<string, ComponentStyling> = {
         },
       },
       sm: {
-        height: 26,
-        classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
+        height: 30,
+        classes: "h-7.5 gap-1 rounded-md px-2 text-base",
         dimensions: {
           paddingX: 8,
-          fontSize: 12,
+          fontSize: 14,
           borderRadius: 6,
         },
       },
