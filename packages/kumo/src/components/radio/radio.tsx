@@ -472,7 +472,7 @@ function RadioGroup<Value = string>({
       >
         <Fieldset.Root
           disabled={disabled}
-          className={cn("flex flex-col gap-4", className)}
+          className={cn("flex flex-col gap-4 p-0", className)}
         >
           {legend && (
             <Fieldset.Legend className="text-base font-medium text-kumo-default">

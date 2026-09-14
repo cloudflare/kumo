@@ -8,7 +8,7 @@ import {
 
 describe("Radio", () => {
   it("renders a radio group with legend and items", () => {
-    render(
+    const { container } = render(
       <Radio.Group legend="Choose option" defaultValue="a">
         <Radio.Item label="Option A" value="a" />
         <Radio.Item label="Option B" value="b" />
@@ -18,6 +18,7 @@ describe("Radio", () => {
     expect(screen.getByText("Choose option")).toBeTruthy();
     expect(screen.getByText("Option A")).toBeTruthy();
     expect(screen.getByText("Option B")).toBeTruthy();
+    expect(container.querySelector("fieldset")?.className).toContain("p-0");
   });
 
   it("renders card items with description", () => {
