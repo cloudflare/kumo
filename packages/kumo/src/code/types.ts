@@ -135,6 +135,8 @@ export interface UseShikiHighlighterResult {
 /**
  * Props for CodeHighlighted component.
  */
+export type CodeHighlightedVariant = "default" | "plain";
+
 export interface CodeHighlightedProps {
   /** Source code to display */
   code: string;
@@ -145,6 +147,14 @@ export interface CodeHighlightedProps {
    * Must be included in the ShikiProvider's `languages` array.
    */
   lang: LanguageInput | (string & {});
+
+  /**
+   * Visual style of the code block.
+   * - `"default"` — Code block with a surface, border, and rounded corners
+   * - `"plain"` — Frameless code block for embedding in another surface
+   * @default "default"
+   */
+  variant?: CodeHighlightedVariant;
 
   /** Display line numbers */
   showLineNumbers?: boolean;

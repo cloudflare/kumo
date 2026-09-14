@@ -34,6 +34,7 @@ import type { CodeHighlightedProps } from "./types";
 export function CodeHighlighted({
   code,
   lang,
+  variant = "default",
   showLineNumbers = false,
   highlightLines,
   showCopyButton = false,
@@ -76,7 +77,10 @@ export function CodeHighlighted({
   // Container styles - use flex layout for single-line with copy button
   // Includes defensive resets (m-0, p-0) to prevent global CSS pollution
   const containerClasses = cn(
-    "group relative m-0 w-full min-w-0 rounded-md border border-kumo-fill bg-kumo-base p-0",
+    "group relative m-0 w-full min-w-0 p-0",
+    variant === "plain"
+      ? "rounded-none border-0 bg-transparent"
+      : "rounded-md border border-kumo-fill bg-kumo-base",
     showCopyButton && isSingleLine && "flex items-center",
     className,
   );

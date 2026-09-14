@@ -186,6 +186,22 @@ export function CodeHighlightedCopyButtonDemo() {
   );
 }
 
+/** Frameless code block for embedding in another surface */
+export function CodeHighlightedPlainDemo() {
+  return (
+    <DemoProvider>
+      <div className="p-4">
+        <CodeHighlighted
+          code={`const embedded = true;
+console.log({ embedded });`}
+          lang="typescript"
+          variant="plain"
+        />
+      </div>
+    </DemoProvider>
+  );
+}
+
 /** Full featured example */
 export function CodeHighlightedFullFeaturedDemo() {
   return (

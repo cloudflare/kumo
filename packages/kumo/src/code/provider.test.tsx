@@ -401,6 +401,26 @@ describe("ShikiProvider", () => {
     expect(mockHighlighter.codeToHtml).toHaveBeenCalledTimes(1);
   });
 
+  it("renders the plain CodeHighlighted variant without a frame", () => {
+    const { container } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <CodeHighlighted
+          code="const x = 1;"
+          lang="javascript"
+          variant="plain"
+        />
+      </ShikiProvider>,
+    );
+
+    const classList = container.firstElementChild?.classList;
+    expect(classList?.contains("rounded-none")).toBe(true);
+    expect(classList?.contains("border-0")).toBe(true);
+    expect(classList?.contains("bg-transparent")).toBe(true);
+    expect(classList?.contains("rounded-md")).toBe(false);
+    expect(classList?.contains("border-kumo-fill")).toBe(false);
+    expect(classList?.contains("bg-kumo-base")).toBe(false);
+  });
+
   it("exposes normalized languages in context so hook alias resolution works end-to-end", async () => {
     // This is the integration test for the bug where the context stores raw
     // aliases (e.g., ["js", "ts"]) but the hook normalizes to canonical names
