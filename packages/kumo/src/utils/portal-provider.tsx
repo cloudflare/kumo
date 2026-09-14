@@ -23,6 +23,10 @@ const PortalContainerContext = createContext<PortalContainer>(null);
  * When not provided, overlays portal to `document.body` (default browser behavior).
  * Individual components can override this via their own `container` prop.
  *
+ * For app-wide portal stacking, consumers should set `isolation: isolate` on
+ * their app root (not `<body>`). Do not add z-index workarounds to Kumo's
+ * portaled components or target Base UI internal data attributes.
+ *
  * @example Shadow DOM usage
  * ```tsx
  * function WebComponent() {

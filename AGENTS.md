@@ -47,6 +47,15 @@ kumo/
 - **Surface hierarchy**: `bg-kumo-base` → `bg-kumo-elevated` → `bg-kumo-recessed`
 - **Mode/theme**: `data-mode="light"|"dark"` + `data-theme="fedramp"` on parent element
 
+### Portal stacking (CRITICAL)
+
+- Kumo floating components portal to `document.body` without a `z-index`.
+  Consumers should create an app-root stacking context with `isolation: isolate`
+  (Tailwind: `className="isolate"`).
+- Do **not** fix a popup that appears below consumer content by adding `z-index`
+  to Kumo popup components, targeting Base UI internal data attributes, or
+  applying `isolation` to `<body>`.
+
 ### Components
 
 - **Scaffold new**: `pnpm --filter @cloudflare/kumo new:component` (never create manually)
