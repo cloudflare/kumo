@@ -434,7 +434,7 @@ function CheckboxGroup({
         allValues={allValues}
         disabled={disabled}
       >
-        <Fieldset.Root className={cn("flex flex-col gap-4", className)}>
+        <Fieldset.Root className={cn("flex flex-col gap-4 p-0", className)}>
           {legend && (
             <Fieldset.Legend className="text-base font-medium text-kumo-default">
               {legend}

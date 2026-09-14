@@ -42,6 +42,17 @@ describe("ButtonGroup", () => {
     expect(screen.getByRole("group", { name: "Deploy" })).toBeTruthy();
   });
 
+  it('does not allow role="group" to be overridden', () => {
+    const props = { role: "toolbar" };
+    render(
+      <ButtonGroup {...props}>
+        <Button>One</Button>
+      </ButtonGroup>,
+    );
+    expect(screen.getByRole("group")).toBeTruthy();
+    expect(screen.queryByRole("toolbar")).toBeNull();
+  });
+
   it("lays buttons out horizontally", () => {
     render(
       <ButtonGroup>
@@ -49,6 +60,20 @@ describe("ButtonGroup", () => {
       </ButtonGroup>,
     );
     expect(screen.getByRole("group").className).toContain("flex-row");
+  });
+
+  it("uses logical child-position selectors to join controls", () => {
+    render(
+      <ButtonGroup>
+        <Button>One</Button>
+        <a href="/two">Two</a>
+      </ButtonGroup>,
+    );
+    const className = screen.getByRole("group").className;
+    expect(className).toContain("rounded-s-none");
+    expect(className).toContain("rounded-e-none");
+    expect(className).toContain("-ms-px");
+    expect(className).not.toContain("!ring-kumo-line");
   });
 
   it("merges a custom className", () => {

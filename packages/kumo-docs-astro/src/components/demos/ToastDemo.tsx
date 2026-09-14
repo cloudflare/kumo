@@ -26,6 +26,43 @@ export function ToastBasicDemo() {
   );
 }
 
+function ToastFunctionalUpdateButton() {
+  const toastManager = useKumoToastManager();
+
+  return (
+    <Button
+      onClick={() => {
+        const id = toastManager.add({
+          id: "functional-update",
+          title: "Deploying Worker",
+          description: "Uploading your changes.",
+          variant: "info",
+          data: { deployment: "in progress" },
+        });
+
+        setTimeout(() => {
+          toastManager.update(id, (toast) => ({
+            title: "Worker deployed",
+            description: `Deployment was ${toast.data.deployment}.`,
+            variant: "success",
+          }));
+        }, 1200);
+      }}
+    >
+      Deploy Worker
+    </Button>
+  );
+}
+
+/** Demonstrates updating a toast from its current state. */
+export function ToastFunctionalUpdateDemo() {
+  return (
+    <Toasty>
+      <ToastFunctionalUpdateButton />
+    </Toasty>
+  );
+}
+
 function ToastTitleOnlyButton() {
   const toastManager = useKumoToastManager();
 

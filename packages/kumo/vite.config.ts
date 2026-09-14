@@ -69,6 +69,10 @@ const packEntries = {
     __dirname,
     "src/components/layer-card/index.ts",
   ),
+  "components/layer-dialog": resolve(
+    __dirname,
+    "src/components/layer-dialog/index.ts",
+  ),
   "components/label": resolve(__dirname, "src/components/label/index.ts"),
   "components/loader": resolve(__dirname, "src/components/loader/index.ts"),
   "components/menubar": resolve(__dirname, "src/components/menubar/index.ts"),
@@ -119,6 +123,10 @@ const packEntries = {
   "components/table-of-contents": resolve(
     __dirname,
     "src/components/table-of-contents/index.ts",
+  ),
+  "components/tag-input": resolve(
+    __dirname,
+    "src/components/tag-input/index.ts",
   ),
   // PLOP_INJECT_COMPONENT_ENTRY
   // Utils entry point

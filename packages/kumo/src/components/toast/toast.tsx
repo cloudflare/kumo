@@ -1,6 +1,7 @@
 import {
   Toast,
   ToastManagerAddOptions,
+  ToastManagerUpdateOptions,
   ToastObject,
 } from "@base-ui/react/toast";
 import type React from "react";
@@ -204,6 +205,9 @@ export type KumoToastOptions<Data extends object> = ToastObject<Data> &
 export type KumoToastManagerAddOptions<Data extends object> =
   ToastManagerAddOptions<Data> & KumoToastOptionsBase;
 
+export type KumoToastManagerUpdateOptions<Data extends object> =
+  ToastManagerUpdateOptions<Data> & KumoToastOptionsBase;
+
 function wrapManagerMethods<
   T extends { add: Function; update: Function; promise: Function },
 >(manager: T) {
@@ -245,10 +249,20 @@ function wrapManagerMethods<
       });
     },
 
-    update: (id: string, options: Partial<KumoToastManagerAddOptions<any>>) => {
-      return manager.update(id, {
-        ...options,
-      });
+    update: (
+      id: string,
+      options:
+        | KumoToastManagerUpdateOptions<any>
+        | ((
+            prevToast: KumoToastOptions<any>,
+          ) => KumoToastManagerUpdateOptions<any>),
+    ) => {
+      return manager.update(
+        id,
+        typeof options === "function"
+          ? (prevToast: ToastObject<any>) => options(prevToast)
+          : { ...options },
+      );
     },
 
     promise: <T,>(

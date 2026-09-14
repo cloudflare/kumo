@@ -3,7 +3,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 import {
-  hasChangesInPath,
+  getChangedFiles,
   getNewlyAddedFiles,
   isPullRequestContext,
   logPullRequestContext,
@@ -17,6 +17,7 @@ import {
 const KUMO_PACKAGE_NAME = "@cloudflare/kumo";
 const KUMO_PATH = "packages/kumo";
 const CHANGESET_DIR = ".changeset";
+const KUMO_README_PATH = `${KUMO_PATH}/README.md`;
 
 interface ChangesetFile {
   name: string;
@@ -150,17 +151,23 @@ function main() {
   console.log("Changeset validation passed!");
 }
 
-function checkForKumoChanges(): boolean {
-  const result = hasChangesInPath(KUMO_PATH);
+export function requiresKumoChangeset(
+  changedFiles: readonly string[],
+): boolean {
+  return changedFiles.some((file) => file !== KUMO_README_PATH);
+}
 
-  if (result === null) {
+function checkForKumoChanges(): boolean {
+  const changedFiles = getChangedFiles({ filterPath: KUMO_PATH });
+
+  if (changedFiles === null) {
     console.warn(
       "⚠️  Warning: Could not determine if kumo changes exist, assuming they do",
     );
     return true;
   }
 
-  return result;
+  return requiresKumoChangeset(changedFiles);
 }
 
 function getNewlyAddedChangesets(): ChangesetFile[] {

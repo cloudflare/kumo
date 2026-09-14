@@ -31,6 +31,7 @@ import {
   Switch,
   Table,
   TableOfContents,
+  TagInput,
   Tabs,
   Text,
   Toolbar,
@@ -74,6 +75,7 @@ const componentRoutes: Record<string, string> = {
   input: "/components/input",
   "input-area": "/components/input-area",
   "input-group": "/components/input-group",
+  "tag-input": "/components/tag-input",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   link: "/components/link",
@@ -159,6 +161,17 @@ export function HomeGrid() {
           <Input placeholder="Type something..." />
           <Input variant="error" value="Invalid!" />
         </div>
+      ),
+    },
+    {
+      name: "Tag Input",
+      id: "tag-input",
+      Component: (
+        <TagInput
+          className="w-[280px]"
+          defaultValue={["frontend", "priority"]}
+          placeholder="Add a label"
+        />
       ),
     },
     {

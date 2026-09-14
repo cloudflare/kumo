@@ -435,15 +435,10 @@ async function createComboboxComponent(
 
   trigger.appendChild(placeholderText);
 
-  // Create chevron down icon
-  const chevronIconName = "ph-caret-down";
+  // Create up/down chevron icon
+  const chevronIconName = "ph-caret-up-down";
   const chevron = getButtonIcon(chevronIconName, "sm");
   chevron.name = "Chevron";
-
-  // Rotate chevron 180° when open (pointing up)
-  if (open) {
-    chevron.rotation = 180;
-  }
 
   // Apply icon color based on state
   const iconColorToken =

@@ -1,5 +1,5 @@
 import { Combobox as ComboboxBase } from "@base-ui/react/combobox";
-import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
+import { CaretUpDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
 import {
   Fragment,
   createContext,
@@ -313,7 +313,7 @@ function TriggerValue({
           iconStyles.iconRight,
         )}
       >
-        <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
+        <CaretUpDownIcon size={iconStyles.iconSize} className="fill-current" />
       </ComboboxBase.Icon>
     </ComboboxBase.Trigger>
   );
@@ -409,7 +409,10 @@ function TriggerInput({
         )}
       >
         <ComboboxBase.Icon className="flex items-center">
-          <CaretDownIcon size={iconStyles.iconSize} className="fill-current" />
+          <CaretUpDownIcon
+            size={iconStyles.iconSize}
+            className="fill-current"
+          />
         </ComboboxBase.Icon>
       </ComboboxBase.Trigger>
     </div>
@@ -462,7 +465,7 @@ function Input(props: ComboboxBase.Input.Props) {
       {...props}
       className={cn(
         inputVariants(),
-        "mx-1.5 w-[calc(100%-0.75rem)] shrink-0 first:mb-2",
+        "mx-0 -mt-1.5 w-full shrink-0 rounded-b-none first:mb-2",
         props.className,
       )}
     />
@@ -669,4 +672,5 @@ export const Combobox = Object.assign(Root, {
 
   // Filtering
   useFilter: ComboboxBase.useFilter,
+  createItems: ComboboxBase.createItems,
 });

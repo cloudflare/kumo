@@ -9,6 +9,7 @@ import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
+  IntegerYAxisChartDemo,
   BarChartDemo,
   ReferenceMarkersChartDemo,
   ThresholdsChartDemo,
@@ -20,6 +21,7 @@ import {
   LoadingChartDemo,
   LoadingBarChartDemo,
   TimeRangeSelectionChartDemo,
+  ChartExampleDemo,
   TooltipFollowCursorDemo,
   TooltipBoundaryDemo,
 } from "~/components/demos/Chart/ChartDemo";
@@ -37,6 +39,21 @@ import {
 
   <ComponentExample demo="BasicLineChartDemo">
     <BasicLineChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Discrete Count Data
+
+<p>
+  Set <code>yAxisMinInterval={1}</code> for discrete values such as request
+  counts. This prevents fractional y-axis tick marks while leaving the default
+  axis behavior unchanged for rates and other continuous values.
+</p>
+
+  <ComponentExample demo="IntegerYAxisChartDemo">
+    <IntegerYAxisChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 
@@ -126,6 +143,22 @@ import {
 
   <ComponentExample demo="TimeRangeSelectionChartDemo">
     <TimeRangeSelectionChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Tooltip footer
+
+<p>
+  Use the <code>tooltipFooter</code> prop to add brief supporting text below
+  the values in standard series tooltips. It works with every timeseries chart
+  configuration, including line, bar, gradient, threshold, and custom-axis
+  charts.
+</p>
+
+  <ComponentExample demo="ChartExampleDemo">
+    <ChartExampleDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

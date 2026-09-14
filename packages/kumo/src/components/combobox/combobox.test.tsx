@@ -31,6 +31,30 @@ function renderComboboxWithInput(
 describe("Combobox", () => {
   // Rendering
 
+  it("creates item collections from application data", () => {
+    const collection = Combobox.createItems([{ id: "apple", label: "Apple" }], {
+      getValue: (fruit) => fruit.id,
+      getLabel: (fruit) => fruit.label,
+    });
+
+    render(
+      <Combobox items={collection}>
+        <Combobox.TriggerInput placeholder="Pick a fruit" />
+        <Combobox.Content>
+          <Combobox.List>
+            {(fruit) => (
+              <Combobox.Item key={fruit.id} value={fruit}>
+                {fruit.label}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>,
+    );
+
+    expect(screen.getByRole("combobox")).toBeTruthy();
+  });
+
   it("renders without crashing", () => {
     renderComboboxWithInput();
     expect(screen.getByRole("combobox")).toBeTruthy();
@@ -39,6 +63,29 @@ describe("Combobox", () => {
   it("renders a combobox input with placeholder text", () => {
     renderComboboxWithInput();
     expect(screen.getByPlaceholderText("Pick a fruit…")).toBeTruthy();
+  });
+
+  it("styles an input inside content flush with the popup edges", () => {
+    render(
+      <Combobox items={fruits} defaultOpen>
+        <Combobox.TriggerValue placeholder="Select a fruit" />
+        <Combobox.Content>
+          <Combobox.Input placeholder="Search fruits…" />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                {item}
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Content>
+      </Combobox>,
+    );
+
+    const input = screen.getByPlaceholderText("Search fruits…");
+    expect(input.classList.contains("mx-0")).toBe(true);
+    expect(input.classList.contains("-mt-1.5")).toBe(true);
+    expect(input.classList.contains("rounded-b-none")).toBe(true);
   });
 
   it("accepts positioner props on content", () => {

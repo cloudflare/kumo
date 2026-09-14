@@ -96,9 +96,67 @@ const SIDEBAR_WIDTH = "16.25rem";
 const SIDEBAR_WIDTH_ICON = "57px";
 const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
+const TRANSITION_FALLBACK_GRACE_MS = 50;
 const MOBILE_BREAKPOINT = 768;
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function useOpenChangeComplete(
+  open: boolean,
+  duration: number,
+  onComplete?: (open: boolean) => void,
+  active = true,
+) {
+  const enabled = active && onComplete !== undefined;
+  const callbackRef = useRef(onComplete);
+  const durationRef = useRef(duration);
+  const previousOpenRef = useRef(open);
+  const previousActiveRef = useRef(active);
+  const pendingOpenRef = useRef<boolean | undefined>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  callbackRef.current = onComplete;
+  durationRef.current = duration;
+
+  const complete = useCallback(() => {
+    const pendingOpen = pendingOpenRef.current;
+    if (pendingOpen === undefined) return;
+
+    pendingOpenRef.current = undefined;
+    clearTimeout(timeoutRef.current);
+    callbackRef.current?.(pendingOpen);
+  }, []);
+
+  useEffect(() => {
+    const openChanged = previousOpenRef.current !== open;
+    const wasActive = previousActiveRef.current;
+    previousOpenRef.current = open;
+    previousActiveRef.current = active;
+    if (!enabled) {
+      pendingOpenRef.current = undefined;
+      clearTimeout(timeoutRef.current);
+      return;
+    }
+    if (!wasActive || !openChanged) return;
+
+    pendingOpenRef.current = open;
+    if (
+      durationRef.current === 0 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      complete();
+      return;
+    }
+    timeoutRef.current = setTimeout(
+      complete,
+      durationRef.current + TRANSITION_FALLBACK_GRACE_MS,
+    );
+    return () => clearTimeout(timeoutRef.current);
+  }, [active, complete, enabled, open]);
+
+  return complete;
+}
 
 // ============================================================================
 // Mobile detection hook
@@ -172,6 +230,14 @@ export interface SidebarContextValue {
    * @param options.behavior — `"auto"` for instant, `"smooth"` for animated (default `"auto"`)
    */
   scrollToItem: (id: string, options?: SidebarScrollToItemOptions) => void;
+  /**
+   * Scroll a tagged nav item only when it is outside its sidebar viewport.
+   * Explicit alignment controls where an offscreen item lands.
+   */
+  scrollItemIntoView: (
+    id: string,
+    options?: SidebarScrollToItemOptions,
+  ) => void;
 }
 
 /**
@@ -227,6 +293,8 @@ export interface SidebarProviderProps {
   open?: boolean;
   /** Callback when open state changes (controlled mode). */
   onOpenChange?: (open: boolean) => void;
+  /** Callback after the sidebar finishes its open or close transition. */
+  onOpenChangeComplete?: (open: boolean) => void;
   /** Sidebar layout variant. @default "sidebar" */
   variant?: SidebarVariant;
   /** Which side the sidebar is on. @default "left" */
@@ -293,6 +361,7 @@ function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  onOpenChangeComplete,
   variant = KUMO_SIDEBAR_DEFAULT_VARIANTS.variant,
   side = KUMO_SIDEBAR_DEFAULT_VARIANTS.side,
   collapsible = KUMO_SIDEBAR_DEFAULT_VARIANTS.collapsible,
@@ -404,8 +473,13 @@ function SidebarProvider({
       // which walks the ancestor chain and scrolls the document too.
       const targetRect = target.getBoundingClientRect();
       const viewportRect = viewport.getBoundingClientRect();
+      const viewportScaleY =
+        viewport.offsetHeight > 0 && viewportRect.height > 0
+          ? viewportRect.height / viewport.offsetHeight
+          : 1;
       const itemScrollOffset =
-        targetRect.top - viewportRect.top + viewport.scrollTop;
+        (targetRect.top - viewportRect.top) / viewportScaleY +
+        viewport.scrollTop;
 
       let desired: number;
       if (align === "center") {
@@ -443,6 +517,27 @@ function SidebarProvider({
     [],
   );
 
+  const scrollItemIntoView = useCallback(
+    (id: string, options: SidebarScrollToItemOptions = {}) => {
+      const target = itemsRef.current.get(id);
+      if (!target) return;
+      const viewport = target.closest<HTMLElement>('[data-sidebar="viewport"]');
+      if (!viewport) return;
+
+      const targetRect = target.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+      if (
+        targetRect.top >= viewportRect.top &&
+        targetRect.bottom <= viewportRect.bottom
+      ) {
+        return;
+      }
+
+      scrollToItem(id, options);
+    },
+    [scrollToItem],
+  );
+
   // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
   // either stable (props, setters) or derived from state that triggers re-render
   const contextValue = useMemo<SidebarContextValue>(
@@ -472,8 +567,39 @@ function SidebarProvider({
       animationDuration,
       registerItem,
       scrollToItem,
+      scrollItemIntoView,
     }),
     [state, open, openMobile, isMobile, width, isResizing, isPeeking],
+  );
+
+  const completeDesktopOpenChange = useOpenChangeComplete(
+    open,
+    animationDuration,
+    onOpenChangeComplete,
+    !isMobile,
+  );
+  const completeMobileOpenChange = useOpenChangeComplete(
+    openMobile,
+    animationDuration,
+    onOpenChangeComplete,
+    isMobile,
+  );
+  const completeOpenChange = isMobile
+    ? completeMobileOpenChange
+    : completeDesktopOpenChange;
+  const transitionProperty = isMobile ? "transform" : "width";
+  const handleOpenTransitionEnd = useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
+      if (
+        target.closest("[data-sidebar-wrapper]") === event.currentTarget &&
+        target.dataset.sidebar === "sidebar" &&
+        event.propertyName === transitionProperty
+      ) {
+        completeOpenChange();
+      }
+    },
+    [completeOpenChange, transitionProperty],
   );
 
   return (
@@ -482,6 +608,7 @@ function SidebarProvider({
         data-sidebar-wrapper=""
         data-state={state}
         data-side={side}
+        onTransitionEnd={handleOpenTransitionEnd}
         style={
           {
             "--sidebar-width": sidebarWidthValue,
@@ -2069,6 +2196,7 @@ interface SidebarCollapseContextValue {
   isCollapsible: boolean;
   autoScrollOnOpen: boolean;
   toggle: () => void;
+  completeOpenChange: () => void;
 }
 
 const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
@@ -2077,6 +2205,7 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   isCollapsible: false,
   autoScrollOnOpen: false,
   toggle: () => {},
+  completeOpenChange: () => {},
 });
 
 export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div"> {
@@ -2086,6 +2215,8 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
   open?: boolean;
   /** Callback when open state changes. */
   onOpenChange?: (open: boolean) => void;
+  /** Callback after the content finishes its open or close transition. */
+  onOpenChangeComplete?: (open: boolean) => void;
   /** Scroll the expanded content into view after opening. @default false */
   autoScrollOnOpen?: boolean;
 }
@@ -2118,6 +2249,7 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       defaultOpen = false,
       open: openProp,
       onOpenChange,
+      onOpenChangeComplete,
       autoScrollOnOpen = false,
       className,
       children,
@@ -2125,6 +2257,7 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     },
     ref,
   ) => {
+    const { animationDuration } = useSidebar();
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
     const isOpen = openProp ?? internalOpen;
     const contentId = useId();
@@ -2138,6 +2271,12 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       keyboardExpandedRef.current = false;
     }, [isOpen, onOpenChange]);
 
+    const completeOpenChange = useOpenChangeComplete(
+      isOpen,
+      animationDuration,
+      onOpenChangeComplete,
+    );
+
     const contextValue = useMemo<SidebarCollapseContextValue>(
       () => ({
         contentId,
@@ -2145,8 +2284,9 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
         isCollapsible: true,
         autoScrollOnOpen,
         toggle,
+        completeOpenChange,
       }),
-      [contentId, isOpen, autoScrollOnOpen, toggle],
+      [contentId, isOpen, autoScrollOnOpen, toggle, completeOpenChange],
     );
 
     const handleFocusIn = useCallback(
@@ -2247,12 +2387,14 @@ SidebarCollapsibleTrigger.displayName = "Sidebar.CollapsibleTrigger";
 const SidebarCollapsibleContent = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<"div">
->(({ className, children, ...props }, ref) => {
-  const { contentId, isOpen: isCollapsibleOpen } = useContext(
-    SidebarCollapseContext,
-  );
+>(({ className, children, onTransitionEnd, ...props }, ref) => {
+  const {
+    contentId,
+    isOpen: isCollapsibleOpen,
+    autoScrollOnOpen,
+    completeOpenChange,
+  } = useContext(SidebarCollapseContext);
   const { state, animationDuration } = useSidebar();
-  const { autoScrollOnOpen } = useContext(SidebarCollapseContext);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   const isOpen = isCollapsibleOpen && state !== "collapsed";
@@ -2301,12 +2443,26 @@ const SidebarCollapsibleContent = forwardRef<
     [ref, inertRef],
   );
 
+  const handleOpenTransitionEnd = useCallback(
+    (event: React.TransitionEvent<HTMLDivElement>) => {
+      onTransitionEnd?.(event);
+      if (
+        event.target === event.currentTarget &&
+        event.propertyName === "grid-template-rows"
+      ) {
+        completeOpenChange();
+      }
+    },
+    [completeOpenChange, onTransitionEnd],
+  );
+
   return (
     <div
       ref={mergedRef}
       id={contentId}
       role="region"
       aria-hidden={!isOpen}
+      onTransitionEnd={handleOpenTransitionEnd}
       className={cn(
         "grid",
         "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",

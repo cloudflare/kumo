@@ -1,5 +1,32 @@
 import { defineConfig } from "vite-plus";
 
+// Fingerprint source/configuration, not pnpm's machine-specific install state
+// or directory listings that change when generated outputs are absent in CI.
+const toolchainInputs = [
+  "package.json",
+  "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
+  ".node-version",
+  ".npmrc",
+  "tsconfig.json",
+  "vite.config.ts",
+  "patches/**",
+];
+const demoInputs = [
+  ...toolchainInputs,
+  "packages/kumo-docs-astro/package.json",
+  "packages/kumo-docs-astro/tsconfig.json",
+  "packages/kumo-docs-astro/scripts/extract-demo-examples.ts",
+  "packages/kumo-docs-astro/src/components/demos/**",
+];
+const registryInputs = [
+  ...demoInputs,
+  "packages/kumo/package.json",
+  "packages/kumo/tsconfig.json",
+  "packages/kumo/src/**",
+  "packages/kumo/scripts/**",
+];
+
 export default defineConfig({
   staged: {
     "*": "vp check --fix",
@@ -10,24 +37,32 @@ export default defineConfig({
     tasks: {
       "gen:demos": {
         command: "pnpm --filter @cloudflare/kumo-docs-astro codegen:demos",
+        input: demoInputs,
+        output: ["packages/kumo-docs-astro/dist/demo-metadata.json"],
       },
       "gen:registry": {
         command: "tsx packages/kumo/scripts/component-registry/index.ts",
         dependsOn: ["gen:demos"],
-        // The registry's own incremental cache is memoization, not an input.
-        input: [{ auto: true }, "!packages/kumo/.cache/**"],
+        input: registryInputs,
+        // Restore the memo too: the package build invokes codegen a second time.
+        output: [
+          "packages/kumo/ai/**",
+          "packages/kumo/.cache/component-registry-cache.json",
+        ],
       },
       "build:kumo": {
         command: "pnpm --filter @cloudflare/kumo build",
         // Pre-warms the registry memo so the in-build codegen pass is incremental.
         dependsOn: ["gen:registry"],
-        // The build regenerates these itself; outputs, not inputs.
         input: [
-          { auto: true },
+          ...demoInputs,
+          ".gitignore",
+          "packages/kumo/**",
+          "!packages/kumo/node_modules/**",
           "!packages/kumo/ai/**",
           "!packages/kumo/dist/**",
           "!packages/kumo/.cache/**",
-          "!packages/kumo-docs-astro/dist/**",
+          "!packages/kumo/**/*.tsbuildinfo",
         ],
       },
       "gen:figma-data": {
