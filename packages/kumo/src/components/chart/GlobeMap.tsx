@@ -32,7 +32,7 @@ export interface GlobeMapProps {
   /** Stroke color for the hatched land. Defaults to the neutral Kumo map area color. */
   landColor?: string;
   /** Spacing between land hatch lines in view-box pixels. Default: `10`. */
-  landDotSpacing?: number;
+  landHatchSpacing?: number;
   /** Fill behind the land and graticule. Default: the Kumo base surface. */
   oceanColor?: string;
   /** Geographic points drawn above the land. Back-facing points are clipped. */
@@ -44,7 +44,7 @@ export interface GlobeMapProps {
   /** Called when a visible marker is clicked. */
   onMarkerClick?: (marker: GlobeMapMarker) => void;
   /** Initial globe rotation as `[longitude, latitude, roll]`. */
-  rotation?: [number, number, number];
+  defaultRotation?: [number, number, number];
   /** Allow pointer dragging to rotate the globe. Default: `true`. */
   draggable?: boolean;
   /** Continuously rotate the globe horizontally. Default: `false`. */
@@ -55,8 +55,8 @@ export interface GlobeMapProps {
   showGraticule?: boolean;
   /** Show the Kumo-styled marker tooltip. Default: `true`. */
   showTooltip?: boolean;
-  /** Called after pointer dragging changes the globe rotation. */
-  onRotationChange?: (rotation: [number, number, number]) => void;
+  /** Called after pointer or keyboard interaction changes the globe rotation. */
+  onUserRotationChange?: (rotation: [number, number, number]) => void;
   /** Accessible label for the visualization. Default: `"Interactive globe map"`. */
   "aria-label"?: string;
   /** Fixed component height. Otherwise the globe uses a square aspect ratio. */
@@ -75,6 +75,21 @@ interface GlobeTooltip {
 const GLOBE_VIEWBOX_SIZE = 640;
 const GLOBE_PADDING = 18;
 const GLOBE_RADIUS = GLOBE_VIEWBOX_SIZE / 2 - GLOBE_PADDING;
+const AUTO_ROTATE_INTERVAL = 1000 / 30;
+
+function finiteNumber(value: number, fallback: number): number {
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function normalizeRotation(
+  rotation: [number, number, number],
+): [number, number, number] {
+  return [
+    finiteNumber(rotation[0], -10),
+    Math.max(-90, Math.min(90, finiteNumber(rotation[1], -20))),
+    finiteNumber(rotation[2], 0),
+  ];
+}
 
 function createLandHatchPath(
   projection: ReturnType<typeof geoOrthographic>,
@@ -119,19 +134,19 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
   function GlobeMap(
     {
       landColor,
-      landDotSpacing = 10,
+      landHatchSpacing = 10,
       oceanColor = "var(--color-kumo-base)",
       markers = [],
       markerColor,
       markerRadius = 7,
       onMarkerClick,
-      rotation: initialRotation = [-10, -20, 0],
+      defaultRotation = [-10, -20, 0],
       draggable = true,
       autoRotate = false,
       autoRotateSpeed = 4,
       showGraticule = false,
       showTooltip = true,
-      onRotationChange,
+      onUserRotationChange,
       "aria-label": ariaLabel = "Interactive globe map",
       height,
       className,
@@ -139,7 +154,9 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
     },
     ref,
   ) {
-    const [rotation, setRotation] = useState(initialRotation);
+    const [rotation, setRotation] = useState(() =>
+      normalizeRotation(defaultRotation),
+    );
     const [tooltip, setTooltip] = useState<GlobeTooltip | null>(null);
     const sphereClipId = useId();
     const rotationRef = useRef(rotation);
@@ -150,7 +167,14 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
       y: number;
       rotation: [number, number, number];
     } | null>(null);
-    const didDragRef = useRef(false);
+    const isFocusedRef = useRef(false);
+    const pointerMoveFrameRef = useRef<number | null>(null);
+    const pendingPointerMoveRef = useRef<{
+      pointerId: number;
+      x: number;
+      y: number;
+    } | null>(null);
+    const instructionsId = useId();
 
     const palette = useMemo(
       () => ChartPalette.mapColors(isDarkMode),
@@ -158,25 +182,47 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
     );
     const resolvedLandColor = landColor ?? palette.area;
     const resolvedMarkerColor = markerColor ?? palette.bubble;
-    const projection = geoOrthographic()
-      .translate([GLOBE_VIEWBOX_SIZE / 2, GLOBE_VIEWBOX_SIZE / 2])
-      .scale(GLOBE_RADIUS)
-      .clipAngle(90)
-      .rotate(rotation);
-    const path = geoPath(projection);
-    const landHatchPath = createLandHatchPath(projection, landDotSpacing);
-    const center = projection.invert?.([
-      GLOBE_VIEWBOX_SIZE / 2,
-      GLOBE_VIEWBOX_SIZE / 2,
-    ]);
+    const safeHatchSpacing = Math.max(3, finiteNumber(landHatchSpacing, 10));
+    const safeMarkerRadius = Math.max(0, finiteNumber(markerRadius, 7));
+    const safeAutoRotateSpeed = Math.max(
+      -60,
+      Math.min(60, finiteNumber(autoRotateSpeed, 4)),
+    );
+    const projection = useMemo(
+      () =>
+        geoOrthographic()
+          .translate([GLOBE_VIEWBOX_SIZE / 2, GLOBE_VIEWBOX_SIZE / 2])
+          .scale(GLOBE_RADIUS)
+          .clipAngle(90)
+          .rotate(rotation),
+      [rotation],
+    );
+    const path = useMemo(() => geoPath(projection), [projection]);
+    const spherePath = useMemo(
+      () => path({ type: "Sphere" }) ?? undefined,
+      [path],
+    );
+    const graticulePath = useMemo(
+      () => path(geoGraticule10()) ?? undefined,
+      [path],
+    );
+    const landHatchPath = useMemo(
+      () => createLandHatchPath(projection, safeHatchSpacing),
+      [projection, safeHatchSpacing],
+    );
+    const center = useMemo(
+      () =>
+        projection.invert?.([GLOBE_VIEWBOX_SIZE / 2, GLOBE_VIEWBOX_SIZE / 2]),
+      [projection],
+    );
 
     const updateRotation = useCallback(
       (nextRotation: [number, number, number], notify = false) => {
         rotationRef.current = nextRotation;
         setRotation(nextRotation);
-        if (notify) onRotationChange?.(nextRotation);
+        if (notify) onUserRotationChange?.(nextRotation);
       },
-      [onRotationChange],
+      [onUserRotationChange],
     );
 
     useEffect(() => {
@@ -191,16 +237,22 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
       let frame: number | null = null;
       let previousTime: number | null = null;
       const rotate = (time: number) => {
-        if (previousTime !== null && !dragRef.current) {
+        if (dragRef.current || isFocusedRef.current) {
+          previousTime = time;
+        } else if (
+          previousTime !== null &&
+          time - previousTime >= AUTO_ROTATE_INTERVAL
+        ) {
           const deltaSeconds = Math.min((time - previousTime) / 1000, 0.1);
           const current = rotationRef.current;
           updateRotation([
-            current[0] + autoRotateSpeed * deltaSeconds,
+            current[0] + safeAutoRotateSpeed * deltaSeconds,
             current[1],
             current[2],
           ]);
+          previousTime = time;
         }
-        previousTime = time;
+        if (previousTime === null) previousTime = time;
         frame = requestAnimationFrame(rotate);
       };
       const start = () => {
@@ -225,7 +277,7 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
         observer?.disconnect();
         stop();
       };
-    }, [autoRotate, autoRotateSpeed, updateRotation]);
+    }, [autoRotate, safeAutoRotateSpeed, updateRotation]);
 
     const moveTooltip = useCallback(
       (event: ReactPointerEvent<SVGCircleElement>, marker: GlobeMapMarker) => {
@@ -247,15 +299,14 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
 
     const handlePointerDown = (event: ReactPointerEvent<SVGSVGElement>) => {
       if (!draggable) return;
+      if (event.isPrimary === false || event.button !== 0) return;
       if (
         event.target instanceof Element &&
-        event.target.closest('circle[role="button"]')
+        event.target.closest('[data-globe-marker-interactive="true"]')
       ) {
-        didDragRef.current = false;
         return;
       }
       event.currentTarget.setPointerCapture(event.pointerId);
-      didDragRef.current = false;
       dragRef.current = {
         pointerId: event.pointerId,
         x: event.clientX,
@@ -264,36 +315,88 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
       };
       setTooltip(null);
     };
+    const applyPointerMove = useCallback(
+      (pointerId: number, x: number, y: number) => {
+        const drag = dragRef.current;
+        if (!drag || drag.pointerId !== pointerId) return;
+        const deltaX = x - drag.x;
+        const deltaY = y - drag.y;
+        updateRotation(
+          [
+            drag.rotation[0] + deltaX * 0.3,
+            Math.max(-90, Math.min(90, drag.rotation[1] - deltaY * 0.3)),
+            drag.rotation[2],
+          ],
+          true,
+        );
+      },
+      [updateRotation],
+    );
     const handlePointerMove = (event: ReactPointerEvent<SVGSVGElement>) => {
       const drag = dragRef.current;
       if (!drag || drag.pointerId !== event.pointerId) return;
-      const deltaX = event.clientX - drag.x;
-      const deltaY = event.clientY - drag.y;
-      if (Math.hypot(deltaX, deltaY) > 3) didDragRef.current = true;
-      updateRotation(
-        [
-          drag.rotation[0] + deltaX * 0.3,
-          Math.max(-90, Math.min(90, drag.rotation[1] - deltaY * 0.3)),
-          drag.rotation[2],
-        ],
-        true,
-      );
+      pendingPointerMoveRef.current = {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+      };
+      if (pointerMoveFrameRef.current !== null) return;
+      pointerMoveFrameRef.current = requestAnimationFrame(() => {
+        pointerMoveFrameRef.current = null;
+        const pending = pendingPointerMoveRef.current;
+        pendingPointerMoveRef.current = null;
+        if (pending) applyPointerMove(pending.pointerId, pending.x, pending.y);
+      });
     };
-    const handlePointerUp = (event: ReactPointerEvent<SVGSVGElement>) => {
+    const finishPointerDrag = (event: ReactPointerEvent<SVGSVGElement>) => {
       if (dragRef.current?.pointerId !== event.pointerId) return;
+      if (pointerMoveFrameRef.current !== null) {
+        cancelAnimationFrame(pointerMoveFrameRef.current);
+        pointerMoveFrameRef.current = null;
+      }
+      const pending = pendingPointerMoveRef.current;
+      pendingPointerMoveRef.current = null;
+      if (pending) applyPointerMove(pending.pointerId, pending.x, pending.y);
       dragRef.current = null;
-      event.currentTarget.releasePointerCapture(event.pointerId);
+      if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
     };
+
+    useEffect(
+      () => () => {
+        if (pointerMoveFrameRef.current !== null) {
+          cancelAnimationFrame(pointerMoveFrameRef.current);
+        }
+      },
+      [],
+    );
 
     return (
       <div
         ref={ref}
         className={cn("relative w-full overflow-hidden", className)}
         style={height === undefined ? { aspectRatio: "1" } : { height }}
+        onFocusCapture={() => {
+          isFocusedRef.current = true;
+        }}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            isFocusedRef.current = false;
+          }
+        }}
       >
+        {draggable ? (
+          <span id={instructionsId} className="sr-only">
+            Use the arrow keys to rotate the globe.
+          </span>
+        ) : null}
         <svg
           ref={svgRef}
+          role="group"
           aria-label={ariaLabel}
+          aria-describedby={draggable ? instructionsId : undefined}
+          tabIndex={draggable ? 0 : undefined}
           viewBox={`0 0 ${GLOBE_VIEWBOX_SIZE} ${GLOBE_VIEWBOX_SIZE}`}
           className={cn(
             "block size-full touch-none select-none",
@@ -301,26 +404,58 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
           )}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
+          onPointerUp={finishPointerDrag}
+          onPointerCancel={finishPointerDrag}
+          onLostPointerCapture={(event) => {
+            if (dragRef.current?.pointerId === event.pointerId) {
+              dragRef.current = null;
+            }
+          }}
+          onKeyDown={(event) => {
+            if (!draggable || event.target !== event.currentTarget) return;
+            if (
+              event.key !== "ArrowLeft" &&
+              event.key !== "ArrowRight" &&
+              event.key !== "ArrowUp" &&
+              event.key !== "ArrowDown"
+            ) {
+              return;
+            }
+            event.preventDefault();
+            const [longitude, latitude, roll] = rotationRef.current;
+            const nextRotation: [number, number, number] =
+              event.key === "ArrowLeft"
+                ? [longitude - 10, latitude, roll]
+                : event.key === "ArrowRight"
+                  ? [longitude + 10, latitude, roll]
+                  : event.key === "ArrowUp"
+                    ? [longitude, Math.min(90, latitude + 10), roll]
+                    : event.key === "ArrowDown"
+                      ? [longitude, Math.max(-90, latitude - 10), roll]
+                      : [longitude, latitude, roll];
+            if (nextRotation[0] === longitude && nextRotation[1] === latitude) {
+              return;
+            }
+            updateRotation(nextRotation, true);
+          }}
           onPointerLeave={() => {
             if (!dragRef.current) setTooltip(null);
           }}
         >
           <defs>
             <clipPath id={sphereClipId}>
-              <path d={path({ type: "Sphere" }) ?? undefined} />
+              <path d={spherePath} />
             </clipPath>
           </defs>
           <path
-            d={path({ type: "Sphere" }) ?? undefined}
+            d={spherePath}
             fill={oceanColor}
             className="stroke-kumo-line"
             strokeWidth={1.5}
           />
           {showGraticule ? (
             <path
-              d={path(geoGraticule10()) ?? undefined}
+              d={graticulePath}
               fill="none"
               className="stroke-kumo-line"
               strokeWidth={0.75}
@@ -347,25 +482,33 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
               marker.description ??
               `${marker.latitude.toFixed(2)}, ${marker.longitude.toFixed(2)}`;
             const activateMarker = () => {
-              if (didDragRef.current) {
-                didDragRef.current = false;
-                return;
-              }
               onMarkerClick?.(marker);
             };
             if (!position || !isVisible) return null;
+            const isInteractive = onMarkerClick !== undefined;
             return (
               <circle
                 key={`${marker.name}-${index}`}
                 cx={position[0]}
                 cy={position[1]}
-                r={marker.radius ?? markerRadius}
+                r={Math.max(
+                  0,
+                  finiteNumber(
+                    marker.radius ?? safeMarkerRadius,
+                    safeMarkerRadius,
+                  ),
+                )}
                 fill={marker.color ?? resolvedMarkerColor}
                 className="stroke-kumo-base transition-opacity outline-none hover:opacity-80 focus-visible:opacity-80"
                 strokeWidth={2}
-                role="button"
-                aria-label={`${marker.name}: ${detail}`}
-                tabIndex={0}
+                data-globe-marker=""
+                data-globe-marker-interactive={isInteractive}
+                role={isInteractive ? "button" : undefined}
+                aria-label={
+                  isInteractive ? `${marker.name}: ${detail}` : undefined
+                }
+                aria-hidden={isInteractive ? undefined : true}
+                tabIndex={isInteractive ? 0 : undefined}
                 onPointerEnter={(event) => moveTooltip(event, marker)}
                 onPointerMove={(event) => {
                   if (!dragRef.current) moveTooltip(event, marker);
@@ -373,33 +516,53 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
                 onPointerLeave={() => setTooltip(null)}
                 onFocus={(event) => {
                   if (!showTooltip) return;
-                  const bounds =
+                  const svgBounds =
                     event.currentTarget.ownerSVGElement?.getBoundingClientRect();
-                  if (!bounds) return;
+                  if (!svgBounds) return;
+                  const markerBounds =
+                    event.currentTarget.getBoundingClientRect();
                   setTooltip({
                     name: marker.name,
                     detail,
-                    x: (position[0] / GLOBE_VIEWBOX_SIZE) * bounds.width,
-                    y: (position[1] / GLOBE_VIEWBOX_SIZE) * bounds.height,
+                    x:
+                      markerBounds.left +
+                      markerBounds.width / 2 -
+                      svgBounds.left,
+                    y: markerBounds.top - svgBounds.top,
                   });
                 }}
                 onBlur={() => setTooltip(null)}
-                onClick={activateMarker}
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter" && event.key !== " ") return;
-                  event.preventDefault();
-                  activateMarker();
-                }}
+                onClick={isInteractive ? activateMarker : undefined}
+                onKeyDown={
+                  isInteractive
+                    ? (event) => {
+                        if (event.key !== "Enter" && event.key !== " ") return;
+                        event.preventDefault();
+                        activateMarker();
+                      }
+                    : undefined
+                }
               />
             );
           })}
           <path
-            d={path({ type: "Sphere" }) ?? undefined}
+            d={spherePath}
             fill="none"
             className="pointer-events-none stroke-kumo-line"
             strokeWidth={2}
           />
         </svg>
+        {onMarkerClick === undefined && markers.length > 0 ? (
+          <ul className="sr-only" aria-label={`${ariaLabel} locations`}>
+            {markers.map((marker, index) => (
+              <li key={`${marker.name}-${index}`}>
+                {marker.name}:{" "}
+                {marker.description ??
+                  `${marker.latitude.toFixed(2)}, ${marker.longitude.toFixed(2)}`}
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {tooltip ? (
           <div
             role="tooltip"

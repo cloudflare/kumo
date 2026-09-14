@@ -180,12 +180,12 @@ export default function Example() {
       <div>
         <Heading level={3}>Cloudflare Availability Locations</Heading>
         <p class="mb-4 text-kumo-subtle">
-          Plot geographic markers without WebGL. Hatched neutral land, a transparent ocean, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe to reveal points on the hidden hemisphere.
+          Plot geographic markers without WebGL. Hatched neutral land, a transparent ocean, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe or focus it and use the arrow keys to reveal points on the hidden hemisphere.
         </p>
         <ComponentExample code={`<GlobeMap
   markers={cloudflareAvailabilityLocations}
   landColor="var(--text-color-kumo-inactive)"
-  landDotSpacing={8}
+  landHatchSpacing={8}
   oceanColor="transparent"
   showGraticule
   markerColor="var(--color-kumo-brand)"

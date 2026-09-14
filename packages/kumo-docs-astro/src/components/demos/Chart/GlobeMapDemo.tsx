@@ -61,7 +61,7 @@ export function GlobeMapAvailabilityZonesDemo() {
       <GlobeMap
         markers={cloudflareAvailabilityLocations}
         landColor="var(--text-color-kumo-inactive)"
-        landDotSpacing={8}
+        landHatchSpacing={8}
         oceanColor="transparent"
         showGraticule
         markerColor="var(--color-kumo-brand)"

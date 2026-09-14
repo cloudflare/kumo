@@ -56,7 +56,8 @@ describe("GlobeMap", () => {
 
     const globe = getByLabelText("Traffic globe");
     expect(globe.tagName).toBe("svg");
-    expect(globe.getAttribute("role")).toBeNull();
+    expect(getByRole("group", { name: "Traffic globe" })).toBe(globe);
+    expect(globe.getAttribute("aria-describedby")).toBeTruthy();
     expect(globe.querySelectorAll("path").length).toBeGreaterThan(3);
     const landPath = globe
       .querySelector('[data-land-style="hatched"]')
@@ -85,22 +86,61 @@ describe("GlobeMap", () => {
   });
 
   it("updates rotation while dragging", async () => {
-    const onRotationChange = vi.fn();
+    const onUserRotationChange = vi.fn();
     const { getByLabelText } = render(
       <GlobeMap
         aria-label="Draggable globe"
-        onRotationChange={onRotationChange}
+        onUserRotationChange={onUserRotationChange}
       />,
     );
     const globe = getByLabelText("Draggable globe");
     const land = globe.querySelector('[data-land-style="hatched"]');
     const initialPath = land?.getAttribute("d");
 
-    fireEvent.pointerDown(globe, { pointerId: 1, clientX: 100, clientY: 100 });
+    fireEvent.pointerDown(globe, {
+      pointerId: 1,
+      clientX: 100,
+      clientY: 100,
+      button: 0,
+      isPrimary: true,
+    });
     fireEvent.pointerMove(globe, { pointerId: 1, clientX: 140, clientY: 100 });
 
     await waitFor(() => expect(land?.getAttribute("d")).not.toBe(initialPath));
-    expect(onRotationChange).toHaveBeenCalledWith([2, -20, 0]);
+    expect(onUserRotationChange).toHaveBeenCalledWith([2, -20, 0]);
+  });
+
+  it("supports keyboard rotation", async () => {
+    const onUserRotationChange = vi.fn();
+    const { getByRole } = render(
+      <GlobeMap
+        aria-label="Keyboard globe"
+        onUserRotationChange={onUserRotationChange}
+      />,
+    );
+    const globe = getByRole("group", { name: "Keyboard globe" });
+
+    await userEvent.type(globe, "{ArrowRight}{ArrowUp}");
+
+    expect(onUserRotationChange).toHaveBeenNthCalledWith(1, [0, -20, 0]);
+    expect(onUserRotationChange).toHaveBeenNthCalledWith(2, [0, -10, 0]);
+  });
+
+  it("does not expose informational markers as buttons", () => {
+    const { container, getByRole, queryByRole } = render(
+      <GlobeMap
+        markers={[{ name: "London", latitude: 51.5, longitude: -0.12 }]}
+      />,
+    );
+
+    expect(queryByRole("button", { name: /London:/ })).toBeNull();
+    const marker = container.querySelector("[data-globe-marker]");
+    expect(marker?.getAttribute("aria-hidden")).toBe("true");
+    expect(marker?.getAttribute("tabindex")).toBeNull();
+    expect(
+      getByRole("list", { name: "Interactive globe map locations" })
+        .textContent,
+    ).toContain("London: 51.50, -0.12");
   });
 
   it("calls onMarkerClick when a marker is clicked", async () => {
