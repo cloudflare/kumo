@@ -49,9 +49,9 @@ kumo/
 
 ### Portal stacking (CRITICAL)
 
-- Kumo floating components portal to `document.body` without a `z-index`.
-  Consumers should create an app-root stacking context with `isolation: isolate`
-  (Tailwind: `className="isolate"`).
+- Kumo floating components portal to `document.body`. Consumers should create an
+  app-root stacking context with `isolation: isolate` (Tailwind:
+  `className="isolate"`).
 - Do **not** fix a popup that appears below consumer content by adding `z-index`
   to Kumo popup components, targeting Base UI internal data attributes, or
   applying `isolation` to `<body>`.
