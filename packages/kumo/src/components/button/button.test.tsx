@@ -116,8 +116,12 @@ describe("Button", () => {
   it("title prop wraps in Tooltip and removes native title attribute", () => {
     render(<Button title="Save changes">Save</Button>);
     const button = screen.getByRole("button", { name: "Save" });
+    const trigger = button.parentElement;
     // title is intercepted by Tooltip wrapper, not set as native attribute
     expect(button.getAttribute("title")).toBeNull();
+    expect(button.hasAttribute("data-base-ui-tooltip-trigger")).toBe(false);
+    expect(trigger?.tagName).toBe("SPAN");
+    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
   });
 
   it("uses title as the accessible name when there are no children", () => {
@@ -177,6 +181,37 @@ describe("Button", () => {
     expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
     expect(trigger?.hasAttribute("disabled")).toBe(false);
   });
+
+  it.each(["disabled", "loading"] as const)(
+    "keeps the tooltip trigger mounted when %s changes",
+    (state) => {
+      const { container, rerender } = render(
+        <Button title="Save changes">Save</Button>,
+      );
+      const trigger = container.querySelector("[data-base-ui-tooltip-trigger]");
+      const button = screen.getByRole("button");
+      const activeState =
+        state === "disabled" ? { disabled: true } : { loading: true };
+
+      expect(trigger).toBeTruthy();
+
+      rerender(
+        <Button title="Save changes" {...activeState}>
+          Save
+        </Button>,
+      );
+      expect(container.querySelector("[data-base-ui-tooltip-trigger]")).toBe(
+        trigger,
+      );
+      expect(screen.getByRole("button")).toBe(button);
+
+      rerender(<Button title="Save changes">Save</Button>);
+      expect(container.querySelector("[data-base-ui-tooltip-trigger]")).toBe(
+        trigger,
+      );
+      expect(screen.getByRole("button")).toBe(button);
+    },
+  );
 
   it("keeps emphasized variant rings color-matched when pressed or focused", () => {
     for (const variant of ["primary", "destructive"] as const) {
@@ -249,9 +284,12 @@ describe("LinkButton", () => {
       </LinkButton>,
     );
     const link = screen.getByRole("link", { name: "Home" });
+    const trigger = link.parentElement;
     // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
     expect(link.getAttribute("title")).toBeNull();
-    expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(false);
+    expect(trigger?.tagName).toBe("SPAN");
+    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
   });
 
   describe("disabled", () => {
@@ -321,6 +359,58 @@ describe("LinkButton", () => {
       expect(button.getAttribute("title")).toBeNull();
       expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
       expect(trigger?.hasAttribute("disabled")).toBe(false);
+    });
+
+    it("uses title as the accessible name when disabled without children", () => {
+      render(
+        <LinkButton
+          href="/home"
+          disabled
+          icon={Plus}
+          title="Go home"
+          aria-label=""
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Go home" })).toBeTruthy();
+    });
+
+    it("keeps the tooltip trigger mounted when disabled changes", () => {
+      const { container, rerender } = render(
+        <LinkButton href="/home" title="Go home">
+          Home
+        </LinkButton>,
+      );
+      const trigger = container.querySelector("[data-base-ui-tooltip-trigger]");
+
+      expect(trigger).toBeTruthy();
+      expect(
+        container.querySelectorAll("[data-base-ui-tooltip-trigger]"),
+      ).toHaveLength(1);
+
+      rerender(
+        <LinkButton href="/home" title="Go home" disabled>
+          Home
+        </LinkButton>,
+      );
+      expect(container.querySelector("[data-base-ui-tooltip-trigger]")).toBe(
+        trigger,
+      );
+      expect(
+        container.querySelectorAll("[data-base-ui-tooltip-trigger]"),
+      ).toHaveLength(1);
+
+      rerender(
+        <LinkButton href="/home" title="Go home">
+          Home
+        </LinkButton>,
+      );
+      expect(container.querySelector("[data-base-ui-tooltip-trigger]")).toBe(
+        trigger,
+      );
+      expect(
+        container.querySelectorAll("[data-base-ui-tooltip-trigger]"),
+      ).toHaveLength(1);
     });
   });
 });
