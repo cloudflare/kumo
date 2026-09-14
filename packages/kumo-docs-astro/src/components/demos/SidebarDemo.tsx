@@ -623,7 +623,77 @@ export function SidebarAutoScrollDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 7. Sliding Views — animated horizontal transitions between surfaces
+// 7. Transition completion — run work after sidebar and collapsible animations
+// ---------------------------------------------------------------------------
+
+/** Run layout-dependent work after a sidebar or collapsible finishes transitioning. */
+export function SidebarTransitionCompleteDemo() {
+  const [completion, setCompletion] = useState(
+    "No transition has completed yet.",
+  );
+
+  return (
+    <DemoContainer>
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        className="h-full min-h-0!"
+        onOpenChangeComplete={(open) => {
+          setCompletion(`Sidebar ${open ? "opened" : "collapsed"}.`);
+        }}
+      >
+        <Sidebar>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Overview</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                <Sidebar.MenuButton icon={HouseIcon} active>
+                  Home
+                </Sidebar.MenuButton>
+                <Sidebar.MenuItem>
+                  <Sidebar.Collapsible
+                    onOpenChangeComplete={(open) => {
+                      setCompletion(
+                        `Compute section ${open ? "opened" : "collapsed"}.`,
+                      );
+                    }}
+                  >
+                    <Sidebar.CollapsibleTrigger
+                      render={
+                        <Sidebar.MenuButton icon={CodeIcon}>
+                          Compute
+                          <Sidebar.MenuChevron />
+                        </Sidebar.MenuButton>
+                      }
+                    />
+                    <Sidebar.CollapsibleContent>
+                      <Sidebar.MenuSub>
+                        <Sidebar.MenuSubButton>Workers</Sidebar.MenuSubButton>
+                        <Sidebar.MenuSubButton>Pages</Sidebar.MenuSubButton>
+                      </Sidebar.MenuSub>
+                    </Sidebar.CollapsibleContent>
+                  </Sidebar.Collapsible>
+                </Sidebar.MenuItem>
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <Sidebar.Footer>
+            <Sidebar.Trigger />
+          </Sidebar.Footer>
+        </Sidebar>
+        <DemoMain>
+          <p aria-live="polite">{completion}</p>
+          <p>
+            Toggle the sidebar or open Compute to see the completion callback.
+          </p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 8. Sliding Views — animated horizontal transitions between surfaces
 // ---------------------------------------------------------------------------
 
 /** Sidebar with animated sliding views between Account and Zone navigation. */
@@ -712,7 +782,7 @@ export function SidebarSlidingViewsDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// 8. Full — kitchen sink showcasing every subcomponent
+// 9. Full — kitchen sink showcasing every subcomponent
 // ---------------------------------------------------------------------------
 
 /** Kitchen sink sidebar showcasing every subcomponent: header with account switcher, groups with labels, collapsible sections with nested expandable, badges, sliding views via Domains, and a footer trigger. */

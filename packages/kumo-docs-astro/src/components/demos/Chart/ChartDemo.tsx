@@ -111,6 +111,40 @@ export function BasicLineChartDemo() {
   );
 }
 
+/**
+ * Discrete request-count chart with whole-number y-axis ticks.
+ */
+export function IntegerYAxisChartDemo() {
+  const isDarkMode = useIsDarkMode();
+
+  const data = useMemo(() => {
+    const end = Date.now();
+    const values = [0, 1, 3, 2, 5, 4, 7, 3, 6, 2, 4, 1];
+
+    return [
+      {
+        name: "Requests",
+        data: values.map((value, index): [number, number] => [
+          end - (values.length - index - 1) * 60_000,
+          value,
+        ]),
+        color: ChartPalette.semantic("Neutral", isDarkMode),
+      },
+    ];
+  }, [isDarkMode]);
+
+  return (
+    <TimeseriesChart
+      echarts={echarts}
+      isDarkMode={isDarkMode}
+      data={data}
+      xAxisName="Time (UTC)"
+      yAxisName="Requests"
+      yAxisMinInterval={1}
+    />
+  );
+}
+
 export function ReferenceMarkersChartDemo() {
   const isDarkMode = useIsDarkMode();
 

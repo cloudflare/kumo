@@ -4,6 +4,7 @@ import {
   Badge,
   Banner,
   Button,
+  ButtonGroup,
   Checkbox,
   ClipboardText,
   Collapsible,
@@ -43,6 +44,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 import { CommandPaletteBasicDemo } from "~/components/demos/CommandPaletteDemo";
 import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
+  CaretDownIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   TranslateIcon,
@@ -56,6 +58,7 @@ const componentRoutes: Record<string, string> = {
   banner: "/components/banner",
   breadcrumbs: "/components/breadcrumbs",
   button: "/components/button",
+  "button-group": "/components/button-group",
   checkbox: "/components/checkbox",
   "clipboard-text": "/components/clipboard-text",
   "code-highlighted": "/components/code-highlighted",
@@ -136,6 +139,18 @@ export function HomeGrid() {
           </Button>
           <Button loading>Create Worker</Button>
         </div>
+      ),
+    },
+    {
+      name: "Button Group",
+      id: "button-group",
+      Component: (
+        <ButtonGroup>
+          <Button variant="primary">Deploy</Button>
+          <Button variant="primary" shape="square" aria-label="More options">
+            <CaretDownIcon />
+          </Button>
+        </ButtonGroup>
       ),
     },
     {

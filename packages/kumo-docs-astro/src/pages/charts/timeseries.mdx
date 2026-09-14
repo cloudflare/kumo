@@ -9,6 +9,7 @@ import ComponentSection from "~/components/docs/ComponentSection.astro";
 import ComponentExample from "~/components/docs/ComponentExample.astro";
 import {
   BasicLineChartDemo,
+  IntegerYAxisChartDemo,
   BarChartDemo,
   ReferenceMarkersChartDemo,
   ThresholdsChartDemo,
@@ -38,6 +39,21 @@ import {
 
   <ComponentExample demo="BasicLineChartDemo">
     <BasicLineChartDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Discrete Count Data
+
+<p>
+  Set <code>yAxisMinInterval={1}</code> for discrete values such as request
+  counts. This prevents fractional y-axis tick marks while leaving the default
+  axis behavior unchanged for rates and other continuous values.
+</p>
+
+  <ComponentExample demo="IntegerYAxisChartDemo">
+    <IntegerYAxisChartDemo client:visible />
   </ComponentExample>
 </ComponentSection>
 

@@ -87,6 +87,11 @@ export interface TimeseriesChartProps {
   /** Number of ticks to display on the y-axis */
   yAxisTickCount?: number;
   /**
+   * Minimum interval between y-axis ticks. Set to `1` for discrete count data
+   * so ECharts does not render fractional tick marks.
+   */
+  yAxisMinInterval?: number;
+  /**
    * Custom formatter for tooltip values.
    * Receives the raw y-value and returns a display string.
    * When omitted, the raw value is shown. Takes precedence over the
@@ -240,6 +245,7 @@ export const TimeseriesChart = forwardRef<
     yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
+    yAxisMinInterval,
     tooltipValueFormat,
     tooltipFooter,
     onTimeRangeChange,
@@ -532,6 +538,9 @@ export const TimeseriesChart = forwardRef<
           },
         },
         splitNumber: yAxisTickCount,
+        ...(yAxisMinInterval !== undefined && {
+          minInterval: yAxisMinInterval,
+        }),
         ...(thresholdExtent && {
           min: (value: { min: number }) =>
             Math.min(value.min, thresholdExtent.min),
@@ -555,6 +564,7 @@ export const TimeseriesChart = forwardRef<
     yAxisTickFormat,
     yAxisName,
     yAxisTickCount,
+    yAxisMinInterval,
     incompleteBefore,
     incompleteAfter,
     type,

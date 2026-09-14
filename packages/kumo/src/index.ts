@@ -255,6 +255,7 @@ export {
   ChartLegend,
   BubbleMap,
   ChoroplethMap,
+  GlobeMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
@@ -266,6 +267,8 @@ export {
   type MapStyle,
   type BubbleMapProps,
   type ChoroplethMapProps,
+  type GlobeMapProps,
+  type GlobeMapMarker,
 } from "./components/chart";
 export {
   Autocomplete,
@@ -337,10 +340,31 @@ export {
   type UseTableOfContentsActiveIdResult,
 } from "./components/table-of-contents";
 export {
+  ButtonGroup,
+  KUMO_BUTTON_GROUP_VARIANTS,
+  KUMO_BUTTON_GROUP_DEFAULT_VARIANTS,
+  KUMO_BUTTON_GROUP_STYLING,
+  type ButtonGroupProps,
+} from "./components/button-group";
+export {
   TagInput,
   type TagInputLabels,
   type TagInputProps,
 } from "./components/tag-input";
+export {
+  LayerDialog,
+  type LayerDialogProps,
+  type LayerDialogActionsProps,
+  type LayerDialogBodyProps,
+  type LayerDialogContentProps,
+  type LayerDialogDescriptionProps,
+  type LayerDialogPrimaryProps,
+  type LayerDialogRootProps,
+  type LayerDialogTitleProps,
+  type KumoLayerDialogPrimaryVariant,
+  type KumoLayerDialogSize,
+  type KumoLayerDialogVerticalAlign,
+} from "./components/layer-dialog";
 // PLOP_INJECT_EXPORT
 
 // Utils
@@ -354,6 +378,12 @@ export {
   KumoPortalProvider,
   type PortalContainer,
 } from "./utils/portal-provider";
+export {
+  KumoLocaleProvider,
+  type KumoLocaleProviderProps,
+  type KumoTranslations,
+  type KumoTranslationsPartial,
+} from "./utils/locale-provider";
 
 // Registry types (for consuming packages to type registry JSON)
 export type {
