@@ -4,6 +4,7 @@ import {
   Badge,
   Banner,
   Button,
+  ButtonGroup,
   Checkbox,
   ClipboardText,
   Collapsible,
@@ -30,6 +31,7 @@ import {
   Switch,
   Table,
   TableOfContents,
+  TagInput,
   Tabs,
   Text,
   Toolbar,
@@ -42,6 +44,7 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 import { CommandPaletteBasicDemo } from "~/components/demos/CommandPaletteDemo";
 import { InputGroupDemo } from "~/components/demos/InputGroupDemo";
 import {
+  CaretDownIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   TranslateIcon,
@@ -55,6 +58,7 @@ const componentRoutes: Record<string, string> = {
   banner: "/components/banner",
   breadcrumbs: "/components/breadcrumbs",
   button: "/components/button",
+  "button-group": "/components/button-group",
   checkbox: "/components/checkbox",
   "clipboard-text": "/components/clipboard-text",
   "code-highlighted": "/components/code-highlighted",
@@ -71,6 +75,7 @@ const componentRoutes: Record<string, string> = {
   input: "/components/input",
   "input-area": "/components/input-area",
   "input-group": "/components/input-group",
+  "tag-input": "/components/tag-input",
   label: "/components/label",
   "layer-card": "/components/layer-card",
   link: "/components/link",
@@ -137,6 +142,18 @@ export function HomeGrid() {
       ),
     },
     {
+      name: "Button Group",
+      id: "button-group",
+      Component: (
+        <ButtonGroup>
+          <Button variant="primary">Deploy</Button>
+          <Button variant="primary" shape="square" aria-label="More options">
+            <CaretDownIcon />
+          </Button>
+        </ButtonGroup>
+      ),
+    },
+    {
       name: "Input",
       id: "input",
       Component: (
@@ -144,6 +161,17 @@ export function HomeGrid() {
           <Input placeholder="Type something..." />
           <Input variant="error" value="Invalid!" />
         </div>
+      ),
+    },
+    {
+      name: "Tag Input",
+      id: "tag-input",
+      Component: (
+        <TagInput
+          className="w-[280px]"
+          defaultValue={["frontend", "priority"]}
+          placeholder="Add a label"
+        />
       ),
     },
     {

@@ -1,5 +1,17 @@
 # @cloudflare/kumo
 
+## 2.13.2
+
+### Patch Changes
+
+- 36fc155: Add `scrollItemIntoView()` to preserve the position of visible sidebar items while honoring alignment for offscreen items.
+
+## 2.13.1
+
+### Patch Changes
+
+- 7d5241d: Allow default Tooltip trigger children to control their line height, preventing inherited text from being clipped.
+
 ## 2.13.0
 
 ### Minor Changes

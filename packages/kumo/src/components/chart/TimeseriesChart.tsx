@@ -87,12 +87,23 @@ export interface TimeseriesChartProps {
   /** Number of ticks to display on the y-axis */
   yAxisTickCount?: number;
   /**
+   * Minimum interval between y-axis ticks. Set to `1` for discrete count data
+   * so ECharts does not render fractional tick marks.
+   */
+  yAxisMinInterval?: number;
+  /**
    * Custom formatter for tooltip values.
    * Receives the raw y-value and returns a display string.
    * When omitted, the raw value is shown. Takes precedence over the
    * deprecated `yAxisTickLabelFormat` prop.
    */
   tooltipValueFormat?: (value: number) => string;
+  /**
+   * Footer text rendered below the series rows in the tooltip.
+   * Intended for brief context such as data freshness or aggregation details.
+   * Available for every `TimeseriesChart` configuration.
+   */
+  tooltipFooter?: string;
   /**
    * Controls which series are shown in the tooltip.
    * - `"all"` — show all series at the hovered timestamp (default)
@@ -234,7 +245,9 @@ export const TimeseriesChart = forwardRef<
     yAxisTickLabelFormat,
     yAxisName,
     yAxisTickCount,
+    yAxisMinInterval,
     tooltipValueFormat,
+    tooltipFooter,
     onTimeRangeChange,
     height = 350,
     incomplete,
@@ -525,6 +538,9 @@ export const TimeseriesChart = forwardRef<
           },
         },
         splitNumber: yAxisTickCount,
+        ...(yAxisMinInterval !== undefined && {
+          minInterval: yAxisMinInterval,
+        }),
         ...(thresholdExtent && {
           min: (value: { min: number }) =>
             Math.min(value.min, thresholdExtent.min),
@@ -548,6 +564,7 @@ export const TimeseriesChart = forwardRef<
     yAxisTickFormat,
     yAxisName,
     yAxisTickCount,
+    yAxisMinInterval,
     incompleteBefore,
     incompleteAfter,
     type,
@@ -767,6 +784,7 @@ export const TimeseriesChart = forwardRef<
                 state={tooltipState}
                 formatValue={formatFn}
                 formatTimestamp={formatTimestamp}
+                footer={tooltipFooter}
               />
             </TooltipPrimitive.Popup>
           </TooltipPrimitive.Positioner>

@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import pixelmatch from "pixelmatch";
@@ -13,6 +13,7 @@ import {
   getComponentFromFile,
   type DiscoveredComponent,
 } from "./page-config";
+import { getPullRequestFiles } from "./pull-request-files";
 
 // The worker URL is not a secret — it is public in the source code. Keeping it
 // as a secret in CI provides false security and creates a foot-gun where the
@@ -68,22 +69,27 @@ interface ComparisonResult {
   diffPercent: number;
 }
 
-function getChangedFiles(): string[] | null {
+async function getChangedFiles(): Promise<string[] | null> {
   try {
-    const base = process.env.GITHUB_BASE_REF || "main";
-    // Use PR_HEAD_SHA when provided. CI checks out main for security (to avoid
-    // running untrusted PR code with secrets), so HEAD points to main. The PR's
-    // head commit is fetched separately and passed via PR_HEAD_SHA.
-    const head = process.env.PR_HEAD_SHA || "HEAD";
-    // Use two-dot diff (A..B) instead of three-dot (A...B) because shallow
-    // clones don't have enough history to compute merge-base.
-    const output = execSync(`git diff --name-only origin/${base}..${head}`, {
-      encoding: "utf-8",
-    });
+    const token = process.env.GITHUB_TOKEN;
+    const pullRequestNumber =
+      process.env.GITHUB_PR_NUMBER ?? process.env.PR_NUMBER;
+    const repository = process.env.GITHUB_REPOSITORY;
+    if (token && pullRequestNumber && repository) {
+      return getPullRequestFiles({ repository, pullRequestNumber, token });
+    }
+
+    const output = execFileSync(
+      "git",
+      ["diff", "--name-only", "origin/main..HEAD"],
+      {
+        encoding: "utf-8",
+      },
+    );
     return output.trim().split("\n").filter(Boolean);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.warn(`git diff failed, falling back to full regression: ${msg}`);
+    console.warn(`Changed-file lookup failed; running full regression: ${msg}`);
     return null;
   }
 }
@@ -504,13 +510,13 @@ async function main(): Promise<void> {
       `Running full visual regression (${components.length} components)...\n`,
     );
   } else {
-    const changedFiles = getChangedFiles();
+    const changedFiles = await getChangedFiles();
 
-    // If git diff failed, we don't know what changed — run full regression to be safe
+    // If changed-file lookup failed, run the full regression to be safe.
     if (changedFiles === null) {
       components = allComponents;
       console.log(
-        `Running full visual regression (${components.length} components, git diff unavailable)...\n`,
+        `Running full visual regression (${components.length} components, changed files unavailable)...\n`,
       );
     } else {
       const classification = classifyChangedFiles(changedFiles);

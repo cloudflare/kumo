@@ -227,7 +227,7 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       inputVariants({ size, variant, focusIndicator: true }),
       "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
       autoResize &&
-        "field-sizing-content w-full resize-none scroll-pb-2 [scrollbar-color:var(--color-kumo-line)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-corner]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-kumo-line [&::-webkit-scrollbar-track]:my-2",
+        "field-sizing-content w-full resize-none scroll-pb-2 [scrollbar-width:thin] [scrollbar-color:var(--color-kumo-line)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-corner]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-kumo-line [&::-webkit-scrollbar-track]:my-2",
       className,
     );
 

@@ -30,6 +30,7 @@ import {
 export const CATEGORY_MAP: Record<string, string> = {
   // Action
   button: "Action",
+  "button-group": "Action",
   "clipboard-text": "Action",
   // Display
   badge: "Display",
@@ -65,6 +66,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   tabs: "Navigation",
   // Overlay
   dialog: "Overlay",
+  "layer-dialog": "Overlay",
   dropdown: "Overlay",
   popover: "Overlay",
   tooltip: "Overlay",

@@ -35,6 +35,10 @@ const packEntries = {
   "components/badge": resolve(__dirname, "src/components/badge/index.ts"),
   "components/banner": resolve(__dirname, "src/components/banner/index.ts"),
   "components/button": resolve(__dirname, "src/components/button/index.ts"),
+  "components/button-group": resolve(
+    __dirname,
+    "src/components/button-group/index.ts",
+  ),
   "components/date-range-picker": resolve(
     __dirname,
     "src/components/date-range-picker/index.ts",
@@ -64,6 +68,10 @@ const packEntries = {
   "components/layer-card": resolve(
     __dirname,
     "src/components/layer-card/index.ts",
+  ),
+  "components/layer-dialog": resolve(
+    __dirname,
+    "src/components/layer-dialog/index.ts",
   ),
   "components/label": resolve(__dirname, "src/components/label/index.ts"),
   "components/loader": resolve(__dirname, "src/components/loader/index.ts"),
@@ -115,6 +123,10 @@ const packEntries = {
   "components/table-of-contents": resolve(
     __dirname,
     "src/components/table-of-contents/index.ts",
+  ),
+  "components/tag-input": resolve(
+    __dirname,
+    "src/components/tag-input/index.ts",
   ),
   // PLOP_INJECT_COMPONENT_ENTRY
   // Utils entry point

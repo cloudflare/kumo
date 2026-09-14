@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo",
-  "version": "2.13.0",
+  "version": "2.13.2",
   "private": false,
   "description": "Kumo - Cloudflare's component library for building modern web applications",
   "keywords": [
@@ -75,6 +75,10 @@
     "./components/button": {
       "types": "./dist/components/button.d.ts",
       "import": "./dist/components/button.js"
+    },
+    "./components/button-group": {
+      "types": "./dist/components/button-group.d.ts",
+      "import": "./dist/components/button-group.js"
     },
     "./components/chart": {
       "types": "./dist/components/chart.d.ts",
@@ -156,6 +160,10 @@
       "types": "./dist/components/layer-card.d.ts",
       "import": "./dist/components/layer-card.js"
     },
+    "./components/layer-dialog": {
+      "types": "./dist/components/layer-dialog.d.ts",
+      "import": "./dist/components/layer-dialog.js"
+    },
     "./components/link": {
       "types": "./dist/components/link.d.ts",
       "import": "./dist/components/link.js"
@@ -215,6 +223,10 @@
     "./components/tabs": {
       "types": "./dist/components/tabs.d.ts",
       "import": "./dist/components/tabs.js"
+    },
+    "./components/tag-input": {
+      "types": "./dist/components/tag-input.d.ts",
+      "import": "./dist/components/tag-input.js"
     },
     "./components/text": {
       "types": "./dist/components/text.d.ts",
@@ -453,7 +465,7 @@
     "test:browser": "vp test --config=vitest.browser.config.ts"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
+    "@base-ui/react": "^1.8.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "cnfast": "^0.0.8",
