@@ -1,5 +1,5 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { Button } from "../../components/button";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -12,11 +12,11 @@ export const KUMO_EMPTY_VARIANTS = {
       description: "Compact empty state for smaller containers",
     },
     base: {
-      classes: "px-10 py-16 gap-6",
+      classes: "px-6 py-8 gap-4 md:px-10 md:py-16 md:gap-6",
       description: "Default empty state size",
     },
     lg: {
-      classes: "px-12 py-20 gap-8",
+      classes: "px-6 py-8 gap-4 md:px-12 md:py-20 md:gap-8",
       description: "Large empty state for prominent placement",
     },
   },
@@ -68,10 +68,10 @@ export function emptyVariants({
 export interface EmptyProps extends KumoEmptyVariantsProps {
   /** Decorative icon displayed above the title (e.g. from `@phosphor-icons/react`). */
   icon?: React.ReactNode;
-  /** Primary heading text for the empty state. */
-  title: string;
-  /** Secondary description text displayed below the title. */
-  description?: string;
+  /** Primary heading content for the empty state. */
+  title: ReactNode;
+  /** Secondary description content displayed below the title. */
+  description?: ReactNode;
   /** Shell command displayed in a copyable code block. */
   commandLine?: string;
   /** Additional content (buttons, links) rendered below the description. */
@@ -102,11 +102,17 @@ export function Empty({
   return (
     <div className={cn(emptyVariants({ size }), className)}>
       {icon}
-      <h2 className="text-2xl font-semibold">{title}</h2>
+      <div className="flex flex-col items-center gap-2">
+        <h2 className="text-xl font-semibold text-balance sm:text-2xl">
+          {title}
+        </h2>
 
-      {description && (
-        <p className="max-w-140 text-center text-kumo-subtle">{description}</p>
-      )}
+        {description && (
+          <p className="max-w-140 text-center text-base text-pretty text-kumo-subtle sm:text-lg">
+            {description}
+          </p>
+        )}
+      </div>
 
       {commandLine && (
         <div
