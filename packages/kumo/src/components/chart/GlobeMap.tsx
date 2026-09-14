@@ -35,7 +35,7 @@ export interface GlobeMapProps {
   landHatchSpacing?: number;
   /** Fill behind the land and graticule. Default: the Kumo base surface. */
   oceanColor?: string;
-  /** Geographic points drawn above the land. Back-facing points are clipped. */
+  /** Geographic points drawn above the land. Points fade at the horizon and back-facing points are hidden. */
   markers?: GlobeMapMarker[];
   /** Default marker fill. Defaults to the Kumo chart blue. */
   markerColor?: string;
@@ -75,6 +75,7 @@ interface GlobeTooltip {
 const GLOBE_VIEWBOX_SIZE = 640;
 const GLOBE_PADDING = 18;
 const GLOBE_RADIUS = GLOBE_VIEWBOX_SIZE / 2 - GLOBE_PADDING;
+const MARKER_EDGE_FADE_DISTANCE = 24;
 const AUTO_ROTATE_INTERVAL = 1000 / 30;
 
 function finiteNumber(value: number, fallback: number): number {
@@ -472,6 +473,13 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
             clipPath={`url(#${sphereClipId})`}
             className="pointer-events-none"
           />
+          <path
+            data-globe-outline=""
+            d={spherePath}
+            fill="none"
+            className="pointer-events-none stroke-kumo-line"
+            strokeWidth={2}
+          />
           {markers.map((marker, index) => {
             const position = projection([marker.longitude, marker.latitude]);
             const isVisible =
@@ -486,6 +494,17 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
             };
             if (!position || !isVisible) return null;
             const isInteractive = onMarkerClick !== undefined;
+            const distanceFromCenter = Math.hypot(
+              position[0] - GLOBE_VIEWBOX_SIZE / 2,
+              position[1] - GLOBE_VIEWBOX_SIZE / 2,
+            );
+            const edgeOpacity = Math.max(
+              0,
+              Math.min(
+                1,
+                (GLOBE_RADIUS - distanceFromCenter) / MARKER_EDGE_FADE_DISTANCE,
+              ),
+            );
             return (
               <circle
                 key={`${marker.name}-${index}`}
@@ -499,7 +518,8 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
                   ),
                 )}
                 fill={marker.color ?? resolvedMarkerColor}
-                className="stroke-kumo-base transition-opacity outline-none hover:opacity-80 focus-visible:opacity-80"
+                opacity={edgeOpacity}
+                className="stroke-kumo-base transition-opacity outline-none"
                 strokeWidth={2}
                 data-globe-marker=""
                 data-globe-marker-interactive={isInteractive}
@@ -545,12 +565,6 @@ export const GlobeMap = forwardRef<HTMLDivElement, GlobeMapProps>(
               />
             );
           })}
-          <path
-            d={spherePath}
-            fill="none"
-            className="pointer-events-none stroke-kumo-line"
-            strokeWidth={2}
-          />
         </svg>
         {onMarkerClick === undefined && markers.length > 0 ? (
           <ul className="sr-only" aria-label={`${ariaLabel} locations`}>

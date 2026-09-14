@@ -143,6 +143,22 @@ describe("GlobeMap", () => {
     ).toContain("London: 51.50, -0.12");
   });
 
+  it("renders markers above the outline and fades them at the horizon", () => {
+    const { container } = render(
+      <GlobeMap
+        defaultRotation={[0, 0, 0]}
+        markers={[{ name: "Edge", latitude: 0, longitude: 80 }]}
+      />,
+    );
+    const outline = container.querySelector("[data-globe-outline]");
+    const marker = container.querySelector("[data-globe-marker]");
+    const opacity = Number(marker?.getAttribute("opacity"));
+
+    expect(outline?.nextElementSibling).toBe(marker);
+    expect(opacity).toBeGreaterThan(0);
+    expect(opacity).toBeLessThan(1);
+  });
+
   it("calls onMarkerClick when a marker is clicked", async () => {
     const user = userEvent.setup();
     const onMarkerClick = vi.fn();
