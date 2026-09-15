@@ -35,7 +35,7 @@ describe("Empty", () => {
     expect(title.className).not.toContain("font-semibold");
   });
 
-  it("renders the command line without a background or brand-colored text", () => {
+  it("renders the command line with inset styling and without brand-colored text", () => {
     render(<Empty title="Install Kumo" commandLine="npm install kumo" />);
 
     const command = screen.getByText("npm install kumo");
@@ -43,14 +43,15 @@ describe("Empty", () => {
     const commandContainer = commandTextGroup?.parentElement;
 
     expect(command.className).not.toContain("text-kumo-brand");
-    expect(commandContainer?.className).not.toContain("bg-kumo-overlay");
-    expect(commandContainer?.className.split(" ")).not.toContain("border");
+    expect(commandContainer?.className).toContain("bg-kumo-overlay");
+    expect(commandContainer?.className.split(" ")).toContain("border");
+    expect(commandContainer?.className).toContain("border-white");
     expect(commandContainer?.className.split(" ")).toContain("ring");
     expect(commandContainer?.className).toContain("ring-kumo-line");
     expect(commandContainer?.className).toContain("items-center");
     expect(commandTextGroup?.className).toContain("items-baseline");
-    expect(commandContainer?.className).toContain("shadow-sm");
-    expect(commandContainer?.className).not.toContain("shadow-xs");
+    expect(commandContainer?.className).toContain("shadow-xs");
+    expect(commandContainer?.className).not.toContain("shadow-inner");
     expect(commandContainer?.className).not.toContain("hover:");
 
     const prompt = screen.getByText("$");
