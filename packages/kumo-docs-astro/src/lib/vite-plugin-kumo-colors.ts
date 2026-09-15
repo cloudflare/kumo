@@ -20,6 +20,11 @@ type ColorToken = {
   tokenType: TokenType;
 };
 
+type ThemeConfigModule = {
+  THEME_CONFIG: ThemeConfig;
+  AVAILABLE_THEMES: readonly string[];
+};
+
 // Path to the source config.ts — used for dev-mode loading and HMR watching
 const configFile = resolve(
   __dirname,
@@ -109,20 +114,17 @@ function getColorsFromConfig(
  *
  * @returns Astro/Vite compatible plugin
  */
-export function kumoColorsPlugin() {
-  // Reference to the Vite dev server (set during configureServer).
-  // Only used in actual dev mode — Astro's build also creates a server
-  // for SSR, but ssrLoadModule can hang during build, so we track the
-  // real mode via the config hook.
+export function kumoColorsPlugin({
+  isDev,
+  builtThemeConfig,
+}: {
+  isDev: boolean;
+  builtThemeConfig?: ThemeConfigModule;
+}) {
   let server: any = null;
-  let isDevMode = false;
 
   return {
     name: "vite-plugin-kumo-colors",
-
-    config(_: unknown, env: { command: string }) {
-      isDevMode = env.command === "serve";
-    },
 
     resolveId(id: string) {
       if (id === VIRTUAL_MODULE_ID) {
@@ -135,20 +137,21 @@ export function kumoColorsPlugin() {
         let themeConfig: ThemeConfig;
         let availableThemes: readonly string[];
 
-        if (isDevMode && server) {
+        if (isDev && server) {
           // Dev mode: load source .ts directly via Vite's module runner.
           // This always reads the latest file contents — no build needed.
           const mod = await server.ssrLoadModule(configFile);
           themeConfig = mod.THEME_CONFIG;
           availableThemes = mod.AVAILABLE_THEMES;
         } else {
-          // Production build: resolve the package export lazily. A top-level
-          // import would require Kumo's dist output before Astro can even load
-          // this plugin in dev mode, bypassing the source-loading path above.
-          const mod =
-            await import("@cloudflare/kumo/scripts/theme-generator/config");
-          themeConfig = mod.THEME_CONFIG;
-          availableThemes = mod.AVAILABLE_THEMES;
+          if (!builtThemeConfig) {
+            throw new Error(
+              "The built Kumo theme config is required outside dev mode.",
+            );
+          }
+
+          themeConfig = builtThemeConfig.THEME_CONFIG;
+          availableThemes = builtThemeConfig.AVAILABLE_THEMES;
         }
 
         const colors = getColorsFromConfig(themeConfig, availableThemes);
