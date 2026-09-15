@@ -186,6 +186,53 @@ export function CodeHighlightedCopyButtonDemo() {
   );
 }
 
+/** Frameless code block for embedding in another surface */
+export function CodeHighlightedPlainDemo() {
+  return (
+    <DemoProvider>
+      <div className="grid md:grid-cols-2 divide-x divide-kumo-line border border-kumo-line rounded">
+        <div className="p-2">
+          <CodeHighlighted
+            showLineNumbers
+            code={`type EmbeddedOptions = {
+  enabled: boolean;
+  target: string;
+};
+
+const options = {
+  enabled: true,
+  target: "#preview",
+} satisfies EmbeddedOptions;
+
+console.log(options);`}
+            lang="typescript"
+            variant="plain"
+          />
+        </div>
+        <div className="p-2">
+          <CodeHighlighted
+            showCopyButton
+            code={`type EmbeddedOptions = {
+  enabled: boolean;
+  target: string;
+};
+
+const options = {
+  enabled: true,
+  target: "#preview",
+} satisfies EmbeddedOptions;
+
+console.log(options);`}
+            lang="typescript"
+            variant="plain"
+            highlightLines={[6, 7, 8, 9]}
+          />
+        </div>
+      </div>
+    </DemoProvider>
+  );
+}
+
 /** Full featured example */
 export function CodeHighlightedFullFeaturedDemo() {
   return (
