@@ -10,7 +10,7 @@
  * - Wrap your app with the kumo CSS import: `import "@cloudflare/kumo/styles"`.
  *
  * **Component categories:**
- * - **Action:** Button, ClipboardText
+ * - **Action:** Button, ClipboardText, InlineCopyText
  * - **Display:** Badge, Breadcrumbs, Code, Empty, LayerCard, Meter, Surface (deprecated), Text
  * - **Feedback:** Banner, Loader, Toast
  * - **Input:** Checkbox, Combobox, DateRangePicker, Field, Input, Radio, Select, SensitiveInput, Switch
@@ -50,6 +50,14 @@ export {
   type CheckboxChangeEventDetails,
 } from "./components/checkbox";
 export { ClipboardText } from "./components/clipboard-text";
+export {
+  InlineCopyText,
+  KUMO_INLINE_COPY_TEXT_DEFAULT_VARIANTS,
+  KUMO_INLINE_COPY_TEXT_STYLING,
+  KUMO_INLINE_COPY_TEXT_VARIANTS,
+  type InlineCopyTextLabels,
+  type InlineCopyTextProps,
+} from "./components/inline-copy-text";
 export { Code, CodeBlock } from "./components/code";
 export { Combobox } from "./components/combobox";
 export {
