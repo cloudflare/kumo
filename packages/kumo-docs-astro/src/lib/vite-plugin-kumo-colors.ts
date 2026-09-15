@@ -1,10 +1,9 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  THEME_CONFIG as STATIC_THEME_CONFIG,
-  AVAILABLE_THEMES as STATIC_AVAILABLE_THEMES,
-} from "@cloudflare/kumo/scripts/theme-generator/config";
-import type { TokenDefinition } from "@cloudflare/kumo/scripts/theme-generator/types";
+import type {
+  ThemeConfig,
+  TokenDefinition,
+} from "@cloudflare/kumo/scripts/theme-generator/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -32,8 +31,8 @@ const configFile = resolve(
  * Derives token data directly from config.ts (single source of truth).
  */
 function getColorsFromConfig(
-  THEME_CONFIG: typeof STATIC_THEME_CONFIG,
-  AVAILABLE_THEMES: typeof STATIC_AVAILABLE_THEMES,
+  THEME_CONFIG: ThemeConfig,
+  AVAILABLE_THEMES: readonly string[],
 ): ColorToken[] {
   const colors: ColorToken[] = [];
 
@@ -106,7 +105,7 @@ function getColorsFromConfig(
  *
  * In dev mode, uses Vite's ssrLoadModule to import the source .ts file
  * directly — changes to config.ts are reflected without rebuilding kumo.
- * In production builds, uses the static import from the built dist/.
+ * In production builds, loads the package export from the built dist/.
  *
  * @returns Astro/Vite compatible plugin
  */
@@ -133,23 +132,26 @@ export function kumoColorsPlugin() {
 
     async load(id: string) {
       if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-        let THEME_CONFIG: typeof STATIC_THEME_CONFIG;
-        let AVAILABLE_THEMES: typeof STATIC_AVAILABLE_THEMES;
+        let themeConfig: ThemeConfig;
+        let availableThemes: readonly string[];
 
         if (isDevMode && server) {
           // Dev mode: load source .ts directly via Vite's module runner.
           // This always reads the latest file contents — no build needed.
           const mod = await server.ssrLoadModule(configFile);
-          THEME_CONFIG = mod.THEME_CONFIG;
-          AVAILABLE_THEMES = mod.AVAILABLE_THEMES;
+          themeConfig = mod.THEME_CONFIG;
+          availableThemes = mod.AVAILABLE_THEMES;
         } else {
-          // Production build: use the statically imported config from dist/.
-          // This is resolved at module load time and always available.
-          THEME_CONFIG = STATIC_THEME_CONFIG;
-          AVAILABLE_THEMES = STATIC_AVAILABLE_THEMES;
+          // Production build: resolve the package export lazily. A top-level
+          // import would require Kumo's dist output before Astro can even load
+          // this plugin in dev mode, bypassing the source-loading path above.
+          const mod =
+            await import("@cloudflare/kumo/scripts/theme-generator/config");
+          themeConfig = mod.THEME_CONFIG;
+          availableThemes = mod.AVAILABLE_THEMES;
         }
 
-        const colors = getColorsFromConfig(THEME_CONFIG, AVAILABLE_THEMES);
+        const colors = getColorsFromConfig(themeConfig, availableThemes);
 
         return `
 export const kumoColors = ${JSON.stringify(colors, null, 2)};
