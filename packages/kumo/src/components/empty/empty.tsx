@@ -109,7 +109,7 @@ export function Empty({
             {title}
           </Text>
         ) : (
-          <Text variant="secondary" size="base">
+          <Text variant="secondary" size="base" as="h2">
             {title}
           </Text>
         )}

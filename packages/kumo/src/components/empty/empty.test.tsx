@@ -30,6 +30,7 @@ describe("Empty", () => {
 
     const title = screen.getByText("Nothing here");
 
+    expect(title.tagName).toBe("H2");
     expect(title.className).toContain("text-base/[inherit]");
     expect(title.className).toContain("text-kumo-subtle");
     expect(title.className).not.toContain("font-semibold");
