@@ -419,6 +419,66 @@ describe("ShikiProvider", () => {
     expect(classList?.contains("rounded-md")).toBe(false);
     expect(classList?.contains("border-kumo-fill")).toBe(false);
     expect(classList?.contains("bg-kumo-base")).toBe(false);
+    expect(container.querySelector("pre")?.classList.contains("!p-0")).toBe(
+      true,
+    );
+  });
+
+  it("removes Shiki pre padding from the plain CodeHighlighted variant", async () => {
+    mockHighlighter.codeToHtml.mockReturnValue(
+      '<pre><code><span class="line">const x = 1;</span>\n<span class="line">const y = 2;</span></code></pre>',
+    );
+
+    const { container } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <CodeHighlighted
+          code={"const x = 1;\nconst y = 2;"}
+          lang="javascript"
+          variant="plain"
+          showLineNumbers
+        />
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector(".kumo-shiki")).not.toBeNull();
+    });
+
+    const classList = container.querySelector(".kumo-shiki")?.classList;
+    expect(classList?.contains("[&>pre]:!p-0")).toBe(true);
+    expect(classList?.contains("[&>pre]:!p-4")).toBe(false);
+
+    const lineNumberClasses = container.querySelector(
+      ".kumo-line-numbers",
+    )?.classList;
+    expect(lineNumberClasses?.contains("py-0")).toBe(true);
+    expect(lineNumberClasses?.contains("py-4")).toBe(false);
+  });
+
+  it("does not extend highlighted lines beyond a plain code block", async () => {
+    mockHighlighter.codeToHtml.mockReturnValue(
+      '<pre><code><span class="line">const x = 1;</span></code></pre>',
+    );
+
+    const { container } = render(
+      <ShikiProvider engine="javascript" languages={["javascript"]}>
+        <CodeHighlighted
+          code="const x = 1;"
+          lang="javascript"
+          variant="plain"
+          highlightLines={[1]}
+        />
+      </ShikiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector(".line-highlighted")).not.toBeNull();
+    });
+
+    const classList = container.querySelector(".kumo-shiki")?.classList;
+    expect(classList?.contains("[&_.line-highlighted]:!m-0")).toBe(true);
+    expect(classList?.contains("[&_.line-highlighted]:!w-full")).toBe(true);
+    expect(classList?.contains("[&_.line-highlighted]:!px-0")).toBe(true);
   });
 
   it("exposes normalized languages in context so hook alias resolution works end-to-end", async () => {
