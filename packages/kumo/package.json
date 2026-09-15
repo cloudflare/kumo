@@ -144,6 +144,10 @@
       "types": "./dist/components/grid.d.ts",
       "import": "./dist/components/grid.js"
     },
+    "./components/inline-copy-text": {
+      "types": "./dist/components/inline-copy-text.d.ts",
+      "import": "./dist/components/inline-copy-text.js"
+    },
     "./components/input": {
       "types": "./dist/components/input.d.ts",
       "import": "./dist/components/input.js"
