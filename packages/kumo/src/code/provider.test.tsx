@@ -405,9 +405,10 @@ describe("ShikiProvider", () => {
     const { container } = render(
       <ShikiProvider engine="javascript" languages={["javascript"]}>
         <CodeHighlighted
-          code="const x = 1;"
+          code={"const x = 1;\nconst y = 2;"}
           lang="javascript"
           variant="plain"
+          showCopyButton
         />
       </ShikiProvider>,
     );
@@ -422,6 +423,14 @@ describe("ShikiProvider", () => {
     expect(container.querySelector("pre")?.classList.contains("!p-0")).toBe(
       true,
     );
+
+    const copyButtonContainer = screen.getByRole("button", {
+      name: "Copy",
+    }).parentElement;
+    expect(copyButtonContainer?.classList.contains("top-0")).toBe(true);
+    expect(copyButtonContainer?.classList.contains("right-0")).toBe(true);
+    expect(copyButtonContainer?.classList.contains("top-2")).toBe(false);
+    expect(copyButtonContainer?.classList.contains("right-2")).toBe(false);
   });
 
   it("removes Shiki pre padding from the plain CodeHighlighted variant", async () => {
@@ -448,9 +457,8 @@ describe("ShikiProvider", () => {
     expect(classList?.contains("[&>pre]:!p-0")).toBe(true);
     expect(classList?.contains("[&>pre]:!p-4")).toBe(false);
 
-    const lineNumberClasses = container.querySelector(
-      ".kumo-line-numbers",
-    )?.classList;
+    const lineNumberClasses =
+      container.querySelector(".kumo-line-numbers")?.classList;
     expect(lineNumberClasses?.contains("py-0")).toBe(true);
     expect(lineNumberClasses?.contains("py-4")).toBe(false);
   });

@@ -111,7 +111,11 @@ export function CodeHighlighted({
   const copyButton = showCopyButton ? (
     <div
       className={cn(
-        isSingleLine ? "shrink-0 px-2" : "absolute top-2 right-2",
+        isSingleLine
+          ? "shrink-0 px-2"
+          : variant === "plain"
+            ? "absolute top-0 right-0"
+            : "absolute top-2 right-2",
         !copied && "opacity-0 transition-opacity group-hover:opacity-100",
       )}
     >

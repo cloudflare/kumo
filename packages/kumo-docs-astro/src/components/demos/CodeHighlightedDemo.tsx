@@ -211,6 +211,7 @@ console.log(options);`}
         </div>
         <div className="p-2">
           <CodeHighlighted
+            showCopyButton
             code={`type EmbeddedOptions = {
   enabled: boolean;
   target: string;

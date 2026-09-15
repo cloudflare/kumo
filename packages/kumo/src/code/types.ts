@@ -137,7 +137,7 @@ export interface UseShikiHighlighterResult {
  */
 export type CodeHighlightedVariant = "default" | "plain";
 
-interface CodeHighlightedBaseProps {
+export interface CodeHighlightedProps {
   /** Source code to display */
   code: string;
 
@@ -165,22 +165,13 @@ interface CodeHighlightedBaseProps {
 
   /** Additional CSS classes */
   className?: string;
-}
 
-export type CodeHighlightedProps = CodeHighlightedBaseProps &
-  (
-    | {
-        /** Code block with a surface, border, and rounded corners. @default "default" */
-        variant?: "default";
-        /** Show copy-to-clipboard button */
-        showCopyButton?: boolean;
-      }
-    | {
-        /** Frameless code block without padding for embedding in another surface. */
-        variant: "plain";
-        showCopyButton?: never;
-      }
-  );
+  /** Code block appearance. @default "default" */
+  variant?: CodeHighlightedVariant;
+
+  /** Show copy-to-clipboard button */
+  showCopyButton?: boolean;
+}
 
 // Re-export for backwards compatibility (deprecated, use SupportedLanguage instead)
 /** @deprecated Use SupportedLanguage instead */
