@@ -255,6 +255,7 @@ export {
   ChartLegend,
   BubbleMap,
   ChoroplethMap,
+  GlobeMap,
   type KumoChartOption,
   type SankeyChartProps,
   type SankeyNodeData,
@@ -266,6 +267,8 @@ export {
   type MapStyle,
   type BubbleMapProps,
   type ChoroplethMapProps,
+  type GlobeMapProps,
+  type GlobeMapMarker,
 } from "./components/chart";
 export {
   Autocomplete,
@@ -336,6 +339,13 @@ export {
   type UseTableOfContentsActiveIdOptions,
   type UseTableOfContentsActiveIdResult,
 } from "./components/table-of-contents";
+export {
+  ButtonGroup,
+  KUMO_BUTTON_GROUP_VARIANTS,
+  KUMO_BUTTON_GROUP_DEFAULT_VARIANTS,
+  KUMO_BUTTON_GROUP_STYLING,
+  type ButtonGroupProps,
+} from "./components/button-group";
 export {
   TagInput,
   type TagInputLabels,

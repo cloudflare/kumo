@@ -49,6 +49,12 @@ import {
 // Helpers
 // ---------------------------------------------------------------------------
 
+function fireTransitionEnd(element: HTMLElement, propertyName: string) {
+  const event = new Event("transitionend", { bubbles: true });
+  Object.defineProperty(event, "propertyName", { value: propertyName });
+  fireEvent(element, event);
+}
+
 /** Minimal sidebar wrapper for tests that need Provider context. */
 function TestSidebar({
   children,
@@ -75,11 +81,13 @@ function StateReader() {
   );
 }
 
-function setMobileMatchMedia(matches: boolean) {
+function setMobileMatchMedia(matches: boolean, prefersReducedMotion = false) {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
-      matches,
+      matches: query.includes("prefers-reduced-motion")
+        ? prefersReducedMotion
+        : matches,
       media: query,
       onchange: null,
       addListener: vi.fn(),
@@ -257,6 +265,255 @@ describe("Sidebar toggle", () => {
     await user.click(screen.getByRole("button", { name: "Collapse sidebar" }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
+
+  it("calls onOpenChangeComplete after the sidebar transition finishes", async () => {
+    const onOpenChangeComplete = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <TestSidebar defaultOpen onOpenChangeComplete={onOpenChangeComplete}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Collapse sidebar" }));
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "opacity",
+    );
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "width",
+    );
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "width",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it("does not complete a parent sidebar from a nested sidebar transition", () => {
+    const outerOnOpenChangeComplete = vi.fn();
+    const innerOnOpenChangeComplete = vi.fn();
+    const nestedSidebars = (open: boolean) => (
+      <SidebarProvider
+        open={open}
+        onOpenChangeComplete={outerOnOpenChangeComplete}
+      >
+        <Sidebar>
+          <span />
+        </Sidebar>
+        <SidebarProvider
+          open={open}
+          onOpenChangeComplete={innerOnOpenChangeComplete}
+        >
+          <Sidebar>
+            <span />
+          </Sidebar>
+        </SidebarProvider>
+      </SidebarProvider>
+    );
+    const { rerender } = render(nestedSidebars(true));
+    rerender(nestedSidebars(false));
+
+    const sidebars = document.querySelectorAll<HTMLElement>(
+      '[data-sidebar="sidebar"]',
+    );
+    fireTransitionEnd(sidebars[1]!, "width");
+
+    expect(innerOnOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(innerOnOpenChangeComplete).toHaveBeenCalledWith(false);
+    expect(outerOnOpenChangeComplete).not.toHaveBeenCalled();
+  });
+
+  it("completes the latest state when no transition event fires", () => {
+    vi.useFakeTimers();
+    const onOpenChangeComplete = vi.fn();
+
+    try {
+      render(
+        <TestSidebar
+          defaultOpen
+          animationDuration={100}
+          onOpenChangeComplete={onOpenChangeComplete}
+        >
+          <SidebarFooter>
+            <SidebarTrigger />
+          </SidebarFooter>
+        </TestSidebar>,
+      );
+
+      const trigger = screen.getByRole("button", {
+        name: "Collapse sidebar",
+      });
+      fireEvent.click(trigger);
+      fireEvent.click(trigger);
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.advanceTimersByTime(100);
+      });
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+      expect(onOpenChangeComplete).toHaveBeenCalledWith(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("completes an open change when the callback is added with it", () => {
+    const onOpenChangeComplete = vi.fn();
+    const sidebar = (open: boolean, callback?: (nextOpen: boolean) => void) => (
+      <TestSidebar open={open} onOpenChangeComplete={callback}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+    const { rerender } = render(sidebar(true));
+    rerender(sidebar(false, onOpenChangeComplete));
+
+    fireTransitionEnd(
+      document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+      "width",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it("completes immediately when reduced motion disables transitions", () => {
+    setMobileMatchMedia(false, true);
+    const onOpenChangeComplete = vi.fn();
+    render(
+      <TestSidebar defaultOpen onOpenChangeComplete={onOpenChangeComplete}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Collapse sidebar" }));
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it("clears pending state when the callback is removed", () => {
+    vi.useFakeTimers();
+    const firstCallback = vi.fn();
+    const nextCallback = vi.fn();
+    const sidebar = (
+      open: boolean,
+      onOpenChangeComplete?: (open: boolean) => void,
+    ) => (
+      <TestSidebar open={open} onOpenChangeComplete={onOpenChangeComplete}>
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+
+    try {
+      const { rerender } = render(sidebar(true, firstCallback));
+      rerender(sidebar(false, firstCallback));
+      rerender(sidebar(true));
+      rerender(sidebar(true, nextCallback));
+
+      fireTransitionEnd(
+        document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+        "width",
+      );
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(firstCallback).not.toHaveBeenCalled();
+      expect(nextCallback).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not complete when switching between desktop and mobile", () => {
+    vi.useFakeTimers();
+    const onOpenChangeComplete = vi.fn();
+    const sidebar = (mobileBreakpoint: number) => (
+      <TestSidebar
+        defaultOpen
+        mobileBreakpoint={mobileBreakpoint}
+        onOpenChangeComplete={onOpenChangeComplete}
+      >
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+
+    try {
+      const { rerender } = render(sidebar(768));
+      setMobileMatchMedia(true);
+      rerender(sidebar(769));
+
+      fireTransitionEnd(
+        document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+        "transform",
+      );
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not complete a controlled open state when switching to mobile", () => {
+    vi.useFakeTimers();
+    const onOpenChangeComplete = vi.fn();
+    const sidebar = (mobileBreakpoint: number) => (
+      <TestSidebar
+        open
+        mobileBreakpoint={mobileBreakpoint}
+        onOpenChangeComplete={onOpenChangeComplete}
+      >
+        <SidebarFooter>
+          <SidebarTrigger />
+        </SidebarFooter>
+      </TestSidebar>
+    );
+
+    try {
+      const { rerender } = render(sidebar(768));
+      setMobileMatchMedia(true);
+      rerender(sidebar(769));
+
+      fireTransitionEnd(
+        document.querySelector<HTMLElement>('[data-sidebar="sidebar"]')!,
+        "transform",
+      );
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(onOpenChangeComplete).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 // ============================================================================
@@ -266,10 +523,14 @@ describe("Sidebar toggle", () => {
 describe("Sidebar.Collapsible", () => {
   function CollapsibleTest({
     defaultOpen = false,
+    open,
     autoScrollOnOpen = false,
+    onOpenChangeComplete,
   }: {
     defaultOpen?: boolean;
+    open?: boolean;
     autoScrollOnOpen?: boolean;
+    onOpenChangeComplete?: (open: boolean) => void;
   }) {
     return (
       <TestSidebar defaultOpen>
@@ -278,7 +539,9 @@ describe("Sidebar.Collapsible", () => {
             <SidebarMenuItem>
               <SidebarCollapsible
                 defaultOpen={defaultOpen}
+                open={open}
                 autoScrollOnOpen={autoScrollOnOpen}
+                onOpenChangeComplete={onOpenChangeComplete}
               >
                 <SidebarCollapsibleTrigger
                   render={
@@ -344,6 +607,48 @@ describe("Sidebar.Collapsible", () => {
     const content = screen.getByTestId("collapsible-content");
     expect(content.hasAttribute("inert")).toBe(true);
     expect(content.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("calls onOpenChangeComplete after the content transition finishes", () => {
+    const onOpenChangeComplete = vi.fn();
+    render(<CollapsibleTest onOpenChangeComplete={onOpenChangeComplete} />);
+
+    fireEvent.click(screen.getByText("Compute").closest("button")!);
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(screen.getByTestId("collapsible-content"), "opacity");
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(true);
+  });
+
+  it("completes a controlled change when the callback is added with it", () => {
+    const onOpenChangeComplete = vi.fn();
+    const { rerender } = render(<CollapsibleTest open />);
+    rerender(
+      <CollapsibleTest
+        open={false}
+        onOpenChangeComplete={onOpenChangeComplete}
+      />,
+    );
+
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
   });
 
   it("should scroll opened content into view when enabled", () => {

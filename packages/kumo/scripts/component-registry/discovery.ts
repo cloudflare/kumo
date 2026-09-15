@@ -30,6 +30,7 @@ import {
 export const CATEGORY_MAP: Record<string, string> = {
   // Action
   button: "Action",
+  "button-group": "Action",
   "clipboard-text": "Action",
   // Display
   badge: "Display",

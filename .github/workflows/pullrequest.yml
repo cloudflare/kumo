@@ -133,6 +133,30 @@ jobs:
       - run: vp run --filter @cloudflare/kumo test
       - run: vp run test:ci
 
+  visual-contracts:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/install-dependencies
+        with:
+          filter: "@cloudflare/kumo"
+      - name: Install Chromium
+        working-directory: packages/kumo
+        run: vp exec playwright install --with-deps chromium
+      - name: Run visual contracts
+        run: vp run --filter @cloudflare/kumo test:visual-contracts
+      - name: Upload visual-contract artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-contract-artifacts
+          path: packages/kumo/.vitest-attachments/
+          if-no-files-found: ignore
+          retention-days: 7
+
   test-react-compatibility:
     needs: build
     timeout-minutes: 5

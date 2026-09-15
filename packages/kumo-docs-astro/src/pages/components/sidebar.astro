@@ -15,6 +15,7 @@ import {
   SidebarRightDemo,
   SidebarPeekingDemo,
   SidebarAutoScrollDemo,
+  SidebarTransitionCompleteDemo,
   SidebarSlidingViewsDemo,
   SidebarMobileDemo,
   SidebarFullScreenMobileDemo,
@@ -252,6 +253,43 @@ const { state, isPeeking } = useSidebar();
   </Sidebar.CollapsibleContent>
 </Sidebar.Collapsible>`}>
           <SidebarAutoScrollDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Transition Completion</Heading>
+        <p>
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onOpenChangeComplete</code> when work must wait for a sidebar or collapsible transition to settle, such as measuring layout or scrolling newly revealed content. The callback receives the completed open state and also runs when reduced motion disables the transition.
+        </p>
+        <ComponentExample code={`const [completion, setCompletion] = useState("");
+
+<Sidebar.Provider
+  defaultOpen
+  onOpenChangeComplete={(open) => {
+    setCompletion("Sidebar " + (open ? "opened." : "collapsed."));
+  }}
+>
+  <Sidebar>
+    <Sidebar.Content>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          <Sidebar.Collapsible
+            onOpenChangeComplete={(open) => {
+              setCompletion(
+                "Compute section " + (open ? "opened." : "collapsed."),
+              );
+            }}
+          >
+            <Sidebar.CollapsibleTrigger render={<Sidebar.MenuButton>Compute</Sidebar.MenuButton>} />
+            <Sidebar.CollapsibleContent>...</Sidebar.CollapsibleContent>
+          </Sidebar.Collapsible>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Content>
+    <Sidebar.Footer><Sidebar.Trigger /></Sidebar.Footer>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarTransitionCompleteDemo client:load />
         </ComponentExample>
       </div>
 

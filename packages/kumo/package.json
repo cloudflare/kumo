@@ -76,6 +76,10 @@
       "types": "./dist/components/button.d.ts",
       "import": "./dist/components/button.js"
     },
+    "./components/button-group": {
+      "types": "./dist/components/button-group.d.ts",
+      "import": "./dist/components/button-group.js"
+    },
     "./components/chart": {
       "types": "./dist/components/chart.d.ts",
       "import": "./dist/components/chart.js"
@@ -458,7 +462,8 @@
     "typecheck": "tsc --noEmit",
     "validate:build": "vp test run --project=unit tests/imports/export-path-validation.test.ts",
     "validate:changeset": "tsx ../../ci/scripts/validate-kumo-changeset.ts",
-    "test:browser": "vp test --config=vitest.browser.config.ts"
+    "test:browser": "vp test --config=vitest.browser.config.ts",
+    "test:visual-contracts": "vp test run --config=vitest.visual-contracts.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

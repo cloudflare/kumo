@@ -64,5 +64,10 @@ packages/kumo/ai/schemas.ts
 .vitest-attachments/
 __screenshots__/
 
+# Browser visual-contract baselines are intentional test fixtures. Keep them
+# alongside their component tests so snapshot updates are visible in review.
+!packages/kumo/src/components/**/__screenshots__/
+!packages/kumo/src/components/**/__screenshots__/**
+
 # CI report artifacts
 ci/reports/
