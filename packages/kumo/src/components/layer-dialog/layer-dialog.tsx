@@ -77,6 +77,7 @@ const AlertContext = createContext(false);
 interface BodySlots {
   title: ReactNode;
   description: ReactNode;
+  actions: ReactNode;
   showCloseButton: boolean;
   closeLabel: string;
 }
@@ -84,6 +85,7 @@ interface BodySlots {
 const BodySlotsContext = createContext<BodySlots>({
   title: null,
   description: null,
+  actions: null,
   showCloseButton: false,
   closeLabel: "",
 });
@@ -272,13 +274,18 @@ function LayerDialogContent({
   const bodySlots: BodySlots = {
     title: title.element,
     description: description.element ?? null,
+    actions: actions.element ?? null,
     showCloseButton: actions.count === 0,
     closeLabel: closeLabel ?? layerDialog.close,
   };
 
   return (
     <DrawerBase.Portal container={container}>
-      <DrawerBase.Backdrop className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200" />
+      <DrawerBase.Backdrop
+        forceRender
+        data-layer-dialog-backdrop
+        className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200"
+      />
       {/*
         Desktop sizing contract: the viewport owns the vertical breathing room
         (via the verticalAlign variant) and the popup fills it with
@@ -311,7 +318,7 @@ function LayerDialogContent({
               <BodySlotsContext.Provider value={bodySlots}>
                 {body.element}
               </BodySlotsContext.Provider>
-              {actions.element}
+              {isDesktop && actions.element}
             </DrawerBase.Content>
           </LayerCard>
         </DrawerBase.Popup>
@@ -376,8 +383,9 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
   const [condensed, setCondensed] = useState(false);
   const descriptionClipRef = useRef<HTMLDivElement>(null);
   const dismissDisabled = useContext(DismissDisabledContext);
-  const { title, description, showCloseButton, closeLabel } =
+  const { title, description, actions, showCloseButton, closeLabel } =
     useContext(BodySlotsContext);
+  const isDesktop = useContext(DesktopContext);
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
@@ -410,7 +418,7 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
 
   return (
     <LayerCard.Primary className="min-h-0 flex-1 gap-0 p-0">
-      <div className="z-10 flex shrink-0 items-start justify-between gap-4 rounded-t-lg bg-kumo-base px-4.5 py-4">
+      <div className="z-10 flex shrink-0 items-start justify-between gap-4 rounded-t-lg bg-kumo-base px-4 py-4 sm:px-4.5">
         <div className="flex min-w-0 flex-col">
           {title}
           {description && (
@@ -441,9 +449,15 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
           className="min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
           onScroll={handleScroll}
         >
-          <ScrollAreaBase.Content className="px-4.5 pb-4.5">
-            {content}
-          </ScrollAreaBase.Content>
+          {isDesktop ? (
+            <ScrollAreaBase.Content className="px-4.5 pb-4.5">
+              {content}
+            </ScrollAreaBase.Content>
+          ) : (
+            <ScrollAreaBase.Content className="px-4 pb-4">
+              {content}
+            </ScrollAreaBase.Content>
+          )}
         </ScrollAreaBase.Viewport>
         <ScrollAreaBase.Scrollbar
           keepMounted
@@ -453,6 +467,11 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
           <ScrollAreaBase.Thumb className="w-full rounded-full bg-kumo-contrast opacity-10 transition-opacity hover:opacity-20 active:opacity-30" />
         </ScrollAreaBase.Scrollbar>
       </ScrollAreaBase.Root>
+      {!isDesktop && actions && (
+        <div className="shrink-0 border-t border-kumo-hairline p-4">
+          {actions}
+        </div>
+      )}
     </LayerCard.Primary>
   );
 }
@@ -531,6 +550,7 @@ const LayerDialogActions = Object.assign(
   }: LayerDialogActionsProps) {
     const dismissDisabled = useContext(DismissDisabledContext);
     const isAlert = useContext(AlertContext);
+    const isDesktop = useContext(DesktopContext);
     const { layerDialog } = useKumoLocale();
     const label =
       dismissLabel ?? (isAlert ? layerDialog.cancel : layerDialog.close);
@@ -542,7 +562,12 @@ const LayerDialogActions = Object.assign(
     }
 
     return (
-      <div className="flex w-full shrink-0 items-center justify-between gap-2 pt-1.75">
+      <div
+        className={cn(
+          "flex w-full items-center justify-between gap-2",
+          isDesktop && "shrink-0 pt-1.75",
+        )}
+      >
         <LayerDialogDismiss disabled={dismissDisabled} label={label} />
         {children}
       </div>
@@ -561,12 +586,13 @@ function LayerDialogDismiss({
   disabled: boolean;
   label: string;
 }) {
+  const isDesktop = useContext(DesktopContext);
   const close = (closeProps: ComponentPropsWithoutRef<"button">) => (
     <Button
       {...closeProps}
       className="hover:bg-kumo-fill/50"
       disabled={disabled}
-      variant="ghost"
+      variant={isDesktop ? "ghost" : "secondary"}
     >
       {label}
     </Button>

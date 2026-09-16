@@ -312,7 +312,10 @@ describe("LayerDialog dismissal", () => {
     );
   });
 
-  it("does not turn a nested Root into an alert", () => {
+  it("keeps nested dialogs distinct and renders a backdrop for each layer", () => {
+    const initialBackdropCount = document.querySelectorAll(
+      "[data-layer-dialog-backdrop]",
+    ).length;
     const { getAllByRole, getByRole } = render(
       <LayerDialog.Alert open>
         <LayerDialog.Content>
@@ -335,6 +338,9 @@ describe("LayerDialog dismissal", () => {
     expect(getAllByRole("alertdialog", { hidden: true })).toHaveLength(1);
     expect(getByRole("dialog", { hidden: true })).toBeDefined();
     expect(getByRole("button", { hidden: true, name: "Close" })).toBeDefined();
+    expect(
+      document.querySelectorAll("[data-layer-dialog-backdrop]"),
+    ).toHaveLength(initialBackdropCount + 2);
   });
 
   it("describes the popup with its Description slot when present", () => {
