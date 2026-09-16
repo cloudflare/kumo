@@ -9,9 +9,9 @@ import ComponentExample from "~/components/docs/ComponentExample.astro";
 import ComponentSection from "~/components/docs/ComponentSection.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
-  InlineCopyTextAlternateTextDemo,
   InlineCopyTextBasicDemo,
   InlineCopyTextResourceRowDemo,
+  InlineCopyTextRichContentDemo,
 } from "~/components/demos/InlineCopyTextDemo";
 
 <ComponentSection>
@@ -50,9 +50,10 @@ import { InlineCopyText } from "@cloudflare/kumo";
 export default function Example() {
   return (
     <InlineCopyText
-      text="f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5"
       labels={{ copyAction: "Copy database ID", copied: "Database ID copied" }}
-    />
+    >
+      f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5
+    </InlineCopyText>
   );
 }
 ```
@@ -71,12 +72,12 @@ An enclosing Tailwind `group` can reveal the copy icon when the entire row is ho
   <InlineCopyTextResourceRowDemo client:visible />
 </ComponentExample>
 
-### Copy alternate text
+### Rich content
 
-Use `textToCopy` when the displayed label and copied value differ.
+String children are copied by default. When the children are not a string, provide the required `value` prop with the value to copy. `InlineCopyText` also accepts Text props such as `variant`, `size`, `bold`, `truncate`, and `as`; heading variants are not supported.
 
-<ComponentExample demo="InlineCopyTextAlternateTextDemo">
-  <InlineCopyTextAlternateTextDemo client:visible />
+<ComponentExample demo="InlineCopyTextRichContentDemo">
+  <InlineCopyTextRichContentDemo client:visible />
 </ComponentExample>
 
 </ComponentSection>

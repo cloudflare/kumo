@@ -6,10 +6,26 @@ import {
   useRef,
   useState,
   type ComponentPropsWithoutRef,
+  type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
+import {
+  Text,
+  type KumoTextSize,
+  type KumoTextVariant,
+  type TextProps,
+} from "../text/text";
 
 const COPIED_FEEDBACK_MS = 1500;
+
+function resolveCopyValue(children: ReactNode, value: string | undefined) {
+  if (value !== undefined) return value;
+  if (typeof children === "string") return children;
+
+  throw new Error(
+    "InlineCopyText requires a value prop when children is not a string.",
+  );
+}
 
 /**
  * InlineCopyText has no visual variants. The required exports are kept for the
@@ -22,7 +38,7 @@ export const KUMO_INLINE_COPY_TEXT_DEFAULT_VARIANTS = {} as const;
 /** Base classes shared by every InlineCopyText. */
 export const KUMO_INLINE_COPY_TEXT_STYLING = {
   baseClasses:
-    "group/inline-copy flex min-w-0 max-w-full cursor-pointer items-center gap-1 rounded-xs border-0 bg-transparent p-0 font-mono text-sm text-kumo-subtle hover:text-kumo-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+    "group/inline-copy flex min-w-0 max-w-full cursor-pointer items-center gap-1 rounded-xs border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
 } as const;
 
 export interface InlineCopyTextLabels {
@@ -32,30 +48,75 @@ export interface InlineCopyTextLabels {
   copied?: string;
 }
 
+type InlineCopyTextHeadingVariant = Extract<
+  KumoTextVariant,
+  `heading${string}`
+>;
+type InlineCopyTextVariant = Exclude<
+  KumoTextVariant,
+  InlineCopyTextHeadingVariant
+>;
+type InlineCopyTextCopyVariant = Exclude<
+  InlineCopyTextVariant,
+  "mono" | "mono-secondary"
+>;
+type InlineCopyTextMonospaceVariant = Extract<
+  InlineCopyTextVariant,
+  "mono" | "mono-secondary"
+>;
+
+type InlineCopyTextSharedTextProps = Pick<TextProps, "as" | "truncate">;
+
+type InlineCopyTextTextProps =
+  | (InlineCopyTextSharedTextProps & {
+      variant: InlineCopyTextCopyVariant;
+      size?: KumoTextSize;
+      bold?: boolean;
+    })
+  | (InlineCopyTextSharedTextProps & {
+      /** @default "mono-secondary" */
+      variant?: InlineCopyTextMonospaceVariant;
+      size?: "lg";
+      bold?: never;
+    });
+
+type InlineCopyTextContentProps =
+  | {
+      /** Text content to display. Its value is copied unless `value` is provided. */
+      children: string;
+      /** The value to copy. Defaults to `children` when `children` is a string. */
+      value?: string;
+    }
+  | {
+      /** Rich content to display. */
+      children: Exclude<ReactNode, string>;
+      /** The value to copy. Required when `children` is not a string. */
+      value: string;
+    };
+
 /**
  * InlineCopyText component props.
  *
  * @example
  * ```tsx
  * <InlineCopyText
- *   text="0c239dd2"
  *   labels={{ copyAction: "Copy database ID", copied: "Copied" }}
- * />
+ * >
+ *   0c239dd2
+ * </InlineCopyText>
  * ```
  */
-export interface InlineCopyTextProps extends Omit<
+export type InlineCopyTextProps = Omit<
   ComponentPropsWithoutRef<"button">,
-  "children" | "onCopy"
-> {
-  /** The text to display and copy to the clipboard. */
-  text: string;
-  /** If provided, this text is copied instead of the displayed `text`. */
-  textToCopy?: string;
-  /** Callback fired after text is copied successfully. */
-  onCopy?: () => void;
-  /** Accessible labels for localization. */
-  labels?: InlineCopyTextLabels;
-}
+  "children" | "onCopy" | "value"
+> &
+  InlineCopyTextTextProps &
+  InlineCopyTextContentProps & {
+    /** Callback fired after text is copied successfully. */
+    onCopy?: () => void;
+    /** Accessible labels for localization. */
+    labels?: InlineCopyTextLabels;
+  };
 
 /**
  * Compact, borderless copy control for IDs and other short values displayed
@@ -72,8 +133,13 @@ export const InlineCopyText = forwardRef<
 >(
   (
     {
-      text,
-      textToCopy,
+      children,
+      value,
+      variant = "mono-secondary",
+      size,
+      bold,
+      truncate = true,
+      as = "span",
       className,
       onClick,
       onCopy,
@@ -87,6 +153,7 @@ export const InlineCopyText = forwardRef<
   ) => {
     const [copied, setCopied] = useState(false);
     const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const valueToCopy = resolveCopyValue(children, value);
 
     useEffect(() => {
       return () => {
@@ -102,7 +169,7 @@ export const InlineCopyText = forwardRef<
       }
 
       try {
-        await navigator.clipboard.writeText(textToCopy ?? text);
+        await navigator.clipboard.writeText(valueToCopy);
         setCopied(true);
         resetTimeoutRef.current = setTimeout(() => {
           setCopied(false);
@@ -113,7 +180,35 @@ export const InlineCopyText = forwardRef<
         setCopied(false);
         console.warn("Clipboard copy failed", error);
       }
-    }, [onCopy, text, textToCopy]);
+    }, [onCopy, valueToCopy]);
+
+    const textHoverClasses =
+      variant === "mono-secondary"
+        ? "group-hover/inline-copy:text-kumo-default group-focus-visible/inline-copy:text-kumo-default"
+        : undefined;
+    const renderedText =
+      variant === "mono" || variant === "mono-secondary" ? (
+        <Text<InlineCopyTextMonospaceVariant>
+          as={as}
+          size={size === "lg" ? size : undefined}
+          truncate={truncate}
+          variant={variant}
+          DANGEROUS_className={textHoverClasses}
+        >
+          {children}
+        </Text>
+      ) : (
+        <Text<InlineCopyTextCopyVariant>
+          as={as}
+          bold={bold}
+          size={size}
+          truncate={truncate}
+          variant={variant}
+          DANGEROUS_className={textHoverClasses}
+        >
+          {children}
+        </Text>
+      );
 
     return (
       <button
@@ -130,7 +225,7 @@ export const InlineCopyText = forwardRef<
         }}
         aria-label={copied ? copiedLabel : copyAction}
       >
-        <span className="min-w-0 truncate">{text}</span>
+        {renderedText}
         {copied ? (
           <CheckIcon aria-hidden size={14} className="shrink-0" />
         ) : (

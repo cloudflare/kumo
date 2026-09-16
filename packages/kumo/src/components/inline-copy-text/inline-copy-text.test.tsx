@@ -33,8 +33,8 @@ describe("InlineCopyText", () => {
     await act(() => Promise.resolve());
   };
 
-  it("renders the text as an accessible copy button", () => {
-    render(<InlineCopyText text="namespace-id" />);
+  it("renders string children as an accessible copy button", () => {
+    render(<InlineCopyText>namespace-id</InlineCopyText>);
 
     expect(screen.getByText("namespace-id")).toBeTruthy();
     expect(
@@ -42,8 +42,8 @@ describe("InlineCopyText", () => {
     ).toBeTruthy();
   });
 
-  it("copies the text and announces success", async () => {
-    render(<InlineCopyText text="namespace-id" />);
+  it("copies string children and announces success", async () => {
+    render(<InlineCopyText>namespace-id</InlineCopyText>);
 
     await clickCopyButton();
 
@@ -52,10 +52,33 @@ describe("InlineCopyText", () => {
     expect(screen.getByText("Copied")).toBeTruthy();
   });
 
-  it("copies textToCopy instead of the displayed text", async () => {
+  it("copies value instead of string children when provided", async () => {
     render(
-      <InlineCopyText text="visible-id" textToCopy="complete-resource-id" />,
+      <InlineCopyText value="complete-resource-id">visible-id</InlineCopyText>,
     );
+
+    await clickCopyButton();
+
+    expect(writeText).toHaveBeenCalledWith("complete-resource-id");
+  });
+
+  it("renders rich children with Text props and copies value", async () => {
+    render(
+      <InlineCopyText
+        value="complete-resource-id"
+        variant="body"
+        size="lg"
+        bold
+        as="strong"
+      >
+        <span>Visible resource</span>
+      </InlineCopyText>,
+    );
+
+    const text = screen.getByText("Visible resource").closest("strong");
+    expect(text).toBeTruthy();
+    expect(text?.classList.contains("text-lg/[inherit]")).toBe(true);
+    expect(text?.classList.contains("font-medium")).toBe(true);
 
     await clickCopyButton();
 
@@ -65,9 +88,10 @@ describe("InlineCopyText", () => {
   it("supports localized accessible labels", async () => {
     render(
       <InlineCopyText
-        text="namespace-id"
         labels={{ copyAction: "Copy namespace ID", copied: "ID copied" }}
-      />,
+      >
+        namespace-id
+      </InlineCopyText>,
     );
 
     await clickCopyButton(
@@ -82,7 +106,9 @@ describe("InlineCopyText", () => {
     const onClick = vi.fn();
     const onCopy = vi.fn();
     render(
-      <InlineCopyText text="namespace-id" onClick={onClick} onCopy={onCopy} />,
+      <InlineCopyText onClick={onClick} onCopy={onCopy}>
+        namespace-id
+      </InlineCopyText>,
     );
 
     await clickCopyButton();
@@ -93,10 +119,9 @@ describe("InlineCopyText", () => {
 
   it("does not copy when the consumer prevents the click", async () => {
     render(
-      <InlineCopyText
-        text="namespace-id"
-        onClick={(event) => event.preventDefault()}
-      />,
+      <InlineCopyText onClick={(event) => event.preventDefault()}>
+        namespace-id
+      </InlineCopyText>,
     );
 
     await clickCopyButton();
@@ -107,7 +132,7 @@ describe("InlineCopyText", () => {
   it("keeps the copy label when writing to the clipboard fails", async () => {
     const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
     writeText.mockRejectedValue(new Error("Copy failed"));
-    render(<InlineCopyText text="namespace-id" />);
+    render(<InlineCopyText>namespace-id</InlineCopyText>);
 
     await clickCopyButton();
 
@@ -122,7 +147,7 @@ describe("InlineCopyText", () => {
 
   it("resets copied feedback after the last click", async () => {
     vi.useFakeTimers();
-    render(<InlineCopyText text="namespace-id" />);
+    render(<InlineCopyText>namespace-id</InlineCopyText>);
     const button = screen.getByRole("button", { name: "Copy to clipboard" });
 
     await clickCopyButton(button);
@@ -143,7 +168,9 @@ describe("InlineCopyText", () => {
   it("forwards its ref and merges custom classes", () => {
     const ref = createRef<HTMLButtonElement>();
     render(
-      <InlineCopyText ref={ref} text="namespace-id" className="custom-class" />,
+      <InlineCopyText ref={ref} className="custom-class">
+        namespace-id
+      </InlineCopyText>,
     );
 
     expect(ref.current?.tagName).toBe("BUTTON");

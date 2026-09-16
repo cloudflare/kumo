@@ -4,9 +4,10 @@ import { InlineCopyText } from "@cloudflare/kumo";
 export function InlineCopyTextBasicDemo() {
   return (
     <InlineCopyText
-      text="f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5"
       labels={{ copyAction: "Copy database ID", copied: "Database ID copied" }}
-    />
+    >
+      f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5
+    </InlineCopyText>
   );
 }
 
@@ -18,23 +19,28 @@ export function InlineCopyTextResourceRowDemo() {
         Production database
       </span>
       <InlineCopyText
-        text="f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5"
         labels={{
           copyAction: "Copy database ID",
           copied: "Database ID copied",
         }}
-      />
+      >
+        f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5
+      </InlineCopyText>
     </div>
   );
 }
 
-/** Display one value while copying a different value. */
-export function InlineCopyTextAlternateTextDemo() {
+/** Display rich content while copying its underlying value. */
+export function InlineCopyTextRichContentDemo() {
   return (
     <InlineCopyText
-      text="production-database"
-      textToCopy="f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5"
+      value="f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5"
+      variant="body"
       labels={{ copyAction: "Copy database ID", copied: "Database ID copied" }}
-    />
+    >
+      <span>
+        Database ID: <strong>f86b3f10…</strong>
+      </span>
+    </InlineCopyText>
   );
 }
