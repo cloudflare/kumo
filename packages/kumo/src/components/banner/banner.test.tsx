@@ -39,7 +39,7 @@ describe("Banner", () => {
     const cta = screen.getByTestId("cta");
     expect(cta.tagName).toBe("BUTTON");
     expect(cta.getAttribute("data-kumo-component")).toBe("Button");
-    expect(cta.className).toContain("text-white");
+    expect(cta.className).toContain("!text-kumo-button-emphasis");
     expect(cta.className).toContain("bg-(--kumo-button-emphasis-bg)");
     expect(
       cta.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
