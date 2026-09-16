@@ -20,7 +20,7 @@ export const KUMO_INPUT_VARIANTS = {
       description: "Extra small input for compact UIs",
     },
     sm: {
-      classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
+      classes: "h-7.5 gap-1 rounded-md px-2 text-base",
       description: "Small input for secondary fields",
     },
     base: {
@@ -52,7 +52,7 @@ export const KUMO_INPUT_DEFAULT_VARIANTS = {
 export const KUMO_INPUT_STYLING = {
   dimensions: {
     xs: { height: 20, paddingX: 6, fontSize: 12, borderRadius: 2, width: 160 },
-    sm: { height: 26, paddingX: 8, fontSize: 12, borderRadius: 6, width: 200 },
+    sm: { height: 30, paddingX: 8, fontSize: 14, borderRadius: 6, width: 200 },
     base: {
       height: 36,
       paddingX: 12,
