@@ -190,7 +190,7 @@ export function CodeHighlightedCopyButtonDemo() {
 export function CodeHighlightedPlainDemo() {
   return (
     <DemoProvider>
-      <div className="grid md:grid-cols-2 divide-x divide-kumo-line border border-kumo-line rounded">
+      <div className="grid divide-x divide-kumo-line rounded border border-kumo-line md:grid-cols-2">
         <div className="p-2">
           <CodeHighlighted
             showLineNumbers

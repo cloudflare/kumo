@@ -24,7 +24,7 @@ interface CodeExampleProps {
 export function CodeExample({ code }: CodeExampleProps) {
   return (
     <CodeHighlighted
-      className="code-block p-2 [&_pre]:text-base! p-6"
+      className="code-block p-2 p-6 [&_pre]:text-base!"
       code={code}
       lang="tsx"
       variant="plain"
