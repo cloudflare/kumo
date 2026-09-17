@@ -27,7 +27,7 @@ export const KUMO_BUTTON_GROUP_STYLING = {
     // and LinkButton groups retain the correct outer corners. The one-level
     // descendant selectors support Button's tooltip wrapper.
     "[&>*:not(:first-child):is(button,a)]:rounded-s-none",
-    "[&>*:not(:last-child):is(button,a)]:rounded-e-none",
+    "[&>*:is(button,a):has(~_:is(button,a))]:rounded-e-none",
     "[&>*:not(:first-child)>:is(button,a)]:rounded-s-none",
     "[&>*:not(:last-child)>:is(button,a)]:rounded-e-none",
     // Overlap borders/rings by 1px so adjacent buttons share a single seam

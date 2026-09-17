@@ -62,6 +62,19 @@ describe("ButtonGroup", () => {
     expect(screen.getByRole("group").className).toContain("flex-row");
   });
 
+  it("ignores non-control siblings mounted by an open overlay", () => {
+    render(
+      <ButtonGroup>
+        <Button>One</Button>
+        <Button>Two</Button>
+        <span data-portal-placeholder="" />
+      </ButtonGroup>,
+    );
+    expect(screen.getByRole("group").className).toContain(
+      "[&>*:is(button,a):has(~_:is(button,a))]:rounded-e-none",
+    );
+  });
+
   it("uses logical child-position selectors to join controls", () => {
     render(
       <ButtonGroup>
