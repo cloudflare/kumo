@@ -58,6 +58,7 @@ const componentItems: NavItem[] = [
   { label: "Empty", href: "/components/empty" },
   { label: "Flow", href: "/components/flow" },
   { label: "Grid", href: "/components/grid" },
+  { label: "Inline Copy Text", href: "/components/inline-copy-text" },
   { label: "Input", href: "/components/input" },
   { label: "InputArea", href: "/components/input-area" },
   { label: "InputGroup", href: "/components/input-group" },

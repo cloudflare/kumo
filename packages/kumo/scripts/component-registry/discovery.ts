@@ -32,6 +32,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   button: "Action",
   "button-group": "Action",
   "clipboard-text": "Action",
+  "inline-copy-text": "Action",
   // Display
   badge: "Display",
   breadcrumbs: "Display",

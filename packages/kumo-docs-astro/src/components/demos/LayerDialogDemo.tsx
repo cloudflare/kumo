@@ -246,6 +246,61 @@ export function LayerDialogCleanupDemo() {
   );
 }
 
+export function LayerDialogNestedDemo() {
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Edit deployment</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Edit deployment</LayerDialog.Title>
+        <LayerDialog.Description>
+          Review the deployment settings before saving.
+        </LayerDialog.Description>
+        <LayerDialog.Body>
+          <div className="flex flex-col gap-4">
+            <Text variant="secondary">
+              Opening a second dialog from this body should keep the first
+              dialog beneath it and restore focus when it closes.
+            </Text>
+            <LayerDialog.Alert>
+              <LayerDialog.Trigger
+                render={(props) => (
+                  <Button variant="secondary-destructive" {...props}>
+                    Discard changes
+                  </Button>
+                )}
+              />
+              <LayerDialog.Content size="sm">
+                <LayerDialog.Title>Discard unsaved changes?</LayerDialog.Title>
+                <LayerDialog.Description>
+                  Your deployment edits will be permanently lost.
+                </LayerDialog.Description>
+                <LayerDialog.Body>
+                  <Text variant="secondary">
+                    This nested alert is independently portaled and should
+                    dismiss back to the edit dialog.
+                  </Text>
+                </LayerDialog.Body>
+                <LayerDialog.Actions>
+                  <LayerDialog.Actions.Primary variant="destructive">
+                    Discard changes
+                  </LayerDialog.Actions.Primary>
+                </LayerDialog.Actions>
+              </LayerDialog.Content>
+            </LayerDialog.Alert>
+          </div>
+        </LayerDialog.Body>
+        <LayerDialog.Actions>
+          <LayerDialog.Actions.Primary>
+            Save changes
+          </LayerDialog.Actions.Primary>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+
 export function LayerDialogTopAlignDemo() {
   return (
     <LayerDialog.Root>
