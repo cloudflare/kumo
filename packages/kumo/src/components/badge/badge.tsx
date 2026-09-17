@@ -276,6 +276,7 @@ export function Badge({
       : "";
   return (
     <span
+      data-kumo-component="Badge"
       className={cn(
         badgeVariants({ variant, appearance }),
         icon && "pl-1.5",
