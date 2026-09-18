@@ -137,7 +137,9 @@ export function HomeGrid() {
       id: "button",
       Component: (
         <div className="grid gap-3">
-          <Button icon={PlusIcon}>Create Worker</Button>
+          <Button icon={PlusIcon} variant="destructive">
+            Create Worker
+          </Button>
           <Button variant="primary" icon={PlusIcon}>
             Create Worker
           </Button>
