@@ -13,6 +13,14 @@ const HIDE_SIDEBAR_CSS = `
   aside[data-sidebar-open] { display: none !important; }
   .main-content { margin-left: 0 !important; }
 `;
+const STABLE_SCREENSHOT_CSS = `
+  *, *::before, *::after {
+    animation: none !important;
+    caret-color: transparent !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+`;
 
 // Allowed origins for CORS. Restricted to known Cloudflare hosts — the worker
 // is internal tooling and should never be called from arbitrary origins.
@@ -57,6 +65,7 @@ interface PageAction {
 
 interface PageConfig {
   url: string;
+  captureId?: string;
   actions?: PageAction[];
   fullPage?: boolean;
   selector?: string;
@@ -81,6 +90,7 @@ interface BatchRequest {
 
 interface ScreenshotResult {
   url: string;
+  captureId?: string;
   sectionId?: string;
   sectionTitle?: string;
   image?: string;
@@ -186,7 +196,7 @@ function getScreenshotKey(
   const pathname = new URL(fullUrl).pathname.replace(/^\/+|\/+$/g, "");
   const pathPart = sanitizeKeyPart(pathname || "root");
   const namePart = sectionId
-    ? sanitizeKeyPart(sectionId)
+    ? `${sanitizeKeyPart(sectionId)}-${index + 1}`
     : `screenshot-${index + 1}`;
 
   return `${prefix}/${pathPart}/${namePart}.png`;
@@ -228,12 +238,14 @@ async function appendScreenshotResult(options: {
   storage?: StorageConfig;
   url: string;
   image: Buffer;
+  captureId?: string;
   sectionId?: string;
   sectionTitle?: string;
   debug?: ScreenshotResult["debug"];
 }): Promise<void> {
   const result: ScreenshotResult = {
     url: options.url,
+    captureId: options.captureId,
     sectionId: options.sectionId,
     sectionTitle: options.sectionTitle,
     debug: options.debug,
@@ -243,7 +255,7 @@ async function appendScreenshotResult(options: {
     const key = getScreenshotKey(
       options.storage.prefix,
       options.url,
-      options.sectionId,
+      options.sectionId ?? options.captureId,
       options.results.length,
     );
 
@@ -434,7 +446,11 @@ async function handleBatch(
       // Resolve and validate the full URL for this page.
       const urlCheck = getPageUrl(baseUrl, pageConfig.url);
       if (!urlCheck.ok) {
-        results.push({ url: pageConfig.url, error: urlCheck.error });
+        results.push({
+          url: pageConfig.url,
+          captureId: pageConfig.captureId,
+          error: urlCheck.error,
+        });
         continue;
       }
       const fullUrl = urlCheck.url;
@@ -454,13 +470,15 @@ async function handleBatch(
         const shouldHideSidebar = pageConfig.hideSidebar ?? globalHideSidebar;
         if (shouldHideSidebar) {
           await page.addStyleTag({ content: HIDE_SIDEBAR_CSS });
-          await new Promise((r) => setTimeout(r, 100));
         }
+
+        await stabilizePage(page);
 
         if (pageConfig.actions) {
           for (const action of pageConfig.actions) {
             await executeAction(page, action);
           }
+          await stabilizePage(page);
         }
 
         if (pageConfig.captureSections) {
@@ -476,8 +494,25 @@ async function handleBatch(
               }));
 
               if (attrs.sectionId) {
-                await element.scrollIntoView();
-                await new Promise((r) => setTimeout(r, 200));
+                await element.evaluate((el: Element) => {
+                  el.scrollIntoView({
+                    behavior: "auto",
+                    block: "center",
+                    inline: "nearest",
+                  });
+
+                  let parent = el.parentElement;
+                  while (parent) {
+                    parent.scrollTop = Math.round(parent.scrollTop);
+                    parent.scrollLeft = Math.round(parent.scrollLeft);
+                    parent = parent.parentElement;
+                  }
+                  window.scrollTo(
+                    Math.round(window.scrollX),
+                    Math.round(window.scrollY),
+                  );
+                });
+                await stabilizePage(page);
                 const shot = await element.screenshot({ type: "png" });
                 await appendScreenshotResult({
                   env,
@@ -485,6 +520,7 @@ async function handleBatch(
                   results,
                   storage: normalizedStorage,
                   url: fullUrl,
+                  captureId: pageConfig.captureId,
                   sectionId: attrs.sectionId,
                   sectionTitle: attrs.sectionTitle || attrs.sectionId,
                   image: Buffer.from(shot),
@@ -500,6 +536,7 @@ async function handleBatch(
               results,
               storage: normalizedStorage,
               url: fullUrl,
+              captureId: pageConfig.captureId,
               image: Buffer.from(shot),
             });
           }
@@ -513,6 +550,7 @@ async function handleBatch(
               results,
               storage: normalizedStorage,
               url: fullUrl,
+              captureId: pageConfig.captureId,
               image: Buffer.from(shot),
             });
           } else {
@@ -590,6 +628,7 @@ async function handleBatch(
               results,
               storage: normalizedStorage,
               url: fullUrl,
+              captureId: pageConfig.captureId,
               image: Buffer.from(shot),
               debug: { dimensions, viewport: newViewport },
             });
@@ -601,6 +640,7 @@ async function handleBatch(
               results,
               storage: normalizedStorage,
               url: fullUrl,
+              captureId: pageConfig.captureId,
               image: Buffer.from(shot),
             });
           }
@@ -608,6 +648,7 @@ async function handleBatch(
       } catch (error) {
         results.push({
           url: fullUrl,
+          captureId: pageConfig.captureId,
           error: error instanceof Error ? error.message : String(error),
         });
       } finally {
@@ -633,6 +674,33 @@ async function handleBatch(
 type PuppeteerPage = Awaited<
   ReturnType<Awaited<ReturnType<typeof puppeteer.launch>>["newPage"]>
 >;
+
+async function stabilizePage(page: PuppeteerPage): Promise<void> {
+  await page.addStyleTag({ content: STABLE_SCREENSHOT_CSS });
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all(
+      Array.from(document.images, (image) =>
+        image.decode().catch(() => undefined),
+      ),
+    );
+
+    document.getAnimations().forEach((animation) => {
+      animation.pause();
+      animation.currentTime = 0;
+    });
+    document.querySelectorAll("svg").forEach((svg) => {
+      if (svg instanceof SVGSVGElement && svg.pauseAnimations) {
+        svg.pauseAnimations();
+        svg.setCurrentTime(0);
+      }
+    });
+
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
+  });
+}
 
 async function executeAction(
   page: PuppeteerPage,

@@ -760,7 +760,10 @@ export function HomeGrid() {
   ];
 
   return (
-    <ul className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-hairline md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul
+      data-vr-home-grid
+      className="grid auto-rows-min grid-cols-1 gap-px bg-kumo-hairline md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+    >
       {components.map((c) => {
         const route = componentRoutes[c.id] || null;
         return (
