@@ -206,31 +206,40 @@ function PopoverContent({
         sideOffset={sideOffset}
         positionMethod={positionMethod}
       >
-        <PopoverBase.Popup
+        <div
           className={cn(
-            "flex origin-(--transform-origin) flex-col rounded-lg bg-kumo-base px-4 py-3 text-sm text-kumo-default",
-            "shadow-md outline outline-kumo-line",
-            "transition-[transform,scale,opacity] duration-150",
-            "data-starting-style:scale-90 data-starting-style:opacity-0",
-            "data-ending-style:scale-90 data-ending-style:opacity-0",
-            "data-instant:duration-0",
-            "kumo-popover-popup",
-            className,
+            "relative origin-(--transform-origin) overflow-visible transition-[scale] duration-150",
+            "[&:has(>.kumo-popover-popup[data-starting-style])]:scale-90",
+            "[&:has(>.kumo-popover-popup[data-ending-style])]:scale-90",
+            "[&:has(>.kumo-popover-popup[data-instant])]:duration-0",
           )}
         >
-          <PopoverBase.Arrow
+          <PopoverBase.Popup
             className={cn(
-              "flex",
-              "data-[side=bottom]:-top-2",
-              "data-[side=left]:right-[-13px] data-[side=left]:rotate-90",
-              "data-[side=right]:left-[-13px] data-[side=right]:-rotate-90",
-              "data-[side=top]:-bottom-2 data-[side=top]:rotate-180",
+              "flex flex-col rounded-lg bg-kumo-base px-4 py-3 text-sm text-kumo-default",
+              "shadow-md outline outline-kumo-line",
+              "transition-opacity duration-150",
+              "data-starting-style:opacity-0",
+              "data-ending-style:opacity-0",
+              "data-instant:duration-0",
+              "kumo-popover-popup",
+              className,
             )}
           >
-            <ArrowSvg />
-          </PopoverBase.Arrow>
-          {children}
-        </PopoverBase.Popup>
+            <PopoverBase.Arrow
+              className={cn(
+                "flex",
+                "data-[side=bottom]:-top-2",
+                "data-[side=left]:right-[-13px] data-[side=left]:rotate-90",
+                "data-[side=right]:left-[-13px] data-[side=right]:-rotate-90",
+                "data-[side=top]:-bottom-2 data-[side=top]:rotate-180",
+              )}
+            >
+              <ArrowSvg />
+            </PopoverBase.Arrow>
+            {children}
+          </PopoverBase.Popup>
+        </div>
       </PopoverBase.Positioner>
     </PopoverBase.Portal>
   );
