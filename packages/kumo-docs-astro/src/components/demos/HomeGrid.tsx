@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Checkbox,
   ClipboardText,
+  CloudflareLogo,
   Collapsible,
   Combobox,
   DatePicker,
@@ -19,6 +20,7 @@ import {
   InputArea,
   Label,
   LayerCard,
+  LayerDialog,
   Link,
   Loader,
   Meter,
@@ -61,6 +63,7 @@ const componentRoutes: Record<string, string> = {
   "button-group": "/components/button-group",
   checkbox: "/components/checkbox",
   "clipboard-text": "/components/clipboard-text",
+  "cloudflare-logo": "/components/cloudflare-logo",
   "code-highlighted": "/components/code-highlighted",
   collapsible: "/components/collapsible",
   autocomplete: "/components/autocomplete",
@@ -78,6 +81,7 @@ const componentRoutes: Record<string, string> = {
   "tag-input": "/components/tag-input",
   label: "/components/label",
   "layer-card": "/components/layer-card",
+  "layer-dialog": "/components/layer-dialog",
   link: "/components/link",
   loader: "/components/loader",
   meter: "/components/meter",
@@ -168,7 +172,7 @@ export function HomeGrid() {
       id: "tag-input",
       Component: (
         <TagInput
-          className="w-[280px]"
+          className="w-[280px] max-w-full"
           defaultValue={["frontend", "priority"]}
           placeholder="Add a label"
         />
@@ -202,7 +206,7 @@ export function HomeGrid() {
       name: "Toolbar",
       id: "toolbar",
       Component: (
-        <Toolbar>
+        <Toolbar className="max-w-full">
           <Toolbar.Input
             aria-label="Search DNS records"
             placeholder="Search..."
@@ -269,23 +273,6 @@ export function HomeGrid() {
           onClick={() => {
             setSwitchToggled(!switchToggled);
           }}
-        />
-      ),
-    },
-    {
-      name: "Input (with validation)",
-      id: "input",
-      Component: (
-        <Input
-          label="Email"
-          placeholder="name@example.com"
-          type="email"
-          variant="error"
-          error={{
-            message: "Please enter a valid email.",
-            match: "typeMismatch",
-          }}
-          description="The email to send notifications to."
         />
       ),
     },
@@ -416,6 +403,41 @@ export function HomeGrid() {
       ),
     },
     {
+      name: "LayerDialog",
+      id: "layer-dialog",
+      Component: (
+        <LayerDialog.Root>
+          <LayerDialog.Trigger
+            render={(props) => <Button {...props}>Open dialog</Button>}
+          />
+          <LayerDialog.Content size="sm">
+            <LayerDialog.Title>Keyboard shortcuts</LayerDialog.Title>
+            <LayerDialog.Description>
+              Search components and jump to a page.
+            </LayerDialog.Description>
+            <LayerDialog.Body>
+              <div className="flex items-center justify-between gap-4 rounded-lg bg-kumo-elevated px-3 py-2.5">
+                <Text size="sm" variant="secondary">
+                  Open command palette
+                </Text>
+                <span
+                  aria-label="Command K"
+                  className="flex shrink-0 items-center gap-1"
+                >
+                  <kbd className="min-w-6 rounded-md bg-kumo-base px-1.5 py-1 text-center text-xs font-medium text-kumo-default ring ring-kumo-line">
+                    ⌘
+                  </kbd>
+                  <kbd className="min-w-6 rounded-md bg-kumo-base px-1.5 py-1 text-center text-xs font-medium text-kumo-default ring ring-kumo-line">
+                    K
+                  </kbd>
+                </span>
+              </div>
+            </LayerDialog.Body>
+          </LayerDialog.Content>
+        </LayerDialog.Root>
+      ),
+    },
+    {
       name: "Loader",
       id: "loader",
       Component: <Loader />,
@@ -424,10 +446,10 @@ export function HomeGrid() {
       name: "SkeletonLine",
       id: "skeleton-line",
       Component: (
-        <div className="flex w-[200px] flex-col gap-2">
+        <div className="mr-auto flex w-full max-w-[200px] flex-col gap-2">
           <SkeletonLine minWidth={50} maxWidth={100} />
           <SkeletonLine minWidth={100} />
-          <SkeletonLine minWidth={50} maxWidth={150} />
+          <SkeletonLine minWidth={50} maxWidth={75} />
         </div>
       ),
     },
@@ -489,6 +511,11 @@ export function HomeGrid() {
           <Badge variant="red">Red</Badge>
         </div>
       ),
+    },
+    {
+      name: "CloudflareLogo",
+      id: "cloudflare-logo",
+      Component: <CloudflareLogo className="w-48 max-w-full" />,
     },
     {
       name: "Toast",
@@ -663,28 +690,42 @@ export function HomeGrid() {
       name: "Table",
       id: "table",
       Component: (
-        <Table className="w-[200px] text-sm">
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Name</Table.Head>
-              <Table.Head>Status</Table.Head>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>Worker 1</Table.Cell>
-              <Table.Cell>Active</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>Worker 2</Table.Cell>
-              <Table.Cell>Paused</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell>Worker 3</Table.Cell>
-              <Table.Cell>Active</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
+        <LayerCard className="w-full max-w-[280px] p-0">
+          <Table className="text-sm">
+            <Table.Header variant="compact">
+              <Table.Row>
+                <Table.Head>Name</Table.Head>
+                <Table.Head className="text-center">Status</Table.Head>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell>Worker 1</Table.Cell>
+                <Table.Cell className="text-center">
+                  <Badge appearance="dot" variant="success">
+                    Active
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Worker 2</Table.Cell>
+                <Table.Cell className="text-center">
+                  <Badge appearance="dot" variant="neutral">
+                    Paused
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>Worker 3</Table.Cell>
+                <Table.Cell className="text-center">
+                  <Badge appearance="dot" variant="success">
+                    Active
+                  </Badge>
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          </Table>
+        </LayerCard>
       ),
     },
     {
@@ -724,7 +765,7 @@ export function HomeGrid() {
         const route = componentRoutes[c.id] || null;
         return (
           <li
-            className="relative flex aspect-square items-center justify-center bg-kumo-canvas"
+            className="relative flex aspect-square w-full min-w-0 items-center justify-center self-stretch bg-kumo-canvas"
             key={c.name}
           >
             {route ? (
@@ -739,7 +780,7 @@ export function HomeGrid() {
                 {c.name}
               </span>
             )}
-            <div className="flex w-full items-center justify-center p-8 leading-normal tracking-normal">
+            <div className="flex w-full min-w-0 items-center justify-center p-8 leading-normal tracking-normal">
               {c.Component ?? (
                 <p className="text-base font-medium text-kumo-subtle">TBD</p>
               )}
