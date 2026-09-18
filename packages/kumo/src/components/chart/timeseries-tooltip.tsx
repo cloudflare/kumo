@@ -29,7 +29,7 @@ export type TooltipState = SeriesTooltipState | MarkerTooltipState;
 export interface TooltipContentProps {
   state: TooltipState;
   formatValue?: (v: number) => string;
-  formatTimestamp: (ts: number | string | Date) => string;
+  formatTimestamp: (timestamp: number) => string;
   footer?: string;
 }
 
@@ -77,7 +77,7 @@ function MarkerTooltipContent({
 }: {
   state: MarkerTooltipState;
   formatValue?: (v: number) => string;
-  formatTimestamp: (ts: number | string | Date) => string;
+  formatTimestamp: (timestamp: number) => string;
 }) {
   return (
     <>

@@ -238,6 +238,43 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
   string,
   Record<string, PropSchema>
 > = {
+  InlineCopyText: {
+    children: {
+      type: "ReactNode",
+      required: true,
+      description:
+        "Content to display. String children are copied unless `value` is provided.",
+    },
+    value: {
+      type: "string",
+      description:
+        "The value to copy. Required when `children` is not a string.",
+    },
+    variant: {
+      type: '"body" | "secondary" | "success" | "error" | "mono" | "mono-secondary"',
+      optional: true,
+      description:
+        "Text style variant. Supports every Text variant except heading variants.",
+      values: [
+        "body",
+        "secondary",
+        "success",
+        "error",
+        "mono",
+        "mono-secondary",
+      ],
+      default: '"mono-secondary"',
+    },
+    size: {
+      type: '"xs" | "sm" | "base" | "lg"',
+      description: "Text size. Supported values depend on the text variant.",
+    },
+    bold: {
+      type: "boolean",
+      description:
+        "Whether to use medium font weight. Only applies to body text variants.",
+    },
+  },
   Meter: {
     value: {
       type: "number",

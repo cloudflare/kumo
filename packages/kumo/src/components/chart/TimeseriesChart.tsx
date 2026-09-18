@@ -99,6 +99,13 @@ export interface TimeseriesChartProps {
    */
   tooltipValueFormat?: (value: number) => string;
   /**
+   * Custom formatter for tooltip timestamps.
+   * Receives the raw timestamp in milliseconds and returns a display string.
+   * Applies to standard series and marker tooltips. When omitted, timestamps
+   * are formatted using the browser's locale and time zone.
+   */
+  tooltipTimestampFormat?: (timestamp: number) => string;
+  /**
    * Footer text rendered below the series rows in the tooltip.
    * Intended for brief context such as data freshness or aggregation details.
    * Available for every `TimeseriesChart` configuration.
@@ -224,6 +231,11 @@ const DEFAULT_X_AXIS_TICK_COUNT = 5;
  *   yAxisName="Count"
  *   yAxisTickFormat={(value) => `${value / 1000}k`}
  *   tooltipValueFormat={(value) => `${value.toFixed(2)} req/s`}
+ *   tooltipTimestampFormat={(timestamp) => new Intl.DateTimeFormat(undefined, {
+ *     timeZone: "UTC",
+ *     dateStyle: "medium",
+ *     timeStyle: "medium",
+ *   }).format(timestamp)}
  *   onTimeRangeChange={(from, to) => setRange([from, to])}
  * />
  * ```
@@ -247,6 +259,7 @@ export const TimeseriesChart = forwardRef<
     yAxisTickCount,
     yAxisMinInterval,
     tooltipValueFormat,
+    tooltipTimestampFormat,
     tooltipFooter,
     onTimeRangeChange,
     height = 350,
@@ -783,7 +796,9 @@ export const TimeseriesChart = forwardRef<
               <TooltipContent
                 state={tooltipState}
                 formatValue={formatFn}
-                formatTimestamp={formatTimestamp}
+                formatTimestamp={
+                  tooltipTimestampFormat ?? formatDefaultTimestamp
+                }
                 footer={tooltipFooter}
               />
             </TooltipPrimitive.Popup>
@@ -1115,9 +1130,8 @@ const tooltipDateFormat = new Intl.DateTimeFormat(undefined, {
 });
 
 /**
- * Formats a timestamp for use in chart tooltips using the browser's locale.
- * Accepts a Unix timestamp in milliseconds, an ISO date string, or a `Date` object.
+ * Formats a Unix timestamp in milliseconds using the browser's locale and time zone.
  */
-function formatTimestamp(ts: number | string | Date): string {
-  return tooltipDateFormat.format(new Date(ts));
+function formatDefaultTimestamp(timestamp: number): string {
+  return tooltipDateFormat.format(timestamp);
 }

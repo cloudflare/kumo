@@ -16,6 +16,7 @@ import {
   LayerDialogCleanupDemo,
   LayerDialogInformationalDemo,
   LayerDialogMaxHeightDemo,
+  LayerDialogNestedDemo,
   LayerDialogPendingDemo,
   LayerDialogSizeDemo,
   LayerDialogTopAlignDemo,
@@ -88,7 +89,7 @@ export default function Example() {
 `LayerDialog.Content` accepts exactly one `Title`, one `Body`, an optional `Description`, and an optional `Actions`. It chooses its dismissal UI automatically:
 
 - Without `Actions`: show an X in the title frame and no footer.
-- With `Actions`: remove the X and show a footer with **Close** or **Cancel** and one primary action.
+- With `Actions`: remove the X and show **Close** or **Cancel** plus one primary action. On mobile, they remain visible beneath the scrolling body behind a hairline divider; on desktop, they remain in the fixed footer.
 
 Consumers cannot mix these layouts or add more primary actions. Use the X for read-only content, `Actions` when the user must commit a change, and `LayerDialog.Alert` for destructive or critical confirmations.
 
@@ -103,13 +104,13 @@ Consumers cannot mix these layouts or add more primary actions. Use the X for re
 
 <ComponentSection>
 ## Standard action
-Adding `Actions` selects a fixed footer with exactly one Kumo primary action and an automatic **Close** button. Consumers cannot add custom footer controls, change button sizes, or add extra CTAs. The primary action accepts `variant="primary"` (default) or `variant="destructive"`.
+Adding `Actions` selects exactly one Kumo primary action and an automatic **Close** button. On mobile, the actions stay visible beneath the scrolling body behind a hairline divider; on desktop, they occupy the fixed footer. Consumers cannot add custom controls, change button sizes, or add extra CTAs. The primary action accepts `variant="primary"` (default) or `variant="destructive"`.
 <ComponentExample demo="LayerDialogActionDemo"><LayerDialogActionDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
 ## Cancellation wording
-When `LayerDialog.Actions` is present, LayerDialog renders a secondary button that dismisses the dialog. Its default label is "Close", or "Cancel" for `LayerDialog.Alert`.
+When `LayerDialog.Actions` is present, LayerDialog renders a dismiss button. It uses the secondary button treatment on mobile and the ghost treatment in the desktop footer. Its default label is "Close", or "Cancel" for `LayerDialog.Alert`.
 
 Use `dismissLabel` only when this dialog needs more specific wording, such as "Keep editing" or "Discard changes". The label does not change the button's behavior: it always closes the dialog.
 <ComponentExample demo="LayerDialogCancelDemo"><LayerDialogCancelDemo client:load /></ComponentExample>
@@ -121,6 +122,12 @@ Use `dismissLabel` only when this dialog needs more specific wording, such as "K
 Pass `variant="destructive"` to the primary action when the confirmation is irreversible. Alerts that confirm a non-destructive but critical step keep the default primary styling.
 
 <ComponentExample demo="LayerDialogAlertDemo"><LayerDialogAlertDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Nested dialogs
+Nest one `LayerDialog.Root` or `LayerDialog.Alert` inside the parent dialog's body when the user must confirm a related action. Each dialog portals independently; Base UI keeps the nested drawer active above its parent and returns focus to the parent trigger when it closes. The nested drawer renders its own backdrop over the parent, so the parent remains intact but clearly inactive. No z-index overrides are needed.
+<ComponentExample demo="LayerDialogNestedDemo"><LayerDialogNestedDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>

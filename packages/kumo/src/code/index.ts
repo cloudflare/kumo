@@ -39,6 +39,7 @@ export { LANGUAGE_ALIASES } from "./types";
 export type {
   ShikiProviderProps,
   CodeHighlightedProps,
+  CodeHighlightedVariant,
   UseShikiHighlighterResult,
   ShikiEngine,
   BundledLanguage,

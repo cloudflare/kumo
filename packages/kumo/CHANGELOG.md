@@ -1,5 +1,30 @@
 # @cloudflare/kumo
 
+## 2.14.0
+
+### Minor Changes
+
+- da41be5: Update the bundled Base UI dependency to version 1.8.0 and expose its Combobox item collection and functional Toast update APIs.
+- 9ad4c57: Add `ButtonGroup` component for joining a small set of tightly-coupled buttons into a single control — most commonly a split button (a primary action next to a dropdown trigger). Handles layout only: children keep their own variant, size, and shape while the group flattens inner corners and overlaps borders so the buttons share one seam. Renders `role="group"`. For grouping multiple independent buttons or inputs, use `Toolbar` instead.
+- d0b18d6: Add sidebar open-change completion callbacks.
+- cd119ab: Add the TagInput component for creating and removing free-form values.
+- 5d19dee: Add `InlineCopyText`, a compact borderless copy control for short values in dense interfaces and table cells. It accepts string or rich children, Text typography props excluding heading variants, an explicit copied value for rich content, localized accessible labels, inline success feedback, and hover or focus icon reveal.
+- 77489b5: Add an optional `yAxisMinInterval` prop to `TimeseriesChart` for discrete data.
+- 6989681: Add support for footer text below `TimeseriesChart` tooltip values.
+- 06321ce: Add a strict responsive LayerDialog component with automatic dismissal composition, alert-dialog semantics, mobile drawer behavior, and application-wide defaults for its built-in close and cancel copy through `KumoLocaleProvider`.
+- d4a3e71: Add `GlobeMap`, an SVG orthographic globe with boundary-free hatched land, horizon-faded geographic markers, optional geographic guides, pointer and keyboard rotation, automatic rotation, Kumo-themed tooltips, and no WebGL or ECharts requirement.
+
+### Patch Changes
+
+- de80043: Reset the native fieldset padding in radio and checkbox groups.
+- 1175556: Refine Empty state typography and balance description text when it wraps.
+- 5b1e222: Support nested LayerDialog drawers with independently layered backdrops and responsive mobile actions.
+- 9c970e3: Add a plain CodeHighlighted variant for frameless, padding-free code blocks with a correctly positioned copy button.
+- cfffa4e: Document app-root CSS isolation for reliable stacking of portaled components.
+- 6e7bd82: Update formatting for Vite+ 0.3.1.
+- 78d05b6: Use the up/down double chevron in Combobox value and input triggers to match Select.
+- 86029e4: Add a visual regression contract for truncating text in default Tooltip triggers.
+
 ## 2.13.2
 
 ### Patch Changes

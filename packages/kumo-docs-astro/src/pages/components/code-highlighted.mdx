@@ -16,6 +16,7 @@ import {
   CodeHighlightedHighlightLinesDemo,
   CodeHighlightedLineNumbersDemo,
   CodeHighlightedCopyButtonDemo,
+  CodeHighlightedPlainDemo,
   CodeHighlightedFullFeaturedDemo,
   CodeHighlightedSharedProviderDemo,
   CodeHighlightedCssDemo,
@@ -171,6 +172,16 @@ export function App() {
 <p>Add a copy-to-clipboard button with `showCopyButton` .</p>
 <ComponentExample demo="CodeHighlightedCopyButtonDemo">
   <CodeHighlightedCopyButtonDemo client:visible />
+</ComponentExample>
+
+### Plain
+
+<p>
+  Use `variant="plain"` to remove the outer surface, border, and rounded corners
+  when embedding highlighted code inside another container.
+</p>
+<ComponentExample demo="CodeHighlightedPlainDemo">
+  <CodeHighlightedPlainDemo client:visible />
 </ComponentExample>
 
 ### Full Featured
@@ -567,6 +578,16 @@ import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
         <td class="py-2">
           Language identifier (must be in provider's languages)
         </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline/50">
+        <td class="py-2 pr-4">
+          <code>variant</code>
+        </td>
+        <td class="py-2 pr-4">
+          <code>"default" | "plain"</code>
+        </td>
+        <td class="py-2 pr-4">No</td>
+        <td class="py-2">Visual style of the code block</td>
       </tr>
       <tr class="border-b border-kumo-hairline/50">
         <td class="py-2 pr-4">

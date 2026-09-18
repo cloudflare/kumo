@@ -89,12 +89,14 @@ import {
 
 <ComponentSection>
 
-## Custom X-Axis Label Format
+## Custom Timestamp and Value Formats
 
 <p>
-  Use the <code>xAxisTickLabelFormat</code> prop to control how x-axis tick
-  labels are rendered. The formatter receives the raw timestamp in milliseconds
-  and returns a display string, overriding ECharts' built-in time formatting.
+  Use <code>xAxisTickFormat</code> to customize x-axis labels and
+  <code>tooltipTimestampFormat</code> to customize timestamps in standard and
+  marker tooltips. Both receive the raw timestamp in milliseconds, so the same
+  user-selected time zone can be applied consistently. Tooltip timestamps use
+  the browser's locale and time zone when no formatter is provided.
 </p>
 
   <ComponentExample demo="CustomAxisLabelFormatDemo">

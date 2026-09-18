@@ -1,6 +1,7 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Button } from "../../components/button";
+import { Text } from "../../components/text";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 
@@ -102,27 +103,42 @@ export function Empty({
   return (
     <div className={cn(emptyVariants({ size }), className)}>
       {icon}
-      <h2 className="text-2xl font-semibold">{title}</h2>
+      <div className="flex flex-col items-center gap-2.5">
+        {description ? (
+          <Text variant="heading" size="lg" as="h2">
+            {title}
+          </Text>
+        ) : (
+          <Text variant="secondary" size="base" as="h2">
+            {title}
+          </Text>
+        )}
 
-      {description && (
-        <p className="max-w-140 text-center text-kumo-subtle">{description}</p>
-      )}
+        {description && (
+          <Text
+            variant="secondary"
+            size="base"
+            DANGEROUS_className="max-w-140 text-center text-balance leading-normal"
+          >
+            {description}
+          </Text>
+        )}
+      </div>
 
       {commandLine && (
         <div
           className={cn(
-            "group/cmd relative inline-flex h-10 max-w-8/10 transform-gpu items-center gap-2 rounded-lg font-mono shadow-sm",
-            "bg-kumo-overlay pr-2 pl-3",
-            "transition-all duration-300 hover:border-kumo-interact/80 hover:shadow-md",
-            "border border-kumo-fill/60",
+            "relative inline-flex h-10 max-w-8/10 transform-gpu items-center gap-2 rounded-lg border border-white bg-kumo-overlay pr-2 pl-3 font-mono shadow-xs ring ring-kumo-line",
           )}
         >
-          <span className="text-xs text-kumo-inactive select-none">$</span>
-          <span className="no-scrollbar overflow-scroll text-base whitespace-nowrap text-kumo-brand">
-            {commandLine}
+          <span className="inline-flex min-w-0 items-baseline gap-2">
+            <span className="text-kumo-subtle select-none">$</span>
+            <span className="no-scrollbar overflow-scroll text-base whitespace-nowrap">
+              {commandLine}
+            </span>
           </span>
           <Button
-            className="group"
+            className="text-kumo-subtle"
             size="sm"
             variant="ghost"
             shape="square"
@@ -141,10 +157,7 @@ export function Empty({
                 className="animate-bounce-in text-kumo-success"
               />
             ) : (
-              <CopyIcon
-                size={16}
-                className="text-kumo-inactive group-hover:text-kumo-brand"
-              />
+              <CopyIcon size={16} />
             )}
           </Button>
         </div>

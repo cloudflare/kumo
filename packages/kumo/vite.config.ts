@@ -59,7 +59,10 @@ const packEntries = {
     "src/components/collapsible/index.ts",
   ),
   "components/field": resolve(__dirname, "src/components/field/index.ts"),
-
+  "components/inline-copy-text": resolve(
+    __dirname,
+    "src/components/inline-copy-text/index.ts",
+  ),
   "components/input": resolve(__dirname, "src/components/input/index.ts"),
   "components/input-group": resolve(
     __dirname,

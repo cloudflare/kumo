@@ -13,6 +13,7 @@ describe("Badge", () => {
     render(<Badge>Status</Badge>);
     const el = screen.getByText("Status");
     expect(el.tagName).toBe("SPAN");
+    expect(el.getAttribute("data-kumo-component")).toBe("Badge");
   });
 
   it("merges custom className", () => {

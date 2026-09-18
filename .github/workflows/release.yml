@@ -46,6 +46,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+          # Changesets shells out to npm for registry lookups. Allow that npm
+          # subprocess even though Vite+ configures pnpm as the package manager.
+          NPM_CONFIG_FORCE: true
 
       # Publish pkg-pr-new preview for Version Packages PR
       # (GITHUB_TOKEN PRs don't trigger workflows, so we do it here)

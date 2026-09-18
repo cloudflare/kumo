@@ -1,0 +1,90 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Inline Copy Text"
+description: "A compact, borderless copy control for short inline values."
+sourceFile: "components/inline-copy-text"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import {
+  InlineCopyTextBasicDemo,
+  InlineCopyTextResourceRowDemo,
+  InlineCopyTextRichContentDemo,
+} from "~/components/demos/InlineCopyTextDemo";
+
+<ComponentSection>
+  <ComponentExample demo="InlineCopyTextBasicDemo">
+    <InlineCopyTextBasicDemo client:visible />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+```tsx
+import { InlineCopyText } from "@cloudflare/kumo";
+```
+
+### Granular
+
+```tsx
+import { InlineCopyText } from "@cloudflare/kumo/components/inline-copy-text";
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Usage
+
+Use `InlineCopyText` for short identifiers and values in dense interfaces such as table cells. Use [`ClipboardText`](/components/clipboard-text) when the value should appear in a read-only, input-like field with an always-visible copy button.
+
+```tsx
+import { InlineCopyText } from "@cloudflare/kumo";
+
+export default function Example() {
+  return (
+    <InlineCopyText
+      labels={{ copyAction: "Copy database ID", copied: "Database ID copied" }}
+    >
+      f86b3f10-32e9-4db7-ae95-84a1b2c3d4e5
+    </InlineCopyText>
+  );
+}
+```
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Examples
+
+### Resource row
+
+An enclosing Tailwind `group` can reveal the copy icon when the entire row is hovered or receives focus within.
+
+<ComponentExample demo="InlineCopyTextResourceRowDemo">
+  <InlineCopyTextResourceRowDemo client:visible />
+</ComponentExample>
+
+### Rich content
+
+String children are copied by default. When the children are not a string, provide the required `value` prop with the value to copy. `InlineCopyText` also accepts Text props such as `variant`, `size`, `bold`, `truncate`, and `as`; heading variants are not supported.
+
+<ComponentExample demo="InlineCopyTextRichContentDemo">
+  <InlineCopyTextRichContentDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="InlineCopyText" />
+</ComponentSection>
