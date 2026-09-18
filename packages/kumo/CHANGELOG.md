@@ -1,5 +1,16 @@
 # @cloudflare/kumo
 
+## 2.15.0
+
+### Minor Changes
+
+- 88850d5: Add `tooltipTimestampFormat` to TimeseriesChart for formatting standard and marker tooltip timestamps in a consumer-selected time zone.
+
+### Patch Changes
+
+- a8c946a: Match a linkable Badge's focus outline to its pill shape.
+- 7d91721: Preserve ButtonGroup's outer corners while an overlay control is open.
+
 ## 2.14.0
 
 ### Minor Changes
