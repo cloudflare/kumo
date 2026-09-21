@@ -175,9 +175,9 @@ export default function Example() {
 ### Scrollable content
 
 <p>
-  Apply overflow styles to an inner scroll container, not to `Popover.Popup` or
-  the deprecated `Popover.Content`. This keeps `Popover.Arrow` outside the
-  clipping boundary while the content scrolls independently.
+  When the arrow and heading should remain fixed, place the overflowing content
+  in an inner scroll container. Existing overflow styles on the deprecated
+  `Popover.Content` remain supported by its fade-only transition.
 </p>
 <ComponentExample demo="PopoverOverflowDemo">
   <PopoverOverflowDemo client:load />
