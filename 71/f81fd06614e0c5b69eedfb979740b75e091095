@@ -1,0 +1,21 @@
+packages/kumo-docs-astro/src/components/demos/PopoverDemo.tsx
+  s_b6a265cbec2271::t_1f65c97157e95b 102-103,107,109,111-112
+packages/kumo-docs-astro/src/pages/components/popover.mdx
+  s_b6a265cbec2271::t_de8fa32a1dada8 191-193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "71f81fd06614e0c5b69eedfb979740b75e091095",
+  "prompts": {},
+  "sessions": {
+    "s_b6a265cbec2271": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c3fb-5d38-7632-80a1-ac3a3ab8a0af",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
