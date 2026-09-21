@@ -15,8 +15,8 @@ describe("Popover", () => {
           <Popover.Trigger>Open composed popover</Popover.Trigger>
           <Popover.Portal>
             <Popover.Positioner>
-              <Popover.Popup>
-                <Popover.Arrow />
+              <Popover.Popup className={() => "popup-state-class"}>
+                <Popover.Arrow className={() => "arrow-state-class"} />
                 <Popover.Title>Composed popover</Popover.Title>
               </Popover.Popup>
             </Popover.Positioner>
@@ -35,6 +35,8 @@ describe("Popover", () => {
     const arrow = popup.querySelector<HTMLElement>("[data-kumo-part='arrow']");
     expect(arrow).not.toBeNull();
     expect(arrow?.parentElement).toBe(popup);
+    expect(popup).toHaveClass("popup-state-class");
+    expect(arrow).toHaveClass("arrow-state-class");
     expect(getComputedStyle(popup).transformOrigin).not.toBe("50% 50%");
     expect(Number.parseFloat(getComputedStyle(popup).scale)).toBeLessThan(1);
     expect(getComputedStyle(popup).transitionProperty).toContain("scale");

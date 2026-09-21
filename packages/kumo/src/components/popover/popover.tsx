@@ -188,14 +188,16 @@ function PopoverPopup({ className, ...props }: PopoverPopupProps) {
     <PopoverBase.Popup
       data-kumo-component="Popover"
       data-kumo-part="popup"
-      className={cn(
-        popupBaseClassName,
-        "origin-(--transform-origin) transition-[transform,scale,opacity] duration-150",
-        "data-starting-style:scale-90 data-starting-style:opacity-0",
-        "data-ending-style:scale-90 data-ending-style:opacity-0",
-        "data-instant:duration-0",
-        className,
-      )}
+      className={(state) =>
+        cn(
+          popupBaseClassName,
+          "origin-(--transform-origin) transition-[transform,scale,opacity] duration-150",
+          "data-starting-style:scale-90 data-starting-style:opacity-0",
+          "data-ending-style:scale-90 data-ending-style:opacity-0",
+          "data-instant:duration-0",
+          typeof className === "function" ? className(state) : className,
+        )
+      }
       {...props}
     />
   );
@@ -220,14 +222,16 @@ function PopoverArrow({
     <PopoverBase.Arrow
       data-kumo-component="Popover"
       data-kumo-part="arrow"
-      className={cn(
-        "flex",
-        "data-[side=bottom]:-top-2",
-        "data-[side=left]:right-[-13px] data-[side=left]:rotate-90",
-        "data-[side=right]:left-[-13px] data-[side=right]:-rotate-90",
-        "data-[side=top]:-bottom-2 data-[side=top]:rotate-180",
-        className,
-      )}
+      className={(state) =>
+        cn(
+          "flex",
+          "data-[side=bottom]:-top-2",
+          "data-[side=left]:right-[-13px] data-[side=left]:rotate-90",
+          "data-[side=right]:left-[-13px] data-[side=right]:-rotate-90",
+          "data-[side=top]:-bottom-2 data-[side=top]:rotate-180",
+          typeof className === "function" ? className(state) : className,
+        )
+      }
       {...props}
     >
       {children}
