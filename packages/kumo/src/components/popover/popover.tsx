@@ -106,18 +106,165 @@ function PopoverTrigger({
 PopoverTrigger.displayName = "Popover.Trigger";
 
 // ============================================================================
+// Popover Portal
+// ============================================================================
+
+type BasePopoverPortalProps = ComponentPropsWithoutRef<
+  typeof PopoverBase.Portal
+>;
+
+export type PopoverPortalProps = Omit<BasePopoverPortalProps, "container"> & {
+  /**
+   * Container element for the portal. Use this to render the popover inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
+};
+
+function PopoverPortal({
+  container: containerProp,
+  ...props
+}: PopoverPortalProps) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
+  return <PopoverBase.Portal container={container} {...props} />;
+}
+
+PopoverPortal.displayName = "Popover.Portal";
+
+// ============================================================================
+// Popover Backdrop
+// ============================================================================
+
+type BasePopoverBackdropProps = ComponentPropsWithoutRef<
+  typeof PopoverBase.Backdrop
+>;
+
+export type PopoverBackdropProps = BasePopoverBackdropProps;
+
+function PopoverBackdrop(props: PopoverBackdropProps) {
+  return <PopoverBase.Backdrop {...props} />;
+}
+
+PopoverBackdrop.displayName = "Popover.Backdrop";
+
+// ============================================================================
+// Popover Positioner
+// ============================================================================
+
+type BasePopoverPositionerProps = ComponentPropsWithoutRef<
+  typeof PopoverBase.Positioner
+>;
+
+export type PopoverPositionerProps = BasePopoverPositionerProps;
+
+function PopoverPositioner({
+  side = KUMO_POPOVER_DEFAULT_VARIANTS.side,
+  sideOffset = 8,
+  ...props
+}: PopoverPositionerProps) {
+  return (
+    <PopoverBase.Positioner side={side} sideOffset={sideOffset} {...props} />
+  );
+}
+
+PopoverPositioner.displayName = "Popover.Positioner";
+
+// ============================================================================
+// Popover Popup
+// ============================================================================
+
+type BasePopoverPopupProps = ComponentPropsWithoutRef<typeof PopoverBase.Popup>;
+
+export type PopoverPopupProps = BasePopoverPopupProps;
+
+const popupBaseClassName =
+  "flex flex-col rounded-lg bg-kumo-base px-4 py-3 text-sm text-kumo-default shadow-md outline outline-kumo-line kumo-popover-popup";
+
+function PopoverPopup({ className, ...props }: PopoverPopupProps) {
+  return (
+    <PopoverBase.Popup
+      data-kumo-component="Popover"
+      data-kumo-part="popup"
+      className={cn(
+        popupBaseClassName,
+        "origin-(--transform-origin) transition-[transform,scale,opacity] duration-150",
+        "data-starting-style:scale-90 data-starting-style:opacity-0",
+        "data-ending-style:scale-90 data-ending-style:opacity-0",
+        "data-instant:duration-0",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+PopoverPopup.displayName = "Popover.Popup";
+
+// ============================================================================
+// Popover Arrow
+// ============================================================================
+
+type BasePopoverArrowProps = ComponentPropsWithoutRef<typeof PopoverBase.Arrow>;
+
+export type PopoverArrowProps = BasePopoverArrowProps;
+
+function PopoverArrow({
+  className,
+  children = <ArrowSvg />,
+  ...props
+}: PopoverArrowProps) {
+  return (
+    <PopoverBase.Arrow
+      data-kumo-component="Popover"
+      data-kumo-part="arrow"
+      className={cn(
+        "flex",
+        "data-[side=bottom]:-top-2",
+        "data-[side=left]:right-[-13px] data-[side=left]:rotate-90",
+        "data-[side=right]:left-[-13px] data-[side=right]:-rotate-90",
+        "data-[side=top]:-bottom-2 data-[side=top]:rotate-180",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </PopoverBase.Arrow>
+  );
+}
+
+PopoverArrow.displayName = "Popover.Arrow";
+
+// ============================================================================
+// Popover Viewport
+// ============================================================================
+
+type BasePopoverViewportProps = ComponentPropsWithoutRef<
+  typeof PopoverBase.Viewport
+>;
+
+export type PopoverViewportProps = BasePopoverViewportProps;
+
+function PopoverViewport(props: PopoverViewportProps) {
+  return <PopoverBase.Viewport {...props} />;
+}
+
+PopoverViewport.displayName = "Popover.Viewport";
+
+// ============================================================================
 // Popover Content
 // ============================================================================
 
 /** Alignment options for popover positioning */
 type PopoverAlign = "start" | "center" | "end";
 
-type BasePopoverPositionerProps = ComponentPropsWithoutRef<
-  typeof PopoverBase.Positioner
->;
-
 /**
  * Popover content panel props.
+ *
+ * @deprecated Prefer composing `Popover.Portal`, `Popover.Positioner`,
+ * `Popover.Popup`, and `Popover.Arrow` to match Base UI's structure.
  *
  * @example
  * ```tsx
@@ -193,12 +340,9 @@ function PopoverContent({
   className,
   container: containerProp,
 }: PopoverContentProps) {
-  const contextContainer = usePortalContainer();
-  const container = containerProp ?? contextContainer ?? undefined;
-
   return (
-    <PopoverBase.Portal container={container}>
-      <PopoverBase.Positioner
+    <PopoverPortal container={containerProp}>
+      <PopoverPositioner
         anchor={anchor}
         align={align}
         alignOffset={alignOffset}
@@ -207,32 +351,22 @@ function PopoverContent({
         positionMethod={positionMethod}
       >
         <PopoverBase.Popup
+          data-kumo-component="Popover"
+          data-kumo-part="popup"
           className={cn(
-            "flex flex-col rounded-lg bg-kumo-base px-4 py-3 text-sm text-kumo-default",
-            "shadow-md outline outline-kumo-line",
+            popupBaseClassName,
             "transition-opacity duration-150",
             "data-starting-style:opacity-0",
             "data-ending-style:opacity-0",
             "data-instant:duration-0",
-            "kumo-popover-popup",
             className,
           )}
         >
-          <PopoverBase.Arrow
-            className={cn(
-              "flex",
-              "data-[side=bottom]:-top-2",
-              "data-[side=left]:right-[-13px] data-[side=left]:rotate-90",
-              "data-[side=right]:left-[-13px] data-[side=right]:-rotate-90",
-              "data-[side=top]:-bottom-2 data-[side=top]:rotate-180",
-            )}
-          >
-            <ArrowSvg />
-          </PopoverBase.Arrow>
+          <PopoverArrow />
           {children}
         </PopoverBase.Popup>
-      </PopoverBase.Positioner>
-    </PopoverBase.Portal>
+      </PopoverPositioner>
+    </PopoverPortal>
   );
 }
 
@@ -361,19 +495,31 @@ function ArrowSvg(props: React.ComponentProps<"svg">) {
  *
  * @example
  * ```tsx
- * <Popover>
+ * <Popover.Root>
  *   <Popover.Trigger render={<Button>Open</Button>} />
- *   <Popover.Content>
- *     <Popover.Title>Notifications</Popover.Title>
- *     <Popover.Description>You are all caught up!</Popover.Description>
- *   </Popover.Content>
- * </Popover>
+ *   <Popover.Portal>
+ *     <Popover.Positioner>
+ *       <Popover.Popup>
+ *         <Popover.Arrow />
+ *         <Popover.Title>Notifications</Popover.Title>
+ *         <Popover.Description>You are all caught up!</Popover.Description>
+ *       </Popover.Popup>
+ *     </Popover.Positioner>
+ *   </Popover.Portal>
+ * </Popover.Root>
  * ```
  *
  * @see https://base-ui.com/react/components/popover
  */
 export const Popover = Object.assign(PopoverRoot, {
+  Root: PopoverRoot,
   Trigger: PopoverTrigger,
+  Portal: PopoverPortal,
+  Backdrop: PopoverBackdrop,
+  Positioner: PopoverPositioner,
+  Popup: PopoverPopup,
+  Arrow: PopoverArrow,
+  Viewport: PopoverViewport,
   Content: PopoverContent,
   Title: PopoverTitle,
   Description: PopoverDescription,
@@ -384,6 +530,12 @@ export const Popover = Object.assign(PopoverRoot, {
 export {
   PopoverRoot,
   PopoverTrigger,
+  PopoverPortal,
+  PopoverBackdrop,
+  PopoverPositioner,
+  PopoverPopup,
+  PopoverArrow,
+  PopoverViewport,
   PopoverContent,
   PopoverTitle,
   PopoverDescription,
