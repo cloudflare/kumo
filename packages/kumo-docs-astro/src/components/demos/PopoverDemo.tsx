@@ -99,17 +99,17 @@ export function PopoverCssVariablesDemo() {
   return (
     <div className="w-64">
       <Popover.Root>
-        <Popover.Trigger render={<Button className="w-full" />}>
-          Open anchor-sized Popover
+        <Popover.Trigger render={<Button className="h-24 w-full" />}>
+          Tall anchor
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Positioner className="max-h-[var(--available-height)] max-w-[var(--available-width)]">
-            <Popover.Popup className="w-[var(--anchor-width)] origin-[var(--transform-origin)]">
+            <Popover.Popup className="h-[var(--anchor-height)] w-[var(--anchor-width)] origin-[var(--transform-origin)]">
               <Popover.Arrow />
-              <Popover.Title>Anchor-sized popup</Popover.Title>
+              <Popover.Title>Same size as its anchor</Popover.Title>
               <Popover.Description>
-                Its width follows the trigger and its maximum size follows the
-                available viewport space.
+                Its height and width come directly from Base UI's anchor
+                variables.
               </Popover.Description>
             </Popover.Popup>
           </Popover.Positioner>
