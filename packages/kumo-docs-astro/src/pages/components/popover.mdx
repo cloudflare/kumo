@@ -13,6 +13,7 @@ import {
   PopoverHeroDemo,
   PopoverBasicDemo,
   PopoverLegacyContentDemo,
+  PopoverOverflowDemo,
   PopoverWithCloseDemo,
   PopoverPositionDemo,
   PopoverCustomContentDemo,
@@ -164,13 +165,22 @@ export default function Example() {
   `Popover.Content` is deprecated, but remains available so existing popovers do
   not break. It combines `Portal`, `Positioner`, `Popup`, and `Arrow` into one
   component and fades in smoothly using opacity only, without a scale or
-  transform animation. The example also applies `overflow-auto` directly to
-  `Content` to demonstrate that existing scrollable popovers remain compatible.
-  New popovers should compose the individual parts as shown in the basic
-  example, with scrolling on an inner container when needed.
+  transform animation. New popovers should compose the individual parts as
+  shown in the basic example.
 </p>
 <ComponentExample demo="PopoverLegacyContentDemo">
   <PopoverLegacyContentDemo client:load />
+</ComponentExample>
+
+### Scrollable content
+
+<p>
+  Apply overflow styles to an inner scroll container, not to `Popover.Popup` or
+  the deprecated `Popover.Content`. This keeps `Popover.Arrow` outside the
+  clipping boundary while the content scrolls independently.
+</p>
+<ComponentExample demo="PopoverOverflowDemo">
+  <PopoverOverflowDemo client:load />
 </ComponentExample>
 
 ### With Close Button

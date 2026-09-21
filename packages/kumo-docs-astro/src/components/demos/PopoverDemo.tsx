@@ -50,23 +50,46 @@ export function PopoverLegacyContentDemo() {
       <Popover.Trigger render={<Button variant="secondary" />}>
         Open legacy Content
       </Popover.Trigger>
-      <Popover.Content className="h-48 w-72 overflow-auto">
+      <Popover.Content className="w-72">
         <Popover.Title>Compatibility mode</Popover.Title>
         <Popover.Description>
           This legacy wrapper fades in without scaling or transforming.
         </Popover.Description>
-        <div className="mt-3 flex flex-col gap-2">
-          {Array.from({ length: 10 }, (_, index) => (
-            <div
-              key={index}
-              className="shrink-0 rounded-md bg-kumo-elevated px-3 py-2"
-            >
-              Scrollable item {index + 1}
-            </div>
-          ))}
-        </div>
       </Popover.Content>
     </Popover>
+  );
+}
+
+export function PopoverOverflowDemo() {
+  return (
+    <Popover.Root>
+      <Popover.Trigger render={<Button variant="secondary" />}>
+        Open scrollable Popover
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup className="w-72">
+            <Popover.Arrow />
+            <div className="max-h-48 overflow-auto" tabIndex={0}>
+              <Popover.Title>Scrollable content</Popover.Title>
+              <Popover.Description>
+                The popup and arrow stay outside the scrolling container.
+              </Popover.Description>
+              <div className="mt-3 flex flex-col gap-2">
+                {Array.from({ length: 10 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="shrink-0 rounded-md bg-kumo-elevated px-3 py-2"
+                  >
+                    Scrollable item {index + 1}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
