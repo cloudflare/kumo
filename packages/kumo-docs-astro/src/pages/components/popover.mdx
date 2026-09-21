@@ -187,10 +187,10 @@ export default function Example() {
 ### CSS variables
 
 <p>
-  Base UI exposes positioning measurements as CSS variables. This example uses
-  `--anchor-height` and `--anchor-width` to match the trigger,
-  `--available-height` and `--available-width` to respect the viewport, and
-  `--transform-origin` for the popup animation.
+  Base UI exposes the space between the trigger and the viewport edge as
+  `--available-height`. This example gives the popup a preferred height of
+  320px, then uses the variable as its maximum height so the popup shrinks and
+  its inner content scrolls when less space is available.
 </p>
 <ComponentExample demo="PopoverCssVariablesDemo">
   <PopoverCssVariablesDemo client:load />

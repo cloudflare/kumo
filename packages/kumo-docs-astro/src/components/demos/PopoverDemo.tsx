@@ -97,25 +97,34 @@ export function PopoverOverflowDemo() {
 
 export function PopoverCssVariablesDemo() {
   return (
-    <div className="w-64">
-      <Popover.Root>
-        <Popover.Trigger render={<Button className="h-24 w-full" />}>
-          Tall anchor
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Positioner className="max-h-[var(--available-height)] max-w-[var(--available-width)]">
-            <Popover.Popup className="h-[var(--anchor-height)] w-[var(--anchor-width)] origin-[var(--transform-origin)]">
-              <Popover.Arrow />
-              <Popover.Title>Same size as its anchor</Popover.Title>
-              <Popover.Description>
-                Its height and width come directly from Base UI's anchor
-                variables.
-              </Popover.Description>
-            </Popover.Popup>
-          </Popover.Positioner>
-        </Popover.Portal>
-      </Popover.Root>
-    </div>
+    <Popover.Root>
+      <Popover.Trigger render={<Button />}>Open tall Popover</Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup className="h-80 max-h-[var(--available-height)] w-72">
+            <Popover.Arrow />
+            <Popover.Title>Available-height popup</Popover.Title>
+            <Popover.Description>
+              The popup is 320px tall unless the viewport provides less space.
+            </Popover.Description>
+            <div
+              aria-label="Popover rows"
+              className="mt-3 min-h-0 flex-1 overflow-y-auto rounded-md border border-kumo-hairline outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
+              tabIndex={0}
+            >
+              {Array.from({ length: 12 }, (_, index) => (
+                <div
+                  key={index}
+                  className="border-b border-kumo-hairline px-3 py-2 last:border-b-0"
+                >
+                  Row {index + 1}
+                </div>
+              ))}
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
