@@ -1,0 +1,19 @@
+packages/kumo-docs-astro/src/pages/components/popover.mdx
+  s_b6a265cbec2271::t_2bf59c54fc569b 178-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "56968e89f0472bb502bbf1d38a4dbf54e089ccba",
+  "prompts": {},
+  "sessions": {
+    "s_b6a265cbec2271": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c3fb-5d38-7632-80a1-ac3a3ab8a0af",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
