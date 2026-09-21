@@ -70,21 +70,23 @@ export function PopoverOverflowDemo() {
         <Popover.Positioner>
           <Popover.Popup className="w-72">
             <Popover.Arrow />
-            <div className="max-h-48 overflow-auto" tabIndex={0}>
-              <Popover.Title>Scrollable content</Popover.Title>
-              <Popover.Description>
-                The popup and arrow stay outside the scrolling container.
-              </Popover.Description>
-              <div className="mt-3 flex flex-col gap-2">
-                {Array.from({ length: 10 }, (_, index) => (
-                  <div
-                    key={index}
-                    className="shrink-0 rounded-md bg-kumo-elevated px-3 py-2"
-                  >
-                    Scrollable item {index + 1}
-                  </div>
-                ))}
-              </div>
+            <Popover.Title>Recent notifications</Popover.Title>
+            <Popover.Description>
+              The list scrolls while the heading and arrow stay in place.
+            </Popover.Description>
+            <div
+              aria-label="Recent notifications"
+              className="mt-3 max-h-40 overflow-y-auto rounded-md border border-kumo-hairline outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
+              tabIndex={0}
+            >
+              {Array.from({ length: 10 }, (_, index) => (
+                <div
+                  key={index}
+                  className="border-b border-kumo-hairline px-3 py-2 last:border-b-0"
+                >
+                  Notification {index + 1}
+                </div>
+              ))}
             </div>
           </Popover.Popup>
         </Popover.Positioner>
