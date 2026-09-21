@@ -1,0 +1,21 @@
+packages/kumo/src/components/popover/popover.tsx
+  s_b6a265cbec2271::t_44d6cb95a13f5e 191-200,225-234
+packages/kumo/src/components/popover/popover.visual.browser.test.tsx
+  s_b6a265cbec2271::t_bbf4e56cdf1a39 18-19,38-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "72cc3cfdc4f103e2172221b8c374fbfb436777c1",
+  "prompts": {},
+  "sessions": {
+    "s_b6a265cbec2271": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c3fb-5d38-7632-80a1-ac3a3ab8a0af",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
