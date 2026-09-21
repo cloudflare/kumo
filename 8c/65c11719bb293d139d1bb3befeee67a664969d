@@ -1,0 +1,27 @@
+.changeset/friendly-spoons-float.md
+  s_b6a265cbec2271::t_d9f9a79addae0c 1-5
+packages/kumo-docs-astro/src/components/demos/PopoverDemo.tsx
+  s_b6a265cbec2271::t_556c2e82e2a405 7,13-24,30,32-43,47,50-54,56,58-66,73-96,100,104-115,117,121-130,132,136-145,147,151-160,167,169-193,199,207-224,287,291-318
+packages/kumo-docs-astro/src/pages/components/popover.mdx
+  s_b6a265cbec2271::t_72e2a22f4fa350 15,62,64-73,161-175,185-186,215-218,232,245-287,291-293
+packages/kumo/src/components/popover/popover.tsx
+  s_b6a265cbec2271::t_ca301489dee5b4 109,112-155,161-262,266-268,344-345,354-355,357,365,368-369,498,500-509,515,517-522,533-538
+packages/kumo/src/components/popover/popover.visual.browser.test.tsx
+  s_b6a265cbec2271::t_9ff7096ba36e79 6-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8c65c11719bb293d139d1bb3befeee67a664969d",
+  "prompts": {},
+  "sessions": {
+    "s_b6a265cbec2271": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c3fb-5d38-7632-80a1-ac3a3ab8a0af",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
