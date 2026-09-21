@@ -14,6 +14,7 @@ import {
   PopoverBasicDemo,
   PopoverLegacyContentDemo,
   PopoverOverflowDemo,
+  PopoverCssVariablesDemo,
   PopoverWithCloseDemo,
   PopoverPositionDemo,
   PopoverCustomContentDemo,
@@ -181,6 +182,18 @@ export default function Example() {
 </p>
 <ComponentExample demo="PopoverOverflowDemo">
   <PopoverOverflowDemo client:load />
+</ComponentExample>
+
+### CSS variables
+
+<p>
+  Base UI exposes positioning measurements as CSS variables. This example uses
+  `--anchor-width` to match the trigger, `--available-height` and
+  `--available-width` to respect the viewport, and `--transform-origin` for the
+  popup animation.
+</p>
+<ComponentExample demo="PopoverCssVariablesDemo">
+  <PopoverCssVariablesDemo client:load />
 </ComponentExample>
 
 ### With Close Button

@@ -95,6 +95,30 @@ export function PopoverOverflowDemo() {
   );
 }
 
+export function PopoverCssVariablesDemo() {
+  return (
+    <div className="w-64">
+      <Popover.Root>
+        <Popover.Trigger render={<Button className="w-full" />}>
+          Open anchor-sized Popover
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Positioner className="max-h-[var(--available-height)] max-w-[var(--available-width)]">
+            <Popover.Popup className="w-[var(--anchor-width)] origin-[var(--transform-origin)]">
+              <Popover.Arrow />
+              <Popover.Title>Anchor-sized popup</Popover.Title>
+              <Popover.Description>
+                Its width follows the trigger and its maximum size follows the
+                available viewport space.
+              </Popover.Description>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
+    </div>
+  );
+}
+
 export function PopoverWithCloseDemo() {
   return (
     <Popover.Root>
