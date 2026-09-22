@@ -72,12 +72,12 @@ export function LayerDialogActionDemo() {
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             disabled={!hostname || !name}
             onClick={() => undefined}
           >
             Save hostname
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -118,9 +118,9 @@ export function LayerDialogFormDemo() {
           </form>
         </LayerDialog.Body>
         <LayerDialog.Actions dismissLabel="Cancel">
-          <LayerDialog.Actions.Primary form={formId} type="submit">
+          <LayerDialog.Action form={formId} type="submit">
             Create deployment
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -146,12 +146,14 @@ export function LayerDialogSplitActionDemo() {
           </Text>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary>
+          <LayerDialog.Action
+            menu={[
+              <DropdownMenu.Item key="draft">Save as draft</DropdownMenu.Item>,
+            ]}
+            menuLabel="Save options"
+          >
             Save and deploy
-          </LayerDialog.Actions.Primary>
-          <LayerDialog.Actions.Menu aria-label="Save options">
-            <DropdownMenu.Item>Save as draft</DropdownMenu.Item>
-          </LayerDialog.Actions.Menu>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -189,12 +191,12 @@ export function LayerDialogCancelDemo() {
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions dismissLabel="Cancel">
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             disabled={!email || !name}
             onClick={() => undefined}
           >
             Save changes
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -247,13 +249,13 @@ export function LayerDialogAlertDemo() {
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             disabled={confirmation !== workerName}
             onClick={() => undefined}
             variant="destructive"
           >
             Delete Worker
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Alert>
@@ -280,7 +282,7 @@ export function LayerDialogPendingDemo() {
           </Text>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             loading={pending}
             onClick={() => {
               setPending(true);
@@ -288,7 +290,7 @@ export function LayerDialogPendingDemo() {
             }}
           >
             Save changes
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -358,18 +360,16 @@ export function LayerDialogNestedDemo() {
                   </Text>
                 </LayerDialog.Body>
                 <LayerDialog.Actions>
-                  <LayerDialog.Actions.Primary variant="destructive">
+                  <LayerDialog.Action variant="destructive">
                     Discard changes
-                  </LayerDialog.Actions.Primary>
+                  </LayerDialog.Action>
                 </LayerDialog.Actions>
               </LayerDialog.Content>
             </LayerDialog.Alert>
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary>
-            Save changes
-          </LayerDialog.Actions.Primary>
+          <LayerDialog.Action>Save changes</LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -428,9 +428,7 @@ export function LayerDialogMaxHeightDemo() {
             </ol>
           </LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>
-              Export log
-            </LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Export log</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Root>
@@ -471,9 +469,7 @@ export function LayerDialogSizeDemo() {
             </div>
           </LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>
-              Create deployment
-            </LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Create deployment</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Root>

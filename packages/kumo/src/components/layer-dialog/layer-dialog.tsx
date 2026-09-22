@@ -70,8 +70,6 @@ export type KumoLayerDialogVerticalAlign =
 const DesktopContext = createContext(false);
 const DismissDisabledContext = createContext(false);
 const AlertContext = createContext(false);
-const PrimaryActionVariantContext =
-  createContext<KumoLayerDialogPrimaryVariant>("primary");
 const LayerDialogPortalContainerContext = createContext<
   PortalContainer | undefined
 >(undefined);
@@ -510,12 +508,16 @@ function LayerDialogIconClose({
   return <DrawerBase.Close render={close} />;
 }
 
-export type LayerDialogPrimaryProps = Omit<
+export type LayerDialogActionProps = Omit<
   ComponentPropsWithoutRef<"button">,
   "children" | "className"
 > & {
   children: ReactNode;
   loading?: boolean;
+  /** Related actions exposed from the split-button menu. */
+  menu?: ReactNode[];
+  /** Accessible name for the split-button menu trigger. */
+  menuLabel?: string;
   /**
    * Visual emphasis of the primary action. Use `destructive` when confirming
    * an irreversible action such as a delete.
@@ -528,8 +530,8 @@ export type KumoLayerDialogPrimaryVariant = "primary" | "destructive";
 
 export interface LayerDialogActionsProps {
   /**
-   * Exactly one primary action, with an optional Actions.Menu for related
-   * alternate outcomes such as "Save as draft".
+   * Exactly one action. Pass `menu` to LayerDialog.Action for related actions
+   * such as "Save as draft".
    */
   children: ReactNode;
   /**
@@ -541,55 +543,46 @@ export interface LayerDialogActionsProps {
   dismissLabel?: string;
 }
 
-function LayerDialogPrimary({
+function LayerDialogAction({
   children,
   loading,
+  menu,
+  menuLabel = "More actions",
   variant = "primary",
   ...props
-}: LayerDialogPrimaryProps) {
-  return (
+}: LayerDialogActionProps) {
+  const container = useContext(LayerDialogPortalContainerContext);
+  const button = (
     <Button {...props} loading={loading} variant={variant}>
       {children}
     </Button>
   );
-}
 
-LayerDialogPrimary.displayName = "LayerDialog.Actions.Primary";
-
-export interface LayerDialogActionsMenuProps {
-  /** Menu items for alternate outcomes related to the primary action. */
-  children: ReactNode;
-  /** Accessible name for the alternate-action menu. */
-  "aria-label": string;
-}
-
-function LayerDialogActionsMenu({
-  children,
-  "aria-label": ariaLabel,
-}: LayerDialogActionsMenuProps) {
-  const variant = useContext(PrimaryActionVariantContext);
-  const container = useContext(LayerDialogPortalContainerContext);
+  if (!menu?.length) return button;
 
   return (
-    <DropdownMenu>
-      <DropdownMenu.Trigger
-        render={
-          <Button
-            aria-label={ariaLabel}
-            icon={<CaretDownIcon />}
-            shape="square"
-            variant={variant}
-          />
-        }
-      />
-      <DropdownMenu.Content container={container}>
-        {children}
-      </DropdownMenu.Content>
-    </DropdownMenu>
+    <ButtonGroup aria-label={menuLabel}>
+      {button}
+      <DropdownMenu>
+        <DropdownMenu.Trigger
+          render={
+            <Button
+              aria-label={menuLabel}
+              icon={<CaretDownIcon />}
+              shape="square"
+              variant={variant}
+            />
+          }
+        />
+        <DropdownMenu.Content container={container}>
+          {menu}
+        </DropdownMenu.Content>
+      </DropdownMenu>
+    </ButtonGroup>
   );
 }
 
-LayerDialogActionsMenu.displayName = "LayerDialog.Actions.Menu";
+LayerDialogAction.displayName = "LayerDialog.Action";
 
 const LayerDialogActions = Object.assign(
   function LayerDialogActions({
@@ -604,36 +597,22 @@ const LayerDialogActions = Object.assign(
       dismissLabel ?? (isAlert ? layerDialog.cancel : layerDialog.close);
 
     const actionChildren = Children.toArray(children);
-    const primary = actionChildren.filter(
+    const action = actionChildren.filter(
       (
         child,
       ): child is ReactElement<
-        LayerDialogPrimaryProps,
-        typeof LayerDialogPrimary
-      > => isValidElement(child) && child.type === LayerDialogPrimary,
-    );
-    const menu = actionChildren.filter(
-      (
-        child,
-      ): child is ReactElement<
-        LayerDialogActionsMenuProps,
-        typeof LayerDialogActionsMenu
-      > => isValidElement(child) && child.type === LayerDialogActionsMenu,
+        LayerDialogActionProps,
+        typeof LayerDialogAction
+      > => isValidElement(child) && child.type === LayerDialogAction,
     );
 
-    if (
-      primary.length !== 1 ||
-      menu.length > 1 ||
-      actionChildren.length !== primary.length + menu.length
-    ) {
+    if (action.length !== 1 || actionChildren.length !== action.length) {
       throw new Error(
-        "LayerDialog.Actions requires exactly one direct LayerDialog.Actions.Primary and an optional direct LayerDialog.Actions.Menu.",
+        "LayerDialog.Actions requires exactly one direct LayerDialog.Action.",
       );
     }
 
-    const primaryAction = primary[0];
-    const alternateMenu = menu[0];
-    const primaryVariant = primaryAction.props.variant ?? "primary";
+    const primaryAction = action[0];
 
     return (
       <div
@@ -643,22 +622,11 @@ const LayerDialogActions = Object.assign(
         )}
       >
         <LayerDialogDismiss disabled={dismissDisabled} label={label} />
-        {alternateMenu ? (
-          <ButtonGroup aria-label={alternateMenu.props["aria-label"]}>
-            {primaryAction}
-            <PrimaryActionVariantContext.Provider value={primaryVariant}>
-              {alternateMenu}
-            </PrimaryActionVariantContext.Provider>
-          </ButtonGroup>
-        ) : (
-          primaryAction
-        )}
+        {primaryAction}
       </div>
     );
   },
   {
-    Primary: LayerDialogPrimary,
-    Menu: LayerDialogActionsMenu,
     displayName: "LayerDialog.Actions",
   },
 );
@@ -693,6 +661,7 @@ const LayerDialog = Object.assign(LayerDialogRoot, {
   Title: LayerDialogTitle,
   Description: LayerDialogDescription,
   Body: LayerDialogBody,
+  Action: LayerDialogAction,
   Actions: LayerDialogActions,
 });
 
@@ -705,5 +674,6 @@ export {
   LayerDialogTitle,
   LayerDialogDescription,
   LayerDialogBody,
+  LayerDialogAction,
   LayerDialogActions,
 };
