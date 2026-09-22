@@ -1,0 +1,23 @@
+.changeset/split-layer-dialog-actions.md
+  s_d71d9a27a39c4d::t_2e4c14baabd758 1-5
+packages/kumo/src/components/layer-dialog/index.ts
+  s_d71d9a27a39c4d::t_ef86824b6d1282 5
+packages/kumo/src/index.ts
+  s_d71d9a27a39c4d::t_44d78f76c49a00 366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cae7b04eb9cbba83c54a9dbe2c41d0ecd033021f",
+  "prompts": {},
+  "sessions": {
+    "s_d71d9a27a39c4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ca4a-c52f-7051-ac66-eb45c77fcd11",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
