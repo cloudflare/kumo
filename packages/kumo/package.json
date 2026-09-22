@@ -473,7 +473,7 @@
     "@base-ui/react": "^1.8.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
-    "cnfast": "^0.0.8",
+    "cn": "0.3.0",
     "d3-geo": "^3.1.1",
     "motion": "^12.34.1",
     "react-day-picker": "^9.13.2",
