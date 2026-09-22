@@ -373,6 +373,12 @@ export {
   type KumoLayerDialogSize,
   type KumoLayerDialogVerticalAlign,
 } from "./components/layer-dialog";
+export {
+  WebMCPForm,
+  KUMO_WEB_MCP_FORM_VARIANTS,
+  KUMO_WEB_MCP_FORM_DEFAULT_VARIANTS,
+  type WebMCPFormProps,
+} from "./components/web-mcp-form";
 // PLOP_INJECT_EXPORT
 
 // Utils

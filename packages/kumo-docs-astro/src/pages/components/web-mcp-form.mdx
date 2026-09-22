@@ -1,0 +1,90 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "WebMCP Form"
+description: "Expose a native form as an experimental declarative WebMCP tool."
+sourceFile: "components/web-mcp-form"
+---
+
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import CodeBlock from "~/components/docs/CodeBlock.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import { WebMCPFormBasicDemo } from "~/components/demos/WebMCPFormDemo";
+
+<ComponentSection>
+  <ComponentExample demo="WebMCPFormBasicDemo">
+    <WebMCPFormBasicDemo client:load />
+  </ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+
+## Experimental
+
+WebMCP is an evolving browser API and is not available across all browsers. `WebMCPForm` renders a native `<form>`, so unsupported browsers retain ordinary form behavior.
+
+Kumo does not expose forms automatically. Applications must explicitly provide a tool name, description, and named controls. Parameter descriptions are recommended; experimental browsers may otherwise derive them from associated labels or ARIA descriptions.
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Installation
+
+### Barrel
+
+<CodeBlock code={`import { WebMCPForm } from "@cloudflare/kumo";`} lang="tsx" />
+
+### Granular
+
+<CodeBlock
+  code={`import { WebMCPForm } from "@cloudflare/kumo/components/web-mcp-form";`}
+  lang="tsx"
+/>
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Usage
+
+```tsx
+import { Button, Input, WebMCPForm } from "@cloudflare/kumo";
+
+export default function ProductSearch() {
+  return (
+    <WebMCPForm
+      toolName="search-products"
+      toolDescription="Search the product catalog by name"
+    >
+      <Input
+        name="query"
+        label="Product name"
+        required
+        toolParamDescription="Product name or keyword to search for"
+      />
+      <Button type="submit">Search</Button>
+    </WebMCPForm>
+  );
+}
+```
+
+Without `autoSubmit`, an agent can fill the form but the user remains responsible for reviewing and submitting it. Only enable `autoSubmit` for operations where automatic execution is appropriate.
+
+</ComponentSection>
+
+<ComponentSection>
+
+## Supported Controls
+
+This initial release supports declarative parameter descriptions on `Input` and `InputArea`, which render native form controls. Custom controls such as `Select`, `Checkbox`, `Switch`, `Radio`, and `Combobox` are not yet claimed as WebMCP-compatible because browser schema synthesis for hidden and custom controls is still evolving.
+
+</ComponentSection>
+
+<ComponentSection>
+
+## API Reference
+
+<PropsTable component="WebMCPForm" />
+
+</ComponentSection>
