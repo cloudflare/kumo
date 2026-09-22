@@ -1,0 +1,27 @@
+.changeset/fuzzy-waves-smile.md
+  s_376cace46ee679::t_d0e8bc5b88f56e 1-5
+packages/kumo/package.json
+  s_376cace46ee679::t_d81535166a272c 476
+packages/kumo/src/utils/cn.ts
+  s_376cace46ee679::t_dbe766fa28648d 1
+packages/kumo/vite.config.ts
+  s_376cace46ee679::t_e781607548e0e4 292
+pnpm-lock.yaml
+  s_376cace46ee679::t_62681ceab99fa4 227-229,3527-3529,9005
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "89631392d18bc60b85f4e3bac43b7e10e61d2896",
+  "prompts": {},
+  "sessions": {
+    "s_376cace46ee679": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c953-547f-7b52-93ce-8f496024085a",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
