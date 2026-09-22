@@ -1,0 +1,21 @@
+packages/kumo/package.json
+  s_376cace46ee679::t_7bf8a92b843165 476
+pnpm-lock.yaml
+  s_376cace46ee679::t_8020704d6ae4eb 228-229,3527-3528,9005
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3ef6dc1cec710559f9f6eac0879f10350d155f7f",
+  "prompts": {},
+  "sessions": {
+    "s_376cace46ee679": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c953-547f-7b52-93ce-8f496024085a",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
