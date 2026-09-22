@@ -1,0 +1,19 @@
+packages/kumo-docs-astro/src/pages/components/layer-dialog.mdx
+  s_d71d9a27a39c4d::t_4148062ea19222 122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e95d1042cc92cc0ca62f7878f4b1729f46f6f98d",
+  "prompts": {},
+  "sessions": {
+    "s_d71d9a27a39c4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ca4a-c52f-7051-ac66-eb45c77fcd11",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
