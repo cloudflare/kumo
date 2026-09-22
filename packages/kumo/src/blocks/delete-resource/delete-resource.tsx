@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogRoot,
@@ -15,6 +15,8 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { Banner } from "../../components/banner";
+
+const COPIED_FEEDBACK_MS = 1500;
 
 export const KUMO_DELETE_RESOURCE_VARIANTS = {
   size: {
@@ -78,13 +80,32 @@ export function DeleteResource({
 }: DeleteResourceProps) {
   const [confirmationInput, setConfirmationInput] = useState("");
   const [copied, setCopied] = useState(false);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyAttemptRef = useRef(0);
+  const openRef = useRef(open);
+  openRef.current = open;
 
   useEffect(() => {
     if (!open) {
+      copyAttemptRef.current += 1;
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+        resetTimeoutRef.current = null;
+      }
       setConfirmationInput("");
       setCopied(false);
     }
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      copyAttemptRef.current += 1;
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+        resetTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const normalizeForComparison = useCallback(
     (str: string) => (caseSensitive ? str : str.toLowerCase()),
@@ -101,9 +122,28 @@ export function DeleteResource({
   }, [isConfirmed, isDeleting, onDelete]);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(resourceName);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    const attempt = ++copyAttemptRef.current;
+    if (resetTimeoutRef.current !== null) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
+
+    try {
+      await navigator.clipboard.writeText(resourceName);
+      if (!openRef.current || copyAttemptRef.current !== attempt) return;
+
+      setCopied(true);
+      resetTimeoutRef.current = setTimeout(() => {
+        if (!openRef.current || copyAttemptRef.current !== attempt) return;
+        setCopied(false);
+        resetTimeoutRef.current = null;
+      }, COPIED_FEEDBACK_MS);
+    } catch (error) {
+      if (!openRef.current || copyAttemptRef.current !== attempt) return;
+
+      setCopied(false);
+      console.warn("Clipboard copy failed", error);
+    }
   }, [resourceName]);
 
   return (

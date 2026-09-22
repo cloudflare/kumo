@@ -19,6 +19,8 @@ import {
 } from "../input/input";
 import { Field, type FieldErrorMatch } from "../field/field";
 
+const COPIED_FEEDBACK_MS = 2000;
+
 export const KUMO_SENSITIVE_INPUT_VARIANTS = KUMO_INPUT_VARIANTS;
 
 export const KUMO_SENSITIVE_INPUT_DEFAULT_VARIANTS = {
@@ -133,6 +135,8 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
     );
 
     const [copied, setCopied] = useState(false);
+    const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const copyAttemptRef = useRef(0);
 
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -153,17 +157,37 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       [ref],
     );
 
-    // Reset copied state after 2 seconds
     useEffect(() => {
-      if (copied) {
-        const timeoutId = setTimeout(() => setCopied(false), 2000);
-        return () => clearTimeout(timeoutId);
-      }
-    }, [copied]);
+      return () => {
+        copyAttemptRef.current += 1;
+        if (resetTimeoutRef.current !== null) {
+          clearTimeout(resetTimeoutRef.current);
+          resetTimeoutRef.current = null;
+        }
+      };
+    }, []);
+
+    const showCopiedFeedback = useCallback((attempt: number) => {
+      if (copyAttemptRef.current !== attempt) return;
+
+      setCopied(true);
+      resetTimeoutRef.current = setTimeout(() => {
+        if (copyAttemptRef.current !== attempt) return;
+        setCopied(false);
+        resetTimeoutRef.current = null;
+      }, COPIED_FEEDBACK_MS);
+    }, []);
 
     const copyToClipboard = useCallback(
       async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+        const attempt = ++copyAttemptRef.current;
+        if (resetTimeoutRef.current !== null) {
+          clearTimeout(resetTimeoutRef.current);
+          resetTimeoutRef.current = null;
+        }
+
+        let copyError: unknown;
         try {
           if (
             typeof navigator !== "undefined" &&
@@ -171,13 +195,18 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             typeof navigator.clipboard.writeText === "function"
           ) {
             await navigator.clipboard.writeText(value);
-            setCopied(true);
-            onCopy?.();
+            if (copyAttemptRef.current === attempt) {
+              showCopiedFeedback(attempt);
+              onCopy?.();
+            }
             return;
           }
-        } catch {
+        } catch (error) {
+          copyError = error;
           // Fall through to manual fallback
         }
+
+        if (copyAttemptRef.current !== attempt) return;
 
         if (typeof document !== "undefined") {
           const textarea = document.createElement("textarea");
@@ -192,10 +221,17 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             : null;
           textarea.select();
           try {
-            document.execCommand("copy");
-            setCopied(true);
-            onCopy?.();
+            if (!document.execCommand("copy")) {
+              throw new Error("Copy command was not accepted");
+            }
+            if (copyAttemptRef.current === attempt) {
+              showCopiedFeedback(attempt);
+              onCopy?.();
+            }
           } catch (error) {
+            if (copyAttemptRef.current !== attempt) return;
+
+            setCopied(false);
             console.warn("Clipboard copy failed", error);
           } finally {
             document.body.removeChild(textarea);
@@ -204,9 +240,12 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
               selection?.addRange(previousRange);
             }
           }
+        } else if (copyAttemptRef.current === attempt) {
+          setCopied(false);
+          console.warn("Clipboard copy failed", copyError);
         }
       },
-      [value, onCopy],
+      [value, onCopy, showCopiedFeedback],
     );
 
     // Sync mode when value changes externally

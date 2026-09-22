@@ -3,6 +3,7 @@ import {
   cloneElement,
   isValidElement,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
   type ReactElement,
@@ -14,6 +15,8 @@ import { SkeletonLine } from "../../components/loader/skeleton-line";
 import { useLinkComponent } from "../../utils/link-provider";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+
+const COPIED_FEEDBACK_MS = 2000;
 
 /** Breadcrumbs size variant definitions. */
 export const KUMO_BREADCRUMBS_VARIANTS = {
@@ -145,21 +148,42 @@ function MobileEllipsis() {
 
 function Clipboard({ text }: { text: string }) {
   const [isCopied, setIsCopied] = useState(false);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyAttemptRef = useRef(0);
 
   useEffect(() => {
-    if (!isCopied) return;
-
-    const timeoutId = setTimeout(() => setIsCopied(false), 2000);
-    return () => clearTimeout(timeoutId);
-  }, [isCopied]);
+    return () => {
+      copyAttemptRef.current += 1;
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+        resetTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const handleCopyDeeplink = async () => {
     if (!text) return;
 
+    const attempt = ++copyAttemptRef.current;
+    if (resetTimeoutRef.current !== null) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
+
     try {
       await navigator.clipboard.writeText(text);
+      if (copyAttemptRef.current !== attempt) return;
+
       setIsCopied(true);
+      resetTimeoutRef.current = setTimeout(() => {
+        if (copyAttemptRef.current !== attempt) return;
+        setIsCopied(false);
+        resetTimeoutRef.current = null;
+      }, COPIED_FEEDBACK_MS);
     } catch (err) {
+      if (copyAttemptRef.current !== attempt) return;
+
+      setIsCopied(false);
       console.error("Failed to copy deeplink:", err);
     }
   };

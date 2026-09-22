@@ -1,9 +1,11 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "../../components/button";
 import { Text } from "../../components/text";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+
+const COPIED_FEEDBACK_MS = 1000;
 
 /** Empty state size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_EMPTY_VARIANTS = {
@@ -99,6 +101,45 @@ export function Empty({
   className,
 }: EmptyProps) {
   const [emptyStateCopied, setEmptyStateCopied] = useState<boolean>(false);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyAttemptRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      copyAttemptRef.current += 1;
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+        resetTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    if (!commandLine) return;
+
+    const attempt = ++copyAttemptRef.current;
+    if (resetTimeoutRef.current !== null) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
+
+    try {
+      await navigator.clipboard.writeText(commandLine);
+      if (copyAttemptRef.current !== attempt) return;
+
+      setEmptyStateCopied(true);
+      resetTimeoutRef.current = setTimeout(() => {
+        if (copyAttemptRef.current !== attempt) return;
+        setEmptyStateCopied(false);
+        resetTimeoutRef.current = null;
+      }, COPIED_FEEDBACK_MS);
+    } catch (error) {
+      if (copyAttemptRef.current !== attempt) return;
+
+      setEmptyStateCopied(false);
+      console.warn("Clipboard copy failed", error);
+    }
+  }, [commandLine]);
 
   return (
     <div className={cn(emptyVariants({ size }), className)}>
@@ -143,13 +184,7 @@ export function Empty({
             variant="ghost"
             shape="square"
             aria-label="Copy command"
-            onClick={async () => {
-              setEmptyStateCopied(true);
-              setTimeout(() => {
-                setEmptyStateCopied(false);
-              }, 1000);
-              await navigator.clipboard.writeText(commandLine);
-            }}
+            onClick={handleCopy}
           >
             {emptyStateCopied ? (
               <CheckIcon
