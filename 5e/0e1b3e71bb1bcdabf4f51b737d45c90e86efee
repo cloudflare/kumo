@@ -1,0 +1,21 @@
+.changeset/quiet-text-deprecations.md
+  s_bc95e11a39ffe0::t_b5ad2ac8b34936 1-5
+packages/kumo/src/components/text/text.test.tsx
+  s_bc95e11a39ffe0::t_64df8870b6f415 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5e0e1b3e71bb1bcdabf4f51b737d45c90e86efee",
+  "prompts": {},
+  "sessions": {
+    "s_bc95e11a39ffe0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c934-8d4f-7f12-99b8-2ade10533b4d",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
