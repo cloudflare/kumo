@@ -1,3 +1,8 @@
+// Stub Web Animations API for happy-dom (Base UI ScrollArea calls getAnimations).
+if (!HTMLElement.prototype.getAnimations) {
+  HTMLElement.prototype.getAnimations = () => [];
+}
+
 import {
   act,
   fireEvent,
@@ -8,6 +13,7 @@ import {
 import { describe, expect, it, vi } from "vite-plus/test";
 import { KumoPortalProvider } from "../../utils/portal-provider";
 import { KumoLocaleProvider } from "../../utils/locale-provider";
+import { DropdownMenu } from "../dropdown/dropdown";
 import {
   KUMO_LAYER_DIALOG_DEFAULT_VARIANTS,
   KUMO_LAYER_DIALOG_VARIANTS,
@@ -113,6 +119,78 @@ describe("LayerDialog", () => {
         </LayerDialog.Alert>,
       ),
     ).toThrow("LayerDialog.Alert requires");
+  });
+
+  it("accepts a split primary action group for related alternate outcomes", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary>
+              Save and deploy
+            </LayerDialog.Actions.Primary>
+            <LayerDialog.Actions.Menu aria-label="Save options">
+              <DropdownMenu.Item>Save as draft</DropdownMenu.Item>
+            </LayerDialog.Actions.Menu>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    expect(getByRole("group", { name: "Save options" })).toBeDefined();
+    const primary = getByRole("button", { name: "Save and deploy" });
+    const menu = getByRole("button", { name: "Save options" });
+    expect(primary.className).toContain("bg-(--kumo-button-emphasis-bg)");
+    expect(menu.className).toContain("bg-(--kumo-button-emphasis-bg)");
+    expect(
+      primary.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-brand)");
+    expect(
+      menu.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-brand)");
+  });
+
+  it("uses Content's portal container for alternate action menus", async () => {
+    const portalContainer = document.createElement("div");
+    document.body.append(portalContainer);
+
+    const { unmount } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content container={portalContainer}>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary>
+              Save and deploy
+            </LayerDialog.Actions.Primary>
+            <LayerDialog.Actions.Menu aria-label="Save options">
+              <DropdownMenu.Item>Save as draft</DropdownMenu.Item>
+            </LayerDialog.Actions.Menu>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    fireEvent.click(
+      within(portalContainer).getByRole("button", { name: "Save options" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        within(portalContainer).getByRole("menuitem", {
+          name: "Save as draft",
+        }),
+      ).toBeDefined();
+    });
+
+    unmount();
+    portalContainer.remove();
   });
 
   it("uses the portal container from KumoPortalProvider", () => {
@@ -250,6 +328,27 @@ describe("LayerDialog", () => {
     expect(
       actionsDialog.getByRole("button", { name: "Keep editing" }),
     ).toBeDefined();
+  });
+
+  it("rejects arbitrary extra footer controls", () => {
+    expect(() =>
+      render(
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Save changes</LayerDialog.Title>
+            <LayerDialog.Body>
+              Review your changes before saving.
+            </LayerDialog.Body>
+            <LayerDialog.Actions>
+              <LayerDialog.Actions.Primary>
+                Save and deploy
+              </LayerDialog.Actions.Primary>
+              <button type="button">Save as draft</button>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Root>,
+      ),
+    ).toThrow("optional direct LayerDialog.Actions.Menu");
   });
 });
 

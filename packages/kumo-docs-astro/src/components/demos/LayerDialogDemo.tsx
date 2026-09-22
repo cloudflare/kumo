@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   Button,
+  DropdownMenu,
   Input,
   LayerDialog,
   Text,
@@ -77,6 +78,80 @@ export function LayerDialogActionDemo() {
           >
             Save hostname
           </LayerDialog.Actions.Primary>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+
+export function LayerDialogFormDemo() {
+  const formId = useId();
+
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Create deployment</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Create deployment</LayerDialog.Title>
+        <LayerDialog.Description>
+          The browser owns the form’s native validation and submission state.
+        </LayerDialog.Description>
+        <LayerDialog.Body>
+          <form
+            id={formId}
+            className="flex flex-col gap-5"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <Input
+              label="Service name"
+              name="serviceName"
+              placeholder="production-api"
+              required
+            />
+            <Input
+              label="Compatibility date"
+              name="compatibilityDate"
+              required
+              type="date"
+            />
+          </form>
+        </LayerDialog.Body>
+        <LayerDialog.Actions dismissLabel="Cancel">
+          <LayerDialog.Actions.Primary form={formId} type="submit">
+            Create deployment
+          </LayerDialog.Actions.Primary>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+
+export function LayerDialogSplitActionDemo() {
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Edit deployment</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Save deployment</LayerDialog.Title>
+        <LayerDialog.Description>
+          Deploy these changes now, or keep them as a draft.
+        </LayerDialog.Description>
+        <LayerDialog.Body>
+          <Text variant="secondary">
+            The alternate save outcome is related to the primary action, so it
+            lives in its split-button menu rather than as an unrelated footer
+            button.
+          </Text>
+        </LayerDialog.Body>
+        <LayerDialog.Actions>
+          <LayerDialog.Actions.Primary>
+            Save and deploy
+          </LayerDialog.Actions.Primary>
+          <LayerDialog.Actions.Menu aria-label="Save options">
+            <DropdownMenu.Item>Save as draft</DropdownMenu.Item>
+          </LayerDialog.Actions.Menu>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>

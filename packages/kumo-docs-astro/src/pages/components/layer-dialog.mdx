@@ -14,11 +14,13 @@ import {
   LayerDialogAlertDemo,
   LayerDialogCancelDemo,
   LayerDialogCleanupDemo,
+  LayerDialogFormDemo,
   LayerDialogInformationalDemo,
   LayerDialogMaxHeightDemo,
   LayerDialogNestedDemo,
   LayerDialogPendingDemo,
   LayerDialogSizeDemo,
+  LayerDialogSplitActionDemo,
   LayerDialogTopAlignDemo,
 } from "~/components/demos/LayerDialogDemo";
 
@@ -91,7 +93,7 @@ export default function Example() {
 - Without `Actions`: show an X in the title frame and no footer.
 - With `Actions`: remove the X and show **Close** or **Cancel** plus one primary action. On mobile, they remain visible beneath the scrolling body behind a hairline divider; on desktop, they remain in the fixed footer.
 
-Consumers cannot mix these layouts or add more primary actions. Use the X for read-only content, `Actions` when the user must commit a change, and `LayerDialog.Alert` for destructive or critical confirmations.
+Consumers cannot mix these layouts or add more primary actions. `Actions` can optionally include one `Actions.Menu` for alternate outcomes related to its primary action. Use the X for read-only content, `Actions` when the user must commit a change, and `LayerDialog.Alert` for destructive or critical confirmations.
 
 `Description` renders directly beneath the title inside the sticky title frame and becomes the dialog's accessible description. Without one, the body copy describes the dialog instead.
 </ComponentSection>
@@ -104,8 +106,24 @@ Consumers cannot mix these layouts or add more primary actions. Use the X for re
 
 <ComponentSection>
 ## Standard action
-Adding `Actions` selects exactly one Kumo primary action and an automatic **Close** button. On mobile, the actions stay visible beneath the scrolling body behind a hairline divider; on desktop, they occupy the fixed footer. Consumers cannot add custom controls, change button sizes, or add extra CTAs. The primary action accepts `variant="primary"` (default) or `variant="destructive"`.
+Adding `Actions` selects exactly one Kumo primary action and an automatic **Close** button. On mobile, the actions stay visible beneath the scrolling body behind a hairline divider; on desktop, they occupy the fixed footer. Consumers cannot add unrelated footer controls or extra CTAs. The primary action accepts `variant="primary"` (default) or `variant="destructive"`.
 <ComponentExample demo="LayerDialogActionDemo"><LayerDialogActionDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Native forms
+
+`Body` and `Actions` are separate slots, so the native `<form>` belongs inside `Body` while its submit button belongs in `Actions`. Give the form an ID, then associate the primary action using its HTML `form` attribute. This preserves built-in validation and supports uncontrolled form fields without React state.
+
+<ComponentExample demo="LayerDialogFormDemo"><LayerDialogFormDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Alternate save outcomes
+
+When the primary submit action has closely related alternatives, add one `LayerDialog.Actions.Menu`. It renders a standardized split-button caret beside the primary action. Keep the automatic dismiss button separate. For example, **Save and deploy** can expose **Save as draft** without turning the footer into three peer actions.
+
+<ComponentExample demo="LayerDialogSplitActionDemo"><LayerDialogSplitActionDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
@@ -296,5 +314,15 @@ Height is derived from content and capped by the viewport. Following Base UI's i
     </tbody>
   </table>
 </div>
+
+### LayerDialog.Actions.Menu
+
+<p>
+  An optional menu of alternate outcomes related to the primary action. It
+  renders the standardized caret half of a split button and inherits the
+  primary action's variant. Provide an accessible label and one or more
+  `DropdownMenu.Item` children.
+</p>
+<PropsTable component="LayerDialog.Actions.Menu" />
 
 </ComponentSection>

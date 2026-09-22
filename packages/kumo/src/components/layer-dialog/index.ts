@@ -2,6 +2,7 @@ export {
   LayerDialog,
   type LayerDialogProps,
   type LayerDialogActionsProps,
+  type LayerDialogActionsMenuProps,
   type LayerDialogBodyProps,
   type LayerDialogContentProps,
   type LayerDialogDescriptionProps,

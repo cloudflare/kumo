@@ -13,8 +13,10 @@ import {
 import { Drawer as DrawerBase } from "@base-ui/react/drawer";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 import { useMediaQuery } from "@base-ui/react/unstable-use-media-query";
-import { X } from "@phosphor-icons/react";
+import { CaretDownIcon, X } from "@phosphor-icons/react";
 import { Button } from "../button/button";
+import { ButtonGroup } from "../button-group/button-group";
+import { DropdownMenu } from "../dropdown/dropdown";
 import { LayerCard } from "../layer-card/layer-card";
 import { Text } from "../text/text";
 import { cn } from "../../utils/cn";
@@ -68,6 +70,11 @@ export type KumoLayerDialogVerticalAlign =
 const DesktopContext = createContext(false);
 const DismissDisabledContext = createContext(false);
 const AlertContext = createContext(false);
+const PrimaryActionVariantContext =
+  createContext<KumoLayerDialogPrimaryVariant>("primary");
+const LayerDialogPortalContainerContext = createContext<
+  PortalContainer | undefined
+>(undefined);
 
 /**
  * Slots that `LayerDialog.Content` hands to `LayerDialog.Body` so the title
@@ -280,50 +287,52 @@ function LayerDialogContent({
   };
 
   return (
-    <DrawerBase.Portal container={container}>
-      <DrawerBase.Backdrop
-        forceRender
-        data-layer-dialog-backdrop
-        className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200"
-      />
-      {/*
+    <LayerDialogPortalContainerContext.Provider value={container}>
+      <DrawerBase.Portal container={container}>
+        <DrawerBase.Backdrop
+          forceRender
+          data-layer-dialog-backdrop
+          className="fixed inset-0 bg-kumo-recessed opacity-80 transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:opacity-0 data-[swiping]:duration-0 motion-reduce:transition-none sm:duration-200 sm:data-[ending-style]:duration-200"
+        />
+        {/*
         Desktop sizing contract: the viewport owns the vertical breathing room
         (via the verticalAlign variant) and the popup fills it with
         `max-h-full`, so the cap can never drift from the alignment padding.
         Mobile sheets are bottom-anchored and capped at 85dvh instead.
       */}
-      <DrawerBase.Viewport
-        className={cn(
-          "fixed inset-0 flex items-end justify-center sm:px-4",
-          verticalAlignConfig.classes,
-        )}
-        data-base-ui-swipe-ignore={
-          isDesktop || dismissDisabled || isAlert ? "" : undefined
-        }
-      >
-        <DrawerBase.Popup
-          render={isAlert ? <div role="alertdialog" /> : <div />}
+        <DrawerBase.Viewport
           className={cn(
-            "fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-full sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0",
-            sizeConfig.classes,
+            "fixed inset-0 flex items-end justify-center sm:px-4",
+            verticalAlignConfig.classes,
           )}
+          data-base-ui-swipe-ignore={
+            isDesktop || dismissDisabled || isAlert ? "" : undefined
+          }
         >
-          <LayerCard className="flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 shadow-[0_20px_25px_-5px_rgb(0_0_0/0.03),0_8px_10px_-6px_rgb(0_0_0/0.03)] max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-full sm:rounded-xl">
-            {!isDesktop && !isAlert && (
-              <div aria-hidden className="flex justify-center pt-1.5 pb-3">
-                <div className="h-1 w-10 rounded-full bg-kumo-fill" />
-              </div>
+          <DrawerBase.Popup
+            render={isAlert ? <div role="alertdialog" /> : <div />}
+            className={cn(
+              "fixed inset-x-0 bottom-0 flex max-h-[85dvh] min-h-0 w-full max-w-none [transform:translate3d(0,var(--drawer-swipe-movement-y,0px),0)] transform-gpu overflow-visible transition-[transform,opacity] duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform outline-none data-[ending-style]:[transform:translate3d(0,100%,0)] data-[ending-style]:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-[starting-style]:[transform:translate3d(0,100%,0)] data-[swiping]:duration-0 data-[swiping]:select-none motion-reduce:transition-none sm:static sm:max-h-full sm:[transform:translate3d(0,0,0)] sm:duration-200 sm:data-[ending-style]:[transform:translate3d(0,8px,0)] sm:data-[ending-style]:opacity-0 sm:data-[ending-style]:duration-200 sm:data-[starting-style]:[transform:translate3d(0,8px,0)] sm:data-[starting-style]:opacity-0",
+              sizeConfig.classes,
             )}
-            <DrawerBase.Content className="flex min-h-0 flex-col overflow-visible">
-              <BodySlotsContext.Provider value={bodySlots}>
-                {body.element}
-              </BodySlotsContext.Provider>
-              {isDesktop && actions.element}
-            </DrawerBase.Content>
-          </LayerCard>
-        </DrawerBase.Popup>
-      </DrawerBase.Viewport>
-    </DrawerBase.Portal>
+          >
+            <LayerCard className="flex max-h-[85dvh] min-h-0 w-full flex-col overflow-hidden rounded-none bg-kumo-elevated p-1.5 shadow-[0_20px_25px_-5px_rgb(0_0_0/0.03),0_8px_10px_-6px_rgb(0_0_0/0.03)] max-sm:border-t max-sm:border-kumo-hairline max-sm:shadow-xs max-sm:ring-0 sm:max-h-full sm:rounded-xl">
+              {!isDesktop && !isAlert && (
+                <div aria-hidden className="flex justify-center pt-1.5 pb-3">
+                  <div className="h-1 w-10 rounded-full bg-kumo-fill" />
+                </div>
+              )}
+              <DrawerBase.Content className="flex min-h-0 flex-col overflow-visible">
+                <BodySlotsContext.Provider value={bodySlots}>
+                  {body.element}
+                </BodySlotsContext.Provider>
+                {isDesktop && actions.element}
+              </DrawerBase.Content>
+            </LayerCard>
+          </DrawerBase.Popup>
+        </DrawerBase.Viewport>
+      </DrawerBase.Portal>
+    </LayerDialogPortalContainerContext.Provider>
   );
 }
 
@@ -518,7 +527,11 @@ export type LayerDialogPrimaryProps = Omit<
 export type KumoLayerDialogPrimaryVariant = "primary" | "destructive";
 
 export interface LayerDialogActionsProps {
-  children: ReactElement<LayerDialogPrimaryProps>;
+  /**
+   * Exactly one primary action, with an optional Actions.Menu for related
+   * alternate outcomes such as "Save as draft".
+   */
+  children: ReactNode;
   /**
    * Text of the automatic dismiss button. Say "Cancel" only when the
    * workflow has a real cancel outcome. Translate it for non-English
@@ -543,6 +556,41 @@ function LayerDialogPrimary({
 
 LayerDialogPrimary.displayName = "LayerDialog.Actions.Primary";
 
+export interface LayerDialogActionsMenuProps {
+  /** Menu items for alternate outcomes related to the primary action. */
+  children: ReactNode;
+  /** Accessible name for the alternate-action menu. */
+  "aria-label": string;
+}
+
+function LayerDialogActionsMenu({
+  children,
+  "aria-label": ariaLabel,
+}: LayerDialogActionsMenuProps) {
+  const variant = useContext(PrimaryActionVariantContext);
+  const container = useContext(LayerDialogPortalContainerContext);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger
+        render={
+          <Button
+            aria-label={ariaLabel}
+            icon={<CaretDownIcon />}
+            shape="square"
+            variant={variant}
+          />
+        }
+      />
+      <DropdownMenu.Content container={container}>
+        {children}
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+}
+
+LayerDialogActionsMenu.displayName = "LayerDialog.Actions.Menu";
+
 const LayerDialogActions = Object.assign(
   function LayerDialogActions({
     children,
@@ -555,11 +603,37 @@ const LayerDialogActions = Object.assign(
     const label =
       dismissLabel ?? (isAlert ? layerDialog.cancel : layerDialog.close);
 
-    if (!isValidElement(children) || children.type !== LayerDialogPrimary) {
+    const actionChildren = Children.toArray(children);
+    const primary = actionChildren.filter(
+      (
+        child,
+      ): child is ReactElement<
+        LayerDialogPrimaryProps,
+        typeof LayerDialogPrimary
+      > => isValidElement(child) && child.type === LayerDialogPrimary,
+    );
+    const menu = actionChildren.filter(
+      (
+        child,
+      ): child is ReactElement<
+        LayerDialogActionsMenuProps,
+        typeof LayerDialogActionsMenu
+      > => isValidElement(child) && child.type === LayerDialogActionsMenu,
+    );
+
+    if (
+      primary.length !== 1 ||
+      menu.length > 1 ||
+      actionChildren.length !== primary.length + menu.length
+    ) {
       throw new Error(
-        "LayerDialog.Actions requires exactly one direct LayerDialog.Actions.Primary.",
+        "LayerDialog.Actions requires exactly one direct LayerDialog.Actions.Primary and an optional direct LayerDialog.Actions.Menu.",
       );
     }
+
+    const primaryAction = primary[0];
+    const alternateMenu = menu[0];
+    const primaryVariant = primaryAction.props.variant ?? "primary";
 
     return (
       <div
@@ -569,12 +643,22 @@ const LayerDialogActions = Object.assign(
         )}
       >
         <LayerDialogDismiss disabled={dismissDisabled} label={label} />
-        {children}
+        {alternateMenu ? (
+          <ButtonGroup aria-label={alternateMenu.props["aria-label"]}>
+            {primaryAction}
+            <PrimaryActionVariantContext.Provider value={primaryVariant}>
+              {alternateMenu}
+            </PrimaryActionVariantContext.Provider>
+          </ButtonGroup>
+        ) : (
+          primaryAction
+        )}
       </div>
     );
   },
   {
     Primary: LayerDialogPrimary,
+    Menu: LayerDialogActionsMenu,
     displayName: "LayerDialog.Actions",
   },
 );
