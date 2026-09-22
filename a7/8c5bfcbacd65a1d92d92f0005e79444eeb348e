@@ -1,0 +1,29 @@
+packages/kumo/src/index.ts
+  s_d71d9a27a39c4d::t_44d78f76c49a00 366
+.changeset/split-layer-dialog-actions.md
+  s_d71d9a27a39c4d::t_2e4c14baabd758 1-5
+packages/kumo/src/components/layer-dialog/index.ts
+  s_d71d9a27a39c4d::t_ef86824b6d1282 5
+packages/kumo-docs-astro/src/pages/components/layer-dialog.mdx
+  s_d71d9a27a39c4d::t_f4fdc956fb0d5a 17,23,96,109,113-128,318-327
+packages/kumo/src/components/layer-dialog/layer-dialog.test.tsx
+  s_d71d9a27a39c4d::t_737634506dfa4c 11,119-151,288-308
+packages/kumo/src/components/layer-dialog/layer-dialog.tsx
+  s_d71d9a27a39c4d::t_08523f9700ce1c 16,18-19,73-74,525-529,554-585,598-620,622,626-629,638-647,653
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a78c5bfcbacd65a1d92d92f0005e79444eeb348e",
+  "prompts": {},
+  "sessions": {
+    "s_d71d9a27a39c4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ca4a-c52f-7051-ac66-eb45c77fcd11",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
