@@ -3,6 +3,45 @@ import { render } from "vitest-browser-react";
 import { Popover } from "./popover";
 
 describe("Popover", () => {
+  test("uses Base UI composition and scales from the positioned origin", async () => {
+    const { getByRole } = await render(
+      <>
+        <style>{`
+          .kumo-popover-popup {
+            transition-duration: 10s !important;
+          }
+        `}</style>
+        <Popover.Root>
+          <Popover.Trigger>Open composed popover</Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner>
+              <Popover.Popup className={() => "popup-state-class"}>
+                <Popover.Arrow className={() => "arrow-state-class"} />
+                <Popover.Title>Composed popover</Popover.Title>
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
+      </>,
+    );
+
+    await getByRole("button", { name: "Open composed popover" }).click();
+
+    const popup = getByRole("dialog").element();
+    await expect
+      .poll(() => Number.parseFloat(getComputedStyle(popup).opacity))
+      .toBeGreaterThan(0);
+
+    const arrow = popup.querySelector<HTMLElement>("[data-kumo-part='arrow']");
+    expect(arrow).not.toBeNull();
+    expect(arrow?.parentElement).toBe(popup);
+    expect(popup).toHaveClass("popup-state-class");
+    expect(arrow).toHaveClass("arrow-state-class");
+    expect(getComputedStyle(popup).transformOrigin).not.toBe("50% 50%");
+    expect(Number.parseFloat(getComputedStyle(popup).scale)).toBeLessThan(1);
+    expect(getComputedStyle(popup).transitionProperty).toContain("scale");
+  });
+
   test("keeps the arrow visible while popup content scrolls during the opening transition", async () => {
     const { getByRole } = await render(
       <>
