@@ -5,11 +5,12 @@ packages/kumo/src/components/layer-dialog/index.ts
 packages/kumo/src/components/layer-dialog/layer-dialog.tsx
   s_d71d9a27a39c4d::t_08523f9700ce1c 16,18-19,73-77,290-297,303,305-306,308-310,312-316,318-335,530-534,559-593,606-628,630,634-637,646-655,661
 packages/kumo-docs-astro/src/pages/components/layer-dialog.mdx
-  s_d71d9a27a39c4d::t_f4fdc956fb0d5a 17,23,96,109,113-128,318-327
+  s_d71d9a27a39c4d::t_f4fdc956fb0d5a 17,23,96,109,113-128,113-121,123-128,318-327
 packages/kumo/src/index.ts
   s_d71d9a27a39c4d::t_44d78f76c49a00 366
 packages/kumo/src/components/layer-dialog/layer-dialog.test.tsx
   s_d71d9a27a39c4d::t_737634506dfa4c 16,124-195,332-352
+  s_d71d9a27a39c4d::t_effc644d4fe6c9 1-5
 packages/kumo-docs-astro/src/components/demos/LayerDialogDemo.tsx
   s_d71d9a27a39c4d::t_748a2ca2ae87c6 1,4,87-160
 ---
