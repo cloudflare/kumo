@@ -1,0 +1,23 @@
+packages/kumo/src/code/code-highlighted.tsx
+  s_0482ce3b40f8e0::t_f744a41cf34819 3,5,51,60-68
+packages/kumo/src/components/breadcrumbs/breadcrumbs.tsx
+  s_0482ce3b40f8e0::t_47d11fe3a310f2 15,146,151-154
+packages/kumo/src/components/empty/empty.tsx
+  s_0482ce3b40f8e0::t_daf41710d32d0d 2,7,102,107-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b35d8e485d36e368e3649aeed7d99143f0ad6f7e",
+  "prompts": {},
+  "sessions": {
+    "s_0482ce3b40f8e0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cf1a-66ef-7151-9414-e0370bce3996",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
