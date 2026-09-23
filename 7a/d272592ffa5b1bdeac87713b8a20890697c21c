@@ -1,0 +1,21 @@
+packages/kumo/src/blocks/delete-resource/delete-resource.tsx
+  s_5caf814427534b::t_6cd388604cf177 1,19-20,83-86,90-94,100-109,125-146
+packages/kumo/src/components/empty/empty.test.tsx
+  s_5caf814427534b::t_890583a3712254 1-2,6-10,73-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7ad272592ffa5b1bdeac87713b8a20890697c21c",
+  "prompts": {},
+  "sessions": {
+    "s_5caf814427534b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3639ed84ffeN0W6g238fZYC4K",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Bartek Bak <bartek@cloudflare.com>"
+    }
+  }
+}

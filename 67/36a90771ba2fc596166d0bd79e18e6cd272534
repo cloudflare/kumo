@@ -1,0 +1,29 @@
+packages/kumo-docs-astro/src/pages/components/toast.mdx
+  s_105df7a74a0a6c::t_e859b2c90662a6 17,162-172
+packages/kumo/src/components/toast/toast.test.tsx
+  s_809e85018fcd01::t_4acf8079acaed7 1,63-133,136,146,149-163,166-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6736a90771ba2fc596166d0bd79e18e6cd272534",
+  "prompts": {},
+  "sessions": {
+    "s_105df7a74a0a6c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f5ba313a0ffehN2EfDg4qO4OAt",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Bartek Bak <bartek@cloudflare.com>"
+    },
+    "s_809e85018fcd01": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f5bacab3effeyc2jjbN6HBqia3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Bartek Bak <bartek@cloudflare.com>"
+    }
+  }
+}
