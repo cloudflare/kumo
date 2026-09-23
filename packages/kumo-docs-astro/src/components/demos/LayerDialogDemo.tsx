@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   Button,
+  DropdownMenu,
   Input,
   LayerDialog,
   Text,
@@ -71,15 +72,130 @@ export function LayerDialogActionDemo() {
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             disabled={!hostname || !name}
             onClick={() => undefined}
           >
             Save hostname
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
+  );
+}
+
+export function LayerDialogFormDemo() {
+  const formId = useId();
+
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Create deployment</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Create deployment</LayerDialog.Title>
+        <LayerDialog.Description>
+          The browser owns the form’s native validation and submission state.
+        </LayerDialog.Description>
+        <LayerDialog.Body>
+          <form
+            id={formId}
+            className="flex flex-col gap-5"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <Input
+              label="Service name"
+              name="serviceName"
+              placeholder="production-api"
+              required
+            />
+            <Input
+              label="Compatibility date"
+              name="compatibilityDate"
+              required
+              type="date"
+            />
+          </form>
+        </LayerDialog.Body>
+        <LayerDialog.Actions dismissLabel="Cancel">
+          <LayerDialog.Action form={formId} type="submit">
+            Create deployment
+          </LayerDialog.Action>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+
+export function LayerDialogSplitActionDemo() {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <LayerDialog.Root>
+        <LayerDialog.Trigger
+          render={(props) => <Button {...props}>Edit deployment</Button>}
+        />
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save deployment</LayerDialog.Title>
+          <LayerDialog.Description>
+            Deploy these changes now, or keep them as a draft.
+          </LayerDialog.Description>
+          <LayerDialog.Body>
+            <Text variant="secondary">
+              The alternate save outcome is related to the primary action, so it
+              lives in its split-button menu rather than as an unrelated footer
+              button.
+            </Text>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="draft">
+                  Save as draft
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Save options"
+            >
+              Save and deploy
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>
+
+      <LayerDialog.Alert>
+        <LayerDialog.Trigger
+          render={(props) => (
+            <Button {...props} variant="secondary">
+              Delete deployment
+            </Button>
+          )}
+        />
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete deployment</LayerDialog.Title>
+          <LayerDialog.Description>
+            This permanently removes the deployment and cannot be undone.
+          </LayerDialog.Description>
+          <LayerDialog.Body>
+            <Text variant="secondary">
+              The destructive split button keeps every part of the action,
+              including the menu trigger, visually consistent.
+            </Text>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="delete-with-tokens">
+                  Delete and revoke tokens
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Delete options"
+              variant="destructive"
+            >
+              Delete deployment
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>
+    </div>
   );
 }
 
@@ -114,12 +230,12 @@ export function LayerDialogCancelDemo() {
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions dismissLabel="Cancel">
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             disabled={!email || !name}
             onClick={() => undefined}
           >
             Save changes
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -172,13 +288,13 @@ export function LayerDialogAlertDemo() {
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             disabled={confirmation !== workerName}
             onClick={() => undefined}
             variant="destructive"
           >
             Delete Worker
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Alert>
@@ -205,7 +321,7 @@ export function LayerDialogPendingDemo() {
           </Text>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary
+          <LayerDialog.Action
             loading={pending}
             onClick={() => {
               setPending(true);
@@ -213,7 +329,7 @@ export function LayerDialogPendingDemo() {
             }}
           >
             Save changes
-          </LayerDialog.Actions.Primary>
+          </LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -283,18 +399,16 @@ export function LayerDialogNestedDemo() {
                   </Text>
                 </LayerDialog.Body>
                 <LayerDialog.Actions>
-                  <LayerDialog.Actions.Primary variant="destructive">
+                  <LayerDialog.Action variant="destructive">
                     Discard changes
-                  </LayerDialog.Actions.Primary>
+                  </LayerDialog.Action>
                 </LayerDialog.Actions>
               </LayerDialog.Content>
             </LayerDialog.Alert>
           </div>
         </LayerDialog.Body>
         <LayerDialog.Actions>
-          <LayerDialog.Actions.Primary>
-            Save changes
-          </LayerDialog.Actions.Primary>
+          <LayerDialog.Action>Save changes</LayerDialog.Action>
         </LayerDialog.Actions>
       </LayerDialog.Content>
     </LayerDialog.Root>
@@ -353,9 +467,7 @@ export function LayerDialogMaxHeightDemo() {
             </ol>
           </LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>
-              Export log
-            </LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Export log</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Root>
@@ -396,9 +508,7 @@ export function LayerDialogSizeDemo() {
             </div>
           </LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>
-              Create deployment
-            </LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Create deployment</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Root>
