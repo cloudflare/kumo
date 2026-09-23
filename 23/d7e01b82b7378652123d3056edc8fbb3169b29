@@ -1,0 +1,27 @@
+packages/kumo/src/blocks/delete-resource/delete-resource.test.tsx
+  s_5bbc70ed2c3f33::t_b78851c3fd1553 37,40,46
+packages/kumo/src/code/code-highlighted.test.tsx
+  s_5bbc70ed2c3f33::t_804ef88f5e8b40 47,50,57,60
+packages/kumo/src/components/breadcrumbs/breadcrumbs.test.tsx
+  s_5bbc70ed2c3f33::t_bfbc6cc9acafc2 28,31,37
+packages/kumo/src/components/empty/empty.test.tsx
+  s_5bbc70ed2c3f33::t_82209932740801 90,93,99
+packages/kumo/src/components/sensitive-input/sensitive-input.test.tsx
+  s_5bbc70ed2c3f33::t_6320ac893b3f92 78,83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "23d7e01b82b7378652123d3056edc8fbb3169b29",
+  "prompts": {},
+  "sessions": {
+    "s_5bbc70ed2c3f33": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0cf1b-3d49-7ea3-8014-c0b533dd0a29",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
