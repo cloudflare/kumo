@@ -129,34 +129,73 @@ export function LayerDialogFormDemo() {
 
 export function LayerDialogSplitActionDemo() {
   return (
-    <LayerDialog.Root>
-      <LayerDialog.Trigger
-        render={(props) => <Button {...props}>Edit deployment</Button>}
-      />
-      <LayerDialog.Content>
-        <LayerDialog.Title>Save deployment</LayerDialog.Title>
-        <LayerDialog.Description>
-          Deploy these changes now, or keep them as a draft.
-        </LayerDialog.Description>
-        <LayerDialog.Body>
-          <Text variant="secondary">
-            The alternate save outcome is related to the primary action, so it
-            lives in its split-button menu rather than as an unrelated footer
-            button.
-          </Text>
-        </LayerDialog.Body>
-        <LayerDialog.Actions>
-          <LayerDialog.Action
-            menu={[
-              <DropdownMenu.Item key="draft">Save as draft</DropdownMenu.Item>,
-            ]}
-            menuLabel="Save options"
-          >
-            Save and deploy
-          </LayerDialog.Action>
-        </LayerDialog.Actions>
-      </LayerDialog.Content>
-    </LayerDialog.Root>
+    <div className="flex flex-wrap justify-center gap-3">
+      <LayerDialog.Root>
+        <LayerDialog.Trigger
+          render={(props) => <Button {...props}>Edit deployment</Button>}
+        />
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save deployment</LayerDialog.Title>
+          <LayerDialog.Description>
+            Deploy these changes now, or keep them as a draft.
+          </LayerDialog.Description>
+          <LayerDialog.Body>
+            <Text variant="secondary">
+              The alternate save outcome is related to the primary action, so it
+              lives in its split-button menu rather than as an unrelated footer
+              button.
+            </Text>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="draft">
+                  Save as draft
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Save options"
+            >
+              Save and deploy
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>
+
+      <LayerDialog.Alert>
+        <LayerDialog.Trigger
+          render={(props) => (
+            <Button {...props} variant="secondary">
+              Delete deployment
+            </Button>
+          )}
+        />
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete deployment</LayerDialog.Title>
+          <LayerDialog.Description>
+            This permanently removes the deployment and cannot be undone.
+          </LayerDialog.Description>
+          <LayerDialog.Body>
+            <Text variant="secondary">
+              The destructive split button keeps every part of the action,
+              including the menu trigger, visually consistent.
+            </Text>
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="delete-with-tokens">
+                  Delete and revoke tokens
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Delete options"
+              variant="destructive"
+            >
+              Delete deployment
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>
+    </div>
   );
 }
 
