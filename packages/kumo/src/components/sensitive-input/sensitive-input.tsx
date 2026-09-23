@@ -2,7 +2,6 @@ import { Eye, EyeSlash } from "@phosphor-icons/react";
 import {
   forwardRef,
   useCallback,
-  useEffect,
   useId,
   useRef,
   useState,
@@ -18,8 +17,7 @@ import {
   type KumoInputVariant,
 } from "../input/input";
 import { Field, type FieldErrorMatch } from "../field/field";
-
-const COPIED_FEEDBACK_MS = 2000;
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 export const KUMO_SENSITIVE_INPUT_VARIANTS = KUMO_INPUT_VARIANTS;
 
@@ -134,9 +132,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       hasValue ? "masked" : "empty",
     );
 
-    const [copied, setCopied] = useState(false);
-    const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const copyAttemptRef = useRef(0);
+    const { copied, runCopy } = useCopyFeedback();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -157,95 +153,61 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       [ref],
     );
 
-    useEffect(() => {
-      return () => {
-        copyAttemptRef.current += 1;
-        if (resetTimeoutRef.current !== null) {
-          clearTimeout(resetTimeoutRef.current);
-          resetTimeoutRef.current = null;
-        }
-      };
-    }, []);
-
-    const showCopiedFeedback = useCallback((attempt: number) => {
-      if (copyAttemptRef.current !== attempt) return;
-
-      setCopied(true);
-      resetTimeoutRef.current = setTimeout(() => {
-        if (copyAttemptRef.current !== attempt) return;
-        setCopied(false);
-        resetTimeoutRef.current = null;
-      }, COPIED_FEEDBACK_MS);
-    }, []);
-
     const copyToClipboard = useCallback(
       async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        const attempt = ++copyAttemptRef.current;
-        if (resetTimeoutRef.current !== null) {
-          clearTimeout(resetTimeoutRef.current);
-          resetTimeoutRef.current = null;
-        }
-
-        let copyError: unknown;
-        try {
-          if (
-            typeof navigator !== "undefined" &&
-            navigator.clipboard &&
-            typeof navigator.clipboard.writeText === "function"
-          ) {
-            await navigator.clipboard.writeText(value);
-            if (copyAttemptRef.current === attempt) {
-              showCopiedFeedback(attempt);
-              onCopy?.();
+        const didCopy = await runCopy(
+          async (isCurrent) => {
+            try {
+              if (
+                typeof navigator !== "undefined" &&
+                navigator.clipboard &&
+                typeof navigator.clipboard.writeText === "function"
+              ) {
+                await navigator.clipboard.writeText(value);
+                return;
+              }
+            } catch {
+              // Fall through to manual fallback.
             }
-            return;
-          }
-        } catch (error) {
-          copyError = error;
-          // Fall through to manual fallback
-        }
 
-        if (copyAttemptRef.current !== attempt) return;
+            if (!isCurrent()) return;
 
-        if (typeof document !== "undefined") {
-          const textarea = document.createElement("textarea");
-          textarea.value = value;
-          textarea.setAttribute("readonly", "");
-          textarea.style.position = "absolute";
-          textarea.style.left = "-9999px";
-          document.body.appendChild(textarea);
-          const selection = document.getSelection();
-          const previousRange = selection?.rangeCount
-            ? selection.getRangeAt(0)
-            : null;
-          textarea.select();
-          try {
-            if (!document.execCommand("copy")) {
-              throw new Error("Copy command was not accepted");
+            if (typeof document === "undefined") {
+              throw new Error("Clipboard API is unavailable");
             }
-            if (copyAttemptRef.current === attempt) {
-              showCopiedFeedback(attempt);
-              onCopy?.();
-            }
-          } catch (error) {
-            if (copyAttemptRef.current !== attempt) return;
 
-            setCopied(false);
-            console.warn("Clipboard copy failed", error);
-          } finally {
-            document.body.removeChild(textarea);
-            if (previousRange) {
-              selection?.removeAllRanges();
-              selection?.addRange(previousRange);
+            const textarea = document.createElement("textarea");
+            textarea.value = value;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "absolute";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            const selection = document.getSelection();
+            const previousRange = selection?.rangeCount
+              ? selection.getRangeAt(0)
+              : null;
+            textarea.select();
+            try {
+              if (!document.execCommand("copy")) {
+                throw new Error("Copy command was not accepted");
+              }
+            } finally {
+              document.body.removeChild(textarea);
+              if (previousRange) {
+                selection?.removeAllRanges();
+                selection?.addRange(previousRange);
+              }
             }
-          }
-        } else if (copyAttemptRef.current === attempt) {
-          setCopied(false);
-          console.warn("Clipboard copy failed", copyError);
+          },
+          (error) => console.warn("Clipboard copy failed", error),
+        );
+
+        if (didCopy) {
+          onCopy?.();
         }
       },
-      [value, onCopy, showCopiedFeedback],
+      [value, onCopy, runCopy],
     );
 
     // Sync mode when value changes externally

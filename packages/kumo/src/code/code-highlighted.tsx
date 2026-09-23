@@ -1,18 +1,11 @@
 "use client";
 
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { cn } from "../utils/cn";
+import { useCopyFeedback } from "../utils/use-copy-feedback";
 import { Button } from "../components/button";
 import { useShikiHighlighter } from "./use-shiki-highlighter";
 import type { CodeHighlightedProps } from "./types";
-
-const COPIED_FEEDBACK_MS = 2000;
 
 /**
  * Syntax-highlighted code block powered by Shiki.
@@ -55,9 +48,7 @@ export function CodeHighlighted({
     error,
     labels: providerLabels,
   } = useShikiHighlighter();
-  const [copied, setCopied] = useState(false);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyAttemptRef = useRef(0);
+  const { copied, runCopy } = useCopyFeedback();
 
   // Merge provider labels with component-level overrides
   const labels = useMemo(
@@ -66,39 +57,15 @@ export function CodeHighlighted({
   );
 
   const handleCopy = useCallback(async () => {
-    const attempt = ++copyAttemptRef.current;
-    if (resetTimeoutRef.current !== null) {
-      clearTimeout(resetTimeoutRef.current);
-      resetTimeoutRef.current = null;
-    }
-
-    try {
-      await navigator.clipboard.writeText(code);
-      if (copyAttemptRef.current !== attempt) return;
-
-      setCopied(true);
-      resetTimeoutRef.current = setTimeout(() => {
-        if (copyAttemptRef.current !== attempt) return;
-        setCopied(false);
-        resetTimeoutRef.current = null;
-      }, COPIED_FEEDBACK_MS);
-    } catch (err) {
-      if (copyAttemptRef.current !== attempt) return;
-
-      setCopied(false);
-      console.error("[Kumo CodeHighlighted] Failed to copy to clipboard:", err);
-    }
-  }, [code]);
-
-  useEffect(() => {
-    return () => {
-      copyAttemptRef.current += 1;
-      if (resetTimeoutRef.current !== null) {
-        clearTimeout(resetTimeoutRef.current);
-        resetTimeoutRef.current = null;
-      }
-    };
-  }, []);
+    await runCopy(
+      () => navigator.clipboard.writeText(code),
+      (error) =>
+        console.error(
+          "[Kumo CodeHighlighted] Failed to copy to clipboard:",
+          error,
+        ),
+    );
+  }, [code, runCopy]);
 
   // Memoized so unrelated rerenders (e.g. copy state) don't re-highlight
   const html = useMemo(() => highlight(code, lang), [highlight, code, lang]);

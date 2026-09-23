@@ -1,11 +1,10 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 import { Button } from "../../components/button";
 import { Text } from "../../components/text";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
-
-const COPIED_FEEDBACK_MS = 1000;
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 /** Empty state size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_EMPTY_VARIANTS = {
@@ -100,46 +99,16 @@ export function Empty({
   size = "base",
   className,
 }: EmptyProps) {
-  const [emptyStateCopied, setEmptyStateCopied] = useState<boolean>(false);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const copyAttemptRef = useRef(0);
-
-  useEffect(() => {
-    return () => {
-      copyAttemptRef.current += 1;
-      if (resetTimeoutRef.current !== null) {
-        clearTimeout(resetTimeoutRef.current);
-        resetTimeoutRef.current = null;
-      }
-    };
-  }, []);
+  const { copied: emptyStateCopied, runCopy } = useCopyFeedback(1000);
 
   const handleCopy = useCallback(async () => {
     if (!commandLine) return;
 
-    const attempt = ++copyAttemptRef.current;
-    if (resetTimeoutRef.current !== null) {
-      clearTimeout(resetTimeoutRef.current);
-      resetTimeoutRef.current = null;
-    }
-
-    try {
-      await navigator.clipboard.writeText(commandLine);
-      if (copyAttemptRef.current !== attempt) return;
-
-      setEmptyStateCopied(true);
-      resetTimeoutRef.current = setTimeout(() => {
-        if (copyAttemptRef.current !== attempt) return;
-        setEmptyStateCopied(false);
-        resetTimeoutRef.current = null;
-      }, COPIED_FEEDBACK_MS);
-    } catch (error) {
-      if (copyAttemptRef.current !== attempt) return;
-
-      setEmptyStateCopied(false);
-      console.warn("Clipboard copy failed", error);
-    }
-  }, [commandLine]);
+    await runCopy(
+      () => navigator.clipboard.writeText(commandLine),
+      (error) => console.warn("Clipboard copy failed", error),
+    );
+  }, [commandLine, runCopy]);
 
   return (
     <div className={cn(emptyVariants({ size }), className)}>
