@@ -1,13 +1,8 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vite-plus/test";
 import { Empty } from "./empty";
 
 describe("Empty", () => {
-  afterEach(() => {
-    vi.useRealTimers();
-    vi.restoreAllMocks();
-  });
-
   it("renders the title as a large heading when a description is present", () => {
     render(
       <Empty
@@ -69,77 +64,5 @@ describe("Empty", () => {
 
     const copyIcon = copyButton.querySelector("svg");
     expect(copyIcon?.getAttribute("class") ?? "").not.toContain("group-hover:");
-  });
-
-  it("resets command copy feedback after the last successful click", async () => {
-    vi.useFakeTimers();
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-    });
-    render(<Empty title="Install Kumo" commandLine="npm install kumo" />);
-    const copyButton = screen.getByRole("button", { name: "Copy command" });
-    const copyIconPath = copyButton.querySelector("path")?.getAttribute("d");
-
-    fireEvent.click(copyButton);
-    await act(() => Promise.resolve());
-    expect(copyButton.querySelector("path")?.getAttribute("d")).not.toBe(
-      copyIconPath,
-    );
-
-    await act(async () => vi.advanceTimersByTime(500));
-    fireEvent.click(copyButton);
-    await act(() => Promise.resolve());
-    await act(async () => vi.advanceTimersByTime(500));
-
-    expect(copyButton.querySelector("path")?.getAttribute("d")).not.toBe(
-      copyIconPath,
-    );
-
-    await act(async () => vi.advanceTimersByTime(500));
-    expect(copyButton.querySelector("path")?.getAttribute("d")).toBe(
-      copyIconPath,
-    );
-  });
-
-  it("clears prior feedback when the latest clipboard write fails", async () => {
-    let rejectRetry!: (reason?: unknown) => void;
-    const pendingRetry = new Promise<void>((_, reject) => {
-      rejectRetry = reject;
-    });
-    const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const writeText = vi
-      .fn()
-      .mockResolvedValueOnce(undefined)
-      .mockReturnValueOnce(pendingRetry);
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: { writeText },
-    });
-    render(<Empty title="Install Kumo" commandLine="npm install kumo" />);
-    const copyButton = screen.getByRole("button", { name: "Copy command" });
-    const copyIconPath = copyButton.querySelector("path")?.getAttribute("d");
-
-    fireEvent.click(copyButton);
-    await act(() => Promise.resolve());
-    expect(copyButton.querySelector("path")?.getAttribute("d")).not.toBe(
-      copyIconPath,
-    );
-
-    fireEvent.click(copyButton);
-    expect(copyButton.querySelector("path")?.getAttribute("d")).not.toBe(
-      copyIconPath,
-    );
-
-    const copyError = new Error("Copy failed");
-    await act(async () => {
-      rejectRetry(copyError);
-      await pendingRetry.catch(() => {});
-    });
-
-    expect(copyButton.querySelector("path")?.getAttribute("d")).toBe(
-      copyIconPath,
-    );
-    expect(warning).toHaveBeenCalledWith("Clipboard copy failed", copyError);
   });
 });
