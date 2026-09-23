@@ -1,0 +1,19 @@
+packages/kumo-docs-astro/src/components/demos/LayerDialogDemo.tsx
+  s_d71d9a27a39c4d::t_b11d8a7a88923e 132-198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5c8193d2756844aab3da0e58f4998167d775e791",
+  "prompts": {},
+  "sessions": {
+    "s_d71d9a27a39c4d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ca4a-c52f-7051-ac66-eb45c77fcd11",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
