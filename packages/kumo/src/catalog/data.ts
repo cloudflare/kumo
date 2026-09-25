@@ -7,6 +7,11 @@
 import type { DataModel, DynamicValue } from "./types";
 
 /**
+ * Forbidden property names to prevent prototype pollution and unintended traversal (defense-in-depth).
+ */
+const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+/**
  * Get a value from an object by JSON Pointer path.
  *
  * @example
@@ -31,7 +36,11 @@ export function getByPath(obj: unknown, path: string): unknown {
       return undefined;
     }
 
-    if (typeof current === "object") {
+    if (
+      typeof current === "object" &&
+      !FORBIDDEN_KEYS.has(segment) &&
+      Object.hasOwn(current, segment)
+    ) {
       current = (current as Record<string, unknown>)[segment];
     } else {
       return undefined;
@@ -55,23 +64,39 @@ export function setByPath(
   path: string,
   value: unknown,
 ): void {
+  if (!path || path === "/") return;
+
   const segments = path.startsWith("/")
     ? path.slice(1).split("/")
     : path.split("/");
 
-  if (segments.length === 0) return;
+  for (const segment of segments) {
+    if (FORBIDDEN_KEYS.has(segment)) {
+      return;
+    }
+  }
 
   let current: Record<string, unknown> = obj;
 
   for (let i = 0; i < segments.length - 1; i++) {
     const segment = segments[i]!;
-    if (!(segment in current) || typeof current[segment] !== "object") {
+    if (
+      !Object.hasOwn(current, segment) ||
+      typeof current[segment] !== "object" ||
+      current[segment] === null
+    ) {
+      if (Array.isArray(current) && segment === "length") {
+        return;
+      }
       current[segment] = {};
     }
     current = current[segment] as Record<string, unknown>;
   }
 
   const lastSegment = segments[segments.length - 1]!;
+  if (Array.isArray(current) && lastSegment === "length") {
+    return;
+  }
   current[lastSegment] = value;
 }
 
