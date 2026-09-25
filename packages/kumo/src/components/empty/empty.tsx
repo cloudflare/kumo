@@ -1,9 +1,10 @@
 import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useCallback } from "react";
 import { Button } from "../../components/button";
 import { Text } from "../../components/text";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 /** Empty state size variant definitions mapping sizes to their Tailwind classes. */
 export const KUMO_EMPTY_VARIANTS = {
@@ -98,7 +99,16 @@ export function Empty({
   size = "base",
   className,
 }: EmptyProps) {
-  const [emptyStateCopied, setEmptyStateCopied] = useState<boolean>(false);
+  const { copied: emptyStateCopied, runCopy } = useCopyFeedback(1000);
+
+  const handleCopy = useCallback(async () => {
+    if (!commandLine) return;
+
+    await runCopy(
+      () => navigator.clipboard.writeText(commandLine),
+      (error) => console.warn("Clipboard copy failed", error),
+    );
+  }, [commandLine, runCopy]);
 
   return (
     <div className={cn(emptyVariants({ size }), className)}>
@@ -143,13 +153,7 @@ export function Empty({
             variant="ghost"
             shape="square"
             aria-label="Copy command"
-            onClick={async () => {
-              setEmptyStateCopied(true);
-              setTimeout(() => {
-                setEmptyStateCopied(false);
-              }, 1000);
-              await navigator.clipboard.writeText(commandLine);
-            }}
+            onClick={handleCopy}
           >
             {emptyStateCopied ? (
               <CheckIcon

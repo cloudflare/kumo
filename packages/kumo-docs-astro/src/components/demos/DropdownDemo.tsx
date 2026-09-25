@@ -9,6 +9,7 @@ import {
   GearIcon,
   BookOpenIcon,
   ArrowSquareOutIcon,
+  ArrowsClockwiseIcon,
   CopyIcon,
   PencilSimpleIcon,
   TrashIcon,
@@ -191,6 +192,12 @@ export function DropdownOnClickDemo() {
             onClick={() => setLastAction("Renamed")}
           >
             Rename
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            icon={<ArrowsClockwiseIcon className="animate-spin" />}
+            onClick={() => setLastAction("Refreshed")}
+          >
+            Refresh
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item

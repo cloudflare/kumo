@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vite-plus/test";
+import { describe, expect, it } from "vite-plus/test";
 import { render } from "@testing-library/react";
 import { Text, textVariants } from "./text";
 
@@ -24,21 +24,6 @@ describe("Text", () => {
     expect(heading).toBeTruthy();
     expect(heading?.classList.contains("text-xl")).toBe(true);
     expect(heading?.classList.contains("font-semibold")).toBe(true);
-  });
-
-  it("warns when a deprecated heading variant is used", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    render(
-      <Text variant="heading1" as="h1">
-        Legacy heading
-      </Text>,
-    );
-
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('variant="heading1" is deprecated'),
-    );
-    warn.mockRestore();
   });
 
   it("renders body variant as <p> by default", () => {

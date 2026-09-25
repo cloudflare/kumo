@@ -526,14 +526,16 @@ describe("Sidebar.Collapsible", () => {
     open,
     autoScrollOnOpen = false,
     onOpenChangeComplete,
+    sidebarOpen,
   }: {
     defaultOpen?: boolean;
     open?: boolean;
     autoScrollOnOpen?: boolean;
     onOpenChangeComplete?: (open: boolean) => void;
+    sidebarOpen?: boolean;
   }) {
     return (
-      <TestSidebar defaultOpen>
+      <TestSidebar defaultOpen open={sidebarOpen}>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -649,6 +651,98 @@ describe("Sidebar.Collapsible", () => {
 
     expect(onOpenChangeComplete).toHaveBeenCalledOnce();
     expect(onOpenChangeComplete).toHaveBeenCalledWith(false);
+  });
+
+  it.each([
+    { change: "the sidebar expands", isMobile: false, sidebarOpen: true },
+    { change: "the sidebar collapses", isMobile: false, sidebarOpen: false },
+    {
+      change: "the controlled mobile drawer opens",
+      isMobile: true,
+      sidebarOpen: true,
+    },
+  ])("completes an open group when $change", ({ isMobile, sidebarOpen }) => {
+    setMobileMatchMedia(isMobile);
+    const onOpenChangeComplete = vi.fn();
+    const { rerender } = render(
+      <CollapsibleTest
+        open
+        sidebarOpen={!sidebarOpen}
+        onOpenChangeComplete={onOpenChangeComplete}
+      />,
+    );
+    rerender(
+      <CollapsibleTest
+        open
+        sidebarOpen={sidebarOpen}
+        onOpenChangeComplete={onOpenChangeComplete}
+      />,
+    );
+    expect(onOpenChangeComplete).not.toHaveBeenCalled();
+
+    fireTransitionEnd(
+      screen.getByTestId("collapsible-content"),
+      "grid-template-rows",
+    );
+
+    expect(onOpenChangeComplete).toHaveBeenCalledOnce();
+    expect(onOpenChangeComplete).toHaveBeenCalledWith(sidebarOpen);
+  });
+
+  it("completes an open group when the uncontrolled mobile drawer opens and closes", () => {
+    setMobileMatchMedia(true);
+    const onOpenChangeComplete = vi.fn();
+    function DrawerToggle() {
+      const { toggleSidebar } = useSidebar();
+      return (
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          data-testid="drawer-toggle"
+        >
+          Toggle drawer
+        </button>
+      );
+    }
+    render(
+      <SidebarProvider>
+        <DrawerToggle />
+        <Sidebar>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarCollapsible
+                  open
+                  onOpenChangeComplete={onOpenChangeComplete}
+                >
+                  <SidebarCollapsibleTrigger
+                    render={<SidebarMenuButton>Compute</SidebarMenuButton>}
+                  />
+                  <SidebarCollapsibleContent data-testid="collapsible-content">
+                    <SidebarMenuSub>
+                      <SidebarMenuSubButton>Workers</SidebarMenuSubButton>
+                    </SidebarMenuSub>
+                  </SidebarCollapsibleContent>
+                </SidebarCollapsible>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
+      </SidebarProvider>,
+    );
+    const content = screen.getByTestId("collapsible-content");
+    expect(content.getAttribute("aria-hidden")).toBe("true");
+
+    fireEvent.click(screen.getByTestId("drawer-toggle"));
+    expect(content.getAttribute("aria-hidden")).toBe("false");
+    fireTransitionEnd(content, "grid-template-rows");
+    expect(onOpenChangeComplete).toHaveBeenLastCalledWith(true);
+
+    fireEvent.click(screen.getByTestId("drawer-toggle"));
+    expect(content.getAttribute("aria-hidden")).toBe("true");
+    fireTransitionEnd(content, "grid-template-rows");
+    expect(onOpenChangeComplete).toHaveBeenCalledTimes(2);
+    expect(onOpenChangeComplete).toHaveBeenLastCalledWith(false);
   });
 
   it("should scroll opened content into view when enabled", () => {
