@@ -101,6 +101,38 @@ export function BannerWithIconDemo() {
   );
 }
 
+export function BannerIconAlignmentPreview() {
+  const message =
+    "A DNS record for puppies.cloudflare.dev already exists in this zone and must be reviewed before continuing.";
+
+  return (
+    <div className="grid w-full gap-3 md:grid-cols-2">
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-kumo-subtle">Before</p>
+        <div className="flex max-w-72 items-center gap-2 rounded-md bg-kumo-warning-tint px-3 py-2 text-sm text-kumo-warning">
+          <Warning
+            weight="fill"
+            className="size-[1em] flex-none fill-kumo-warning text-kumo-warning"
+          />
+          <p className="leading-snug">{message}</p>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-kumo-subtle">After</p>
+        <div className="flex max-w-72 items-start gap-2 rounded-md bg-kumo-warning-tint px-3 py-2 text-sm text-kumo-warning">
+          <span className="flex h-[1lh] flex-none items-center fill-kumo-warning leading-snug">
+            <Warning
+              weight="fill"
+              className="size-[1em] flex-none fill-kumo-warning text-kumo-warning"
+            />
+          </span>
+          <p className="leading-snug">{message}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Banner with custom React content in description. */
 export function BannerCustomContentDemo() {
   return (
