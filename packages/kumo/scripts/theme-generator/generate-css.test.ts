@@ -27,4 +27,17 @@ describe("theme css generator", () => {
     );
     expect(css).not.toMatch(/\n\[data-theme="fedramp"\] \{/);
   });
+
+  it("emits a themeable Button emphasis foreground with white defaults", () => {
+    const css = generateKumoThemeCSS(THEME_CONFIG);
+
+    expect(css).toContain(`--text-color-kumo-button-emphasis: light-dark(
+    var(--color-white, #fff),
+    var(--color-white, #fff)
+  );`);
+    expect(countOccurrences(css, "--text-color-kumo-button-emphasis")).toBe(3);
+    expect(css).not.toContain(
+      "--text-color-kumo-button-emphasis: var(--color-white, #fff) !important",
+    );
+  });
 });
