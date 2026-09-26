@@ -31,6 +31,7 @@ const EXCLUDED_COMPONENTS = new Set([
   "Grid", // Layout utility - Figma has native grid/auto-layout tools
   "PageHeader", // Complex composite component - too layout-specific for Figma generation
   "Popover", // Interactive popup - similar to Tooltip but click-triggered, will add generator later
+  "WebMCPForm", // Semantic form wrapper with no standalone visual representation
 ]);
 
 // Map registry component names to generator file names (if they differ)
