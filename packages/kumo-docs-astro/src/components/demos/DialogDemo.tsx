@@ -23,7 +23,7 @@ export function DialogBasicDemo() {
             render={(props) => (
               <Button
                 {...props}
-                variant="secondary"
+                variant="ghost"
                 shape="square"
                 icon={<X />}
                 aria-label="Close"
@@ -43,18 +43,18 @@ export function DialogBasicDemo() {
 export function DialogWithActionsDemo() {
   return (
     <Dialog.Root>
-      <Dialog.Trigger render={(p) => <Button {...p}>Delete</Button>} />
+      <Dialog.Trigger render={(p) => <Button {...p}>Save changes</Button>} />
       <Dialog className="p-8">
         <div className="mb-4 flex items-start justify-between gap-4">
           <Dialog.Title className="text-2xl font-semibold">
-            Modal Title
+            Save changes
           </Dialog.Title>
           <Dialog.Close
             aria-label="Close"
             render={(props) => (
               <Button
                 {...props}
-                variant="secondary"
+                variant="ghost"
                 shape="square"
                 icon={<X />}
                 aria-label="Close"
@@ -76,8 +76,8 @@ export function DialogWithActionsDemo() {
           />
           <Dialog.Close
             render={(props) => (
-              <Button variant="destructive" {...props}>
-                Delete
+              <Button variant="primary" {...props}>
+                Save
               </Button>
             )}
           />
@@ -129,7 +129,7 @@ export function DialogMaxWidthDemo() {
 
 export function DialogConfirmationDemo() {
   return (
-    <Dialog.Root disablePointerDismissal>
+    <Dialog.Root role="alertdialog" disablePointerDismissal>
       <Dialog.Trigger
         render={(p) => (
           <Button {...p} variant="destructive">
@@ -147,8 +147,8 @@ export function DialogConfirmationDemo() {
           </Dialog.Title>
         </div>
         <Dialog.Description className="text-kumo-subtle">
-          This action cannot be undone. This will permanently delete the project
-          and all associated data.
+          This example is using <code>disablePointerDismissal</code>. Try closing this dialog by clicking outside -
+          it should not close.
         </Dialog.Description>
         <div className="mt-8 flex justify-end gap-2">
           <Dialog.Close
@@ -240,7 +240,7 @@ export function DialogWithSelectDemo() {
             render={(props) => (
               <Button
                 {...props}
-                variant="secondary"
+                variant="ghost"
                 shape="square"
                 icon={<X />}
                 aria-label="Close"
@@ -270,7 +270,13 @@ export function DialogWithSelectDemo() {
               </Button>
             )}
           />
-          <Button variant="primary">Create</Button>
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="primary" {...props}>
+                Create
+              </Button>
+            )}
+          />
         </div>
       </Dialog>
     </Dialog.Root>
@@ -295,7 +301,7 @@ export function DialogWithComboboxDemo() {
             render={(props) => (
               <Button
                 {...props}
-                variant="secondary"
+                variant="ghost"
                 shape="square"
                 icon={<X />}
                 aria-label="Close"
@@ -330,7 +336,13 @@ export function DialogWithComboboxDemo() {
               </Button>
             )}
           />
-          <Button variant="primary">Create</Button>
+          <Dialog.Close
+            render={(props) => (
+              <Button variant="primary" {...props}>
+                Create
+              </Button>
+            )}
+          />
         </div>
       </Dialog>
     </Dialog.Root>
@@ -351,7 +363,7 @@ export function DialogWithDropdownDemo() {
             render={(props) => (
               <Button
                 {...props}
-                variant="secondary"
+                variant="ghost"
                 shape="square"
                 icon={<X />}
                 aria-label="Close"
