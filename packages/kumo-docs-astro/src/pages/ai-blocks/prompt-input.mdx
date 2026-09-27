@@ -1,0 +1,199 @@
+---
+layout: ~/layouts/MdxDocLayout.astro
+title: "Prompt Input"
+description: "A composable AI prompt input with textarea, footer actions, and submit button."
+sourceFile: "blocks/prompt-input"
+---
+
+import ComponentSection from "~/components/docs/ComponentSection.astro";
+import ComponentExample from "~/components/docs/ComponentExample.astro";
+import PropsTable from "~/components/docs/PropsTable.astro";
+import Callout from "~/components/docs/Callout.astro";
+import {
+  PromptInputDemo,
+  PromptInputLargeDemo,
+  PromptInputCompactDemo,
+  PromptInputCompactLargeDemo,
+} from "~/components/demos/PromptInputDemo";
+
+{/* Prompt Input */}
+
+<ComponentSection>
+
+## Prompt Input
+
+<p>
+  A composable form for AI prompt entry. Combines a growing textarea, a footer
+  for actions, and an optional header for context references. Press{" "}
+  <code>Enter</code> to submit or <code>Shift+Enter</code> for a new line.
+  The textarea auto-resizes with content up to a max height, then scrolls.
+</p>
+
+<ComponentExample demo="PromptInputDemo">
+  <PromptInputDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Prompt Input Large */}
+
+<ComponentSection>
+
+## Prompt Input Large
+
+<p>
+  The <code>lg</code> size increases text size, padding, and corner radius for
+  prominent placements like landing pages or full-screen chat views.
+</p>
+
+<ComponentExample demo="PromptInputLargeDemo">
+  <PromptInputLargeDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Compact */}
+
+<ComponentSection>
+
+## Compact
+
+<p>
+  The <code>compact</code> variant arranges everything in a single row — useful
+  for sidebars, toolbars, or inline chat inputs. The header slot is hidden
+  automatically in this variant. Clicking anywhere on the container focuses the
+  textarea.
+</p>
+
+<ComponentExample demo="PromptInputCompactDemo">
+  <PromptInputCompactDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Compact Large */}
+
+<ComponentSection>
+
+## Compact Large
+
+<p>
+  Compact layout at the <code>lg</code> size — larger hit target and text for
+  touch-friendly or high-prominence inline inputs.
+</p>
+
+<ComponentExample demo="PromptInputCompactLargeDemo">
+  <PromptInputCompactLargeDemo client:visible />
+</ComponentExample>
+
+</ComponentSection>
+
+{/* Composition */}
+
+<ComponentSection>
+
+## Composition
+
+<p>
+  PromptInput is fully composable with standard Kumo components. The examples
+  above demonstrate context badges using <code>Button</code> in the header, and
+  model selectors using <code>DropdownMenu.RadioGroup</code> in the footer.
+  Only the structural sub-components are part of the block:
+</p>
+
+| Sub-component | Purpose |
+|---|---|
+| `PromptInput.Header` | Context area for badges or attachments — hidden in compact variant |
+| `PromptInput.Textarea` | Auto-resizing textarea with Enter-to-submit. Default max height is 256px (`max-h-64`); override via `className="max-h-96"` etc. |
+| `PromptInput.Footer` | Action bar below the textarea |
+| `PromptInput.SubmitButton` | Submit/stop button that auto-scales with the parent size |
+
+</ComponentSection>
+
+{/* Keyboard Controls */}
+
+<ComponentSection>
+
+## Keyboard Controls
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Submit the form |
+| `Shift+Enter` | Insert a new line |
+
+</ComponentSection>
+
+{/* Auto-resize */}
+
+<ComponentSection>
+
+## Auto-resize
+
+<p>
+  Pass <code>autoResize</code> to <code>PromptInput.Textarea</code> to grow
+  the textarea with its content. It caps at the element's CSS{" "}
+  <code>max-height</code> (default <code>max-h-64</code> / 256px), then scrolls.
+  Override the cap via <code>className</code>:
+</p>
+
+```tsx
+{/* Default: 256px max */}
+<PromptInput.Textarea autoResize />
+
+{/* Custom: 384px max */}
+<PromptInput.Textarea autoResize className="max-h-96" />
+
+{/* No limit */}
+<PromptInput.Textarea autoResize className="max-h-none" />
+```
+
+</ComponentSection>
+
+{/* Installation */}
+
+<ComponentSection>
+
+## Installation
+
+  <p>
+    PromptInput is an <strong>AI block</strong> — a CLI-installed component that
+    you own and can customize.
+  </p>
+  <div class="space-y-4">
+    <div>
+      <p>**1. Initialize Kumo config (first time only)**</p>
+
+```bash
+npx @cloudflare/kumo init
+```
+
+</div>
+<div>
+<p>**2. Install the block**</p>
+
+```bash
+npx @cloudflare/kumo add PromptInput
+```
+
+</div>
+<div>
+<p>**3. Import from your local path**</p>
+
+```tsx
+import { PromptInput } from "./components/kumo/prompt-input/prompt-input";
+```
+
+    </div>
+
+  </div>
+</ComponentSection>
+
+{/* API Reference */}
+
+<ComponentSection>
+
+## API Reference
+
+  <PropsTable component="PromptInput" />
+
+</ComponentSection>
