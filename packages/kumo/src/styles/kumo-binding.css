@@ -326,3 +326,56 @@
 .kumo-input-placeholder::placeholder {
   color: var(--text-color-kumo-placeholder);
 }
+
+/* Autofill: apply a consistent info tint to autofilled fields */
+@layer base {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000),
+      0 0 0 1000px
+        color-mix(
+          in srgb,
+          var(--color-kumo-info-tint) 35%,
+          var(--color-kumo-control)
+        )
+        inset !important;
+    box-shadow:
+      var(--tw-inset-shadow, 0 0 #0000),
+      var(--tw-inset-ring-shadow, 0 0 #0000),
+      var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000),
+      var(--tw-shadow, 0 0 #0000),
+      0 0 0 1000px
+        color-mix(
+          in srgb,
+          var(--color-kumo-info-tint) 35%,
+          var(--color-kumo-control)
+        )
+        inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  [data-slot="input-group"] input:-webkit-autofill,
+  [data-slot="input-group"] input:-webkit-autofill:hover,
+  [data-slot="input-group"] input:-webkit-autofill:focus {
+    border-color: transparent !important;
+  }
+
+  [data-slot="input-group"]:has(input:-webkit-autofill),
+  [data-slot="input-group-container-zone"]:has(input:-webkit-autofill) {
+    background-color: color-mix(
+      in srgb,
+      var(--color-kumo-info-tint) 35%,
+      var(--color-kumo-control)
+    ) !important;
+  }
+}
