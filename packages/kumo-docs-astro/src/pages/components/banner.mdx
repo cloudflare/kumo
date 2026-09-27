@@ -18,6 +18,7 @@ import {
   BannerWithIconDemo,
   BannerWithActionDemo,
   BannerWithActionsDemo,
+  BannerActionEmphasisDemo,
   BannerCompactDemo,
   BannerCompactWithCtaDemo,
   BannerCompactWithoutActionDemo,
@@ -113,14 +114,26 @@ export default function Example() {
 
 ### With action
 
+`Banner.Action` picks up the banner's accent color automatically. It defaults to `variant="secondary"` — an accent-tinted fill with an accent hairline — so the CTA stays readable without shouting over the message.
+
 <ComponentExample demo="BannerWithActionDemo">
   <BannerWithActionDemo client:visible />
 </ComponentExample>
 
 ### With multiple actions
 
+Keep the leading CTA on the default treatment and step supporting actions down to `variant="ghost"`.
+
 <ComponentExample demo="BannerWithActionsDemo">
   <BannerWithActionsDemo client:visible />
+</ComponentExample>
+
+### High-emphasis action
+
+Escalate to `variant="primary"` only when the banner's CTA is the single most important action on the page — a filled accent button competes with page-level CTAs.
+
+<ComponentExample demo="BannerActionEmphasisDemo">
+  <BannerActionEmphasisDemo client:visible />
 </ComponentExample>
 
 ### Compact size

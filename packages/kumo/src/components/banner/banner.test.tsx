@@ -32,7 +32,11 @@ describe("Banner", () => {
       <Banner
         variant="error"
         title="Save failed"
-        action={<Banner.Action data-testid="cta">Retry</Banner.Action>}
+        action={
+          <Banner.Action variant="primary" data-testid="cta">
+            Retry
+          </Banner.Action>
+        }
       />,
     );
 
@@ -50,6 +54,26 @@ describe("Banner", () => {
     expect(cta.parentElement?.className).toContain("gap-2");
   });
 
+  it("defaults Banner.Action to the quiet accent-tinted secondary treatment", () => {
+    render(
+      <Banner
+        variant="error"
+        title="Save failed"
+        action={<Banner.Action data-testid="cta">Retry</Banner.Action>}
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    expect(cta.className).toContain("bg-kumo-danger/12");
+    expect(cta.className).toContain("ring-kumo-danger/40");
+    expect(cta.className).toContain("text-kumo-danger");
+    // Must not fall back to the loud filled primary CTA.
+    expect(cta.className).not.toContain("text-white");
+    expect(
+      cta.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("");
+  });
+
   it("styles a ghost Banner.Action with accent text and a tinted hover", () => {
     render(
       <Banner
@@ -65,10 +89,35 @@ describe("Banner", () => {
 
     const cta = screen.getByTestId("cta");
     expect(cta.className).toContain("fill-kumo-warning");
-    expect(cta.className).toContain("hover:bg-kumo-warning/10");
+    expect(cta.className).toContain("text-kumo-warning");
+    expect(cta.className).toContain("not-disabled:hover:bg-kumo-warning/12");
   });
 
-  it("styles a secondary Banner.Action as an accent-hued outline", () => {
+  it("keeps a disabled Banner.Action's hover treatment inert and dims it", () => {
+    render(
+      <Banner
+        variant="error"
+        title="Save failed"
+        action={
+          <Banner.Action disabled data-testid="cta">
+            Retry
+          </Banner.Action>
+        }
+      />,
+    );
+
+    const cta = screen.getByTestId("cta");
+    expect((cta as HTMLButtonElement).disabled).toBe(true);
+    // Button dims the whole chip, so the accent fill/ring recede with it.
+    expect(cta.className).toContain("opacity-50");
+    expect(cta.className).toContain("cursor-not-allowed");
+    // Hover colors are gated behind not-disabled: so they cannot fire here, and
+    // none of them carry `!important` that would beat disabled:text-kumo-subtle.
+    expect(cta.className).not.toMatch(/(^|\s)hover:/);
+    expect(cta.className).not.toContain("!");
+  });
+
+  it("styles a secondary Banner.Action as an accent-tinted chip", () => {
     render(
       <Banner
         variant="error"
@@ -82,13 +131,19 @@ describe("Banner", () => {
     );
 
     const cta = screen.getByTestId("cta");
-    // Transparent bg + accent-hued ring in the same hue as the error banner accent.
-    expect(cta.className).toContain("ring-kumo-danger/50");
-    expect(cta.className).toContain("hover:bg-kumo-danger/10");
-    expect(cta.className).toContain("hover:!ring-kumo-danger/50");
-    expect(cta.className).toContain("hover:!text-inherit");
+    // Accent fill + accent hairline in the same hue as the error banner accent.
+    expect(cta.className).toContain("bg-kumo-danger/12");
+    expect(cta.className).toContain("ring-kumo-danger/40");
+    expect(cta.className).toContain("not-disabled:hover:bg-kumo-danger/20");
+    expect(cta.className).toContain("not-disabled:hover:ring-kumo-danger/60");
+    expect(cta.className).toContain("not-disabled:hover:text-kumo-danger");
+    // Button's outline hover defaults are deduped away by tailwind-merge.
+    expect(cta.className).not.toContain("text-kumo-strong");
+    expect(cta.className).not.toContain("ring-kumo-focus/25");
+    // Explicit bright text token, not the banner's dimmed inherited color.
+    expect(cta.className).toContain("text-kumo-danger");
+    expect(cta.className).not.toContain("text-inherit");
     // Not the filled primary CTA.
-    expect(cta.className).toContain("bg-transparent");
     expect(cta.className).not.toContain("text-white");
     expect(
       cta.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
