@@ -50,6 +50,16 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
   );
 }
 
+/**
+ * Keeps the footer action aligned with the collapsed rail. The library footer
+ * deliberately gains breathing room in its expanded state; these demos use a
+ * single bottom-left action, so retaining its x-position makes the transition
+ * easier to follow.
+ */
+function DemoSidebarFooter({ children }: { children: React.ReactNode }) {
+  return <Sidebar.Footer className="!px-[11px]">{children}</Sidebar.Footer>;
+}
+
 function BrandLogo() {
   return (
     <div className="flex w-full min-w-0 items-center gap-2 px-3 transition-[padding] duration-(--sidebar-animation-duration) ease-(--sidebar-easing) group-data-[state=collapsed]/sidebar:px-2">
@@ -311,9 +321,9 @@ export function SidebarToggleDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <ToggleButton />
@@ -360,9 +370,9 @@ export function SidebarLoadingDemo() {
               </Sidebar.Group>
             </Sidebar.Content>
           )}
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <button
@@ -415,9 +425,9 @@ export function SidebarResizableDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
           <Sidebar.ResizeHandle />
         </Sidebar>
         <DemoMain>
@@ -517,9 +527,9 @@ export function SidebarPeekingDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <PeekStateIndicator />
@@ -610,9 +620,9 @@ export function SidebarAutoScrollDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <p>Open Workers near the bottom of the list</p>
@@ -677,9 +687,9 @@ export function SidebarTransitionCompleteDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <p aria-live="polite">{completion}</p>
@@ -943,9 +953,9 @@ export function SidebarFullDemo() {
             </Sidebar.SlidingView>
           </Sidebar.SlidingViews>
 
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain />
       </Sidebar.Provider>
@@ -1041,9 +1051,9 @@ export function SidebarScrollToItemDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <ScrollToItemControls />
@@ -1105,9 +1115,9 @@ export function SidebarMobileDemo() {
               </Sidebar.Menu>
             </Sidebar.Group>
           </Sidebar.Content>
-          <Sidebar.Footer>
+          <DemoSidebarFooter>
             <Sidebar.Trigger />
-          </Sidebar.Footer>
+          </DemoSidebarFooter>
         </Sidebar>
         <DemoMain>
           <MobileToggleButton />
