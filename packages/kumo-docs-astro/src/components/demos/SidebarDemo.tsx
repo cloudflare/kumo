@@ -59,6 +59,7 @@ function DemoMain({ children }: { children?: React.ReactNode }) {
 function DemoSidebarFooter({ children }: { children: React.ReactNode }) {
   return <Sidebar.Footer className="!px-[11px]">{children}</Sidebar.Footer>;
 }
+DemoSidebarFooter.displayName = "Sidebar.Footer";
 
 function BrandLogo() {
   return (
