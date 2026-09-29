@@ -24,6 +24,122 @@ const createMockEcharts = (mockChart = createMockChart()) => ({
 });
 
 describe("TimeseriesChart", () => {
+  it("formats tooltip timestamps in the browser locale and time zone by default", async () => {
+    const mockChart = createMockChart();
+    const timestamp = Date.UTC(2026, 8, 18, 12, 34, 56);
+
+    render(
+      <TimeseriesChart
+        echarts={createMockEcharts(mockChart) as any}
+        data={[
+          {
+            name: "Requests",
+            color: "#4290F0",
+            data: [[timestamp, 10]],
+          },
+        ]}
+      />,
+    );
+
+    const updateAxisPointer = mockChart.on.mock.calls.find(
+      (call) => call[0] === "updateaxispointer",
+    )?.[1];
+    expect(updateAxisPointer).toBeTypeOf("function");
+
+    await act(() => updateAxisPointer({ axesInfo: [{ value: timestamp }] }));
+
+    const expected = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).format(timestamp);
+    expect(await screen.findByText(expected)).not.toBeNull();
+  });
+
+  it("uses a custom UTC formatter and updates an open tooltip when it changes", async () => {
+    const mockChart = createMockChart();
+    const mockEcharts = createMockEcharts(mockChart);
+    const timestamp = Date.UTC(2026, 8, 18, 12, 34, 56);
+    const data = [
+      {
+        name: "Requests",
+        color: "#4290F0",
+        data: [[timestamp, 10]] as [number, number][],
+      },
+    ];
+    const utcFormatter = (value: number) =>
+      new Intl.DateTimeFormat(undefined, {
+        timeZone: "UTC",
+        dateStyle: "medium",
+        timeStyle: "medium",
+      }).format(value);
+
+    const { rerender } = render(
+      <TimeseriesChart
+        echarts={mockEcharts as any}
+        data={data}
+        tooltipTimestampFormat={() => "Original time zone"}
+      />,
+    );
+
+    const updateAxisPointer = mockChart.on.mock.calls.find(
+      (call) => call[0] === "updateaxispointer",
+    )?.[1];
+    expect(updateAxisPointer).toBeTypeOf("function");
+
+    await act(() => updateAxisPointer({ axesInfo: [{ value: timestamp }] }));
+    expect(await screen.findByText("Original time zone")).not.toBeNull();
+
+    rerender(
+      <TimeseriesChart
+        echarts={mockEcharts as any}
+        data={data}
+        tooltipTimestampFormat={utcFormatter}
+      />,
+    );
+
+    expect(await screen.findByText(utcFormatter(timestamp))).not.toBeNull();
+    expect(screen.queryByText("Original time zone")).toBeNull();
+  });
+
+  it("uses the custom timestamp formatter for marker tooltips", async () => {
+    const mockChart = createMockChart();
+    const timestamp = Date.UTC(2026, 8, 18, 12, 34, 56);
+    const marker = { timestamp, label: "Deployment" };
+    const tooltipTimestampFormat = vi.fn(
+      (value: number) => `UTC: ${new Date(value).toISOString()}`,
+    );
+
+    render(
+      <TimeseriesChart
+        echarts={createMockEcharts(mockChart) as any}
+        data={[]}
+        markers={[marker]}
+        tooltipTimestampFormat={tooltipTimestampFormat}
+      />,
+    );
+
+    const mouseover = mockChart.on.mock.calls.find(
+      (call) => call[0] === "mouseover",
+    )?.[1];
+    expect(mouseover).toBeTypeOf("function");
+
+    await act(() =>
+      mouseover({
+        componentType: "markLine",
+        data: { tooltip: { marker: { ...marker, markers: [marker] } } },
+      }),
+    );
+
+    expect(
+      await screen.findByText(`UTC: ${new Date(timestamp).toISOString()}`),
+    ).not.toBeNull();
+    expect(tooltipTimestampFormat).toHaveBeenCalledWith(timestamp);
+  });
+
   it("leaves the y-axis interval unconstrained by default", async () => {
     const mockChart = createMockChart();
 

@@ -289,7 +289,7 @@ export default defineConfig({
         },
         advancedChunks: {
           groups: [
-            { name: "vendor-styling", test: /node_modules\/.*cnfast/ },
+            { name: "vendor-styling", test: /node_modules\/cn/ },
             {
               name: "vendor-floating-ui",
               test: /node_modules\/.*@floating-ui/,

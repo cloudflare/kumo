@@ -4,133 +4,257 @@ import { BellIcon, DotsThree } from "@phosphor-icons/react";
 
 export function PopoverHeroDemo() {
   return (
-    <Popover>
+    <Popover.Root>
       <Popover.Trigger
         render={
           <Button shape="square" icon={BellIcon} aria-label="Notifications" />
         }
       />
-      <Popover.Content>
-        <Popover.Title>Notifications</Popover.Title>
-        <Popover.Description>
-          You are all caught up. Good job!
-        </Popover.Description>
-      </Popover.Content>
-    </Popover>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup>
+            <Popover.Arrow />
+            <Popover.Title>Notifications</Popover.Title>
+            <Popover.Description>
+              You are all caught up. Good job!
+            </Popover.Description>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
 export function PopoverBasicDemo() {
   return (
-    <Popover>
+    <Popover.Root>
       <Popover.Trigger render={<Button />}>Open Popover</Popover.Trigger>
-      <Popover.Content>
-        <Popover.Title>Popover Title</Popover.Title>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup>
+            <Popover.Arrow />
+            <Popover.Title>Popover Title</Popover.Title>
+            <Popover.Description>
+              This is a basic popover with a title and description.
+            </Popover.Description>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+export function PopoverLegacyContentDemo() {
+  return (
+    <Popover>
+      <Popover.Trigger render={<Button variant="secondary" />}>
+        Open legacy Content
+      </Popover.Trigger>
+      <Popover.Content className="w-72">
+        <Popover.Title>Compatibility mode</Popover.Title>
         <Popover.Description>
-          This is a basic popover with a title and description.
+          This legacy wrapper fades in without scaling or transforming.
         </Popover.Description>
       </Popover.Content>
     </Popover>
   );
 }
 
+export function PopoverOverflowDemo() {
+  return (
+    <Popover.Root>
+      <Popover.Trigger render={<Button variant="secondary" />}>
+        Open scrollable Popover
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup className="w-72">
+            <Popover.Arrow />
+            <Popover.Title>Recent notifications</Popover.Title>
+            <Popover.Description>
+              The list scrolls while the heading and arrow stay in place.
+            </Popover.Description>
+            <div
+              aria-label="Recent notifications"
+              className="mt-3 max-h-40 overflow-y-auto rounded-md border border-kumo-hairline outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
+              tabIndex={0}
+            >
+              {Array.from({ length: 10 }, (_, index) => (
+                <div
+                  key={index}
+                  className="border-b border-kumo-hairline px-3 py-2 last:border-b-0"
+                >
+                  Notification {index + 1}
+                </div>
+              ))}
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+export function PopoverCssVariablesDemo() {
+  return (
+    <Popover.Root>
+      <Popover.Trigger render={<Button />}>Open tall Popover</Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup className="h-80 max-h-[var(--available-height)] w-72">
+            <Popover.Arrow />
+            <Popover.Title>Available-height popup</Popover.Title>
+            <Popover.Description>
+              The popup is 320px tall unless the viewport provides less space.
+            </Popover.Description>
+            <div
+              aria-label="Popover rows"
+              className="mt-3 min-h-0 flex-1 overflow-y-auto rounded-md border border-kumo-hairline outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand"
+              tabIndex={0}
+            >
+              {Array.from({ length: 12 }, (_, index) => (
+                <div
+                  key={index}
+                  className="border-b border-kumo-hairline px-3 py-2 last:border-b-0"
+                >
+                  Row {index + 1}
+                </div>
+              ))}
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
 export function PopoverWithCloseDemo() {
   return (
-    <Popover>
+    <Popover.Root>
       <Popover.Trigger render={<Button />}>Open Settings</Popover.Trigger>
-      <Popover.Content>
-        <Popover.Title>Settings</Popover.Title>
-        <Popover.Description>
-          Configure your preferences below.
-        </Popover.Description>
-        <div className="mt-3">
-          <Popover.Close render={<Button variant="secondary" size="sm" />}>
-            Close
-          </Popover.Close>
-        </div>
-      </Popover.Content>
-    </Popover>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup>
+            <Popover.Arrow />
+            <Popover.Title>Settings</Popover.Title>
+            <Popover.Description>
+              Configure your preferences below.
+            </Popover.Description>
+            <div className="mt-3">
+              <Popover.Close render={<Button variant="secondary" size="sm" />}>
+                Close
+              </Popover.Close>
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
 export function PopoverPositionDemo() {
   return (
     <div className="flex flex-wrap gap-4">
-      <Popover>
+      <Popover.Root>
         <Popover.Trigger render={<Button variant="secondary" />}>
           Bottom
         </Popover.Trigger>
-        <Popover.Content side="bottom">
-          <Popover.Title>Bottom</Popover.Title>
-          <Popover.Description>
-            Popover on bottom (default).
-          </Popover.Description>
-        </Popover.Content>
-      </Popover>
+        <Popover.Portal>
+          <Popover.Positioner side="bottom">
+            <Popover.Popup>
+              <Popover.Arrow />
+              <Popover.Title>Bottom</Popover.Title>
+              <Popover.Description>
+                Popover on bottom (default).
+              </Popover.Description>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
 
-      <Popover>
+      <Popover.Root>
         <Popover.Trigger render={<Button variant="secondary" />}>
           Top
         </Popover.Trigger>
-        <Popover.Content side="top">
-          <Popover.Title>Top</Popover.Title>
-          <Popover.Description>Popover on top.</Popover.Description>
-        </Popover.Content>
-      </Popover>
+        <Popover.Portal>
+          <Popover.Positioner side="top">
+            <Popover.Popup>
+              <Popover.Arrow />
+              <Popover.Title>Top</Popover.Title>
+              <Popover.Description>Popover on top.</Popover.Description>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
 
-      <Popover>
+      <Popover.Root>
         <Popover.Trigger render={<Button variant="secondary" />}>
           Left
         </Popover.Trigger>
-        <Popover.Content side="left">
-          <Popover.Title>Left</Popover.Title>
-          <Popover.Description>Popover on left.</Popover.Description>
-        </Popover.Content>
-      </Popover>
+        <Popover.Portal>
+          <Popover.Positioner side="left">
+            <Popover.Popup>
+              <Popover.Arrow />
+              <Popover.Title>Left</Popover.Title>
+              <Popover.Description>Popover on left.</Popover.Description>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
 
-      <Popover>
+      <Popover.Root>
         <Popover.Trigger render={<Button variant="secondary" />}>
           Right
         </Popover.Trigger>
-        <Popover.Content side="right">
-          <Popover.Title>Right</Popover.Title>
-          <Popover.Description>Popover on right.</Popover.Description>
-        </Popover.Content>
-      </Popover>
+        <Popover.Portal>
+          <Popover.Positioner side="right">
+            <Popover.Popup>
+              <Popover.Arrow />
+              <Popover.Title>Right</Popover.Title>
+              <Popover.Description>Popover on right.</Popover.Description>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 }
 
 export function PopoverCustomContentDemo() {
   return (
-    <Popover>
+    <Popover.Root>
       <Popover.Trigger render={<Button />}>User Profile</Popover.Trigger>
-      <Popover.Content className="w-64">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-full bg-kumo-recessed" />
-          <div>
-            <Popover.Title>Jane Doe</Popover.Title>
-            <p className="text-sm text-kumo-subtle">jane@example.com</p>
-          </div>
-        </div>
-        <div className="mt-3 flex gap-2 border-t border-kumo-hairline pt-3">
-          <Button variant="secondary" size="sm" className="flex-1">
-            Profile
-          </Button>
-          <Popover.Close
-            render={<Button variant="ghost" size="sm" className="flex-1" />}
-          >
-            Sign Out
-          </Popover.Close>
-        </div>
-      </Popover.Content>
-    </Popover>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup className="w-64">
+            <Popover.Arrow />
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-full bg-kumo-recessed" />
+              <div>
+                <Popover.Title>Jane Doe</Popover.Title>
+                <p className="text-sm text-kumo-subtle">jane@example.com</p>
+              </div>
+            </div>
+            <div className="mt-3 flex gap-2 border-t border-kumo-hairline pt-3">
+              <Button variant="secondary" size="sm" className="flex-1">
+                Profile
+              </Button>
+              <Popover.Close
+                render={<Button variant="ghost" size="sm" className="flex-1" />}
+              >
+                Sign Out
+              </Popover.Close>
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
 export function PopoverOpenOnHoverDemo() {
   return (
-    <Popover>
+    <Popover.Root>
       <Popover.Trigger
         openOnHover
         delay={200}
@@ -138,19 +262,24 @@ export function PopoverOpenOnHoverDemo() {
       >
         Hover Me
       </Popover.Trigger>
-      <Popover.Content>
-        <Popover.Title>Hover Triggered</Popover.Title>
-        <Popover.Description>
-          This popover opens on hover with a 200ms delay. It can still contain
-          interactive content like buttons and links.
-        </Popover.Description>
-        <div className="mt-3">
-          <Popover.Close render={<Button variant="secondary" size="sm" />}>
-            Got it
-          </Popover.Close>
-        </div>
-      </Popover.Content>
-    </Popover>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup>
+            <Popover.Arrow />
+            <Popover.Title>Hover Triggered</Popover.Title>
+            <Popover.Description>
+              This popover opens on hover with a 200ms delay. It can still
+              contain interactive content like buttons and links.
+            </Popover.Description>
+            <div className="mt-3">
+              <Popover.Close render={<Button variant="secondary" size="sm" />}>
+                Got it
+              </Popover.Close>
+            </div>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
@@ -213,29 +342,38 @@ export function PopoverVirtualAnchorDemo() {
           </tbody>
         </table>
       </div>
-      <Popover
+      <Popover.Root
         open={!!selectedRow}
         onOpenChange={(open) => !open && setSelectedRow(null)}
       >
-        <Popover.Content
-          side="left"
-          anchor={
-            anchorRect ? { getBoundingClientRect: () => anchorRect } : undefined
-          }
-        >
-          <Popover.Title>
-            Edit {rows.find((r) => r.id === selectedRow)?.name}
-          </Popover.Title>
-          <Popover.Description>
-            The popover anchors to the selected row, not the icon button.
-          </Popover.Description>
-          <div className="mt-3">
-            <Popover.Close render={<Button size="sm" variant="secondary" />}>
-              Close
-            </Popover.Close>
-          </div>
-        </Popover.Content>
-      </Popover>
+        <Popover.Portal>
+          <Popover.Positioner
+            side="left"
+            anchor={
+              anchorRect
+                ? { getBoundingClientRect: () => anchorRect }
+                : undefined
+            }
+          >
+            <Popover.Popup>
+              <Popover.Arrow />
+              <Popover.Title>
+                Edit {rows.find((r) => r.id === selectedRow)?.name}
+              </Popover.Title>
+              <Popover.Description>
+                The popover anchors to the selected row, not the icon button.
+              </Popover.Description>
+              <div className="mt-3">
+                <Popover.Close
+                  render={<Button size="sm" variant="secondary" />}
+                >
+                  Close
+                </Popover.Close>
+              </div>
+            </Popover.Popup>
+          </Popover.Positioner>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 }

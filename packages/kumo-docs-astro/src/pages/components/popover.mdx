@@ -12,6 +12,9 @@ import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   PopoverHeroDemo,
   PopoverBasicDemo,
+  PopoverLegacyContentDemo,
+  PopoverOverflowDemo,
+  PopoverCssVariablesDemo,
   PopoverWithCloseDemo,
   PopoverPositionDemo,
   PopoverCustomContentDemo,
@@ -58,13 +61,18 @@ import { Popover, Button } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
-    <Popover>
+    <Popover.Root>
       <Popover.Trigger render={<Button />}>Open</Popover.Trigger>
-      <Popover.Content>
-        <Popover.Title>Popover Title</Popover.Title>
-        <Popover.Description>Popover content goes here.</Popover.Description>
-      </Popover.Content>
-    </Popover>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup>
+            <Popover.Arrow />
+            <Popover.Title>Popover Title</Popover.Title>
+            <Popover.Description>Popover content goes here.</Popover.Description>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 ```
@@ -152,6 +160,42 @@ export default function Example() {
   <PopoverBasicDemo client:load />
 </ComponentExample>
 
+### Deprecated Content compatibility
+
+<p>
+  `Popover.Content` is deprecated, but remains available so existing popovers do
+  not break. It combines `Portal`, `Positioner`, `Popup`, and `Arrow` into one
+  component and fades in smoothly using opacity only, without a scale or
+  transform animation. New popovers should compose the individual parts as
+  shown in the basic example.
+</p>
+<ComponentExample demo="PopoverLegacyContentDemo">
+  <PopoverLegacyContentDemo client:load />
+</ComponentExample>
+
+### Scrollable content
+
+<p>
+  When the arrow and heading should remain fixed, place the overflowing content
+  in an inner scroll container. Existing overflow styles on the deprecated
+  `Popover.Content` remain supported by its fade-only transition.
+</p>
+<ComponentExample demo="PopoverOverflowDemo">
+  <PopoverOverflowDemo client:load />
+</ComponentExample>
+
+### CSS variables
+
+<p>
+  Base UI exposes the space between the trigger and the viewport edge as
+  `--available-height`. This example gives the popup a preferred height of
+  320px, then uses the variable as its maximum height so the popup shrinks and
+  its inner content scrolls when less space is available.
+</p>
+<ComponentExample demo="PopoverCssVariablesDemo">
+  <PopoverCssVariablesDemo client:load />
+</ComponentExample>
+
 ### With Close Button
 
 <ComponentExample demo="PopoverWithCloseDemo">
@@ -161,8 +205,8 @@ export default function Example() {
 ### Positioning
 
 <p>
-  Use the `side` prop to control where the popover appears relative to the
-  trigger.
+  Use the `side` prop on `Popover.Positioner` to control where the popover
+  appears relative to the trigger.
 </p>
 <ComponentExample demo="PopoverPositionDemo">
   <PopoverPositionDemo client:load />
@@ -191,10 +235,10 @@ export default function Example() {
 ### Virtual Anchor
 
 <p>
-  Use the `anchor` prop on `Popover.Content` to position the popover against an
-  element other than the trigger, or against a virtual point (e.g., a `DOMRect`
-  from `getBoundingClientRect()`). This is useful when the trigger and the
-  desired anchor are in different component trees.
+  Use the `anchor` prop on `Popover.Positioner` to position the popover against
+  an element other than the trigger, or against a virtual point (e.g., a
+  `DOMRect` from `getBoundingClientRect()`). This is useful when the trigger and
+  the desired anchor are in different component trees.
 </p>
 <ComponentExample demo="PopoverVirtualAnchorDemo">
   <PopoverVirtualAnchorDemo client:load />
@@ -208,7 +252,7 @@ export default function Example() {
 
 ## API Reference
 
-### Popover
+### Popover.Root
 
 <p>The root component that manages the popover's open state.</p>
 <PropsTable component="Popover" />
@@ -221,14 +265,55 @@ export default function Example() {
 </p>
 <PropsTable component="Popover.Trigger" />
 
+### Popover.Portal
+
+<p>
+  Renders the popover outside the application DOM hierarchy. It uses the
+  container from `KumoPortalProvider` by default and accepts a `container` prop
+  to override it.
+</p>
+<PropsTable component="Popover.Portal" />
+
+### Popover.Backdrop
+
+<p>An optional backdrop rendered behind the popover.</p>
+<PropsTable component="Popover.Backdrop" />
+
+### Popover.Positioner
+
+<p>
+  Positions the popup relative to its trigger or an `anchor`. Use `side`,
+  `align`, and their offset props to control placement.
+</p>
+<PropsTable component="Popover.Positioner" />
+
+### Popover.Popup
+
+<p>
+  The styled popup container. Place `Popover.Arrow` and the popover content
+  directly inside it.
+</p>
+<PropsTable component="Popover.Popup" />
+
+### Popover.Arrow
+
+<p>An optional arrow that points toward the popover's anchor.</p>
+<PropsTable component="Popover.Arrow" />
+
+### Popover.Viewport
+
+<p>
+  A viewport for animating content changes when one popup is shared by multiple
+  triggers. It is not required for ordinary popovers or scrolling content.
+</p>
+<PropsTable component="Popover.Viewport" />
+
 ### Popover.Content
 
 <p>
-  The container for popover content. Controls positioning via `side`, `align`,
-  `sideOffset`, and `alignOffset` props. Use the `anchor` prop to position
-  against a custom element or virtual point instead of the trigger. Use
-  `positionMethod="fixed"` when the popover needs to escape stacking contexts,
-  such as when inside sticky headers.
+  A deprecated compatibility wrapper that combines `Portal`, `Positioner`,
+  `Popup`, and `Arrow`. Existing usages remain supported, but new code should
+  compose the individual parts shown above.
 </p>
 <PropsTable component="Popover.Content" />
 

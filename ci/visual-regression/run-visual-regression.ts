@@ -1,19 +1,17 @@
 #!/usr/bin/env tsx
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import pixelmatch from "pixelmatch";
-import { PNG } from "pngjs";
 import {
-  CANARY_COMPONENTS,
-  COMPONENT_ACTIONS,
   classifyChangedFiles,
   discoverComponents,
   getAffectedComponents,
   getComponentFromFile,
   type DiscoveredComponent,
 } from "./page-config";
+import { compareImages } from "./image-comparison";
 import { getPullRequestFiles } from "./pull-request-files";
+import { buildPageRequests, chunkPageRequests } from "./requests";
 
 // The worker URL is not a secret — it is public in the source code. Keeping it
 // as a secret in CI provides false security and creates a foot-gun where the
@@ -36,6 +34,8 @@ const API_KEY = process.env.SCREENSHOT_API_KEY ?? "";
  */
 interface ScreenshotResult {
   url: string;
+  /** Stable identifier echoed from the page request. */
+  captureId?: string;
   /** Base64-encoded PNG image */
   image?: string;
   /** Worker-served URL for the stored PNG */
@@ -61,9 +61,10 @@ interface CapturedScreenshot {
 interface ComparisonResult {
   id: string;
   name: string;
-  beforeUrl: string;
-  afterUrl: string;
+  beforeUrl: string | null;
+  afterUrl: string | null;
   diffUrl: string | null;
+  kind: "modified" | "added" | "removed";
   changed: boolean;
   diffPixels: number;
   diffPercent: number;
@@ -117,13 +118,14 @@ function getRunStoragePrefix(): string {
   const prNumber =
     process.env.GITHUB_PR_NUMBER ?? process.env.PR_NUMBER ?? "local";
   const runId = process.env.GITHUB_RUN_ID ?? Date.now().toString();
+  const runAttempt = process.env.GITHUB_RUN_ATTEMPT ?? "1";
   const headSha =
     process.env.PR_HEAD_SHA ?? process.env.GITHUB_SHA ?? "unknown";
 
   return [
     "runs",
     `pr-${sanitizeKeyPart(prNumber)}`,
-    `run-${sanitizeKeyPart(runId)}`,
+    `run-${sanitizeKeyPart(runId)}-${sanitizeKeyPart(runAttempt)}`,
     sanitizeKeyPart(headSha.substring(0, 12)),
   ].join("/");
 }
@@ -173,13 +175,6 @@ async function uploadScreenshotToWorker(
  * This ensures stable, per-component screenshots that don't shift based on
  * scroll position or page layout changes.
  */
-interface PageRequest {
-  url: string;
-  captureSections: boolean;
-  hideSidebar: boolean;
-  actions?: Array<{ type: string; selector: string; waitAfter?: number }>;
-}
-
 async function captureScreenshots(
   baseUrl: string,
   components: DiscoveredComponent[],
@@ -190,25 +185,7 @@ async function captureScreenshots(
   ensureDir(outputDir);
   const screenshots: CapturedScreenshot[] = [];
 
-  const requests: PageRequest[] = [];
-
-  for (const component of components) {
-    requests.push({
-      url: component.url,
-      captureSections: true,
-      hideSidebar: true,
-    });
-
-    const action = COMPONENT_ACTIONS[component.id];
-    if (action) {
-      requests.push({
-        url: component.url,
-        captureSections: false,
-        hideSidebar: true,
-        actions: [action],
-      });
-    }
-  }
+  const requests = buildPageRequests(components);
 
   console.log(`Capturing screenshots from ${baseUrl}...`);
   console.log(`  ${components.length} components, ${requests.length} requests`);
@@ -220,48 +197,63 @@ async function captureScreenshots(
     headers["X-API-Key"] = API_KEY;
   }
 
-  const response = await fetch(`${WORKER_URL}/batch`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      baseUrl,
-      pages: requests,
-      viewport: { width: 1440, height: 900 },
-      hideSidebar: true,
-      storage: {
-        prefix: storagePrefix,
-        includeImage: true,
-      },
-    }),
-  });
+  const results: ScreenshotResult[] = [];
+  for (const batch of chunkPageRequests(requests)) {
+    const response = await fetch(`${WORKER_URL}/batch`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        baseUrl,
+        pages: batch,
+        viewport: { width: 1440, height: 900 },
+        hideSidebar: true,
+      }),
+    });
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Worker request failed: ${response.status} - ${text}`);
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Worker request failed: ${response.status} - ${text}`);
+    }
+
+    const data = (await response.json()) as WorkerResponse;
+    results.push(...data.results);
   }
 
-  const data = (await response.json()) as WorkerResponse;
-
-  for (const result of data.results) {
+  const captureErrors: string[] = [];
+  const sectionedUrls = new Set<string>();
+  const unsectionedResults = new Map<string, number>();
+  const screenshotIdCounts = new Map<string, number>();
+  for (const result of results) {
     if (result.error) {
-      console.warn(`  Error: ${result.url}: ${result.error}`);
+      captureErrors.push(`${result.url}: ${result.error}`);
       continue;
     }
 
     if (!result.image) {
-      console.warn(`  Empty: ${result.url}`);
+      captureErrors.push(`${result.url}: worker returned no image`);
       continue;
     }
 
     const urlPath = new URL(result.url).pathname.replace(/\/$/, "");
-    const componentSlug = urlPath.split("/").pop() || "unknown";
+    const componentSlug = urlPath.split("/").pop() || "home";
 
-    const isOpenState = requests.some(
+    const hasOpenRequest = requests.some(
       (r) =>
         r.url === urlPath.replace(/\/$/, "") &&
-        r.actions &&
-        r.actions.length > 0,
+        r.actions?.some(
+          (action) => action.type === "click" || action.type === "hover",
+        ),
     );
+    const priorUnsectionedResults = unsectionedResults.get(urlPath) ?? 0;
+    const isOpenState =
+      hasOpenRequest &&
+      (sectionedUrls.has(urlPath) || priorUnsectionedResults > 0);
+
+    if (result.sectionId) {
+      sectionedUrls.add(urlPath);
+    } else {
+      unsectionedResults.set(urlPath, priorUnsectionedResults + 1);
+    }
 
     let screenshotId: string;
     let screenshotName: string;
@@ -269,6 +261,12 @@ async function captureScreenshots(
     if (result.sectionId) {
       screenshotId = `${componentSlug}-${result.sectionId}`;
       screenshotName = `${formatName(componentSlug)} / ${result.sectionTitle || result.sectionId}`;
+    } else if (result.captureId?.endsWith("-open")) {
+      screenshotId = result.captureId;
+      screenshotName = `${formatName(result.captureId.slice(0, -5))} (Open)`;
+    } else if (result.captureId) {
+      screenshotId = result.captureId;
+      screenshotName = formatName(result.captureId);
     } else if (isOpenState) {
       screenshotId = `${componentSlug}-open`;
       screenshotName = `${formatName(componentSlug)} (Open)`;
@@ -277,13 +275,23 @@ async function captureScreenshots(
       screenshotName = formatName(componentSlug);
     }
 
+    const occurrence = (screenshotIdCounts.get(screenshotId) ?? 0) + 1;
+    screenshotIdCounts.set(screenshotId, occurrence);
+    if (occurrence > 1) {
+      screenshotId = `${screenshotId}-${occurrence}`;
+      screenshotName = `${screenshotName} (${occurrence})`;
+    }
+
     const filename = `${prefix}-${screenshotId}.png`;
     const filepath = join(outputDir, filename);
 
     const imageBuffer = Buffer.from(result.image, "base64");
     writeFileSync(filepath, imageBuffer);
 
-    const imageUrl = result.imageUrl ?? null;
+    const imageUrl = await uploadScreenshotToWorker(
+      imageBuffer,
+      `${storagePrefix}/${filename}`,
+    );
     console.log(
       imageUrl
         ? `  OK: ${screenshotName} -> ${imageUrl}`
@@ -298,6 +306,12 @@ async function captureScreenshots(
     });
   }
 
+  if (captureErrors.length > 0) {
+    throw new Error(
+      `Screenshot capture incomplete:\n${captureErrors.join("\n")}`,
+    );
+  }
+
   return screenshots;
 }
 
@@ -306,86 +320,6 @@ function formatName(slug: string): string {
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
-}
-
-interface DiffResult {
-  changed: boolean;
-  diffPixels: number;
-  diffPercent: number;
-  /** Raw PNG buffer of the diff image, null if images are identical or missing */
-  diffImage: Buffer | null;
-}
-
-function compareImages(beforePath: string, afterPath: string): DiffResult {
-  if (!existsSync(beforePath) || !existsSync(afterPath)) {
-    return { changed: true, diffPixels: 0, diffPercent: 100, diffImage: null };
-  }
-
-  const beforeBuf = readFileSync(beforePath);
-  const afterBuf = readFileSync(afterPath);
-
-  // Fast path: byte-identical images need no pixel comparison
-  if (beforeBuf.equals(afterBuf)) {
-    return { changed: false, diffPixels: 0, diffPercent: 0, diffImage: null };
-  }
-
-  const beforePng = PNG.sync.read(beforeBuf);
-  const afterPng = PNG.sync.read(afterBuf);
-
-  // Handle size mismatches by padding the smaller image
-  const width = Math.max(beforePng.width, afterPng.width);
-  const height = Math.max(beforePng.height, afterPng.height);
-
-  const padToSize = (png: PNG, w: number, h: number): Uint8Array => {
-    if (png.width === w && png.height === h) {
-      return new Uint8Array(
-        png.data.buffer,
-        png.data.byteOffset,
-        png.data.byteLength,
-      );
-    }
-    const padded = new Uint8Array(w * h * 4);
-    for (let y = 0; y < png.height; y++) {
-      const srcOffset = y * png.width * 4;
-      const dstOffset = y * w * 4;
-      padded.set(
-        png.data.subarray(srcOffset, srcOffset + png.width * 4),
-        dstOffset,
-      );
-    }
-    return padded;
-  };
-
-  const beforeData = padToSize(beforePng, width, height);
-  const afterData = padToSize(afterPng, width, height);
-  const diffData = new Uint8Array(width * height * 4);
-
-  const diffPixels = pixelmatch(
-    beforeData,
-    afterData,
-    diffData,
-    width,
-    height,
-    {
-      threshold: 0.1,
-      diffColor: [255, 0, 0],
-      alpha: 0.3,
-    },
-  );
-
-  const totalPixels = width * height;
-  const diffPercent = totalPixels > 0 ? (diffPixels / totalPixels) * 100 : 0;
-
-  const diffPng = new PNG({ width, height });
-  diffPng.data = Buffer.from(diffData);
-  const diffImage = PNG.sync.write(diffPng);
-
-  return {
-    changed: true,
-    diffPixels,
-    diffPercent: Math.round(diffPercent * 100) / 100,
-    diffImage,
-  };
 }
 
 function generateMarkdownReport(comparisons: ComparisonResult[]): string {
@@ -409,16 +343,27 @@ function generateMarkdownReport(comparisons: ComparisonResult[]): string {
   lines.push("");
 
   for (const comp of changed) {
-    const diffLabel = `${comp.diffPixels.toLocaleString()} px (${comp.diffPercent}%)`;
+    const percent =
+      comp.diffPercent > 0 && comp.diffPercent < 0.01
+        ? "<0.01"
+        : comp.diffPercent.toFixed(2).replace(/\.00$/, "");
+    const diffLabel =
+      comp.kind === "modified"
+        ? `${comp.diffPixels.toLocaleString()} px (${percent}%) changed`
+        : `${comp.kind}`;
     lines.push(`### ${comp.name}`);
-    lines.push(`${diffLabel} changed`);
+    lines.push(diffLabel);
     lines.push("");
     lines.push("| Before | After | Diff |");
     lines.push("|--------|-------|------|");
+    const beforeCell = comp.beforeUrl
+      ? `![Before](${comp.beforeUrl})`
+      : "*not present*";
+    const afterCell = comp.afterUrl
+      ? `![After](${comp.afterUrl})`
+      : "*not present*";
     const diffCell = comp.diffUrl ? `![Diff](${comp.diffUrl})` : "*no diff*";
-    lines.push(
-      `| ![Before](${comp.beforeUrl}) | ![After](${comp.afterUrl}) | ${diffCell} |`,
-    );
+    lines.push(`| ${beforeCell} | ${afterCell} | ${diffCell} |`);
     lines.push("");
   }
 
@@ -498,8 +443,19 @@ async function main(): Promise<void> {
   const afterUrl =
     process.env.AFTER_URL ?? process.env.PREVIEW_URL ?? beforeUrl;
 
-  console.log("Discovering components from docs site...");
-  const allComponents = await discoverComponents(beforeUrl);
+  console.log("Discovering components from docs sites...");
+  const [beforeComponents, afterComponents] = await Promise.all([
+    discoverComponents(beforeUrl),
+    discoverComponents(afterUrl),
+  ]);
+  const allComponents = Array.from(
+    new Map(
+      [...beforeComponents, ...afterComponents].map((component) => [
+        component.id,
+        component,
+      ]),
+    ).values(),
+  );
   console.log(`Found ${allComponents.length} components\n`);
 
   let components: DiscoveredComponent[];
@@ -529,17 +485,15 @@ async function main(): Promise<void> {
       }
 
       if (classification.requiresFullRegression) {
-        components = allComponents.filter((c) =>
-          CANARY_COMPONENTS.includes(c.id),
-        );
+        components = allComponents;
         const broadFiles = changedFiles.filter((f) => !getComponentFromFile(f));
-        console.log("Broad-impact files changed (running canary regression):");
+        console.log("Broad-impact files changed (running full regression):");
         broadFiles.slice(0, 10).forEach((f) => console.log(`  - ${f}`));
         if (broadFiles.length > 10) {
           console.log(`  ... and ${broadFiles.length - 10} more`);
         }
         console.log(
-          `\nRunning canary regression on ${components.length} representative component(s):\n`,
+          `\nRunning full regression on ${components.length} page(s):\n`,
         );
         components.forEach((c) => console.log(`  - ${c.name} (${c.url})`));
       } else {
@@ -564,9 +518,16 @@ async function main(): Promise<void> {
   const storagePrefix = getRunStoragePrefix();
 
   console.log("=== Capturing BEFORE screenshots ===");
+  const selectedIds = new Set(components.map((component) => component.id));
+  const beforeCaptureComponents = beforeComponents.filter((component) =>
+    selectedIds.has(component.id),
+  );
+  const afterCaptureComponents = afterComponents.filter((component) =>
+    selectedIds.has(component.id),
+  );
   const beforeScreenshots = await captureScreenshots(
     beforeUrl,
-    components,
+    beforeCaptureComponents,
     beforeDir,
     "before",
     `${storagePrefix}/before`,
@@ -575,7 +536,7 @@ async function main(): Promise<void> {
   console.log("\n=== Capturing AFTER screenshots ===");
   const afterScreenshots = await captureScreenshots(
     afterUrl,
-    components,
+    afterCaptureComponents,
     afterDir,
     "after",
     `${storagePrefix}/after`,
@@ -584,8 +545,21 @@ async function main(): Promise<void> {
   console.log("\n=== Comparing screenshots ===");
   const comparisons: ComparisonResult[] = [];
 
-  const beforeMap = new Map(beforeScreenshots.map((s) => [s.id, s]));
-  const afterMap = new Map(afterScreenshots.map((s) => [s.id, s]));
+  const indexScreenshots = (
+    screenshots: CapturedScreenshot[],
+    label: string,
+  ) => {
+    const map = new Map<string, CapturedScreenshot>();
+    for (const screenshot of screenshots) {
+      if (map.has(screenshot.id)) {
+        throw new Error(`Duplicate ${label} screenshot id: ${screenshot.id}`);
+      }
+      map.set(screenshot.id, screenshot);
+    }
+    return map;
+  };
+  const beforeMap = indexScreenshots(beforeScreenshots, "before");
+  const afterMap = indexScreenshots(afterScreenshots, "after");
 
   const allIds = Array.from(
     new Set([...Array.from(beforeMap.keys()), ...Array.from(afterMap.keys())]),
@@ -595,12 +569,26 @@ async function main(): Promise<void> {
     const before = beforeMap.get(id);
     const after = afterMap.get(id);
 
-    if (!before || !after) continue;
-    if (!before.url || !after.url) {
+    if (!before || !after) {
+      const screenshot = before ?? after;
+      comparisons.push({
+        id,
+        name: screenshot?.name ?? id,
+        beforeUrl: before?.url ?? null,
+        afterUrl: after?.url ?? null,
+        diffUrl: null,
+        kind: before ? "removed" : "added",
+        changed: true,
+        diffPixels: 0,
+        diffPercent: 100,
+      });
       console.log(
-        `  ${before?.name || after?.name || id}: skipped (upload failed)`,
+        `  ${screenshot?.name ?? id}: ${before ? "REMOVED" : "ADDED"}`,
       );
       continue;
+    }
+    if (!before.url || !after.url) {
+      throw new Error(`Screenshot upload missing for ${before.name}`);
     }
 
     const diff = compareImages(before.path, after.path);
@@ -629,6 +617,7 @@ async function main(): Promise<void> {
       beforeUrl: before.url,
       afterUrl: after.url,
       diffUrl,
+      kind: "modified",
       changed: diff.changed,
       diffPixels: diff.diffPixels,
       diffPercent: diff.diffPercent,

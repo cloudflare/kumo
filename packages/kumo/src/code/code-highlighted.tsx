@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { cn } from "../utils/cn";
+import { useCopyFeedback } from "../utils/use-copy-feedback";
 import { Button } from "../components/button";
 import { useShikiHighlighter } from "./use-shiki-highlighter";
 import type { CodeHighlightedProps } from "./types";
@@ -47,7 +48,7 @@ export function CodeHighlighted({
     error,
     labels: providerLabels,
   } = useShikiHighlighter();
-  const [copied, setCopied] = useState(false);
+  const { copied, runCopy } = useCopyFeedback();
 
   // Merge provider labels with component-level overrides
   const labels = useMemo(
@@ -56,14 +57,15 @@ export function CodeHighlighted({
   );
 
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("[Kumo CodeHighlighted] Failed to copy to clipboard:", err);
-    }
-  }, [code]);
+    await runCopy(
+      () => navigator.clipboard.writeText(code),
+      (error) =>
+        console.error(
+          "[Kumo CodeHighlighted] Failed to copy to clipboard:",
+          error,
+        ),
+    );
+  }, [code, runCopy]);
 
   // Memoized so unrelated rerenders (e.g. copy state) don't re-highlight
   const html = useMemo(() => highlight(code, lang), [highlight, code, lang]);

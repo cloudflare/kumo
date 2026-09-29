@@ -235,9 +235,7 @@ export function ThresholdsChartDemo() {
   );
 }
 
-/**
- * Timeseries chart with custom axis tick label formats for both x-axis (HH:MM) and y-axis (compact numbers).
- */
+/** Timeseries chart with custom UTC timestamps and compact value formats. */
 export function CustomAxisLabelFormatDemo() {
   const isDarkMode = useIsDarkMode();
 
@@ -259,15 +257,25 @@ export function CustomAxisLabelFormatDemo() {
       data={data}
       xAxisName="Time (UTC)"
       yAxisName="Requests"
-      xAxisTickFormat={(ts) => {
-        const d = new Date(ts);
-        return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
-      }}
+      xAxisTickFormat={(timestamp) =>
+        new Intl.DateTimeFormat(undefined, {
+          timeZone: "UTC",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(timestamp)
+      }
       yAxisTickFormat={(value) => {
         if (value >= 1000) return `${value / 1000}k`;
         return value.toString();
       }}
       tooltipValueFormat={(value) => `${(value / 1000).toFixed(1)}k requests`}
+      tooltipTimestampFormat={(timestamp) =>
+        new Intl.DateTimeFormat(undefined, {
+          timeZone: "UTC",
+          dateStyle: "medium",
+          timeStyle: "medium",
+        }).format(timestamp)
+      }
     />
   );
 }

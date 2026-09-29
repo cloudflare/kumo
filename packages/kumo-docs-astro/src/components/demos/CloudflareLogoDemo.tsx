@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CloudflareLogo,
   PoweredByCloudflare,
@@ -11,6 +11,8 @@ import {
   DownloadSimpleIcon,
   ArrowSquareOutIcon,
 } from "@phosphor-icons/react";
+
+const COPIED_FEEDBACK_MS = 2000;
 
 export function CloudflareLogoBasicDemo() {
   return <CloudflareLogo className="w-72" />;
@@ -60,11 +62,42 @@ export function CloudflareLogoSizesDemo() {
 
 export function CloudflareLogoCopyDemo() {
   const [copied, setCopied] = useState<string | null>(null);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyAttemptRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      copyAttemptRef.current += 1;
+      if (resetTimeoutRef.current !== null) {
+        clearTimeout(resetTimeoutRef.current);
+        resetTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const copyToClipboard = async (text: string, label: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(label);
-    setTimeout(() => setCopied(null), 2000);
+    const attempt = ++copyAttemptRef.current;
+    if (resetTimeoutRef.current !== null) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      if (copyAttemptRef.current !== attempt) return;
+
+      setCopied(label);
+      resetTimeoutRef.current = setTimeout(() => {
+        if (copyAttemptRef.current !== attempt) return;
+        setCopied(null);
+        resetTimeoutRef.current = null;
+      }, COPIED_FEEDBACK_MS);
+    } catch (error) {
+      if (copyAttemptRef.current !== attempt) return;
+
+      setCopied(null);
+      console.error("Failed to copy logo SVG:", error);
+    }
   };
 
   return (

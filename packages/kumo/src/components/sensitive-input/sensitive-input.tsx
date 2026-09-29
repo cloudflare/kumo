@@ -2,7 +2,6 @@ import { Eye, EyeSlash } from "@phosphor-icons/react";
 import {
   forwardRef,
   useCallback,
-  useEffect,
   useId,
   useRef,
   useState,
@@ -18,6 +17,7 @@ import {
   type KumoInputVariant,
 } from "../input/input";
 import { Field, type FieldErrorMatch } from "../field/field";
+import { useCopyFeedback } from "../../utils/use-copy-feedback";
 
 export const KUMO_SENSITIVE_INPUT_VARIANTS = KUMO_INPUT_VARIANTS;
 
@@ -132,7 +132,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       hasValue ? "masked" : "empty",
     );
 
-    const [copied, setCopied] = useState(false);
+    const { copied, runCopy } = useCopyFeedback();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -153,60 +153,61 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
       [ref],
     );
 
-    // Reset copied state after 2 seconds
-    useEffect(() => {
-      if (copied) {
-        const timeoutId = setTimeout(() => setCopied(false), 2000);
-        return () => clearTimeout(timeoutId);
-      }
-    }, [copied]);
-
     const copyToClipboard = useCallback(
       async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        try {
-          if (
-            typeof navigator !== "undefined" &&
-            navigator.clipboard &&
-            typeof navigator.clipboard.writeText === "function"
-          ) {
-            await navigator.clipboard.writeText(value);
-            setCopied(true);
-            onCopy?.();
-            return;
-          }
-        } catch {
-          // Fall through to manual fallback
-        }
-
-        if (typeof document !== "undefined") {
-          const textarea = document.createElement("textarea");
-          textarea.value = value;
-          textarea.setAttribute("readonly", "");
-          textarea.style.position = "absolute";
-          textarea.style.left = "-9999px";
-          document.body.appendChild(textarea);
-          const selection = document.getSelection();
-          const previousRange = selection?.rangeCount
-            ? selection.getRangeAt(0)
-            : null;
-          textarea.select();
-          try {
-            document.execCommand("copy");
-            setCopied(true);
-            onCopy?.();
-          } catch (error) {
-            console.warn("Clipboard copy failed", error);
-          } finally {
-            document.body.removeChild(textarea);
-            if (previousRange) {
-              selection?.removeAllRanges();
-              selection?.addRange(previousRange);
+        const didCopy = await runCopy(
+          async (isCurrent) => {
+            try {
+              if (
+                typeof navigator !== "undefined" &&
+                navigator.clipboard &&
+                typeof navigator.clipboard.writeText === "function"
+              ) {
+                await navigator.clipboard.writeText(value);
+                return;
+              }
+            } catch {
+              // Fall through to manual fallback.
             }
-          }
+
+            if (!isCurrent()) return;
+
+            if (typeof document === "undefined") {
+              throw new Error("Clipboard API is unavailable");
+            }
+
+            const textarea = document.createElement("textarea");
+            textarea.value = value;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "absolute";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            const selection = document.getSelection();
+            const previousRange = selection?.rangeCount
+              ? selection.getRangeAt(0)
+              : null;
+            textarea.select();
+            try {
+              if (!document.execCommand("copy")) {
+                throw new Error("Copy command was not accepted");
+              }
+            } finally {
+              document.body.removeChild(textarea);
+              if (previousRange) {
+                selection?.removeAllRanges();
+                selection?.addRange(previousRange);
+              }
+            }
+          },
+          (error) => console.warn("Clipboard copy failed", error),
+        );
+
+        if (didCopy) {
+          onCopy?.();
         }
       },
-      [value, onCopy],
+      [value, onCopy, runCopy],
     );
 
     // Sync mode when value changes externally

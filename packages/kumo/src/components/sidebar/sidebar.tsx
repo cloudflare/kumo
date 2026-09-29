@@ -2199,6 +2199,11 @@ interface SidebarCollapseContextValue {
   completeOpenChange: () => void;
 }
 
+const isCollapsibleContentShown = (
+  isOpen: boolean,
+  { isMobile, openMobile, state }: SidebarContextValue,
+) => isOpen && (isMobile ? openMobile : state !== "collapsed");
+
 const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   contentId: "",
   isOpen: true,
@@ -2215,7 +2220,10 @@ export interface SidebarCollapsibleProps extends ComponentPropsWithoutRef<"div">
   open?: boolean;
   /** Callback when open state changes. */
   onOpenChange?: (open: boolean) => void;
-  /** Callback after the content finishes its open or close transition. */
+  /**
+   * Callback after the content finishes showing or hiding. Also fires when the
+   * sidebar expands or collapses an open section, including the mobile drawer.
+   */
   onOpenChangeComplete?: (open: boolean) => void;
   /** Scroll the expanded content into view after opening. @default false */
   autoScrollOnOpen?: boolean;
@@ -2257,9 +2265,11 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     },
     ref,
   ) => {
-    const { animationDuration } = useSidebar();
+    const sidebar = useSidebar();
+    const { animationDuration } = sidebar;
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
     const isOpen = openProp ?? internalOpen;
+    const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
 
@@ -2272,7 +2282,7 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     }, [isOpen, onOpenChange]);
 
     const completeOpenChange = useOpenChangeComplete(
-      isOpen,
+      isContentShown,
       animationDuration,
       onOpenChangeComplete,
     );
@@ -2394,13 +2404,14 @@ const SidebarCollapsibleContent = forwardRef<
     autoScrollOnOpen,
     completeOpenChange,
   } = useContext(SidebarCollapseContext);
-  const { state, animationDuration } = useSidebar();
+  const sidebar = useSidebar();
+  const { animationDuration } = sidebar;
   const contentRef = useRef<HTMLDivElement | null>(null);
 
-  const isOpen = isCollapsibleOpen && state !== "collapsed";
+  const isContentShown = isCollapsibleContentShown(isCollapsibleOpen, sidebar);
 
   useEffect(() => {
-    if (!isOpen || !autoScrollOnOpen) return;
+    if (!isContentShown || !autoScrollOnOpen) return;
 
     const timeout = window.setTimeout(() => {
       const prefersReducedMotion = window.matchMedia(
@@ -2413,21 +2424,21 @@ const SidebarCollapsibleContent = forwardRef<
     }, animationDuration);
 
     return () => window.clearTimeout(timeout);
-  }, [isOpen, autoScrollOnOpen, animationDuration]);
+  }, [isContentShown, autoScrollOnOpen, animationDuration]);
 
   // Imperatively set inert — React 18 doesn't reliably forward
   // the inert attribute as a JSX prop on initial mount.
   const inertRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (node) {
-        if (!isOpen) {
+        if (!isContentShown) {
           node.setAttribute("inert", "");
         } else {
           node.removeAttribute("inert");
         }
       }
     },
-    [isOpen],
+    [isContentShown],
   );
 
   const mergedRef = useCallback(
@@ -2461,13 +2472,13 @@ const SidebarCollapsibleContent = forwardRef<
       ref={mergedRef}
       id={contentId}
       role="region"
-      aria-hidden={!isOpen}
+      aria-hidden={!isContentShown}
       onTransitionEnd={handleOpenTransitionEnd}
       className={cn(
         "grid",
         "transition-[grid-template-rows] duration-(--sidebar-animation-duration) ease-(--sidebar-easing)",
         "motion-reduce:transition-none",
-        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        isContentShown ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
         className,
       )}
       {...props}

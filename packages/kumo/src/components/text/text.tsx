@@ -357,13 +357,6 @@ function _Text<Variant extends TextVariant = "body">(
   ref: ForwardedRef<HTMLElement>,
 ) {
   const isCopy = ["body", "secondary", "success", "error"].includes(variant);
-  const isDeprecatedHeading = isDeprecatedHeadingVariant(variant);
-
-  if (process.env.NODE_ENV !== "production" && isDeprecatedHeading) {
-    console.warn(
-      `[Kumo Text]: variant="${variant}" is deprecated. Use variant="heading" and set size and as explicitly.`,
-    );
-  }
 
   // Heading variants do not auto-select h1/h2/h3, keeping visual presentation
   // separate from the document outline. Use `as` to opt into semantic HTML.

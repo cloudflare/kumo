@@ -140,7 +140,11 @@ const DropdownMenuContent = React.forwardRef<
 
 const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (!IconComponent) return null;
-  if (React.isValidElement(IconComponent)) return IconComponent;
+  if (React.isValidElement<{ className?: string }>(IconComponent)) {
+    return React.cloneElement(IconComponent, {
+      className: cn("mr-2 h-4 w-4", IconComponent.props.className),
+    });
+  }
   const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
   return <Comp className="mr-2 h-4 w-4" />;
 };

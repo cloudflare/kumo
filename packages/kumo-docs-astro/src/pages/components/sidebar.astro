@@ -259,7 +259,7 @@ const { state, isPeeking } = useSidebar();
       <div>
         <Heading level={3}>Transition Completion</Heading>
         <p>
-          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onOpenChangeComplete</code> when work must wait for a sidebar or collapsible transition to settle, such as measuring layout or scrolling newly revealed content. The callback receives the completed open state and also runs when reduced motion disables the transition.
+          Use <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">onOpenChangeComplete</code> when work must wait for a sidebar or collapsible transition to settle, such as measuring layout or scrolling newly revealed content. The callback receives the completed open state and also runs when reduced motion disables the transition. A <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">Sidebar.Collapsible</code> also completes when the sidebar or mobile drawer shows or hides an open section, so the callback always matches what the user sees.
         </p>
         <ComponentExample code={`const [completion, setCompletion] = useState("");
 

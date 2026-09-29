@@ -1,3 +1,8 @@
+// Stub Web Animations API for happy-dom (Base UI ScrollArea calls getAnimations).
+if (!HTMLElement.prototype.getAnimations) {
+  HTMLElement.prototype.getAnimations = () => [];
+}
+
 import {
   act,
   fireEvent,
@@ -8,6 +13,7 @@ import {
 import { describe, expect, it, vi } from "vite-plus/test";
 import { KumoPortalProvider } from "../../utils/portal-provider";
 import { KumoLocaleProvider } from "../../utils/locale-provider";
+import { DropdownMenu } from "../dropdown/dropdown";
 import {
   KUMO_LAYER_DIALOG_DEFAULT_VARIANTS,
   KUMO_LAYER_DIALOG_VARIANTS,
@@ -22,6 +28,7 @@ describe("LayerDialog", () => {
     expect(LayerDialog.Title).toBeDefined();
     expect(LayerDialog.Description).toBeDefined();
     expect(LayerDialog.Body).toBeDefined();
+    expect(LayerDialog.Action).toBeDefined();
     expect(LayerDialog.Actions).toBeDefined();
   });
 
@@ -115,6 +122,119 @@ describe("LayerDialog", () => {
     ).toThrow("LayerDialog.Alert requires");
   });
 
+  it("accepts a split primary action group for related alternate outcomes", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="draft">
+                  Save as draft
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Save options"
+            >
+              Save and deploy
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    expect(getByRole("group", { name: "Save options" })).toBeDefined();
+    const primary = getByRole("button", { name: "Save and deploy" });
+    const menu = getByRole("button", { name: "Save options" });
+    expect(primary.className).toContain("bg-(--kumo-button-emphasis-bg)");
+    expect(menu.className).toContain("bg-(--kumo-button-emphasis-bg)");
+    expect(
+      primary.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-brand)");
+    expect(
+      menu.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-brand)");
+  });
+
+  it("uses Content's portal container for alternate action menus", async () => {
+    const portalContainer = document.createElement("div");
+    document.body.append(portalContainer);
+
+    const { unmount } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content container={portalContainer}>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="draft">
+                  Save as draft
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="Save options"
+            >
+              Save and deploy
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    fireEvent.click(
+      within(portalContainer).getByRole("button", { name: "Save options" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        within(portalContainer).getByRole("menuitem", {
+          name: "Save as draft",
+        }),
+      ).toBeDefined();
+    });
+
+    unmount();
+    portalContainer.remove();
+  });
+
+  it("matches a destructive action's variant in its menu trigger", () => {
+    const { getByRole } = render(
+      <LayerDialog.Alert open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Delete deployment</LayerDialog.Title>
+          <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Action
+              menu={[
+                <DropdownMenu.Item key="archive">
+                  Archive instead
+                </DropdownMenu.Item>,
+              ]}
+              menuLabel="More delete actions"
+              variant="destructive"
+            >
+              Delete deployment
+            </LayerDialog.Action>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Alert>,
+    );
+
+    const primary = getByRole("button", { name: "Delete deployment" });
+    const menu = getByRole("button", { name: "More delete actions" });
+    expect(
+      primary.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-danger)");
+    expect(
+      menu.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-danger)");
+  });
+
   it("uses the portal container from KumoPortalProvider", () => {
     const portalContainer = document.createElement("div");
     document.body.append(portalContainer);
@@ -146,7 +266,7 @@ describe("LayerDialog", () => {
           <LayerDialog.Title>Delete resource</LayerDialog.Title>
           <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -166,7 +286,7 @@ describe("LayerDialog", () => {
           <LayerDialog.Title>Delete resource</LayerDialog.Title>
           <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -202,7 +322,7 @@ describe("LayerDialog", () => {
             <LayerDialog.Title>Delete resource</LayerDialog.Title>
             <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
             <LayerDialog.Actions>
-              <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+              <LayerDialog.Action>Delete</LayerDialog.Action>
             </LayerDialog.Actions>
           </LayerDialog.Content>
         </LayerDialog.Alert>
@@ -240,7 +360,7 @@ describe("LayerDialog", () => {
             <LayerDialog.Title>Information</LayerDialog.Title>
             <LayerDialog.Body>Body</LayerDialog.Body>
             <LayerDialog.Actions dismissLabel="Keep editing">
-              <LayerDialog.Actions.Primary>Save</LayerDialog.Actions.Primary>
+              <LayerDialog.Action>Save</LayerDialog.Action>
             </LayerDialog.Actions>
           </LayerDialog.Content>
         </LayerDialog.Root>
@@ -250,6 +370,25 @@ describe("LayerDialog", () => {
     expect(
       actionsDialog.getByRole("button", { name: "Keep editing" }),
     ).toBeDefined();
+  });
+
+  it("rejects arbitrary extra footer controls", () => {
+    expect(() =>
+      render(
+        <LayerDialog.Root open>
+          <LayerDialog.Content>
+            <LayerDialog.Title>Save changes</LayerDialog.Title>
+            <LayerDialog.Body>
+              Review your changes before saving.
+            </LayerDialog.Body>
+            <LayerDialog.Actions>
+              <LayerDialog.Action>Save and deploy</LayerDialog.Action>
+              <button type="button">Save as draft</button>
+            </LayerDialog.Actions>
+          </LayerDialog.Content>
+        </LayerDialog.Root>,
+      ),
+    ).toThrow("exactly one direct LayerDialog.Action");
   });
 });
 
@@ -268,7 +407,7 @@ describe("LayerDialog dismissal", () => {
           <LayerDialog.Title>Delete resource</LayerDialog.Title>
           <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -329,7 +468,7 @@ describe("LayerDialog dismissal", () => {
             </LayerDialog.Root>
           </LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -457,7 +596,7 @@ describe("LayerDialog dismissal", () => {
           <LayerDialog.Title>Deploy to production</LayerDialog.Title>
           <LayerDialog.Body>Traffic switches immediately.</LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>Deploy</LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Deploy</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -472,9 +611,9 @@ describe("LayerDialog dismissal", () => {
           <LayerDialog.Title>Delete resource</LayerDialog.Title>
           <LayerDialog.Body>This cannot be undone.</LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary variant="destructive">
+            <LayerDialog.Action variant="destructive">
               Delete
-            </LayerDialog.Actions.Primary>
+            </LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -501,9 +640,9 @@ describe("LayerDialog dismissal", () => {
           <LayerDialog.Title>Löschen</LayerDialog.Title>
           <LayerDialog.Body>Unwiderruflich.</LayerDialog.Body>
           <LayerDialog.Actions dismissLabel="Abbrechen">
-            <LayerDialog.Actions.Primary variant="destructive">
+            <LayerDialog.Action variant="destructive">
               Löschen
-            </LayerDialog.Actions.Primary>
+            </LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
@@ -518,7 +657,7 @@ describe("LayerDialog dismissal", () => {
           <LayerDialog.Title>Delete resource</LayerDialog.Title>
           <LayerDialog.Body>This action cannot be undone.</LayerDialog.Body>
           <LayerDialog.Actions>
-            <LayerDialog.Actions.Primary>Delete</LayerDialog.Actions.Primary>
+            <LayerDialog.Action>Delete</LayerDialog.Action>
           </LayerDialog.Actions>
         </LayerDialog.Content>
       </LayerDialog.Alert>,
