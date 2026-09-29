@@ -46,6 +46,20 @@ describe("Input", () => {
     expect(input).toHaveProperty("disabled", true);
   });
 
+  it("renders a declarative WebMCP parameter description", () => {
+    render(
+      <Input
+        label="Search"
+        name="query"
+        toolParamDescription="Product name to search for"
+      />,
+    );
+
+    expect(
+      screen.getByRole("textbox").getAttribute("toolparamdescription"),
+    ).toBe("Product name to search for");
+  });
+
   it("applies password manager ignore hints when requested", () => {
     render(<Input aria-label="Test" passwordManagerIgnore />);
     const input = screen.getByRole("textbox");
@@ -229,6 +243,20 @@ describe("Input", () => {
 });
 
 describe("InputArea", () => {
+  it("renders a declarative WebMCP parameter description", () => {
+    render(
+      <InputArea
+        label="Details"
+        name="details"
+        toolParamDescription="Additional search criteria"
+      />,
+    );
+
+    expect(
+      screen.getByRole("textbox").getAttribute("toolparamdescription"),
+    ).toBe("Additional search criteria");
+  });
+
   it("auto-resizes to its scrollHeight when autoResize is true", () => {
     const scrollHeight = vi
       .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")

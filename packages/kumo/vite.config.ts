@@ -131,6 +131,10 @@ const packEntries = {
     __dirname,
     "src/components/tag-input/index.ts",
   ),
+  "components/web-mcp-form": resolve(
+    __dirname,
+    "src/components/web-mcp-form/index.ts",
+  ),
   // PLOP_INJECT_COMPONENT_ENTRY
   // Utils entry point
   utils: resolve(__dirname, "src/utils/index.ts"),

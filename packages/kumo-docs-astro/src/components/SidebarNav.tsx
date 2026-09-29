@@ -84,6 +84,7 @@ const componentItems: NavItem[] = [
   { label: "Toolbar", href: "/components/toolbar" },
   { label: "Toast", href: "/components/toast" },
   { label: "Tooltip", href: "/components/tooltip" },
+  { label: "WebMCP Form", href: "/components/web-mcp-form" },
 ];
 
 const chartItems: NavItem[] = [

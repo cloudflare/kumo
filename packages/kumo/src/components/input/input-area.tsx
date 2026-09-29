@@ -223,6 +223,8 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
       [onChange, onValueChange, resize, isControlled],
     );
 
+    const { toolParamDescription, ...textareaProps } = inputProps;
+
     const textareaClassName = cn(
       inputVariants({ size, variant, focusIndicator: true }),
       "h-auto py-2", // Input variant always comes with size, but it does not apply for textarea
@@ -251,7 +253,8 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
                 className={textareaClassName}
                 onChange={handleChange}
                 rows={autoResize ? minRows : rows}
-                {...inputProps}
+                {...{ toolparamdescription: toolParamDescription }}
+                {...textareaProps}
               />
             )}
           />
@@ -266,7 +269,8 @@ export const InputArea = React.forwardRef<HTMLTextAreaElement, InputAreaProps>(
         className={textareaClassName}
         onChange={handleChange}
         rows={autoResize ? minRows : rows}
-        {...inputProps}
+        {...{ toolparamdescription: toolParamDescription }}
+        {...textareaProps}
       />
     );
   },
@@ -304,6 +308,8 @@ export type InputAreaProps = {
   minRows?: number;
   /** Maximum number of rows to grow to when `autoResize` is enabled; content beyond this scrolls. */
   maxRows?: number;
+  /** Agent-facing parameter description for a declarative WebMCP form. */
+  toolParamDescription?: string;
 
   // Finally, spread the native input props (least important)
 } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size">;

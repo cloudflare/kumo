@@ -248,6 +248,10 @@
       "types": "./dist/components/tooltip.d.ts",
       "import": "./dist/components/tooltip.js"
     },
+    "./components/web-mcp-form": {
+      "types": "./dist/components/web-mcp-form.d.ts",
+      "import": "./dist/components/web-mcp-form.js"
+    },
     "./primitives": {
       "types": "./dist/primitives.d.ts",
       "import": "./dist/primitives.js"

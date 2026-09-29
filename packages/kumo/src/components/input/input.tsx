@@ -147,6 +147,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     labelTooltip,
     description,
     error,
+    toolParamDescription,
     passwordManagerIgnore = false,
     ...inputProps
   } = props;
@@ -199,6 +200,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
             "data-lpignore": "true",
           }
         : {})}
+      {...{ toolparamdescription: toolParamDescription }}
       {...inputProps}
     />
   );
@@ -265,6 +267,8 @@ export type InputProps = Pick<KumoInputVariantsProps, "size" | "variant"> &
     description?: ReactNode;
     /** Error message or validation error object */
     error?: string | { message: ReactNode; match: FieldErrorMatch };
+    /** Agent-facing parameter description for a declarative WebMCP form. */
+    toolParamDescription?: string;
     /** Suppress browser extension password manager overlays on non-credential inputs. */
     passwordManagerIgnore?: boolean;
   };
