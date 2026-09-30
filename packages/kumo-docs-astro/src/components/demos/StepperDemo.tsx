@@ -60,10 +60,7 @@ export function StepperHeroDemo() {
           <Stepper.Header icon={<UsersIcon />}>Team access</Stepper.Header>
           <Stepper.Panel>
             <div className="space-y-4">
-              <Input
-                label="Invite teammates"
-                placeholder="name@company.com"
-              />
+              <Input label="Invite teammates" placeholder="name@company.com" />
               <Radio.Group legend="Default role" defaultValue="developer">
                 <Radio.Item
                   value="admin"
@@ -260,6 +257,127 @@ export function StepperAsyncDemo() {
             <Stepper.Footer>
               <Stepper.Back />
               <Stepper.Next finishLabel="Create workspace" />
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+      </Stepper.Root>
+    </div>
+  );
+}
+
+/**
+ * Exploration — `fill="progress"`: white fills every step up to the furthest
+ * one reached, so the surface itself shows how far along you are.
+ */
+export function StepperProgressFillDemo() {
+  return (
+    <div className="w-full max-w-2xl">
+      <Stepper.Root fill="progress">
+        <Stepper.Step>
+          <Stepper.Header icon={<BuildingsIcon />}>
+            Project details
+          </Stepper.Header>
+          <Stepper.Panel>
+            <Input label="Project name" placeholder="acme-web" />
+            <Stepper.Footer>
+              <Stepper.Back hideOnFirst />
+              <Stepper.Next>Continue</Stepper.Next>
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+
+        <Stepper.Step>
+          <Stepper.Header icon={<UsersIcon />}>Team access</Stepper.Header>
+          <Stepper.Panel>
+            <Input label="Invite teammates" placeholder="name@company.com" />
+            <Stepper.Footer>
+              <Stepper.Back />
+              <Stepper.Next>Continue</Stepper.Next>
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+
+        <Stepper.Step>
+          <Stepper.Header icon={<GearIcon />}>Configuration</Stepper.Header>
+          <Stepper.Panel>
+            <div className="flex flex-col items-start gap-3">
+              <Checkbox label="Enable automatic deployments from main" />
+              <Checkbox label="Enable preview environments" />
+            </div>
+            <Stepper.Footer>
+              <Stepper.Back />
+              <Stepper.Next>Continue</Stepper.Next>
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+
+        <Stepper.Step>
+          <Stepper.Header icon={<RocketLaunchIcon />}>
+            Review &amp; deploy
+          </Stepper.Header>
+          <Stepper.Panel>
+            <Text variant="secondary">
+              Creating your project will provision resources and run the first
+              deployment.
+            </Text>
+            <Stepper.Footer>
+              <Stepper.Back />
+              <Stepper.Next finishLabel="Create project" />
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+      </Stepper.Root>
+    </div>
+  );
+}
+
+/** Exploration — `fill="progress"` in horizontal: the rail's pill grows. */
+export function StepperProgressFillHorizontalDemo() {
+  return (
+    <div className="w-full max-w-2xl">
+      <Stepper.Root orientation="horizontal" fill="progress">
+        <Stepper.Step>
+          <Stepper.Header icon={<BuildingsIcon />}>Details</Stepper.Header>
+          <Stepper.Panel>
+            <Input label="Project name" placeholder="acme-web" />
+            <Stepper.Footer>
+              <Stepper.Back hideOnFirst />
+              <Stepper.Next>Continue</Stepper.Next>
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+
+        <Stepper.Step>
+          <Stepper.Header icon={<UsersIcon />}>Team</Stepper.Header>
+          <Stepper.Panel>
+            <Input label="Invite teammates" placeholder="name@company.com" />
+            <Stepper.Footer>
+              <Stepper.Back />
+              <Stepper.Next>Continue</Stepper.Next>
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+
+        <Stepper.Step>
+          <Stepper.Header icon={<GearIcon />}>Config</Stepper.Header>
+          <Stepper.Panel>
+            <Checkbox label="Enable preview environments" />
+            <Stepper.Footer>
+              <Stepper.Back />
+              <Stepper.Next>Continue</Stepper.Next>
+            </Stepper.Footer>
+          </Stepper.Panel>
+        </Stepper.Step>
+
+        <Stepper.Step>
+          <Stepper.Header icon={<RocketLaunchIcon />}>Deploy</Stepper.Header>
+          <Stepper.Panel>
+            <Text variant="secondary">
+              Review your settings and create the project.
+            </Text>
+            <Stepper.Footer>
+              <Stepper.Back />
+              <Stepper.Next finishLabel="Create project" />
             </Stepper.Footer>
           </Stepper.Panel>
         </Stepper.Step>

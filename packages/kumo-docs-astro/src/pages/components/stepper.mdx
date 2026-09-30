@@ -1,7 +1,7 @@
 ---
 layout: ~/layouts/MdxDocLayout.astro
 title: "Stepper"
-description: "A layered, accordion-style wizard for multi-step forms and flows, with first-class support for async transitions."
+description: "A layered wizard for multi-step forms and flows, with first-class support for async transitions."
 sourceFile: "components/stepper"
 ---
 
@@ -12,6 +12,8 @@ import {
   StepperHeroDemo,
   StepperHorizontalDemo,
   StepperAsyncDemo,
+  StepperProgressFillDemo,
+  StepperProgressFillHorizontalDemo,
 } from "~/components/demos/StepperDemo";
 
 {/* Hero Demo */}
@@ -20,6 +22,27 @@ import {
   <ComponentExample demo="StepperHeroDemo">
     <StepperHeroDemo client:load />
   </ComponentExample>
+</ComponentSection>
+
+{/* Exploration: progress fill */}
+
+<ComponentSection>
+
+## Exploration: progress fill
+
+Temporary, for comparison with the default above. With `fill="progress"` the
+white surface covers every step up to the furthest one reached instead of only
+the active step, so it grows as you move through the flow and doesn't shrink
+when you jump back.
+
+<ComponentExample demo="StepperProgressFillDemo">
+  <StepperProgressFillDemo client:load />
+</ComponentExample>
+
+<ComponentExample demo="StepperProgressFillHorizontalDemo">
+  <StepperProgressFillHorizontalDemo client:load />
+</ComponentExample>
+
 </ComponentSection>
 
 {/* Installation */}
@@ -51,8 +74,11 @@ import { Stepper } from "@cloudflare/kumo/components/stepper";
 Stepper favors composition over configuration. Assemble `Header`, `Panel`, and
 `Footer` parts inside each `Step` rather than driving the component through a
 wall of props. The Root owns wizard state — active step, completion, and async
-transitions — and lays the steps out as a layered card where every header stays
-visible and the active step expands.
+transitions — and lays the steps out in the same layered frame as
+`LayerDialog`: every step sits on the gray frame, and the active step lifts onto
+a white card so it's clear where to focus. Completed steps keep their check,
+even after you jump back to an earlier one, and any step you've already reached
+stays clickable.
 
 ```tsx
 <Stepper.Root onComplete={submit}>
@@ -77,11 +103,13 @@ visible and the active step expands.
 
 ## Orientation
 
-Set `orientation="horizontal"` for a compact, overflow-proof header: a Select
-that lists every step (jump to any you've already visited) flanked by prev/next
-arrows, iOS-picker style, with the active panel below. This stays clean no
-matter how many steps you have or how long the labels are. The state machine,
-async support, and error states are identical — only the layout changes.
+Set `orientation="horizontal"` to render the headers as a connected rail across
+the top of the frame. The active step's panel sits below it as a titled white
+card, and a direct `Stepper.Footer` moves onto the frame beneath that card, the
+same place `LayerDialog` puts its actions. On narrow viewports the rail becomes
+a Select that lists every step, with prev/next arrows on either side. The state
+machine, async support, and error states are identical — only the layout
+changes.
 
 <ComponentExample demo="StepperHorizontalDemo">
   <StepperHorizontalDemo client:load />
@@ -167,7 +195,7 @@ const { activeStep, totalSteps, isLastStep } = useStepper();
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `icon` | `ReactNode` | — | Leading icon slot. |
-| `clickable` | `boolean` | `false` | Allow clicking the header to jump to this step. |
+| `clickable` | `boolean` | reached steps | Allow clicking the header to jump to this step. Defaults to `true` for any step already reached; pass `false` to lock it. |
 | `indicator` | `ReactNode` | — | Override the default numbered/check status badge. |
 | `className` | `string` | — | Additional CSS classes. |
 
