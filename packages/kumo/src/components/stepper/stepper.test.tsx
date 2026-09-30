@@ -281,4 +281,72 @@ describe("Stepper", () => {
       expect(filled()).toEqual([true, true, false]);
     });
   });
+
+  describe("review fixes", () => {
+    it("makes collapsed vertical panels inert", () => {
+      const { container } = render(<Wizard />);
+      const panels = Array.from(
+        container.querySelectorAll('[data-kumo-part="panel"]'),
+      ).map((panel) => panel.hasAttribute("inert"));
+      expect(panels).toEqual([false, true, true]);
+
+      fireEvent.click(
+        openPanel(container)!.querySelector("button:last-of-type")!,
+      );
+      const after = Array.from(
+        container.querySelectorAll('[data-kumo-part="panel"]'),
+      ).map((panel) => panel.hasAttribute("inert"));
+      expect(after).toEqual([true, false, true]);
+    });
+
+    it("disables Finish once complete so onComplete can't run twice", async () => {
+      const onComplete = vi.fn();
+      const { container } = render(<Wizard onComplete={onComplete} />);
+      const next = () =>
+        openPanel(container)!.querySelector<HTMLButtonElement>(
+          "button:last-of-type",
+        )!;
+
+      fireEvent.click(next());
+      fireEvent.click(next());
+      fireEvent.click(next());
+      await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(next().disabled).toBe(true));
+
+      fireEvent.click(next());
+      expect(onComplete).toHaveBeenCalledTimes(1);
+    });
+
+    it("lets Back leave the completion view of a one-step flow", async () => {
+      const { container } = render(
+        <Stepper.Root>
+          <Stepper.Step>
+            <Stepper.Header>Only</Stepper.Header>
+            <Stepper.Panel>
+              <Stepper.Footer>
+                <Stepper.Next />
+              </Stepper.Footer>
+            </Stepper.Panel>
+          </Stepper.Step>
+          <Stepper.Complete>
+            <p>All done</p>
+            <Stepper.Footer>
+              <Stepper.Back />
+            </Stepper.Footer>
+          </Stepper.Complete>
+        </Stepper.Root>,
+      );
+      fireEvent.click(openPanel(container)!.querySelector("button")!);
+      await screen.findByText("All done");
+
+      const complete = container.querySelector<HTMLElement>(
+        '[data-kumo-part="complete"]',
+      )!;
+      const back = within(complete).getByText("Back").closest("button")!;
+      expect(back.disabled).toBe(false);
+
+      fireEvent.click(back);
+      expect(screen.queryByText("All done")).toBeNull();
+    });
+  });
 });

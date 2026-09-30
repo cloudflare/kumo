@@ -629,7 +629,7 @@ function StepperNav({ className }: { className?: string }) {
     goToStep,
     previousStep,
   } = useStepper();
-  const { headers } = useContext(StepperInternalContext);
+  const { headers, showCompleteView } = useContext(StepperInternalContext);
 
   const items = headers.map((header, i) => ({
     label: header.label,
@@ -638,7 +638,7 @@ function StepperNav({ className }: { className?: string }) {
     disabled: i > maxStepReached,
   }));
 
-  const canPrev = !isFirstStep && !isLoading;
+  const canPrev = (!isFirstStep || showCompleteView) && !isLoading;
   const canNext = activeStep < maxStepReached && !isLoading;
 
   return (
@@ -929,6 +929,19 @@ const StepPanel = forwardRef<HTMLDivElement, StepPanelProps>(function StepPanel(
   const { orientation, totalSteps } = useStepper();
   const { headers } = useContext(StepperInternalContext);
 
+  // A collapsed vertical panel is only clipped, so make it inert to keep its
+  // fields out of the tab order and accessibility tree while staying mounted
+  // (field state) and rendered (collapse animation). Set imperatively like
+  // Sidebar: React 18 doesn't reliably forward `inert` as a JSX prop.
+  const collapseRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      if (isActive) node.removeAttribute("inert");
+      else node.setAttribute("inert", "");
+    },
+    [isActive],
+  );
+
   if (orientation === "horizontal") {
     const { content, footers } = splitFooters(children);
 
@@ -961,6 +974,7 @@ const StepPanel = forwardRef<HTMLDivElement, StepPanelProps>(function StepPanel(
 
   return (
     <div
+      ref={collapseRef}
       data-kumo-part="panel"
       data-state={isActive ? "open" : "closed"}
       className={cn(
@@ -1081,15 +1095,18 @@ function StepperBack({
   ...props
 }: StepperBackProps) {
   const { previousStep, isFirstStep, isLoading } = useStepper();
+  const { showCompleteView } = useContext(StepperInternalContext);
+  // From the completion view there's always a step to go back to.
+  const atStart = isFirstStep && !showCompleteView;
 
   // Keep the footer's justify-between layout balanced when hidden.
-  if (hideOnFirst && isFirstStep) return <span aria-hidden />;
+  if (hideOnFirst && atStart) return <span aria-hidden />;
 
   return (
     <Button
       variant={variant}
       onClick={previousStep}
-      disabled={disabled ?? (isFirstStep || isLoading)}
+      disabled={disabled ?? (atStart || isLoading)}
       className={cn(variant === "ghost" && FRAME_HOVER_CLASSES, className)}
       {...(props as ButtonProps)}
     >
@@ -1127,13 +1144,14 @@ function StepperNext({
   disabled,
   ...props
 }: StepperNextProps) {
-  const { nextStep, isLastStep, isLoading } = useStepper();
+  const { nextStep, isLastStep, isLoading, isComplete } = useStepper();
 
   return (
     <Button
       variant={variant}
       loading={isLoading}
-      disabled={disabled}
+      // Once finished, don't let Finish run `onComplete` a second time.
+      disabled={disabled || isComplete}
       onClick={() => {
         void nextStep(beforeNext);
       }}
