@@ -506,6 +506,22 @@
   color: var(--rdp-range_start-color);
 }
 
+/* Outside-month ranges are a quiet continuation, not a second primary selection. */
+.rdp-day.rdp-outside:is(.rdp-range_start, .rdp-range_middle, .rdp-range_end) {
+  --rdp-range_start-date-background-color: var(--color-kumo-tint);
+  --rdp-range_middle-background-color: var(--color-kumo-tint);
+  --rdp-range_end-date-background-color: var(--color-kumo-tint);
+  --rdp-range_start-color: var(--text-color-kumo-default);
+  --rdp-range_middle-color: var(--text-color-kumo-default);
+  --rdp-range_end-color: var(--text-color-kumo-default);
+  --rdp-fill-hover-bg: var(--color-kumo-fill-hover);
+
+  /* Keep selectable dates legible without giving them the disabled opacity. */
+  &:not(.rdp-disabled) .rdp-day_button {
+    opacity: 1;
+  }
+}
+
 /* Focusable days */
 .rdp-focusable {
   cursor: pointer;
