@@ -2,7 +2,7 @@
  * Tests for Kumo catalog module
  */
 
-import { describe, it, expect, vi } from "vite-plus/test";
+import { describe, it, expect, vi, afterEach } from "vite-plus/test";
 import {
   getByPath,
   setByPath,
@@ -36,9 +36,20 @@ describe("data utilities", () => {
       const obj = { user: { name: "John" } };
       expect(getByPath(obj, "user/name")).toBe("John");
     });
+
+    it("does not access prototype properties", () => {
+      const obj = { user: { name: "John" } };
+      expect(getByPath(obj, "/constructor")).toBeUndefined();
+      expect(getByPath(obj, "/__proto__")).toBeUndefined();
+      expect(getByPath(obj, "/toString")).toBeUndefined();
+      expect(getByPath(obj, "/valueOf")).toBeUndefined();
+    });
   });
 
   describe("setByPath", () => {
+    afterEach(() => {
+      delete (Object.prototype as Record<string, unknown>).polluted;
+    });
     it("sets nested values", () => {
       const obj: Record<string, unknown> = {};
       setByPath(obj, "/user/name", "John");
@@ -49,6 +60,43 @@ describe("data utilities", () => {
       const obj: Record<string, unknown> = { user: { name: "John" } };
       setByPath(obj, "/user/name", "Jane");
       expect(obj).toEqual({ user: { name: "Jane" } });
+    });
+
+    it("prevents prototype pollution", () => {
+      const obj: Record<string, unknown> = {};
+      setByPath(obj, "/__proto__/polluted", "yes");
+      setByPath(obj, "/constructor/prototype/polluted", "yes");
+      setByPath(obj, "/prototype/polluted", "yes");
+      setByPath(obj, "/user/__proto__", { polluted: "yes" });
+
+      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+      expect(obj.polluted).toBeUndefined();
+      expect(obj).toEqual({});
+      expect(Object.getPrototypeOf(obj)).toBe(Object.prototype);
+    });
+
+    it("handles empty paths without modifying object", () => {
+      const obj: Record<string, unknown> = { a: 1 };
+      setByPath(obj, "", "val");
+      setByPath(obj, "/", "val");
+      expect(obj).toEqual({ a: 1 });
+    });
+
+    it("handles non-object and null intermediate values", () => {
+      const obj: Record<string, unknown> = { user: null, count: 42 };
+      setByPath(obj, "/user/name", "John");
+      setByPath(obj, "/count/value", 100);
+      expect(obj).toEqual({
+        user: { name: "John" },
+        count: { value: 100 },
+      });
+    });
+
+    it("handles array length path safely without throwing", () => {
+      const obj: Record<string, unknown> = { items: [1, 2] };
+      setByPath(obj, "/items/length/x", 1);
+      setByPath(obj, "/items/length", "x");
+      expect(obj).toEqual({ items: [1, 2] });
     });
   });
 
