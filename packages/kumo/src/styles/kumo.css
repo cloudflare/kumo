@@ -506,8 +506,18 @@
   color: var(--rdp-range_start-color);
 }
 
-/* Outside-month ranges are a quiet continuation, not a second primary selection. */
-.rdp-day.rdp-outside:is(.rdp-range_start, .rdp-range_middle, .rdp-range_end) {
+/* The panel where a range starts stays primary, including its outside dates. */
+.rdp-day[data-kumo-range-emphasis="primary"]:not(.rdp-disabled) .rdp-day_button {
+  opacity: 1;
+}
+
+.rdp-day[data-kumo-range-emphasis="primary"]:not(.rdp-range_middle) .rdp-day_button {
+  color: var(--rdp-range_start-color);
+}
+
+/* Other panels show a quiet continuation, not a second primary selection. */
+.rdp-day[data-kumo-range-emphasis="secondary"] {
+  --rdp-accent-color: var(--color-kumo-tint);
   --rdp-range_start-date-background-color: var(--color-kumo-tint);
   --rdp-range_middle-background-color: var(--color-kumo-tint);
   --rdp-range_end-date-background-color: var(--color-kumo-tint);
