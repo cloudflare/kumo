@@ -17,6 +17,11 @@
     var(--color-neutral-900, oklch(20.5% 0 0))
   );
 
+  --text-color-kumo-button-emphasis: light-dark(
+    var(--color-white, #fff),
+    var(--color-white, #fff)
+  );
+
   --text-color-kumo-strong: light-dark(
     var(--color-neutral-950, oklch(14.5% 0 0)),
     var(--color-neutral-50, oklch(98.5% 0 0))
@@ -294,6 +299,7 @@
       oklch(21% 0.006 285.885)
     );
     --text-color-kumo-inverse: var(--color-neutral-100, oklch(97% 0 0));
+    --text-color-kumo-button-emphasis: var(--color-white, #fff);
     --text-color-kumo-strong: var(--color-neutral-950, oklch(14.5% 0 0));
     --text-color-kumo-subtle: var(--color-neutral-500, oklch(55.6% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-300, oklch(87% 0 0));
@@ -376,6 +382,7 @@
   [data-theme="kumo"] [data-mode="dark"] {
     --text-color-kumo-default: var(--color-neutral-100, oklch(97% 0 0));
     --text-color-kumo-inverse: var(--color-neutral-900, oklch(20.5% 0 0));
+    --text-color-kumo-button-emphasis: var(--color-white, #fff);
     --text-color-kumo-strong: var(--color-neutral-50, oklch(98.5% 0 0));
     --text-color-kumo-subtle: var(--color-neutral-400, oklch(70.8% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-600, oklch(43.9% 0 0));

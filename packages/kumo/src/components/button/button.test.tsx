@@ -192,6 +192,36 @@ describe("Button", () => {
       expect(className).not.toContain("focus-visible:ring-kumo-brand");
     }
   });
+
+  it("uses a semantic foreground for emphasized variants", () => {
+    for (const variant of ["primary", "destructive"] as const) {
+      const className = buttonVariants({ variant });
+
+      expect(className).toContain("!text-kumo-button-emphasis");
+      expect(className).not.toContain("!text-white");
+      expect(className).toContain("disabled:opacity-50");
+    }
+  });
+
+  it("keeps the semantic emphasis foreground while disabled or loading", () => {
+    render(
+      <>
+        <Button variant="primary" disabled>
+          Save
+        </Button>
+        <Button variant="destructive" loading>
+          Delete
+        </Button>
+      </>,
+    );
+
+    for (const button of screen.getAllByRole("button")) {
+      expect(button.hasAttribute("disabled")).toBe(true);
+      expect(button.classList.contains("!text-kumo-button-emphasis")).toBe(
+        true,
+      );
+    }
+  });
 });
 
 describe("RefreshButton", () => {
