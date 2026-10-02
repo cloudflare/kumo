@@ -2,4 +2,4 @@
 "@cloudflare/kumo": patch
 ---
 
-Keep `useKumoToastManager` stable across unrelated renders.
+Keep `useKumoToastManager` stable when the toast list changes.
