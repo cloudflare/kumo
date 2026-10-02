@@ -319,10 +319,9 @@ function _RadioItem<T = string>(
   } = useContext(RadioGroupContext);
   const appearance = appearanceProp ?? groupAppearance;
   const isCard = appearance === "card";
-  // Card items in a vertical card group render as rows of one shared card;
-  // the group draws the outer border and each row draws its divider.
-  const isJoined =
-    isCard && groupAppearance === "card" && orientation === "vertical";
+  // Card items in a card group render as cells of one shared card; the group
+  // draws the outer border and each cell draws its own dividers.
+  const isJoined = isCard && groupAppearance === "card" && orientation !== null;
 
   // Fall back to an appearance-appropriate default when controlPosition is
   // not provided: card defaults to "end" (radio on the right), default
@@ -339,9 +338,16 @@ function _RadioItem<T = string>(
         className={cn(
           "group relative m-0 flex items-start gap-3 bg-kumo-base p-3 transition-colors has-[[data-checked]]:bg-kumo-tint",
           isJoined
-            ? // bg-clip-padding keeps the checked tint from darkening the
-              // translucent divider.
-              "border-b border-kumo-hairline bg-clip-padding last:border-b-0"
+            ? cn(
+                // bg-clip-padding keeps the checked tint from darkening the
+                // translucent dividers.
+                "border-b border-kumo-hairline bg-clip-padding last:border-b-0",
+                // Two-column grid: the left column draws the column divider
+                // (unless it's a lone last item), and the last row drops its
+                // bottom divider.
+                orientation === "horizontal" &&
+                  "odd:border-r [&:last-child:nth-child(odd)]:border-r-0 [&:nth-last-child(2):nth-child(odd)]:border-b-0",
+              )
             : "rounded-lg border border-kumo-hairline has-[[data-checked]]:border-kumo-interact",
           controlAtStart && "flex-row-reverse",
           variant === "error" &&
@@ -512,7 +518,7 @@ function RadioGroup<Value = string>({
                   ? "flex flex-col overflow-hidden rounded-lg border border-kumo-hairline"
                   : "flex flex-col gap-2"
                 : appearance === "card"
-                  ? "grid grid-cols-2 gap-3"
+                  ? "grid grid-cols-2 overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base"
                   : "flex flex-row flex-wrap gap-2",
             )}
           >

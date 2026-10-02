@@ -116,7 +116,7 @@ describe("Radio", () => {
     }
   });
 
-  it("keeps horizontal card items as separate cards", () => {
+  it("joins horizontal card items into one two-column card", () => {
     const { container } = render(
       <Radio.Group
         legend="Plan"
@@ -126,12 +126,17 @@ describe("Radio", () => {
       >
         <Radio.Item label="Free" value="free" />
         <Radio.Item label="Pro" value="pro" />
+        <Radio.Item label="Business" value="business" />
       </Radio.Group>,
     );
 
-    for (const label of container.querySelectorAll("label")) {
-      expect(label.className).toContain("rounded-lg");
-      expect(label.className).not.toContain("border-b");
+    const labels = container.querySelectorAll("label");
+    const grid = labels[0].parentElement?.className ?? "";
+    expect(grid).toContain("grid-cols-2");
+    expect(grid).toContain("rounded-lg");
+    for (const label of labels) {
+      expect(label.className).toContain("odd:border-r");
+      expect(label.className).not.toContain("rounded-lg");
     }
   });
 
