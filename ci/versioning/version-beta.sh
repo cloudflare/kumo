@@ -18,7 +18,8 @@ commitHash=${GITHUB_SHA:+${GITHUB_SHA:0:7}}
 commitHash=${commitHash:-$(git rev-parse --short HEAD)}
 
 # Find all modified package.json files and append "-beta" and the commit hash to their version
-git diff --cached --name-only | grep 'package.json$' | while read -r file ; do
+# (no matches is fine: it means there were no pending changesets)
+git diff --cached --name-only | { grep 'package.json$' || true; } | while read -r file ; do
     echo "Updating $file with \"-beta\" and commit hash $commitHash"
 
     # Use jq to safely read and modify the JSON data, appending "-beta" and the commit hash to the version
