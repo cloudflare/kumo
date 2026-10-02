@@ -1,0 +1,97 @@
+DEPLOY_PROTOTYPE_HANDOFF.md
+  s_5ee067d1962785::t_810e1294ae9ab5 1-158
+packages/kumo-docs-astro/package.json
+  s_5ee067d1962785::t_7ed9455254fa07 28-29
+packages/kumo-docs-astro/src/components/SidebarNav.tsx
+  s_5ee067d1962785::t_d4dbe0a471c018 38-39,41
+packages/kumo-docs-astro/src/components/prototypes/app-source/AppSource.tsx
+  s_93cfabae97ecca::t_364bbbb6a8b999 1-704
+packages/kumo-docs-astro/src/components/prototypes/app-source/MultistepWizard.tsx
+  s_93cfabae97ecca::t_2a59f4d1d509c5 1-1008
+packages/kumo-docs-astro/src/components/prototypes/app-source/ScrollMask.tsx
+  s_93cfabae97ecca::t_b57cfdff1475c0 1-29
+packages/kumo-docs-astro/src/components/prototypes/app-source/SelectionCard.tsx
+  s_93cfabae97ecca::t_d95739e6bfebd3 1-162
+packages/kumo-docs-astro/src/components/prototypes/create-token/CreateToken.tsx
+  s_c561a61a0ea571::t_adaedca9a2101b 1-1007
+packages/kumo-docs-astro/src/components/prototypes/create-token/catalog.ts
+  s_c561a61a0ea571::t_be0471f6c3e6f5 1-399
+packages/kumo-docs-astro/src/components/prototypes/deploy/Configure.tsx
+  s_5ee067d1962785::t_9da06d3a8a05b4 1-1382
+packages/kumo-docs-astro/src/components/prototypes/deploy/DESIGN.md
+  s_5ee067d1962785::t_8edfc960082787 1-99
+packages/kumo-docs-astro/src/components/prototypes/deploy/Deploy.tsx
+  s_5ee067d1962785::t_a6f9695ba7737a 1-1371
+packages/kumo-docs-astro/src/components/prototypes/deploy/Dialkit.tsx
+  s_5ee067d1962785::t_1220a009b3bd75 1-106
+packages/kumo-docs-astro/src/components/prototypes/deploy/ProviderSheet.tsx
+  s_5ee067d1962785::t_71d776c8a91f17 1-321
+packages/kumo-docs-astro/src/components/prototypes/deploy/Remedy.tsx
+  s_5ee067d1962785::t_89ac8933def4aa 1-440
+packages/kumo-docs-astro/src/components/prototypes/deploy/RepositoryPicker.tsx
+  s_5ee067d1962785::t_25cc21caddea37 1-386
+packages/kumo-docs-astro/src/components/prototypes/deploy/contents.ts
+  s_5ee067d1962785::t_2c2c414cae13e7 1-588
+packages/kumo-docs-astro/src/components/prototypes/deploy/files.ts
+  s_5ee067d1962785::t_22bdcdd5442024 1-121
+packages/kumo-docs-astro/src/components/prototypes/deploy/marks.tsx
+  s_5ee067d1962785::t_4bd289e1828680 1-279
+packages/kumo-docs-astro/src/components/prototypes/deploy/parse.ts
+  s_5ee067d1962785::t_f92388e872f881 1-159
+packages/kumo-docs-astro/src/components/prototypes/deploy/world.ts
+  s_5ee067d1962785::t_cb248d05f36597 1-677
+packages/kumo-docs-astro/src/components/prototypes/scm-source/Proposed.tsx
+  s_5ee067d1962785::t_f058d58026753e 791-792,1148,1153,1178,1183,1190,1279,1284-1288,1290-1295
+packages/kumo-docs-astro/src/components/prototypes/scm-source/ui.tsx
+  s_5ee067d1962785::t_fb4646187bad32 250,315-351,364-367
+packages/kumo-docs-astro/src/components/prototypes/token-permissions/BulkEditMenu.tsx
+  s_c561a61a0ea571::t_2dc069bf70cbe0 1-119
+packages/kumo-docs-astro/src/components/prototypes/token-permissions/TokenPermissions.tsx
+  s_c561a61a0ea571::t_403b832b8941e2 1-565
+packages/kumo-docs-astro/src/components/prototypes/token-permissions/data.ts
+  s_c561a61a0ea571::t_0011d8ab39ff2f 1-252
+packages/kumo-docs-astro/src/components/prototypes/token-permissions/model.ts
+  s_c561a61a0ea571::t_f77ddb8ecae310 1-63
+packages/kumo-docs-astro/src/pages/prototypes/app-source.astro
+  s_93cfabae97ecca::t_452a9dde16ddfa 1-12
+packages/kumo-docs-astro/src/pages/prototypes/create-token.astro
+  s_c561a61a0ea571::t_3231a7edff5fb6 1-21
+packages/kumo-docs-astro/src/pages/prototypes/deploy.astro
+  s_5ee067d1962785::t_6ae2d032c155be 1-8
+packages/kumo-docs-astro/src/pages/prototypes/token-permissions.astro
+  s_c561a61a0ea571::t_ca191d28d4c178 1-11
+pnpm-lock.yaml
+  s_5ee067d1962785::t_d4db5c7a25a78c 369-374,2423-2483,2515-2518,2535-2538,2543-2546,2551-2554,4638-4640,5183-5190,6721,7895-7939,7986-7993,8015-8020,8025-8029,8035-8039,10241-10242,11156-11161,11479
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b0f0966bd08a5b814bf7a79985ef0e7dd62cfe57",
+  "prompts": {},
+  "sessions": {
+    "s_5ee067d1962785": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0f7c1-76b0-7691-a8fd-728331a6b0a7",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    },
+    "s_93cfabae97ecca": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0f286-50de-7383-85a2-06dcd5b9b46e",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    },
+    "s_c561a61a0ea571": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d374-53a9-7910-b673-d7f077cabad6",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
