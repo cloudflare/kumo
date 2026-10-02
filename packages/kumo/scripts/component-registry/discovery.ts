@@ -56,6 +56,7 @@ export const CATEGORY_MAP: Record<string, string> = {
   "input-group": "Input",
   radio: "Input",
   select: "Input",
+  slider: "Input",
   switch: "Input",
   // Layout
   grid: "Layout",
