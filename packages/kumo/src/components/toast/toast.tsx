@@ -5,6 +5,7 @@ import {
   ToastObject,
 } from "@base-ui/react/toast";
 import type React from "react";
+import { useMemo } from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { Button, ButtonProps } from "../../components/button";
@@ -306,10 +307,13 @@ function wrapManagerMethods<
 
 export const useKumoToastManager = () => {
   const manager = Toast.useToastManager();
-  return {
-    ...wrapManagerMethods(manager),
-    toasts: manager.toasts as Array<KumoToastOptions<any>>,
-  };
+  return useMemo(
+    () => ({
+      ...wrapManagerMethods(manager),
+      toasts: manager.toasts as Array<KumoToastOptions<any>>,
+    }),
+    [manager],
+  );
 };
 
 export const createKumoToastManager = () => {

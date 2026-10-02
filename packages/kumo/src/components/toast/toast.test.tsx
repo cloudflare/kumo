@@ -119,4 +119,28 @@ describe("Toasty", () => {
     });
     expect(await screen.findByText("in-tree")).toBeTruthy();
   });
+
+  it("keeps the manager stable across unrelated renders", () => {
+    const managers: Array<ReturnType<typeof useKumoToastManager>> = [];
+
+    function CaptureManager({ label }: { label: string }) {
+      const manager = useKumoToastManager();
+      managers.push(manager);
+      return <div>{label}</div>;
+    }
+
+    const view = render(
+      <Toasty>
+        <CaptureManager label="first" />
+      </Toasty>,
+    );
+    const firstManager = managers.at(-1)!;
+
+    view.rerender(
+      <Toasty>
+        <CaptureManager label="second" />
+      </Toasty>,
+    );
+    expect(managers.at(-1)).toBe(firstManager);
+  });
 });
