@@ -41,7 +41,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 hover:not-has-[[data-checked]]:bg-kumo-elevated has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
@@ -360,8 +360,9 @@ function _RadioItem<T = string>(
             ? "cursor-not-allowed opacity-50"
             : cn(
                 "cursor-pointer has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50",
+                // The checked row keeps its tint while hovered.
                 variant !== "error" &&
-                  "hover:not-has-[[data-disabled]]:bg-kumo-tint",
+                  "hover:not-has-[[data-disabled]]:not-has-[[data-checked]]:bg-kumo-elevated",
               ),
           className,
         )}
