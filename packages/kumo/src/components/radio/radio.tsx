@@ -98,15 +98,18 @@ export type RadioVariant = KumoRadioVariant;
 /** Position of the radio control relative to its label */
 export type RadioControlPosition = "start" | "end";
 
-// Context for passing controlPosition and appearance from Group to Items.
-// `controlPosition` may be undefined so each item can fall back to an
+// Context for passing controlPosition, appearance, and orientation from Group
+// to Items. `controlPosition` may be undefined so each item can fall back to an
 // appearance-appropriate default (start for default, end for card).
+// `orientation` is null outside a Radio.Group.
 const RadioGroupContext = createContext<{
   controlPosition: RadioControlPosition | undefined;
   appearance: KumoRadioAppearance;
+  orientation: "vertical" | "horizontal" | null;
 }>({
   controlPosition: undefined,
   appearance: "default",
+  orientation: null,
 });
 
 /**
@@ -309,10 +312,17 @@ function _RadioItem<T = string>(
   }: RadioItemProps<T>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const { controlPosition, appearance: groupAppearance } =
-    useContext(RadioGroupContext);
+  const {
+    controlPosition,
+    appearance: groupAppearance,
+    orientation,
+  } = useContext(RadioGroupContext);
   const appearance = appearanceProp ?? groupAppearance;
   const isCard = appearance === "card";
+  // Card items in a vertical card group render as rows of one shared card;
+  // the group draws the outer border and each row draws its divider.
+  const isJoined =
+    isCard && groupAppearance === "card" && orientation === "vertical";
 
   // Fall back to an appearance-appropriate default when controlPosition is
   // not provided: card defaults to "end" (radio on the right), default
@@ -327,10 +337,19 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "group relative m-0 flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+          "group relative m-0 flex items-start gap-3 bg-kumo-base p-3 transition-colors has-[[data-checked]]:bg-kumo-tint",
+          isJoined
+            ? // bg-clip-padding keeps the checked tint from darkening the
+              // translucent divider.
+              "border-b border-kumo-hairline bg-clip-padding last:border-b-0"
+            : "rounded-lg border border-kumo-hairline has-[[data-checked]]:border-kumo-interact",
           controlAtStart && "flex-row-reverse",
           variant === "error" &&
-            "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
+            cn(
+              "has-[[data-checked]]:bg-kumo-base",
+              !isJoined &&
+                "border-kumo-danger has-[[data-checked]]:border-kumo-danger",
+            ),
           disabled
             ? "cursor-not-allowed opacity-50"
             : cn(
@@ -356,7 +375,7 @@ function _RadioItem<T = string>(
           value={value}
           disabled={disabled}
           className={cn(
-            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring-2 focus:ring-kumo-focus focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:ring-kumo-focus focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
@@ -460,7 +479,9 @@ function RadioGroup<Value = string>({
   className,
 }: RadioGroupProps<Value>) {
   return (
-    <RadioGroupContext.Provider value={{ controlPosition, appearance }}>
+    <RadioGroupContext.Provider
+      value={{ controlPosition, appearance, orientation }}
+    >
       <BaseRadioGroup<Value>
         defaultValue={defaultValue}
         value={value}
@@ -472,7 +493,12 @@ function RadioGroup<Value = string>({
       >
         <Fieldset.Root
           disabled={disabled}
-          className={cn("flex flex-col gap-4 p-0", className)}
+          className={cn(
+            "flex flex-col p-0",
+            // Card groups match Field's label-to-control gap.
+            appearance === "card" ? "gap-2" : "gap-4",
+            className,
+          )}
         >
           {legend && (
             <Fieldset.Legend className="text-base font-medium text-kumo-default">
@@ -482,7 +508,9 @@ function RadioGroup<Value = string>({
           <div
             className={cn(
               orientation === "vertical"
-                ? cn("flex flex-col", appearance === "card" ? "gap-3" : "gap-2")
+                ? appearance === "card"
+                  ? "flex flex-col overflow-hidden rounded-lg border border-kumo-hairline"
+                  : "flex flex-col gap-2"
                 : appearance === "card"
                   ? "grid grid-cols-2 gap-3"
                   : "flex flex-row flex-wrap gap-2",
