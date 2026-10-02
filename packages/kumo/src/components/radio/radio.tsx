@@ -341,7 +341,7 @@ function _RadioItem<T = string>(
             ? cn(
                 // bg-clip-padding keeps the checked tint from darkening the
                 // translucent dividers.
-                "border-b border-kumo-hairline bg-clip-padding last:border-b-0",
+                "border-b border-kumo-line bg-clip-padding last:border-b-0",
                 // Two-column grid: the left column draws the column divider
                 // (unless it's a lone last item), and the last row drops its
                 // bottom divider.
@@ -515,10 +515,10 @@ function RadioGroup<Value = string>({
             className={cn(
               orientation === "vertical"
                 ? appearance === "card"
-                  ? "flex flex-col overflow-hidden rounded-lg border border-kumo-hairline"
+                  ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
                   : "flex flex-col gap-2"
                 : appearance === "card"
-                  ? "grid grid-cols-2 overflow-hidden rounded-lg border border-kumo-hairline bg-kumo-base"
+                  ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
                   : "flex flex-row flex-wrap gap-2",
             )}
           >

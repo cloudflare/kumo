@@ -109,7 +109,7 @@ describe("Radio", () => {
 
     const labels = container.querySelectorAll("label");
     expect(labels[0].parentElement?.className).toContain("rounded-lg");
-    expect(labels[0].parentElement?.className).toContain("border");
+    expect(labels[0].parentElement?.className).toContain("ring-kumo-line");
     for (const label of labels) {
       expect(label.className).toContain("border-b");
       expect(label.className).not.toContain("rounded-lg");
