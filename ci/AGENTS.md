@@ -79,14 +79,14 @@ deploy-docs-preview.sh → write-kumo-docs-report.ts → ci/reports/kumo-docs-pr
 
 ## GITHUB WORKFLOWS
 
-| Workflow                      | Trigger                          | Purpose                                      |
-| ----------------------------- | -------------------------------- | -------------------------------------------- |
-| `release.yml`                 | push:main                        | changesets/action (Version PR or publish)    |
-| `pullrequest.yml`             | pull_request, push:opencode/\*\* | Build, lint, typecheck, test                 |
-| `docs-pr.yml`                 | pull_request                     | Build and test docs; upload preview artifact |
-| `package-preview-pr.yml`      | pull_request, push:opencode/\*\* | Publish package preview with pkg-pr-new      |
-| `docs-preview-post-build.yml` | workflow_run, check_run          | Deploy fork docs; start visual regression    |
-| `visual-regression.yml`       | workflow_call                    | Verify preview and compare screenshots       |
+| Workflow                      | Trigger                          | Purpose                                                            |
+| ----------------------------- | -------------------------------- | ------------------------------------------------------------------ |
+| `release.yml`                 | push:main                        | changesets/action (Version PR or publish); publish `beta` dist-tag |
+| `pullrequest.yml`             | pull_request, push:opencode/\*\* | Build, lint, typecheck, test                                       |
+| `docs-pr.yml`                 | pull_request                     | Build and test docs; upload preview artifact                       |
+| `package-preview-pr.yml`      | pull_request, push:opencode/\*\* | Publish package preview with pkg-pr-new                            |
+| `docs-preview-post-build.yml` | workflow_run, check_run          | Deploy fork docs; start visual regression                          |
+| `visual-regression.yml`       | workflow_call                    | Verify preview and compare screenshots                             |
 
 ## ANTI-PATTERNS
 
