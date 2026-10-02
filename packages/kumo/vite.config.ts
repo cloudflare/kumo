@@ -85,6 +85,7 @@ const packEntries = {
     "src/components/pagination/index.ts",
   ),
   "components/select": resolve(__dirname, "src/components/select/index.ts"),
+  "components/stepper": resolve(__dirname, "src/components/stepper/index.ts"),
   "components/surface": resolve(__dirname, "src/components/surface/index.ts"),
   "components/switch": resolve(__dirname, "src/components/switch/index.ts"),
   "components/table": resolve(__dirname, "src/components/table/index.ts"),
