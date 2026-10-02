@@ -121,3 +121,72 @@ export function CheckboxGroupErrorDemo() {
     </Checkbox.Group>
   );
 }
+
+export function CheckboxCardDemo() {
+  const [products, setProducts] = useState<string[]>(["gateway"]);
+
+  return (
+    <Checkbox.Group
+      legend="Where should this profile scan?"
+      appearance="card"
+      value={products}
+      onValueChange={setProducts}
+    >
+      <Checkbox.Item
+        value="gateway"
+        label="Web traffic"
+        description="Uploads and downloads through Gateway HTTP policies."
+      />
+      <Checkbox.Item
+        value="ai"
+        label="AI prompts"
+        description="Prompts sent to AI apps, and the responses they return."
+      />
+      <Checkbox.Item
+        value="casb"
+        label="SaaS and cloud storage"
+        description="Files stored in connected apps and cloud accounts."
+      />
+      <Checkbox.Item
+        value="email"
+        label="Outbound email"
+        description="Email leaving your organization."
+      />
+    </Checkbox.Group>
+  );
+}
+
+export function CheckboxCardHorizontalDemo() {
+  const [products, setProducts] = useState<string[]>(["gateway"]);
+
+  return (
+    <Checkbox.Group
+      legend="Where should this profile scan?"
+      appearance="card"
+      orientation="horizontal"
+      value={products}
+      onValueChange={setProducts}
+    >
+      <Checkbox.Item
+        value="gateway"
+        label="Web traffic"
+        description="Uploads and downloads through Gateway HTTP policies."
+      />
+      <Checkbox.Item
+        value="ai"
+        label="AI prompts"
+        description="Prompts sent to AI apps, and the responses they return."
+      />
+      <Checkbox.Item
+        value="casb"
+        label="SaaS and cloud storage"
+        description="Files stored in connected apps and cloud accounts."
+      />
+      <Checkbox.Item
+        value="email"
+        label="Outbound email"
+        description="Email leaving your organization."
+      />
+    </Checkbox.Group>
+  );
+}
