@@ -1,5 +1,26 @@
 # @cloudflare/kumo
 
+## 2.15.0
+
+### Minor Changes
+
+- 88850d5: Add `tooltipTimestampFormat` to TimeseriesChart for formatting standard and marker tooltip timestamps in a consumer-selected time zone.
+- 3d93312: Add `appearance="card"` and `orientation` to `Checkbox.Group`, plus `appearance` and `description` to `Checkbox.Item`. Card groups render as one card with dividers (rows when vertical, a two-column grid when horizontal), matching `Radio.Group`'s card appearance.
+- 81b0ef4: Add Base UI-style composable Popover parts while preserving the legacy `Popover.Content` API.
+- 49317c6: Render `Radio.Group` cards as one card with dividers (rows when vertical, a two-column grid when horizontal), give card radio controls a 1px ring, and tighten card groups' legend and description gaps to match `Field`.
+- 2f9b17f: Allow LayerDialog actions to use a ButtonGroup split button for related alternate submit outcomes.
+
+### Patch Changes
+
+- 09a9dae: Apply dropdown icon spacing and sizing to element icons while preserving their custom classes.
+- f7d6829: Keep Popover arrows visible when content clips or scrolls by using a compatibility-safe opacity transition.
+- dae9cdd: Keep transient copy feedback visible until the final repeated copy click settles across Kumo copy controls.
+- a8c946a: Match a linkable Badge's focus outline to its pill shape.
+- c3b0294: Replace the internal class merging dependency with `cn`.
+- 6701f40: Fire `Sidebar.Collapsible` `onOpenChangeComplete` when the sidebar or mobile drawer shows or hides an open section. Before, the callback fired only when the section itself toggled.
+- 462516f: Stop logging runtime warnings for deprecated Text heading variants. The variants remain marked as deprecated in the TypeScript API.
+- 7d91721: Preserve ButtonGroup's outer corners while an overlay control is open.
+
 ## 2.14.0
 
 ### Minor Changes
