@@ -41,7 +41,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
     },
@@ -336,7 +336,7 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "group relative m-0 flex items-start gap-3 bg-kumo-base p-3 transition-colors has-[[data-checked]]:bg-kumo-tint",
+          "group relative m-0 flex items-start gap-3 bg-kumo-base p-3 has-[[data-checked]]:bg-kumo-tint",
           isJoined
             ? cn(
                 // bg-clip-padding keeps the checked tint from darkening the
