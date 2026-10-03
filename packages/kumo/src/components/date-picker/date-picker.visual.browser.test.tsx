@@ -5,13 +5,22 @@ import { render } from "vitest-browser-react";
 import { DatePicker } from "./date-picker";
 import type { DateRange } from "react-day-picker";
 
-function getRangeDay(calendar: Element, date: string) {
+function getDateCell(calendar: Element, date: string) {
   const cell = calendar.querySelector<HTMLElement>(`[data-day="${date}"]`);
-  const button = cell?.querySelector<HTMLButtonElement>("button");
-  if (!cell || !button) {
-    throw new Error(`DatePicker test day not found: ${date}`);
+  if (!cell) {
+    throw new Error(`DatePicker test date cell not found: ${date}`);
   }
-  return { cell, button };
+  return cell;
+}
+
+function getDateButton(calendar: Element, date: string) {
+  const button = getDateCell(calendar, date).querySelector<HTMLButtonElement>(
+    "button",
+  );
+  if (!button) {
+    throw new Error(`DatePicker test date button not found: ${date}`);
+  }
+  return button;
 }
 
 for (const mode of ["light", "dark"]) {
@@ -49,17 +58,10 @@ for (const mode of ["light", "dark"]) {
           dates: ["2026-10-01"],
         },
       ])(
-        "uses a secondary highlight for $name",
+        "shows each selected date only once for $name",
         async ({ from, to, dates }) => {
-          const { getByRole, getByTestId } = await render(
+          const { getByRole } = await render(
             <div data-mode={mode} data-theme={theme}>
-              <div
-                data-testid="secondary-range-colors"
-                style={{
-                  backgroundColor: "var(--color-kumo-tint)",
-                  color: "var(--text-color-kumo-default)",
-                }}
-              />
               <DatePicker
                 mode="range"
                 defaultMonth={new Date(2026, 8, 1)}
@@ -69,58 +71,72 @@ for (const mode of ["light", "dark"]) {
               />
             </div>,
           );
-
           const calendars = [
             getByRole("grid", { name: "September 2026" }).element(),
             getByRole("grid", { name: "October 2026" }).element(),
           ];
-          const secondaryColors = getComputedStyle(
-            getByTestId("secondary-range-colors").element(),
-          );
+
+          for (const calendar of calendars) {
+            const outsideCells = calendar.querySelectorAll("[data-outside]");
+            expect(outsideCells.length).toBeGreaterThan(0);
+            for (const cell of outsideCells) {
+              expect(cell).not.toBeVisible();
+              expect(cell).toHaveTextContent("");
+              expect(cell.querySelector("button")).toBeNull();
+            }
+          }
 
           for (const date of dates) {
-            const days = calendars.map((calendar) =>
-              getRangeDay(calendar, date),
+            const cells = calendars.map((calendar) =>
+              getDateCell(calendar, date),
             );
-            const outside = days.find((day) =>
-              day.cell.hasAttribute("data-outside"),
+            const visibleCells = cells.filter(
+              (cell) => getComputedStyle(cell).visibility !== "hidden",
             );
-            const inside = days.find(
-              (day) => !day.cell.hasAttribute("data-outside"),
-            );
-            if (!outside || !inside) {
-              throw new Error(`DatePicker test needs both copies of ${date}`);
+            expect(visibleCells).toHaveLength(1);
+            for (const cell of visibleCells) {
+              expect(cell).toHaveAttribute("aria-selected", "true");
+              expect(cell.querySelector("button")).toBeEnabled();
+              expect(cell.querySelector("button")).toBeVisible();
             }
-
-            expect(getComputedStyle(outside.cell).backgroundColor).toBe(
-              secondaryColors.backgroundColor,
-            );
-            expect(getComputedStyle(outside.cell).backgroundColor).not.toBe(
-              getComputedStyle(inside.cell).backgroundColor,
-            );
-            expect(getComputedStyle(outside.button).color).toBe(
-              secondaryColors.color,
-            );
-            expect(getComputedStyle(outside.button).opacity).toBe("1");
-            expect(outside.button).toBeEnabled();
-            expect(outside.cell).toHaveAttribute("aria-selected", "true");
-            expect(inside.cell).toHaveAttribute("aria-selected", "true");
           }
+
+          const startCalendar = calendars.find(
+            (calendar) =>
+              !getDateCell(calendar, dates[0]).hasAttribute("data-outside"),
+          );
+          const endCalendar = calendars.find(
+            (calendar) =>
+              !getDateCell(calendar, dates[dates.length - 1]).hasAttribute(
+                "data-outside",
+              ),
+          );
+          if (!startCalendar || !endCalendar) {
+            throw new Error("DatePicker test endpoint calendars not found");
+          }
+          const start = getDateCell(startCalendar, dates[0]);
+          const end = getDateCell(endCalendar, dates[dates.length - 1]);
+          expect(getComputedStyle(start).backgroundColor).not.toBe(
+            "rgba(0, 0, 0, 0)",
+          );
+          expect(getComputedStyle(end).backgroundColor).toBe(
+            getComputedStyle(start).backgroundColor,
+          );
+          expect(
+            getComputedStyle(
+              getDateButton(endCalendar, dates[dates.length - 1]),
+            ).color,
+          ).toBe(
+            getComputedStyle(getDateButton(startCalendar, dates[0])).color,
+          );
         },
       );
     });
   }
 }
 
-function InteractiveRangePicker({
-  initialRange = { from: new Date(2026, 9, 1), to: new Date(2026, 9, 2) },
-  min,
-}: {
-  initialRange?: DateRange | undefined;
-  min?: number;
-}) {
-  const [range, setRange] = useState<DateRange | undefined>(initialRange);
-
+function InteractiveRangePicker({ min }: { min?: number }) {
+  const [range, setRange] = useState<DateRange>();
   return (
     <DatePicker
       mode="range"
@@ -134,163 +150,42 @@ function InteractiveRangePicker({
   );
 }
 
-for (const mode of ["light", "dark"]) {
-  for (const theme of ["kumo", "fedramp"]) {
-    describe(`DatePicker selection panel order (${theme}, ${mode})`, () => {
-      test.each(["September 2026", "October 2026"])(
-        "keeps the first selection panel primary when starting in %s",
-        async (primaryMonth) => {
-          const { getByRole, getByTestId } = await render(
-            <div data-mode={mode} data-theme={theme}>
-              <div
-                data-testid="primary-range-colors"
-                style={{
-                  backgroundColor:
-                    mode === "light" ? "oklch(20.5% 0 0)" : "oklch(97% 0 0)",
-                  color:
-                    mode === "light" ? "oklch(97% 0 0)" : "oklch(20.5% 0 0)",
-                }}
-              />
-              <div
-                data-testid="secondary-range-colors"
-                style={{
-                  backgroundColor: "var(--color-kumo-tint)",
-                  color: "var(--text-color-kumo-default)",
-                }}
-              />
-              <InteractiveRangePicker initialRange={{ from: undefined }} />
-            </div>,
-          );
-          const primaryColors = getComputedStyle(
-            getByTestId("primary-range-colors").element(),
-          );
-          const secondaryColors = getComputedStyle(
-            getByTestId("secondary-range-colors").element(),
-          );
-          const primary = getByRole("grid", { name: primaryMonth });
-          const secondary = getByRole("grid", {
-            name:
-              primaryMonth === "September 2026"
-                ? "October 2026"
-                : "September 2026",
-          });
+describe("DatePicker multi-month interaction", () => {
+  test.each([
+    { direction: "forward", start: "2026-09-29", end: "2026-10-03", min: 0 },
+    { direction: "backward", start: "2026-10-03", end: "2026-09-29", min: 0 },
+    { direction: "forward", start: "2026-09-29", end: "2026-10-03", min: 2 },
+    { direction: "backward", start: "2026-10-03", end: "2026-09-29", min: 2 },
+  ])(
+    "selects a range $direction across panels with min=$min",
+    async ({ start, end, min }) => {
+      const { getByRole } = await render(<InteractiveRangePicker min={min} />);
+      const september = getByRole("grid", { name: "September 2026" }).element();
+      const october = getByRole("grid", { name: "October 2026" }).element();
+      const startCalendar = start.startsWith("2026-09") ? september : october;
+      const endCalendar = end.startsWith("2026-09") ? september : october;
 
-          await primary
-            .getByRole("button", { name: "Thursday, October 1st, 2026" })
-            .click();
-          const firstPrimary = getRangeDay(primary.element(), "2026-10-01");
-          const firstSecondary = getRangeDay(secondary.element(), "2026-10-01");
-          expect(getComputedStyle(firstPrimary.cell).backgroundColor).not.toBe(
-            getComputedStyle(firstSecondary.cell).backgroundColor,
-          );
-          expect(getComputedStyle(firstPrimary.button).opacity).toBe("1");
-          expect(getComputedStyle(firstPrimary.cell).backgroundColor).toBe(
-            primaryColors.backgroundColor,
-          );
-          await expect
-            .poll(() => getComputedStyle(firstPrimary.button).color)
-            .toBe(primaryColors.color);
-          expect(getComputedStyle(firstSecondary.cell).backgroundColor).toBe(
-            secondaryColors.backgroundColor,
-          );
-          await expect
-            .poll(() => getComputedStyle(firstSecondary.button).color)
-            .toBe(secondaryColors.color);
+      await userEvent.click(getDateButton(startCalendar, start));
+      await userEvent.click(getDateButton(endCalendar, end));
 
-          await secondary
-            .getByRole("button", { name: "Friday, October 2nd, 2026" })
-            .click();
-          for (const date of ["2026-10-01", "2026-10-02"]) {
-            const primaryDay = getRangeDay(primary.element(), date);
-            const secondaryDay = getRangeDay(secondary.element(), date);
-            expect(getComputedStyle(primaryDay.cell).backgroundColor).toBe(
-              primaryColors.backgroundColor,
-            );
-            await expect
-              .poll(() => getComputedStyle(primaryDay.button).color)
-              .toBe(primaryColors.color);
-            expect(getComputedStyle(secondaryDay.cell).backgroundColor).toBe(
-              secondaryColors.backgroundColor,
-            );
-            await expect
-              .poll(() => getComputedStyle(secondaryDay.button).color)
-              .toBe(secondaryColors.color);
-            expect(
-              getComputedStyle(secondaryDay.cell).backgroundColor,
-            ).not.toBe(getComputedStyle(primaryDay.cell).backgroundColor);
-            expect(primaryDay.cell).toHaveAttribute("aria-selected", "true");
-            expect(secondaryDay.cell).toHaveAttribute("aria-selected", "true");
-          }
-        },
-      );
-    });
-  }
-}
-
-describe("DatePicker range-origin lifecycle", () => {
-  test.each([0, 2])(
-    "retains the origin across a month-spanning range with min=%s",
-    async (min) => {
-      const { getByRole } = await render(
-        <InteractiveRangePicker initialRange={{ from: undefined }} min={min} />,
-      );
-      const september = getByRole("grid", { name: "September 2026" });
-      const october = getByRole("grid", { name: "October 2026" });
-
-      await september
-        .getByRole("button", { name: "Tuesday, September 29th, 2026" })
-        .click();
-      await october
-        .getByRole("button", { name: "Saturday, October 3rd, 2026" })
-        .click();
-
-      for (const date of [
-        "2026-09-29",
-        "2026-09-30",
-        "2026-10-01",
-        "2026-10-02",
-        "2026-10-03",
-      ]) {
-        expect(getRangeDay(september.element(), date).cell).toHaveAttribute(
-          "data-kumo-range-emphasis",
-          "primary",
+      for (const date of ["2026-09-29", "2026-09-30"]) {
+        expect(getDateCell(september, date)).toHaveAttribute(
+          "aria-selected",
+          "true",
         );
-        expect(getRangeDay(october.element(), date).cell).toHaveAttribute(
-          "data-kumo-range-emphasis",
-          "secondary",
+        expect(getDateCell(october, date)).not.toBeVisible();
+      }
+      for (const date of ["2026-10-01", "2026-10-02", "2026-10-03"]) {
+        expect(getDateCell(october, date)).toHaveAttribute(
+          "aria-selected",
+          "true",
         );
+        expect(getDateCell(september, date)).not.toBeVisible();
       }
     },
   );
 
-  test("switches origin when a new range starts in the other panel", async () => {
-    const { getByRole } = await render(
-      <InteractiveRangePicker initialRange={{ from: undefined }} />,
-    );
-    const september = getByRole("grid", { name: "September 2026" });
-    const october = getByRole("grid", { name: "October 2026" });
-    await september
-      .getByRole("button", { name: "Thursday, October 1st, 2026" })
-      .click();
-    await september
-      .getByRole("button", { name: "Friday, October 2nd, 2026" })
-      .click();
-
-    await october
-      .getByRole("button", { name: "Thursday, October 1st, 2026, selected" })
-      .click();
-
-    expect(getRangeDay(october.element(), "2026-10-01").cell).toHaveAttribute(
-      "data-kumo-range-emphasis",
-      "primary",
-    );
-    expect(getRangeDay(september.element(), "2026-10-01").cell).toHaveAttribute(
-      "data-kumo-range-emphasis",
-      "secondary",
-    );
-  });
-
-  test("supports uncontrolled selection and keyboard activation", async () => {
+  test("supports uncontrolled keyboard selection across the month boundary", async () => {
     const { getByRole } = await render(
       <DatePicker
         mode="range"
@@ -299,155 +194,130 @@ describe("DatePicker range-origin lifecycle", () => {
         animate={false}
       />,
     );
-    const september = getByRole("grid", { name: "September 2026" });
-    const october = getByRole("grid", { name: "October 2026" });
-    const start = getRangeDay(september.element(), "2026-10-01").button;
-    const end = getRangeDay(october.element(), "2026-10-02").button;
+    const september = getByRole("grid", { name: "September 2026" }).element();
+    const october = getByRole("grid", { name: "October 2026" }).element();
+    const start = getDateButton(september, "2026-09-30");
+    const end = getDateButton(october, "2026-10-01");
+
     start.focus();
-    await userEvent.keyboard("{Enter}");
-    end.focus();
+    await userEvent.keyboard("{Enter}{ArrowRight}");
+
+    expect(end).toHaveFocus();
+    expect(end.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(end).boxShadow).not.toBe("none");
+
     await userEvent.keyboard("{Enter}");
 
-    expect(getRangeDay(september.element(), "2026-10-02").cell).toHaveAttribute(
+    expect(getDateCell(september, "2026-09-30")).toHaveAttribute(
       "aria-selected",
       "true",
     );
-    expect(getRangeDay(september.element(), "2026-10-02").cell).toHaveAttribute(
-      "data-kumo-range-emphasis",
-      "primary",
-    );
-    expect(getRangeDay(october.element(), "2026-10-02").cell).toHaveAttribute(
-      "data-kumo-range-emphasis",
-      "secondary",
+    expect(getDateCell(october, "2026-10-01")).toHaveAttribute(
+      "aria-selected",
+      "true",
     );
   });
 
-  test("uses in-month emphasis for an external preset instead of retaining stale origin", async () => {
-    function RangeWithPreset() {
-      const [range, setRange] = useState<DateRange>();
-      return (
-        <>
-          <button
-            onClick={() =>
-              setRange({ from: new Date(2026, 9, 1), to: new Date(2026, 9, 3) })
-            }
-          >
-            Apply preset
-          </button>
-          <DatePicker
-            mode="range"
-            defaultMonth={new Date(2026, 8, 1)}
-            numberOfMonths={2}
-            selected={range}
-            onChange={setRange}
-            animate={false}
-          />
-        </>
-      );
-    }
-    const { getByRole } = await render(<RangeWithPreset />);
-    const september = getByRole("grid", { name: "September 2026" });
-    const october = getByRole("grid", { name: "October 2026" });
-    await september
-      .getByRole("button", { name: "Thursday, October 1st, 2026" })
-      .click();
-    await september
-      .getByRole("button", { name: "Friday, October 2nd, 2026" })
-      .click();
-
-    await getByRole("button", { name: "Apply preset" }).click();
-
-    expect(getRangeDay(september.element(), "2026-10-01").cell).toHaveAttribute(
-      "data-kumo-range-emphasis",
-      "secondary",
-    );
-    expect(getRangeDay(october.element(), "2026-10-01").cell).toHaveAttribute(
-      "data-kumo-range-emphasis",
-      "primary",
-    );
-  });
-
-  test("restores in-month emphasis when navigating away from the origin month", async () => {
-    const { getByRole } = await render(
-      <InteractiveRangePicker initialRange={{ from: undefined }} />,
-    );
-    const september = getByRole("grid", { name: "September 2026" });
-    await september
-      .getByRole("button", { name: "Thursday, October 1st, 2026" })
-      .click();
-    await september
-      .getByRole("button", { name: "Friday, October 2nd, 2026" })
-      .click();
+  test("keeps outside dates hidden after navigating to the next month", async () => {
+    const { getByRole } = await render(<InteractiveRangePicker />);
 
     await getByRole("button", { name: "Go to the Next Month" }).click();
 
-    expect(
-      getRangeDay(
-        getByRole("grid", { name: "October 2026" }).element(),
-        "2026-10-01",
-      ).cell,
-    ).toHaveAttribute("data-kumo-range-emphasis", "primary");
-  });
-});
-
-describe("DatePicker outside-month interaction", () => {
-  test("allows selection from a secondary range endpoint", async () => {
-    const { getByRole } = await render(<InteractiveRangePicker />);
-    const september = getByRole("grid", { name: "September 2026" });
-    const october = getByRole("grid", { name: "October 2026" });
-
-    await september
-      .getByRole("button", { name: "Thursday, October 1st, 2026, selected" })
-      .click();
-
-    expect(
-      getRangeDay(september.element(), "2026-10-02").cell,
-    ).not.toHaveAttribute("aria-selected");
-    expect(
-      getRangeDay(october.element(), "2026-10-02").cell,
-    ).not.toHaveAttribute("aria-selected");
-    expect(getRangeDay(september.element(), "2026-10-01").cell).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    expect(getRangeDay(october.element(), "2026-10-01").cell).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    const october = getByRole("grid", { name: "October 2026" }).element();
+    const november = getByRole("grid", { name: "November 2026" }).element();
+    expect(getDateCell(october, "2026-09-30")).not.toBeVisible();
+    expect(getDateCell(november, "2026-12-01")).not.toBeVisible();
+    expect(getDateButton(october, "2026-10-01")).toBeVisible();
+    expect(getDateButton(november, "2026-11-01")).toBeVisible();
   });
 
-  test("preserves a visible keyboard focus indicator", async () => {
-    const { getByRole } = await render(<InteractiveRangePicker />);
-    const { button } = getRangeDay(
-      getByRole("grid", { name: "September 2026" }).element(),
-      "2026-10-01",
-    );
-
-    await userEvent.keyboard("{Tab}");
-    button.focus();
-
-    expect(button).toHaveFocus();
-    expect(button.matches(":focus-visible")).toBe(true);
-    expect(getComputedStyle(button).boxShadow).not.toBe("none");
-  });
-
-  test("keeps disabled outside dates unavailable", async () => {
+  test("keeps disabled in-month dates unavailable", async () => {
     const { getByRole } = await render(
       <DatePicker
         mode="range"
         defaultMonth={new Date(2026, 8, 1)}
         numberOfMonths={2}
-        selected={{ from: new Date(2026, 9, 1), to: new Date(2026, 9, 2) }}
         disabled={new Date(2026, 9, 2)}
         animate={false}
       />,
     );
+    const october = getByRole("grid", { name: "October 2026" }).element();
 
-    const { button } = getRangeDay(
-      getByRole("grid", { name: "September 2026" }).element(),
-      "2026-10-02",
+    expect(getDateButton(october, "2026-10-02")).toBeDisabled();
+  });
+});
+
+describe("DatePicker outside-day configuration", () => {
+  test.each(["single", "multiple", "range"] as const)(
+    "hides outside dates in multi-month %s mode",
+    async (mode) => {
+      const { getByRole } = await render(
+        <DatePicker
+          mode={mode}
+          required={false}
+          defaultMonth={new Date(2026, 8, 1)}
+          numberOfMonths={3}
+          animate={false}
+        />,
+      );
+      const september = getByRole("grid", { name: "September 2026" }).element();
+      const october = getByRole("grid", { name: "October 2026" }).element();
+      const november = getByRole("grid", { name: "November 2026" }).element();
+
+      expect(getDateCell(september, "2026-10-01")).not.toBeVisible();
+      expect(getDateCell(october, "2026-09-30")).not.toBeVisible();
+      expect(getDateCell(november, "2026-12-01")).not.toBeVisible();
+    },
+  );
+
+  test.each([undefined, 1])(
+    "preserves outside dates in a single-month view with numberOfMonths=%s",
+    async (numberOfMonths) => {
+      const { getByRole } = await render(
+        <DatePicker
+          mode="single"
+          defaultMonth={new Date(2026, 8, 1)}
+          numberOfMonths={numberOfMonths}
+          animate={false}
+        />,
+      );
+      const september = getByRole("grid", { name: "September 2026" }).element();
+
+      expect(getDateButton(september, "2026-10-01")).toBeVisible();
+    },
+  );
+
+  test("allows opting into outside dates in a multi-month view", async () => {
+    const { getByRole } = await render(
+      <DatePicker
+        mode="range"
+        defaultMonth={new Date(2026, 8, 1)}
+        numberOfMonths={2}
+        showOutsideDays
+        animate={false}
+      />,
     );
-    expect(button).toBeDisabled();
-    expect(getComputedStyle(button).opacity).toBe("0.4");
+    const september = getByRole("grid", { name: "September 2026" }).element();
+    const october = getByRole("grid", { name: "October 2026" }).element();
+
+    expect(getDateButton(september, "2026-10-01")).toBeVisible();
+    expect(getDateButton(october, "2026-10-01")).toBeVisible();
+  });
+
+  test("allows hiding outside dates in a single-month view", async () => {
+    const { getByRole } = await render(
+      <DatePicker
+        mode="single"
+        defaultMonth={new Date(2026, 8, 1)}
+        showOutsideDays={false}
+        animate={false}
+      />,
+    );
+    const september = getByRole("grid", { name: "September 2026" }).element();
+
+    expect(getDateCell(september, "2026-10-01")).not.toBeVisible();
+    expect(
+      getDateCell(september, "2026-10-01").querySelector("button"),
+    ).toBeNull();
   });
 });

@@ -506,32 +506,6 @@
   color: var(--rdp-range_start-color);
 }
 
-/* The panel where a range starts stays primary, including its outside dates. */
-.rdp-day[data-kumo-range-emphasis="primary"]:not(.rdp-disabled) .rdp-day_button {
-  opacity: 1;
-}
-
-.rdp-day[data-kumo-range-emphasis="primary"]:not(.rdp-range_middle) .rdp-day_button {
-  color: var(--rdp-range_start-color);
-}
-
-/* Other panels show a quiet continuation, not a second primary selection. */
-.rdp-day[data-kumo-range-emphasis="secondary"] {
-  --rdp-accent-color: var(--color-kumo-tint);
-  --rdp-range_start-date-background-color: var(--color-kumo-tint);
-  --rdp-range_middle-background-color: var(--color-kumo-tint);
-  --rdp-range_end-date-background-color: var(--color-kumo-tint);
-  --rdp-range_start-color: var(--text-color-kumo-default);
-  --rdp-range_middle-color: var(--text-color-kumo-default);
-  --rdp-range_end-color: var(--text-color-kumo-default);
-  --rdp-fill-hover-bg: var(--color-kumo-fill-hover);
-
-  /* Keep selectable dates legible without giving them the disabled opacity. */
-  &:not(.rdp-disabled) .rdp-day_button {
-    opacity: 1;
-  }
-}
-
 /* Focusable days */
 .rdp-focusable {
   cursor: pointer;
