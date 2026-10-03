@@ -1,4 +1,5 @@
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
+import type { ReactElement } from "react";
 import {
   DayPicker,
   type CustomComponents,
@@ -82,6 +83,8 @@ export type DatePickerProps =
  *
  * Built on [react-day-picker](https://daypicker.dev) with Kumo styling.
  * Supports three selection modes: single, multiple, and range.
+ * Outside-month dates are hidden by default in multi-month views to avoid duplicates.
+ * Set `showOutsideDays` to override this behavior.
  *
  * @example
  * ```tsx
@@ -103,10 +106,10 @@ export function DatePicker({
   classNames,
   onChange,
   ...props
-}: DatePickerProps) {
+}: DatePickerProps): ReactElement {
   return (
     <DayPicker
-      showOutsideDays
+      showOutsideDays={(props.numberOfMonths ?? 1) === 1}
       animate
       {...props}
       onSelect={onChange as never}
