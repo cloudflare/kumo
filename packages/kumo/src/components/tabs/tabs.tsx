@@ -269,7 +269,6 @@ export function Tabs({
               className={cn(
                 "absolute left-0 z-1",
                 "w-(--active-tab-width) translate-x-(--active-tab-left) transition-all duration-200",
-                "data-[rendered=false]:scale-90 data-[rendered=false]:opacity-0",
                 isSegmented &&
                   cn(
                     "top-(--active-tab-top) h-(--active-tab-height) bg-kumo-base shadow-sm ring ring-kumo-line",
