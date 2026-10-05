@@ -1,4 +1,10 @@
-import { Label, Input, Select, Checkbox } from "@cloudflare/kumo";
+import {
+  Label,
+  Input,
+  Select,
+  Checkbox,
+  KumoLocaleProvider,
+} from "@cloudflare/kumo";
 
 export function LabelBasicDemo() {
   return (
@@ -8,6 +14,19 @@ export function LabelBasicDemo() {
       <Label tooltip="More information about this field">
         Label with Tooltip
       </Label>
+      <KumoLocaleProvider
+        translations={{
+          label: {
+            optional: "(opcional)",
+            tooltip: "Mais informações",
+          },
+        }}
+      >
+        <Label showOptional>Rótulo traduzido</Label>
+        <Label tooltip="Mais informações sobre este campo">
+          Rótulo com dica
+        </Label>
+      </KumoLocaleProvider>
     </div>
   );
 }
