@@ -1,0 +1,45 @@
+.changeset/local-label-text.md
+  s_61b931e4c2a195::t_d8f5afb62ee484 1-5
+packages/kumo-docs-astro/src/components/demos/LabelDemo.tsx
+  s_173a1ee488078e::t_6b8370c577d722 8-10,14-16
+packages/kumo/src/components/checkbox/checkbox.test.tsx
+  s_61b931e4c2a195::t_1d4fb6086d3cb9 17-35
+packages/kumo/src/components/checkbox/checkbox.tsx
+  s_61b931e4c2a195::t_58f51a3214f537 119-122,240-241,323,325
+packages/kumo/src/components/field/field.test.tsx
+  s_61b931e4c2a195::t_7c0a3b013a568f 1-24
+packages/kumo/src/components/field/field.tsx
+  s_173a1ee488078e::t_b26f399475f6d1 102-103,106-107,142,144,157-163
+packages/kumo/src/components/label/label.test.tsx
+  s_173a1ee488078e::t_aef02521479631 1-41
+packages/kumo/src/components/label/label.tsx
+  s_173a1ee488078e::t_27212cf7ef74b7 47-48,51-52,94,96,105,115
+packages/kumo/src/components/select/select.test.tsx
+  s_61b931e4c2a195::t_9120f514832411 76-94
+packages/kumo/src/components/select/select.tsx
+  s_61b931e4c2a195::t_d5146394deb7d0 265-268,332-335,389-390,485,487,594,596
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c1c0cc921475ed97044149d5d5113bd065a89839",
+  "prompts": {},
+  "sessions": {
+    "s_173a1ee488078e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a10c9c-767b-7721-abf2-c8ecad225443",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    },
+    "s_61b931e4c2a195": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a10c9c-302f-7aa0-8d40-80a4461eca1f",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
