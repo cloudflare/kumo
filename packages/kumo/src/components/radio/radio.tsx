@@ -1,6 +1,8 @@
 import {
+  Children,
   forwardRef,
   createContext,
+  isValidElement,
   useContext,
   type ReactNode,
   type ReactElement,
@@ -41,9 +43,15 @@ export const KUMO_RADIO_VARIANTS = {
     },
     card: {
       classes:
-        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+        "rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors hover:bg-kumo-tint has-data-checked:border-kumo-interact has-data-checked:bg-kumo-tint",
       description:
         "Choice card appearance with border, padding, and highlighted selection state",
+    },
+    segmented: {
+      classes:
+        "inline-flex h-7 shrink-0 items-center whitespace-nowrap rounded-[5px] bg-kumo-contrast/3.5 px-2.5 text-xs font-medium text-kumo-default ring-1 ring-kumo-line ring-inset select-none hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 hover:not-has-data-disabled:not-has-data-checked:ring hover:not-has-data-disabled:not-has-data-checked:ring-kumo-line has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+      description:
+        "Compact grouped-button appearance for short, mutually exclusive options",
     },
   },
 } as const;
@@ -56,6 +64,7 @@ export const KUMO_RADIO_DEFAULT_VARIANTS = {
 // Derived types from KUMO_RADIO_VARIANTS
 export type KumoRadioVariant = keyof typeof KUMO_RADIO_VARIANTS.variant;
 export type KumoRadioAppearance = keyof typeof KUMO_RADIO_VARIANTS.appearance;
+export type KumoRadioItemAppearance = Exclude<KumoRadioAppearance, "segmented">;
 
 export interface KumoRadioVariantsProps {
   /**
@@ -69,6 +78,7 @@ export interface KumoRadioVariantsProps {
    * Visual appearance.
    * - `"default"` — Standard inline radio item
    * - `"card"` — Choice card with border, padding, and highlighted selection state
+   * - `"segmented"` — Compact grouped-button appearance
    * @default "default"
    */
   appearance?: KumoRadioAppearance;
@@ -220,8 +230,10 @@ export interface RadioGroupProps<Value = string> {
    * Visual appearance applied to all Radio.Item children.
    * - `"default"` — Standard inline radio items
    * - `"card"` — Choice card with border, padding, and highlighted selection state
+   * - `"segmented"` — Compact single-line group for short options
    *
-   * Individual items can override this with their own `appearance` prop.
+   * Individual items can override default and card appearances. Segmented is
+   * group-only and cannot be overridden by individual items.
    * @default "default"
    */
   appearance?: KumoRadioAppearance;
@@ -280,10 +292,11 @@ export type RadioItemProps<Value = string> = {
    * - `"default"` — Standard inline radio item
    * - `"card"` — Choice card with border, padding, and highlighted selection state
    *
-   * When set on an individual item, overrides the group-level `appearance`.
+   * When set on an individual item, overrides a default or card group appearance.
+   * Segmented is a group-only appearance.
    * @default "default"
    */
-  appearance?: KumoRadioAppearance;
+  appearance?: KumoRadioItemAppearance;
   /** Label content displayed next to radio (required). Accepts strings or React nodes for rich content. */
   label: ReactNode;
   /** Description text displayed below the label (only visible in card appearance) */
@@ -311,7 +324,10 @@ function _RadioItem<T = string>(
 ) {
   const { controlPosition, appearance: groupAppearance } =
     useContext(RadioGroupContext);
-  const appearance = appearanceProp ?? groupAppearance;
+  const appearance =
+    groupAppearance === "segmented"
+      ? groupAppearance
+      : (appearanceProp ?? groupAppearance);
   const isCard = appearance === "card";
 
   // Fall back to an appearance-appropriate default when controlPosition is
@@ -320,6 +336,31 @@ function _RadioItem<T = string>(
   const effectiveControlPosition: RadioControlPosition =
     controlPosition ?? (isCard ? "end" : "start");
 
+  if (appearance === "segmented") {
+    return (
+      <label
+        data-kumo-component="Radio"
+        data-kumo-part="item-label"
+        className={cn(
+          "group relative m-0 inline-flex h-7 shrink-0 cursor-pointer items-center rounded-[5px] bg-kumo-contrast/3.5 px-2.5 text-xs font-medium whitespace-nowrap text-kumo-default ring-1 ring-kumo-line select-none ring-inset hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 hover:not-has-data-disabled:not-has-data-checked:ring hover:not-has-data-disabled:not-has-data-checked:ring-kumo-line has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+          variant === "error" &&
+            "ring ring-kumo-danger hover:not-has-data-disabled:ring-kumo-danger has-data-checked:ring-kumo-danger",
+          className,
+        )}
+      >
+        <BaseRadio.Root
+          ref={ref}
+          data-kumo-component="Radio"
+          data-kumo-part="item"
+          value={value}
+          disabled={disabled}
+          className="sr-only"
+        />
+        <span>{label}</span>
+      </label>
+    );
+  }
+
   if (isCard) {
     const controlAtStart = effectiveControlPosition === "start";
     return (
@@ -327,16 +368,16 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "group relative m-0 flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-[[data-checked]]:border-kumo-interact has-[[data-checked]]:bg-kumo-tint",
+          "group relative m-0 flex items-start gap-3 rounded-lg border border-kumo-hairline bg-kumo-base p-3 transition-colors has-data-checked:border-kumo-interact has-data-checked:bg-kumo-tint",
           controlAtStart && "flex-row-reverse",
           variant === "error" &&
-            "border-kumo-danger has-[[data-checked]]:border-kumo-danger has-[[data-checked]]:bg-kumo-base",
+            "border-kumo-danger has-data-checked:border-kumo-danger has-data-checked:bg-kumo-base",
           disabled
             ? "cursor-not-allowed opacity-50"
             : cn(
-                "cursor-pointer has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50",
+                "cursor-pointer has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
                 variant !== "error" &&
-                  "hover:not-has-[[data-disabled]]:bg-kumo-tint",
+                  "hover:not-has-data-disabled:bg-kumo-tint",
               ),
           className,
         )}
@@ -364,7 +405,7 @@ function _RadioItem<T = string>(
             !disabled &&
               variant === "error" &&
               "focus-visible:outline-offset-3",
-            "data-[checked]:bg-kumo-contrast",
+            "data-checked:bg-kumo-contrast",
           )}
         >
           <BaseRadio.Indicator
@@ -406,7 +447,7 @@ function _RadioItem<T = string>(
           !disabled &&
             variant === "error" &&
             "focus:ring-2 focus:ring-kumo-focus focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:outline-offset-3",
-          "data-[checked]:bg-kumo-contrast",
+          "data-checked:bg-kumo-contrast",
         )}
       >
         <BaseRadio.Indicator
@@ -459,6 +500,17 @@ function RadioGroup<Value = string>({
   name,
   className,
 }: RadioGroupProps<Value>) {
+  const segmentedChildren =
+    appearance === "segmented" ? Children.toArray(children) : null;
+  const composableLegends = segmentedChildren?.filter(
+    (child) => isValidElement(child) && child.type === RadioLegend,
+  );
+  const itemChildren = segmentedChildren
+    ? segmentedChildren.filter(
+        (child) => !(isValidElement(child) && child.type === RadioLegend),
+      )
+    : children;
+
   return (
     <RadioGroupContext.Provider value={{ controlPosition, appearance }}>
       <BaseRadioGroup<Value>
@@ -479,16 +531,24 @@ function RadioGroup<Value = string>({
               {legend}
             </Fieldset.Legend>
           )}
+          {composableLegends}
           <div
+            data-kumo-component="Radio"
+            data-kumo-part="items"
             className={cn(
-              orientation === "vertical"
-                ? cn("flex flex-col", appearance === "card" ? "gap-3" : "gap-2")
-                : appearance === "card"
-                  ? "grid grid-cols-2 gap-3"
-                  : "flex flex-row flex-wrap gap-2",
+              appearance === "segmented"
+                ? "inline-flex w-max flex-row flex-nowrap items-center gap-1 self-start rounded-lg bg-kumo-base p-1 shadow-xs ring ring-kumo-line"
+                : orientation === "vertical"
+                  ? cn(
+                      "flex flex-col",
+                      appearance === "card" ? "gap-3" : "gap-2",
+                    )
+                  : appearance === "card"
+                    ? "grid grid-cols-2 gap-3"
+                    : "flex flex-row flex-wrap gap-2",
             )}
           >
-            {children}
+            {itemChildren}
           </div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
           {description && (

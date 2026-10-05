@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import {
   Radio,
   KUMO_RADIO_VARIANTS,
@@ -102,6 +103,222 @@ describe("Radio", () => {
   it("exports KUMO_RADIO_VARIANTS with appearance axis", () => {
     expect(KUMO_RADIO_VARIANTS.appearance.default).toBeDefined();
     expect(KUMO_RADIO_VARIANTS.appearance.card).toBeDefined();
+    expect(KUMO_RADIO_VARIANTS.appearance.segmented).toBeDefined();
     expect(KUMO_RADIO_DEFAULT_VARIANTS.appearance).toBe("default");
+  });
+
+  it("renders a segmented group with radio semantics and intrinsic layout", () => {
+    const { container } = render(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        defaultValue="1"
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+        <Radio.Item label="24h" value="24" />
+      </Radio.Group>,
+    );
+
+    expect(screen.getByRole("group", { name: "Duration preset" })).toBeTruthy();
+    expect(screen.getAllByRole("radio")).toHaveLength(3);
+
+    const items = container.querySelector('[data-kumo-part="items"]');
+    expect(items?.className).toContain("inline-flex");
+    expect(items?.className).toContain("w-max");
+    expect(items?.className).toContain("flex-nowrap");
+    expect(items?.className).toContain("self-start");
+
+    const selected = screen.getByRole("radio", { name: "1h" });
+    const item = selected.closest('[data-kumo-part="item-label"]');
+    expect(selected.getAttribute("aria-checked")).toBe("true");
+    expect(selected.getAttribute("aria-pressed")).toBeNull();
+    expect(item?.className).toContain("h-7");
+    expect(item?.className).toContain("px-2.5");
+    expect(item?.className).toContain("ring-1");
+    expect(item?.className).toContain("ring-kumo-line");
+    expect(item?.className).toContain("text-xs");
+    expect(item?.className).toContain("font-medium");
+    expect(item?.className).not.toContain("tabular-nums");
+    expect(item?.className).toContain("whitespace-nowrap");
+    expect(item?.className).toContain("has-focus-visible:outline-kumo-brand");
+    expect(screen.queryByRole("tab")).toBeNull();
+  });
+
+  it("preserves selected segmented styles on hover", () => {
+    render(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        defaultValue="1"
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    const item = screen
+      .getByRole("radio", { name: "1h" })
+      .closest('[data-kumo-part="item-label"]');
+
+    expect(item?.className).toContain(
+      "hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7",
+    );
+    expect(item?.className).toContain(
+      "hover:not-has-data-disabled:not-has-data-checked:ring-kumo-line",
+    );
+    expect(item?.className).toContain("has-data-checked:bg-kumo-contrast");
+    expect(item?.className).toContain("has-data-checked:ring-kumo-contrast");
+  });
+
+  it("selects segmented items and calls onValueChange once", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+
+    render(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        defaultValue="1"
+        onValueChange={onValueChange}
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    await user.click(screen.getByRole("radio", { name: "12h" }));
+
+    expect(
+      screen.getByRole("radio", { name: "12h" }).getAttribute("aria-checked"),
+    ).toBe("true");
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange.mock.calls[0]?.[0]).toBe("12");
+  });
+
+  it("supports controlled segmented groups", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const { rerender } = render(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        value="1"
+        onValueChange={onValueChange}
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    await user.click(screen.getByRole("radio", { name: "12h" }));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(
+      screen.getByRole("radio", { name: "1h" }).getAttribute("aria-checked"),
+    ).toBe("true");
+
+    rerender(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        value="12"
+        onValueChange={onValueChange}
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    expect(
+      screen.getByRole("radio", { name: "12h" }).getAttribute("aria-checked"),
+    ).toBe("true");
+  });
+
+  it("preserves arrow-key selection for segmented items", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        defaultValue="1"
+      >
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    screen.getByRole("radio", { name: "1h" }).focus();
+    await user.keyboard("{ArrowRight}");
+
+    expect(
+      screen.getByRole("radio", { name: "12h" }).getAttribute("aria-checked"),
+    ).toBe("true");
+  });
+
+  it("keeps a composable legend outside the segmented items", () => {
+    const { container } = render(
+      <Radio.Group appearance="segmented" defaultValue="1">
+        <Radio.Legend>Duration preset</Radio.Legend>
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    const legend = screen.getByText("Duration preset");
+    const items = container.querySelector('[data-kumo-part="items"]');
+
+    expect(screen.getByRole("group", { name: "Duration preset" })).toBeTruthy();
+    expect(items?.contains(legend)).toBe(false);
+    expect(items?.querySelectorAll('[data-kumo-part="item"]')).toHaveLength(2);
+  });
+
+  it("preserves segmented error rendering and item styling", () => {
+    const { container } = render(
+      <Radio.Group
+        appearance="segmented"
+        legend="Duration preset"
+        error="Choose a duration"
+      >
+        <Radio.Item label="1h" value="1" variant="error" />
+        <Radio.Item label="12h" value="12" variant="error" />
+      </Radio.Group>,
+    );
+
+    expect(screen.getByText("Choose a duration")).toBeTruthy();
+    expect(
+      container.querySelector('[data-kumo-part="item-label"]')?.className,
+    ).toContain("ring-kumo-danger");
+  });
+
+  it("preserves segmented group-level and item-level disabled states", () => {
+    const { rerender } = render(
+      <Radio.Group appearance="segmented" legend="Duration preset" disabled>
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" />
+      </Radio.Group>,
+    );
+
+    expect(
+      screen.getByRole("radio", { name: "1h" }).hasAttribute("data-disabled"),
+    ).toBe(true);
+    expect(
+      screen.getByRole("radio", { name: "12h" }).hasAttribute("data-disabled"),
+    ).toBe(true);
+
+    rerender(
+      <Radio.Group appearance="segmented" legend="Duration preset">
+        <Radio.Item label="1h" value="1" />
+        <Radio.Item label="12h" value="12" disabled />
+      </Radio.Group>,
+    );
+
+    expect(
+      screen.getByRole("radio", { name: "1h" }).hasAttribute("data-disabled"),
+    ).toBe(false);
+    expect(
+      screen.getByRole("radio", { name: "12h" }).hasAttribute("data-disabled"),
+    ).toBe(true);
   });
 });
