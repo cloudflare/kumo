@@ -179,7 +179,12 @@ describe("Radio", () => {
     expect(selected.getAttribute("aria-checked")).toBe("true");
     expect(selected.getAttribute("aria-pressed")).toBeNull();
     expect(item?.className).toContain("h-9");
-    expect(item?.className).toContain("px-3");
+    expect(item?.className).toContain("px-3.25");
+    expect(item?.className).toContain("first:pl-3");
+    expect(item?.className).toContain("last:pr-3");
+    expect(item?.className).toContain("-ml-px");
+    expect(item?.className).toContain("first:ml-0");
+    expect(item?.className).not.toContain("-mr-px");
     expect(item?.className).toContain("text-sm");
     expect(item?.className).toContain("font-medium");
     expect(item?.className).toContain("border-r");
