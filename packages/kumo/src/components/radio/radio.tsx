@@ -49,7 +49,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     segmented: {
       classes:
-        "inline-flex h-9 shrink-0 items-center whitespace-nowrap border-r last:border-r-0 border-kumo-line/50 bg-transparent px-3.25 first:pl-3 last:pr-3 -ml-px first:ml-0 text-sm font-medium text-kumo-default first:rounded-l-lg last:rounded-r-lg select-none hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:border-kumo-contrast has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+        "group relative z-0 my-0 mr-0 -ml-px first:ml-0 inline-flex h-8.5 shrink-0 cursor-pointer items-center border-r last:border-r-0 border-kumo-line/60 bg-transparent px-3 first:pl-2.75 last:pr-2.75 first:rounded-l-lg last:rounded-r-lg text-sm font-medium whitespace-nowrap text-kumo-default select-none has-data-checked:text-kumo-inverse has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand before:absolute before:-z-10 before:left-0 first:before:-left-px before:-right-px before:-inset-y-px first:before:rounded-l-[9px] last:before:rounded-r-[9px] hover:not-has-data-disabled:not-has-data-checked:before:bg-kumo-contrast/7 has-data-checked:before:bg-kumo-contrast",
       description:
         "Compact grouped-button appearance for short, mutually exclusive options",
     },
@@ -351,7 +351,10 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "group relative m-0 -ml-px inline-flex h-9 shrink-0 cursor-pointer items-center border-r border-kumo-line/50 bg-transparent px-3.25 text-sm font-medium whitespace-nowrap text-kumo-default select-none first:ml-0 first:rounded-l-lg first:pl-3 last:rounded-r-lg last:border-r-0 last:pr-3 hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:border-kumo-contrast has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+          "group relative z-0 my-0 mr-0 -ml-px inline-flex h-8.5 shrink-0 cursor-pointer items-center border-r border-kumo-line/60 bg-transparent first:ml-0 last:border-r-0",
+          "px-3 text-sm font-medium whitespace-nowrap text-kumo-default select-none first:rounded-l-lg first:pl-2.75 last:rounded-r-lg last:pr-2.75 has-data-checked:text-kumo-inverse has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+          "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand",
+          "before:absolute before:-inset-y-px before:-right-px before:left-0 before:-z-10 first:before:-left-px first:before:rounded-l-[9px] last:before:rounded-r-[9px] hover:not-has-data-disabled:not-has-data-checked:before:bg-kumo-contrast/7 has-data-checked:before:bg-kumo-contrast",
           variant === "error" &&
             "ring ring-kumo-danger hover:not-has-data-disabled:ring-kumo-danger has-data-checked:ring-kumo-danger",
           className,
