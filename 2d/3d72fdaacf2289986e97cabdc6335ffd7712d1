@@ -1,0 +1,23 @@
+packages/kumo-docs-astro/src/components/demos/HomeGrid.tsx
+  s_61b931e4c2a195::t_79fed1f6ef8b0d 569
+packages/kumo-docs-astro/src/components/demos/SliderDemo.tsx
+  s_61b931e4c2a195::t_56eefce0ed55d5 5,13-15,58,66
+packages/kumo/src/components/input/input-area.tsx
+  s_61b931e4c2a195::t_a17519b2a24ec6 230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2d3d72fdaacf2289986e97cabdc6335ffd7712d1",
+  "prompts": {},
+  "sessions": {
+    "s_61b931e4c2a195": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a10c9c-302f-7aa0-8d40-80a4461eca1f",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
