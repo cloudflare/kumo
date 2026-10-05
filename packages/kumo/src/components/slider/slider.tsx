@@ -6,11 +6,11 @@ import { cn } from "../../utils/cn";
 export const KUMO_SLIDER_VARIANTS = {
   size: {
     sm: {
-      classes: "h-6",
+      classes: "h-6 rounded-md",
       description: "Compact slider for dense layouts",
     },
     base: {
-      classes: "h-8",
+      classes: "h-8 rounded-lg",
       description: "Default slider size",
     },
   },
@@ -36,7 +36,7 @@ export function sliderVariants({
   size = KUMO_SLIDER_DEFAULT_VARIANTS.size,
 }: KumoSliderVariantsProps = {}) {
   return cn(
-    "rounded-lg bg-kumo-recessed p-[3px] ring ring-kumo-line",
+    "bg-kumo-recessed p-[3px] ring ring-kumo-line",
     KUMO_SLIDER_VARIANTS.size[size].classes,
   );
 }
@@ -54,20 +54,10 @@ type SliderValue = number | readonly number[];
  */
 export interface SliderProps<Value extends SliderValue = SliderValue>
   extends
-    Omit<BaseSlider.Root.Props<Value>, "children">,
+    Omit<BaseSlider.Root.Props<Value>, "children" | "orientation">,
     KumoSliderVariantsProps {
   /** Label displayed above the slider track. */
   label?: ReactNode;
-  /**
-   * Whether to show each thumb's value in a badge below the track.
-   * @default true
-   */
-  showValue?: boolean;
-  /**
-   * Whether to show the minimum and maximum values at the ends of the track.
-   * @default true
-   */
-  showRange?: boolean;
   /**
    * Accessible name for each thumb. Use it when there is no visible `label`,
    * or to tell the thumbs of a range slider apart.
@@ -90,10 +80,11 @@ function countThumbs(value: SliderValue | undefined) {
  */
 export function Slider<Value extends SliderValue = SliderValue>({
   label,
-  showValue = true,
-  showRange = true,
   size = KUMO_SLIDER_DEFAULT_VARIANTS.size,
   getAriaLabel,
+  // Keeps the thumbs, and the grips inside them, within the track at either
+  // end of the range.
+  thumbAlignment = "edge",
   className,
   min = 0,
   max = 100,
@@ -107,6 +98,8 @@ export function Slider<Value extends SliderValue = SliderValue>({
   const isRange = thumbCount > 1;
   const formatter = new Intl.NumberFormat(locale, format);
   const textSize = size === "sm" ? "text-xs" : "text-sm";
+  // One step smaller than the track radius, so the inset corners stay concentric.
+  const innerRadius = size === "sm" ? "rounded" : "rounded-md";
 
   return (
     <BaseSlider.Root
@@ -117,9 +110,9 @@ export function Slider<Value extends SliderValue = SliderValue>({
       max={max}
       format={format}
       locale={locale}
-      // Keeps the thumbs, and the grips inside them, within the track at
-      // either end of the range.
-      thumbAlignment="edge"
+      thumbAlignment={thumbAlignment}
+      // The track, badges, and range labels are laid out for a horizontal slider only.
+      orientation="horizontal"
       className={cn(
         "flex w-full flex-col gap-2 data-disabled:opacity-50",
         className,
@@ -134,52 +127,58 @@ export function Slider<Value extends SliderValue = SliderValue>({
       ) : null}
       <BaseSlider.Control className={sliderVariants({ size })}>
         <BaseSlider.Track className="relative h-full">
-          <BaseSlider.Indicator className="rounded-md bg-kumo-base shadow-sm ring ring-kumo-line" />
+          <BaseSlider.Indicator
+            className={cn(
+              "bg-kumo-base shadow-sm ring ring-kumo-line",
+              innerRadius,
+            )}
+          />
           {Array.from({ length: thumbCount }, (_, index) => (
             <BaseSlider.Thumb
               key={index}
               index={isRange ? index : undefined}
               getAriaLabel={getAriaLabel}
-              className="h-full w-4 cursor-grab rounded-md outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing"
+              className={cn(
+                "h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
+                innerRadius,
+              )}
             >
               <span
                 aria-hidden
                 className={cn(
-                  "absolute top-1/2 left-1/2 h-1/2 w-0.5 -translate-1/2 rounded-full bg-kumo-fill-hover",
+                  "absolute top-1/2 left-1/2 h-1/2 w-0.5 -translate-1/2 rounded-full bg-kumo-contrast/25",
                   // Grips sit just inside the indicator: at its start for the
                   // first thumb of a range, at its end otherwise.
                   isRange && index === 0 ? "ml-[7px]" : "-ml-[7px]",
                 )}
               />
-              {showValue ? (
-                <span
-                  aria-hidden
-                  className={cn(
-                    "absolute top-full left-1/2 mt-2 -translate-x-1/2 rounded bg-kumo-brand px-1.5 font-medium whitespace-nowrap text-white tabular-nums",
-                    textSize,
-                  )}
-                >
-                  <BaseSlider.Value>
-                    {(formattedValues) => formattedValues[index]}
-                  </BaseSlider.Value>
-                </span>
-              ) : null}
+              <span
+                aria-hidden
+                className={cn(
+                  // The 8px gap plus the control's 3px padding, so the badge lines up
+                  // with the min and max labels below the control.
+                  "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-brand px-1.5 font-medium whitespace-nowrap text-white tabular-nums",
+                  textSize,
+                )}
+              >
+                <BaseSlider.Value>
+                  {(formattedValues) => formattedValues[index]}
+                </BaseSlider.Value>
+              </span>
             </BaseSlider.Thumb>
           ))}
         </BaseSlider.Track>
       </BaseSlider.Control>
-      {showRange ? (
-        <div
-          aria-hidden
-          className={cn(
-            "flex justify-between text-kumo-subtle tabular-nums",
-            textSize,
-          )}
-        >
-          <span>{formatter.format(min)}</span>
-          <span>{formatter.format(max)}</span>
-        </div>
-      ) : null}
+      <div
+        aria-hidden
+        className={cn(
+          "flex justify-between text-kumo-subtle tabular-nums",
+          textSize,
+        )}
+      >
+        <span>{formatter.format(min)}</span>
+        <span>{formatter.format(max)}</span>
+      </div>
     </BaseSlider.Root>
   );
 }

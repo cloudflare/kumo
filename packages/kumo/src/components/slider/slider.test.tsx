@@ -31,28 +31,12 @@ describe("Slider", () => {
     );
   });
 
-  it("shows the value badges and the min and max labels by default", () => {
+  it("shows the value badges and the min and max labels", () => {
     render(<Slider label="Count" defaultValue={2} max={5} />);
 
     expect(screen.getByText("2")).toBeTruthy();
     expect(screen.getByText("0")).toBeTruthy();
     expect(screen.getByText("5")).toBeTruthy();
-  });
-
-  it("hides the value badges and range labels when turned off", () => {
-    render(
-      <Slider
-        label="Count"
-        defaultValue={2}
-        max={5}
-        showValue={false}
-        showRange={false}
-      />,
-    );
-
-    expect(screen.queryByText("2")).toBeNull();
-    expect(screen.queryByText("0")).toBeNull();
-    expect(screen.queryByText("5")).toBeNull();
   });
 
   it("formats values with the format option", () => {
@@ -83,6 +67,33 @@ describe("Slider", () => {
     });
 
     expect(onValueChange.mock.calls[0]?.[0]).toBe(41);
+  });
+
+  it("aligns the thumbs to the track edges by default", () => {
+    render(<Slider label="Volume" defaultValue={40} />);
+
+    const thumb = screen.getByLabelText("Volume", { selector: "input" })
+      .parentElement as HTMLElement;
+    expect(thumb.style.getPropertyValue("--position")).not.toBe("");
+  });
+
+  it("lets callers override the thumb alignment", () => {
+    render(<Slider label="Volume" defaultValue={40} thumbAlignment="center" />);
+
+    const thumb = screen.getByLabelText("Volume", { selector: "input" })
+      .parentElement as HTMLElement;
+    expect(thumb.style.getPropertyValue("--position")).toBe("");
+  });
+
+  it("stays horizontal even when an orientation is passed", () => {
+    const props = { orientation: "vertical" } as object;
+    render(<Slider label="Volume" defaultValue={40} {...props} />);
+
+    expect(
+      screen
+        .getByLabelText("Volume", { selector: "input" })
+        .getAttribute("aria-orientation"),
+    ).toBe("horizontal");
   });
 
   it("applies the size variant to the track", () => {

@@ -47,18 +47,6 @@ export function SliderSizesDemo() {
   );
 }
 
-export function SliderHiddenLabelsDemo() {
-  return (
-    <Slider
-      label="Opacity"
-      defaultValue={60}
-      showValue={false}
-      showRange={false}
-      className="w-72"
-    />
-  );
-}
-
 export function SliderControlledDemo() {
   const [value, setValue] = useState(50);
 
