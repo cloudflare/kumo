@@ -1,0 +1,19 @@
+.changeset/clean-tabs-indicator.md
+  s_173a1ee488078e::t_9e3321ac843da7 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "746ac2a46cbdf31bf7ef6897fc6cd81a65fbf9f9",
+  "prompts": {},
+  "sessions": {
+    "s_173a1ee488078e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a10c9c-767b-7721-abf2-c8ecad225443",
+        "model": "unknown"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
