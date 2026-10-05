@@ -49,7 +49,7 @@ export const KUMO_RADIO_VARIANTS = {
     },
     segmented: {
       classes:
-        "inline-flex h-7 shrink-0 items-center whitespace-nowrap rounded-[5px] bg-kumo-contrast/3.5 px-2.5 text-xs font-medium text-kumo-default ring-1 ring-kumo-line ring-inset select-none hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 hover:not-has-data-disabled:not-has-data-checked:ring hover:not-has-data-disabled:not-has-data-checked:ring-kumo-line has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+        "inline-flex h-9 shrink-0 items-center whitespace-nowrap border-r border-kumo-line/50 bg-kumo-control px-3 text-sm font-medium text-kumo-default first:rounded-l-lg last:rounded-r-lg last:border-r-0 select-none hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:border-kumo-contrast has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
       description:
         "Compact grouped-button appearance for short, mutually exclusive options",
     },
@@ -351,7 +351,7 @@ function _RadioItem<T = string>(
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
-          "group relative m-0 inline-flex h-7 shrink-0 cursor-pointer items-center rounded-[5px] bg-kumo-contrast/3.5 px-2.5 text-xs font-medium whitespace-nowrap text-kumo-default ring-1 ring-kumo-line select-none ring-inset hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 hover:not-has-data-disabled:not-has-data-checked:ring hover:not-has-data-disabled:not-has-data-checked:ring-kumo-line has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
+          "group relative m-0 inline-flex h-9 shrink-0 cursor-pointer items-center border-r border-kumo-line/50 bg-kumo-control px-3 text-sm font-medium whitespace-nowrap text-kumo-default select-none first:rounded-l-lg last:rounded-r-lg last:border-r-0 hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-kumo-brand has-data-checked:border-kumo-contrast has-data-checked:bg-kumo-contrast has-data-checked:text-kumo-inverse has-data-checked:ring has-data-checked:ring-kumo-contrast has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50",
           variant === "error" &&
             "ring ring-kumo-danger hover:not-has-data-disabled:ring-kumo-danger has-data-checked:ring-kumo-danger",
           className,
@@ -554,8 +554,10 @@ function RadioGroup<Value = string>({
           disabled={disabled}
           className={cn(
             "flex flex-col p-0",
-            // Card groups match Field's label-to-control gap.
-            appearance === "card" ? "gap-2" : "gap-4",
+            // Card and segmented groups match Field's label-to-control gap.
+            appearance === "card" || appearance === "segmented"
+              ? "gap-2"
+              : "gap-4",
             className,
           )}
         >
@@ -570,7 +572,7 @@ function RadioGroup<Value = string>({
             data-kumo-part="items"
             className={cn(
               appearance === "segmented"
-                ? "inline-flex w-max flex-row flex-nowrap items-center gap-1 self-start rounded-lg bg-kumo-base p-1 shadow-xs ring ring-kumo-line"
+                ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
                 : orientation === "vertical"
                   ? appearance === "card"
                     ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"

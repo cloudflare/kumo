@@ -169,17 +169,23 @@ describe("Radio", () => {
     expect(items?.className).toContain("w-max");
     expect(items?.className).toContain("flex-nowrap");
     expect(items?.className).toContain("self-start");
+    expect(items?.className).toContain("bg-kumo-control");
+    expect(container.querySelector("fieldset")?.className).toContain("gap-2");
+    expect(items?.className).not.toContain("gap-1");
+    expect(items?.className).not.toContain("p-1");
 
     const selected = screen.getByRole("radio", { name: "1h" });
     const item = selected.closest('[data-kumo-part="item-label"]');
     expect(selected.getAttribute("aria-checked")).toBe("true");
     expect(selected.getAttribute("aria-pressed")).toBeNull();
-    expect(item?.className).toContain("h-7");
-    expect(item?.className).toContain("px-2.5");
-    expect(item?.className).toContain("ring-1");
-    expect(item?.className).toContain("ring-kumo-line");
-    expect(item?.className).toContain("text-xs");
+    expect(item?.className).toContain("h-9");
+    expect(item?.className).toContain("px-3");
+    expect(item?.className).toContain("text-sm");
     expect(item?.className).toContain("font-medium");
+    expect(item?.className).toContain("border-r");
+    expect(item?.className).toContain("border-kumo-line/50");
+    expect(item?.className).toContain("first:rounded-l-lg");
+    expect(item?.className).toContain("last:rounded-r-lg");
     expect(item?.className).not.toContain("tabular-nums");
     expect(item?.className).toContain("whitespace-nowrap");
     expect(item?.className).toContain("has-focus-visible:outline-kumo-brand");
@@ -204,9 +210,6 @@ describe("Radio", () => {
 
     expect(item?.className).toContain(
       "hover:not-has-data-disabled:not-has-data-checked:bg-kumo-contrast/7",
-    );
-    expect(item?.className).toContain(
-      "hover:not-has-data-disabled:not-has-data-checked:ring-kumo-line",
     );
     expect(item?.className).toContain("has-data-checked:bg-kumo-contrast");
     expect(item?.className).toContain("has-data-checked:ring-kumo-contrast");
