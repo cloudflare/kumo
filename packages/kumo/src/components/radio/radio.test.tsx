@@ -99,6 +99,47 @@ describe("Radio", () => {
     expect(label?.className).toContain("flex-row-reverse");
   });
 
+  it("joins vertical card items into one card with dividers", () => {
+    const { container } = render(
+      <Radio.Group legend="Plan" appearance="card" defaultValue="free">
+        <Radio.Item label="Free" value="free" />
+        <Radio.Item label="Pro" value="pro" />
+      </Radio.Group>,
+    );
+
+    const labels = container.querySelectorAll("label");
+    expect(labels[0].parentElement?.className).toContain("rounded-lg");
+    expect(labels[0].parentElement?.className).toContain("ring-kumo-line");
+    for (const label of labels) {
+      expect(label.className).toContain("border-b");
+      expect(label.className).not.toContain("rounded-lg");
+    }
+  });
+
+  it("joins horizontal card items into one two-column card", () => {
+    const { container } = render(
+      <Radio.Group
+        legend="Plan"
+        appearance="card"
+        orientation="horizontal"
+        defaultValue="free"
+      >
+        <Radio.Item label="Free" value="free" />
+        <Radio.Item label="Pro" value="pro" />
+        <Radio.Item label="Business" value="business" />
+      </Radio.Group>,
+    );
+
+    const labels = container.querySelectorAll("label");
+    const grid = labels[0].parentElement?.className ?? "";
+    expect(grid).toContain("grid-cols-2");
+    expect(grid).toContain("rounded-lg");
+    for (const label of labels) {
+      expect(label.className).toContain("odd:border-r");
+      expect(label.className).not.toContain("rounded-lg");
+    }
+  });
+
   it("exports KUMO_RADIO_VARIANTS with appearance axis", () => {
     expect(KUMO_RADIO_VARIANTS.appearance.default).toBeDefined();
     expect(KUMO_RADIO_VARIANTS.appearance.card).toBeDefined();
