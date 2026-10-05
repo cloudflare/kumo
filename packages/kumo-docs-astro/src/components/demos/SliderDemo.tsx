@@ -2,9 +2,7 @@ import { useState } from "react";
 import { Slider } from "@cloudflare/kumo";
 
 export function SliderBasicDemo() {
-  return (
-    <Slider label="Volume" defaultValue={40} className="w-72" />
-  );
+  return <Slider label="Volume" defaultValue={40} className="w-72" />;
 }
 
 export function SliderRangeDemo() {
@@ -12,7 +10,9 @@ export function SliderRangeDemo() {
     <Slider
       label="Price range"
       defaultValue={[25, 75]}
-      getAriaLabel={index => (index === 0 ? "Minimum price" : "Maximum price")}
+      getAriaLabel={(index) =>
+        index === 0 ? "Minimum price" : "Maximum price"
+      }
       className="w-72"
     />
   );
@@ -55,7 +55,7 @@ export function SliderControlledDemo() {
       <Slider
         label="Brightness"
         value={value}
-        onValueChange={next => setValue(next)}
+        onValueChange={(next) => setValue(next)}
       />
       <p className="text-sm text-kumo-subtle">Brightness: {value}%</p>
     </div>
@@ -63,7 +63,5 @@ export function SliderControlledDemo() {
 }
 
 export function SliderDisabledDemo() {
-  return (
-    <Slider label="Locked" defaultValue={70} disabled className="w-72" />
-  );
+  return <Slider label="Locked" defaultValue={70} disabled className="w-72" />;
 }
