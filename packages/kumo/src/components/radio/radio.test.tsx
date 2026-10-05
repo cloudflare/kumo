@@ -184,6 +184,8 @@ describe("Radio", () => {
     expect(item?.className).toContain("font-medium");
     expect(item?.className).toContain("border-r");
     expect(item?.className).toContain("border-kumo-line/50");
+    expect(item?.className).toContain("bg-transparent");
+    expect(item?.className).not.toContain("bg-kumo-control");
     expect(item?.className).toContain("first:rounded-l-lg");
     expect(item?.className).toContain("last:rounded-r-lg");
     expect(item?.className).not.toContain("tabular-nums");
