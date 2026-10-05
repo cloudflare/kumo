@@ -566,7 +566,7 @@ export function HomeGrid() {
       Component: (
         <Slider
           defaultValue={[25, 75]}
-          getAriaLabel={index => (index === 0 ? "Minimum" : "Maximum")}
+          getAriaLabel={(index) => (index === 0 ? "Minimum" : "Maximum")}
           className="w-48"
         />
       ),
