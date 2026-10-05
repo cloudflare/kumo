@@ -125,50 +125,55 @@ export function Slider<Value extends SliderValue = SliderValue>({
           {label}
         </BaseSlider.Label>
       ) : null}
-      <BaseSlider.Control className={sliderVariants({ size })}>
-        <BaseSlider.Track className="relative h-full">
-          <BaseSlider.Indicator
-            className={cn(
-              "bg-kumo-base shadow-sm ring ring-kumo-line",
-              innerRadius,
-            )}
-          />
-          {Array.from({ length: thumbCount }, (_, index) => (
-            <BaseSlider.Thumb
-              key={index}
-              index={isRange ? index : undefined}
-              getAriaLabel={getAriaLabel}
+      {/* The padding lives on a wrapper rather than the control: Base UI
+          positions edge-aligned thumbs as a percentage of the control's full
+          width, so any control padding pushes them past the track ends. */}
+      <div className={sliderVariants({ size })}>
+        <BaseSlider.Control className="h-full">
+          <BaseSlider.Track className="relative h-full">
+            <BaseSlider.Indicator
               className={cn(
-                "h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
+                // Base UI ends the indicator at the thumb's center. Padding
+                // stretches it over the whole thumb, so it fills the track at
+                // either end of the range. `box-content` is forced because global
+                // `* { box-sizing: border-box }` resets would otherwise win.
+                "box-content! bg-kumo-base pr-2 shadow-sm ring ring-kumo-line",
+                isRange && "-ml-2 pl-2",
                 innerRadius,
               )}
-            >
-              <span
-                aria-hidden
+            />
+            {Array.from({ length: thumbCount }, (_, index) => (
+              <BaseSlider.Thumb
+                key={index}
+                index={isRange ? index : undefined}
+                getAriaLabel={getAriaLabel}
                 className={cn(
-                  "absolute top-1/2 left-1/2 h-1/2 w-0.5 -translate-1/2 rounded-full bg-kumo-contrast/25",
-                  // Grips sit just inside the indicator: at its start for the
-                  // first thumb of a range, at its end otherwise.
-                  isRange && index === 0 ? "ml-[7px]" : "-ml-[7px]",
-                )}
-              />
-              <span
-                aria-hidden
-                className={cn(
-                  // The 8px gap plus the control's 3px padding, so the badge lines up
-                  // with the min and max labels below the control.
-                  "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-brand px-1.5 font-medium whitespace-nowrap text-white tabular-nums",
-                  textSize,
+                  "h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
+                  innerRadius,
                 )}
               >
-                <BaseSlider.Value>
-                  {(formattedValues) => formattedValues[index]}
-                </BaseSlider.Value>
-              </span>
-            </BaseSlider.Thumb>
-          ))}
-        </BaseSlider.Track>
-      </BaseSlider.Control>
+                <span
+                  aria-hidden
+                  className="absolute top-1/2 left-1/2 h-1/2 w-0.5 -translate-1/2 rounded-full bg-kumo-contrast/25"
+                />
+                <span
+                  aria-hidden
+                  className={cn(
+                    // The 8px gap plus the control's 3px padding, so the badge lines up
+                    // with the min and max labels below the control.
+                    "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-brand px-1.5 font-medium whitespace-nowrap text-white tabular-nums",
+                    textSize,
+                  )}
+                >
+                  <BaseSlider.Value>
+                    {(formattedValues) => formattedValues[index]}
+                  </BaseSlider.Value>
+                </span>
+              </BaseSlider.Thumb>
+            ))}
+          </BaseSlider.Track>
+        </BaseSlider.Control>
+      </div>
       <div
         aria-hidden
         className={cn(
