@@ -127,6 +127,59 @@ export function LayerDialogFormDemo() {
   );
 }
 
+const WORKERS = [
+  "production-api",
+  "staging-api",
+  "image-resizer",
+  "auth-gateway",
+  "email-router",
+  "analytics-ingest",
+];
+
+/** Unlabeled search input as the first control in the body. */
+export function LayerDialogSearchDemo() {
+  const [query, setQuery] = useState("");
+  const matches = WORKERS.filter((worker) =>
+    worker.toLowerCase().includes(query.trim().toLowerCase()),
+  );
+
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Choose a Worker</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Choose a Worker</LayerDialog.Title>
+        <LayerDialog.Description>
+          Select the Worker that handles requests for this route.
+        </LayerDialog.Description>
+        <LayerDialog.Body>
+          <div className="flex flex-col gap-3">
+            <Input
+              aria-label="Search Workers"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search Workers"
+              type="search"
+              value={query}
+            />
+            {matches.length > 0 ? (
+              <ul className="flex flex-col divide-y divide-kumo-hairline rounded-lg border border-kumo-hairline">
+                {matches.map((worker) => (
+                  <li key={worker} className="px-3 py-2 text-kumo-default">
+                    {worker}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <Text variant="secondary">No Workers match “{query}”.</Text>
+            )}
+          </div>
+        </LayerDialog.Body>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+
 export function LayerDialogSplitActionDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">
