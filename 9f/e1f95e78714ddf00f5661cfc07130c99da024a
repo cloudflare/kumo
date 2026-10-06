@@ -1,0 +1,21 @@
+packages/kumo/src/components/sidebar/sidebar.test.tsx
+  s_a03f747e8b1835::t_52b5f43ec8cba6 659-663,692-747
+packages/kumo/src/components/sidebar/sidebar.tsx
+  s_a03f747e8b1835::t_51254bc9548e68 2202-2205,2268-2269,2272,2407-2408,2411
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9fe1f95e78714ddf00f5661cfc07130c99da024a",
+  "prompts": {},
+  "sessions": {
+    "s_a03f747e8b1835": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f61084012ffehr1Wd77aGQhniI",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "michi <michi@cloudflare.com>"
+    }
+  }
+}
