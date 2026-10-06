@@ -14,6 +14,7 @@ import { describe, expect, it, vi } from "vite-plus/test";
 import { KumoPortalProvider } from "../../utils/portal-provider";
 import { KumoLocaleProvider } from "../../utils/locale-provider";
 import { DropdownMenu } from "../dropdown/dropdown";
+import { Input } from "../input/input";
 import {
   KUMO_LAYER_DIALOG_DEFAULT_VARIANTS,
   KUMO_LAYER_DIALOG_VARIANTS,
@@ -389,6 +390,108 @@ describe("LayerDialog", () => {
         </LayerDialog.Root>,
       ),
     ).toThrow("exactly one direct LayerDialog.Action");
+  });
+});
+
+describe("LayerDialog.Body edge clipping", () => {
+  // The body viewport is a scroll container, so it clips anything painted
+  // outside its box. Inputs draw their border and focus ring as a box-shadow
+  // outside the element, so a first-child control needs top padding or the
+  // top of its outline is cut off. happy-dom has no layout, so assert the
+  // class contract that prevents the clip.
+  const renderBodyWithLeadingInput = (desktop: boolean) => {
+    const originalMatchMedia = window.matchMedia;
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      writable: true,
+      value: (query: string) => ({
+        matches: desktop && query.includes("min-width: 640px"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    });
+
+    const result = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Search</LayerDialog.Title>
+          <LayerDialog.Body>
+            <Input aria-label="Search" placeholder="Search" />
+          </LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const input = result.getByRole("textbox", { name: "Search" });
+    const viewport = result
+      .getByRole("dialog")
+      .querySelector<HTMLElement>("[role='presentation'][style*='overflow']")!;
+    const content = viewport.firstElementChild as HTMLElement;
+
+    return {
+      content,
+      input,
+      viewport,
+      cleanup: () => {
+        result.unmount();
+        Object.defineProperty(window, "matchMedia", {
+          configurable: true,
+          writable: true,
+          value: originalMatchMedia,
+        });
+      },
+    };
+  };
+
+  it.each([
+    ["desktop", true],
+    ["mobile", false],
+  ])(
+    "pads the top of the body so a leading input's ring is not clipped (%s)",
+    (_layout, desktop) => {
+      const { content, input, cleanup } = renderBodyWithLeadingInput(desktop);
+
+      // Guard the premise: the input is the first thing rendered in the
+      // scroll content (possibly inside the body's description wrapper) and
+      // draws its border as a ring.
+      let first = content.firstElementChild;
+      while (first && first !== input && first.firstElementChild) {
+        expect(first.previousElementSibling).toBeNull();
+        first = first.firstElementChild;
+      }
+      expect(first).toBe(input);
+      expect(input.className).toMatch(/(^|\s)ring(\s|$)/);
+      // And the intended layout branch rendered.
+      expect(content.className).toContain(desktop ? "px-4.5" : "px-4");
+
+      // Any top padding of at least 0.5 (2px) covers the 1.5px focus ring.
+      expect(content.className).toMatch(/(^|\s)(pt|py|p)-(0\.5|[1-9])/);
+      expect(content.className).not.toMatch(/(^|\s)(pt|py|p)-0(\s|$)/);
+
+      cleanup();
+    },
+  );
+
+  it("does not fade the top of the body before Base UI measures overflow", () => {
+    // Safari skips Base UI's registered 0px initial value for the overflow
+    // vars, so the mask fallback is what renders until the first measurement.
+    // The body always opens scrolled to the top, so the top fade must fall
+    // back to 0px rather than masking out the first 24px of content.
+    const { viewport, cleanup } = renderBodyWithLeadingInput(true);
+
+    expect(viewport.className).toContain(
+      "var(--scroll-area-overflow-y-start,0px)",
+    );
+    expect(viewport.className).not.toContain(
+      "var(--scroll-area-overflow-y-start,24px)",
+    );
+
+    cleanup();
   });
 });
 
