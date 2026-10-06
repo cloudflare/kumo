@@ -1,0 +1,21 @@
+packages/kumo-docs-astro/src/components/demos/LayerDialogDemo.tsx
+  s_0f759d319f6714::t_9479857c5c73b8 126-178
+packages/kumo-docs-astro/src/pages/components/layer-dialog.mdx
+  s_0f759d319f6714::t_dd46e9acbe3fcc 22,122-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "dcedb420d9051509667b9c8d0dc65805491cb38d",
+  "prompts": {},
+  "sessions": {
+    "s_0f759d319f6714": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_eedde15f8ffehEjH2pqRrGqvgH",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
