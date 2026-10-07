@@ -743,7 +743,7 @@ const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
   ({ className }, ref) => (
     <SelectBase.Separator
       ref={ref}
-      className={cn("-mx-1 my-1 h-px bg-kumo-hairline", className)}
+      className={cn("my-1 h-px bg-kumo-hairline", className)}
     />
   ),
 );
