@@ -289,6 +289,44 @@ export const ADDITIONAL_COMPONENT_PROPS: Record<
       description: "Minimum value of the meter (default: 0)",
     },
   },
+  Slider: {
+    value: {
+      type: "number | readonly number[]",
+      description:
+        "Controlled value. Pass an array to render one thumb per value (a range).",
+    },
+    defaultValue: {
+      type: "number | readonly number[]",
+      description:
+        "Uncontrolled initial value. Pass an array to render one thumb per value (a range).",
+    },
+    onValueChange: {
+      type: "(value: number | readonly number[], eventDetails: SliderRoot.ChangeEventDetails) => void",
+      description:
+        "Called when the value changes while dragging or from the keyboard",
+    },
+    min: {
+      type: "number",
+      description: "Minimum value of the slider (default: 0)",
+    },
+    max: {
+      type: "number",
+      description: "Maximum value of the slider (default: 100)",
+    },
+    step: {
+      type: "number",
+      description: "Amount the value changes per step (default: 1)",
+    },
+    format: {
+      type: "Intl.NumberFormatOptions",
+      description:
+        "Formats the value badges, range labels, and the value announced to assistive technology",
+    },
+    disabled: {
+      type: "boolean",
+      description: "Whether the slider is disabled",
+    },
+  },
   Tooltip: {
     content: {
       type: "ReactNode",

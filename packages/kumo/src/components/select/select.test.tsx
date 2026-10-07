@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { createRef, useState } from "react";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 import { Input } from "../input/input";
 import { Select } from "./select";
 
@@ -73,6 +74,28 @@ describe("Select", () => {
   });
 
   describe("label visibility (new behavior)", () => {
+    it("forwards translated label text", () => {
+      render(
+        <KumoLocaleProvider
+          translations={{
+            label: {
+              optional: "(opcional)",
+              tooltip: "Mais informações",
+            },
+          }}
+        >
+          <Select label="País" required={false} labelTooltip="Ajuda">
+            <Select.Option value="br">Brasil</Select.Option>
+          </Select>
+        </KumoLocaleProvider>,
+      );
+
+      expect(screen.getByText("(opcional)")).toBeTruthy();
+      expect(
+        screen.getByRole("button", { name: "Mais informações" }),
+      ).toBeTruthy();
+    });
+
     it("shows visible label by default when label prop is provided", () => {
       render(
         <Select label="Database" description="Select your preferred database">

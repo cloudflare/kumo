@@ -208,6 +208,10 @@
       "types": "./dist/components/sidebar.d.ts",
       "import": "./dist/components/sidebar.js"
     },
+    "./components/slider": {
+      "types": "./dist/components/slider.d.ts",
+      "import": "./dist/components/slider.js"
+    },
     "./components/surface": {
       "types": "./dist/components/surface.d.ts",
       "import": "./dist/components/surface.js"

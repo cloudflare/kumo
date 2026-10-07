@@ -1,6 +1,10 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 export interface KumoTranslations {
+  label?: {
+    optional: string;
+    tooltip: string;
+  };
   layerDialog: {
     close: string;
     cancel: string;
@@ -8,17 +12,26 @@ export interface KumoTranslations {
 }
 
 export type KumoTranslationsPartial = {
-  [Key in keyof KumoTranslations]?: Partial<KumoTranslations[Key]>;
+  [Key in keyof KumoTranslations]?: Partial<NonNullable<KumoTranslations[Key]>>;
 };
 
-const defaultTranslations: KumoTranslations = {
+type ResolvedKumoTranslations = {
+  [Key in keyof KumoTranslations]-?: NonNullable<KumoTranslations[Key]>;
+};
+
+const defaultTranslations: ResolvedKumoTranslations = {
+  label: {
+    optional: "(optional)",
+    tooltip: "More information",
+  },
   layerDialog: {
     close: "Close",
     cancel: "Cancel",
   },
 };
 
-const KumoLocaleContext = createContext<KumoTranslations>(defaultTranslations);
+const KumoLocaleContext =
+  createContext<ResolvedKumoTranslations>(defaultTranslations);
 
 export interface KumoLocaleProviderProps {
   children: ReactNode;
@@ -37,8 +50,12 @@ export function KumoLocaleProvider({
   children,
   translations,
 }: KumoLocaleProviderProps) {
-  const value = useMemo<KumoTranslations>(
+  const value = useMemo<ResolvedKumoTranslations>(
     () => ({
+      label: {
+        ...defaultTranslations.label,
+        ...translations?.label,
+      },
       layerDialog: {
         ...defaultTranslations.layerDialog,
         ...translations?.layerDialog,
@@ -55,6 +72,6 @@ export function KumoLocaleProvider({
 }
 
 /** @internal Used by Kumo components to resolve translated built-in copy. */
-export function useKumoLocale(): KumoTranslations {
+export function useKumoLocale(): ResolvedKumoTranslations {
   return useContext(KumoLocaleContext);
 }

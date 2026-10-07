@@ -160,6 +160,54 @@ describe("Flow Integration", () => {
       }
     });
 
+    test("custom-rendered nodes are measured at their positioned size", async () => {
+      // Record every committed layout so an intermediate frame laid out from
+      // stretched (pre-positioning) widths would be caught.
+      const ids = ["short", "long", "medium"];
+      const misaligned: string[] = [];
+      const observer = new MutationObserver(() => {
+        const nodes = ids.map((id) =>
+          document.querySelector<HTMLElement>(`[data-node-id="${id}"]`),
+        );
+        if (nodes.some((node) => !node || node.style.left === "")) return;
+        const rights = nodes.map((node) => {
+          const rect = node!.getBoundingClientRect();
+          return Math.round(rect.right);
+        });
+        if (new Set(rights).size !== 1) misaligned.push(rights.join(","));
+      });
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["style"],
+        childList: true,
+        subtree: true,
+      });
+
+      const { getByText } = await render(
+        <Flow>
+          <Flow.Parallel align="end">
+            <Flow.Node id="short" render={<div />}>
+              A
+            </Flow.Node>
+            <Flow.Node id="long" render={<div />}>
+              A much longer branch label
+            </Flow.Node>
+            <Flow.Node id="medium" render={<div />}>
+              Medium label
+            </Flow.Node>
+          </Flow.Parallel>
+          <Flow.Node id="end">End</Flow.Node>
+        </Flow>,
+      );
+
+      await expect.element(getByText("End")).toBeVisible();
+      await waitForNextFrame();
+      await waitForNextFrame();
+      observer.disconnect();
+
+      expect(misaligned).toEqual([]);
+    });
+
     test("connectors stay aligned after a scroll event shifts the container", async () => {
       // Render the flow inside a fixed-height scrollable wrapper so that the
       // Flow container sits below the visible area when scrolled.

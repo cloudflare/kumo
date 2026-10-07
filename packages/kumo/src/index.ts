@@ -373,6 +373,15 @@ export {
   type KumoLayerDialogSize,
   type KumoLayerDialogVerticalAlign,
 } from "./components/layer-dialog";
+export {
+  Slider,
+  sliderVariants,
+  KUMO_SLIDER_VARIANTS,
+  KUMO_SLIDER_DEFAULT_VARIANTS,
+  type SliderProps,
+  type KumoSliderSize,
+  type KumoSliderVariantsProps,
+} from "./components/slider";
 // PLOP_INJECT_EXPORT
 
 // Utils

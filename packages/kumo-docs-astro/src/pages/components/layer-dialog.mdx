@@ -19,6 +19,7 @@ import {
   LayerDialogMaxHeightDemo,
   LayerDialogNestedDemo,
   LayerDialogPendingDemo,
+  LayerDialogSearchDemo,
   LayerDialogSizeDemo,
   LayerDialogSplitActionDemo,
   LayerDialogTopAlignDemo,
@@ -116,6 +117,14 @@ Adding `Actions` selects exactly one Kumo primary action and an automatic **Clos
 `Body` and `Actions` are separate slots, so the native `<form>` belongs inside `Body` while its submit button belongs in `Actions`. Give the form an ID, then associate the primary action using its HTML `form` attribute. This preserves built-in validation and supports uncontrolled form fields without React state.
 
 <ComponentExample demo="LayerDialogFormDemo"><LayerDialogFormDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Search and pickers
+
+A control can be the first element in `Body`. Here an unlabeled search input sits directly beneath the title frame, so give it an `aria-label`. The body leaves room above its content, so the input's border and focus ring are not clipped by the scroll area.
+
+<ComponentExample demo="LayerDialogSearchDemo"><LayerDialogSearchDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>

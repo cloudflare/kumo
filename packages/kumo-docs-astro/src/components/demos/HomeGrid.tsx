@@ -30,6 +30,7 @@ import {
   Select,
   SensitiveInput,
   SkeletonLine,
+  Slider,
   Switch,
   Table,
   TableOfContents,
@@ -91,6 +92,7 @@ const componentRoutes: Record<string, string> = {
   select: "/components/select",
   "sensitive-input": "/components/sensitive-input",
   "skeleton-line": "/components/skeleton-line",
+  slider: "/components/slider",
   switch: "/components/switch",
   table: "/components/table",
   "table-of-contents": "/components/table-of-contents",
@@ -556,6 +558,17 @@ export function HomeGrid() {
       id: "meter",
       Component: (
         <Meter value={75} label="My meter" customValue="100 / 5,000" />
+      ),
+    },
+    {
+      name: "Slider",
+      id: "slider",
+      Component: (
+        <Slider
+          defaultValue={[25, 75]}
+          getAriaLabel={(index) => (index === 0 ? "Minimum" : "Maximum")}
+          className="w-48"
+        />
       ),
     },
     {
