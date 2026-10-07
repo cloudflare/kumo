@@ -2,4 +2,4 @@
 "@cloudflare/kumo": patch
 ---
 
-Prevent Select menus from showing a horizontal scrollbar.
+Prevent Select separators from causing a horizontal scrollbar.

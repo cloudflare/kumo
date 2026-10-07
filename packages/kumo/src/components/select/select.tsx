@@ -562,7 +562,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
           >
             <SelectBase.List
               className={cn(
-                "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-x-hidden overflow-y-auto overscroll-none",
+                "min-h-0 flex-1 scroll-pt-2 scroll-pb-2 overflow-y-auto overscroll-none",
               )}
             >
               {renderedChildren}
@@ -743,7 +743,7 @@ const Separator = forwardRef<HTMLDivElement, SeparatorProps>(
   ({ className }, ref) => (
     <SelectBase.Separator
       ref={ref}
-      className={cn("-mx-1 my-1 h-px bg-kumo-hairline", className)}
+      className={cn("my-1 h-px bg-kumo-hairline", className)}
     />
   ),
 );
