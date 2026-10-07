@@ -13,6 +13,11 @@ import {
   RadioBasicDemo,
   RadioDefaultDemo,
   RadioHorizontalDemo,
+  RadioSegmentedDemo,
+  RadioAppearanceComparisonDemo,
+  RadioSegmentedDisabledDemo,
+  RadioSegmentedLegendDemo,
+  RadioSegmentedLongLabelsDemo,
   RadioDescriptionDemo,
   RadioErrorDemo,
   RadioDisabledDemo,
@@ -99,6 +104,84 @@ export default function Example() {
 </p>
 <ComponentExample demo="RadioHorizontalDemo">
   <RadioHorizontalDemo client:visible />
+</ComponentExample>
+
+### Segmented
+
+<p>
+  Use `appearance="segmented"` for inline, compact options. Items do not wrap,
+  so architect accordingly.
+</p>
+<ComponentExample
+  demo="RadioSegmentedDemo"
+  vrSection="radio-segmented"
+  vrTitle="Radio segmented"
+>
+  <RadioSegmentedDemo client:visible />
+</ComponentExample>
+
+#### Should this be segmented?
+Use the segmented appearance only when the group is small, labels are short,
+and the control fits on one line. Use the default appearance for longer labels,
+descriptive choices, large option sets, or narrow layouts.
+
+Use the [Tabs](/components/tabs) component when selection changes which content
+panel is displayed.
+
+### Default and segmented
+
+<p>
+  The appearance changes presentation only. Both examples represent the same
+  mutually exclusive values.
+</p>
+<ComponentExample
+  demo="RadioAppearanceComparisonDemo"
+  vrSection="radio-appearance-comparison"
+  vrTitle="Radio default and segmented"
+>
+  <RadioAppearanceComparisonDemo client:visible />
+</ComponentExample>
+
+### Disabled segmented controls
+
+<p>
+  Segmented groups support disabling the whole group or an individual option.
+</p>
+<ComponentExample
+  demo="RadioSegmentedDisabledDemo"
+  vrSection="radio-segmented-disabled"
+  vrTitle="Radio segmented disabled"
+>
+  <RadioSegmentedDisabledDemo client:visible />
+</ComponentExample>
+
+### Segmented with a custom legend
+
+<p>
+  `Radio.Legend` remains outside the segmented surface and provides the group's
+  accessible name.
+</p>
+<ComponentExample
+  demo="RadioSegmentedLegendDemo"
+  vrSection="radio-segmented-legend"
+  vrTitle="Radio segmented custom legend"
+>
+  <RadioSegmentedLegendDemo client:visible />
+</ComponentExample>
+
+### Long labels and narrow layouts
+
+<p>
+  Segmented controls keep their intrinsic width and do not wrap, shrink, or
+  truncate their items. Choose the default appearance when translated labels or
+  a narrow container prevent the group from fitting on one line.
+</p>
+<ComponentExample
+  demo="RadioSegmentedLongLabelsDemo"
+  vrSection="radio-segmented-long-labels"
+  vrTitle="Radio segmented long labels"
+>
+  <RadioSegmentedLongLabelsDemo client:visible />
 </ComponentExample>
 
 ### With Description
