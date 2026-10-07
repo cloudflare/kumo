@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 import { Checkbox } from "./checkbox";
 
 describe("Checkbox.Group", () => {
@@ -81,5 +82,27 @@ describe("Checkbox.Group", () => {
       "item",
     );
     expect(label?.className).not.toContain("flex-row-reverse");
+  });
+});
+
+describe("Checkbox", () => {
+  it("forwards translated label text", () => {
+    render(
+      <KumoLocaleProvider
+        translations={{
+          label: {
+            optional: "(opcional)",
+            tooltip: "Mais informações",
+          },
+        }}
+      >
+        <Checkbox label="Atualizações" required={false} labelTooltip="Ajuda" />
+      </KumoLocaleProvider>,
+    );
+
+    expect(screen.getByText("(opcional)")).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Mais informações" }),
+    ).toBeTruthy();
   });
 });

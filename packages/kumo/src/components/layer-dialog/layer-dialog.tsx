@@ -452,16 +452,21 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
         )}
       </div>
       <ScrollAreaBase.Root className="relative flex min-h-0 flex-1 flex-col">
+        {/* The top fade falls back to 0px: the body always opens scrolled to
+            the top, and Safari skips Base UI's registered 0px initial value,
+            so a non-zero fallback fades out the first row until measured. */}
         <ScrollAreaBase.Viewport
-          className="min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,24px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
+          className="min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,0px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
           onScroll={handleScroll}
         >
+          {/* pt-0.5 keeps a first-child control's ring-drawn border and
+              1.5px focus ring inside the viewport, which clips its edges. */}
           {isDesktop ? (
-            <ScrollAreaBase.Content className="px-4.5 pb-4.5">
+            <ScrollAreaBase.Content className="px-4.5 pt-0.5 pb-4.5">
               {content}
             </ScrollAreaBase.Content>
           ) : (
-            <ScrollAreaBase.Content className="px-4 pb-4">
+            <ScrollAreaBase.Content className="px-4 pt-0.5 pb-4">
               {content}
             </ScrollAreaBase.Content>
           )}
