@@ -99,7 +99,8 @@ export default function Example() {
 
 <p>
   Select a continuous range of dates. Works well with `numberOfMonths={2}` for a
-  side-by-side view.
+  side-by-side view. Multi-month views hide dates outside each month so dates are
+  not duplicated between panels. Set `showOutsideDays` to display them.
 </p>
 <ComponentExample demo="DatePickerRangeDemo">
   <DatePickerRangeDemo client:load />
