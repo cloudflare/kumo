@@ -137,7 +137,7 @@ export function Slider<Value extends SliderValue = SliderValue>({
                 // stretches it over the whole thumb, so it fills the track at
                 // either end of the range. `box-content` is forced because global
                 // `* { box-sizing: border-box }` resets would otherwise win.
-                "box-content! bg-kumo-base pr-2 shadow-sm ring ring-kumo-line",
+                "box-content! bg-kumo-overlay pr-2 shadow-sm ring ring-kumo-line",
                 isRange && "-ml-2 pl-2",
                 innerRadius,
               )}
