@@ -137,7 +137,7 @@ export function Slider<Value extends SliderValue = SliderValue>({
                 // stretches it over the whole thumb, so it fills the track at
                 // either end of the range. `box-content` is forced because global
                 // `* { box-sizing: border-box }` resets would otherwise win.
-                "box-content! bg-kumo-base pr-2 shadow-sm ring ring-kumo-line",
+                "box-content! bg-kumo-overlay pr-2 shadow-sm ring ring-kumo-line",
                 isRange && "-ml-2 pl-2",
                 innerRadius,
               )}
@@ -148,7 +148,7 @@ export function Slider<Value extends SliderValue = SliderValue>({
                 index={isRange ? index : undefined}
                 getAriaLabel={getAriaLabel}
                 className={cn(
-                  "h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
+                  "group h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
                   innerRadius,
                 )}
               >
@@ -161,7 +161,7 @@ export function Slider<Value extends SliderValue = SliderValue>({
                   className={cn(
                     // The 8px gap plus the control's 3px padding, so the badge lines up
                     // with the min and max labels below the control.
-                    "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-brand px-1.5 font-medium whitespace-nowrap text-white tabular-nums",
+                    "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-contrast px-1.5 font-medium whitespace-nowrap text-kumo-inverse tabular-nums group-data-disabled:bg-kumo-fill group-data-disabled:text-kumo-default",
                     textSize,
                   )}
                 >
