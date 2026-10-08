@@ -1,5 +1,35 @@
 # @cloudflare/kumo
 
+## 2.15.0
+
+### Minor Changes
+
+- 88850d5: Add `tooltipTimestampFormat` to TimeseriesChart for formatting standard and marker tooltip timestamps in a consumer-selected time zone.
+- 5282710: Add a segmented appearance to Radio groups for compact, mutually exclusive choices.
+- 3d93312: Add `appearance="card"` and `orientation` to `Checkbox.Group`, plus `appearance` and `description` to `Checkbox.Item`. Card groups render as one card with dividers (rows when vertical, a two-column grid when horizontal), matching `Radio.Group`'s card appearance.
+- 81b0ef4: Add Base UI-style composable Popover parts while preserving the legacy `Popover.Content` API.
+- 49317c6: Render `Radio.Group` cards as one card with dividers (rows when vertical, a two-column grid when horizontal), give card radio controls a 1px ring, and tighten card groups' legend and description gaps to match `Field`.
+- 1cb4773: Allow translating optional markers and label tooltip accessible names with KumoLocaleProvider, with Label-level overrides for custom content.
+- 85afbd0: Add `Slider` component for picking a number, or a range between two numbers, by dragging a thumb along a track. Built on Base UI's Slider: pass an array to `value` or `defaultValue` for a range. Shows each thumb's value in a badge below the track and the minimum and maximum at either end, formats them with `format`, and supports `sm` and `base` sizes.
+- 2f9b17f: Allow LayerDialog actions to use a ButtonGroup split button for related alternate submit outcomes.
+
+### Patch Changes
+
+- 09a9dae: Apply dropdown icon spacing and sizing to element icons while preserving their custom classes.
+- f7d6829: Keep Popover arrows visible when content clips or scrolls by using a compatibility-safe opacity transition.
+- 03aa5ae: Remove unused Tabs indicator entrance animation styles.
+- dae9cdd: Keep transient copy feedback visible until the final repeated copy click settles across Kumo copy controls.
+- a8c946a: Match a linkable Badge's focus outline to its pill shape.
+- c3b0294: Replace the internal class merging dependency with `cn`.
+- 86af1a1: Stop `LayerDialog.Body` from clipping the top of its first child. The body now has a little top padding so a leading input's border and focus ring stay visible, and the top scroll fade no longer masks content in Safari before the scroll area is measured.
+- aef723c: Hide outside-month dates by default in multi-month DatePicker views so dates and range highlights are not duplicated between panels. Preserve single-month behavior and explicit showOutsideDays overrides.
+- 6701f40: Fire `Sidebar.Collapsible` `onOpenChangeComplete` when the sidebar or mobile drawer shows or hides an open section. Before, the callback fired only when the section itself toggled.
+- 462516f: Stop logging runtime warnings for deprecated Text heading variants. The variants remain marked as deprecated in the TypeScript API.
+- 543dc8a: Slider: render the current value badge in the high-contrast (black) color instead of the brand blue, with a subtle grey fill when disabled. The filled track is now lighter in dark mode so it stands out from the background.
+- 72b3346: Fix `Flow` nodes with a custom `render` element briefly laying out at the wrong position on mount. Unpositioned nodes are now measured as absolutely positioned elements, so their first reported width matches their final width.
+- 7d91721: Preserve ButtonGroup's outer corners while an overlay control is open.
+- 828866a: Prevent Select separators from causing a horizontal scrollbar.
+
 ## 2.14.0
 
 ### Minor Changes
