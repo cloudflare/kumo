@@ -161,7 +161,7 @@ export function Slider<Value extends SliderValue = SliderValue>({
                   className={cn(
                     // The 8px gap plus the control's 3px padding, so the badge lines up
                     // with the min and max labels below the control.
-                    "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-brand px-1.5 font-medium whitespace-nowrap text-white tabular-nums",
+                    "absolute top-full left-1/2 mt-[11px] -translate-x-1/2 rounded bg-kumo-contrast px-1.5 font-medium whitespace-nowrap text-kumo-inverse tabular-nums",
                     textSize,
                   )}
                 >
