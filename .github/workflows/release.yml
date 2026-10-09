@@ -55,3 +55,60 @@ jobs:
       - name: Publish package preview
         if: ${{ steps.changesets.outputs.pullRequestNumber }}
         run: vp dlx pkg-pr-new publish --pnpm --compact --no-template ./packages/kumo
+
+  # Publishes every main commit to npm under the `beta` dist-tag
+  # (e.g. 2.15.0-beta.3d93312). Lives in this file because npm trusted
+  # publishing is bound to release.yml.
+  beta:
+    permissions:
+      id-token: write
+      contents: read
+
+    if: ${{ github.repository_owner == 'cloudflare' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      # Applies pending changesets, then appends -beta.<sha> to bumped versions.
+      # With no pending changesets (e.g. the Version Packages merge), the
+      # version is unchanged and there is nothing new to publish.
+      - name: Version beta
+        id: version
+        run: |
+          vp run version:beta
+          version=$(node -p "require('./packages/kumo/package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [[ "$version" == *-beta.* ]]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No pending changesets; skipping beta publish of $version"
+          fi
+
+      - name: Build @cloudflare/kumo
+        if: ${{ steps.version.outputs.publish == 'true' }}
+        run: vp run --filter @cloudflare/kumo build
+
+      - name: Publish beta to npm
+        if: ${{ steps.version.outputs.publish == 'true' }}
+        run: vp run release:beta
+        env:
+          NPM_CONFIG_PROVENANCE: true
+          # See the release job: lets changesets shell out to npm.
+          NPM_CONFIG_FORCE: true
+
+      - name: Summary
+        if: ${{ steps.version.outputs.publish == 'true' }}
+        run: |
+          {
+            echo "### Published @cloudflare/kumo@${{ steps.version.outputs.version }}"
+            echo '```sh'
+            echo "pnpm add @cloudflare/kumo@beta"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
