@@ -1,6 +1,6 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toasty, createKumoToastManager, useKumoToastManager } from "./toast";
 
 describe("Toasty", () => {
@@ -118,5 +118,58 @@ describe("Toasty", () => {
       inTreeAdd?.({ title: "in-tree" });
     });
     expect(await screen.findByText("in-tree")).toBeTruthy();
+  });
+
+  it("keeps the manager stable across unrelated renders", () => {
+    const managers: Array<ReturnType<typeof useKumoToastManager>> = [];
+
+    function CaptureManager({ label }: { label: string }) {
+      const manager = useKumoToastManager();
+      managers.push(manager);
+      return <div>{label}</div>;
+    }
+
+    const view = render(
+      <Toasty>
+        <CaptureManager label="first" />
+      </Toasty>,
+    );
+    const firstManager = managers.at(-1)!;
+
+    view.rerender(
+      <Toasty>
+        <CaptureManager label="second" />
+      </Toasty>,
+    );
+    expect(managers.at(-1)).toBe(firstManager);
+  });
+
+  it("keeps the manager stable when an effect adds a toast", async () => {
+    let effectRuns = 0;
+
+    function ErrorToastTrigger() {
+      const [hasError, setHasError] = useState(false);
+      const manager = useKumoToastManager();
+
+      useEffect(() => {
+        effectRuns += 1;
+        if (!hasError) return;
+
+        manager.add({ title: "effect error", variant: "error" });
+      }, [hasError, manager]);
+
+      return <button onClick={() => setHasError(true)}>Trigger error</button>;
+    }
+
+    render(
+      <Toasty>
+        <ErrorToastTrigger />
+      </Toasty>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Trigger error" }));
+
+    expect(await screen.findByText("effect error")).toBeTruthy();
+    expect(effectRuns).toBe(2);
   });
 });
