@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  CircleConnectorStepper,
+  SegmentedBarStepper,
+  PillBreadcrumbStepper,
+  MeterWithMarkersStepper,
+  CardHeaderTabsStepper,
+  KumoTabsStepper,
+} from "../../components/multi-step-form/MultiStepFormOptions";
+---
+
+<BaseLayout title="Multi-step form options">
+  <main class="mx-auto mb-64 max-w-3xl space-y-16 p-6 md:p-12">
+    <header class="grid gap-2">
+      <h1 class="text-2xl font-semibold text-kumo-strong">
+        Multi-step form options
+      </h1>
+      <p class="text-sm text-kumo-subtle">
+        Six horizontal stepper treatments built from Kumo components and
+        tokens. Click Continue and Back to see each state. Press <kbd
+          class="rounded bg-kumo-tint px-1.5 py-0.5 text-xs">D</kbd
+        > to toggle dark mode.
+      </p>
+    </header>
+
+    <section class="grid gap-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        1. Numbered circles with connectors
+      </h2>
+      <CircleConnectorStepper client:load />
+    </section>
+
+    <section class="grid gap-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        2. Segmented progress bar
+      </h2>
+      <SegmentedBarStepper client:load />
+    </section>
+
+    <section class="grid gap-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        3. Pill breadcrumbs
+      </h2>
+      <PillBreadcrumbStepper client:load />
+    </section>
+
+    <section class="grid gap-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        4. Meter with step markers
+      </h2>
+      <MeterWithMarkersStepper client:load />
+    </section>
+
+    <section class="grid gap-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        5. Tabs in the card header
+      </h2>
+      <CardHeaderTabsStepper client:load />
+    </section>
+
+    <section class="grid gap-4">
+      <h2 class="text-xl font-semibold text-kumo-default">
+        6. Kumo Tabs in a LayerCard
+      </h2>
+      <p class="text-sm text-kumo-subtle">
+        Option 5 rebuilt on the real Kumo Tabs component (underline variant).
+        Completed steps stay checked and can be clicked to jump back.
+      </p>
+      <KumoTabsStepper client:load />
+    </section>
+  </main>
+</BaseLayout>
