@@ -104,19 +104,20 @@ Use the solid token on icons, status dots, and progress fills. Banners and badge
 
 ### Text Colors
 
-| Token                   | Purpose                                                        |
-| ----------------------- | -------------------------------------------------------------- |
-| `text-kumo-default`     | Primary body text                                              |
-| `text-kumo-strong`      | Secondary text with slightly less contrast than default        |
-| `text-kumo-subtle`      | Muted text for descriptions, captions, or secondary labels     |
-| `text-kumo-inactive`    | Disabled or inactive text                                      |
-| `text-kumo-placeholder` | Placeholder text in inputs                                     |
-| `text-kumo-inverse`     | Text intended for use on high-contrast or inverted backgrounds |
-| `text-kumo-link`        | Link text                                                      |
-| `text-kumo-info`        | Info-colored text                                              |
-| `text-kumo-success`     | Success-colored text                                           |
-| `text-kumo-warning`     | Warning-colored text                                           |
-| `text-kumo-danger`      | Error/destructive text                                         |
+| Token                       | Purpose                                                        |
+| --------------------------- | -------------------------------------------------------------- |
+| `text-kumo-default`         | Primary body text                                              |
+| `text-kumo-strong`          | Secondary text with slightly less contrast than default        |
+| `text-kumo-subtle`          | Muted text for descriptions, captions, or secondary labels     |
+| `text-kumo-inactive`        | Disabled or inactive text                                      |
+| `text-kumo-placeholder`     | Placeholder text in inputs                                     |
+| `text-kumo-inverse`         | Text intended for use on high-contrast or inverted backgrounds |
+| `text-kumo-button-emphasis` | Foreground text and icons on emphasized Button backgrounds     |
+| `text-kumo-link`            | Link text                                                      |
+| `text-kumo-info`            | Info-colored text                                              |
+| `text-kumo-success`         | Success-colored text                                           |
+| `text-kumo-warning`         | Warning-colored text                                           |
+| `text-kumo-danger`          | Error/destructive text                                         |
 
 ### Borders & Rings
 
