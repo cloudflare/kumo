@@ -28,7 +28,7 @@ export const KUMO_BUTTON_VARIANTS = {
       description: "Extra small button for compact UIs",
     },
     sm: {
-      classes: "h-6.5 gap-1 rounded-md px-2 text-xs",
+      classes: "h-7.5 gap-1 rounded-md px-2 text-base",
       description: "Small button for secondary actions",
     },
     base: {
@@ -42,7 +42,7 @@ export const KUMO_BUTTON_VARIANTS = {
   },
   compactSize: {
     xs: { classes: "size-3.5" },
-    sm: { classes: "size-6.5" },
+    sm: { classes: "size-7.5" },
     base: { classes: "size-9" },
     lg: { classes: "size-10" },
   },

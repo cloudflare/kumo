@@ -19,6 +19,15 @@ const extraTabs = [
 ];
 
 describe("Tabs", () => {
+  it("uses the standardized small control size", () => {
+    render(<Tabs size="sm" selectedValue="overview" tabs={baseTabs} />);
+
+    expect(screen.getByRole("tablist").className).toContain("h-7.5");
+    expect(screen.getByRole("tab", { name: "Overview" }).className).toContain(
+      "text-base",
+    );
+  });
+
   it("forwards nativeButton=false for link-rendered tabs", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
