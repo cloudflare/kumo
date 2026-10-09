@@ -10,7 +10,11 @@ import {
   BubbleMapCloudflareLocationsDemo,
 } from "~/components/demos/Chart/BubbleMapDemo";
 import { ChoroplethMapBasicDemo } from "~/components/demos/Chart/ChoroplethMapDemo";
-import { GlobeMapAvailabilityZonesDemo } from "~/components/demos/Chart/GlobeMapDemo";
+import {
+  GlobeMapAvailabilityZonesDemo,
+  GlobeMapBubbleDemo,
+  GlobeMapChoroplethDemo,
+} from "~/components/demos/Chart/GlobeMapDemo";
 import type { MapGeoJson } from "@cloudflare/kumo";
 
 const WORLD_GEO_JSON_URL =
@@ -178,13 +182,12 @@ export default function Example() {
       </div>
 
       <div>
-        <Heading level={3}>Cloudflare Availability Locations</Heading>
+        <Heading level={3}>Globe Map</Heading>
         <p class="mb-4 text-kumo-subtle">
           Plot geographic markers without WebGL. Hatched neutral land, a transparent ocean, horizon-faded markers, and dense geographic guides echo the globe styling on Cloudflare’s marketing homepage while keeping the blue locations prominent. These illustrative locations use major network metros and IATA identifiers; drag the globe or focus it and use the arrow keys to reveal points on the hidden hemisphere.
         </p>
         <ComponentExample code={`<GlobeMap
   markers={cloudflareAvailabilityLocations}
-  landColor="var(--text-color-kumo-inactive)"
   landHatchSpacing={8}
   oceanColor="transparent"
   showGraticule
@@ -193,6 +196,61 @@ export default function Example() {
   autoRotate
 />`}>
           <GlobeMapAvailabilityZonesDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Globe Bubbles</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Give markers a <code class="text-kumo-default">value</code> to size them like <code class="text-kumo-default">BubbleMap</code>: bubble area is proportional to value between <code class="text-kumo-default">minRadius</code> and <code class="text-kumo-default">maxRadius</code>, larger bubbles are drawn first, and the tooltip shows the value formatted with <code class="text-kumo-default">valueFormat</code>. Hovering the globe with a mouse pauses auto-rotation.
+        </p>
+        <ComponentExample code={`const trafficLocations = [
+  { name: "LHR", description: "London", latitude: 51.51, longitude: -0.13, value: 31880 },
+  { name: "SIN", description: "Singapore", latitude: 1.35, longitude: 103.82, value: 24950 },
+  // ...more locations
+];
+
+<GlobeMap
+  markers={trafficLocations}
+  landHatchSpacing={8}
+  oceanColor="transparent"
+  showGraticule
+  minRadius={5}
+  maxRadius={22}
+  markerOpacity={0.8}
+  valueFormat={(value) =>
+    new Intl.NumberFormat("en", { notation: "compact" }).format(value)
+  }
+  autoRotate
+/>`}>
+          <GlobeMapBubbleDemo client:visible />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Globe Choropleth</Heading>
+        <p class="mb-4 text-kumo-subtle">
+          Pass <code class="text-kumo-default">regionGeoJson</code> and <code class="text-kumo-default">regions</code> to shade countries like <code class="text-kumo-default">ChoroplethMap</code>. Rows join to features by <code class="text-kumo-default">regionNameProperty</code> (default <code class="text-kumo-default">"name"</code>); matched regions are hatched along <code class="text-kumo-default">regionColorRange</code>, brighter for higher values in dark mode. Standard RFC 7946 GeoJSON works as-is, and regions on the far side of the globe are skipped each frame.
+        </p>
+        <ComponentExample code={`const countryTraffic = [
+  { name: "India", value: 20080 },
+  { name: "China", value: 18350 },
+  { name: "Japan", value: 16420 },
+  // ...more countries
+];
+
+<GlobeMap
+  regionGeoJson={geoJson}
+  regions={countryTraffic}
+  landHatchSpacing={6}
+  oceanColor="transparent"
+  defaultRotation={[-85, -15, 0]}
+  valueFormat={(value) =>
+    new Intl.NumberFormat("en", { notation: "compact" }).format(value)
+  }
+  autoRotate
+/>`}>
+          <GlobeMapChoroplethDemo geoJson={geoJson} client:visible />
         </ComponentExample>
       </div>
 

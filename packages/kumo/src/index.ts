@@ -277,6 +277,7 @@ export {
   type ChoroplethMapProps,
   type GlobeMapProps,
   type GlobeMapMarker,
+  type GlobeMapRegion,
 } from "./components/chart";
 export {
   Autocomplete,

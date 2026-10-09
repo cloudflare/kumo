@@ -22,6 +22,7 @@ export function useIsDarkMode() {
     const root = document.documentElement;
 
     const update = () => setIsDark(getIsDark());
+    update();
 
     // Watch html class changes
     const mo = new MutationObserver(update);

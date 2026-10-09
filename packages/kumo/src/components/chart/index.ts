@@ -31,6 +31,11 @@ export {
   type BubbleMapProps,
   type ChoroplethMapProps,
 } from "./Maps";
-export { GlobeMap, type GlobeMapProps, type GlobeMapMarker } from "./GlobeMap";
+export {
+  GlobeMap,
+  type GlobeMapProps,
+  type GlobeMapMarker,
+  type GlobeMapRegion,
+} from "./GlobeMap";
 // Re-export color utilities for consumers who need to match chart colors outside of a chart instance
 export { ChartPalette } from "./Color";

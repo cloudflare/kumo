@@ -5,6 +5,17 @@ import {
   BubbleMapManyPointsDemo,
 } from "../../components/demos/Chart/BubbleMapDemo";
 import { ChoroplethMapBasicDemo } from "../../components/demos/Chart/ChoroplethMapDemo";
+import {
+  GlobeMapAvailabilityZonesDemo,
+  GlobeMapBubbleDemo,
+  GlobeMapChoroplethDemo,
+  GlobeMapClickableBubblesDemo,
+  GlobeMapControlledBubblesDemo,
+  GlobeMapControlledChoroplethDemo,
+  GlobeMapFlatToggleDemo,
+  GlobeMapManyBubblesDemo,
+  GlobeMapStressDemo,
+} from "../../components/demos/Chart/GlobeMapDemo";
 import type { MapGeoJson } from "@cloudflare/kumo";
 
 const WORLD_GEO_JSON_URL =
@@ -32,8 +43,8 @@ try {
     <div>
       <h1 class="text-2xl font-bold text-kumo-strong">Geo Map Demo Components</h1>
       <p class="mt-2 text-kumo-subtle">
-        Test page for validating BubbleMap rendering, point scaling, tooltips,
-        and hover styles across light and dark modes.
+        Test page for validating BubbleMap, ChoroplethMap and GlobeMap rendering,
+        point scaling, tooltips, and hover styles across light and dark modes.
       </p>
     </div>
 
@@ -49,9 +60,112 @@ try {
       </div>
     </section>
 
-    <section >
+    <section>
       <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
         <ChoroplethMapBasicDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">GlobeMap: markers</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Fixed-size markers. Hover the globe with a mouse to pause rotation; tab
+        to it to see the focus ring and use the arrow keys.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapAvailabilityZonesDemo client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">GlobeMap: bubbles by value</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Marker <code>value</code> drives area-proportional bubble size between
+        <code>minRadius</code> and <code>maxRadius</code>; the tooltip shows the
+        formatted value.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapBubbleDemo client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">Flat map ↔ globe</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        The same locations as a flat <code>BubbleMap</code> and a
+        <code>GlobeMap</code>. Use the buttons in the corner to crossfade
+        between views; the globe only spins while visible.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapFlatToggleDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">Controlled: top 5 locations</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Hover (or tab to) a location in the list: the globe rotates to it,
+        highlights it and opens its tooltip (<code>activeMarker</code>); the
+        flat map highlights the same bubble (<code>activeIndex</code>). Leaving
+        the list clears it.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapControlledBubblesDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">Controlled: top 5 countries</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Same for regions: <code>activeRegion</code> on the globe and on the flat
+        <code>ChoroplethMap</code>.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapControlledChoroplethDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">GlobeMap: choropleth</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Countries from <code>regionGeoJson</code> joined to <code>regions</code>
+        by name, hatched brighter by value. Hover a country for its value;
+        countries without data stay neutral.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapChoroplethDemo geoJson={geoJson} client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">GlobeMap: clickable bubbles</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        <code>onMarkerClick</code> makes bubbles keyboard-focusable buttons.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapClickableBubblesDemo client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">GlobeMap: 300 bubbles</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Stress test for overlap (largest drawn first) and rotation performance.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapManyBubblesDemo client:visible />
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-lg font-semibold text-kumo-strong">GlobeMap: stress test</h2>
+      <p class="mb-4 text-sm text-kumo-subtle">
+        Every country as a region plus up to 1000 bubbles while rotating.
+        <em>Cycle focus</em> flies to a new top-10 item every 1.5s. The meter
+        shows frames per second and the slowest frame in the last 0.5s.
+      </p>
+      <div class="p-4 rounded-lg border border-kumo-hairline bg-kumo-base">
+        <GlobeMapStressDemo geoJson={geoJson} client:visible />
       </div>
     </section>
   </div>

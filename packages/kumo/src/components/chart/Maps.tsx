@@ -1,5 +1,10 @@
 import type * as echarts from "echarts/core";
-import type { ForwardedRef, ReactElement, RefAttributes } from "react";
+import type {
+  ForwardedRef,
+  ReactElement,
+  RefAttributes,
+  RefObject,
+} from "react";
 import {
   forwardRef,
   useCallback,
@@ -12,6 +17,7 @@ import { geoMercator } from "d3-geo";
 import { Chart, type ChartEvents, type KumoChartOption } from "./EChart";
 import { ChartPalette } from "./Color";
 import { defaultValueFormat, escapeHtml } from "./tooltip-utils";
+import { DEFAULT_ACTIVE_DELAY, useSettledValue } from "./use-settled-value";
 
 export interface MapGeoJson {
   type: "FeatureCollection";
@@ -263,6 +269,19 @@ export interface BubbleMapProps<T> {
   onBubbleHover?: (row: T | undefined) => void;
   /** Called when a bubble is clicked. */
   onBubbleClick?: (row: T) => void;
+  /**
+   * Index into `data` of a bubble to focus from outside the map, for example
+   * from a list: it is highlighted and its tooltip is shown, exactly as on
+   * hover. Controlled; pass `null` (or omit) to clear.
+   */
+  activeIndex?: number | null;
+  /**
+   * Milliseconds `activeIndex` must stay unchanged before the map reacts, so
+   * sweeping the pointer over a list doesn't flash every bubble passed. Once
+   * an item is active, moving to another waits at most 100ms. `0` reacts
+   * immediately. Clearing (`null`) applies immediately. Default: `300`.
+   */
+  activeDelay?: number;
 
   /**
    * Container aspect ratio as `width / height` (e.g. `1.7` or `"16 / 9"`). The
@@ -335,6 +354,8 @@ function BubbleMapRoot<T>(
     tooltipFormatter,
     onBubbleHover,
     onBubbleClick,
+    activeIndex: activeIndexProp,
+    activeDelay = DEFAULT_ACTIVE_DELAY,
     aspectRatio,
     height,
     className,
@@ -400,8 +421,10 @@ function BubbleMapRoot<T>(
   const hoverRef = useRef(onBubbleHover);
   hoverRef.current = onBubbleHover;
 
+  const instanceRef = useRef<echarts.ECharts | null>(null);
   const mergedRef = useCallback(
     (instance: echarts.ECharts | null) => {
+      instanceRef.current = instance;
       if (typeof ref === "function") {
         ref(instance);
       } else if (ref) {
@@ -411,19 +434,18 @@ function BubbleMapRoot<T>(
     [ref],
   );
 
-  const options = useMemo<KumoChartOption>(() => {
-    const values = data.map((row) => resolve(row, value));
-    const vmax = values.length ? Math.max(...values) : 1;
-
-    const radiusFor = (v: number) => {
-      if (bubbleSize) return bubbleSize(v);
-      if (vmax <= 0) return minRadius;
-      const t = Math.sqrt(Math.max(0, v) / vmax);
-      return minRadius + t * (maxRadius - minRadius);
-    };
-
-    const points: BubblePoint<T>[] = data.map((row) => {
-      const v = resolve(row, value);
+  // Stable while unchanged, so inline accessors don't re-run `setOption`.
+  const values = data.map((row) => resolve(row, value));
+  const vmax = values.length ? Math.max(...values) : 1;
+  const radiusFor = (v: number) => {
+    if (bubbleSize) return bubbleSize(v);
+    if (vmax <= 0) return minRadius;
+    const t = Math.sqrt(Math.max(0, v) / vmax);
+    return minRadius + t * (maxRadius - minRadius);
+  };
+  const points = useStableArray<BubblePoint<T>>(
+    data.map((row, index) => {
+      const v = values[index];
       return {
         name: name ? resolve(row, name) : undefined,
         value: [resolve(row, lng), resolve(row, lat), v],
@@ -435,8 +457,32 @@ function BubbleMapRoot<T>(
         },
         datum: row,
       };
-    });
+    }),
+    bubblePointsEqual,
+  );
 
+  const { formatTooltip, clearTooltip } = useLiveChartTooltip(
+    instanceRef,
+    (params: unknown) => {
+      const p = params as {
+        name?: string;
+        value?: number[];
+        data?: { datum?: T };
+      };
+      const row = p.data?.datum;
+      if (tooltipFormatter && row !== undefined) return tooltipFormatter(row);
+      const v = p.value?.[2];
+      const nameStr = p.name ? `<strong>${escapeHtml(p.name)}</strong>` : "";
+      const valueStr =
+        v !== undefined
+          ? `<span style="color:var(--text-color-kumo-subtle)">${escapeHtml(valueFormat(v))}</span>`
+          : "";
+      return `<div style="display:flex;flex-direction:column;gap:2px;">${nameStr}${valueStr}</div>`;
+    },
+    showTooltip,
+  );
+
+  const options = useMemo<KumoChartOption>(() => {
     return {
       backgroundColor: "transparent",
       animation: true,
@@ -456,28 +502,7 @@ function BubbleMapRoot<T>(
               fontSize: 13,
             },
             extraCssText: "border-radius: 0.5rem;",
-            dangerousHtmlFormatter: (params: unknown) => {
-              const p = params as {
-                name?: string;
-                value?: number[];
-                data?: { datum?: T };
-              };
-              const row = p.data?.datum;
-              if (tooltipFormatter && row !== undefined) {
-                return tooltipFormatter(row);
-              }
-              const v = p.value?.[2];
-              // Two-line layout: name on top, value muted below (use
-              // `valueFormat` to add a unit, e.g. "1.2k requests").
-              const nameStr = p.name
-                ? `<strong>${escapeHtml(p.name)}</strong>`
-                : "";
-              const valueStr =
-                v !== undefined
-                  ? `<span style="color:var(--text-color-kumo-subtle)">${escapeHtml(valueFormat(v))}</span>`
-                  : "";
-              return `<div style="display:flex;flex-direction:column;gap:2px;">${nameStr}${valueStr}</div>`;
-            },
+            dangerousHtmlFormatter: formatTooltip,
           }
         : undefined,
       series: [
@@ -492,25 +517,7 @@ function BubbleMapRoot<T>(
         },
       ],
     };
-  }, [
-    palette,
-    geo,
-    shouldIncludeGeo,
-    data,
-    lng,
-    lat,
-    value,
-    name,
-    minRadius,
-    maxRadius,
-    bubbleSize,
-    bubbleColor,
-    bubbleBorderColor,
-    bubbleBorderWidth,
-    showTooltip,
-    tooltipFormatter,
-    valueFormat,
-  ]);
+  }, [geo, shouldIncludeGeo, points, showTooltip, formatTooltip]);
 
   const handleMouseOver = useCallback(
     (params: Parameters<ChartEvents["mouseover"]>[0]) => {
@@ -521,8 +528,9 @@ function BubbleMapRoot<T>(
   );
 
   const handleMouseOut = useCallback(() => {
+    clearTooltip();
     hoverRef.current?.(undefined);
-  }, []);
+  }, [clearTooltip]);
 
   const handleClick = useCallback(
     (params: Parameters<ChartEvents["click"]>[0]) => {
@@ -532,21 +540,47 @@ function BubbleMapRoot<T>(
     [onBubbleClick],
   );
 
+  const activeIndex = useSettledValue(activeIndexProp ?? null, activeDelay);
+  const activeBubble =
+    activeIndex != null && activeIndex >= 0 && activeIndex < data.length
+      ? { dataIndex: activeIndex }
+      : null;
+  const reapplyActive = useActiveChartItem(
+    instanceRef,
+    activeBubble,
+    showTooltip,
+    options,
+    isDarkMode,
+    clearTooltip,
+  );
+  const hasActive = activeBubble !== null;
+  // Leaving the chart hides ECharts' tooltip; bring the active one back.
+  const handleGlobalOut = useCallback(() => {
+    clearTooltip();
+    hoverRef.current?.(undefined);
+    reapplyActive();
+  }, [reapplyActive, clearTooltip]);
+
   const onEvents = useMemo<Partial<ChartEvents>>(
     () => ({
       ...(onBubbleHover
         ? {
             mouseover: handleMouseOver,
-            mouseout: handleMouseOut,
-            globalout: handleMouseOut,
           }
+        : {}),
+      ...(onBubbleHover || showTooltip ? { mouseout: handleMouseOut } : {}),
+      ...(onBubbleHover || hasActive || showTooltip
+        ? { globalout: handleGlobalOut }
         : {}),
       ...(onBubbleClick ? { click: handleClick } : {}),
     }),
     [
       onBubbleHover,
+      showTooltip,
       handleMouseOver,
       handleMouseOut,
+      handleGlobalOut,
+      hasActive,
       handleClick,
       onBubbleClick,
     ],
@@ -638,6 +672,19 @@ export interface ChoroplethMapProps<T> {
   onRegionHover?: (row: T | undefined) => void;
   /** Called when a region with data is clicked. */
   onRegionClick?: (row: T) => void;
+  /**
+   * Region key (the `name` of a data row) to focus from outside the map, for
+   * example from a list: it is highlighted and its tooltip is shown, exactly
+   * as on hover. Controlled; pass `null` (or omit) to clear.
+   */
+  activeRegion?: string | null;
+  /**
+   * Milliseconds `activeRegion` must stay unchanged before the map reacts, so
+   * sweeping the pointer over a list doesn't flash every region passed. Once
+   * an item is active, moving to another waits at most 100ms. `0` reacts
+   * immediately. Clearing (`null`) applies immediately. Default: `300`.
+   */
+  activeDelay?: number;
 
   /** Map center as `[longitude, latitude]`. Defaults to auto-fit. */
   center?: [number, number];
@@ -718,6 +765,8 @@ function ChoroplethMapRoot<T>(
     tooltipFormatter,
     onRegionHover,
     onRegionClick,
+    activeRegion: activeRegionProp,
+    activeDelay = DEFAULT_ACTIVE_DELAY,
     center,
     zoom = 1.25,
     roam = false,
@@ -797,8 +846,10 @@ function ChoroplethMapRoot<T>(
   const hoverRef = useRef(onRegionHover);
   hoverRef.current = onRegionHover;
 
+  const instanceRef = useRef<echarts.ECharts | null>(null);
   const mergedRef = useCallback(
     (instance: echarts.ECharts | null) => {
+      instanceRef.current = instance;
       if (typeof ref === "function") {
         ref(instance);
       } else if (ref) {
@@ -808,15 +859,48 @@ function ChoroplethMapRoot<T>(
     [ref],
   );
 
-  const options = useMemo<KumoChartOption>(() => {
-    const colors = colorRange ?? palette.scale;
-    const noData = noDataColor ?? palette.area;
-
-    const regions: ChoroplethRegion<T>[] = data.map((row) => ({
+  // Stable while unchanged, so inline accessors don't re-run `setOption`.
+  const regions = useStableArray<ChoroplethRegion<T>>(
+    data.map((row) => ({
       name: resolve(row, name),
       value: resolve(row, value),
       datum: row,
-    }));
+    })),
+    choroplethRegionsEqual,
+  );
+
+  const { formatTooltip, clearTooltip } = useLiveChartTooltip(
+    instanceRef,
+    (params: unknown) => {
+      const p = params as {
+        name?: string;
+        value?: number;
+        data?: { datum?: T };
+      };
+      const row = p.data?.datum;
+      // Regions without a matching data row have no tooltip.
+      if (row === undefined) return "";
+      if (tooltipFormatter) return tooltipFormatter(row);
+      const v =
+        typeof p.value === "number" && !Number.isNaN(p.value)
+          ? p.value
+          : undefined;
+      const nameStr = p.name ? `<strong>${escapeHtml(p.name)}</strong>` : "";
+      const valueStr =
+        v !== undefined
+          ? `<span style="color:var(--text-color-kumo-subtle)">${escapeHtml(valueFormat(v))}</span>`
+          : "";
+      return `<div style="display:flex;flex-direction:column;gap:2px;">${nameStr}${valueStr}</div>`;
+    },
+    showTooltip,
+  );
+  // An inline `colorRange={[…]}` is a new array every render.
+  const stableColorRange = useStableArray(colorRange ?? NO_COLORS, Object.is);
+  const colorRangeKey = colorRange ? stableColorRange : undefined;
+
+  const options = useMemo<KumoChartOption>(() => {
+    const colors = colorRangeKey ?? palette.scale;
+    const noData = noDataColor ?? palette.area;
 
     const values = regions.map((r) => r.value);
     const vmin = values.length ? Math.min(...values) : 0;
@@ -861,29 +945,7 @@ function ChoroplethMapRoot<T>(
               fontSize: 13,
             },
             extraCssText: "border-radius: 0.5rem;",
-            dangerousHtmlFormatter: (params: unknown) => {
-              const p = params as {
-                name?: string;
-                value?: number;
-                data?: { datum?: T };
-              };
-              const row = p.data?.datum;
-              // Suppress the tooltip for regions with no matching data row.
-              if (row === undefined) return "";
-              if (tooltipFormatter) return tooltipFormatter(row);
-              const v =
-                typeof p.value === "number" && !Number.isNaN(p.value)
-                  ? p.value
-                  : undefined;
-              const nameStr = p.name
-                ? `<strong>${escapeHtml(p.name)}</strong>`
-                : "";
-              const valueStr =
-                v !== undefined
-                  ? `<span style="color:var(--text-color-kumo-subtle)">${escapeHtml(valueFormat(v))}</span>`
-                  : "";
-              return `<div style="display:flex;flex-direction:column;gap:2px;">${nameStr}${valueStr}</div>`;
-            },
+            dangerousHtmlFormatter: formatTooltip,
           }
         : undefined,
       series: [
@@ -919,22 +981,20 @@ function ChoroplethMapRoot<T>(
   }, [
     isDarkMode,
     palette,
+    // Re-apply when the geometry changes under an explicit `mapName`.
     geoJson,
     mapName,
     view,
     shouldIncludeView,
-    data,
-    name,
-    value,
+    regions,
     nameProperty,
-    colorRange,
+    colorRangeKey,
     min,
     max,
     noDataColor,
     showLegend,
     showTooltip,
-    tooltipFormatter,
-    valueFormat,
+    formatTooltip,
   ]);
 
   const handleMouseOver = useCallback(
@@ -946,8 +1006,9 @@ function ChoroplethMapRoot<T>(
   );
 
   const handleMouseOut = useCallback(() => {
+    clearTooltip();
     hoverRef.current?.(undefined);
-  }, []);
+  }, [clearTooltip]);
 
   const handleClick = useCallback(
     (params: Parameters<ChartEvents["click"]>[0]) => {
@@ -957,21 +1018,62 @@ function ChoroplethMapRoot<T>(
     [onRegionClick],
   );
 
+  const regionNames = useMemo(
+    () =>
+      new Set(
+        geoJson.features.flatMap((feature) => {
+          const key = feature.properties?.[nameProperty];
+          return typeof key === "string" || typeof key === "number"
+            ? [String(key)]
+            : [];
+        }),
+      ),
+    [geoJson, nameProperty],
+  );
+  const validActiveRegion =
+    activeRegionProp != null &&
+    regionNames.has(activeRegionProp) &&
+    regions.some((region) => region.name === activeRegionProp)
+      ? activeRegionProp
+      : null;
+  const activeRegion = useSettledValue(validActiveRegion, activeDelay);
+  const activeRegionItem = activeRegion != null ? { name: activeRegion } : null;
+  const reapplyActive = useActiveChartItem(
+    instanceRef,
+    activeRegionItem,
+    showTooltip,
+    options,
+    isDarkMode,
+    clearTooltip,
+  );
+  const hasActive = activeRegionItem !== null;
+  // Leaving the chart hides ECharts' tooltip; bring the active one back.
+  const handleGlobalOut = useCallback(() => {
+    clearTooltip();
+    hoverRef.current?.(undefined);
+    reapplyActive();
+  }, [reapplyActive, clearTooltip]);
+
   const onEvents = useMemo<Partial<ChartEvents>>(
     () => ({
       ...(onRegionHover
         ? {
             mouseover: handleMouseOver,
-            mouseout: handleMouseOut,
-            globalout: handleMouseOut,
           }
+        : {}),
+      ...(onRegionHover || showTooltip ? { mouseout: handleMouseOut } : {}),
+      ...(onRegionHover || hasActive || showTooltip
+        ? { globalout: handleGlobalOut }
         : {}),
       ...(onRegionClick ? { click: handleClick } : {}),
     }),
     [
       onRegionHover,
+      showTooltip,
       handleMouseOver,
       handleMouseOut,
+      handleGlobalOut,
+      hasActive,
       handleClick,
       onRegionClick,
     ],
@@ -996,6 +1098,159 @@ export const ChoroplethMap = forwardRef(ChoroplethMapRoot) as (<T>(
 ) => ReactElement | null) & { displayName?: string };
 
 ChoroplethMap.displayName = "ChoroplethMap";
+
+const NO_COLORS: string[] = [];
+
+/** Keeps the previous array while every item is equal. */
+function useStableArray<T>(next: T[], isEqual: (a: T, b: T) => boolean): T[] {
+  const ref = useRef(next);
+  const previous = ref.current;
+  if (
+    previous !== next &&
+    (previous.length !== next.length ||
+      next.some((item, index) => !isEqual(item, previous[index])))
+  ) {
+    ref.current = next;
+  }
+  return ref.current;
+}
+
+function bubblePointsEqual<T>(a: BubblePoint<T>, b: BubblePoint<T>): boolean {
+  return (
+    a.datum === b.datum &&
+    a.name === b.name &&
+    a.symbolSize === b.symbolSize &&
+    a.value[0] === b.value[0] &&
+    a.value[1] === b.value[1] &&
+    a.value[2] === b.value[2] &&
+    a.itemStyle.color === b.itemStyle.color &&
+    a.itemStyle.borderColor === b.itemStyle.borderColor &&
+    a.itemStyle.borderWidth === b.itemStyle.borderWidth
+  );
+}
+
+function choroplethRegionsEqual<T>(
+  a: ChoroplethRegion<T>,
+  b: ChoroplethRegion<T>,
+): boolean {
+  return a.datum === b.datum && a.name === b.name && a.value === b.value;
+}
+
+/**
+ * Stable ECharts formatter that refreshes an open tooltip when its HTML
+ * changes. Cleared on dismiss so formatter changes don't reopen it.
+ */
+function useLiveChartTooltip(
+  instanceRef: RefObject<echarts.ECharts | null>,
+  renderTooltip: (params: unknown) => string,
+  enabled: boolean,
+) {
+  const renderRef = useRef(renderTooltip);
+  useLayoutEffect(() => {
+    renderRef.current = renderTooltip;
+  });
+  const visibleRef = useRef<{ params: unknown; html: string } | null>(null);
+  const clearTooltip = useCallback(() => {
+    visibleRef.current = null;
+  }, []);
+  const formatTooltip = useCallback((params: unknown) => {
+    const html = renderRef.current(params);
+    visibleRef.current = html ? { params, html } : null;
+    return html;
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) {
+      clearTooltip();
+      return;
+    }
+    const visible = visibleRef.current;
+    if (!visible) return;
+    const html = renderTooltip(visible.params);
+    if (html === visible.html) return;
+    const { seriesIndex, dataIndex } = visible.params as {
+      seriesIndex?: number;
+      dataIndex?: number;
+    };
+    if (seriesIndex === undefined || dataIndex === undefined) return;
+    visibleRef.current = html ? { params: visible.params, html } : null;
+    const chart = instanceRef.current;
+    if (!html) {
+      chart?.dispatchAction({ type: "hideTip" });
+    } else {
+      chart?.dispatchAction({ type: "showTip", seriesIndex, dataIndex });
+    }
+  });
+
+  return { formatTooltip, clearTooltip };
+}
+
+/**
+ * Highlights an item of series 0 and shows its tooltip, as on hover. Returns a
+ * function to re-apply it after the pointer leaves the chart.
+ */
+function useActiveChartItem(
+  instanceRef: RefObject<echarts.ECharts | null>,
+  active: { dataIndex: number } | { name: string } | null,
+  showTooltip: boolean,
+  options: KumoChartOption,
+  isDarkMode: boolean | undefined,
+  clearTooltip: () => void,
+): () => void {
+  const activeDataIndex =
+    active && "dataIndex" in active ? active.dataIndex : null;
+  const activeName = active && "name" in active ? active.name : null;
+  const hadActiveRef = useRef(false);
+  const applyRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    const apply = () => {
+      const chart = instanceRef.current;
+      if (!chart) return;
+      const query =
+        activeDataIndex !== null
+          ? { dataIndex: activeDataIndex }
+          : activeName !== null
+            ? { name: activeName }
+            : null;
+      if (!query) {
+        // Only clear what we set.
+        if (!hadActiveRef.current) return;
+        hadActiveRef.current = false;
+        clearTooltip();
+        chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
+        chart.dispatchAction({ type: "hideTip" });
+        return;
+      }
+      hadActiveRef.current = true;
+      chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
+      chart.dispatchAction({ type: "highlight", seriesIndex: 0, ...query });
+      if (showTooltip) {
+        chart.dispatchAction({ type: "showTip", seriesIndex: 0, ...query });
+      }
+    };
+    applyRef.current = apply;
+    // `setOption` uses `lazyUpdate`; wait for layout before `showTip`.
+    let second: number | null = null;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(apply);
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      if (second !== null) cancelAnimationFrame(second);
+    };
+  }, [
+    instanceRef,
+    activeDataIndex,
+    activeName,
+    showTooltip,
+    options,
+    isDarkMode,
+    clearTooltip,
+  ]);
+
+  return useCallback(() => applyRef.current(), []);
+}
 
 /** Register the GeoJSON with ECharts before the child Chart's setOption runs. */
 function useRegisterMap(
