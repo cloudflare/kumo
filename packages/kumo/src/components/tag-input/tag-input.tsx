@@ -153,6 +153,9 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
+      // Enter/Tab/comma while an IME is composing confirm the conversion, not the tag.
+      // keyCode 229 covers Safari, which fires compositionend before keydown.
+      if (event.nativeEvent.isComposing || event.keyCode === 229) return;
       if (!inputValue && event.key === "Backspace") {
         setValues(values.slice(0, -1));
         return;
