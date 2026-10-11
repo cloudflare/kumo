@@ -171,7 +171,10 @@ export function BannerWithActionDemo() {
   );
 }
 
-/** Banner with multiple action buttons. */
+/**
+ * Banner with multiple action buttons. The leading CTA keeps the default quiet
+ * accent chip; supporting actions step down to `variant="ghost"`.
+ */
 export function BannerWithActionsDemo() {
   return (
     <div className="w-full space-y-3">
@@ -183,7 +186,30 @@ export function BannerWithActionsDemo() {
         action={
           <>
             <Banner.Action>Pay now</Banner.Action>
-            <Banner.Action variant="secondary">Go to billing</Banner.Action>
+            <Banner.Action variant="ghost">Go to billing</Banner.Action>
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+/**
+ * Escalate to `variant="primary"` only when the banner's CTA is the single most
+ * important action on the page — a filled accent button competes with page-level CTAs.
+ */
+export function BannerActionEmphasisDemo() {
+  return (
+    <div className="space-y-3 w-full">
+      <Banner
+        icon={<Warning weight="fill" />}
+        variant="error"
+        title="Your account is 90 days past due."
+        description="Pay now to avoid interruption."
+        action={
+          <>
+            <Banner.Action variant="primary">Pay now</Banner.Action>
+            <Banner.Action variant="ghost">Go to billing</Banner.Action>
           </>
         }
       />

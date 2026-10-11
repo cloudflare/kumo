@@ -15,8 +15,9 @@ import type { KumoBannerVariant } from "./banner";
 
 /**
  * Visual variant for a `Banner.Action`, aligned with `Button`'s `variant` naming.
- * - `"primary"` — filled accent gradient for the main action.
- * - `"secondary"` — transparent with an accent-hued outline (same hue as the banner).
+ * - `"secondary"` — accent-tinted fill with an accent hairline (default).
+ * - `"primary"` — filled accent gradient; reserve for banners whose CTA is the
+ *   single most important action on the page, as it competes with page-level CTAs.
  * - `"ghost"` — text-only accent action with a faint accent-tinted hover.
  */
 export type BannerActionVariant = Extract<
@@ -55,7 +56,22 @@ export const BannerActionContext = createContext<BannerActionContextValue>({
   size: "sm",
 });
 
-/** Per-banner-variant colors passed to the underlying `Button`. */
+/**
+ * Per-banner-variant colors passed to the underlying `Button`.
+ *
+ * `secondary` is the default CTA treatment: an accent-tinted fill over the banner's
+ * already-tinted surface plus an accent hairline, so the action reads as a button
+ * without shouting over the message. Hover deepens both the fill and the hairline.
+ *
+ * The label uses the explicit `text-kumo-*` token rather than `text-inherit`. For the
+ * accent banners this matches what they already set on the container, but the neutral
+ * `secondary` banner dims its body text to `text-kumo-default/70`, and inheriting that
+ * made the chip read muddy against the tinted fill.
+ *
+ * Hover colors are prefixed with `not-disabled:` so they match the modifier set on
+ * `Button`'s own `not-disabled:hover:*` outline defaults — that lets tailwind-merge
+ * dedupe them and keeps hover inert on a disabled or loading action.
+ */
 const BANNER_ACTION_ACCENTS: Record<
   KumoBannerVariant,
   { accent: string; secondary: string; ghost: string }
@@ -63,26 +79,30 @@ const BANNER_ACTION_ACCENTS: Record<
   default: {
     accent: "var(--color-kumo-info)",
     secondary:
-      "text-inherit ring-kumo-info/50 fill-kumo-info hover:!text-inherit hover:!ring-kumo-info/50 hover:bg-kumo-info/10",
-    ghost: "text-inherit fill-kumo-info hover:bg-kumo-info/10",
+      "bg-kumo-info/12 text-kumo-info ring-kumo-info/40 fill-kumo-info not-disabled:hover:text-kumo-info not-disabled:hover:ring-kumo-info/60 not-disabled:hover:bg-kumo-info/20",
+    ghost:
+      "text-kumo-info fill-kumo-info not-disabled:hover:bg-kumo-info/12 not-disabled:hover:text-kumo-info",
   },
   alert: {
     accent: "var(--color-kumo-warning)",
     secondary:
-      "text-inherit ring-kumo-warning/50 fill-kumo-warning hover:!text-inherit hover:!ring-kumo-warning/50 hover:bg-kumo-warning/10",
-    ghost: "text-inherit fill-kumo-warning hover:bg-kumo-warning/10",
+      "bg-kumo-warning/12 text-kumo-warning ring-kumo-warning/40 fill-kumo-warning not-disabled:hover:text-kumo-warning not-disabled:hover:ring-kumo-warning/60 not-disabled:hover:bg-kumo-warning/20",
+    ghost:
+      "text-kumo-warning fill-kumo-warning not-disabled:hover:bg-kumo-warning/12 not-disabled:hover:text-kumo-warning",
   },
   error: {
     accent: "var(--color-kumo-danger)",
     secondary:
-      "text-inherit ring-kumo-danger/50 fill-kumo-danger hover:!text-inherit hover:!ring-kumo-danger/50 hover:bg-kumo-danger/10",
-    ghost: "text-inherit fill-kumo-danger hover:bg-kumo-danger/10",
+      "bg-kumo-danger/12 text-kumo-danger ring-kumo-danger/40 fill-kumo-danger not-disabled:hover:text-kumo-danger not-disabled:hover:ring-kumo-danger/60 not-disabled:hover:bg-kumo-danger/20",
+    ghost:
+      "text-kumo-danger fill-kumo-danger not-disabled:hover:bg-kumo-danger/12 not-disabled:hover:text-kumo-danger",
   },
   secondary: {
     accent: "var(--color-neutral-700, oklch(37.1% 0 0))",
     secondary:
-      "text-inherit ring-kumo-focus/20 fill-kumo-subtle hover:!text-inherit hover:!ring-kumo-focus/20 hover:bg-kumo-contrast/10",
-    ghost: "text-inherit fill-kumo-subtle hover:bg-kumo-contrast/10",
+      "bg-kumo-contrast/8 text-kumo-default ring-kumo-focus/30 fill-kumo-subtle not-disabled:hover:text-kumo-strong not-disabled:hover:ring-kumo-focus/45 not-disabled:hover:bg-kumo-contrast/12",
+    ghost:
+      "text-kumo-default fill-kumo-subtle not-disabled:hover:bg-kumo-contrast/10 not-disabled:hover:text-kumo-strong",
   },
 };
 
@@ -100,10 +120,11 @@ type WithBannerActionVariants<Props> = Props extends ButtonProps
   ? Omit<Props, "size" | "variant"> & {
       /**
        * Visual variant of the CTA, aligned with `Button`'s `variant` naming.
-       * - `"primary"` — filled accent gradient for the main action (default).
-       * - `"secondary"` — transparent with an accent-hued outline matching the banner.
+       * - `"secondary"` — accent-tinted fill with an accent hairline (default).
+       * - `"primary"` — filled accent gradient. Reserve for banners whose CTA is the
+       *   single most important action on the page; it competes with page-level CTAs.
        * - `"ghost"` — text-only accent action with a faint accent-tinted hover.
-       * @default "primary"
+       * @default "secondary"
        */
       variant?: BannerActionVariant;
     }
@@ -115,15 +136,20 @@ export type BannerActionProps = WithBannerActionVariants<ButtonProps>;
  * A banner CTA built on Kumo's `Button`. It inherits Button's sizing, interaction,
  * loading, and accessibility behavior while supplying banner-specific accent styles.
  *
+ * Defaults to the quiet `"secondary"` treatment so the CTA stays subordinate to the
+ * banner's message; opt into `variant="primary"` when the action is the page's most
+ * important one.
+ *
  * @example
  * ```tsx
  * <Banner.Action onClick={retry}>Retry</Banner.Action>
+ * <Banner.Action variant="primary" onClick={upgrade}>Upgrade</Banner.Action>
  * <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
  * ```
  */
 export const BannerAction = forwardRef<HTMLButtonElement, BannerActionProps>(
   function BannerAction(
-    { variant = "primary", className, style, ...props },
+    { variant = "secondary", className, style, ...props },
     ref,
   ) {
     const banner = useContext(BannerActionContext);
