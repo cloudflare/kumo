@@ -629,7 +629,7 @@ describe("LayerDialog dismissal", () => {
     const collapsible = description.closest("[class*='grid-rows-']")!;
     const clip = collapsible.firstElementChild as HTMLElement;
     const viewport = popup.querySelector<HTMLElement>(
-      "[role='presentation'][style*='overflow']",
+      "[data-id$='-viewport'][style*='overflow']",
     )!;
 
     // jsdom has no layout, so stub the geometry the scroll handler reads.

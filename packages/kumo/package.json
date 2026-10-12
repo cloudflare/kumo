@@ -474,7 +474,7 @@
     "test:visual-contracts": "vp test run --config=vitest.visual-contracts.config.ts"
   },
   "dependencies": {
-    "@base-ui/react": "^1.8.0",
+    "@base-ui/react": "^1.9.0",
     "@shikijs/langs": "^4.0.0",
     "@shikijs/themes": "^4.0.0",
     "cn": "0.4.0",
