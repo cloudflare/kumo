@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { TagInput } from "./tag-input";
@@ -12,6 +12,50 @@ describe("TagInput", () => {
     });
     fireEvent.keyDown(screen.getByLabelText("Tags"), { key: "Enter" });
     expect(onValueChange).toHaveBeenLastCalledWith(["one", "two"]);
+  });
+
+  it.each([
+    ["Enter", "Enter"],
+    ["comma", ","],
+    ["Tab", "Tab"],
+  ])("commits a tag on a plain %s", (_, key) => {
+    const onValueChange = vi.fn();
+    render(<TagInput aria-label="Tags" onValueChange={onValueChange} />);
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "one" } });
+
+    const event = createEvent.keyDown(input, { key, cancelable: true });
+    fireEvent(input, event);
+
+    expect(onValueChange).toHaveBeenLastCalledWith(["one"]);
+    expect(input.value).toBe("");
+  });
+
+  it.each([
+    ["isComposing", { isComposing: true }],
+    // Safari fires compositionend before keydown, so only keyCode 229 is set.
+    ["keyCode 229", { keyCode: 229 }],
+  ])("ignores commit keys while an IME is composing (%s)", (_, init) => {
+    const onValueChange = vi.fn();
+    render(<TagInput aria-label="Tags" onValueChange={onValueChange} />);
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "にほんご" } });
+
+    for (const key of ["Enter", ",", "Tab"]) {
+      const event = createEvent.keyDown(input, {
+        key,
+        cancelable: true,
+        ...init,
+      });
+      fireEvent(input, event);
+      // preventDefault() would stop the browser from confirming the IME conversion.
+      expect(event.defaultPrevented).toBe(false);
+    }
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(input.value).toBe("にほんご");
+
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onValueChange).toHaveBeenLastCalledWith(["にほんご"]);
   });
 
   it("rejects invalid pasted values", () => {
