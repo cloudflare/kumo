@@ -1,0 +1,19 @@
+packages/kumo/src/components/layer-dialog/layer-dialog.test.tsx
+  s_5a1abf0c8de54c::t_d224d922773f6b 433
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b2caee463084d48594be67bd9c73baa021d1c941",
+  "prompts": {},
+  "sessions": {
+    "s_5a1abf0c8de54c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ecfd9fc73ffe4nkmt1gVFIs7QE",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
