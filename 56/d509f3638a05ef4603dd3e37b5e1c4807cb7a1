@@ -1,0 +1,23 @@
+packages/kumo/package.json
+  s_af6f9d39e09d03::t_b49c9943a29d6b 477
+packages/kumo/src/components/layer-dialog/layer-dialog.test.tsx
+  s_af6f9d39e09d03::t_3a421449b84b02 529
+pnpm-lock.yaml
+  s_af6f9d39e09d03::t_f31dc5a0e31c3f 216-217,762-763,779-780,5266-5267,5819-5823,6556,6559,6564,6570,6576-6577,6632,11221,11313,11820-11823
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "56d509f3638a05ef4603dd3e37b5e1c4807cb7a1",
+  "prompts": {},
+  "sessions": {
+    "s_af6f9d39e09d03": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ecfdd832affezBzl1Bt2zzA0d3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Matt Rothenberg <mrothenberg@cloudflare.com>"
+    }
+  }
+}
