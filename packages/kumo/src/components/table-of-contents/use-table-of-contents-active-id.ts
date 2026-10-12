@@ -175,7 +175,12 @@ export function useTableOfContentsActiveId({
 
     const knownIds = new Set(idsKey.split("\0"));
     const syncFromHash = () => {
-      const id = decodeURIComponent(window.location.hash.slice(1));
+      let id: string;
+      try {
+        id = decodeURIComponent(window.location.hash.slice(1));
+      } catch {
+        return;
+      }
       if (id && knownIds.has(id)) selectSection(id);
     };
 

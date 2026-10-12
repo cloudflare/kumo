@@ -194,6 +194,22 @@ describe("useTableOfContentsActiveId", () => {
     expect(result.current.activeId).toBe("one");
   });
 
+  it("ignores malformed hashes and continues syncing valid hashes", () => {
+    addSections(["one"]);
+    window.location.hash = "#%";
+
+    const { result } = renderHook(() =>
+      useTableOfContentsActiveId({ ids: ["one"] }),
+    );
+    expect(result.current.activeId).toBeNull();
+
+    act(() => {
+      window.location.hash = "#one";
+      window.dispatchEvent(new Event("hashchange"));
+    });
+    expect(result.current.activeId).toBe("one");
+  });
+
   it("ignores hashes that aren't tracked sections", () => {
     addSections(["one"]);
     window.location.hash = "#footnote-3";
