@@ -430,7 +430,7 @@ describe("LayerDialog.Body edge clipping", () => {
     const input = result.getByRole("textbox", { name: "Search" });
     const viewport = result
       .getByRole("dialog")
-      .querySelector<HTMLElement>("[role='presentation'][style*='overflow']")!;
+      .querySelector<HTMLElement>("[data-id$='-viewport'][style*='overflow']")!;
     const content = viewport.firstElementChild as HTMLElement;
 
     return {
