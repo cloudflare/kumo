@@ -161,6 +161,25 @@ export function buttonVariants({
   );
 }
 
+// Icons carry built-in whitespace inside their viewBox, so trim the leading
+// padding of icon + text buttons to optically match the trailing padding.
+const ICON_LEADING_PADDING: Record<KumoButtonSize, string> = {
+  xs: "pl-1",
+  sm: "pl-1.5",
+  base: "pl-2.5",
+  lg: "pl-3.5",
+};
+
+const getIconLeadingPadding = (
+  shape: KumoButtonShape,
+  size: KumoButtonSize,
+  iconNode: React.ReactNode,
+  children: React.ReactNode,
+) => {
+  if (shape !== "base" || !iconNode || children == null) return undefined;
+  return ICON_LEADING_PADDING[size];
+};
+
 // Normalize icon prop to support both React elements and component types
 const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (!IconComponent) return null;
@@ -387,6 +406,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         data-kumo-component="Button"
         className={cn(
           buttonVariants({ variant, size, shape }),
+          getIconLeadingPadding(shape, size, iconNode, children),
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -495,12 +515,14 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       );
     }
 
+    const iconNode = renderIconNode(IconComponent);
     const link = (
       <LinkComponent
         ref={ref}
         data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({ variant, size, shape }),
+          getIconLeadingPadding(shape, size, iconNode, children),
           "flex items-center no-underline! select-text",
           className,
         )}
@@ -510,7 +532,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         {...externalProps}
         {...props}
       >
-        {renderButtonContent(variant, renderIconNode(IconComponent), children)}
+        {renderButtonContent(variant, iconNode, children)}
       </LinkComponent>
     );
 

@@ -105,6 +105,19 @@ describe("Button", () => {
       expect(svgs[0].getAttribute("role")).toBe("status");
     });
 
+    it("trims leading padding when an icon precedes text", () => {
+      render(<Button icon={Plus}>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("pl-2.5");
+    });
+
+    it("keeps symmetric padding without an icon", () => {
+      render(<Button>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("px-3");
+      expect(button.className).not.toContain("pl-2.5");
+    });
+
     it("accepts a React element via icon prop", () => {
       render(<Button icon={<Plus data-testid="plus-icon" />}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
