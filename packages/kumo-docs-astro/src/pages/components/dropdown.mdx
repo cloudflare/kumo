@@ -98,7 +98,10 @@ export default function Example() {
 ### Inset Items
 
 <p>
-  Use `inset` on items without an icon to align their text with items that have one.
+  When any item in a menu has an icon, items without one (including labels)
+  are inset automatically so their text lines up. Use `inset` to force the
+  inset when automatic detection can't see the icon, for example when an item
+  renders its own content through `render`.
 </p>
 <ComponentExample demo="DropdownInsetDemo">
   <DropdownInsetDemo client:load />

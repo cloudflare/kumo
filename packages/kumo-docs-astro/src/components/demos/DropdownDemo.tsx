@@ -154,7 +154,8 @@ export function DropdownNestedDemo() {
 }
 
 /**
- * Use `inset` on items without an icon to align their text with items that have one.
+ * Items without an icon are inset automatically when another item in the same
+ * menu has one, so their text lines up.
  */
 export function DropdownInsetDemo() {
   return (
@@ -164,8 +165,8 @@ export function DropdownInsetDemo() {
         <DropdownMenu.Item icon={PencilSimpleIcon}>Rename</DropdownMenu.Item>
         <DropdownMenu.Item icon={CopyIcon}>Duplicate</DropdownMenu.Item>
         <DropdownMenu.Separator />
-        <DropdownMenu.Item inset>Move to folder</DropdownMenu.Item>
-        <DropdownMenu.Item inset>Add to favorites</DropdownMenu.Item>
+        <DropdownMenu.Item>Move to folder</DropdownMenu.Item>
+        <DropdownMenu.Item>Add to favorites</DropdownMenu.Item>
         <DropdownMenu.Separator />
         <DropdownMenu.Item icon={TrashIcon} variant="danger">
           Delete
