@@ -391,6 +391,30 @@ describe("LayerDialog", () => {
       ),
     ).toThrow("exactly one direct LayerDialog.Action");
   });
+
+  it("keeps the deprecated LayerDialog.Actions.Primary alias working", () => {
+    expect(LayerDialog.Actions.Primary).toBe(LayerDialog.Action);
+
+    const onClick = vi.fn();
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Save changes</LayerDialog.Title>
+          <LayerDialog.Body>
+            Review your changes before saving.
+          </LayerDialog.Body>
+          <LayerDialog.Actions>
+            <LayerDialog.Actions.Primary onClick={onClick}>
+              Save
+            </LayerDialog.Actions.Primary>
+          </LayerDialog.Actions>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    fireEvent.click(getByRole("button", { name: "Save" }));
+    expect(onClick).toHaveBeenCalledOnce();
+  });
 });
 
 describe("LayerDialog.Body edge clipping", () => {

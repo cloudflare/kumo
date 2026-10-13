@@ -531,6 +531,9 @@ export type LayerDialogActionProps = Omit<
   variant?: KumoLayerDialogPrimaryVariant;
 };
 
+/** @deprecated Use `LayerDialogActionProps` instead. */
+export type LayerDialogPrimaryProps = LayerDialogActionProps;
+
 export type KumoLayerDialogPrimaryVariant = "primary" | "destructive";
 
 export interface LayerDialogActionsProps {
@@ -632,6 +635,8 @@ const LayerDialogActions = Object.assign(
     );
   },
   {
+    /** @deprecated Use `LayerDialog.Action` instead. */
+    Primary: LayerDialogAction,
     displayName: "LayerDialog.Actions",
   },
 );
