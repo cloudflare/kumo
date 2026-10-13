@@ -5,6 +5,24 @@ import { Plus } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
 
 describe("Button", () => {
+  it("uses inline-flex layout by default", () => {
+    render(<Button>Save</Button>);
+
+    const button = screen.getByRole("button", { name: "Save" });
+
+    expect(button.classList.contains("inline-flex")).toBe(true);
+    expect(button.classList.contains("flex")).toBe(false);
+  });
+
+  it("allows consumers to opt into flex layout", () => {
+    render(<Button className="flex">Save</Button>);
+
+    const button = screen.getByRole("button", { name: "Save" });
+
+    expect(button.classList.contains("flex")).toBe(true);
+    expect(button.classList.contains("inline-flex")).toBe(false);
+  });
+
   describe("children wrapper", () => {
     it("wraps children in a span with className='contents'", () => {
       render(<Button>Save</Button>);
@@ -207,6 +225,15 @@ describe("RefreshButton", () => {
 });
 
 describe("LinkButton", () => {
+  it("uses inline-flex layout by default", () => {
+    render(<LinkButton href="/home">Home</LinkButton>);
+
+    const link = screen.getByRole("link", { name: "Home" });
+
+    expect(link.classList.contains("inline-flex")).toBe(true);
+    expect(link.classList.contains("flex")).toBe(false);
+  });
+
   it("renders as an <a> element", () => {
     render(<LinkButton href="/home">Home</LinkButton>);
     const link = screen.getByRole("link");
