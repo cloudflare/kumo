@@ -1702,7 +1702,10 @@ const SidebarMenuSub = forwardRef<
     )}
     {...props}
   >
-    <div className="absolute inset-y-px left-[19px] z-10 w-px bg-kumo-line" />
+    <li
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-y-px left-[19px] z-10 block w-px bg-kumo-line"
+    />
     {children}
   </ul>
 ));

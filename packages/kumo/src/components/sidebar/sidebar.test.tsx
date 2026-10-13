@@ -9,6 +9,7 @@ import {
   screen,
   fireEvent,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderToString } from "react-dom/server";
@@ -1045,6 +1046,37 @@ describe("Sidebar.MenuButton", () => {
     expect(link!.getAttribute("aria-current")).toBe("true");
     expect(link!.getAttribute("data-active")).toBe("true");
     expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
+  });
+});
+
+describe("Sidebar.MenuSub", () => {
+  it("renders only list items as direct children of the list", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuSub data-testid="menu-sub">
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton>Workers</SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton>Pages</SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    const list = screen.getByTestId("menu-sub");
+    const children = Array.from(list.children);
+    expect(children.every((child) => child.tagName === "LI")).toBe(true);
+
+    const guideLine = children[0];
+    expect(guideLine.getAttribute("aria-hidden")).toBe("true");
+    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
   });
 });
 
