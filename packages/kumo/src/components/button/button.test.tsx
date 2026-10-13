@@ -123,6 +123,45 @@ describe("Button", () => {
       expect(svgs[0].getAttribute("role")).toBe("status");
     });
 
+    it("trims leading padding when an icon precedes text", () => {
+      render(<Button icon={Plus}>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("pl-2.5");
+      expect(button.className).toContain("pb-0.5");
+    });
+
+    it.each(["square", "circle"] as const)(
+      "keeps %s icon-only buttons untouched",
+      (shape) => {
+        render(<Button shape={shape} icon={Plus} aria-label="Add" />);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pl-");
+        expect(button.className).not.toContain("pb-");
+      },
+    );
+
+    it("keeps symmetric padding without an icon but still lifts the text", () => {
+      render(<Button>Add</Button>);
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.className).toContain("px-3");
+      expect(button.className).toContain("pb-0.5");
+      expect(button.className).not.toContain("pl-2.5");
+    });
+
+    it.each([false, "", [null, false]])(
+      "keeps symmetric padding when children render nothing (%j)",
+      (children) => {
+        render(
+          <Button icon={Plus} aria-label="Add">
+            {children}
+          </Button>,
+        );
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pl-2.5");
+        expect(button.className).not.toContain("pb-0.5");
+      },
+    );
+
     it("accepts a React element via icon prop", () => {
       render(<Button icon={<Plus data-testid="plus-icon" />}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });

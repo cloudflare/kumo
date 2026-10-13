@@ -161,6 +161,46 @@ export function buttonVariants({
   );
 }
 
+// Lowercase text sits below its line box's center, so lift the content row
+// with bottom padding to optically center the text in the button.
+const TEXT_LIFT_CLASSES: Record<KumoButtonSize, string> = {
+  xs: "pb-px [--kumo-button-text-lift:0.5px]",
+  sm: "pb-px [--kumo-button-text-lift:0.5px]",
+  base: "pb-0.5 [--kumo-button-text-lift:1px]",
+  lg: "pb-0.5 [--kumo-button-text-lift:1px]",
+};
+
+// Icons carry built-in whitespace inside their viewBox, so trim the leading
+// padding of icon + text buttons to optically match the trailing padding.
+const ICON_LEADING_PADDING: Record<KumoButtonSize, string> = {
+  xs: "pl-1",
+  sm: "pl-1.5",
+  base: "pl-2.5",
+  lg: "pl-3.5",
+};
+
+// Undo the lift for the icon so it stays centered. The icon is the first child
+// of the flex row: the button itself, or the inner `span.relative` for
+// emphasis variants.
+const ICON_CENTER_CLASSES =
+  "[&>svg:first-child]:translate-y-(--kumo-button-text-lift) [&>span.relative>svg:first-child]:translate-y-(--kumo-button-text-lift)";
+
+const getTextClasses = (
+  shape: KumoButtonShape,
+  size: KumoButtonSize,
+  iconNode: React.ReactNode,
+  children: React.ReactNode,
+) => {
+  const hasText = React.Children.toArray(children).some(
+    (child) => child !== "",
+  );
+  if (shape !== "base" || !hasText) return undefined;
+  return cn(
+    TEXT_LIFT_CLASSES[size],
+    iconNode != null && [ICON_LEADING_PADDING[size], ICON_CENTER_CLASSES],
+  );
+};
+
 // Normalize icon prop to support both React elements and component types
 const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
   if (!IconComponent) return null;
@@ -387,6 +427,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         data-kumo-component="Button"
         className={cn(
           buttonVariants({ variant, size, shape }),
+          getTextClasses(shape, size, iconNode, children),
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
@@ -495,12 +536,14 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       );
     }
 
+    const iconNode = renderIconNode(IconComponent);
     const link = (
       <LinkComponent
         ref={ref}
         data-kumo-component="LinkButton"
         className={cn(
           buttonVariants({ variant, size, shape }),
+          getTextClasses(shape, size, iconNode, children),
           "flex items-center no-underline! select-text",
           className,
         )}
@@ -510,7 +553,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         {...externalProps}
         {...props}
       >
-        {renderButtonContent(variant, renderIconNode(IconComponent), children)}
+        {renderButtonContent(variant, iconNode, children)}
       </LinkComponent>
     );
 
