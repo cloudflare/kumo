@@ -118,6 +118,19 @@ describe("Button", () => {
       expect(button.className).not.toContain("pl-2.5");
     });
 
+    it.each([false, "", [null, false]])(
+      "keeps symmetric padding when children render nothing (%j)",
+      (children) => {
+        render(
+          <Button icon={Plus} aria-label="Add">
+            {children}
+          </Button>,
+        );
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pl-2.5");
+      },
+    );
+
     it("accepts a React element via icon prop", () => {
       render(<Button icon={<Plus data-testid="plus-icon" />}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });

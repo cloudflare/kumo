@@ -176,7 +176,10 @@ const getIconLeadingPadding = (
   iconNode: React.ReactNode,
   children: React.ReactNode,
 ) => {
-  if (shape !== "base" || !iconNode || children == null) return undefined;
+  const hasText = React.Children.toArray(children).some(
+    (child) => child !== "",
+  );
+  if (shape !== "base" || !iconNode || !hasText) return undefined;
   return ICON_LEADING_PADDING[size];
 };
 
