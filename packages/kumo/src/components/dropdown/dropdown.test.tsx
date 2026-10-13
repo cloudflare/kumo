@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { CopyIcon, GearIcon } from "@phosphor-icons/react";
@@ -199,7 +199,8 @@ describe("DropdownMenu", () => {
     }
 
     async function focusTrigger(user: ReturnType<typeof userEvent.setup>) {
-      screen.getByRole("menuitem", { name: "First" }).focus();
+      const first = screen.getByRole("menuitem", { name: "First" });
+      act(() => first.focus());
       await user.keyboard("{ArrowDown}");
       const trigger = screen.getByRole("menuitem", { name: "More" });
       await waitFor(() => expect(document.activeElement).toBe(trigger));
