@@ -109,7 +109,18 @@ describe("Button", () => {
       render(<Button icon={Plus}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
       expect(button.className).toContain("pl-2.5");
+      expect(button.className).toContain("[--kumo-button-icon-offset:1px]");
     });
+
+    it.each(["square", "circle"] as const)(
+      "keeps %s icon-only buttons untouched",
+      (shape) => {
+        render(<Button shape={shape} icon={Plus} aria-label="Add" />);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pl-");
+        expect(button.className).not.toContain("icon-offset");
+      },
+    );
 
     it("keeps symmetric padding without an icon", () => {
       render(<Button>Add</Button>);
