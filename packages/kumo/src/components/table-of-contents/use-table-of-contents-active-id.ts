@@ -175,11 +175,12 @@ export function useTableOfContentsActiveId({
 
     const knownIds = new Set(idsKey.split("\0"));
     const syncFromHash = () => {
-      let id: string;
+      let id = window.location.hash.slice(1);
       try {
-        id = decodeURIComponent(window.location.hash.slice(1));
+        id = decodeURIComponent(id);
       } catch {
-        return;
+        // Malformed percent escape (e.g. an id containing a literal "%").
+        // Browsers leave "%" unencoded in fragments, so match the raw hash.
       }
       if (id && knownIds.has(id)) selectSection(id);
     };
