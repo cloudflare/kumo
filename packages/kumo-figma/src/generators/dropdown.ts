@@ -122,7 +122,7 @@ async function createMenuItem(
 
   // Apply highlight background if highlighted
   if (opts.highlighted) {
-    const highlightVar = getVariableByName(VAR_NAMES.color.control);
+    const highlightVar = getVariableByName(VAR_NAMES.color.tint);
     if (highlightVar) {
       bindFillToVariable(itemFrame, highlightVar.id);
     }

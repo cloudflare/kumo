@@ -13,6 +13,8 @@ import {
   CopyIcon,
   PencilSimpleIcon,
   TrashIcon,
+  GlobeIcon,
+  ClockIcon,
 } from "@phosphor-icons/react";
 
 export function DropdownBasicDemo() {
@@ -100,7 +102,9 @@ export function DropdownNestedDemo() {
 
         {/* Language submenu with RadioGroup */}
         <DropdownMenu.Sub>
-          <DropdownMenu.SubTrigger>Language</DropdownMenu.SubTrigger>
+          <DropdownMenu.SubTrigger icon={GlobeIcon}>
+            Language
+          </DropdownMenu.SubTrigger>
           <DropdownMenu.SubContent>
             <DropdownMenu.Group>
               <DropdownMenu.RadioGroup
@@ -120,7 +124,9 @@ export function DropdownNestedDemo() {
 
         {/* Timezone submenu with RadioGroup */}
         <DropdownMenu.Sub>
-          <DropdownMenu.SubTrigger>Set Timezone</DropdownMenu.SubTrigger>
+          <DropdownMenu.SubTrigger icon={<ClockIcon weight="duotone" />}>
+            Set Timezone
+          </DropdownMenu.SubTrigger>
           <DropdownMenu.SubContent>
             <DropdownMenu.Group>
               <DropdownMenu.RadioGroup

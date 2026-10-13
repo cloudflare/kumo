@@ -58,13 +58,43 @@ export function dropdownVariants({
   );
 }
 
+/**
+ * Renders a menu row icon. Spacing comes from the row's `gap-2`, so Phosphor
+ * components and pre-rendered elements are laid out identically.
+ */
+const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
+  if (!IconComponent) return null;
+  if (React.isValidElement<{ className?: string }>(IconComponent)) {
+    return React.cloneElement(IconComponent, {
+      className: cn("h-4 w-4 shrink-0", IconComponent.props.className),
+    });
+  }
+  const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
+  return <Comp className="h-4 w-4 shrink-0" />;
+};
+
+/**
+ * Shared layout and interaction styles for every selectable menu row
+ * (Item, LinkItem, SubTrigger, CheckboxItem, RadioItem) so they highlight
+ * with the same colour, radius and state.
+ */
+const menuRowClasses = cn(
+  "relative flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-base outline-hidden select-none", // base styles
+  "focus:text-kumo-default focus-visible:ring-2 focus-visible:ring-kumo-brand", // focus state
+  "data-highlighted:bg-kumo-tint", // highlight state
+  "data-disabled:pointer-events-none data-disabled:opacity-50", // disabled state
+);
+
+/** Matches the `p-1.5` padding on the menu popup. */
+const POPUP_PADDING = 6;
+
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubmenuTrigger>,
   React.ComponentPropsWithoutRef<
     typeof DropdownMenuPrimitive.SubmenuTrigger
   > & {
     inset?: boolean;
-    icon?: Icon;
+    icon?: Icon | React.ReactNode;
   }
 >(({ className, inset, children, icon: IconComponent, ...props }, ref) => (
   <DropdownMenuPrimitive.SubmenuTrigger
@@ -72,16 +102,14 @@ const DropdownMenuSubTrigger = React.forwardRef<
     data-kumo-component="DropdownMenu"
     data-kumo-part="submenu-trigger"
     className={cn(
-      "flex cursor-default items-center rounded-sm text-base outline-hidden select-none", // base styles
-      "px-2 py-1.5", // spacing
-      "focus:bg-kumo-tint focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand", // focus state
-      "data-[state=open]:bg-kumo-tint", // open state
+      menuRowClasses,
+      "data-popup-open:bg-kumo-tint", // keep highlighted while the submenu is open
       inset && "pl-8", // conditional inset
       className,
     )}
     {...props}
   >
-    {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+    {renderIconNode(IconComponent)}
     {children}
     <CaretRight className="ml-auto h-4 w-4" />
   </DropdownMenuPrimitive.SubmenuTrigger>
@@ -138,16 +166,27 @@ const DropdownMenuContent = React.forwardRef<
   },
 );
 
-const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
-  if (!IconComponent) return null;
-  if (React.isValidElement<{ className?: string }>(IconComponent)) {
-    return React.cloneElement(IconComponent, {
-      className: cn("mr-2 h-4 w-4", IconComponent.props.className),
-    });
-  }
-  const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
-  return <Comp className="mr-2 h-4 w-4" />;
-};
+DropdownMenuContent.displayName = "DropdownMenuContent";
+
+/**
+ * DropdownMenuSubContent — popup for a nested submenu.
+ *
+ * Defaults are tuned for submenus: `alignOffset` cancels the popup padding so
+ * the first item lines up with its SubTrigger, and a small `sideOffset` lets
+ * the submenu overlap the parent menu slightly. Both remain overridable.
+ */
+const DropdownMenuSubContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuContent>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuContent>
+>(({ sideOffset = 2, alignOffset = -POPUP_PADDING, ...props }, ref) => (
+  <DropdownMenuContent
+    ref={ref}
+    sideOffset={sideOffset}
+    alignOffset={alignOffset}
+    {...props}
+  />
+));
+DropdownMenuSubContent.displayName = "DropdownMenuSubContent";
 
 /**
  * DropdownMenuItem — a single actionable item within a dropdown menu.
@@ -214,7 +253,7 @@ const DropdownMenuItem = React.forwardRef<
       // Matches http://, https://, or protocol-relative //
       const isExternal = /^(https?:)?\/\//.test(href);
       const styles = cn(
-        "flex items-center",
+        "flex items-center gap-2",
         variant === "danger" &&
           "text-kumo-danger data-highlighted:bg-kumo-danger/5 data-highlighted:text-kumo-danger",
       );
@@ -253,7 +292,7 @@ const DropdownMenuItem = React.forwardRef<
         data-kumo-component="DropdownMenu"
         data-kumo-part="item"
         className={cn(
-          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          menuRowClasses,
           inset && "pl-8",
           dropdownVariants({ variant }),
           className,
@@ -318,8 +357,7 @@ const DropdownMenuLinkItem = React.forwardRef<
         data-kumo-component="DropdownMenu"
         data-kumo-part="link-item"
         className={cn(
-          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
-          "focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          menuRowClasses,
           "text-inherit no-underline",
           inset && "pl-8",
           dropdownVariants({ variant }),
@@ -344,10 +382,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     ref={ref}
     data-kumo-component="DropdownMenu"
     data-kumo-part="checkbox-item"
-    className={cn(
-      "relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-base outline-hidden transition-colors select-none focus:bg-kumo-tint focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50",
-      className,
-    )}
+    className={cn(menuRowClasses, "pl-8 transition-colors", className)}
     checked={checked}
     {...props}
   >
@@ -414,12 +449,7 @@ const DropdownMenuRadioItem = React.forwardRef<
     ref={ref}
     data-kumo-component="DropdownMenu"
     data-kumo-part="radio-item"
-    className={cn(
-      "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
-      "data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-tint",
-      inset && "pl-8",
-      className,
-    )}
+    className={cn(menuRowClasses, inset && "pl-8", className)}
     {...props}
   >
     {IconComponent && renderIconNode(IconComponent)}
@@ -513,7 +543,7 @@ export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   Portal: DropdownMenuPrimitive.Portal,
   Sub: DropdownMenuPrimitive.SubmenuRoot,
   SubTrigger: DropdownMenuSubTrigger,
-  SubContent: DropdownMenuContent,
+  SubContent: DropdownMenuSubContent,
   Content: DropdownMenuContent,
   Item: DropdownMenuItem,
   LinkItem: DropdownMenuLinkItem,

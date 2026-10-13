@@ -216,13 +216,20 @@ export default function Example() {
 
 <p>
   Menu item that opens a nested submenu when hovered or clicked. Displays a
-  caret icon automatically.
+  caret icon automatically and stays highlighted while its submenu is open.
+  Like `Item`, its `icon` prop accepts a Phosphor icon component or a rendered
+  element.
 </p>
 <PropsTable component="DropdownMenu.SubTrigger" />
 
 ### DropdownMenu.SubContent
 
-<p>Container for submenu items. Positioned relative to the SubTrigger.</p>
+<p>
+  Container for submenu items. Positioned relative to the SubTrigger. Defaults
+  to `alignOffset={-6}` (cancelling the popup padding so the first item lines
+  up with the trigger) and `sideOffset={2}` (overlapping the parent menu
+  slightly). Pass either prop to override.
+</p>
 <PropsTable component="DropdownMenu.SubContent" />
 
 ### DropdownMenu.Separator
