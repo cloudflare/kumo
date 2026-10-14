@@ -191,11 +191,17 @@ DropdownMenuPortal.displayName = "DropdownMenuPortal";
 const DropdownMenuPositioner = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Positioner>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner>
->(({ sideOffset = 8, ...props }, ref) => (
+>(({ className, sideOffset = 8, ...props }, ref) => (
   <DropdownMenuPrimitive.Positioner
     ref={ref}
     data-kumo-component="DropdownMenu"
     data-kumo-part="positioner"
+    className={(state) =>
+      cn(
+        "outline-hidden",
+        typeof className === "function" ? className(state) : className,
+      )
+    }
     sideOffset={sideOffset}
     {...props}
   />
@@ -220,7 +226,7 @@ const DropdownMenuPopup = React.forwardRef<
     data-kumo-component="DropdownMenu"
     data-kumo-part="popup"
     className={cn(
-      "group/menu overflow-hidden bg-kumo-control text-kumo-default", // background
+      "group/menu overflow-hidden bg-kumo-control text-kumo-default outline-hidden", // background; Base UI focuses the popup when the pointer leaves the items
       "max-h-[var(--available-height)] overflow-y-auto", // limit height when list is too long and might go off screen
       "rounded-lg shadow-lg ring ring-kumo-line", // border part
       "min-w-36 p-1.5", // spacing

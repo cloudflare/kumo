@@ -188,6 +188,8 @@ describe("DropdownMenu", () => {
           "data-starting-style:opacity-0",
           "data-ending-style:opacity-0",
           "data-instant:duration-0",
+          // Base UI focuses the popup when the pointer leaves the items.
+          "outline-hidden",
         ]),
       );
       expect(classes.some((c) => c.includes("data-[state="))).toBe(false);
