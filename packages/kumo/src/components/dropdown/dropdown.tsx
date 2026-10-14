@@ -105,150 +105,6 @@ const menuRowClasses = cn(
 /** Matches the `p-1.5` padding on the menu popup. */
 const POPUP_PADDING = 6;
 
-type SubmenuChangeEventDetails = Parameters<
-  NonNullable<
-    React.ComponentProps<
-      typeof DropdownMenuPrimitive.SubmenuRoot
-    >["onOpenChange"]
-  >
->[1];
-
-/** Builds Base UI-shaped change details for opens/closes Kumo initiates. */
-function createSubmenuChangeDetails(
-  reason: "trigger-focus" | "focus-out",
-  event: FocusEvent,
-  trigger: Element,
-): SubmenuChangeEventDetails {
-  const details = {
-    reason,
-    event,
-    trigger,
-    isCanceled: false,
-    isPropagationAllowed: false,
-    cancel() {
-      details.isCanceled = true;
-    },
-    allowPropagation() {
-      details.isPropagationAllowed = true;
-    },
-    preventUnmountOnClose() {},
-  };
-  return details as SubmenuChangeEventDetails;
-}
-
-interface DropdownMenuSubContextValue {
-  setOpen: (open: boolean, details: SubmenuChangeEventDetails) => void;
-  /** True while the submenu is open because its trigger got keyboard focus. */
-  openedByFocusRef: React.MutableRefObject<boolean>;
-  /** Set when the user leaves the submenu via the keyboard, so returning focus doesn't reopen it. */
-  suppressFocusOpenRef: React.MutableRefObject<boolean>;
-}
-
-const DropdownMenuSubContext =
-  React.createContext<DropdownMenuSubContextValue | null>(null);
-
-const SUBMENU_ITEM_SELECTOR =
-  '[role="menuitem"]:not([data-disabled]), [role="menuitemcheckbox"]:not([data-disabled]), [role="menuitemradio"]:not([data-disabled])';
-
-/** Enter/Space arrive as a keydown, or as a synthetic click with `detail` 0. */
-function isKeyboardActivation(event: Event) {
-  return (
-    event instanceof KeyboardEvent ||
-    (event instanceof MouseEvent && event.detail === 0)
-  );
-}
-
-/** Returns the submenu popup controlled by `trigger`, if mounted. */
-function getSubmenuPopup(trigger: Element) {
-  const popupId = trigger.getAttribute("aria-controls");
-  return popupId ? trigger.ownerDocument.getElementById(popupId) : null;
-}
-
-/** Whether `target` is inside the submenu popup controlled by `trigger`. */
-function isInSubmenu(trigger: Element, target: EventTarget | null) {
-  const popup = getSubmenuPopup(trigger);
-  return !!popup && target instanceof Node && popup.contains(target);
-}
-
-/**
- * DropdownMenuSub — groups a SubTrigger and its SubContent.
- *
- * Wraps Base UI's `SubmenuRoot` so Kumo can open the submenu when its trigger
- * receives keyboard focus. Supports both controlled (`open`) and uncontrolled
- * (`defaultOpen`) usage.
- */
-function DropdownMenuSub({
-  open: openProp,
-  defaultOpen = false,
-  onOpenChange,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.SubmenuRoot>) {
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
-  const open = openProp ?? uncontrolledOpen;
-  const openedByFocusRef = React.useRef(false);
-  const suppressFocusOpenRef = React.useRef(false);
-
-  const setOpen = React.useCallback<DropdownMenuSubContextValue["setOpen"]>(
-    (nextOpen, details) => {
-      const { reason, event, trigger } = details;
-
-      // Enter/Space on a trigger whose submenu was opened by focus would
-      // toggle it closed; move focus into the submenu instead, like ArrowRight.
-      if (
-        !nextOpen &&
-        openedByFocusRef.current &&
-        reason === "trigger-press" &&
-        isKeyboardActivation(event) &&
-        trigger
-      ) {
-        const firstItem = getSubmenuPopup(trigger)?.querySelector<HTMLElement>(
-          SUBMENU_ITEM_SELECTOR,
-        );
-        if (firstItem) {
-          details.cancel();
-          firstItem.focus();
-          return;
-        }
-      }
-
-      onOpenChange?.(nextOpen, details);
-      if (details.isCanceled) return;
-
-      if (!nextOpen) {
-        openedByFocusRef.current = false;
-        suppressFocusOpenRef.current =
-          reason === "escape-key" || reason === "list-navigation";
-      }
-      setUncontrolledOpen(nextOpen);
-    },
-    [onOpenChange],
-  );
-
-  const contextValue = React.useMemo(
-    () => ({ setOpen, openedByFocusRef, suppressFocusOpenRef }),
-    [setOpen],
-  );
-
-  return (
-    <DropdownMenuSubContext.Provider value={contextValue}>
-      <DropdownMenuPrimitive.SubmenuRoot
-        {...props}
-        open={open}
-        onOpenChange={setOpen}
-      />
-    </DropdownMenuSubContext.Provider>
-  );
-}
-DropdownMenuSub.displayName = "DropdownMenuSub";
-
-/**
- * DropdownMenuSubTrigger — row that opens a nested submenu.
- *
- * Opens on hover (pointer) and also when it receives keyboard focus. Keyboard
- * focus stays on the trigger until ArrowRight (ArrowLeft in RTL), Enter or
- * Space moves it into the submenu, so arrowing past the trigger previews the
- * submenu without entering it.
- */
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubmenuTrigger>,
   React.ComponentPropsWithoutRef<
@@ -257,87 +113,24 @@ const DropdownMenuSubTrigger = React.forwardRef<
     inset?: boolean;
     icon?: Icon | React.ReactNode;
   }
->(
-  (
-    {
+>(({ className, inset, children, icon: IconComponent, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubmenuTrigger
+    ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="submenu-trigger"
+    className={cn(
+      menuRowClasses,
+      "data-popup-open:bg-kumo-tint", // keep highlighted while the submenu is open
+      inset && "pl-8", // conditional inset
       className,
-      inset,
-      children,
-      icon: IconComponent,
-      onFocus,
-      onBlur,
-      ...props
-    },
-    ref,
-  ) => {
-    const sub = React.useContext(DropdownMenuSubContext);
-
-    return (
-      <DropdownMenuPrimitive.SubmenuTrigger
-        ref={ref}
-        data-kumo-component="DropdownMenu"
-        data-kumo-part="submenu-trigger"
-        className={cn(
-          menuRowClasses,
-          "data-popup-open:bg-kumo-tint", // keep highlighted while the submenu is open
-          inset && "pl-8", // conditional inset
-          className,
-        )}
-        onFocus={(event) => {
-          onFocus?.(event);
-          if (!sub) return;
-          const trigger = event.currentTarget;
-          // Focus returning after ArrowLeft / Escape must not reopen the submenu.
-          if (sub.suppressFocusOpenRef.current) {
-            sub.suppressFocusOpenRef.current = false;
-            return;
-          }
-          if (
-            trigger.hasAttribute("data-popup-open") ||
-            trigger.hasAttribute("data-disabled") ||
-            // Pointer hover also focuses items; only react to keyboard focus.
-            !trigger.matches(":focus-visible") ||
-            isInSubmenu(trigger, event.relatedTarget)
-          ) {
-            return;
-          }
-          sub.openedByFocusRef.current = true;
-          sub.setOpen(
-            true,
-            createSubmenuChangeDetails(
-              "trigger-focus",
-              event.nativeEvent,
-              trigger,
-            ),
-          );
-        }}
-        onBlur={(event) => {
-          onBlur?.(event);
-          if (!sub) return;
-          sub.suppressFocusOpenRef.current = false;
-          const trigger = event.currentTarget;
-          // Only focus-opened submenus close on blur; hover-opened ones keep
-          // Base UI's pointer handling.
-          if (
-            !sub.openedByFocusRef.current ||
-            isInSubmenu(trigger, event.relatedTarget)
-          ) {
-            return;
-          }
-          sub.setOpen(
-            false,
-            createSubmenuChangeDetails("focus-out", event.nativeEvent, trigger),
-          );
-        }}
-        {...props}
-      >
-        {renderIconNode(IconComponent)}
-        {children}
-        <CaretRight className="ml-auto h-4 w-4" />
-      </DropdownMenuPrimitive.SubmenuTrigger>
-    );
-  },
-);
+    )}
+    {...props}
+  >
+    {renderIconNode(IconComponent)}
+    {children}
+    <CaretRight className="ml-auto h-4 w-4" />
+  </DropdownMenuPrimitive.SubmenuTrigger>
+));
 
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubmenuTrigger.displayName;
@@ -766,7 +559,7 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
 export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   Trigger: DropdownMenuTrigger,
   Portal: DropdownMenuPrimitive.Portal,
-  Sub: DropdownMenuSub,
+  Sub: DropdownMenuPrimitive.SubmenuRoot,
   SubTrigger: DropdownMenuSubTrigger,
   SubContent: DropdownMenuSubContent,
   Content: DropdownMenuContent,

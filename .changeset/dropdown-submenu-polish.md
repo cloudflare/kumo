@@ -4,7 +4,6 @@
 
 DropdownMenu submenu and row improvements:
 
-- A SubTrigger now opens its submenu when it receives keyboard focus, while focus stays on the trigger. ArrowRight (or Enter/Space) moves focus into the submenu, moving to a sibling closes it, and Escape/ArrowLeft from inside the submenu don't reopen it.
 - An open submenu's trigger stays highlighted (`data-popup-open`).
 - Every menu row (Item, LinkItem, SubTrigger, CheckboxItem, RadioItem) uses the same `bg-kumo-tint` highlight and `rounded-md` radius.
 - Submenus line up with their trigger by default: `SubContent` defaults to `alignOffset={-6}` and `sideOffset={2}`.
