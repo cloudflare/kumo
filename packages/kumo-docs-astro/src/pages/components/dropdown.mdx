@@ -187,6 +187,40 @@ export default function Example() {
 <p>Button that opens the dropdown when clicked.</p>
 <PropsTable component="DropdownMenu.Trigger" />
 
+### DropdownMenu.Content
+
+<p>
+  The menu popup. Combines `Portal`, `Positioner` and `Popup`: positioning
+  props such as `side`, `align`, `sideOffset` and `alignOffset` go to the
+  Positioner, and `className` goes to the Popup.
+</p>
+<PropsTable component="DropdownMenu.Content" />
+
+### DropdownMenu.Portal, Positioner and Popup
+
+<p>
+  The parts `Content` is built from. Compose them directly when you need to
+  style or configure the Positioner and Popup separately. `Portal` respects
+  `KumoPortalProvider`, and `Popup` carries the menu surface styles and
+  open/close animation.
+</p>
+
+```tsx
+<DropdownMenu.Portal>
+  <DropdownMenu.Positioner side="top" align="end">
+    <DropdownMenu.Popup className="min-w-56">
+      <DropdownMenu.Item>Edit</DropdownMenu.Item>
+    </DropdownMenu.Popup>
+  </DropdownMenu.Positioner>
+</DropdownMenu.Portal>
+```
+
+<p>
+  Both accept the same props as Base UI's `Menu.Positioner` and `Menu.Popup`.
+  See the [Base UI Menu docs](https://base-ui.com/react/components/menu) for
+  the full list.
+</p>
+
 ### DropdownMenu.Item
 
 <p>Individual menu item for actions.</p>
@@ -228,10 +262,12 @@ export default function Example() {
 ### DropdownMenu.SubContent
 
 <p>
-  Container for submenu items. Positioned relative to the SubTrigger. Defaults
-  to `alignOffset={-6}` (cancelling the popup padding so the first item lines
-  up with the trigger) and `sideOffset={2}` (overlapping the parent menu
-  slightly). Pass either prop to override.
+  Container for submenu items. Positioned relative to the SubTrigger. When the
+  submenu sits beside its trigger, it cancels the popup padding so the first
+  item lines up with the trigger and overlaps the parent menu slightly. If
+  there isn't room and it moves above or below the trigger, it uses the same
+  spacing as a top-level menu. Pass `sideOffset` or `alignOffset` (a number or
+  a function of the resolved `side`) to override.
 </p>
 <PropsTable component="DropdownMenu.SubContent" />
 

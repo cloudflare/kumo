@@ -105,6 +105,24 @@ const menuRowClasses = cn(
 /** Matches the `p-1.5` padding on the menu popup. */
 const POPUP_PADDING = 6;
 
+type PositionerSide = DropdownMenuPrimitive.Positioner.Props["side"];
+
+function isBlockSide(side: PositionerSide) {
+  return side === "top" || side === "bottom";
+}
+
+/**
+ * Submenu offsets, as functions of the resolved side (the pattern Base UI's
+ * submenu demo uses). Beside the trigger, the submenu overlaps the parent menu
+ * slightly and cancels the popup padding so its first item lines up with the
+ * trigger. If collision avoidance moves it above or below the trigger, it falls
+ * back to the same spacing as a top-level menu.
+ */
+const submenuSideOffset = ({ side }: { side: PositionerSide }) =>
+  isBlockSide(side) ? 8 : 2;
+const submenuAlignOffset = ({ side }: { side: PositionerSide }) =>
+  isBlockSide(side) ? 0 : -POPUP_PADDING;
+
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubmenuTrigger>,
   React.ComponentPropsWithoutRef<
@@ -135,74 +153,148 @@ const DropdownMenuSubTrigger = React.forwardRef<
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubmenuTrigger.displayName;
 
-const DropdownMenuContent = React.forwardRef<
+/**
+ * DropdownMenuPortal — moves the menu popup to the end of the document body
+ * (or the `KumoPortalProvider` container, if set).
+ *
+ * Only needed when composing `Positioner` and `Popup` yourself; `Content` and
+ * `SubContent` include it.
+ */
+function DropdownMenuPortal({
+  container: containerProp,
+  ...props
+}: Omit<
+  React.ComponentProps<typeof DropdownMenuPrimitive.Portal>,
+  "container"
+> & {
+  /**
+   * Container element for the portal. Use this to render the dropdown inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
+}) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
+  return <DropdownMenuPrimitive.Portal container={container} {...props} />;
+}
+DropdownMenuPortal.displayName = "DropdownMenuPortal";
+
+/**
+ * DropdownMenuPositioner — positions the menu popup against its trigger.
+ *
+ * A thin wrapper around Base UI's `Menu.Positioner` with Kumo's default
+ * spacing. `sideOffset` and `alignOffset` accept a number or a function of the
+ * resolved side and alignment.
+ */
+const DropdownMenuPositioner = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Positioner>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner> & {
-    /**
-     * Container element for the portal. Use this to render the dropdown inside
-     * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
-     * @default document.body (or KumoPortalProvider container if set)
-     */
-    container?: PortalContainer;
-  }
->(
-  (
-    { className, sideOffset = 8, children, container: containerProp, ...props },
-    ref,
-  ) => {
-    const contextContainer = usePortalContainer();
-    const container = containerProp ?? contextContainer ?? undefined;
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner>
+>(({ sideOffset = 8, ...props }, ref) => (
+  <DropdownMenuPrimitive.Positioner
+    ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="positioner"
+    sideOffset={sideOffset}
+    {...props}
+  />
+));
+DropdownMenuPositioner.displayName = "DropdownMenuPositioner";
 
-    return (
-      <DropdownMenuPrimitive.Portal container={container}>
-        <DropdownMenuPrimitive.Positioner
-          ref={ref}
-          sideOffset={sideOffset}
-          {...props}
-        >
-          <DropdownMenuPrimitive.Popup
-            className={cn(
-              "group/menu overflow-hidden bg-kumo-control text-kumo-default", // background
-              "max-h-[var(--available-height)] overflow-y-auto", // limit height when list is too long and might go off screen
-              "rounded-lg shadow-lg ring ring-kumo-line", // border part
-              "min-w-36 p-1.5", // spacing
-              "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
-              "data-[side=bottom]:slide-in-from-top-2", // bottom side animation
-              "data-[side=left]:slide-in-from-right-2", // left side animation
-              "data-[side=right]:slide-in-from-left-2", // right side animation
-              "data-[side=top]:slide-in-from-bottom-2", // top side animation
-              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95", // close animation
-              className,
-            )}
-          >
-            {children}
-          </DropdownMenuPrimitive.Popup>
-        </DropdownMenuPrimitive.Positioner>
-      </DropdownMenuPrimitive.Portal>
-    );
-  },
-);
+/**
+ * DropdownMenuPopup — the styled menu surface that holds the items.
+ *
+ * Animates with Base UI's `data-starting-style` / `data-ending-style`, scaling
+ * from the trigger via `--transform-origin`.
+ */
+const DropdownMenuPopup = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Popup>,
+  Omit<
+    React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Popup>,
+    "className"
+  > & { className?: string }
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Popup
+    ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="popup"
+    className={cn(
+      "group/menu overflow-hidden bg-kumo-control text-kumo-default", // background
+      "max-h-[var(--available-height)] overflow-y-auto", // limit height when list is too long and might go off screen
+      "rounded-lg shadow-lg ring ring-kumo-line", // border part
+      "min-w-36 p-1.5", // spacing
+      "origin-(--transform-origin) transition-[transform,scale,opacity] duration-150 motion-reduce:transition-none", // animation
+      "data-starting-style:scale-95 data-starting-style:opacity-0", // enter
+      "data-ending-style:scale-95 data-ending-style:opacity-0", // exit
+      "data-instant:duration-0", // Base UI skips the animation for keyboard and dismiss transitions
+      className,
+    )}
+    {...props}
+  />
+));
+DropdownMenuPopup.displayName = "DropdownMenuPopup";
 
+type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
+  typeof DropdownMenuPositioner
+> & {
+  /**
+   * Container element for the portal. Use this to render the dropdown inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
+  /** Classes for the popup surface. */
+  className?: string;
+};
+
+/**
+ * DropdownMenuContent — Portal, Positioner and Popup in one.
+ *
+ * Positioning props go to the Positioner, and `className` goes to the Popup.
+ * Compose `Portal`, `Positioner` and `Popup` directly when you need more
+ * control over either part.
+ */
+const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPositioner>,
+  DropdownMenuContentProps
+>(({ className, children, container, ...props }, ref) => (
+  <DropdownMenuPortal container={container}>
+    <DropdownMenuPositioner ref={ref} {...props}>
+      <DropdownMenuPopup className={className}>{children}</DropdownMenuPopup>
+    </DropdownMenuPositioner>
+  </DropdownMenuPortal>
+));
 DropdownMenuContent.displayName = "DropdownMenuContent";
 
 /**
  * DropdownMenuSubContent — popup for a nested submenu.
  *
- * Defaults are tuned for submenus: `alignOffset` cancels the popup padding so
- * the first item lines up with its SubTrigger, and a small `sideOffset` lets
- * the submenu overlap the parent menu slightly. Both remain overridable.
+ * Same as `Content`, with submenu offsets: beside the trigger it cancels the
+ * popup padding so the first item lines up with the SubTrigger, and overlaps
+ * the parent menu slightly. Pass `sideOffset` or `alignOffset` (a number or a
+ * function) to override.
  */
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuContent>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuContent>
->(({ sideOffset = 2, alignOffset = -POPUP_PADDING, ...props }, ref) => (
-  <DropdownMenuContent
-    ref={ref}
-    sideOffset={sideOffset}
-    alignOffset={alignOffset}
-    {...props}
-  />
-));
+  DropdownMenuContentProps
+>(
+  (
+    {
+      sideOffset = submenuSideOffset,
+      alignOffset = submenuAlignOffset,
+      ...props
+    },
+    ref,
+  ) => (
+    <DropdownMenuContent
+      ref={ref}
+      sideOffset={sideOffset}
+      alignOffset={alignOffset}
+      {...props}
+    />
+  ),
+);
 DropdownMenuSubContent.displayName = "DropdownMenuSubContent";
 
 /**
@@ -535,6 +627,8 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
  * Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`,
  * `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`,
  * `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.
+ * `.Content` and `.SubContent` combine `.Portal`, `.Positioner` and `.Popup`,
+ * which can also be composed directly.
  *
  * Built on `@base-ui/react/menu`.
  *
@@ -558,7 +652,9 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
  */
 export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   Trigger: DropdownMenuTrigger,
-  Portal: DropdownMenuPrimitive.Portal,
+  Portal: DropdownMenuPortal,
+  Positioner: DropdownMenuPositioner,
+  Popup: DropdownMenuPopup,
   Sub: DropdownMenuPrimitive.SubmenuRoot,
   SubTrigger: DropdownMenuSubTrigger,
   SubContent: DropdownMenuSubContent,

@@ -177,4 +177,42 @@ describe("DropdownMenu", () => {
       ).toBeNull();
     });
   });
+
+  describe("popup", () => {
+    it("animates with Base UI's starting and ending style attributes", () => {
+      renderMenu(<DropdownMenu.Item>Item</DropdownMenu.Item>);
+      const classes = screen.getByRole("menu").className.split(" ");
+      expect(classes).toEqual(
+        expect.arrayContaining([
+          "origin-(--transform-origin)",
+          "data-starting-style:opacity-0",
+          "data-ending-style:opacity-0",
+          "data-instant:duration-0",
+        ]),
+      );
+      expect(classes.some((c) => c.includes("data-[state="))).toBe(false);
+    });
+
+    it("can be composed from Portal, Positioner and Popup", () => {
+      render(
+        <DropdownMenu open>
+          <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Positioner className="custom-positioner">
+              <DropdownMenu.Popup className="custom-popup">
+                <DropdownMenu.Item>Item</DropdownMenu.Item>
+              </DropdownMenu.Popup>
+            </DropdownMenu.Positioner>
+          </DropdownMenu.Portal>
+        </DropdownMenu>,
+      );
+
+      expect(part("positioner").className).toContain("custom-positioner");
+      const popup = screen.getByRole("menu");
+      expect(popup.dataset.kumoPart).toBe("popup");
+      expect(popup.className).toContain("custom-popup");
+      expect(popup.className).toContain("bg-kumo-control");
+      expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
+    });
+  });
 });
