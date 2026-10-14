@@ -369,6 +369,116 @@ describe("Flow Integration", () => {
       ).toBe(true);
     });
 
+    test("connectors meet an anchor on a node with a negative top margin", async () => {
+      const { container, getByTestId } = await render(
+        <Flow>
+          <Flow.Node
+            id="margined"
+            render={
+              <div style={{ marginTop: -4, width: 120 }}>
+                <Flow.Anchor
+                  render={
+                    <div data-testid="margined-anchor" style={{ height: 40 }}>
+                      Start
+                    </div>
+                  }
+                />
+              </div>
+            }
+          />
+          <Flow.Node id="next">Next</Flow.Node>
+        </Flow>,
+      );
+
+      await expect.element(getByTestId("margined-anchor")).toBeVisible();
+      await waitForNextFrame();
+      await waitForNextFrame();
+      assertConnectorAtAnchor(
+        container,
+        "margined",
+        "next",
+        "margined-anchor",
+        "start",
+      );
+    });
+
+    test("connectors stay straight between outer- and inner-margin nodes", async () => {
+      const { container, getByTestId } = await render(
+        <Flow>
+          <Flow.Parallel align="end">
+            <Flow.Node
+              id="domains"
+              render={
+                <div style={{ marginTop: -4, width: 120 }}>
+                  <Flow.Anchor
+                    render={
+                      <div data-testid="domains-anchor" style={{ height: 40 }}>
+                        Domains
+                      </div>
+                    }
+                  />
+                </div>
+              }
+            />
+            <Flow.Node id="workers" render={<div>Workers</div>} />
+          </Flow.Parallel>
+          <Flow.Node
+            id="service"
+            render={
+              <div style={{ width: 120 }}>
+                <div style={{ marginTop: -4 }}>
+                  <Flow.Anchor
+                    render={
+                      <div data-testid="service-anchor" style={{ height: 40 }}>
+                        Service
+                      </div>
+                    }
+                  />
+                </div>
+              </div>
+            }
+          />
+          <Flow.Parallel>
+            <Flow.Node
+              id="bindings"
+              render={
+                <div style={{ marginTop: -4, width: 120 }}>
+                  <Flow.Anchor
+                    render={
+                      <div data-testid="bindings-anchor" style={{ height: 40 }}>
+                        Bindings
+                      </div>
+                    }
+                  />
+                </div>
+              }
+            />
+          </Flow.Parallel>
+        </Flow>,
+      );
+
+      await expect.element(getByTestId("service-anchor")).toBeVisible();
+      await waitForNextFrame();
+      await waitForNextFrame();
+
+      for (const [from, to, fromAnchor, toAnchor] of [
+        ["domains", "service", "domains-anchor", "service-anchor"],
+        ["service", "bindings", "service-anchor", "bindings-anchor"],
+      ]) {
+        const { start, end } = getPathEndpointsForConnector(
+          container,
+          from,
+          to,
+        );
+        assertConnectorAtAnchor(container, from, to, fromAnchor, "start");
+        assertConnectorAtAnchor(container, from, to, toAnchor, "end");
+        expect(
+          Math.abs(start.y - end.y),
+          `${from} → ${to}: ${start.y} → ${end.y}`,
+        ).toBeLessThanOrEqual(1);
+      }
+    });
+
     test("does not render outgoing connectors when there is no node after a parallel group", async () => {
       const { container, getByText } = await render(
         <Flow>
@@ -508,6 +618,30 @@ function getPathEndpointsForConnector(
   const d = path!.getAttribute("d")!;
   expect(d).toBeTruthy();
   return getPathEndpoints(d);
+}
+
+function assertConnectorAtAnchor(
+  container: Element,
+  fromId: string,
+  toId: string,
+  anchorId: string,
+  endpoint: "start" | "end",
+) {
+  const path = container.querySelector(
+    `path[data-testid="${fromId}-${toId}"]`,
+  )!;
+  const svgContainer = path.closest("svg")!.closest("[class*='relative']")!;
+  const anchor = container.querySelector(`[data-testid="${anchorId}"]`)!;
+  const anchorRect = anchor.getBoundingClientRect();
+  const containerRect = svgContainer.getBoundingClientRect();
+  const expectedY = anchorRect.top - containerRect.top + anchorRect.height / 2;
+  const actualY = getPathEndpointsForConnector(container, fromId, toId)[
+    endpoint
+  ].y;
+  expect(
+    Math.abs(actualY - expectedY),
+    `${fromId} → ${toId} ${endpoint}: ${actualY} vs anchor ${expectedY}`,
+  ).toBeLessThanOrEqual(1);
 }
 
 /**
