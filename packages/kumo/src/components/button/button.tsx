@@ -532,7 +532,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         className={cn(
           buttonVariants({ variant, size, shape }),
           getIconPaddingClasses(shape, size, iconNode, children),
-          "flex items-center no-underline! select-text",
+          "no-underline! select-text",
           className,
         )}
         href={href}
