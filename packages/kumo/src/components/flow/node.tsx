@@ -118,7 +118,12 @@ export const FlowNode = forwardRef<HTMLElement, FlowNodeProps>(
           if (!nodeRef.current) return;
           const anchorRect = el.getBoundingClientRect();
           const nodeRect = nodeRef.current.getBoundingClientRect();
-          writeOffsets(anchorRect.top - nodeRect.top + anchorRect.height / 2);
+          // Account for the node's margin when measuring its anchor.
+          const marginTop =
+            parseFloat(getComputedStyle(nodeRef.current).marginTop) || 0;
+          writeOffsets(
+            anchorRect.top - nodeRect.top + marginTop + anchorRect.height / 2,
+          );
           reportSize();
         };
 

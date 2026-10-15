@@ -58,13 +58,78 @@ export function dropdownVariants({
   );
 }
 
+/**
+ * Renders a menu row icon inside an icon slot. Spacing comes from the row's
+ * `gap-2`, so Phosphor components and pre-rendered elements are laid out
+ * identically. The slot also lets icon-less rows detect that a sibling has an
+ * icon and inset themselves to keep the text aligned.
+ */
+const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
+  if (!IconComponent) return null;
+  let icon: React.ReactNode;
+  if (React.isValidElement<{ className?: string }>(IconComponent)) {
+    icon = React.cloneElement(IconComponent, {
+      className: cn("h-4 w-4", IconComponent.props.className),
+    });
+  } else {
+    const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
+    icon = <Comp className="h-4 w-4" />;
+  }
+  return (
+    <span data-kumo-part="icon" className="inline-flex shrink-0 items-center">
+      {icon}
+    </span>
+  );
+};
+
+/**
+ * Insets a row without an icon when another row in the same popup has one,
+ * so the text of every row lines up. Same result as the `inset` prop.
+ */
+const autoInsetClasses =
+  "group-has-[[data-kumo-part=icon]]/menu:not-has-[[data-kumo-part=icon]]:pl-8";
+
+/**
+ * Shared layout and interaction styles for every selectable menu row
+ * (Item, LinkItem, SubTrigger, CheckboxItem, RadioItem) so they highlight
+ * with the same colour, radius and state.
+ */
+const menuRowClasses = cn(
+  "relative flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-base outline-hidden select-none", // base styles
+  "focus:text-kumo-default focus-visible:ring-2 focus-visible:ring-kumo-brand", // focus state
+  "data-highlighted:bg-kumo-tint", // highlight state
+  "data-disabled:pointer-events-none data-disabled:opacity-50", // disabled state
+  autoInsetClasses,
+);
+
+/** Matches the `p-1.5` padding on the menu popup. */
+const POPUP_PADDING = 6;
+
+type PositionerSide = DropdownMenuPrimitive.Positioner.Props["side"];
+
+function isBlockSide(side: PositionerSide) {
+  return side === "top" || side === "bottom";
+}
+
+/**
+ * Submenu offsets, as functions of the resolved side (the pattern Base UI's
+ * submenu demo uses). Beside the trigger, the submenu overlaps the parent menu
+ * slightly and cancels the popup padding so its first item lines up with the
+ * trigger. If collision avoidance moves it above or below the trigger, it falls
+ * back to the same spacing as a top-level menu.
+ */
+const submenuSideOffset = ({ side }: { side: PositionerSide }) =>
+  isBlockSide(side) ? 8 : 2;
+const submenuAlignOffset = ({ side }: { side: PositionerSide }) =>
+  isBlockSide(side) ? 0 : -POPUP_PADDING;
+
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubmenuTrigger>,
   React.ComponentPropsWithoutRef<
     typeof DropdownMenuPrimitive.SubmenuTrigger
   > & {
     inset?: boolean;
-    icon?: Icon;
+    icon?: Icon | React.ReactNode;
   }
 >(({ className, inset, children, icon: IconComponent, ...props }, ref) => (
   <DropdownMenuPrimitive.SubmenuTrigger
@@ -72,16 +137,14 @@ const DropdownMenuSubTrigger = React.forwardRef<
     data-kumo-component="DropdownMenu"
     data-kumo-part="submenu-trigger"
     className={cn(
-      "flex cursor-default items-center rounded-sm text-base outline-hidden select-none", // base styles
-      "px-2 py-1.5", // spacing
-      "focus:bg-kumo-tint focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand", // focus state
-      "data-[state=open]:bg-kumo-tint", // open state
+      menuRowClasses,
+      "data-popup-open:bg-kumo-tint", // keep highlighted while the submenu is open
       inset && "pl-8", // conditional inset
       className,
     )}
     {...props}
   >
-    {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+    {renderIconNode(IconComponent)}
     {children}
     <CaretRight className="ml-auto h-4 w-4" />
   </DropdownMenuPrimitive.SubmenuTrigger>
@@ -90,64 +153,155 @@ const DropdownMenuSubTrigger = React.forwardRef<
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubmenuTrigger.displayName;
 
-const DropdownMenuContent = React.forwardRef<
+/**
+ * DropdownMenuPortal — moves the menu popup to the end of the document body
+ * (or the `KumoPortalProvider` container, if set).
+ *
+ * Only needed when composing `Positioner` and `Popup` yourself; `Content` and
+ * `SubContent` include it.
+ */
+function DropdownMenuPortal({
+  container: containerProp,
+  ...props
+}: Omit<
+  React.ComponentProps<typeof DropdownMenuPrimitive.Portal>,
+  "container"
+> & {
+  /**
+   * Container element for the portal. Use this to render the dropdown inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
+}) {
+  const contextContainer = usePortalContainer();
+  const container = containerProp ?? contextContainer ?? undefined;
+
+  return <DropdownMenuPrimitive.Portal container={container} {...props} />;
+}
+DropdownMenuPortal.displayName = "DropdownMenuPortal";
+
+/**
+ * DropdownMenuPositioner — positions the menu popup against its trigger.
+ *
+ * A thin wrapper around Base UI's `Menu.Positioner` with Kumo's default
+ * spacing. `sideOffset` and `alignOffset` accept a number or a function of the
+ * resolved side and alignment.
+ */
+const DropdownMenuPositioner = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Positioner>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner> & {
-    /**
-     * Container element for the portal. Use this to render the dropdown inside
-     * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
-     * @default document.body (or KumoPortalProvider container if set)
-     */
-    container?: PortalContainer;
-  }
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner>
+>(({ className, sideOffset = 8, ...props }, ref) => (
+  <DropdownMenuPrimitive.Positioner
+    ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="positioner"
+    className={(state) =>
+      cn(
+        "outline-hidden",
+        typeof className === "function" ? className(state) : className,
+      )
+    }
+    sideOffset={sideOffset}
+    {...props}
+  />
+));
+DropdownMenuPositioner.displayName = "DropdownMenuPositioner";
+
+/**
+ * DropdownMenuPopup — the styled menu surface that holds the items.
+ *
+ * Animates with Base UI's `data-starting-style` / `data-ending-style`, scaling
+ * from the trigger via `--transform-origin`.
+ */
+const DropdownMenuPopup = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Popup>,
+  Omit<
+    React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Popup>,
+    "className"
+  > & { className?: string }
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Popup
+    ref={ref}
+    data-kumo-component="DropdownMenu"
+    data-kumo-part="popup"
+    className={cn(
+      "group/menu overflow-hidden bg-kumo-control text-kumo-default outline-hidden", // background; Base UI focuses the popup when the pointer leaves the items
+      "max-h-[var(--available-height)] overflow-y-auto", // limit height when list is too long and might go off screen
+      "rounded-lg shadow-lg ring ring-kumo-line", // border part
+      "min-w-36 p-1.5", // spacing
+      "origin-(--transform-origin) transition-[transform,scale,opacity] duration-150 motion-reduce:transition-none", // animation
+      "data-starting-style:scale-95 data-starting-style:opacity-0", // enter
+      "data-ending-style:scale-95 data-ending-style:opacity-0", // exit
+      "data-instant:duration-0", // Base UI skips the animation for keyboard and dismiss transitions
+      className,
+    )}
+    {...props}
+  />
+));
+DropdownMenuPopup.displayName = "DropdownMenuPopup";
+
+type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
+  typeof DropdownMenuPositioner
+> & {
+  /**
+   * Container element for the portal. Use this to render the dropdown inside
+   * a Shadow DOM or custom container. Overrides `KumoPortalProvider` context.
+   * @default document.body (or KumoPortalProvider container if set)
+   */
+  container?: PortalContainer;
+  /** Classes for the popup surface. */
+  className?: string;
+};
+
+/**
+ * DropdownMenuContent — Portal, Positioner and Popup in one.
+ *
+ * Positioning props go to the Positioner, and `className` goes to the Popup.
+ * Compose `Portal`, `Positioner` and `Popup` directly when you need more
+ * control over either part.
+ */
+const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPositioner>,
+  DropdownMenuContentProps
+>(({ className, children, container, ...props }, ref) => (
+  <DropdownMenuPortal container={container}>
+    <DropdownMenuPositioner ref={ref} {...props}>
+      <DropdownMenuPopup className={className}>{children}</DropdownMenuPopup>
+    </DropdownMenuPositioner>
+  </DropdownMenuPortal>
+));
+DropdownMenuContent.displayName = "DropdownMenuContent";
+
+/**
+ * DropdownMenuSubContent — popup for a nested submenu.
+ *
+ * Same as `Content`, with submenu offsets: beside the trigger it cancels the
+ * popup padding so the first item lines up with the SubTrigger, and overlaps
+ * the parent menu slightly. Pass `sideOffset` or `alignOffset` (a number or a
+ * function) to override.
+ */
+const DropdownMenuSubContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuContent>,
+  DropdownMenuContentProps
 >(
   (
-    { className, sideOffset = 8, children, container: containerProp, ...props },
+    {
+      sideOffset = submenuSideOffset,
+      alignOffset = submenuAlignOffset,
+      ...props
+    },
     ref,
-  ) => {
-    const contextContainer = usePortalContainer();
-    const container = containerProp ?? contextContainer ?? undefined;
-
-    return (
-      <DropdownMenuPrimitive.Portal container={container}>
-        <DropdownMenuPrimitive.Positioner
-          ref={ref}
-          sideOffset={sideOffset}
-          {...props}
-        >
-          <DropdownMenuPrimitive.Popup
-            className={cn(
-              "overflow-hidden bg-kumo-control text-kumo-default", // background
-              "max-h-[var(--available-height)] overflow-y-auto", // limit height when list is too long and might go off screen
-              "rounded-lg shadow-lg ring ring-kumo-line", // border part
-              "min-w-36 p-1.5", // spacing
-              "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95", // open animation
-              "data-[side=bottom]:slide-in-from-top-2", // bottom side animation
-              "data-[side=left]:slide-in-from-right-2", // left side animation
-              "data-[side=right]:slide-in-from-left-2", // right side animation
-              "data-[side=top]:slide-in-from-bottom-2", // top side animation
-              "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95", // close animation
-              className,
-            )}
-          >
-            {children}
-          </DropdownMenuPrimitive.Popup>
-        </DropdownMenuPrimitive.Positioner>
-      </DropdownMenuPrimitive.Portal>
-    );
-  },
+  ) => (
+    <DropdownMenuContent
+      ref={ref}
+      sideOffset={sideOffset}
+      alignOffset={alignOffset}
+      {...props}
+    />
+  ),
 );
-
-const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
-  if (!IconComponent) return null;
-  if (React.isValidElement<{ className?: string }>(IconComponent)) {
-    return React.cloneElement(IconComponent, {
-      className: cn("mr-2 h-4 w-4", IconComponent.props.className),
-    });
-  }
-  const Comp = IconComponent as React.ComponentType<Record<string, unknown>>;
-  return <Comp className="mr-2 h-4 w-4" />;
-};
+DropdownMenuSubContent.displayName = "DropdownMenuSubContent";
 
 /**
  * DropdownMenuItem — a single actionable item within a dropdown menu.
@@ -214,7 +368,7 @@ const DropdownMenuItem = React.forwardRef<
       // Matches http://, https://, or protocol-relative //
       const isExternal = /^(https?:)?\/\//.test(href);
       const styles = cn(
-        "flex items-center",
+        "flex items-center gap-2",
         variant === "danger" &&
           "text-kumo-danger data-highlighted:bg-kumo-danger/5 data-highlighted:text-kumo-danger",
       );
@@ -253,7 +407,7 @@ const DropdownMenuItem = React.forwardRef<
         data-kumo-component="DropdownMenu"
         data-kumo-part="item"
         className={cn(
-          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          menuRowClasses,
           inset && "pl-8",
           dropdownVariants({ variant }),
           className,
@@ -318,8 +472,7 @@ const DropdownMenuLinkItem = React.forwardRef<
         data-kumo-component="DropdownMenu"
         data-kumo-part="link-item"
         className={cn(
-          "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
-          "focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-overlay",
+          menuRowClasses,
           "text-inherit no-underline",
           inset && "pl-8",
           dropdownVariants({ variant }),
@@ -344,10 +497,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     ref={ref}
     data-kumo-component="DropdownMenu"
     data-kumo-part="checkbox-item"
-    className={cn(
-      "relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-base outline-hidden transition-colors select-none focus:bg-kumo-tint focus:text-kumo-default focus:ring-kumo-focus/50 focus-visible:ring-2 focus-visible:ring-kumo-brand data-disabled:pointer-events-none data-disabled:opacity-50",
-      className,
-    )}
+    className={cn(menuRowClasses, "pl-8 transition-colors", className)}
     checked={checked}
     {...props}
   >
@@ -370,6 +520,7 @@ const DropdownMenuLabel = React.forwardRef<
     ref={ref}
     className={cn(
       "px-2 py-1.5 text-base font-semibold",
+      autoInsetClasses,
       inset && "pl-8",
       className,
     )}
@@ -414,12 +565,7 @@ const DropdownMenuRadioItem = React.forwardRef<
     ref={ref}
     data-kumo-component="DropdownMenu"
     data-kumo-part="radio-item"
-    className={cn(
-      "relative flex cursor-default items-center rounded-md px-2 py-1.5 text-base outline-hidden select-none",
-      "data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-kumo-tint",
-      inset && "pl-8",
-      className,
-    )}
+    className={cn(menuRowClasses, inset && "pl-8", className)}
     {...props}
   >
     {IconComponent && renderIconNode(IconComponent)}
@@ -487,6 +633,8 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
  * Compound component: `DropdownMenu` (Root), `.Trigger`, `.Content`, `.Item`,
  * `.LinkItem`, `.CheckboxItem`, `.RadioGroup`, `.RadioItem`, `.RadioItemIndicator`,
  * `.Sub`, `.SubTrigger`, `.SubContent`, `.Label`, `.Separator`, `.Shortcut`, `.Group`.
+ * `.Content` and `.SubContent` combine `.Portal`, `.Positioner` and `.Popup`,
+ * which can also be composed directly.
  *
  * Built on `@base-ui/react/menu`.
  *
@@ -510,10 +658,12 @@ DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
  */
 export const DropdownMenu = Object.assign(DropdownMenuPrimitive.Root, {
   Trigger: DropdownMenuTrigger,
-  Portal: DropdownMenuPrimitive.Portal,
+  Portal: DropdownMenuPortal,
+  Positioner: DropdownMenuPositioner,
+  Popup: DropdownMenuPopup,
   Sub: DropdownMenuPrimitive.SubmenuRoot,
   SubTrigger: DropdownMenuSubTrigger,
-  SubContent: DropdownMenuContent,
+  SubContent: DropdownMenuSubContent,
   Content: DropdownMenuContent,
   Item: DropdownMenuItem,
   LinkItem: DropdownMenuLinkItem,
