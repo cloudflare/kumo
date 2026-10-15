@@ -273,6 +273,19 @@ describe("LinkButton", () => {
     expect(link.classList.contains("flex")).toBe(false);
   });
 
+  it("allows consumers to opt into flex layout", () => {
+    render(
+      <LinkButton href="/home" className="flex">
+        Home
+      </LinkButton>,
+    );
+
+    const link = screen.getByRole("link", { name: "Home" });
+
+    expect(link.classList.contains("flex")).toBe(true);
+    expect(link.classList.contains("inline-flex")).toBe(false);
+  });
+
   it("renders as an <a> element", () => {
     render(<LinkButton href="/home">Home</LinkButton>);
     const link = screen.getByRole("link");
@@ -321,6 +334,32 @@ describe("LinkButton", () => {
   });
 
   describe("disabled", () => {
+    it("uses inline-flex layout by default", () => {
+      render(
+        <LinkButton href="/home" disabled>
+          Home
+        </LinkButton>,
+      );
+
+      const button = screen.getByRole("button", { name: "Home" });
+
+      expect(button.classList.contains("inline-flex")).toBe(true);
+      expect(button.classList.contains("flex")).toBe(false);
+    });
+
+    it("allows consumers to opt into flex layout", () => {
+      render(
+        <LinkButton href="/home" className="flex" disabled>
+          Home
+        </LinkButton>,
+      );
+
+      const button = screen.getByRole("button", { name: "Home" });
+
+      expect(button.classList.contains("flex")).toBe(true);
+      expect(button.classList.contains("inline-flex")).toBe(false);
+    });
+
     it("renders a disabled <button> instead of an <a>", () => {
       render(
         <LinkButton href="/home" disabled>
