@@ -1,7 +1,7 @@
 ---
 layout: ~/layouts/MdxDocLayout.astro
 title: "Link"
-description: "A styled anchor component for inline text links with multiple variants and composition support."
+description: "A styled anchor component for inline text links with composition support."
 sourceFile: "components/link"
 ---
 
@@ -11,7 +11,7 @@ import {
   LinkBasicDemo,
   LinkInParagraphDemo,
   LinkExternalDemo,
-  LinkCurrentVariantDemo,
+  LinkColorInheritanceDemo,
   LinkRenderDemo,
 } from "~/components/demos/LinkDemo";
 
@@ -52,7 +52,9 @@ import { Link } from "@cloudflare/kumo/components/link";
 ### Basic Link
 
   <p>
-    The default Link component renders an underlined anchor with primary color styling.
+    Link renders an underlined anchor that inherits its color from the
+    surrounding text. There is a single visual style — Kumo intentionally does
+    not ship a distinct "brand blue" link color.
   </p>
 
 ```tsx
@@ -146,9 +148,7 @@ export default function Example() {
   return (
     <>
       {/* Force a specific router link (bypasses LinkProvider) */}
-      <Link render={<RouterLink to="/dashboard" />} variant="inline">
-        Dashboard
-      </Link>
+      <Link render={<RouterLink to="/dashboard" />}>Dashboard</Link>
 
       {/* Force a plain anchor (bypasses LinkProvider) */}
       <Link render={<a />} href="https://example.com" target="_blank" rel="noopener noreferrer">
@@ -184,14 +184,14 @@ export default function Example() {
   <LinkExternalDemo client:visible />
 </ComponentExample>
 
-### Current Variant (Color Inheritance)
+### Color Inheritance
 
 <p>
-  The `current` variant inherits color from its parent, useful for links within
-  colored contexts like alerts.
+  Link inherits color from its parent, which makes it work naturally inside
+  colored contexts such as alerts and error messages.
 </p>
-<ComponentExample demo="LinkCurrentVariantDemo">
-  <LinkCurrentVariantDemo client:visible />
+<ComponentExample demo="LinkColorInheritanceDemo">
+  <LinkColorInheritanceDemo client:visible />
 </ComponentExample>
 
 ### Composition with render prop
@@ -228,11 +228,12 @@ export default function Example() {
     <tbody>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono text-xs">variant</td>
-        <td class="px-4 py-3 font-mono text-xs">
-          "inline" | "current" | "plain"
+        <td class="px-4 py-3 font-mono text-xs">"default"</td>
+        <td class="px-4 py-3 font-mono text-xs">"default"</td>
+        <td class="px-4 py-3 text-xs">
+          Visual style. Currently a single underlined variant that inherits
+          color from the surrounding text.
         </td>
-        <td class="px-4 py-3 font-mono text-xs">"inline"</td>
-        <td class="px-4 py-3 text-xs">Visual style variant</td>
       </tr>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono text-xs">render</td>
@@ -277,41 +278,6 @@ export default function Example() {
   </table>
 </div>
 
-### Variants
-
-<div class="overflow-x-auto">
-  <table class="w-full text-sm">
-    <thead>
-      <tr class="border-b border-kumo-hairline">
-        <th class="px-4 py-3 text-left font-semibold">Variant</th>
-        <th class="px-4 py-3 text-left font-semibold">Description</th>
-        <th class="px-4 py-3 text-left font-semibold">Use Case</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="border-b border-kumo-hairline">
-        <td class="px-4 py-3 font-mono text-xs">inline</td>
-        <td class="px-4 py-3 text-xs">Primary color with underline</td>
-        <td class="px-4 py-3 text-xs">Default for inline text links</td>
-      </tr>
-      <tr class="border-b border-kumo-hairline">
-        <td class="px-4 py-3 font-mono text-xs">current</td>
-        <td class="px-4 py-3 text-xs">
-          Inherits parent text color with underline
-        </td>
-        <td class="px-4 py-3 text-xs">
-          Links within colored contexts (alerts, errors)
-        </td>
-      </tr>
-      <tr class="border-b border-kumo-hairline">
-        <td class="px-4 py-3 font-mono text-xs">plain</td>
-        <td class="px-4 py-3 text-xs">Primary color without underline</td>
-        <td class="px-4 py-3 text-xs">Navigation links, menus, footers</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
 ### Link.ExternalIcon
 
 <p>
@@ -336,19 +302,16 @@ export default function Example() {
   <div class="space-y-4 text-sm">
     <div>
 
-      ### When to Use Each Variant
+      ### Visual Style
 
       <ul class="ml-4 list-disc space-y-1">
         <li>
-          <strong>inline</strong>: Default choice for links within body text
+          Links are underlined and inherit their color from the surrounding
+          text — there is no separate "brand blue" link color
         </li>
         <li>
-          <strong>current</strong>: Links inside alerts, banners, or other
-          colored containers
-        </li>
-        <li>
-          <strong>plain</strong>: Navigation menus, footers, or where underlines
-          are distracting
+          Inside colored contexts (alerts, errors, callouts), the link
+          automatically picks up the parent color
         </li>
       </ul>
     </div>
@@ -402,7 +365,7 @@ export default function Example() {
           The external icon has `aria-hidden="true"` - add descriptive text for
           screen readers
         </li>
-        <li>Ensure sufficient color contrast for all variants</li>
+        <li>Ensure sufficient color contrast with the surrounding text</li>
         <li>Use descriptive link text (avoid "click here")</li>
       </ul>
     </div>
