@@ -71,6 +71,15 @@ export interface TagInputProps extends NativeInputProps {
   error?: string | { message: ReactNode; match: FieldErrorMatch };
   variant?: KumoInputVariant;
   disabled?: boolean;
+  /** Submits each accepted tag as a separate form value under this name. */
+  name?: string;
+  /**
+   * Requires at least one accepted tag for native form validation. Like a
+   * native input, a `readOnly` TagInput is skipped by validation.
+   */
+  required?: boolean;
+  /** Prevents adding or removing tags while keeping the input focusable. */
+  readOnly?: boolean;
 }
 
 function splitValues(value: string) {
