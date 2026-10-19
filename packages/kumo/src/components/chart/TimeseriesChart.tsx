@@ -388,13 +388,15 @@ export const TimeseriesChart = forwardRef<
       buildTimeseriesThresholdAnnotations(thresholds);
     const thresholdExtent = getThresholdValueExtent(thresholds);
 
-    const markerClusters = clusterTimeseriesMarkers(
-      markers,
-      getApproximateMarkerClusterInterval(
-        getTimestamps(data, markers),
-        xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
-      ),
-    );
+    const markerClusters = markers?.length
+      ? clusterTimeseriesMarkers(
+          markers,
+          getApproximateMarkerClusterInterval(
+            getTimestamps(data, markers),
+            xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
+          ),
+        )
+      : [];
     const markerAnnotations = buildTimeseriesMarkerAnnotations(markerClusters, {
       color: markerColor,
       labelBackgroundColor: markerLabelBackgroundColor,
@@ -829,14 +831,14 @@ function findNearest(data: [number, number][], ts: number): number | null {
   return data[lo][1];
 }
 
-function getTimestamps(
+function* getTimestamps(
   data: TimeseriesData[],
-  markers: TimeseriesMarker[] | undefined,
-): number[] {
-  return [
-    ...data.flatMap((series) => series.data.map(([timestamp]) => timestamp)),
-    ...(markers?.map((marker) => marker.timestamp) ?? []),
-  ];
+  markers: TimeseriesMarker[],
+): Generator<number> {
+  for (const series of data) {
+    for (const [timestamp] of series.data) yield timestamp;
+  }
+  for (const marker of markers) yield marker.timestamp;
 }
 
 function getAllTooltipRowsAtTimestamp(

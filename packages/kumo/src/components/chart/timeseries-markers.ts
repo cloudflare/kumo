@@ -123,11 +123,21 @@ export function clusterTimeseriesMarkers(
 }
 
 export function getApproximateMarkerClusterInterval(
-  timestamps: number[],
+  timestamps: Iterable<number>,
   tickCount: number,
 ): number {
-  if (timestamps.length < 2) return 0;
-  return (Math.max(...timestamps) - Math.min(...timestamps)) / tickCount;
+  // A loop rather than Math.max(...timestamps): spreading large datasets into
+  // a call exceeds the engine's argument limit.
+  let min = Infinity;
+  let max = -Infinity;
+  let count = 0;
+  for (const timestamp of timestamps) {
+    if (timestamp < min) min = timestamp;
+    if (timestamp > max) max = timestamp;
+    count++;
+  }
+  if (count < 2) return 0;
+  return (max - min) / tickCount;
 }
 
 export function getTimeseriesMarkerFromEvent(params: {

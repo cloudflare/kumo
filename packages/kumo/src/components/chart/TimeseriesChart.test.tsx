@@ -386,4 +386,28 @@ describe("TimeseriesChart", () => {
       }),
     );
   });
+
+  it.each([
+    ["without markers", undefined],
+    ["with markers", [{ timestamp: 1, label: "Deployment" }]],
+  ])("renders large multi-series datasets %s", async (_, markers) => {
+    const mockChart = createMockChart();
+    const points = Array.from(
+      { length: 150_000 },
+      (_, i) => [i, i] as [number, number],
+    );
+
+    render(
+      <TimeseriesChart
+        echarts={createMockEcharts(mockChart) as any}
+        data={[
+          { name: "Requests", color: "#4290F0", data: points },
+          { name: "Errors", color: "#F04242", data: points },
+        ]}
+        markers={markers}
+      />,
+    );
+
+    await waitFor(() => expect(mockChart.setOption).toHaveBeenCalled());
+  });
 });
