@@ -14,6 +14,7 @@ import {
   PaginationUnknownTotalDemo,
   PaginationFullDemo,
   PaginationMidPageDemo,
+  PaginationEmptyDemo,
   PaginationLargeDatasetDemo,
   PaginationCustomTextDemo,
   PaginationPageSizeSelectorDemo,
@@ -141,6 +142,25 @@ return (
 <ComponentExample demo="PaginationMidPageDemo">
   <PaginationMidPageDemo client:visible />
 </ComponentExample>
+
+### Empty Results
+
+<p>
+  With `totalCount={0}`, Pagination shows a single empty page. Every navigation
+  button is disabled and `setPage` is never called with page 0.
+</p>
+<ComponentExample demo="PaginationEmptyDemo">
+  <PaginationEmptyDemo client:visible />
+</ComponentExample>
+
+### Page Input
+
+<p>
+  The page input accepts whole page numbers. Press Enter or move focus away to
+  go to that page. Numbers outside the range go to the first or last page.
+  Anything else, such as `abc`, `2.5` or `1e1`, puts back the current page
+  without calling `setPage`.
+</p>
 
 ### Large Dataset
 

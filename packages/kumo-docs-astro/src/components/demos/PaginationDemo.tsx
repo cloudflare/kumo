@@ -60,6 +60,15 @@ export function PaginationMidPageDemo() {
   );
 }
 
+/** An empty result set renders a single empty page with navigation disabled. */
+export function PaginationEmptyDemo() {
+  const [page, setPage] = useState(1);
+
+  return (
+    <Pagination page={page} setPage={setPage} perPage={10} totalCount={0} />
+  );
+}
+
 export function PaginationLargeDatasetDemo() {
   const [page, setPage] = useState(1);
 
