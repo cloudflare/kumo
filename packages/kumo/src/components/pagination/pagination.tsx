@@ -261,18 +261,15 @@ function PaginationControls({
   const hasKnownTotal = totalCount != null;
   const isUnknownTotal = !hasKnownTotal && hasNextPage !== undefined;
   const showFullControls = controls === "full" && !isUnknownTotal;
-  const isNextDisabled = hasKnownTotal
-    ? page === maxPage
-    : hasNextPage !== true;
+  const isNextDisabled = hasKnownTotal ? page >= maxPage : hasNextPage !== true;
 
   const commitEditingPage = () => {
     const value = editingPage.trim();
-    const parsed = Number(value);
-    if (value === "" || !Number.isInteger(parsed)) {
+    if (!/^\d+$/.test(value)) {
       setEditingPage(String(page));
       return;
     }
-    const clamped = clamp(parsed, 1, maxPage);
+    const clamped = clamp(Number(value), 1, maxPage);
     setPage(clamped);
     setEditingPage(String(clamped));
   };
@@ -367,7 +364,7 @@ function PaginationControls({
             <InputGroup.Button
               variant="secondary"
               aria-label={labels.lastPage}
-              disabled={page === maxPage}
+              disabled={page >= maxPage}
               onClick={() => {
                 setPage(maxPage);
                 setEditingPage(String(maxPage));
