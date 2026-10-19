@@ -95,6 +95,10 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
       error,
       variant,
       disabled,
+      readOnly,
+      name,
+      form,
+      required,
       className,
       placeholder,
       id,
@@ -152,7 +156,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
 
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
       onKeyDownProp?.(event);
-      if (event.defaultPrevented) return;
+      if (event.defaultPrevented || readOnly) return;
       // Enter/Tab/comma while an IME is composing confirm the conversion, not the tag.
       // keyCode 229 covers Safari, which fires compositionend before keydown.
       if (event.nativeEvent.isComposing || event.keyCode === 229) return;
@@ -167,11 +171,14 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
 
     const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
       onPasteProp?.(event);
-      if (event.defaultPrevented) return;
+      if (event.defaultPrevented || readOnly) return;
       const text = event.clipboardData.getData("text");
       if (!/[\n,]/.test(text)) return;
       event.preventDefault();
-      commit(text);
+      const { selectionStart, selectionEnd } = event.currentTarget;
+      const start = selectionStart ?? inputValue.length;
+      const end = selectionEnd ?? start;
+      commit(inputValue.slice(0, start) + text + inputValue.slice(end));
     };
 
     const fieldError =
@@ -198,13 +205,16 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
           "px-1 py-0.5",
         )}
         disabled={disabled}
+        readOnly={readOnly}
+        form={form}
+        required={required && values.length === 0}
         autoComplete={autoComplete}
         id={controlProps?.id ?? id ?? inputId}
         placeholder={placeholder}
         value={inputValue}
         onBlur={(event) => {
           onBlur?.(event);
-          if (!event.defaultPrevented) commit(inputValue);
+          if (!event.defaultPrevented && !readOnly) commit(inputValue);
         }}
         onChange={(event) => {
           setInputValue(event.target.value);
@@ -238,12 +248,21 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
               shape="square"
               size="xs"
               variant="ghost"
-              disabled={disabled}
+              disabled={disabled || readOnly}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() =>
                 setValues(values.filter((value) => value !== item))
               }
             />
+            {name ? (
+              <input
+                type="hidden"
+                name={name}
+                form={form}
+                disabled={disabled}
+                value={item}
+              />
+            ) : null}
           </span>
         ))}
         {hasField ? (
