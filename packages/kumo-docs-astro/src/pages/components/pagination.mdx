@@ -146,8 +146,10 @@ return (
 ### Empty Results
 
 <p>
-  With `totalCount={0}`, Pagination shows a single empty page. Every navigation
-  button is disabled and `setPage` is never called with page 0.
+  With `totalCount={0}`, Pagination shows a single empty page and `setPage` is
+  never called with page 0. On page 1, every navigation button is disabled. If
+  results can become empty while on a later page (for example, after filtering),
+  reset `page` to 1.
 </p>
 <ComponentExample demo="PaginationEmptyDemo">
   <PaginationEmptyDemo client:visible />
