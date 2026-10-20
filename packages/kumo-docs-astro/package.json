@@ -1,6 +1,6 @@
 {
   "name": "@cloudflare/kumo-docs-astro",
-  "version": "1.5.23",
+  "version": "1.5.24",
   "private": true,
   "type": "module",
   "exports": {
