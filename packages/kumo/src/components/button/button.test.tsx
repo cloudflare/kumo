@@ -266,9 +266,29 @@ describe("LinkButton", () => {
         Docs
       </LinkButton>,
     );
-    const link = screen.getByRole("link");
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("does not announce a new tab when external is overridden to _self", () => {
+    render(
+      <LinkButton href="https://example.com" external target="_self">
+        Docs
+      </LinkButton>,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
+  });
+
+  it("does not announce a raw target='_blank' without external", () => {
+    render(
+      <LinkButton href="https://example.com" target="_blank">
+        Docs
+      </LinkButton>,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
   });
 
   it("forwards ref to the <a> DOM node", () => {

@@ -315,14 +315,17 @@ export default function Example() {
 ### Link.ExternalIcon
 
 <p>
-  SVG icon component to indicate external links. Accepts all SVG element
-  attributes.
+  Icon that indicates a link opens in a new tab. It also renders visually
+  hidden text, localized through `KumoLocaleProvider` (`link.opensInNewTab`),
+  so screen-reader users get the same warning. Pass `label` to override the
+  text. Accepts all SVG element attributes.
 </p>
 
 ```tsx
 <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
   External Site <Link.ExternalIcon />
 </Link>
+// Accessible name: "External Site (opens in a new tab)"
 ```
 
 </ComponentSection>
