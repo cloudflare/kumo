@@ -182,6 +182,76 @@ describe("Pagination", () => {
 
       expect(setPage).toHaveBeenCalledWith(3);
     });
+
+    it("ignores non-numeric input on Enter and restores the current page", async () => {
+      const user = userEvent.setup();
+      const setPage = vi.fn();
+      renderPagination({ page: 4, setPage });
+
+      const input = screen.getByLabelText("Page number") as HTMLInputElement;
+      await user.clear(input);
+      await user.type(input, "abc");
+      await user.keyboard("{Enter}");
+
+      expect(setPage).not.toHaveBeenCalled();
+      expect(input.value).toBe("4");
+    });
+
+    it("ignores non-numeric input on blur and restores the current page", async () => {
+      const user = userEvent.setup();
+      const setPage = vi.fn();
+      renderPagination({ page: 4, setPage });
+
+      const input = screen.getByLabelText("Page number") as HTMLInputElement;
+      await user.clear(input);
+      await user.type(input, "abc");
+      await user.tab();
+
+      expect(setPage).not.toHaveBeenCalled();
+      expect(input.value).toBe("4");
+    });
+
+    it("ignores fractional page numbers and restores the current page", async () => {
+      const user = userEvent.setup();
+      const setPage = vi.fn();
+      renderPagination({ page: 4, setPage });
+
+      const input = screen.getByLabelText("Page number") as HTMLInputElement;
+      await user.clear(input);
+      await user.click(input);
+      await user.paste("2.5");
+      await user.keyboard("{Enter}");
+
+      expect(setPage).not.toHaveBeenCalled();
+      expect(input.value).toBe("4");
+    });
+  });
+
+  describe("empty result set", () => {
+    it("disables next/last buttons when totalCount is 0", () => {
+      renderPagination({ page: 1, perPage: 10, totalCount: 0 });
+
+      expect(screen.getByLabelText("Next page").hasAttribute("disabled")).toBe(
+        true,
+      );
+      expect(screen.getByLabelText("Last page").hasAttribute("disabled")).toBe(
+        true,
+      );
+    });
+
+    it("never requests page 0 from the page input when totalCount is 0", async () => {
+      const user = userEvent.setup();
+      const setPage = vi.fn();
+      renderPagination({ page: 1, perPage: 10, totalCount: 0, setPage });
+
+      const input = screen.getByLabelText("Page number");
+      await user.clear(input);
+      await user.type(input, "3");
+      await user.keyboard("{Enter}");
+
+      expect(setPage).not.toHaveBeenCalledWith(0);
+      expect(setPage).toHaveBeenCalledWith(1);
+    });
   });
 
   describe("simple controls mode", () => {

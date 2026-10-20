@@ -11,7 +11,9 @@ import CodeBlock from "~/components/docs/CodeBlock.astro";
 import PropsTable from "~/components/docs/PropsTable.astro";
 import {
   TagInputDemo,
+  TagInputFormDemo,
   TagInputLimitedDemo,
+  TagInputReadOnlyDemo,
   TagInputLocalizationDemo,
   TagInputUnrestrictedDemo,
 } from "~/components/demos/TagInputDemo";
@@ -50,6 +52,14 @@ const [tags, setTags] = useState<string[]>([]);
 ### Maximum values
 <ComponentExample demo="TagInputLimitedDemo"><TagInputLimitedDemo client:load /></ComponentExample>
 
+### Forms
+Set `name` to submit each tag as a separate form value, so `FormData.getAll(name)` returns the tags. Text still in the input becomes a tag when focus leaves it, so clicking a submit button includes it. `required` passes once there's at least one tag.
+<ComponentExample demo="TagInputFormDemo"><TagInputFormDemo client:load /></ComponentExample>
+
+### Read-only
+`readOnly` shows the tags and keeps the input focusable, but tags can't be added or removed. Like a native read-only input, it's skipped by form validation, even when `required` is set.
+<ComponentExample demo="TagInputReadOnlyDemo"><TagInputReadOnlyDemo client:load /></ComponentExample>
+
 ### Localization
 <ComponentExample demo="TagInputLocalizationDemo"><TagInputLocalizationDemo client:load /></ComponentExample>
 
@@ -59,7 +69,7 @@ const [tags, setTags] = useState<string[]>([]);
 
 ## Behavior
 
-Press Enter, comma, or Tab to create a tag. Blur also commits the current value. Pasting comma- or newline-separated text creates each value synchronously. Duplicate values are ignored.
+Press Enter, comma, or Tab to create a tag. Blur also commits the current value. Pasting comma- or newline-separated text inserts it into the current text at the cursor, then creates each value synchronously. Pasting text without a separator works like a normal paste. Duplicate values are ignored.
 
 ## Localization
 

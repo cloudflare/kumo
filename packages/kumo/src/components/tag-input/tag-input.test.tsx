@@ -72,6 +72,118 @@ describe("TagInput", () => {
     expect(screen.getByText("valid@example.com")).toBeTruthy();
   });
 
+  it("applies pasted tags to the current draft", () => {
+    const onValueChange = vi.fn();
+    render(<TagInput aria-label="Tags" onValueChange={onValueChange} />);
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "alice" } });
+    input.setSelectionRange(5, 5);
+    fireEvent.paste(input, {
+      clipboardData: { getData: () => ", bob" },
+    });
+    expect(onValueChange).toHaveBeenLastCalledWith(["alice", "bob"]);
+    expect(input.value).toBe("");
+  });
+
+  it("replaces the selected part of the draft when pasting tags", () => {
+    const onValueChange = vi.fn();
+    render(<TagInput aria-label="Tags" onValueChange={onValueChange} />);
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "alXXce" } });
+    input.setSelectionRange(2, 4);
+    fireEvent.paste(input, {
+      clipboardData: { getData: () => "i, bob, al" },
+    });
+    expect(onValueChange).toHaveBeenLastCalledWith(["ali", "bob", "alce"]);
+  });
+
+  it("leaves a paste without separators to the browser", () => {
+    const onValueChange = vi.fn();
+    render(<TagInput aria-label="Tags" onValueChange={onValueChange} />);
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "ali" } });
+    const event = createEvent.paste(input, {
+      clipboardData: { getData: () => "ce" },
+    });
+    fireEvent(input, event);
+    expect(event.defaultPrevented).toBe(false);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("prevents value changes when readOnly", () => {
+    const onValueChange = vi.fn();
+    render(
+      <TagInput
+        aria-label="Tags"
+        defaultValue={["one"]}
+        readOnly
+        onValueChange={onValueChange}
+      />,
+    );
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    expect(input.readOnly).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove one" }));
+    fireEvent.keyDown(input, { key: "Backspace" });
+    fireEvent.paste(input, { clipboardData: { getData: () => "two, three" } });
+    fireEvent.change(input, { target: { value: "four" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.blur(input);
+
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(screen.getByText("one")).toBeTruthy();
+    expect(
+      screen
+        .getByRole("button", { name: "Remove one" })
+        .getAttribute("disabled"),
+    ).not.toBeNull();
+  });
+
+  it("submits accepted tags with the form", () => {
+    const { container } = render(
+      <form>
+        <TagInput aria-label="Tags" name="tags" defaultValue={["one", "two"]} />
+      </form>,
+    );
+    const form = container.querySelector("form")!;
+    const input = screen.getByLabelText("Tags") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "draft" } });
+    expect(new FormData(form).getAll("tags")).toEqual(["one", "two"]);
+  });
+
+  it("omits tags from the form when disabled", () => {
+    const { container } = render(
+      <form>
+        <TagInput
+          aria-label="Tags"
+          name="tags"
+          defaultValue={["one"]}
+          disabled
+        />
+      </form>,
+    );
+    expect(
+      new FormData(container.querySelector("form")!).getAll("tags"),
+    ).toEqual([]);
+  });
+
+  it("satisfies required once a tag exists", () => {
+    const { container, rerender } = render(
+      <form>
+        <TagInput aria-label="Tags" name="tags" required value={["one"]} />
+      </form>,
+    );
+    const form = container.querySelector("form")!;
+    expect(form.checkValidity()).toBe(true);
+
+    rerender(
+      <form>
+        <TagInput aria-label="Tags" name="tags" required value={[]} />
+      </form>,
+    );
+    expect(form.checkValidity()).toBe(false);
+  });
+
   it("disables tag removal when disabled", () => {
     render(<TagInput aria-label="Tags" defaultValue={["one"]} disabled />);
     expect(
