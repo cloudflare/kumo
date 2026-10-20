@@ -45,4 +45,11 @@ describe("SensitiveInput", () => {
     const inputEl = container.querySelector("input");
     expect(inputEl?.parentElement?.className).toContain("ring-kumo-danger");
   });
+
+  it("forwards required to the native input", () => {
+    const { container } = render(<SensitiveInput label="API Key" required />);
+    const inputEl = container.querySelector("input");
+    expect(inputEl?.required).toBe(true);
+    expect(inputEl?.checkValidity()).toBe(false);
+  });
 });
