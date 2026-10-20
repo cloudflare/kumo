@@ -149,6 +149,14 @@ export function ButtonLinkAsButtonDemo() {
   );
 }
 
+export function ButtonLinkNewTabAnnouncementDemo() {
+  return (
+    <LinkButton href="https://developers.cloudflare.com" external>
+      Cloudflare Docs
+    </LinkButton>
+  );
+}
+
 /** Demonstrates a title tooltip on an enabled LinkButton. */
 export function ButtonLinkTooltipDemo() {
   return (

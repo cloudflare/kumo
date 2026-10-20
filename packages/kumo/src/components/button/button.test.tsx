@@ -3,6 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Plus } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
+import { LinkProvider } from "../../utils/link-provider";
 
 describe("Button", () => {
   describe("children wrapper", () => {
@@ -248,9 +249,10 @@ describe("RefreshButton", () => {
 describe("LinkButton", () => {
   it("renders as an <a> element", () => {
     render(<LinkButton href="/home">Home</LinkButton>);
-    const link = screen.getByRole("link");
+    const link = screen.getByRole("link", { name: "Home" });
     expect(link).toBeTruthy();
     expect(link.getAttribute("href")).toBe("/home");
+    expect(link.getAttribute("aria-describedby")).toBeNull();
   });
 
   it("allows text selection", () => {
@@ -266,9 +268,146 @@ describe("LinkButton", () => {
         Docs
       </LinkButton>,
     );
-    const link = screen.getByRole("link");
+    const link = screen.getByRole("link", {
+      name: "Docs",
+      description: "Opens in a new tab",
+    });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("warns when target='_blank' is provided directly", () => {
+    render(
+      <LinkButton href="https://example.com" target="_blank">
+        Docs
+      </LinkButton>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Docs",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("does not warn when external behavior is overridden to the same tab", () => {
+    render(
+      <LinkButton href="https://example.com" external target="_self">
+        Docs
+      </LinkButton>,
+    );
+
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
+  });
+
+  it("preserves an authored accessible name while adding the description", () => {
+    render(
+      <LinkButton
+        href="https://example.com"
+        target="_blank"
+        aria-label="Open documentation"
+      >
+        Docs
+      </LinkButton>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Open documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves aria-labelledby precedence when both naming attributes exist", () => {
+    render(
+      <>
+        <span id="documentation-label">Open labelled documentation</span>
+        <LinkButton
+          href="https://example.com"
+          target="_blank"
+          aria-label="Ignored label"
+          aria-labelledby="documentation-label"
+        >
+          Docs
+        </LinkButton>
+      </>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Open labelled documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves a custom description when automatic warning is disabled", () => {
+    render(
+      <>
+        <span id="custom-description">Opens in another browsing context</span>
+        <LinkButton
+          href="https://example.com"
+          external
+          announceNewTab={false}
+          aria-describedby="custom-description"
+        >
+          Docs
+        </LinkButton>
+      </>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Docs",
+        description: "Opens in another browsing context",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves aria-description when adding the warning", () => {
+    render(
+      <LinkButton
+        href="https://example.com"
+        target="_blank"
+        aria-description="Requires authentication"
+      >
+        Docs
+      </LinkButton>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Docs",
+        description: "Requires authentication Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("forwards the new-tab description through a custom LinkProvider", () => {
+    const CustomLink = React.forwardRef<
+      HTMLAnchorElement,
+      React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
+    >(({ href, ...rest }, ref) => (
+      // oxlint-disable-next-line anchor-has-content, control-has-associated-label
+      <a ref={ref} href={href} data-testid="custom-link-button" {...rest} />
+    ));
+    CustomLink.displayName = "CustomLink";
+
+    render(
+      <LinkProvider component={CustomLink}>
+        <LinkButton href="https://example.com" target="_blank">
+          Docs
+        </LinkButton>
+      </LinkProvider>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Docs",
+      description: "Opens in a new tab",
+    });
+    expect(link.getAttribute("data-testid")).toBe("custom-link-button");
   });
 
   it("forwards ref to the <a> DOM node", () => {
@@ -324,6 +463,7 @@ describe("LinkButton", () => {
       expect(button.hasAttribute("target")).toBe(false);
       expect(button.hasAttribute("rel")).toBe(false);
       expect(button.hasAttribute("download")).toBe(false);
+      expect(button.hasAttribute("aria-describedby")).toBe(false);
     });
 
     it("preserves the LinkButton data attribute", () => {

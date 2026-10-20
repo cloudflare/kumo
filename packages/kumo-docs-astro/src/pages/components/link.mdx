@@ -11,6 +11,7 @@ import {
   LinkBasicDemo,
   LinkInParagraphDemo,
   LinkExternalDemo,
+  LinkNewTabAnnouncementDemo,
   LinkCurrentVariantDemo,
   LinkRenderDemo,
 } from "~/components/demos/LinkDemo";
@@ -89,6 +90,61 @@ export default function Example() {
   );
 }
 ```
+
+When the effective `target` is `_blank`, Kumo associates the localized
+description “Opens in a new tab” with the link. The link's accessible name stays
+focused on its destination or purpose. This behavior is based on the explicit
+target, not whether the URL is external, and it does not change navigation.
+
+Keep an appropriate visible indication such as `Link.ExternalIcon`. The
+accessible description supplements rather than replaces that visual warning.
+
+### New-tab description and localization
+
+Use `KumoLocaleProvider` to translate Kumo-owned description text:
+
+```tsx
+<KumoLocaleProvider
+  translations={{
+    link: { opensInNewTab: "Se abre en una pestaña nueva" },
+  }}
+>
+  <Link href="https://example.com" target="_blank">
+    Documentation <Link.ExternalIcon />
+  </Link>
+</KumoLocaleProvider>
+```
+
+Set `announceNewTab={true}` when an application-owned render callback or routing
+component chooses `_blank` internally. Set it to `false` when the application
+already provides an equivalent description. Opting out removes only Kumo's
+description; authored `aria-describedby` and `aria-description` content remains.
+
+```tsx
+<span id="custom-new-tab-description" hidden>
+  Opens in a separate tab
+</span>
+<Link
+  href="https://example.com"
+  target="_blank"
+  announceNewTab={false}
+  aria-describedby="custom-new-tab-description"
+>
+  Documentation <Link.ExternalIcon />
+</Link>
+```
+
+Kumo can infer only props supplied to `Link` or a static `render` element. A
+`LinkProvider`, custom component, or render callback that chooses or overrides
+the target internally must forward the provided accessibility props and set
+`announceNewTab` explicitly when needed. Kumo does not inspect the DOM or invoke
+render callbacks to infer navigation behavior.
+
+Descriptions may be announced during ordinary focus navigation, but screen
+reader verbosity settings and link-list navigation can omit descriptions. This
+feature alone does not guarantee accessibility conformance. W3C
+[Technique G201](https://www.w3.org/WAI/WCAG22/Techniques/general/G201) is
+advisory and discusses both spoken and visual warnings.
 
 ### Framework Integration (LinkProvider)
 
@@ -184,6 +240,17 @@ export default function Example() {
   <LinkExternalDemo client:visible />
 </ComponentExample>
 
+### Accessible New-tab Description
+
+<p>
+  New-tab links receive a localized accessible description automatically. Use
+  `announceNewTab` to support application-owned target selection or migrate an
+  existing equivalent warning without duplicating it.
+</p>
+<ComponentExample demo="LinkNewTabAnnouncementDemo">
+  <LinkNewTabAnnouncementDemo client:visible />
+</ComponentExample>
+
 ### Current Variant (Color Inheritance)
 
 <p>
@@ -259,6 +326,15 @@ export default function Example() {
         <td class="px-4 py-3 text-xs">
           <strong>Deprecated.</strong> Use `href` instead. This prop will
           be removed in a future major version.
+        </td>
+      </tr>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">announceNewTab</td>
+        <td class="px-4 py-3 font-mono text-xs">boolean</td>
+        <td class="px-4 py-3 font-mono text-xs">target === "_blank"</td>
+        <td class="px-4 py-3 text-xs">
+          Adds or suppresses Kumo's localized accessible new-tab description.
+          Set explicitly when a custom renderer chooses the target internally.
         </td>
       </tr>
       <tr class="border-b border-kumo-hairline">
@@ -399,8 +475,12 @@ export default function Example() {
       <ul class="ml-4 list-disc space-y-1">
         <li>Links are keyboard focusable by default</li>
         <li>
-          The external icon has `aria-hidden="true"` - add descriptive text for
-          screen readers
+          The external icon has `aria-hidden="true"`; Kumo adds an accessible
+          description when the effective target is `_blank`
+        </li>
+        <li>
+          Keep a visible new-tab indication; the screen-reader description does
+          not replace it
         </li>
         <li>Ensure sufficient color contrast for all variants</li>
         <li>Use descriptive link text (avoid "click here")</li>

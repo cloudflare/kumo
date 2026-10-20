@@ -24,6 +24,7 @@ import {
   ButtonDisabledDemo,
   ButtonTitleDemo,
   ButtonLinkAsButtonDemo,
+  ButtonLinkNewTabAnnouncementDemo,
   ButtonLinkTooltipDemo,
   ButtonDisabledLinkDemo,
 } from "~/components/demos/ButtonDemo";
@@ -233,6 +234,23 @@ export default function Example() {
   vrTitle="Link as Button"
 >
   <ButtonLinkAsButtonDemo client:visible />
+</ComponentExample>
+
+### LinkButton New-tab Description
+
+<p>
+  `LinkButton` adds the same localized accessible description as `Link` when
+  its effective target is `_blank`. The `external` prop continues to set
+  `target="_blank"` and `rel="noopener noreferrer"`; an explicit same-tab
+  target overrides that behavior. Use `announceNewTab` only for an intentional
+  opt-in or opt-out, and keep a visible new-tab icon where appropriate.
+</p>
+<ComponentExample
+  demo="ButtonLinkNewTabAnnouncementDemo"
+  vrSection="link-new-tab-description"
+  vrTitle="LinkButton New-tab Description"
+>
+  <ButtonLinkNewTabAnnouncementDemo client:visible />
 </ComponentExample>
 
 ### Link with Tooltip

@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, type SVGProps } from "react";
+import {
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  useEffect,
+  type AnchorHTMLAttributes,
+  type SVGProps,
+} from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "../../utils/cn";
@@ -7,6 +14,7 @@ import {
   useLinkComponent,
   type LinkComponentProps,
 } from "../../utils/link-provider";
+import { useNewTabDescription } from "../../utils/new-tab-description";
 
 /**
  * ExternalIcon - Visual indicator for links that open in a new tab/window.
@@ -115,7 +123,14 @@ export function linkVariants({
  */
 export type LinkProps = useRender.ComponentProps<"a"> &
   LinkComponentProps &
-  KumoLinkVariantsProps;
+  KumoLinkVariantsProps & {
+    /**
+     * Controls whether an accessible description explains that activation
+     * opens a new tab. Defaults to `true` when the effective target is
+     * `_blank`. Set this explicitly when a custom renderer selects the target.
+     */
+    announceNewTab?: boolean;
+  };
 
 /**
  * Link component for consistent inline text links.
@@ -159,10 +174,50 @@ export type LinkProps = useRender.ComponentProps<"a"> &
  * ```
  */
 const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
-  { className, variant = "inline", render, ...props },
+  { announceNewTab, children, className, variant = "inline", render, ...props },
   ref,
 ) {
   const LinkComponent = useLinkComponent();
+  const renderElement = isValidElement<AnchorHTMLAttributes<HTMLAnchorElement>>(
+    render,
+  )
+    ? render
+    : undefined;
+  const renderProps = renderElement?.props;
+  const effectiveTarget = renderProps?.target ?? props.target;
+  const shouldAnnounceNewTab =
+    announceNewTab ?? effectiveTarget?.toLowerCase() === "_blank";
+  const { describedBy, description } = useNewTabDescription({
+    announce: shouldAnnounceNewTab,
+    ariaDescribedBy:
+      renderProps?.["aria-describedby"] ?? props["aria-describedby"],
+    ariaDescription:
+      renderProps?.["aria-description"] ?? props["aria-description"],
+  });
+  const descriptionProps = shouldAnnounceNewTab
+    ? { "aria-describedby": describedBy }
+    : {};
+  const accessibleProps = {
+    ...props,
+    ...descriptionProps,
+  };
+  const renderHasChildren =
+    renderProps !== undefined &&
+    Object.prototype.hasOwnProperty.call(renderProps, "children");
+  const effectiveChildren = renderHasChildren ? renderProps.children : children;
+  const childrenWithDescription = (
+    <>
+      {effectiveChildren}
+      {description}
+    </>
+  );
+  const accessibleRender =
+    renderElement && shouldAnnounceNewTab
+      ? cloneElement(renderElement, {
+          ...descriptionProps,
+          children: childrenWithDescription,
+        })
+      : render;
 
   if (process.env.NODE_ENV !== "production") {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- dev-only, conditional is stable
@@ -187,12 +242,13 @@ const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
       linkVariants({ variant }),
       "group/link inline-flex items-center gap-[0.1875em] has-[>[data-kumo-component=Badge]]:rounded-full",
     ),
+    children: childrenWithDescription,
   } as useRender.ElementProps<"a">;
 
   const element = useRender({
-    render: render ?? <LinkComponent />,
+    render: accessibleRender ?? <LinkComponent />,
     ref,
-    props: mergeProps<"a">(defaultProps, props, { className }),
+    props: mergeProps<"a">(defaultProps, accessibleProps, { className }),
   });
 
   return element;

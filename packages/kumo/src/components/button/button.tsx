@@ -5,6 +5,7 @@ import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
+import { useNewTabDescription } from "../../utils/new-tab-description";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
 export const KUMO_BUTTON_VARIANTS = {
@@ -376,6 +377,11 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
     icon?: Icon | React.ReactNode;
     /** When `true`, opens in a new tab with `rel="noopener noreferrer"`. */
     external?: boolean;
+    /**
+     * Controls whether an accessible description explains that activation
+     * opens a new tab. Defaults to `true` when the effective target is `_blank`.
+     */
+    announceNewTab?: boolean;
     linksExternal?: boolean;
   };
 
@@ -498,6 +504,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       className,
       disabled = false,
       external,
+      announceNewTab,
       href,
       shape = "base",
       size = "base",
@@ -515,6 +522,18 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
       : {};
+    const effectiveTarget = props.target ?? externalProps.target;
+    const shouldAnnounceNewTab =
+      announceNewTab ?? effectiveTarget?.toLowerCase() === "_blank";
+    const { describedBy, description } = useNewTabDescription({
+      announce: shouldAnnounceNewTab,
+      ariaDescribedBy: props["aria-describedby"],
+      ariaDescription: props["aria-description"],
+    });
+    const accessibleProps = {
+      ...props,
+      ...(shouldAnnounceNewTab ? { "aria-describedby": describedBy } : {}),
+    };
 
     if (disabled) {
       // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
@@ -551,9 +570,10 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         to={typeof href === "string" ? href : undefined}
         {...externalProps}
-        {...props}
+        {...accessibleProps}
       >
         {renderButtonContent(variant, iconNode, children)}
+        {description}
       </LinkComponent>
     );
 
