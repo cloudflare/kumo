@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vite-plus/test";
-import { createElement, forwardRef } from "react";
+import { createElement, createRef, forwardRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { Link, KUMO_LINK_VARIANTS, linkVariants } from "./link";
 import { Badge } from "../badge/badge";
 import { LinkProvider } from "../../utils/link-provider";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 
 describe("Link", () => {
   it("should be defined", () => {
@@ -384,5 +385,443 @@ describe("LinkProvider integration patterns", () => {
     // The wrapper never saw the URL via `to` — it was passed as `href`
     // which the wrapper ignores for navigation purposes.
     expect(anchor.getAttribute("data-navigated-to")).toBe("none");
+  });
+});
+
+describe("Link.ExternalIcon new-tab announcement", () => {
+  it("adds screen-reader text to the link's accessible name", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs <Link.ExternalIcon />
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs (opens in a new tab)" }),
+    ).toBeTruthy();
+  });
+
+  it("does not change links without the icon", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs
+      </Link>,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
+  });
+
+  it("uses the localized announcement", () => {
+    render(
+      <KumoLocaleProvider
+        translations={{
+          link: { opensInNewTab: "(se abre en una pestaña nueva)" },
+        }}
+      >
+        <Link href="https://example.com" target="_blank">
+          Documentación <Link.ExternalIcon />
+        </Link>
+      </KumoLocaleProvider>,
+    );
+    expect(
+      screen.getByRole("link", {
+        name: "Documentación (se abre en una pestaña nueva)",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("accepts a label override", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs <Link.ExternalIcon label="(external site)" />
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs (external site)" }),
+    ).toBeTruthy();
+  });
+});
+
+describe("Link external", () => {
+  it("opens in a new tab and adds one localized warning and decorative indicator", () => {
+    render(
+      <Link href="https://example.com" external>
+        Docs
+      </Link>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.querySelectorAll("svg[aria-hidden='true']")).toHaveLength(1);
+    expect(link.querySelectorAll(".sr-only")).toHaveLength(1);
+    expect(link.hasAttribute("external")).toBe(false);
+  });
+
+  it("keeps defaults when optional target and rel props are undefined", () => {
+    render(
+      <Link
+        href="https://example.com"
+        external
+        target={undefined}
+        rel={undefined}
+      >
+        Docs
+      </Link>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("supports localized warning copy through KumoLocaleProvider", () => {
+    render(
+      <KumoLocaleProvider
+        translations={{
+          link: { opensInNewTab: "(se abre en una pestaña nueva)" },
+        }}
+      >
+        <Link href="https://example.com" external>
+          Documentación
+        </Link>
+      </KumoLocaleProvider>,
+    );
+    expect(
+      screen.getByRole("link", {
+        name: "Documentación (se abre en una pestaña nueva)",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("does not warn or add an indicator when the target is explicitly the current tab", () => {
+    render(
+      <Link href="https://example.com" external target="_self" rel="nofollow">
+        Docs
+      </Link>,
+    );
+    const link = screen.getByRole("link", { name: "Docs" });
+    expect(link.getAttribute("target")).toBe("_self");
+    expect(link.getAttribute("rel")).toBe("nofollow");
+    expect(link.querySelector("svg")).toBeNull();
+    expect(link.querySelector(".sr-only")).toBeNull();
+  });
+
+  it("recognizes _blank case-insensitively and respects an explicit rel", () => {
+    render(
+      <Link
+        href="https://example.com"
+        external
+        target="_BLANK"
+        rel="noopener nofollow"
+      >
+        Docs
+      </Link>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.getAttribute("target")).toBe("_BLANK");
+    expect(link.getAttribute("rel")).toBe("noopener nofollow");
+  });
+
+  it("removes external behavior when a boolean external prop becomes false", () => {
+    const { rerender } = render(
+      <Link href="/docs" external>
+        Docs
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs (opens in a new tab)" }),
+    ).toBeTruthy();
+    rerender(
+      <Link href="/docs" external={false}>
+        Docs
+      </Link>,
+    );
+    const link = screen.getByRole("link", { name: "Docs" });
+    expect(link.hasAttribute("target")).toBe(false);
+    expect(link.hasAttribute("rel")).toBe(false);
+    expect(link.querySelector(".sr-only")).toBeNull();
+  });
+
+  it("does not infer external behavior from a raw target prop", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs" }).querySelector(".sr-only"),
+    ).toBeNull();
+  });
+
+  it("preserves explicit accessible names and consumer descriptions", () => {
+    render(
+      <>
+        <span id="format" hidden>
+          PDF document.
+        </span>
+        <Link
+          href="/docs"
+          external
+          aria-label="Documentation"
+          aria-describedby="format"
+          aria-description="Additional context"
+        >
+          Docs
+        </Link>
+      </>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Documentation",
+      description: "PDF document.",
+    });
+    expect(link.getAttribute("aria-label")).toBe("Documentation");
+    expect(link.getAttribute("aria-describedby")).toBe("format");
+    expect(link.getAttribute("aria-description")).toBe("Additional context");
+  });
+
+  it("retains the meaningful name of a title-bearing icon link with an explicit label", () => {
+    render(
+      <Link
+        href="/docs"
+        external
+        title="Documentation"
+        aria-label="Documentation (opens in a new tab)"
+      >
+        <svg aria-hidden="true" />
+      </Link>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Documentation (opens in a new tab)",
+    });
+    expect(link.getAttribute("title")).toBe("Documentation");
+    expect(link.getAttribute("aria-label")).toBe(
+      "Documentation (opens in a new tab)",
+    );
+  });
+
+  it("retains an icon link's aria-labelledby association and naming precedence", () => {
+    render(
+      <>
+        <span id="documentation-name" className="sr-only">
+          Documentation (opens in a new tab)
+        </span>
+        <Link
+          href="/docs"
+          external
+          title="Documentation"
+          aria-label="Other name"
+          aria-labelledby="documentation-name"
+        >
+          <svg aria-hidden="true" />
+        </Link>
+      </>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Documentation (opens in a new tab)",
+    });
+    expect(link.getAttribute("aria-labelledby")).toBe("documentation-name");
+    expect(link.getAttribute("aria-label")).toBe("Other name");
+  });
+
+  it("does not replace meaningful visible text with an explanatory title", () => {
+    render(
+      <Link href="/docs" external title="PDF document">
+        Download documentation
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", {
+        name: "Download documentation (opens in a new tab)",
+        description: "PDF document",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("retains the pill shape around an external Badge link", () => {
+    render(
+      <Link href="/changelog" external variant="plain">
+        <Badge variant="outline">View changelog</Badge>
+      </Link>,
+    );
+    expect(screen.getByRole("link").classList).toContain(
+      "has-[>span>[data-kumo-component=Badge]]:rounded-full",
+    );
+  });
+
+  it("passes external behavior through a forwarding LinkProvider", () => {
+    const RouterLink = forwardRef<
+      HTMLAnchorElement,
+      React.AnchorHTMLAttributes<HTMLAnchorElement>
+    >(({ children, ...props }, ref) => (
+      <a {...props} ref={ref} data-router="true">
+        {children}
+      </a>
+    ));
+    RouterLink.displayName = "ExternalRouterLink";
+    render(
+      <LinkProvider component={RouterLink}>
+        <Link href="/docs" external>
+          Docs
+        </Link>
+      </LinkProvider>,
+    );
+    expect(
+      screen
+        .getByRole("link", { name: "Docs (opens in a new tab)" })
+        .getAttribute("data-router"),
+    ).toBe("true");
+  });
+
+  it("preserves Base UI render-element composition and ref forwarding", () => {
+    const ref = createRef<HTMLAnchorElement>();
+    render(
+      <Link ref={ref} href="/docs" external render={<a data-rendered="true" />}>
+        Docs
+      </Link>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.getAttribute("data-rendered")).toBe("true");
+    expect(ref.current).toBe(link);
+  });
+
+  it("preserves Base UI render-callback composition", () => {
+    render(
+      <Link
+        href="/docs"
+        external
+        render={(props) => <a {...props} data-rendered="true" />}
+      >
+        Docs
+      </Link>,
+    );
+    expect(
+      screen
+        .getByRole("link", { name: "Docs (opens in a new tab)" })
+        .getAttribute("data-rendered"),
+    ).toBe("true");
+  });
+});
+
+describe("Link with provider navigation defaults", () => {
+  // Stratus's AppLink applies external-navigation defaults before spreading
+  // incoming anchor props, so absent props must stay absent to preserve them.
+  const DefaultingLink = forwardRef<
+    HTMLAnchorElement,
+    React.AnchorHTMLAttributes<HTMLAnchorElement>
+  >((props, ref) => (
+    // oxlint-disable-next-line anchor-has-content, control-has-associated-label
+    <a target="_blank" rel="noreferrer" {...props} ref={ref} />
+  ));
+  DefaultingLink.displayName = "DefaultingLink";
+
+  it.each([
+    { name: "omitted", props: {} },
+    { name: "undefined", props: { target: undefined, rel: undefined } },
+    { name: "external false", props: { external: false } },
+  ])(
+    "preserves provider navigation defaults when props are $name",
+    ({ props }) => {
+      render(
+        <LinkProvider component={DefaultingLink}>
+          <Link href="https://example.com" {...props}>
+            Docs
+          </Link>
+        </LinkProvider>,
+      );
+      const link = screen.getByRole("link", { name: "Docs" });
+      expect(link.getAttribute("target")).toBe("_blank");
+      expect(link.getAttribute("rel")).toBe("noreferrer");
+      expect(link.querySelector(".sr-only")).toBeNull();
+      expect(link.querySelector(".link-external-icon")).toBeNull();
+    },
+  );
+
+  it("honors an explicit target without erasing the provider's rel default", () => {
+    render(
+      <LinkProvider component={DefaultingLink}>
+        <Link href="https://example.com" target="_self">
+          Docs
+        </Link>
+      </LinkProvider>,
+    );
+    const link = screen.getByRole("link", { name: "Docs" });
+    expect(link.getAttribute("target")).toBe("_self");
+    expect(link.getAttribute("rel")).toBe("noreferrer");
+  });
+
+  it("honors an explicit rel without erasing the provider's target default", () => {
+    render(
+      <LinkProvider component={DefaultingLink}>
+        <Link href="https://example.com" rel="noopener nofollow">
+          Docs
+        </Link>
+      </LinkProvider>,
+    );
+    const link = screen.getByRole("link", { name: "Docs" });
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener nofollow");
+  });
+
+  it("passes explicit external behavior and its warning through the provider", () => {
+    render(
+      <LinkProvider component={DefaultingLink}>
+        <Link href="https://example.com" external>
+          Docs
+        </Link>
+      </LinkProvider>,
+    );
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.querySelectorAll(".sr-only")).toHaveLength(1);
+    expect(link.querySelectorAll(".link-external-icon")).toHaveLength(1);
+  });
+});
+
+describe("Link.ExternalIcon icon-only naming", () => {
+  it("keeps a title-bearing icon link identifiable through an explicit aria-label", () => {
+    render(
+      <Link
+        href="/docs"
+        target="_blank"
+        title="Documentation"
+        aria-label="Documentation (opens in a new tab)"
+      >
+        <svg aria-hidden="true" />
+        <Link.ExternalIcon />
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Documentation (opens in a new tab)" }),
+    ).toBeTruthy();
+  });
+
+  it("keeps a title-bearing icon link identifiable through aria-labelledby", () => {
+    render(
+      <>
+        <span id="manual-icon-name" className="sr-only">
+          Documentation (opens in a new tab)
+        </span>
+        <Link
+          href="/docs"
+          target="_blank"
+          title="Documentation"
+          aria-labelledby="manual-icon-name"
+        >
+          <svg aria-hidden="true" />
+          <Link.ExternalIcon />
+        </Link>
+      </>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Documentation (opens in a new tab)" }),
+    ).toBeTruthy();
   });
 });
