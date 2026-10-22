@@ -16,7 +16,7 @@ const COPIED_FEEDBACK_MS = 1500;
 export const KUMO_CLIPBOARD_TEXT_VARIANTS = {
   size: {
     sm: {
-      classes: "text-xs",
+      classes: "text-base",
       buttonSize: "sm" as const,
       description: "Small clipboard text for compact UIs",
     },

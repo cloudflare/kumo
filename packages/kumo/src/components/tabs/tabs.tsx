@@ -71,7 +71,7 @@ export interface KumoTabsVariantsProps {
   /**
    * Tab size.
    * - `"base"` — Default size (h-9, text-base)
-   * - `"sm"` — Compact size (h-6.5, text-xs) — matches Input size="sm"
+   * - `"sm"` — Compact size (h-7.5, text-base) — matches Input size="sm"
    * @default "base"
    */
   size?: (typeof KUMO_TABS_VARIANTS.size)[number];
@@ -208,7 +208,7 @@ export function Tabs({
         <div
           className={cn(
             "absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 rounded-lg bg-kumo-recessed",
-            isSm ? "h-6.5" : "h-9",
+            isSm ? "h-7.5" : "h-9",
           )}
         />
       )}
@@ -222,10 +222,9 @@ export function Tabs({
         className={cn(
           "kumo-tabs-list relative flex min-w-0 shrink scroll-px-(--scroll-fade-width) items-stretch overflow-x-auto overflow-y-hidden [--scroll-fade-width:3rem]",
           isSegmented && "rounded-lg bg-kumo-recessed px-0.5",
-          isSegmented && (isSm ? "h-6.5 rounded-md" : "h-9"),
+          isSegmented && (isSm ? "h-7.5 rounded-md" : "h-9"),
           isOverflowing && "cursor-grab active:cursor-grabbing",
-          isUnderline && "gap-4 border-b border-kumo-hairline pb-2",
-          isUnderline && (isSm ? "h-6.5" : "h-7.5"),
+          isUnderline && "h-7.5 gap-4 border-b border-kumo-hairline pb-2",
           listClassName,
         )}
       >
@@ -245,11 +244,10 @@ export function Tabs({
               });
             }}
             className={cn(
-              "relative z-2 flex items-center rounded bg-transparent whitespace-nowrap focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative z-2 flex items-center rounded bg-transparent text-base whitespace-nowrap focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
               isOverflowing
                 ? "cursor-grab active:cursor-grabbing"
                 : "cursor-pointer",
-              isSm ? "text-xs" : "text-base",
               isSegmented &&
                 "my-0.5 text-kumo-subtle hover:text-kumo-default focus-visible:ring-inset aria-selected:text-kumo-default",
               isSegmented && (isSm ? "rounded-sm px-2" : "rounded-md px-2.5"),
