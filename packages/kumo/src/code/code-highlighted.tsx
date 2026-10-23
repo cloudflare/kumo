@@ -89,7 +89,7 @@ export function CodeHighlighted({
 
   const fallbackCodeClasses = cn(
     // Prevent global pre styles from affecting the loading and error states.
-    "!m-0 min-w-0 flex-1 overflow-x-auto",
+    "!m-0 min-w-0 flex-1 overflow-x-auto !rounded-none !border-0 !bg-transparent",
     "font-mono text-sm leading-relaxed text-kumo-subtle",
     variant === "plain" ? "!p-0" : "!p-4",
   );
@@ -168,13 +168,15 @@ export function CodeHighlighted({
           <div className="flex">
             {lineNumbers}
             <pre className={fallbackCodeClasses}>
-              <code className="!m-0 !p-0">{code}</code>
+              <code className="!m-0 !border-0 !bg-transparent !p-0">
+                {code}
+              </code>
             </pre>
           </div>
         )}
         {!lineNumbers && (
           <pre className={fallbackCodeClasses}>
-            <code className="!m-0 !p-0">{code}</code>
+            <code className="!m-0 !border-0 !bg-transparent !p-0">{code}</code>
           </pre>
         )}
         {copyButton}
