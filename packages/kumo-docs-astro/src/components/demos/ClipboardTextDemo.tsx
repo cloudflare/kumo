@@ -12,6 +12,15 @@ export function ClipboardTextApiKeyDemo() {
   return <ClipboardText text="sk_live_51H8..." />;
 }
 
+/** Masks a sensitive value until the reveal button is pressed. */
+export function ClipboardTextMaskedDemo() {
+  return (
+    <div className="max-w-xs w-full">
+      <ClipboardText className="w-full" text="sk_live_51H8_abc123" masked />
+    </div>
+  );
+}
+
 export function ClipboardTextAlternateTextToCopyDemo() {
   return (
     <ClipboardText
