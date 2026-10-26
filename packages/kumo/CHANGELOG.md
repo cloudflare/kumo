@@ -1,5 +1,24 @@
 # @cloudflare/kumo
 
+## 2.16.0
+
+### Minor Changes
+
+- 810d820: Add the `xAxisHideLabelOverlap` prop to `TimeseriesChart`, defaulting to `true`.
+
+### Patch Changes
+
+- 99b17fb: Match CodeHighlighted loading and error fallback styling to highlighted code. Reset host app backgrounds, borders, and pre border radii to keep the frame and spacing consistent while syntax colors load.
+- 6a093a5: Fix disabled `Input` text color. It used an undefined `text-kumo-disabled` token, so disabled inputs looked the same as enabled ones. It now uses `text-kumo-inactive`.
+- e16f41f: Fix `Pagination` page validation. The page input only accepts whole numbers written as digits, so it no longer calls `setPage` with `NaN`, fractions, or values like `0x10` and `1e1`. Invalid input now restores the current page. With `totalCount={0}`, or when `page` is past the last page, Next and Last are disabled and nothing requests page 0.
+- fedc8a7: Fix three `TagInput` bugs:
+
+  - `readOnly` now prevents all value changes. Tags can no longer be removed with their remove buttons or Backspace, and new tags can't be added by typing, pasting, or blurring.
+  - Pasting comma- or newline-separated text now merges it with the draft text and replaces the current selection before splitting it into tags. Previously, text you were already typing was lost.
+  - Native forms now submit the accepted tags. With `name`, each tag is submitted as its own form value, so the empty draft is no longer sent. With `required`, validation passes as soon as there is at least one tag.
+
+- 947065a: Fix `TimeseriesChart` crashing with `RangeError: Maximum call stack size exceeded` on large datasets. Marker clustering no longer spreads every timestamp into `Math.max`/`Math.min`, and is skipped entirely when the chart has no markers.
+
 ## 2.15.0
 
 ### Minor Changes
