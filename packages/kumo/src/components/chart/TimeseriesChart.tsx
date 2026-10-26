@@ -65,6 +65,8 @@ export interface TimeseriesChartProps {
   xAxisName?: string;
   /** Number of ticks to display on the x-axis */
   xAxisTickCount?: number;
+  /** Whether overlapping x-axis labels are automatically hidden. Defaults to `true`. */
+  xAxisHideLabelOverlap?: boolean;
   /**
    * Custom formatter for x-axis tick labels.
    * Receives the raw timestamp in milliseconds and returns a display string,
@@ -252,6 +254,7 @@ export const TimeseriesChart = forwardRef<
     thresholds,
     xAxisName,
     xAxisTickCount,
+    xAxisHideLabelOverlap = true,
     xAxisTickFormat,
     yAxisTickFormat,
     yAxisTickLabelFormat,
@@ -525,6 +528,7 @@ export const TimeseriesChart = forwardRef<
         splitNumber: xAxisTickCount ?? DEFAULT_X_AXIS_TICK_COUNT,
         axisLabel: {
           color: axisTextColor,
+          hideOverlap: xAxisHideLabelOverlap,
           ...(xAxisTickFormat && {
             formatter: (value: number) => xAxisTickFormat(value),
           }),
@@ -575,6 +579,7 @@ export const TimeseriesChart = forwardRef<
     data,
     xAxisName,
     xAxisTickCount,
+    xAxisHideLabelOverlap,
     xAxisTickFormat,
     yAxisTickFormat,
     yAxisName,
