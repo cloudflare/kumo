@@ -455,9 +455,14 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
       <ScrollAreaBase.Root className="relative flex min-h-0 flex-1 flex-col">
         {/* The top fade falls back to 0px: the body always opens scrolled to
             the top, and Safari skips Base UI's registered 0px initial value,
-            so a non-zero fallback fades out the first row until measured. */}
+            so a non-zero fallback fades out the first row until measured.
+
+            no-scrollbar keeps the native scrollbars of Base UI's
+            `overflow: scroll` viewport hidden. Base UI hides them only with a
+            <style> it adds to <head> once per document, which head-swapping
+            client routers and strict CSPs can drop. */}
         <ScrollAreaBase.Viewport
-          className="min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,0px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
+          className="no-scrollbar min-h-0 flex-1 overscroll-none [mask-image:linear-gradient(to_bottom,transparent_0,black_min(24px,var(--scroll-area-overflow-y-start,0px)),black_calc(100%-min(24px,var(--scroll-area-overflow-y-end,24px))),transparent_100%)]"
           onScroll={handleScroll}
         >
           {/* pt-0.5 keeps a first-child control's ring-drawn border and

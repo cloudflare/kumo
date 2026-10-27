@@ -538,6 +538,20 @@ describe("LayerDialog.Body edge clipping", () => {
 
     cleanup();
   });
+
+  it("hides native scrollbars without Base UI's injected style", () => {
+    // Base UI forces `overflow: scroll` on the viewport and hides the native
+    // scrollbars only through a <style> it adds to <head> once per document.
+    // Head-swapping client routers (Astro's ClientRouter) remove that style,
+    // which shows empty scrollbar tracks wherever scrollbars are always
+    // visible, so the viewport must carry Kumo's own rule.
+    const { viewport, cleanup } = renderBodyWithLeadingInput(true);
+
+    expect(viewport.style.overflow).toBe("scroll");
+    expect(viewport.className).toMatch(/(^|\s)no-scrollbar(\s|$)/);
+
+    cleanup();
+  });
 });
 
 describe("LayerDialog dismissal", () => {
