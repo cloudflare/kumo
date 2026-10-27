@@ -20,6 +20,7 @@ import {
   LayerDialogNestedDemo,
   LayerDialogPendingDemo,
   LayerDialogSearchDemo,
+  LayerDialogSeparatorDemo,
   LayerDialogSizeDemo,
   LayerDialogSplitActionDemo,
   LayerDialogTopAlignDemo,
@@ -125,6 +126,14 @@ Adding `Actions` selects exactly one Kumo primary action and an automatic **Clos
 A control can be the first element in `Body`. Here an unlabeled search input sits directly beneath the title frame, so give it an `aria-label`. The body leaves room above its content, so the input's border and focus ring are not clipped by the scroll area.
 
 <ComponentExample demo="LayerDialogSearchDemo"><LayerDialogSearchDemo client:load /></ComponentExample>
+</ComponentSection>
+
+<ComponentSection>
+## Dividing body content
+
+Use `LayerDialog.Separator` between sections in `LayerDialog.Body`. The divider extends through the body's horizontal padding to span the full content surface.
+
+<ComponentExample demo="LayerDialogSeparatorDemo"><LayerDialogSeparatorDemo client:load /></ComponentExample>
 </ComponentSection>
 
 <ComponentSection>
@@ -277,6 +286,11 @@ Height is derived from content and capped by the viewport. Following Base UI's i
 
 <p>The scrollable content region.</p>
 <PropsTable component="LayerDialog.Body" />
+
+### LayerDialog.Separator
+
+<p>A full-width divider between sections of body content.</p>
+<PropsTable component="LayerDialog.Separator" />
 
 ### LayerDialog.Actions
 

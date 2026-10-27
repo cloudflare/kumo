@@ -1,6 +1,7 @@
 import {
   Children,
   createContext,
+  forwardRef,
   isValidElement,
   useContext,
   useRef,
@@ -495,6 +496,25 @@ function LayerDialogBody({ children }: LayerDialogBodyProps) {
 
 LayerDialogBody.displayName = "LayerDialog.Body";
 
+export type LayerDialogSeparatorProps = ComponentPropsWithoutRef<"hr">;
+
+/** A full-width divider between sections of `LayerDialog.Body`. */
+const LayerDialogSeparator = forwardRef<
+  HTMLHRElement,
+  LayerDialogSeparatorProps
+>(({ className, ...props }, ref) => (
+  <hr
+    ref={ref}
+    className={cn(
+      "-mx-4 my-4 h-px border-0 bg-kumo-hairline sm:-mx-4.5",
+      className,
+    )}
+    {...props}
+  />
+));
+
+LayerDialogSeparator.displayName = "LayerDialog.Separator";
+
 function LayerDialogIconClose({
   disabled,
   label,
@@ -676,6 +696,7 @@ const LayerDialog = Object.assign(LayerDialogRoot, {
   Title: LayerDialogTitle,
   Description: LayerDialogDescription,
   Body: LayerDialogBody,
+  Separator: LayerDialogSeparator,
   Action: LayerDialogAction,
   Actions: LayerDialogActions,
 });
@@ -689,6 +710,7 @@ export {
   LayerDialogTitle,
   LayerDialogDescription,
   LayerDialogBody,
+  LayerDialogSeparator,
   LayerDialogAction,
   LayerDialogActions,
 };
