@@ -29,8 +29,29 @@ describe("LayerDialog", () => {
     expect(LayerDialog.Title).toBeDefined();
     expect(LayerDialog.Description).toBeDefined();
     expect(LayerDialog.Body).toBeDefined();
+    expect(LayerDialog.Separator).toBeDefined();
     expect(LayerDialog.Action).toBeDefined();
     expect(LayerDialog.Actions).toBeDefined();
+  });
+
+  it("renders a full-width body separator", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Sections</LayerDialog.Title>
+          <LayerDialog.Body>
+            <span>First</span>
+            <LayerDialog.Separator />
+            <span>Second</span>
+          </LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const separator = getByRole("separator");
+    expect(separator.className).toContain("-mx-4");
+    expect(separator.className).toContain("sm:-mx-4.5");
+    expect(separator.className).toContain("bg-kumo-hairline");
   });
 
   it("uses a larger constrained desktop width by default", () => {
