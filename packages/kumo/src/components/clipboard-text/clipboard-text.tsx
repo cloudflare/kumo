@@ -1,4 +1,9 @@
-import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
+import {
+  CheckIcon,
+  CopyIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@phosphor-icons/react";
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { Toast } from "@base-ui/react/toast";
 import { Tooltip } from "@base-ui/react/tooltip";
@@ -66,7 +71,7 @@ export function clipboardTextVariants({
 }: KumoClipboardTextVariantsProps = {}) {
   return cn(
     // Base styles
-    "flex items-center overflow-hidden bg-kumo-base px-0 font-mono",
+    "flex items-center gap-0 overflow-hidden bg-kumo-base px-0 font-mono",
     // Apply size styles from KUMO_CLIPBOARD_TEXT_VARIANTS
     resolveVariant(
       KUMO_CLIPBOARD_TEXT_VARIANTS.size,
@@ -93,6 +98,8 @@ export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
   text: string;
   /** If provided, this text will be copied to clipboard instead of the `text` prop. */
   textToCopy?: string;
+  /** Masks the text initially and adds a control to reveal or hide it. @default false */
+  masked?: boolean;
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
   /** Callback fired after text is copied to clipboard. */
@@ -119,6 +126,10 @@ export interface ClipboardTextProps extends KumoClipboardTextVariantsProps {
   labels?: {
     /** @default "Copy to clipboard" */
     copyAction?: string;
+    /** @default "Reveal value" */
+    revealAction?: string;
+    /** @default "Hide value" */
+    hideAction?: string;
   };
 }
 
@@ -179,15 +190,21 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
     {
       text,
       textToCopy,
+      masked = false,
       className,
       size = KUMO_CLIPBOARD_TEXT_DEFAULT_VARIANTS.size,
       onCopy,
       tooltip,
-      labels: { copyAction = "Copy to clipboard" } = {},
+      labels: {
+        copyAction = "Copy to clipboard",
+        revealAction = "Reveal value",
+        hideAction = "Hide value",
+      } = {},
     },
     ref,
   ) => {
     const [copied, setCopied] = useState(false);
+    const [revealed, setRevealed] = useState(false);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const toastIdRef = useRef<string | null>(null);
@@ -327,6 +344,23 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
       </Button>
     );
 
+    const visibilityButton = masked ? (
+      <Button
+        size={sizeConfig.buttonSize}
+        variant="ghost"
+        className={cn(
+          "rounded-none border-l! border-kumo-line! px-3",
+          "focus:ring-kumo-focus/50 focus:ring-inset",
+          "focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
+        )}
+        onClick={() => setRevealed((value) => !value)}
+        aria-label={revealed ? hideAction : revealAction}
+        aria-pressed={revealed}
+      >
+        {revealed ? <EyeSlashIcon /> : <EyeIcon />}
+      </Button>
+    ) : null;
+
     return (
       <div
         ref={ref}
@@ -336,7 +370,10 @@ export const ClipboardText = forwardRef<HTMLDivElement, ClipboardTextProps>(
           className,
         )}
       >
-        <span className="grow truncate ps-4 pe-2">{text}</span>
+        <span className="grow truncate ps-4 pe-2">
+          {masked && !revealed ? "••••••••" : text}
+        </span>
+        {visibilityButton}
         {tooltip ? (
           <TooltipWrapper>
             <Tooltip.Root
