@@ -155,20 +155,6 @@ const buildDate =
   <body>
     <slot />
     <script>
-      import type { TransitionBeforeSwapEvent } from "astro:transitions/client";
-
-      // React hoists `<style precedence>` elements (such as Base UI's
-      // scrollbar-hiding style) into <head> once per document and never
-      // re-inserts them, but the ClientRouter swap removes every <head> style
-      // the incoming page lacks. Copying them into the incoming <head> makes
-      // Astro keep the originals in place and discard the copies.
-      document.addEventListener("astro:before-swap", (event) => {
-        const { newDocument } = event as TransitionBeforeSwapEvent;
-        document.head
-          .querySelectorAll("style[data-precedence]")
-          .forEach((style) => newDocument.head.append(style.cloneNode(true)));
-      });
-
       // Wraps code blocks and injects a copy button. Safe to run on every page
       // load — the `.code-block` parent check prevents double-wrapping.
       function wrapCodeBlocks() {
