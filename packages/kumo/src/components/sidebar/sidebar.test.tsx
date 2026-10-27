@@ -1164,6 +1164,19 @@ describe("Sidebar contained mode", () => {
   });
 });
 
+describe("Sidebar.Content scrollbar", () => {
+  it("should hide the native scrollbar without Base UI's injected style", () => {
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>Content</SidebarContent>
+      </TestSidebar>,
+    );
+    // Base UI's own rule lives in a <style> that head-swapping client
+    // routers can remove, so the viewport must carry Kumo's.
+    expect(getViewport().className).toMatch(/(^|\s)no-scrollbar(\s|$)/);
+  });
+});
+
 // ============================================================================
 // Mobile behavior
 // ============================================================================
