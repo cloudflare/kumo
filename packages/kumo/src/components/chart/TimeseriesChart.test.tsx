@@ -183,6 +183,45 @@ describe("TimeseriesChart", () => {
     );
   });
 
+  it("hides overlapping x-axis labels by default and supports disabling it", async () => {
+    const mockChart = createMockChart();
+    const mockEcharts = createMockEcharts(mockChart);
+
+    const { rerender } = render(
+      <TimeseriesChart echarts={mockEcharts as any} data={[]} />,
+    );
+
+    await waitFor(() =>
+      expect(mockChart.setOption).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          xAxis: expect.objectContaining({
+            axisLabel: expect.objectContaining({ hideOverlap: true }),
+          }),
+        }),
+        expect.anything(),
+      ),
+    );
+
+    rerender(
+      <TimeseriesChart
+        echarts={mockEcharts as any}
+        data={[]}
+        xAxisHideLabelOverlap={false}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(mockChart.setOption).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          xAxis: expect.objectContaining({
+            axisLabel: expect.objectContaining({ hideOverlap: false }),
+          }),
+        }),
+        expect.anything(),
+      ),
+    );
+  });
+
   it("does not reserve footer space for an empty string", () => {
     const { container } = render(
       <TooltipContent
