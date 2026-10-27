@@ -805,9 +805,9 @@ describe("Sidebar.Collapsible", () => {
     }
   });
 
-  it("should align the collapsed popup's title row with the trigger", () => {
-    // The title mirrors the parent, so it overlays the trigger row: no offset,
-    // the popup's top edge meets the trigger's top (both are min-h-8.5).
+  it("should align the collapsed popup's first item with the trigger", () => {
+    // The title sits above the trigger row: pull up by its height (34) plus
+    // its bottom margin (6) so the first item lines up with the trigger.
     const rectSpy = vi
       .spyOn(HTMLElement.prototype, "getBoundingClientRect")
       .mockReturnValue({
@@ -831,7 +831,7 @@ describe("Sidebar.Collapsible", () => {
       );
       const preview = previewEl() as HTMLElement;
       expect(preview).toBeTruthy();
-      expect(preview.style.top).toBe("120px"); // 120 - 0
+      expect(preview.style.top).toBe("80px"); // 120 - 34 - 6
     } finally {
       rectSpy.mockRestore();
     }

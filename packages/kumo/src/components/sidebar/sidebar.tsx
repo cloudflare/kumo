@@ -2277,13 +2277,15 @@ const PREVIEW_VIEWPORT_INSET = 8;
  * first item with the row that opened it, so nested popups don't drift.
  */
 const PREVIEW_PADDING = 6;
+/** Preview title row height in px (must match its `min-h-8.5` class). */
+const PREVIEW_TITLE_HEIGHT = 34;
 /**
- * Extra vertical offset for the collapsed-rail title popup, in px, applied on
- * top of the base padding. `0` cancels the padding so the popup's top edge
- * meets the trigger's — the title row (min-h-8.5) overlays the parent row it
- * opened from. Increase to drop the popup down. Tune here to adjust alignment.
+ * How far to pull a titled popup up so its first item, not the title, aligns
+ * with the trigger: the pointer moves straight across onto it. The title's
+ * `-mt-1.5` cancels the top padding, so the first item sits below the title
+ * plus its `mb-1.5` (= PREVIEW_PADDING).
  */
-const PREVIEW_TITLE_OFFSET = 0;
+const PREVIEW_TITLE_OFFSET = PREVIEW_TITLE_HEIGHT + PREVIEW_PADDING;
 
 function getCollapsiblePreviewContent(children: ReactNode) {
   let previewContent: ReactNode = null;
@@ -2509,9 +2511,8 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
         window.innerWidth - PREVIEW_WIDTH - PREVIEW_VIEWPORT_INSET;
       const maxTop = window.innerHeight - PREVIEW_VIEWPORT_INSET;
 
-      // A title mirrors the parent row, so align the two: the popup's top edge
-      // meets the trigger's (both are min-h-8.5). Without a title, pull up by
-      // the popup's padding so the first item aligns instead.
+      // Align the first item with the trigger, skipping the title (if any) and
+      // the popup's padding.
       const topOffset = showPreviewTitle
         ? PREVIEW_TITLE_OFFSET
         : PREVIEW_PADDING;

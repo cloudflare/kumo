@@ -328,7 +328,8 @@ scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
           The collapsed top-level popup shows the parent's name as a title (from the trigger's
           <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code>, or its text when omitted), replacing
           the trigger's own tooltip. Nested popups omit it &mdash; the parent row is already visible beside them. Items
-          with no nested content keep their tooltip instead.
+          with no nested content keep their tooltip instead. Every popup lines its first item up with the trigger, so
+          the pointer can move straight across onto it.
         </p>
         <ComponentExample code={`<Sidebar.Provider previewOnHover>
   <Sidebar>
