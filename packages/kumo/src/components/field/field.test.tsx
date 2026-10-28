@@ -25,4 +25,46 @@ describe("Field", () => {
       screen.getByRole("button", { name: "Mais informações" }),
     ).toBeTruthy();
   });
+
+  it.each([
+    ["undefined", undefined],
+    ["null", null],
+    ["false", false],
+    ["an empty string", ""],
+  ])("renders no label element when label is %s", (_, label) => {
+    const { container } = render(
+      <Field label={label} description="Help text">
+        <input aria-label="Name" />
+      </Field>,
+    );
+
+    expect(container.querySelector("label")).toBeNull();
+    expect(screen.getByText("Help text")).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "Name" })).toBeTruthy();
+  });
+
+  it.each([
+    ["text", "Name", {}],
+    ["the number 0", 0, {}],
+    ["only an optional indicator", undefined, { required: false }],
+    ["only a tooltip", undefined, { labelTooltip: "More" }],
+  ])("keeps the label element for %s", (_, label, props) => {
+    const { container } = render(
+      <Field label={label} {...props}>
+        <input />
+      </Field>,
+    );
+
+    expect(container.querySelector("label")).not.toBeNull();
+  });
+
+  it("still hides the label element with hideLabel", () => {
+    const { container } = render(
+      <Field label="Name" hideLabel>
+        <input />
+      </Field>,
+    );
+
+    expect(container.querySelector("label")).toBeNull();
+  });
 });

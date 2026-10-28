@@ -143,10 +143,16 @@ export function Field({
 }: FieldProps) {
   // Show "(optional)" when required is explicitly false
   const showOptional = required === false;
+  // An empty <label> still takes a grid row and, through aria-labelledby,
+  // overrides the control's own aria-label with an empty name.
+  const hasLabelContent =
+    (label != null && label !== false && label !== "") ||
+    showOptional ||
+    labelTooltip != null;
 
   return (
     <FieldBase.Root className={fieldVariants({ controlFirst })}>
-      {!hideLabel && (
+      {!hideLabel && hasLabelContent && (
         <FieldBase.Label className="m-0 text-base font-medium text-kumo-default select-none">
           <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
             {label}

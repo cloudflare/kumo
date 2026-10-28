@@ -199,6 +199,19 @@ describe("TagInput", () => {
     expect(screen.getByText("Tags").closest("label")?.htmlFor).toBe(input.id);
   });
 
+  it("does not render an empty label when only feedback is shown", () => {
+    const { container } = render(
+      <TagInput aria-label="Tags" validateValue={() => false} />,
+    );
+    fireEvent.change(screen.getByLabelText("Tags"), {
+      target: { value: "bad" },
+    });
+    fireEvent.keyDown(screen.getByLabelText("Tags"), { key: "Enter" });
+    expect(screen.getByText('"bad" is not valid.')).toBeTruthy();
+    expect(container.querySelector("label")).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Tags" })).toBeTruthy();
+  });
+
   it("forwards its ref to the input", () => {
     const ref = createRef<HTMLInputElement>();
     render(<TagInput ref={ref} aria-label="Tags" />);

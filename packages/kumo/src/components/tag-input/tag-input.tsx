@@ -284,7 +284,7 @@ export const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     if (hasField) {
       return (
         <Field
-          label={label ?? ""}
+          label={label}
           labelTooltip={labelTooltip}
           description={description}
           error={fieldError}
