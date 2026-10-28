@@ -114,20 +114,18 @@ for (const mode of ["light", "dark"]) {
           if (!startCalendar || !endCalendar) {
             throw new Error("DatePicker test endpoint calendars not found");
           }
-          const start = getDateCell(startCalendar, dates[0]);
-          const end = getDateCell(endCalendar, dates[dates.length - 1]);
+          // The endpoint fill is on the day buttons; the cells only carry
+          // the range band.
+          const start = getDateButton(startCalendar, dates[0]);
+          const end = getDateButton(endCalendar, dates[dates.length - 1]);
           expect(getComputedStyle(start).backgroundColor).not.toBe(
             "rgba(0, 0, 0, 0)",
           );
           expect(getComputedStyle(end).backgroundColor).toBe(
             getComputedStyle(start).backgroundColor,
           );
-          expect(
-            getComputedStyle(
-              getDateButton(endCalendar, dates[dates.length - 1]),
-            ).color,
-          ).toBe(
-            getComputedStyle(getDateButton(startCalendar, dates[0])).color,
+          expect(getComputedStyle(end).color).toBe(
+            getComputedStyle(start).color,
           );
         },
       );
