@@ -161,6 +161,10 @@ export function Tooltip({
     render ?? (asChild ? (children as TriggerProps["render"]) : undefined);
   const shouldUseRender = resolvedRender !== undefined;
 
+  // A disabled tooltip has nothing to reveal, so keep Kumo's own trigger
+  // (usually plain text) out of the tab order. Custom triggers keep theirs.
+  const triggerTabIndex = !shouldUseRender && props.disabled ? -1 : undefined;
+
   return (
     <TooltipBase.Root {...props}>
       <TooltipBase.Trigger
@@ -179,6 +183,7 @@ export function Tooltip({
           className,
         )}
         render={resolvedRender}
+        tabIndex={triggerTabIndex}
       >
         {asChild ? undefined : (children as ReactNode)}
       </TooltipBase.Trigger>
