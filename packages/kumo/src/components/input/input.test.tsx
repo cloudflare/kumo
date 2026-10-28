@@ -400,4 +400,23 @@ describe("InputArea", () => {
     render(<InputArea ref={ref} aria-label="Notes" autoResize />);
     expect(ref.current).toBeInstanceOf(HTMLTextAreaElement);
   });
+
+  it.each([
+    ["description", { description: "Help text" }],
+    ["error", { error: "Required" }],
+  ])("keeps its aria-label as the name with only a %s", (_, props) => {
+    const { container } = render(<Input aria-label="Name" {...props} />);
+
+    expect(container.querySelector("label")).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Name" })).toBeTruthy();
+  });
+
+  it("keeps the InputArea aria-label as the name with only a description", () => {
+    const { container } = render(
+      <InputArea aria-label="Notes" description="Help text" />,
+    );
+
+    expect(container.querySelector("label")).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Notes" })).toBeTruthy();
+  });
 });

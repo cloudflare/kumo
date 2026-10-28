@@ -120,6 +120,11 @@ export interface FieldProps extends KumoFieldVariantsProps {
   hideLabel?: boolean;
 }
 
+/** Values React renders as nothing. */
+function rendersNothing(node: ReactNode) {
+  return node == null || typeof node === "boolean" || node === "";
+}
+
 /**
  * Form field wrapper that provides a label, optional description, and error display
  * around any form control. Built on Base UI Field primitives.
@@ -143,10 +148,14 @@ export function Field({
 }: FieldProps) {
   // Show "(optional)" when required is explicitly false
   const showOptional = required === false;
+  // An empty <label> still takes a grid row and, through aria-labelledby,
+  // overrides the control's own aria-label with an empty name.
+  const hasLabelContent =
+    !rendersNothing(label) || showOptional || !rendersNothing(labelTooltip);
 
   return (
     <FieldBase.Root className={fieldVariants({ controlFirst })}>
-      {!hideLabel && (
+      {!hideLabel && hasLabelContent && (
         <FieldBase.Label className="m-0 text-base font-medium text-kumo-default select-none">
           <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
             {label}
