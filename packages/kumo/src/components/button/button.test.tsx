@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, type Icon } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
 
 describe("Button", () => {
@@ -162,6 +162,18 @@ describe("Button", () => {
 
       render(<Button icon={lazyElement}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
+      expect(button.querySelector("svg")).toBeTruthy();
+    });
+
+    it("accepts a React.lazy icon component", async () => {
+      const LazyPlus = React.lazy(() => Promise.resolve({ default: Plus }));
+
+      render(
+        <React.Suspense fallback={null}>
+          <Button icon={LazyPlus as unknown as Icon}>Add</Button>
+        </React.Suspense>,
+      );
+      const button = await screen.findByRole("button", { name: "Add" });
       expect(button.querySelector("svg")).toBeTruthy();
     });
   });
