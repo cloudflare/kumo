@@ -1,6 +1,9 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 export interface KumoTranslations {
+  link?: {
+    opensInNewTab: string;
+  };
   label?: {
     optional: string;
     tooltip: string;
@@ -20,6 +23,9 @@ type ResolvedKumoTranslations = {
 };
 
 const defaultTranslations: ResolvedKumoTranslations = {
+  link: {
+    opensInNewTab: "Opens in a new tab",
+  },
   label: {
     optional: "(optional)",
     tooltip: "More information",
@@ -52,6 +58,10 @@ export function KumoLocaleProvider({
 }: KumoLocaleProviderProps) {
   const value = useMemo<ResolvedKumoTranslations>(
     () => ({
+      link: {
+        ...defaultTranslations.link,
+        ...translations?.link,
+      },
       label: {
         ...defaultTranslations.label,
         ...translations?.label,

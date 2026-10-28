@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vite-plus/test";
-import { createElement, forwardRef } from "react";
-import { render, screen } from "@testing-library/react";
+import { createElement, createRef, forwardRef } from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Link, KUMO_LINK_VARIANTS, linkVariants } from "./link";
 import { Badge } from "../badge/badge";
 import { LinkProvider } from "../../utils/link-provider";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 
 describe("Link", () => {
   it("should be defined", () => {
@@ -134,10 +135,11 @@ describe("Link", () => {
 // href behavior — the standard, framework-agnostic prop
 // ---------------------------------------------------------------------------
 describe("Link with href (standard usage)", () => {
-  it("renders an anchor with the correct href", () => {
+  it("keeps ordinary same-tab links unchanged", () => {
     render(<Link href="/docs">Docs</Link>);
     const anchor = screen.getByRole("link", { name: "Docs" });
     expect(anchor.getAttribute("href")).toBe("/docs");
+    expect(anchor.getAttribute("aria-describedby")).toBeNull();
   });
 
   it("renders external URLs correctly with the default LinkProvider", () => {
@@ -150,12 +152,347 @@ describe("Link with href (standard usage)", () => {
         External
       </Link>,
     );
-    const anchor = screen.getByRole("link", { name: "External" });
+    const anchor = screen.getByRole("link", {
+      name: "External",
+      description: "Opens in a new tab",
+    });
     expect(anchor.getAttribute("href")).toBe("https://example.com");
     expect(anchor.getAttribute("target")).toBe("_blank");
   });
 
-  it("passes href through to a custom LinkProvider component", () => {
+  it("describes a direct blank-target link without changing its name", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Documentation
+      </Link>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("uses the localized new-tab announcement", () => {
+    render(
+      <KumoLocaleProvider
+        translations={{
+          link: { opensInNewTab: "Se abre en una pestaña nueva" },
+        }}
+      >
+        <Link href="https://example.com" target="_blank">
+          Documentación
+        </Link>
+      </KumoLocaleProvider>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Documentación",
+        description: "Se abre en una pestaña nueva",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves a consumer description when automatic warning is disabled", () => {
+    render(
+      <>
+        <span id="custom-description">Opens in another browsing context</span>
+        <Link
+          href="https://example.com"
+          target="_blank"
+          announceNewTab={false}
+          aria-describedby="custom-description"
+        >
+          Documentation
+        </Link>
+      </>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Documentation",
+        description: "Opens in another browsing context",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("describes a new tab selected by a composed router", () => {
+    render(
+      <Link render={<a href="https://example.com" target="_blank" />}>
+        Documentation
+      </Link>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("announces the composed target when it overrides the Link target", () => {
+    render(
+      <Link
+        render={<a href="https://example.com" target="_blank" />}
+        target="_self"
+      >
+        Documentation
+      </Link>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Documentation",
+      description: "Opens in a new tab",
+    });
+    expect(link.getAttribute("target")).toBe("_blank");
+  });
+
+  it("does not describe a Link target overridden by a composed same-tab target", () => {
+    render(
+      <Link
+        render={<a href="https://example.com" target="_self" />}
+        target="_blank"
+      >
+        Documentation
+      </Link>,
+    );
+
+    const link = screen.getByRole("link", { name: "Documentation" });
+    expect(link.getAttribute("target")).toBe("_self");
+    expect(link.getAttribute("aria-describedby")).toBeNull();
+  });
+
+  it("preserves names, descriptions, and children supplied by a composed link", () => {
+    render(
+      <>
+        <span id="composed-label">Composed documentation</span>
+        <span id="composed-description">Router-provided context</span>
+        <Link
+          target="_self"
+          aria-label="Link-provided label"
+          aria-describedby="link-description"
+          render={
+            <a
+              href="https://example.com"
+              target="_blank"
+              aria-labelledby="composed-label"
+              aria-describedby="composed-description"
+            >
+              Composed child
+            </a>
+          }
+        >
+          Link child
+        </Link>
+      </>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Composed documentation",
+      description: "Router-provided context Opens in a new tab",
+    });
+    expect(link.textContent).toContain("Composed child");
+    expect(link.getAttribute("aria-label")).toBe("Link-provided label");
+    expect(link.getAttribute("aria-labelledby")).toBe("composed-label");
+    expect(link.getAttribute("aria-describedby")?.split(" ")[0]).toBe(
+      "composed-description",
+    );
+  });
+
+  it("can announce a target selected by a render callback", () => {
+    render(
+      <Link
+        announceNewTab
+        render={(renderProps) => (
+          <a {...renderProps} href="https://example.com" target="_blank" />
+        )}
+      >
+        Callback documentation
+      </Link>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Callback documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves an authored aria-label while adding the description", () => {
+    render(
+      <Link
+        href="https://example.com"
+        target="_blank"
+        aria-label="Open documentation"
+      >
+        Docs
+      </Link>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Open documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves an authored aria-labelledby name while adding the description", () => {
+    render(
+      <>
+        <span id="documentation-label">Open documentation</span>
+        <Link
+          href="https://example.com"
+          target="_blank"
+          aria-labelledby="documentation-label"
+        >
+          Docs
+        </Link>
+      </>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Open documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves aria-labelledby precedence when both naming attributes exist", () => {
+    render(
+      <>
+        <span id="documentation-label">Open labelled documentation</span>
+        <Link
+          href="https://example.com"
+          target="_blank"
+          aria-label="Ignored label"
+          aria-labelledby="documentation-label"
+        >
+          Docs
+        </Link>
+      </>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Open labelled documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("recognizes browsing-context keywords case-insensitively", () => {
+    render(
+      <Link href="https://example.com" target="_BLANK">
+        Documentation
+      </Link>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves a native title fallback name for an icon-only link", () => {
+    render(
+      <Link
+        href="https://example.com/docs"
+        target="_blank"
+        title="Documentation"
+      >
+        <svg aria-hidden="true" />
+      </Link>,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Documentation",
+        description: "Opens in a new tab",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("preserves existing aria-describedby references before the warning", () => {
+    render(
+      <>
+        <span id="documentation-context">Requires authentication</span>
+        <Link
+          href="https://example.com"
+          target="_blank"
+          aria-describedby="documentation-context"
+        >
+          Documentation
+        </Link>
+      </>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Documentation",
+      description: "Requires authentication Opens in a new tab",
+    });
+    expect(link.getAttribute("aria-describedby")?.split(" ")[0]).toBe(
+      "documentation-context",
+    );
+  });
+
+  it("preserves aria-description when adding the warning", () => {
+    render(
+      <Link
+        href="https://example.com"
+        target="_blank"
+        aria-description="Requires authentication"
+      >
+        Documentation
+      </Link>,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Documentation",
+      description: "Requires authentication Opens in a new tab",
+    });
+    expect(link.getAttribute("aria-description")).toBe(
+      "Requires authentication",
+    );
+  });
+
+  it("preserves composed refs and event handlers", () => {
+    const linkRef = createRef<HTMLAnchorElement>();
+    const linkClick = vi.fn();
+    const renderClick = vi.fn();
+
+    render(
+      <Link
+        ref={linkRef}
+        target="_blank"
+        onClick={linkClick}
+        render={
+          <a href="https://example.com" onClick={renderClick}>
+            Documentation
+          </a>
+        }
+      />,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Documentation",
+      description: "Opens in a new tab",
+    });
+    fireEvent.click(link);
+    expect(linkRef.current).toBe(link);
+    expect(linkClick).toHaveBeenCalledOnce();
+    expect(renderClick).toHaveBeenCalledOnce();
+  });
+
+  it("forwards the new-tab description through a custom LinkProvider", () => {
     const CustomLink = forwardRef<
       HTMLAnchorElement,
       React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string }
@@ -167,12 +504,18 @@ describe("Link with href (standard usage)", () => {
 
     render(
       <LinkProvider component={CustomLink}>
-        <Link href="https://example.com">External</Link>
+        <Link href="https://example.com" target="_blank">
+          External
+        </Link>
       </LinkProvider>,
     );
 
-    const anchor = screen.getByTestId("custom-link");
+    const anchor = screen.getByRole("link", {
+      name: "External",
+      description: "Opens in a new tab",
+    });
     expect(anchor.getAttribute("href")).toBe("https://example.com");
+    expect(anchor.getAttribute("data-testid")).toBe("custom-link");
   });
 });
 
