@@ -10,9 +10,9 @@
  *   pnpm codegen:themes --dry-run # Preview without writing
  */
 
-import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeFormattedFile } from "../format-generated.js";
 import {
   generateAllThemes,
   listAllTokens,
@@ -140,7 +140,7 @@ async function main() {
       console.log(`\n=== ${filename} ===\n`);
       console.log(content);
     } else {
-      fs.writeFileSync(filepath, content, "utf-8");
+      await writeFormattedFile(filepath, content);
       console.log(`  Wrote ${filename}`);
     }
   }
