@@ -29,6 +29,7 @@ describe("Field", () => {
   it.each([
     ["undefined", undefined],
     ["null", null],
+    ["true", true],
     ["false", false],
     ["an empty string", ""],
   ])("renders no label element when label is %s", (_, label) => {
@@ -56,6 +57,16 @@ describe("Field", () => {
     );
 
     expect(container.querySelector("label")).not.toBeNull();
+  });
+
+  it("renders no label element for an empty tooltip", () => {
+    const { container } = render(
+      <Field label={undefined} labelTooltip="">
+        <input />
+      </Field>,
+    );
+
+    expect(container.querySelector("label")).toBeNull();
   });
 
   it("still hides the label element with hideLabel", () => {
