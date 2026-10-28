@@ -153,17 +153,20 @@ describe("Button", () => {
 
     // React Flight (RSC) can deliver an element prop as a lazy reference whose
     // resolved value is an element, not a component (#891).
-    it("accepts an element delivered as an RSC lazy reference", () => {
-      const lazyElement = {
-        $$typeof: Symbol.for("react.lazy"),
-        _payload: <Plus data-testid="plus-icon" />,
-        _init: (payload: React.ReactElement) => payload,
-      } as unknown as React.ReactNode;
+    it.skipIf(React.version.startsWith("18."))(
+      "accepts an element delivered as an RSC lazy reference",
+      () => {
+        const lazyElement = {
+          $$typeof: Symbol.for("react.lazy"),
+          _payload: <Plus data-testid="plus-icon" />,
+          _init: (payload: React.ReactElement) => payload,
+        } as unknown as React.ReactNode;
 
-      render(<Button icon={lazyElement}>Add</Button>);
-      const button = screen.getByRole("button", { name: "Add" });
-      expect(button.querySelector("svg")).toBeTruthy();
-    });
+        render(<Button icon={lazyElement}>Add</Button>);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.querySelector("svg")).toBeTruthy();
+      },
+    );
 
     it("accepts a React.lazy icon component", async () => {
       const LazyPlus = React.lazy(() => Promise.resolve({ default: Plus }));

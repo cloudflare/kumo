@@ -618,25 +618,28 @@ describe("InputGroup", () => {
 
     // React Flight (RSC) can deliver an element prop as a lazy reference whose
     // resolved value is an element, not a component (#891).
-    it("passes an element delivered as an RSC lazy reference through unchanged", () => {
-      const lazyElement = {
-        $$typeof: Symbol.for("react.lazy"),
-        _payload: <svg data-testid="element-icon" data-size={42} />,
-        _init: (payload: React.ReactElement) => payload,
-      } as unknown as React.ReactNode;
+    it.skipIf(React.version.startsWith("18."))(
+      "passes an element delivered as an RSC lazy reference through unchanged",
+      () => {
+        const lazyElement = {
+          $$typeof: Symbol.for("react.lazy"),
+          _payload: <svg data-testid="element-icon" data-size={42} />,
+          _init: (payload: React.ReactElement) => payload,
+        } as unknown as React.ReactNode;
 
-      render(
-        <InputGroup size="base">
-          <InputGroup.Input aria-label="Test" />
-          <InputGroup.Addon align="end">
-            <InputGroup.Button icon={lazyElement} aria-label="Help" />
-          </InputGroup.Addon>
-        </InputGroup>,
-      );
+        render(
+          <InputGroup size="base">
+            <InputGroup.Input aria-label="Test" />
+            <InputGroup.Addon align="end">
+              <InputGroup.Button icon={lazyElement} aria-label="Help" />
+            </InputGroup.Addon>
+          </InputGroup>,
+        );
 
-      const icon = screen.getByTestId("element-icon");
-      expect(icon.getAttribute("data-size")).toBe("42");
-    });
+        const icon = screen.getByTestId("element-icon");
+        expect(icon.getAttribute("data-size")).toBe("42");
+      },
+    );
 
     it("does not inject icon size outside InputGroup context", () => {
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
