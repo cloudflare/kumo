@@ -7,34 +7,51 @@ import {
   useLinkComponent,
   type LinkComponentProps,
 } from "../../utils/link-provider";
+import { useKumoLocale } from "../../utils/locale-provider";
+
+type LinkExternalIconProps = SVGProps<SVGSVGElement> & {
+  /**
+   * Screen-reader text rendered alongside the icon. Defaults to the localized
+   * `link.opensInNewTab` string from `KumoLocaleProvider`.
+   */
+  label?: string;
+};
 
 /**
- * ExternalIcon - Visual indicator for links that open in a new tab/window.
+ * ExternalIcon - Indicator for links that open in a new tab/window.
  *
- * Use this as a child of Link to indicate external navigation:
+ * Renders a decorative icon plus visually hidden text, so sighted and
+ * screen-reader users get the same warning:
  * ```tsx
  * <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
  *   Visit Example <Link.ExternalIcon />
  * </Link>
  * ```
  */
-const ExternalIcon = (props: SVGProps<SVGSVGElement>) => (
-  <svg
-    width="1em"
-    height="1em"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-    className="link-external-icon"
-    {...props}
-  >
-    <path d="M9 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V15" />
-    <path d="M14 4H20M20 4V10M20 4L11 13" />
-  </svg>
-);
+const ExternalIcon = ({ label, ...props }: LinkExternalIconProps) => {
+  const { link } = useKumoLocale();
+
+  return (
+    <>
+      <svg
+        width="1em"
+        height="1em"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="link-external-icon"
+        {...props}
+      >
+        <path d="M9 4H8.8C7.11984 4 6.27976 4 5.63803 4.32698C5.07354 4.6146 4.6146 5.07354 4.32698 5.63803C4 6.27976 4 7.11984 4 8.8V15.2C4 16.8802 4 17.7202 4.32698 18.362C4.6146 18.9265 5.07354 19.3854 5.63803 19.673C6.27976 20 7.11984 20 8.8 20H15.2C16.8802 20 17.7202 20 18.362 19.673C18.9265 19.3854 19.3854 18.9265 19.673 18.362C20 17.7202 20 16.8802 20 15.2V15" />
+        <path d="M14 4H20M20 4V10M20 4L11 13" />
+      </svg>
+      <span className="sr-only"> {label ?? link.opensInNewTab}</span>
+    </>
+  );
+};
 
 ExternalIcon.displayName = "Link.ExternalIcon";
 

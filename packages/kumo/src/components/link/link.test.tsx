@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { Link, KUMO_LINK_VARIANTS, linkVariants } from "./link";
 import { Badge } from "../badge/badge";
 import { LinkProvider } from "../../utils/link-provider";
+import { KumoLocaleProvider } from "../../utils/locale-provider";
 
 describe("Link", () => {
   it("should be defined", () => {
@@ -384,5 +385,57 @@ describe("LinkProvider integration patterns", () => {
     // The wrapper never saw the URL via `to` — it was passed as `href`
     // which the wrapper ignores for navigation purposes.
     expect(anchor.getAttribute("data-navigated-to")).toBe("none");
+  });
+});
+
+describe("Link.ExternalIcon new-tab announcement", () => {
+  it("adds screen-reader text to the link's accessible name", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs <Link.ExternalIcon />
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs (opens in a new tab)" }),
+    ).toBeTruthy();
+  });
+
+  it("does not change links without the icon", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs
+      </Link>,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
+  });
+
+  it("uses the localized announcement", () => {
+    render(
+      <KumoLocaleProvider
+        translations={{
+          link: { opensInNewTab: "(se abre en una pestaña nueva)" },
+        }}
+      >
+        <Link href="https://example.com" target="_blank">
+          Documentación <Link.ExternalIcon />
+        </Link>
+      </KumoLocaleProvider>,
+    );
+    expect(
+      screen.getByRole("link", {
+        name: "Documentación (se abre en una pestaña nueva)",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("accepts a label override", () => {
+    render(
+      <Link href="https://example.com" target="_blank">
+        Docs <Link.ExternalIcon label="(external site)" />
+      </Link>,
+    );
+    expect(
+      screen.getByRole("link", { name: "Docs (external site)" }),
+    ).toBeTruthy();
   });
 });
