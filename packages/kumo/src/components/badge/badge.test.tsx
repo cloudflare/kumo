@@ -1,3 +1,4 @@
+import type { ReactElement, ReactNode } from "react";
 import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { ArrowRightIcon } from "@phosphor-icons/react";
@@ -35,6 +36,19 @@ describe("Badge", () => {
 
   it("renders an icon", () => {
     render(<Badge icon={ArrowRightIcon}>Next</Badge>);
+    expect(screen.getByText("Next").querySelector("svg")).toBeTruthy();
+  });
+
+  // React Flight (RSC) can deliver an element prop as a lazy reference whose
+  // resolved value is an element, not a component (#891).
+  it("renders an icon element delivered as an RSC lazy reference", () => {
+    const lazyElement = {
+      $$typeof: Symbol.for("react.lazy"),
+      _payload: <ArrowRightIcon />,
+      _init: (payload: ReactElement) => payload,
+    } as unknown as ReactNode;
+
+    render(<Badge icon={lazyElement}>Next</Badge>);
     expect(screen.getByText("Next").querySelector("svg")).toBeTruthy();
   });
 

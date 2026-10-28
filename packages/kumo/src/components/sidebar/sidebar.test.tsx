@@ -1047,6 +1047,28 @@ describe("Sidebar.MenuButton", () => {
     expect(link!.getAttribute("data-active")).toBe("true");
     expect(link!.getAttribute("data-kumo-part")).toBe("menu-button-link");
   });
+
+  // React Flight (RSC) can deliver an element prop as a lazy reference whose
+  // resolved value is an element, not a component (#891).
+  it("should render an icon element delivered as an RSC lazy reference", () => {
+    const lazyElement = {
+      $$typeof: Symbol.for("react.lazy"),
+      _payload: <svg data-testid="lazy-icon" />,
+      _init: (payload: React.ReactElement) => payload,
+    } as unknown as React.ReactNode;
+
+    render(
+      <TestSidebar defaultOpen>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuButton icon={lazyElement}>Home</SidebarMenuButton>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const button = screen.getByRole("button", { name: "Home" });
+    expect(within(button).getByTestId("lazy-icon")).toBeTruthy();
+  });
 });
 
 describe("Sidebar.MenuSub", () => {

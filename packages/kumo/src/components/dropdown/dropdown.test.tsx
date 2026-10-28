@@ -108,6 +108,21 @@ describe("DropdownMenu", () => {
       );
       expect(screen.getByTestId("custom-icon").className).toContain("h-4 w-4");
     });
+
+    // React Flight (RSC) can deliver an element prop as a lazy reference whose
+    // resolved value is an element, not a component (#891).
+    it("accepts an icon element delivered as an RSC lazy reference", () => {
+      const lazyElement = {
+        $$typeof: Symbol.for("react.lazy"),
+        _payload: <span data-testid="custom-icon" />,
+        _init: (payload: React.ReactElement) => payload,
+      } as unknown as React.ReactNode;
+
+      renderMenu(
+        <DropdownMenu.Item icon={lazyElement}>Item</DropdownMenu.Item>,
+      );
+      expect(screen.getByTestId("custom-icon").className).toContain("h-4 w-4");
+    });
   });
 
   describe("icon spacing", () => {
