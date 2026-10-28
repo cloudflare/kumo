@@ -7,9 +7,10 @@
  * Run: pnpm build:primitives
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { readFileSync, mkdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { writeFormattedFile } from "./format-generated.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,7 +40,7 @@ const COMPATIBILITY_EXPORTS: Record<string, string[]> = {
   ],
 };
 
-function main() {
+async function main() {
   // Read base-ui package.json
   if (!existsSync(BASE_UI_PACKAGE)) {
     console.error("❌ @base-ui/react not found. Run pnpm install first.");
@@ -65,13 +66,13 @@ function main() {
   }
 
   // Generate barrel export (index.ts)
-  generateBarrelExport(subpaths);
+  await generateBarrelExport(subpaths);
 
   // Generate individual primitive files
-  generateIndividualPrimitives(subpaths);
+  await generateIndividualPrimitives(subpaths);
 
   // Update package.json with granular exports
-  updatePackageJsonExports(subpaths);
+  await updatePackageJsonExports(subpaths);
 
   console.log(`✓ Generated primitives`);
   console.log(`  → ${subpaths.length} base-ui exports`);
@@ -80,7 +81,7 @@ function main() {
   console.log(`  → Updated package.json exports`);
 }
 
-function generateBarrelExport(subpaths: string[]) {
+async function generateBarrelExport(subpaths: string[]) {
   const lines: string[] = [
     "/**",
     " * Base UI Primitives - Barrel Export",
@@ -107,10 +108,10 @@ function generateBarrelExport(subpaths: string[]) {
   }
   lines.push("");
 
-  writeFileSync(PRIMITIVES_FILE, lines.join("\n"));
+  await writeFormattedFile(PRIMITIVES_FILE, lines.join("\n"));
 }
 
-function generateIndividualPrimitives(subpaths: string[]) {
+async function generateIndividualPrimitives(subpaths: string[]) {
   for (const subpath of subpaths) {
     const primitiveName = subpath.replace("./", "");
     const primitiveFile = join(PRIMITIVES_DIR, `${primitiveName}.ts`);
@@ -135,11 +136,11 @@ function generateIndividualPrimitives(subpaths: string[]) {
       "",
     ].join("\n");
 
-    writeFileSync(primitiveFile, content);
+    await writeFormattedFile(primitiveFile, content);
   }
 }
 
-function updatePackageJsonExports(subpaths: string[]) {
+async function updatePackageJsonExports(subpaths: string[]) {
   const pkg = JSON.parse(readFileSync(PACKAGE_JSON, "utf-8"));
 
   // Find the "./primitives" export and add granular exports after it
@@ -179,7 +180,7 @@ function updatePackageJsonExports(subpaths: string[]) {
   }
 
   pkg.exports = newExports;
-  writeFileSync(PACKAGE_JSON, JSON.stringify(pkg, null, 2) + "\n");
+  await writeFormattedFile(PACKAGE_JSON, JSON.stringify(pkg, null, 2) + "\n");
 }
 
 function toPascalCase(str: string): string {
@@ -189,4 +190,7 @@ function toPascalCase(str: string): string {
     .join("");
 }
 
-main();
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
