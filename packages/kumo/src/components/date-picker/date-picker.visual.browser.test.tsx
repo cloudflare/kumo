@@ -133,6 +133,90 @@ for (const mode of ["light", "dark"]) {
   }
 }
 
+function getRoundedSides(button: HTMLElement) {
+  const { borderTopLeftRadius, borderTopRightRadius } =
+    getComputedStyle(button);
+  return {
+    left: borderTopLeftRadius !== "0px",
+    right: borderTopRightRadius !== "0px",
+  };
+}
+
+function hasBand(cell: HTMLElement) {
+  return getComputedStyle(cell).backgroundImage !== "none";
+}
+
+describe("DatePicker range corners", () => {
+  // October 2026 starts on a Thursday, so the 10th ends a week and the 11th
+  // starts the next one.
+  test.each([
+    {
+      name: "squares the ends where they meet the band",
+      from: 13,
+      to: 15,
+      dir: "ltr",
+      start: { left: true, right: false },
+      end: { left: false, right: true },
+      bands: [true, true],
+    },
+    {
+      name: "mirrors the corners in RTL",
+      from: 13,
+      to: 15,
+      dir: "rtl",
+      start: { left: false, right: true },
+      end: { left: true, right: false },
+      bands: [true, true],
+    },
+    {
+      name: "keeps a one-day range round",
+      from: 14,
+      to: 14,
+      dir: "ltr",
+      start: { left: true, right: true },
+      end: { left: true, right: true },
+      bands: [false, false],
+    },
+    {
+      name: "keeps a start at the end of a week round",
+      from: 10,
+      to: 13,
+      dir: "ltr",
+      start: { left: true, right: true },
+      end: { left: false, right: true },
+      bands: [false, true],
+    },
+    {
+      name: "keeps an end at the start of a week round",
+      from: 7,
+      to: 11,
+      dir: "ltr",
+      start: { left: true, right: false },
+      end: { left: true, right: true },
+      bands: [true, false],
+    },
+  ])("$name", async ({ from, to, dir, start, end, bands }) => {
+    const { getByRole } = await render(
+      <DatePicker
+        mode="range"
+        defaultMonth={new Date(2026, 9, 1)}
+        selected={{ from: new Date(2026, 9, from), to: new Date(2026, 9, to) }}
+        dir={dir}
+        animate={false}
+      />,
+    );
+    const october = getByRole("grid", { name: "October 2026" }).element();
+    const toIso = (day: number) => `2026-10-${String(day).padStart(2, "0")}`;
+
+    expect(getRoundedSides(getDateButton(october, toIso(from)))).toEqual(start);
+    expect(getRoundedSides(getDateButton(october, toIso(to)))).toEqual(end);
+    expect([
+      hasBand(getDateCell(october, toIso(from))),
+      hasBand(getDateCell(october, toIso(to))),
+    ]).toEqual(bands);
+  });
+});
+
 function InteractiveRangePicker({ min }: { min?: number }) {
   const [range, setRange] = useState<DateRange>();
   return (

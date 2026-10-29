@@ -88,6 +88,9 @@ const dayButtonClassName = cn(
   "data-selected-single:bg-kumo-contrast data-selected-single:text-kumo-inverse data-selected-single:hover:bg-kumo-contrast",
   "data-range-start:bg-kumo-contrast data-range-start:text-kumo-inverse data-range-start:hover:bg-kumo-contrast",
   "data-range-end:bg-kumo-contrast data-range-end:text-kumo-inverse data-range-end:hover:bg-kumo-contrast",
+  // Range ends are square on the side that meets the band. A one-day range
+  // has no band, so it stays round.
+  "data-range-end:rounded-s-none data-range-start:rounded-e-none data-range-start:data-range-end:rounded-md",
   "data-range-middle:hover:bg-kumo-fill-hover",
 );
 
@@ -235,24 +238,28 @@ export function DatePicker({
           "flex h-(--cell-size) w-(--cell-width) items-center justify-center text-xs text-kumo-subtle",
         ),
         // The range band is painted on the cells: full width in the middle,
-        // the inner half at each end so it starts under the end squares, and
+        // the inner half at each end so it meets the end squares, and
         // rounded where a week wraps, so it reads as one continuous strip.
+        // Days are td elements, so first-of-type skips a week number cell.
         day: cn(
           defaults.day,
           "relative flex h-(--cell-size) w-(--cell-width) justify-center p-0 text-center",
-          "data-selected:first:rounded-l-md data-selected:last:rounded-r-md",
+          "data-selected:first-of-type:rounded-s-md data-selected:last-of-type:rounded-e-md",
+          // A range end at the edge of a week has no band beside it, so it
+          // stays round.
+          "[&:first-of-type>[data-range-end]]:rounded-s-md [&:last-of-type>[data-range-start]]:rounded-e-md",
           // A range that starts and ends on the same day has no band.
           "has-[[data-range-start]]:has-[[data-range-end]]:bg-none",
         ),
         day_button: cn(defaults.day_button, dayButtonClassName),
         range_start: cn(
           defaults.range_start,
-          "bg-linear-to-r from-transparent from-50% to-kumo-fill to-50% rtl:bg-linear-to-l",
+          "bg-linear-to-r from-transparent from-50% to-kumo-fill to-50% last-of-type:bg-none rtl:bg-linear-to-l",
         ),
         range_middle: cn(defaults.range_middle, "bg-kumo-fill"),
         range_end: cn(
           defaults.range_end,
-          "bg-linear-to-l from-transparent from-50% to-kumo-fill to-50% rtl:bg-linear-to-r",
+          "bg-linear-to-l from-transparent from-50% to-kumo-fill to-50% first-of-type:bg-none rtl:bg-linear-to-r",
         ),
         hidden: cn(defaults.hidden, "invisible"),
         footer: cn(defaults.footer, "w-0 min-w-full pt-3"),
