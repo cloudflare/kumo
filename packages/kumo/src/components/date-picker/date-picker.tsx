@@ -4,12 +4,12 @@ import {
   CaretRightIcon,
   CaretUpIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useRef, type ReactElement } from "react";
+import { useMemo, type ReactElement } from "react";
 import {
   DayPicker,
   getDefaultClassNames,
   type CustomComponents,
-  type DayButtonProps,
+  type DayProps,
   type PropsBase,
   type PropsSingle,
   type PropsSingleRequired,
@@ -40,58 +40,53 @@ const Chevron: CustomComponents["Chevron"] = ({
 };
 
 /**
- * Day button that exposes its selection state as data attributes, so single
- * selections and range ends get the filled style while the days between them
- * show the range band painted on their cells.
+ * Renders the day cell, or a custom `Day`, with markers for where it sits in
+ * a selected range. Day buttons take their styles from their cell, so a
+ * custom `DayButton` keeps them, and so does a custom `Day` that passes its
+ * props on.
  */
-function DayButton({ day: _day, modifiers, ...props }: DayButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null);
-
-  // Follow keyboard focus between days, like react-day-picker's own button.
-  useEffect(() => {
-    if (modifiers.focused) ref.current?.focus();
-  }, [modifiers.focused]);
-
-  const inRange =
-    modifiers.range_start || modifiers.range_end || modifiers.range_middle;
-
-  return (
-    <button
-      ref={ref}
-      data-selected-single={(modifiers.selected && !inRange) || undefined}
-      data-range-start={modifiers.range_start || undefined}
-      data-range-end={modifiers.range_end || undefined}
-      data-range-middle={modifiers.range_middle || undefined}
-      data-today={
-        (modifiers.today && !modifiers.selected && !modifiers.outside) ||
-        undefined
-      }
-      data-outside={(modifiers.outside && !modifiers.selected) || undefined}
-      {...props}
-    />
-  );
+function withRangeMarkers(CustomDay?: CustomComponents["Day"]) {
+  return function Day({ day, modifiers, ...props }: DayProps) {
+    const markers = {
+      "data-range-start": modifiers.range_start || undefined,
+      "data-range-middle": modifiers.range_middle || undefined,
+      "data-range-end": modifiers.range_end || undefined,
+    };
+    return CustomDay ? (
+      <CustomDay day={day} modifiers={modifiers} {...props} {...markers} />
+    ) : (
+      <td {...props} {...markers} />
+    );
+  };
 }
 
 /** Square ghost buttons the size of a day square. */
 const navButtonClassName = cn(
   buttonVariants({ variant: "ghost", shape: "square" }),
-  "size-(--cell-size) rounded-md aria-disabled:cursor-not-allowed aria-disabled:opacity-50 rtl:[&>svg]:rotate-180",
+  "size-(--cell-size) rounded-md aria-disabled:cursor-not-allowed aria-disabled:opacity-50",
 );
 
+// Each state is read from the day's cell: react-day-picker's data-selected,
+// data-today, data-outside and data-disabled, plus the range markers above.
+// The button can sit anywhere inside the cell, so a custom DayButton that
+// wraps it keeps the styles.
 const dayButtonClassName = cn(
   "flex size-(--cell-size) items-center justify-center rounded-md text-base text-kumo-default tabular-nums transition-colors outline-none",
   "cursor-pointer hover:bg-kumo-tint",
   "focus-visible:relative focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-kumo-brand",
-  "disabled:cursor-not-allowed disabled:text-kumo-inactive disabled:hover:bg-transparent",
-  "data-outside:text-kumo-subtle",
-  "data-today:font-semibold data-today:text-(--color-kumo-brand)",
-  "data-selected-single:bg-kumo-contrast data-selected-single:text-kumo-inverse data-selected-single:hover:bg-kumo-contrast",
-  "data-range-start:bg-kumo-contrast data-range-start:text-kumo-inverse data-range-start:hover:bg-kumo-contrast",
-  "data-range-end:bg-kumo-contrast data-range-end:text-kumo-inverse data-range-end:hover:bg-kumo-contrast",
-  // Range ends are square on the side that meets the band. A one-day range
-  // has no band, so it stays round.
-  "data-range-end:rounded-s-none data-range-start:rounded-e-none data-range-start:data-range-end:rounded-md",
-  "data-range-middle:hover:bg-kumo-fill-hover",
+  "[td[data-day][data-disabled]_&]:cursor-not-allowed [td[data-day][data-disabled]_&]:text-kumo-inactive [td[data-day][data-disabled]_&]:hover:bg-transparent",
+  // Days from other months are as quiet as disabled ones.
+  "[td[data-day][data-outside]:not([data-selected])_&]:text-kumo-inactive",
+  // Today keeps its weight when disabled, so it can still be found.
+  "[td[data-day][data-today]:not([data-selected],[data-outside])_&]:font-semibold [td[data-day][data-today]:not([data-selected],[data-outside],[data-disabled])_&]:text-kumo-link",
+  // Selected days are filled, except the days inside a range, which show the
+  // band painted on their cells.
+  "[td[data-day][data-selected]:not([data-range-middle])_&]:bg-kumo-contrast [td[data-day][data-selected]:not([data-range-middle])_&]:text-kumo-inverse [td[data-day][data-selected]:not([data-range-middle])_&]:hover:bg-kumo-contrast",
+  "[td[data-day][data-range-middle]:not([data-disabled])_&]:hover:bg-kumo-interact",
+  // Range ends are square on the side that meets the band. A one-day range,
+  // or an end at the edge of a week, has no band beside it, so it stays round.
+  "[td[data-day][data-range-start]:not([data-range-end],:last-of-type)_&]:rounded-e-none",
+  "[td[data-day][data-range-end]:not([data-range-start],:first-of-type)_&]:rounded-s-none",
 );
 
 /** Base props shared across all DatePicker modes */
@@ -186,6 +181,9 @@ export function DatePicker({
 }: DatePickerProps): ReactElement {
   const defaults = getDefaultClassNames();
   const hasDropdowns = props.captionLayout?.startsWith("dropdown") ?? false;
+  const hasNavAround = props.navLayout === "around";
+  const customDay = props.components?.Day;
+  const Day = useMemo(() => withRangeMarkers(customDay), [customDay]);
 
   return (
     <DayPicker
@@ -197,24 +195,51 @@ export function DatePicker({
         // Days are --cell-size squares centered in --cell-width columns, so
         // they get a little air on each side while the nav buttons, weekday
         // labels and days still share one grid.
-        months: cn(defaults.months, "relative flex flex-col gap-4 sm:flex-row"),
-        month: cn(defaults.month, "flex flex-col gap-3"),
+        // isolate keeps the nav's and focused days' z-index inside the
+        // calendar.
+        months: cn(
+          defaults.months,
+          "relative isolate flex flex-col gap-4 sm:flex-row",
+        ),
+        // navLayout="after" and "around" render the buttons inside a month,
+        // so the month positions them. Otherwise it stays unpositioned, so it
+        // doesn't cover the nav.
+        month: cn(
+          defaults.month,
+          "flex flex-col gap-3",
+          props.navLayout && "relative",
+        ),
         // Both buttons sit together at the end of the header, so switching
         // months is a short mouse trip. The inset matches the columns' side
         // air, so the last button lines up with the last day square and the
-        // caption with the first.
-        nav: cn(defaults.nav, "absolute end-0.5 top-0 flex items-center gap-1"),
-        button_previous: cn(defaults.button_previous, navButtonClassName),
-        button_next: cn(defaults.button_next, navButtonClassName),
+        // caption with the first. The buttons sit above the caption, so a
+        // long month name in a dropdown can't cover them. The nav's chevrons
+        // don't follow the text direction, so they flip in RTL;
+        // navLayout="around" flips its own.
+        nav: cn(
+          defaults.nav,
+          "absolute end-0.5 top-0 z-1 flex items-center gap-1 rtl:[&_svg]:rotate-180",
+        ),
+        button_previous: cn(
+          defaults.button_previous,
+          navButtonClassName,
+          hasNavAround && "absolute start-0.5 top-0 z-1",
+        ),
+        button_next: cn(
+          defaults.button_next,
+          navButtonClassName,
+          hasNavAround && "absolute end-0.5 top-0 z-1",
+        ),
         month_caption: cn(
           defaults.month_caption,
           "flex h-(--cell-size) items-center px-0.5",
+          hasNavAround && "justify-center px-(--cell-size)",
         ),
         caption_label: cn(
           defaults.caption_label,
           "text-base font-medium text-kumo-default",
           hasDropdowns &&
-            "flex h-7 items-center gap-1 rounded-md pr-1 pl-2 [&>svg]:text-kumo-subtle",
+            "flex h-7 items-center gap-1 rounded-md ps-2 pe-1 [&>svg]:text-kumo-subtle",
         ),
         dropdowns: cn(defaults.dropdowns, "flex items-center gap-1.5"),
         dropdown_root: cn(
@@ -245,11 +270,8 @@ export function DatePicker({
           defaults.day,
           "relative flex h-(--cell-size) w-(--cell-width) justify-center p-0 text-center",
           "data-selected:first-of-type:rounded-s-md data-selected:last-of-type:rounded-e-md",
-          // A range end at the edge of a week has no band beside it, so it
-          // stays round.
-          "[&:first-of-type>[data-range-end]]:rounded-s-md [&:last-of-type>[data-range-start]]:rounded-e-md",
           // A range that starts and ends on the same day has no band.
-          "has-[[data-range-start]]:has-[[data-range-end]]:bg-none",
+          "data-range-start:data-range-end:bg-none",
         ),
         day_button: cn(defaults.day_button, dayButtonClassName),
         range_start: cn(
@@ -273,8 +295,8 @@ export function DatePicker({
       }}
       components={{
         Chevron,
-        DayButton,
         ...props.components,
+        Day,
       }}
     />
   );
