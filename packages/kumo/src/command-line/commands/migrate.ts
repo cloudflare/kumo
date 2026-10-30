@@ -125,11 +125,14 @@ export function migrate(args: string[]): void {
   }
 
   if (!hasPendingMigrations()) {
-    console.log("No pending token migrations.");
-    console.log("\nYour codebase is up to date with the current Kumo version.");
-    console.log("Token migrations are only needed when upgrading to versions");
-    console.log("that include breaking changes to token names.");
-    return;
+    // stdout carries JSON by default, so keep the status text off it.
+    const print = outputClasses ? console.log : console.error;
+    print("No pending token migrations.");
+    print("\nYour codebase is up to date with the current Kumo version.");
+    print("Token migrations are only needed when upgrading to versions");
+    print("that include breaking changes to token names.");
+    // JSON mode falls through to the JSON output below; --classes stops here.
+    if (outputClasses) return;
   }
 
   const direction: Direction = toOld ? "to-old" : "to-new";
