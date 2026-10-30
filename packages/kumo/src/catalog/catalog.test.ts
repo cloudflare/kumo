@@ -295,3 +295,35 @@ describe("initCatalog", () => {
     }
   });
 });
+
+describe("hasAction", () => {
+  it("only reports registered actions, not Object.prototype names", async () => {
+    const { createKumoCatalog } = await import("./catalog");
+    const empty = createKumoCatalog();
+    const catalog = createKumoCatalog({
+      actions: { myAction: { description: "Do something" } },
+    });
+
+    for (const name of ["toString", "constructor", "hasOwnProperty"]) {
+      expect(empty.hasAction(name)).toBe(false);
+      expect(catalog.hasAction(name)).toBe(false);
+    }
+    expect(catalog.hasAction("myAction")).toBe(true);
+    expect(catalog.actionNames).toEqual(["myAction"]);
+  });
+
+  it("follows changes to the supplied actions object", async () => {
+    const { createKumoCatalog } = await import("./catalog");
+    const actions: Record<string, { description: string }> = {
+      save: { description: "Save" },
+    };
+    const catalog = createKumoCatalog({ actions });
+
+    delete actions.save;
+    actions.later = { description: "Later" };
+
+    expect(catalog.hasAction("save")).toBe(false);
+    expect(catalog.hasAction("later")).toBe(true);
+    expect(catalog.actionNames).toEqual(["later"]);
+  });
+});

@@ -104,7 +104,8 @@ function getSchemas(): SchemasModule {
  */
 export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
   const { actions = {} } = config;
-  const actionNames = Object.keys(actions);
+  // Read from the live object so changes to `actions` show up in every use.
+  const getActionNames = () => Object.keys(actions);
 
   return {
     get componentNames(): readonly string[] {
@@ -113,7 +114,7 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
     },
 
     get actionNames(): readonly string[] {
-      return actionNames;
+      return getActionNames();
     },
 
     hasComponent(type: string): boolean {
@@ -126,7 +127,7 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
     },
 
     hasAction(name: string): boolean {
-      return name in actions;
+      return getActionNames().includes(name);
     },
 
     validateElement(element: unknown): ValidationResult {
@@ -225,12 +226,15 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
       }
 
       // Actions section
+      const actionNames = getActionNames();
       if (actionNames.length > 0) {
         lines.push("");
         lines.push("## Available Actions");
         lines.push("");
-        for (const [name, def] of Object.entries(actions)) {
-          lines.push(`- \`${name}\`: ${(def as ActionDefinition).description}`);
+        for (const name of actionNames) {
+          lines.push(
+            `- \`${name}\`: ${(actions[name] as ActionDefinition).description}`,
+          );
         }
       }
 
