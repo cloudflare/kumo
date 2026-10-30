@@ -320,6 +320,7 @@ export {
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
   type SidebarState,
+  type SidebarFlyout,
   type SidebarSide,
   type SidebarVariant,
   type SidebarCollapsible as SidebarCollapsibleType,

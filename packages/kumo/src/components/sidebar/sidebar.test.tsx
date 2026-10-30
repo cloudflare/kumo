@@ -44,6 +44,7 @@ import {
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
+  type SidebarFlyout,
 } from "./sidebar";
 
 // ---------------------------------------------------------------------------
@@ -983,6 +984,304 @@ describe("Sidebar.ResizeHandle", () => {
 // ============================================================================
 // MenuButton
 // ============================================================================
+
+describe("Sidebar flyout", () => {
+  function FlyoutTest({
+    flyout = "collapsed",
+    open = false,
+    label,
+    tooltip = "Compute",
+  }: {
+    /** `null` turns flyouts off. */
+    flyout?: SidebarFlyout | null;
+    open?: boolean;
+    label?: string;
+    tooltip?: string;
+  }) {
+    return (
+      <TestSidebar defaultOpen={open} flyout={flyout ?? undefined}>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible>
+                <SidebarCollapsibleTrigger
+                  render={
+                    <SidebarMenuButton tooltip={tooltip}>
+                      Compute
+                      <SidebarMenuChevron />
+                    </SidebarMenuButton>
+                  }
+                />
+                <SidebarCollapsibleContent label={label}>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarCollapsible>
+                        <SidebarCollapsibleTrigger
+                          render={
+                            <SidebarMenuSubButton>
+                              Workers & Pages
+                              <SidebarMenuChevron />
+                            </SidebarMenuSubButton>
+                          }
+                        />
+                        <SidebarCollapsibleContent>
+                          <SidebarMenuSub>
+                            <SidebarMenuSubButton href="/overview">
+                              Overview
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSub>
+                        </SidebarCollapsibleContent>
+                      </SidebarCollapsible>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubButton href="/queues" active>
+                      Queues
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>
+    );
+  }
+
+  it("is a menu trigger on the collapsed rail", () => {
+    render(<FlyoutTest />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.getAttribute("aria-haspopup")).toBe("menu");
+  });
+
+  it("stays an inline disclosure when the rail is expanded", () => {
+    render(<FlyoutTest open />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+    expect(trigger.getAttribute("aria-controls")).toBeTruthy();
+  });
+
+  it("stays an inline disclosure without the flyout prop", () => {
+    render(<FlyoutTest flyout={null} />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+  });
+
+  it("renders nested content as menu items and submenus", async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest />);
+
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByText("Compute")).toBeTruthy();
+
+    const queues = within(menu).getByRole("menuitem", { name: "Queues" });
+    expect(queues.getAttribute("href")).toBe("/queues");
+    expect(queues.getAttribute("aria-current")).toBe("page");
+
+    const submenuTrigger = within(menu).getByRole("menuitem", {
+      name: /Workers & Pages/,
+    });
+    expect(submenuTrigger.getAttribute("aria-haspopup")).toBe("menu");
+  });
+
+  it("closes when a link is chosen", async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest />);
+
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+    const menu = await screen.findByRole("menu");
+    await user.click(within(menu).getByRole("menuitem", { name: "Queues" }));
+
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+  });
+
+  it("opens from the keyboard", async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest />);
+
+    await user.tab();
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: /Compute/ }),
+    );
+    await user.keyboard("{Enter}");
+
+    expect(await screen.findByRole("menu")).toBeTruthy();
+  });
+
+  it("titles the flyout from the trigger tooltip, then label", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<FlyoutTest tooltip="Compute (tooltip)" />);
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+    expect(
+      within(await screen.findByRole("menu")).getByText("Compute (tooltip)"),
+    ).toBeTruthy();
+    unmount();
+
+    render(<FlyoutTest label="Compute (label)" />);
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+    expect(
+      within(await screen.findByRole("menu")).getByText("Compute (label)"),
+    ).toBeTruthy();
+  });
+
+  it('flyout="always" previews closed sections on hover when expanded', async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest flyout="always" open />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+
+    // Still an inline disclosure, not a menu button.
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+
+    // The inline copy is inert and hidden, so a visible link means the
+    // preview opened.
+    expect(screen.queryByRole("link", { name: "Queues" })).toBeNull();
+    await user.hover(trigger);
+    expect(await screen.findByRole("link", { name: "Queues" })).toBeTruthy();
+  });
+
+  it('flyout="always" moves one preview between sections', async () => {
+    const user = userEvent.setup();
+    const section = (name: string, link: string) => (
+      <SidebarMenuItem>
+        <SidebarCollapsible>
+          <SidebarCollapsibleTrigger
+            render={<SidebarMenuButton>{name}</SidebarMenuButton>}
+          />
+          <SidebarCollapsibleContent>
+            <SidebarMenuSub>
+              <SidebarMenuSubButton href={`/${link}`}>
+                {link}
+              </SidebarMenuSubButton>
+            </SidebarMenuSub>
+          </SidebarCollapsibleContent>
+        </SidebarCollapsible>
+      </SidebarMenuItem>
+    );
+    render(
+      <TestSidebar defaultOpen flyout="always">
+        <SidebarContent>
+          <SidebarMenu>
+            {section("Compute", "Queues")}
+            {section("Storage", "R2")}
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    await user.hover(screen.getByRole("button", { name: "Compute" }));
+    expect(await screen.findByRole("link", { name: "Queues" })).toBeTruthy();
+
+    await user.hover(screen.getByRole("button", { name: "Storage" }));
+    expect(await screen.findByRole("link", { name: "R2" })).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Queues" })).toBeNull();
+  });
+
+  it('flyout="always" expands nested sections inside the preview', async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest flyout="always" open />);
+
+    await user.hover(screen.getByRole("button", { name: /Compute/ }));
+    const nested = await screen.findByRole("button", {
+      name: /Workers & Pages/,
+    });
+    fireEvent.click(nested);
+
+    // The preview stays open and the nested section expands within it.
+    expect(nested.getAttribute("aria-expanded")).toBe("true");
+    expect(await screen.findByRole("link", { name: "Overview" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Queues" })).toBeTruthy();
+  });
+
+  it('flyout="always" still expands inline on click', () => {
+    render(<FlyoutTest flyout="always" open />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+
+    // fireEvent: happy-dom treats userEvent's click focus as focus-visible,
+    // which would trigger keyboard auto-expand first.
+    fireEvent.click(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+    expect(screen.getByRole("link", { name: "Queues" })).toBeTruthy();
+  });
+
+  it('flyout="always" is a menu on the collapsed rail', () => {
+    render(<FlyoutTest flyout="always" />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.getAttribute("aria-haspopup")).toBe("menu");
+  });
+
+  it("moves one rail menu between sections", async () => {
+    const user = userEvent.setup();
+    const section = (name: string, link: string) => (
+      <SidebarMenuItem>
+        <SidebarCollapsible>
+          <SidebarCollapsibleTrigger
+            render={
+              <SidebarMenuButton tooltip={name}>{name}</SidebarMenuButton>
+            }
+          />
+          <SidebarCollapsibleContent>
+            <SidebarMenuSub>
+              <SidebarMenuSubButton href={`/${link}`}>
+                {link}
+              </SidebarMenuSubButton>
+            </SidebarMenuSub>
+          </SidebarCollapsibleContent>
+        </SidebarCollapsible>
+      </SidebarMenuItem>
+    );
+    render(
+      <TestSidebar defaultOpen={false} flyout="collapsed">
+        <SidebarContent>
+          <SidebarMenu>
+            {section("Compute", "Queues")}
+            {section("Storage", "R2")}
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+
+    await user.hover(screen.getByRole("button", { name: "Compute" }));
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByText("Compute")).toBeTruthy();
+    expect(within(menu).getByRole("menuitem", { name: "Queues" })).toBeTruthy();
+
+    await user.hover(screen.getByRole("button", { name: "Storage" }));
+    await waitFor(() =>
+      expect(screen.getByRole("menuitem", { name: "R2" })).toBeTruthy(),
+    );
+    expect(screen.getAllByRole("menu")).toHaveLength(1);
+    expect(within(screen.getByRole("menu")).getByText("Storage")).toBeTruthy();
+    expect(screen.queryByRole("menuitem", { name: "Queues" })).toBeNull();
+  });
+
+  it("is ignored when peekable", () => {
+    render(
+      <TestSidebar defaultOpen={false} flyout="collapsed" peekable>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible>
+                <SidebarCollapsibleTrigger
+                  render={<SidebarMenuButton>Compute</SidebarMenuButton>}
+                />
+                <SidebarCollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubButton href="/queues">
+                      Queues
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+  });
+});
 
 describe("Sidebar.MenuButton", () => {
   it("should auto-wrap in <li> when not inside MenuItem", () => {
