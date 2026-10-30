@@ -311,4 +311,19 @@ describe("hasAction", () => {
     expect(catalog.hasAction("myAction")).toBe(true);
     expect(catalog.actionNames).toEqual(["myAction"]);
   });
+
+  it("follows changes to the supplied actions object", async () => {
+    const { createKumoCatalog } = await import("./catalog");
+    const actions: Record<string, { description: string }> = {
+      save: { description: "Save" },
+    };
+    const catalog = createKumoCatalog({ actions });
+
+    delete actions.save;
+    actions.later = { description: "Later" };
+
+    expect(catalog.hasAction("save")).toBe(false);
+    expect(catalog.hasAction("later")).toBe(true);
+    expect(catalog.actionNames).toEqual(["later"]);
+  });
 });
