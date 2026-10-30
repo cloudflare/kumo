@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vite-plus/test";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { createElement } from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { SensitiveInput } from "./sensitive-input";
 
 describe("SensitiveInput", () => {
@@ -44,5 +44,36 @@ describe("SensitiveInput", () => {
     // Error styling (ring-kumo-danger) is on the container div wrapping the password input
     const inputEl = container.querySelector("input");
     expect(inputEl?.parentElement?.className).toContain("ring-kumo-danger");
+  });
+
+  it("masks the value again on blur when an onBlur handler is passed", () => {
+    const onBlur = vi.fn();
+    render(<SensitiveInput defaultValue="example-value" onBlur={onBlur} />);
+    fireEvent.keyDown(screen.getByRole("button", { name: /masked/ }), {
+      key: "Enter",
+    });
+    const input = screen.getByDisplayValue("example-value");
+    expect(input.getAttribute("type")).toBe("text");
+
+    fireEvent.blur(input);
+
+    expect(input.getAttribute("type")).toBe("password");
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onBlur but stays revealed when focus moves to the visibility toggle", () => {
+    const onBlur = vi.fn();
+    render(<SensitiveInput defaultValue="example-value" onBlur={onBlur} />);
+    fireEvent.keyDown(screen.getByRole("button", { name: /masked/ }), {
+      key: "Enter",
+    });
+    const input = screen.getByDisplayValue("example-value");
+
+    fireEvent.blur(input, {
+      relatedTarget: screen.getByRole("button", { name: "Hide value" }),
+    });
+
+    expect(input.getAttribute("type")).toBe("text");
+    expect(onBlur).toHaveBeenCalledTimes(1);
   });
 });
