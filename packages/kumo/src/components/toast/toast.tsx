@@ -125,7 +125,7 @@ export function toastVariants({
   variant = KUMO_TOAST_DEFAULT_VARIANTS.variant,
 }: KumoToastVariantsProps = {}) {
   return cn(
-    // Base styles for toast root
+    // Base styles for the toast surface
     "rounded-xl ring ring-kumo-line bg-clip-padding p-4 shadow-lg",
     // Apply variant styles from KUMO_TOAST_VARIANTS
     resolveVariant(
@@ -199,6 +199,16 @@ type KumoToastOptionsBase = {
   bump?: boolean;
 };
 
+// Set by every `add()` and cleared by `update()` and promise results.
+// `ToastList` only bumps when this is set and `updateKey > 0`, because Base UI
+// increments `updateKey` for duplicate adds and explicit updates alike.
+// `Symbol.for` keeps this working across duplicate Kumo bundles.
+const KUMO_TOAST_AUTO_BUMP = Symbol.for("kumo-toast-auto-bump");
+
+type KumoToastInternalOptions = {
+  [KUMO_TOAST_AUTO_BUMP]?: boolean;
+};
+
 export type KumoToastOptions<Data extends object> = ToastObject<Data> &
   KumoToastOptionsBase;
 
@@ -208,45 +218,47 @@ export type KumoToastManagerAddOptions<Data extends object> =
 export type KumoToastManagerUpdateOptions<Data extends object> =
   ToastManagerUpdateOptions<Data> & KumoToastOptionsBase;
 
+function withBumpIntent<T extends KumoToastOptionsBase>(
+  options: T,
+  autoBump: boolean,
+): T & KumoToastInternalOptions {
+  return {
+    ...options,
+    // Keep `bump` operation-scoped instead of inheriting a previous value
+    // through Base UI's partial update merge.
+    bump: options.bump,
+    [KUMO_TOAST_AUTO_BUMP]: autoBump,
+  };
+}
+
 function wrapManagerMethods<
-  T extends { add: Function; update: Function; promise: Function },
+  T extends {
+    add: Function;
+    update: Function;
+    promise: Function;
+    toasts?: Array<ToastObject<any>>;
+  },
 >(manager: T) {
   return {
     ...manager,
 
     add: (options: KumoToastManagerAddOptions<any>) => {
-      if (options.id) {
-        const toasts = (manager as any).toasts as
-          Array<ToastObject<any>> | undefined;
+      const existingToast = options.id
+        ? manager.toasts?.find((toast) => toast.id === options.id)
+        : undefined;
 
-        if (toasts) {
-          const existingToast = toasts.find((toast) => toast.id === options.id);
-
-          // If toast exists and is not exiting, trigger bump and prevent duplicate
-          if (existingToast && existingToast.transitionStatus !== "ending") {
-            // Reset animation by disabling then re-enabling
-            manager.update(options.id, { bump: false });
-            requestAnimationFrame(() => {
-              manager.update(options.id, {
-                bump: true,
-                ...(options.timeout !== undefined && {
-                  timeout: options.timeout,
-                }),
-              });
-            });
-            return options.id;
-          }
-
-          // If toast exists and is exiting, let it finish - don't add duplicate
-          if (existingToast && existingToast.transitionStatus === "ending") {
-            return options.id;
-          }
+      if (existingToast) {
+        // Bump the visible toast instead of replacing it, and let an
+        // exiting toast finish.
+        if (existingToast.transitionStatus !== "ending") {
+          const bumpOptions: KumoToastManagerUpdateOptions<any> =
+            options.timeout !== undefined ? { timeout: options.timeout } : {};
+          manager.update(existingToast.id, withBumpIntent(bumpOptions, true));
         }
+        return existingToast.id;
       }
 
-      return manager.add({
-        ...options,
-      });
+      return manager.add(withBumpIntent(options, true));
     },
 
     update: (
@@ -260,8 +272,9 @@ function wrapManagerMethods<
       return manager.update(
         id,
         typeof options === "function"
-          ? (prevToast: ToastObject<any>) => options(prevToast)
-          : { ...options },
+          ? (prevToast: ToastObject<any>) =>
+              withBumpIntent(options(prevToast), false)
+          : withBumpIntent(options, false),
       );
     },
 
@@ -278,27 +291,27 @@ function wrapManagerMethods<
       },
     ) => {
       return manager.promise(promise, {
-        loading: { ...options.loading },
+        loading: withBumpIntent(options.loading, false),
         success:
           typeof options.success === "function"
-            ? (data: T) => ({
-                ...(
-                  options.success as (
+            ? (data: T) =>
+                withBumpIntent(
+                  (options.success as (
                     data: T,
-                  ) => KumoToastManagerAddOptions<any>
-                )(data),
-              })
-            : { ...options.success },
+                  ) => KumoToastManagerAddOptions<any>)(data),
+                  false,
+                )
+            : withBumpIntent(options.success, false),
         error:
           typeof options.error === "function"
-            ? (error: Error) => ({
-                ...(
-                  options.error as (
+            ? (error: Error) =>
+                withBumpIntent(
+                  (options.error as (
                     error: Error,
-                  ) => KumoToastManagerAddOptions<any>
-                )(error),
-              })
-            : { ...options.error },
+                  ) => KumoToastManagerAddOptions<any>)(error),
+                  false,
+                )
+            : withBumpIntent(options.error, false),
       });
     },
   };
@@ -356,69 +369,96 @@ export const ToastProvider = Toasty;
 
 function ToastList() {
   const { toasts } = useKumoToastManager();
-  return toasts.map((toast) => (
-    <Toast.Root
-      key={toast.id}
-      toast={toast}
-      className={cn(
-        "absolute right-0 bottom-0 left-auto z-[calc(1000-var(--toast-index))] mr-0 h-[var(--height)] w-full origin-bottom select-none",
-        toastVariants({ variant: toast.variant }),
-        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
-        "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
-        "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
-        "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
-        "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
-        "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
-        "data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
-        "data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
-        "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
-        toast.bump && "animate-toast-bump",
-      )}
-    >
-      <ToastBackground variant={toast.variant} />
-      <Toast.Content className="isolate flex flex-col gap-1 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100">
-        {toast.content ?? (
-          <>
-            <div className="flex items-start gap-2">
-              <ToastIcon variant={toast.variant} />
-              <div className="flex flex-col gap-1 overflow-hidden">
-                <Toast.Title
-                  data-toast-title
-                  className="text-[0.975rem] leading-5 font-medium text-kumo-default"
-                />
-                <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
+  return toasts.map((toast) => {
+    const updateKey = toast.updateKey ?? 0;
+    const internalToast: KumoToastOptions<any> & KumoToastInternalOptions =
+      toast;
+    const shouldBump =
+      toast.bump === true ||
+      (toast.bump !== false &&
+        internalToast[KUMO_TOAST_AUTO_BUMP] === true &&
+        updateKey > 0);
+    // Alternate between two identical animations so each bump replays
+    // without remounting the toast.
+    const bumpAnimation =
+      shouldBump &&
+      (updateKey % 2 === 0
+        ? "animate-toast-bump-alternate"
+        : "animate-toast-bump");
 
-                {!!toast.actions && (
-                  <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
-                    {toast.actions.map((actionProps, idx) => (
-                      <Button key={idx} {...actionProps} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </>
+    // The root owns the slide transition and the inner surface owns the bump,
+    // so a bump never cancels an in-progress slide-in.
+    return (
+      <Toast.Root
+        key={toast.id}
+        toast={toast}
+        className={cn(
+          "absolute right-0 bottom-0 left-auto z-[calc(1000-var(--toast-index))] mr-0 h-[var(--height)] w-full origin-bottom rounded-xl select-none motion-reduce:[transition-property:opacity]",
+          "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
+          "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
+          "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
+          "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
+          "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
+          "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
+          "data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
+          "data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
+          "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
         )}
-        <Toast.Close
-          data-kumo-part="close"
-          aria-label="Close"
-          render={
-            <Button
-              variant="ghost"
-              size="sm"
-              shape="square"
+      >
+        <div
+          data-kumo-part="surface"
+          className={cn(
+            "relative h-full w-full",
+            toastVariants({ variant: toast.variant }),
+            bumpAnimation,
+          )}
+        >
+          <ToastBackground variant={toast.variant} />
+          <Toast.Content className="isolate flex flex-col gap-1 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100">
+            {toast.content ?? (
+              <>
+                <div className="flex items-start gap-2">
+                  <ToastIcon variant={toast.variant} />
+                  <div className="flex flex-col gap-1 overflow-hidden">
+                    <Toast.Title
+                      data-toast-title
+                      className="text-[0.975rem] leading-5 font-medium text-kumo-default"
+                    />
+                    <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
+
+                    {!!toast.actions && (
+                      <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
+                        {toast.actions.map((actionProps, idx) => (
+                          <Button key={idx} {...actionProps} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+            <Toast.Close
+              data-kumo-part="close"
               aria-label="Close"
-              className={cn(
-                "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
-                toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
-              )}
-              icon={<XIcon className="h-3 w-3" />}
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  shape="square"
+                  aria-label="Close"
+                  className={cn(
+                    "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+                    toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
+                  )}
+                  icon={<XIcon className="h-3 w-3" />}
+                />
+              }
             />
-          }
-        />
-      </Toast.Content>
-    </Toast.Root>
-  ));
+          </Toast.Content>
+        </div>
+      </Toast.Root>
+    );
+  });
 }
 
 const TOAST_CLOSE_CLASSES: Record<string, string> = {
