@@ -336,22 +336,48 @@ export function SidebarToggleDemo() {
 }
 
 // ---------------------------------------------------------------------------
-// Hover Preview — collapsed collapsibles reveal nested content in a popup
+// Flyout — collapsed collapsibles reveal nested content in a popup
 // ---------------------------------------------------------------------------
 
+/** Turns peeking on (collapsing the sidebar to try it) or off (expanding back). */
+function PeekToggle({
+  peekable,
+  onPeekableChange,
+}: {
+  peekable: boolean;
+  onPeekableChange: (peekable: boolean) => void;
+}) {
+  const { setOpen } = useSidebar();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onPeekableChange(!peekable);
+        setOpen(peekable);
+      }}
+      className="cursor-pointer rounded-lg border border-kumo-line bg-kumo-base px-3 py-1.5 text-base text-kumo-default transition-colors hover:bg-kumo-tint"
+    >
+      {peekable ? "Disable peeking" : "Enable peeking"}
+    </button>
+  );
+}
+
 /**
- * Opt-in hover previews via `previewOnHover`: hovering a closed section shows
+ * Opt-in hover flyouts via `flyout`: hovering a closed section shows
  * its nested content in a popup instead of expanding inline. Collapse the rail
- * to see closed and open sections alike preview. Childless items (Analytics)
- * have nothing to preview, so they show a plain tooltip.
+ * to see closed and open sections alike in a flyout. Childless items (Analytics)
+ * have nothing to show, so they show a plain tooltip. Enable peeking to see
+ * flyouts wait for the peek to expand.
  */
-export function SidebarHoverPreviewDemo() {
+export function SidebarFlyoutDemo() {
+  const [peekable, setPeekable] = useState(false);
   return (
     <DemoContainer>
       <Sidebar.Provider
         contained
         defaultOpen
-        previewOnHover
+        peekable={peekable}
+        flyout
         className="h-full min-h-0!"
       >
         <Sidebar>
@@ -370,7 +396,7 @@ export function SidebarHoverPreviewDemo() {
                   </Sidebar.MenuButton>
                 </Sidebar.MenuItem>
                 <Sidebar.MenuItem>
-                  {/* Closed section: hovering previews its children in a popup.
+                  {/* Closed section: hovering shows its children in a flyout.
                       `tooltip` names the parent (the popup lists only its
                       children). */}
                   <Sidebar.Collapsible>
@@ -443,8 +469,8 @@ export function SidebarHoverPreviewDemo() {
           </Sidebar.Footer>
         </Sidebar>
         <DemoMain>
-          <ToggleButton />
-          <p>Hover a collapsed icon to preview its nested items</p>
+          <PeekToggle peekable={peekable} onPeekableChange={setPeekable} />
+          <p>Hover a collapsed icon to see its nested items in a flyout</p>
         </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>

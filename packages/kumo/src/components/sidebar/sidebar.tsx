@@ -1,3 +1,4 @@
+import { PreviewCard as PreviewCardBase } from "@base-ui/react/preview-card";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 import React, {
   type ComponentPropsWithoutRef,
@@ -14,11 +15,11 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
-import { createPortal } from "react-dom";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
+import { usePortalContainer } from "../../utils/portal-provider";
 import { Button } from "../button";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
@@ -98,8 +99,10 @@ const SIDEBAR_WIDTH_ICON = "57px";
 const SIDEBAR_EASING = "cubic-bezier(0.77, 0, 0.175, 1)";
 const SIDEBAR_ANIMATION_DURATION_MS = 250;
 const TRANSITION_FALLBACK_GRACE_MS = 50;
+/** Grace before a peek collapses on mouse leave, with hover flyouts on. */
+const PEEK_LEAVE_DELAY_MS = 120;
 const MOBILE_BREAKPOINT = 768;
-/** Label typography shared by group labels and preview popup titles. */
+/** Label typography shared by group labels and flyout popup titles. */
 const SIDEBAR_LABEL_TEXT = "truncate text-sm font-medium text-kumo-subtle";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -212,8 +215,10 @@ export interface SidebarContextValue {
   setIsResizing: (resizing: boolean) => void;
   setWidth: (width: number) => void;
   isPeeking: boolean;
+  /** `true` once a peek has finished expanding. Hover flyouts wait for it. */
+  isPeekSettled: boolean;
   peekable: boolean;
-  previewOnHover: boolean;
+  flyout: boolean;
   startPeek: () => void;
   stopPeek: () => void;
   contained: boolean;
@@ -330,11 +335,13 @@ export interface SidebarProviderProps {
    * When true, hovering a closed collapsible section shows its nested content in
    * a floating popup instead of expanding inline.
    *
-   * When the sidebar rail is collapsed, previews appear regardless of the
+   * When the sidebar rail is collapsed, flyouts appear regardless of the
    * section's open state (inline content cannot render in a collapsed rail).
+   * Combined with `peekable`, the peek handles the collapsed rail: flyouts
+   * wait until it has fully expanded.
    * @default false
    */
-  previewOnHover?: boolean;
+  flyout?: boolean;
   /**
    * Duration of sidebar expand/collapse animation in milliseconds.
    * @default 250
@@ -385,7 +392,7 @@ function SidebarProvider({
   onWidthChange,
   contained = false,
   peekable = false,
-  previewOnHover = false,
+  flyout = false,
   animationDuration = SIDEBAR_ANIMATION_DURATION_MS,
   mobileBreakpoint,
   children,
@@ -397,6 +404,7 @@ function SidebarProvider({
   const [width, setWidthState] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
   const [isPeeking, setIsPeeking] = useState(false);
+  const [isPeekSettled, setIsPeekSettled] = useState(false);
 
   // When controlled (`openProp` provided), use it directly for mobile too.
   // When uncontrolled, use internal `_openMobile` state.
@@ -451,6 +459,7 @@ function SidebarProvider({
 
   const stopPeek = useCallback(() => {
     setIsPeeking(false);
+    setIsPeekSettled(false);
   }, []);
 
   const state: SidebarState = isPeeking
@@ -552,8 +561,6 @@ function SidebarProvider({
     [scrollToItem],
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- all values are
-  // either stable (props, setters) or derived from state that triggers re-render
   const contextValue = useMemo<SidebarContextValue>(
     () => ({
       state,
@@ -574,8 +581,9 @@ function SidebarProvider({
       setIsResizing,
       setWidth,
       isPeeking,
+      isPeekSettled,
       peekable,
-      previewOnHover,
+      flyout,
       startPeek,
       stopPeek,
       contained,
@@ -584,7 +592,42 @@ function SidebarProvider({
       scrollToItem,
       scrollItemIntoView,
     }),
-    [state, open, openMobile, isMobile, width, isResizing, isPeeking],
+    [
+      state,
+      open,
+      setOpen,
+      openMobile,
+      setOpenMobile,
+      isMobile,
+      toggleSidebar,
+      variant,
+      side,
+      collapsible,
+      width,
+      resizable,
+      minWidth,
+      maxWidth,
+      isResizing,
+      setWidth,
+      isPeeking,
+      isPeekSettled,
+      peekable,
+      flyout,
+      startPeek,
+      stopPeek,
+      contained,
+      animationDuration,
+      registerItem,
+      scrollToItem,
+      scrollItemIntoView,
+    ],
+  );
+
+  const completePeek = useOpenChangeComplete(
+    isPeeking,
+    animationDuration,
+    setIsPeekSettled,
+    !isMobile,
   );
 
   const completeDesktopOpenChange = useOpenChangeComplete(
@@ -606,15 +649,22 @@ function SidebarProvider({
   const handleOpenTransitionEnd = useCallback(
     (event: React.TransitionEvent<HTMLDivElement>) => {
       const target = event.target as HTMLElement;
+      if (target.closest("[data-sidebar-wrapper]") !== event.currentTarget) {
+        return;
+      }
       if (
-        target.closest("[data-sidebar-wrapper]") === event.currentTarget &&
         target.dataset.sidebar === "sidebar" &&
         event.propertyName === transitionProperty
       ) {
         completeOpenChange();
+      } else if (
+        target.dataset.sidebar === "content-container" &&
+        event.propertyName === "width"
+      ) {
+        completePeek();
       }
     },
-    [completeOpenChange, transitionProperty],
+    [completeOpenChange, completePeek, transitionProperty],
   );
 
   return (
@@ -711,6 +761,7 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       startPeek,
       stopPeek,
       contained,
+      flyout,
     } = useSidebar();
 
     // --- Mobile a11y hooks (must be before early returns) ---
@@ -801,15 +852,36 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarRootProps>(
       [stopPeek],
     );
 
+    const stopPeekTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+      null,
+    );
+    const clearStopPeekTimeout = useCallback(() => {
+      if (stopPeekTimeoutRef.current) {
+        clearTimeout(stopPeekTimeoutRef.current);
+        stopPeekTimeoutRef.current = null;
+      }
+    }, []);
+
+    useEffect(() => clearStopPeekTimeout, [clearStopPeekTimeout]);
+
     const handlePeekMouseEnter = useCallback(() => {
       isPointerInPeekZoneRef.current = true;
+      clearStopPeekTimeout();
       startPeek();
-    }, [startPeek]);
+    }, [clearStopPeekTimeout, startPeek]);
 
     const handlePeekMouseLeave = useCallback(() => {
       isPointerInPeekZoneRef.current = false;
-      stopPeek();
-    }, [stopPeek]);
+      clearStopPeekTimeout();
+      // Hover flyouts portal outside the sidebar, past a small gap. Give the
+      // pointer time to cross it: entering a flyout re-enters the peek zone
+      // (portals bubble through the React tree) and cancels the stop.
+      if (flyout) {
+        stopPeekTimeoutRef.current = setTimeout(stopPeek, PEEK_LEAVE_DELAY_MS);
+      } else {
+        stopPeek();
+      }
+    }, [clearStopPeekTimeout, flyout, stopPeek]);
 
     if (collapsible === "none") {
       return (
@@ -1445,7 +1517,7 @@ export interface SidebarMenuButtonProps extends Omit<
   /**
    * Collapsed-rail label. Defaults to the button's text; set this to override
    * (e.g. a shorter label). Not shown when the sidebar is peekable or a hover
-   * preview supplies the label.
+   * flyout supplies the label.
    */
   tooltip?: string;
   /** Anchor id for `useSidebar().scrollToItem(id)`. */
@@ -1498,7 +1570,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     const { state, peekable, registerItem } = useSidebar();
     const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
-    const { hasPreview } = useContext(SidebarCollapseContext);
+    const { hasFlyout } = useContext(SidebarCollapseContext);
 
     const registerAutoWrap = useCallback(
       (node: HTMLLIElement | null) => {
@@ -1570,7 +1642,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       "text-kumo-default",
       "transition-[color,box-shadow,outline] duration-(--sidebar-animation-duration)",
       !active && "hover:bg-(--sidebar-active-bg)",
-      !active && "data-[preview-open]:bg-(--sidebar-active-bg)",
+      !active && "data-[flyout-open]:bg-(--sidebar-active-bg)",
       // Active state
       active && "bg-(--sidebar-active-bg)",
       // When a child sub-button is active, don't show active styling on the parent trigger
@@ -1630,8 +1702,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     // any label) so the DOM stays stable across expand/collapse — otherwise
     // React remounts the button and kills its CSS transitions.
     // Suppressed when peekable (hover reveals the full sidebar) or when a hover
-    // preview owns the label (its popup carries the title and sits in front).
-    const showTooltip = state === "collapsed" && !peekable && !hasPreview;
+    // flyout owns the label (its popup carries the title and sits in front).
+    const showTooltip = state === "collapsed" && !peekable && !hasFlyout;
     const tooltipText = tooltip ?? getElementText(children);
     if (tooltipText) {
       button = (
@@ -1808,7 +1880,7 @@ const SidebarMenuSubButton = forwardRef<
     "before:absolute before:inset-x-0 before:-inset-y-px",
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",
-    !active && "data-[preview-open]:bg-(--sidebar-active-bg)",
+    !active && "data-[flyout-open]:bg-(--sidebar-active-bg)",
     active && "bg-(--sidebar-active-bg)",
     "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
     className,
@@ -2226,14 +2298,14 @@ SidebarResizeHandle.displayName = "Sidebar.ResizeHandle";
 interface SidebarCollapseContextValue {
   contentId: string;
   isOpen: boolean;
-  isPreviewOpen: boolean;
+  isFlyoutOpen: boolean;
   isCollapsible: boolean;
   autoScrollOnOpen: boolean;
-  /** True when this section can open a hover-preview popup. */
-  hasPreview: boolean;
+  /** True when this section can open a hover-flyout popup. */
+  hasFlyout: boolean;
   toggle: () => void;
   completeOpenChange: () => void;
-  closePreview: () => void;
+  closeFlyout: () => void;
 }
 
 const isCollapsibleContentShown = (
@@ -2244,51 +2316,51 @@ const isCollapsibleContentShown = (
 const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   contentId: "",
   isOpen: true,
-  isPreviewOpen: false,
+  isFlyoutOpen: false,
   isCollapsible: false,
   autoScrollOnOpen: false,
-  hasPreview: false,
+  hasFlyout: false,
   toggle: () => {},
   completeOpenChange: () => {},
-  closePreview: () => {},
+  closeFlyout: () => {},
 });
 
-interface SidebarPreviewContextValue {
-  /** True when descendants are rendered inside a hover-preview popup. */
-  insidePreview: boolean;
+interface SidebarFlyoutContextValue {
+  /** True when descendants are rendered inside a hover-flyout popup. */
+  insideFlyout: boolean;
   /** Close this popup and every ancestor popup in the chain. */
   dismissAll: () => void;
 }
 
-const SidebarPreviewContext = createContext<SidebarPreviewContextValue>({
-  insidePreview: false,
+const SidebarFlyoutContext = createContext<SidebarFlyoutContextValue>({
+  insideFlyout: false,
   dismissAll: () => {},
 });
 
-/** Preview popup width in px (matches the `w-56` class below). */
-const PREVIEW_WIDTH = 224;
-/** Gap between the trigger and the preview popup in px. */
-const PREVIEW_GAP = 7;
-/** Minimum viewport inset for the preview popup in px. */
-const PREVIEW_VIEWPORT_INSET = 8;
+/** Gap between the trigger and the flyout popup in px. */
+const FLYOUT_GAP = 7;
+/** Minimum viewport inset for the flyout popup in px. */
+const FLYOUT_VIEWPORT_INSET = 8;
+const FLYOUT_TRIGGER_SELECTOR =
+  "[data-sidebar='menu-button'], [data-sidebar='menu-sub-button']";
 /**
- * Preview popup inner padding in px (must match the `p-1.5` class below).
+ * Flyout popup inner padding in px (must match the `p-1.5` class below).
  * When there's no title, offsetting the popup top by this amount aligns its
  * first item with the row that opened it, so nested popups don't drift.
  */
-const PREVIEW_PADDING = 6;
-/** Preview title row height in px (must match its `min-h-8.5` class). */
-const PREVIEW_TITLE_HEIGHT = 34;
+const FLYOUT_PADDING = 6;
+/** Flyout title row height in px (must match its `min-h-8.5` class). */
+const FLYOUT_TITLE_HEIGHT = 34;
 /**
  * How far to pull a titled popup up so its first item, not the title, aligns
  * with the trigger: the pointer moves straight across onto it. The title's
  * `-mt-1.5` cancels the top padding, so the first item sits below the title
- * plus its `mb-1.5` (= PREVIEW_PADDING).
+ * plus its `mb-1.5` (= FLYOUT_PADDING).
  */
-const PREVIEW_TITLE_OFFSET = PREVIEW_TITLE_HEIGHT + PREVIEW_PADDING;
+const FLYOUT_TITLE_OFFSET = FLYOUT_TITLE_HEIGHT + FLYOUT_PADDING;
 
-function getCollapsiblePreviewContent(children: ReactNode) {
-  let previewContent: ReactNode = null;
+function getCollapsibleFlyoutContent(children: ReactNode) {
+  let flyoutContent: ReactNode = null;
 
   React.Children.forEach(children, (child) => {
     if (
@@ -2296,11 +2368,11 @@ function getCollapsiblePreviewContent(children: ReactNode) {
       (child.type as { displayName?: string })?.displayName ===
         "Sidebar.CollapsibleContent"
     ) {
-      previewContent = (child.props as { children?: ReactNode }).children;
+      flyoutContent = (child.props as { children?: ReactNode }).children;
     }
   });
 
-  return previewContent;
+  return flyoutContent;
 }
 
 /**
@@ -2319,7 +2391,7 @@ function getElementText(children: ReactNode): string {
 }
 
 /**
- * Label for a collapsible's preview popup: the trigger's `tooltip` when set,
+ * Label for a collapsible's flyout popup: the trigger's `tooltip` when set,
  * otherwise its plain-text children. Returns null when neither is available.
  */
 function getCollapsibleTriggerLabel(children: ReactNode): string | null {
@@ -2402,58 +2474,67 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     const sidebar = useSidebar();
     const { animationDuration } = sidebar;
     const [internalOpen, setInternalOpen] = useState(defaultOpen);
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
+    const [flyoutOpen, setFlyoutOpen] = useState(false);
+    const [flyoutNode, setFlyoutNode] = useState<HTMLDivElement | null>(null);
     const isOpen = openProp ?? internalOpen;
     const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
-    const previewRef = useRef<HTMLDivElement | null>(null);
+    const portalContainer = usePortalContainer();
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const closePreviewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    const closeFlyoutTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
       null,
     );
-    const previewContent = getCollapsiblePreviewContent(children);
-    const hasPreviewContent = previewContent !== null;
-    const previewLabel = getCollapsibleTriggerLabel(children);
+    const flyoutContent = getCollapsibleFlyoutContent(children);
+    const hasFlyoutContent = flyoutContent !== null;
+    const flyoutLabel = getCollapsibleTriggerLabel(children);
     const {
       isMobile,
       side,
       state,
-      previewOnHover: previewEnabled,
+      open: sidebarOpen,
+      peekable,
+      isPeeking,
+      isPeekSettled,
+      flyout: flyoutEnabled,
     } = useSidebar();
+    // With `peekable`, hovering the collapsed rail peeks instead: flyouts wait
+    // until the peek has fully expanded, then behave as in an expanded sidebar.
+    const isBlockedByPeek =
+      peekable && !sidebarOpen && !(isPeeking && isPeekSettled);
+    const isHoveredRef = useRef(false);
 
-    const clearPreviewCloseTimeout = useCallback(() => {
-      if (closePreviewTimeoutRef.current) {
-        clearTimeout(closePreviewTimeoutRef.current);
-        closePreviewTimeoutRef.current = null;
+    const clearFlyoutCloseTimeout = useCallback(() => {
+      if (closeFlyoutTimeoutRef.current) {
+        clearTimeout(closeFlyoutTimeoutRef.current);
+        closeFlyoutTimeoutRef.current = null;
       }
     }, []);
 
-    const closePreview = useCallback(() => {
-      clearPreviewCloseTimeout();
-      closePreviewTimeoutRef.current = setTimeout(() => {
-        setPreviewOpen(false);
+    const closeFlyout = useCallback(() => {
+      clearFlyoutCloseTimeout();
+      closeFlyoutTimeoutRef.current = setTimeout(() => {
+        setFlyoutOpen(false);
       }, 120);
-    }, [clearPreviewCloseTimeout]);
+    }, [clearFlyoutCloseTimeout]);
 
-    const closePreviewImmediately = useCallback(() => {
-      clearPreviewCloseTimeout();
-      setPreviewOpen(false);
-    }, [clearPreviewCloseTimeout]);
+    const closeFlyoutImmediately = useCallback(() => {
+      clearFlyoutCloseTimeout();
+      setFlyoutOpen(false);
+    }, [clearFlyoutCloseTimeout]);
 
     // Chain up ancestor popups so a click anywhere in the stack dismisses all.
-    const parentPreview = useContext(SidebarPreviewContext);
+    const parentFlyout = useContext(SidebarFlyoutContext);
     // The title only renders for a collapsed, top-level popup with a label.
-    const showPreviewTitle =
-      state === "collapsed" && !parentPreview.insidePreview && !!previewLabel;
+    const showFlyoutTitle =
+      state === "collapsed" && !parentFlyout.insideFlyout && !!flyoutLabel;
     const dismissAll = useCallback(() => {
-      closePreviewImmediately();
-      parentPreview.dismissAll();
-    }, [closePreviewImmediately, parentPreview]);
+      closeFlyoutImmediately();
+      parentFlyout.dismissAll();
+    }, [closeFlyoutImmediately, parentFlyout]);
 
-    const previewProviderValue = useMemo<SidebarPreviewContextValue>(
-      () => ({ insidePreview: true, dismissAll }),
+    const flyoutProviderValue = useMemo<SidebarFlyoutContextValue>(
+      () => ({ insideFlyout: true, dismissAll }),
       [dismissAll],
     );
 
@@ -2471,134 +2552,125 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       onOpenChangeComplete,
     );
 
-    const openPreview = useCallback(() => {
+    const openFlyout = useCallback(() => {
       if (
-        !previewEnabled ||
+        !flyoutEnabled ||
         isMobile ||
-        !hasPreviewContent ||
+        isBlockedByPeek ||
+        !hasFlyoutContent ||
         !containerRef.current
       ) {
         return;
       }
       // A collapsed rail cannot render inline content (see
-      // SidebarCollapsibleContent), so preview regardless of open state.
-      // Otherwise only preview closed sections — open ones show inline.
+      // SidebarCollapsibleContent), so show the flyout regardless of open state.
+      // Otherwise only closed sections get one — open ones show inline.
       if (state !== "collapsed" && isOpen) {
         return;
       }
-      clearPreviewCloseTimeout();
-
-      const trigger = containerRef.current.querySelector<HTMLElement>(
-        "[data-sidebar='menu-button'], [data-sidebar='menu-sub-button']",
-      );
-      const anchor = trigger ?? containerRef.current;
-      const rect = anchor.getBoundingClientRect();
-
-      // When the trigger lives inside another preview popup, measure the
-      // horizontal gap from that popup's outer edge (not the button's, which
-      // is inset by the popup's padding/indent). Keeps every popup-to-popup
-      // gap visually equal.
-      const parentPopup = anchor.closest<HTMLElement>(
-        "[data-sidebar='collapsible-preview']",
-      );
-      const horizontalRect = parentPopup?.getBoundingClientRect() ?? rect;
-
-      const rawLeft =
-        side === "left"
-          ? horizontalRect.right + PREVIEW_GAP
-          : horizontalRect.left - PREVIEW_WIDTH - PREVIEW_GAP;
-      const maxLeft =
-        window.innerWidth - PREVIEW_WIDTH - PREVIEW_VIEWPORT_INSET;
-      const maxTop = window.innerHeight - PREVIEW_VIEWPORT_INSET;
-
-      // Align the first item with the trigger, skipping the title (if any) and
-      // the popup's padding.
-      const topOffset = showPreviewTitle
-        ? PREVIEW_TITLE_OFFSET
-        : PREVIEW_PADDING;
-
-      setPreviewPosition({
-        top: Math.min(
-          Math.max(PREVIEW_VIEWPORT_INSET, rect.top - topOffset),
-          Math.max(PREVIEW_VIEWPORT_INSET, maxTop),
-        ),
-        left: Math.min(
-          Math.max(PREVIEW_VIEWPORT_INSET, rawLeft),
-          Math.max(PREVIEW_VIEWPORT_INSET, maxLeft),
-        ),
-      });
-      setPreviewOpen(true);
+      clearFlyoutCloseTimeout();
+      setFlyoutOpen(true);
     }, [
-      clearPreviewCloseTimeout,
-      hasPreviewContent,
+      clearFlyoutCloseTimeout,
+      hasFlyoutContent,
+      isBlockedByPeek,
       isMobile,
       isOpen,
-      previewEnabled,
-      showPreviewTitle,
-      side,
+      flyoutEnabled,
       state,
     ]);
+
+    const getFlyoutAnchor = useCallback(
+      () =>
+        containerRef.current?.querySelector(FLYOUT_TRIGGER_SELECTOR) ??
+        containerRef.current,
+      [],
+    );
+
+    // Opening stays ours (hover, peek, keyboard rules); Base UI only reports
+    // dismissals (Escape, outside press).
+    const handleFlyoutOpenChange = useCallback(
+      (open: boolean) => {
+        if (!open) closeFlyoutImmediately();
+      },
+      [closeFlyoutImmediately],
+    );
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         onMouseEnter?.(e);
-        openPreview();
+        isHoveredRef.current = true;
+        openFlyout();
       },
-      [onMouseEnter, openPreview],
+      [onMouseEnter, openFlyout],
     );
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         onMouseLeave?.(e);
-        closePreview();
+        isHoveredRef.current = false;
+        closeFlyout();
       },
-      [closePreview, onMouseLeave],
+      [closeFlyout, onMouseLeave],
     );
+
+    // Close when a peek ends; open for the resting pointer once it settles
+    // (no fresh mouseenter fires when the sidebar expands under it).
+    const wasBlockedByPeekRef = useRef(isBlockedByPeek);
+    useEffect(() => {
+      const wasBlocked = wasBlockedByPeekRef.current;
+      wasBlockedByPeekRef.current = isBlockedByPeek;
+      if (isBlockedByPeek) {
+        closeFlyoutImmediately();
+      } else if (wasBlocked && isHoveredRef.current) {
+        openFlyout();
+      }
+    }, [isBlockedByPeek, closeFlyoutImmediately, openFlyout]);
 
     const contextValue = useMemo<SidebarCollapseContextValue>(
       () => ({
         contentId,
         isOpen,
-        isPreviewOpen: previewOpen,
+        isFlyoutOpen: flyoutOpen,
         isCollapsible: true,
         autoScrollOnOpen,
-        hasPreview: previewEnabled && hasPreviewContent,
+        hasFlyout: flyoutEnabled && hasFlyoutContent,
         toggle,
         completeOpenChange,
-        closePreview: closePreviewImmediately,
+        closeFlyout: closeFlyoutImmediately,
       }),
       [
         contentId,
         isOpen,
-        previewOpen,
+        flyoutOpen,
         autoScrollOnOpen,
-        previewEnabled,
-        hasPreviewContent,
+        flyoutEnabled,
+        hasFlyoutContent,
         toggle,
         completeOpenChange,
-        closePreviewImmediately,
+        closeFlyoutImmediately,
       ],
     );
 
     useEffect(
       () => () => {
-        clearPreviewCloseTimeout();
+        clearFlyoutCloseTimeout();
       },
-      [clearPreviewCloseTimeout],
+      [clearFlyoutCloseTimeout],
     );
 
-    // The preview is a mouse-only affordance: it stays clickable, but its
+    // The flyout is a mouse-only affordance: it stays clickable, but its
     // contents are removed from the tab order so keyboard users transparently
     // get the inline expansion instead (handleFocusIn). Paired with
     // aria-hidden on the popup, this avoids focusable content in a hidden
     // subtree.
     useEffect(() => {
-      if (!previewOpen || !previewRef.current) return;
-      const focusables = previewRef.current.querySelectorAll<HTMLElement>(
+      if (!flyoutNode) return;
+      const focusables = flyoutNode.querySelectorAll<HTMLElement>(
         "a[href], button, input, select, textarea, [tabindex]",
       );
       for (const el of focusables) el.setAttribute("tabindex", "-1");
-    }, [previewOpen, previewContent]);
+    }, [flyoutNode, flyoutContent]);
 
     const handleFocusIn = useCallback(
       (e: React.FocusEvent<HTMLDivElement>) => {
@@ -2646,67 +2718,89 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
           {...props}
         >
           {children}
-          {previewOpen &&
-            previewContent &&
-            typeof document !== "undefined" &&
-            createPortal(
-              <SidebarPreviewContext.Provider value={previewProviderValue}>
-                <div
-                  ref={previewRef}
-                  data-sidebar="collapsible-preview"
-                  // Mouse-only affordance. Hidden from the accessibility tree
-                  // and its contents removed from the tab order (see effect
-                  // above); keyboard/AT users get the inline expansion instead.
-                  aria-hidden="true"
-                  className={cn(
-                    "fixed z-[1000] w-56 overflow-y-auto rounded-lg bg-kumo-control p-1.5 text-kumo-default shadow-lg ring ring-kumo-line",
-                    "max-h-[calc(100vh-1rem)]",
-                    "animate-in fade-in-0 zoom-in-95 duration-150",
-                  )}
-                  style={
-                    {
-                      "--sidebar-active-bg": "var(--color-kumo-tint)",
-                      top: previewPosition.top,
-                      left: previewPosition.left,
-                    } as CSSProperties
+          {hasFlyoutContent && (
+            <PreviewCardBase.Root
+              open={flyoutOpen}
+              onOpenChange={handleFlyoutOpenChange}
+            >
+              <PreviewCardBase.Portal container={portalContainer ?? undefined}>
+                <PreviewCardBase.Positioner
+                  anchor={getFlyoutAnchor}
+                  positionMethod="fixed"
+                  side={side === "left" ? "right" : "left"}
+                  align="start"
+                  // A trigger inside a parent flyout is inset by its padding;
+                  // add it back so every popup-to-popup gap matches.
+                  sideOffset={
+                    parentFlyout.insideFlyout
+                      ? FLYOUT_GAP + FLYOUT_PADDING
+                      : FLYOUT_GAP
                   }
-                  onMouseEnter={clearPreviewCloseTimeout}
-                  onMouseLeave={closePreview}
-                  // Any click on an item (navigation) dismisses the whole
-                  // popup stack. Parent triggers stop propagation to stay open.
-                  onClick={dismissAll}
+                  // Align the first item with the trigger, skipping the title
+                  // (if any) and the popup's padding.
+                  alignOffset={
+                    showFlyoutTitle ? -FLYOUT_TITLE_OFFSET : -FLYOUT_PADDING
+                  }
+                  collisionPadding={FLYOUT_VIEWPORT_INSET}
                 >
-                  {/* Names the parent, hidden by the collapsed rail, styled to
+                  <SidebarFlyoutContext.Provider value={flyoutProviderValue}>
+                    <PreviewCardBase.Popup
+                      ref={setFlyoutNode}
+                      data-sidebar="collapsible-flyout"
+                      // Mouse-only affordance. Hidden from the accessibility
+                      // tree and its contents removed from the tab order (see
+                      // effect above); keyboard/AT users get inline expansion.
+                      aria-hidden="true"
+                      className={cn(
+                        "w-56 overflow-y-auto rounded-lg bg-kumo-control p-1.5 text-kumo-default shadow-lg ring ring-kumo-line",
+                        "max-h-[calc(100vh-1rem)]",
+                        "animate-in fade-in-0 zoom-in-95 duration-150",
+                      )}
+                      style={
+                        {
+                          "--sidebar-active-bg": "var(--color-kumo-tint)",
+                        } as CSSProperties
+                      }
+                      onMouseEnter={clearFlyoutCloseTimeout}
+                      onMouseLeave={closeFlyout}
+                      // Any click on an item (navigation) dismisses the whole
+                      // popup stack. Parent triggers stop propagation to stay
+                      // open.
+                      onClick={dismissAll}
+                    >
+                      {/* Names the parent, hidden by the collapsed rail, styled to
                       match Sidebar.GroupLabel. Negative margins cancel `p-1.5`
                       for a wall-to-wall separator; pl-[18px] = popup p-1.5 (6) +
                       item px-3 (12) aligns the title with the items. Nested
                       popups omit it. */}
-                  {showPreviewTitle && (
-                    <div
-                      data-sidebar="collapsible-preview-title"
-                      className={cn(
-                        SIDEBAR_LABEL_TEXT,
-                        "-mx-1.5 -mt-1.5 mb-1.5 flex min-h-8.5 items-center border-b border-kumo-line pr-3 pl-[18px]",
+                      {showFlyoutTitle && (
+                        <div
+                          data-sidebar="collapsible-flyout-title"
+                          className={cn(
+                            SIDEBAR_LABEL_TEXT,
+                            "-mx-1.5 -mt-1.5 mb-1.5 flex min-h-8.5 items-center border-b border-kumo-line pr-3 pl-[18px]",
+                          )}
+                        >
+                          {flyoutLabel}
+                        </div>
                       )}
-                    >
-                      {previewLabel}
-                    </div>
-                  )}
-                  {/* Flatten the top-level sub-list (no indent/connector) since
+                      {/* Flatten the top-level sub-list (no indent/connector) since
                       the popup already opens from its parent; deeper levels keep
                       theirs. `>` targets only the first level. */}
-                  <div
-                    className={cn(
-                      "[&>[data-sidebar=menu-sub]]:pl-0",
-                      "[&>[data-sidebar=menu-sub]>li[aria-hidden=true]]:hidden",
-                    )}
-                  >
-                    {previewContent}
-                  </div>
-                </div>
-              </SidebarPreviewContext.Provider>,
-              document.body,
-            )}
+                      <div
+                        className={cn(
+                          "[&>[data-sidebar=menu-sub]]:pl-0",
+                          "[&>[data-sidebar=menu-sub]>li[aria-hidden=true]]:hidden",
+                        )}
+                      >
+                        {flyoutContent}
+                      </div>
+                    </PreviewCardBase.Popup>
+                  </SidebarFlyoutContext.Provider>
+                </PreviewCardBase.Positioner>
+              </PreviewCardBase.Portal>
+            </PreviewCardBase.Root>
+          )}
         </div>
       </SidebarCollapseContext.Provider>
     );
@@ -2737,10 +2831,10 @@ export interface SidebarCollapsibleTriggerProps {
  * ```
  */
 function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
-  const { contentId, isOpen, isPreviewOpen, toggle, closePreview } = useContext(
+  const { contentId, isOpen, isFlyoutOpen, toggle, closeFlyout } = useContext(
     SidebarCollapseContext,
   );
-  const { insidePreview } = useContext(SidebarPreviewContext);
+  const { insideFlyout } = useContext(SidebarFlyoutContext);
 
   const hasHref = Boolean((render.props as { href?: string }).href);
 
@@ -2748,12 +2842,12 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
     "aria-expanded": isOpen,
     "aria-controls": contentId,
     "data-open": isOpen || undefined,
-    "data-preview-open": isPreviewOpen || undefined,
+    "data-flyout-open": isFlyoutOpen || undefined,
     // Inside a popup, a parent with no href only reveals children on hover —
     // it has no click action, so drop the pointer cursor. `!` is required: the
     // base clickable-affordance rule in kumo.css is unlayered and would
     // otherwise win over the (layered) utility.
-    ...(insidePreview && !hasHref
+    ...(insideFlyout && !hasHref
       ? {
           className: cn(
             (render.props as { className?: string }).className,
@@ -2771,7 +2865,7 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
       // Inside a popup, children are revealed by hover only — never toggle the
       // disclosure (that would set isOpen and disable this item's own hover
       // popup).
-      if (insidePreview) {
+      if (insideFlyout) {
         // A parent with no href has no click action: keep the flyout open by
         // stopping the bubble to the container's dismiss-all. A parent with an
         // href navigates, so let it bubble and dismiss the whole popup stack.
@@ -2779,7 +2873,7 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
         return;
       }
 
-      closePreview();
+      closeFlyout();
       toggle();
     },
   } as Record<string, unknown>);

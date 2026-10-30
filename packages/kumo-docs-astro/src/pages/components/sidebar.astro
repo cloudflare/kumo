@@ -14,7 +14,7 @@ import {
   SidebarResizableDemo,
   SidebarRightDemo,
   SidebarPeekingDemo,
-  SidebarHoverPreviewDemo,
+  SidebarFlyoutDemo,
   SidebarAutoScrollDemo,
   SidebarTransitionCompleteDemo,
   SidebarSlidingViewsDemo,
@@ -316,12 +316,12 @@ scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
       </div>
 
       <div>
-        <Heading level={3}>Hover Preview</Heading>
+        <Heading level={3}>Flyout</Heading>
         <p>
-          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">previewOnHover</code> on the Provider (default
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">flyout</code> on the Provider (default
           <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">false</code>) to reveal a closed collapsible's nested
-          content in a floating popup on hover, instead of expanding it inline. A collapsed rail can't render inline
-          content, so its sections preview regardless of open state. Previews are mouse-only (hidden from the
+          content in a flyout on hover, instead of expanding it inline. A collapsed rail can't render inline
+          content, so its sections show a flyout regardless of open state. Flyouts are mouse-only (hidden from the
           accessibility tree); keyboard and assistive-tech users get inline expansion.
         </p>
         <p>
@@ -329,9 +329,11 @@ scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
           <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code>, or its text when omitted), replacing
           the trigger's own tooltip. Nested popups omit it &mdash; the parent row is already visible beside them. Items
           with no nested content keep their tooltip instead. Every popup lines its first item up with the trigger, so
-          the pointer can move straight across onto it.
+          the pointer can move straight across onto it. Combined with
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">peekable</code>, hovering the collapsed rail peeks
+          first; flyouts only appear once the sidebar has fully expanded.
         </p>
-        <ComponentExample code={`<Sidebar.Provider previewOnHover>
+        <ComponentExample code={`<Sidebar.Provider flyout>
   <Sidebar>
     <Sidebar.Content>
       <Sidebar.Menu>
@@ -357,7 +359,7 @@ scrollToItem("zero-trust", { align: "center", behavior: "smooth" });`}>
     </Sidebar.Content>
   </Sidebar>
 </Sidebar.Provider>`}>
-          <SidebarHoverPreviewDemo client:load />
+          <SidebarFlyoutDemo client:load />
         </ComponentExample>
       </div>
 
