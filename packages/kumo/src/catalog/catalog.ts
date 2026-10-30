@@ -126,7 +126,7 @@ export function createKumoCatalog(config: CatalogConfig = {}): KumoCatalog {
     },
 
     hasAction(name: string): boolean {
-      return Object.hasOwn(actions, name);
+      return actionNames.includes(name);
     },
 
     validateElement(element: unknown): ValidationResult {
