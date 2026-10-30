@@ -1,6 +1,7 @@
 import React from "react";
-import { describe, expect, it } from "vite-plus/test";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Plus } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
 
@@ -185,36 +186,230 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: "Archive" })).toBeTruthy();
   });
 
-  it("uses an enabled tooltip trigger around a disabled button", () => {
-    render(
-      <Button title="Saving is unavailable" disabled>
-        Save
-      </Button>,
+  describe("title while unavailable", () => {
+    const reason = "You need edit access to save";
+
+    function renderBetweenButtons(button: React.ReactNode) {
+      render(
+        <>
+          <button type="button">Before</button>
+          {button}
+          <button type="button">After</button>
+        </>,
+      );
+    }
+
+    it.each([
+      ["disabled", { disabled: true }],
+      ["loading", { loading: true }],
+    ] as const)(
+      "keeps a %s button focusable and describes it with the title",
+      async (_state, stateProps) => {
+        renderBetweenButtons(
+          <Button title={reason} {...stateProps}>
+            Save
+          </Button>,
+        );
+        const user = userEvent.setup();
+
+        const button = screen.getByRole("button", { description: reason });
+        expect(button.hasAttribute("disabled")).toBe(false);
+        expect(button.getAttribute("aria-disabled")).toBe("true");
+        expect(button.getAttribute("title")).toBeNull();
+
+        await user.click(screen.getByRole("button", { name: "Before" }));
+        await user.tab();
+        expect(document.activeElement).toBe(button);
+      },
     );
 
-    const button = screen.getByRole("button", { name: "Save" });
-    const trigger = button.parentElement;
+    it("marks a loading button busy", () => {
+      render(
+        <Button title="Saving changes" loading>
+          Save
+        </Button>,
+      );
 
-    expect(button.hasAttribute("disabled")).toBe(true);
-    expect(trigger?.tagName).toBe("SPAN");
-    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
-    expect(trigger?.hasAttribute("disabled")).toBe(false);
+      expect(screen.getByRole("button").getAttribute("aria-busy")).toBe("true");
+    });
+
+    it("is the tooltip trigger itself and opens the tooltip on focus", async () => {
+      renderBetweenButtons(
+        <Button disabled title={reason}>
+          Save
+        </Button>,
+      );
+      const user = userEvent.setup();
+      const button = screen.getByRole("button", { name: "Save" });
+
+      expect(button.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+
+      await user.click(screen.getByRole("button", { name: "Before" }));
+      await user.tab();
+
+      // The hidden description plus the visible tooltip popup.
+      await waitFor(() =>
+        expect(
+          screen.getAllByText(reason).filter((element) => !element.hidden),
+        ).toHaveLength(1),
+      );
+    });
+
+    it("keeps the same trigger when disabled or loading changes", () => {
+      const { rerender } = render(<Button title={reason}>Save</Button>);
+      const trigger = screen.getByRole("button", { name: "Save" });
+
+      rerender(
+        <Button title={reason} disabled>
+          Save
+        </Button>,
+      );
+      expect(screen.getByRole("button", { name: "Save" })).toBe(trigger);
+
+      rerender(
+        <Button title={reason} loading>
+          Save
+        </Button>,
+      );
+      expect(screen.getByRole("button")).toBe(trigger);
+
+      rerender(<Button title={reason}>Save</Button>);
+      expect(screen.getByRole("button", { name: "Save" })).toBe(trigger);
+    });
+
+    it.each([
+      ["disabled", { disabled: true }],
+      ["loading", { loading: true }],
+    ] as const)(
+      "ignores clicks, key presses, and form submission while %s",
+      async (_state, stateProps) => {
+        const onClick = vi.fn<() => void>();
+        const onMouseDown = vi.fn<() => void>();
+        const onPointerDown = vi.fn<() => void>();
+        const onKeyDown = vi.fn<() => void>();
+        const onKeyUp = vi.fn<() => void>();
+        const onSubmit = vi.fn<(event: React.FormEvent) => void>((event) =>
+          event.preventDefault(),
+        );
+        render(
+          <form onSubmit={onSubmit}>
+            <input aria-label="Name" />
+            <Button
+              type="submit"
+              title={reason}
+              onClick={onClick}
+              onMouseDown={onMouseDown}
+              onPointerDown={onPointerDown}
+              onKeyDown={onKeyDown}
+              onKeyUp={onKeyUp}
+              {...stateProps}
+            >
+              Save
+            </Button>
+          </form>,
+        );
+        const user = userEvent.setup();
+        const button = screen.getByRole("button");
+
+        await user.click(button);
+        button.focus();
+        await user.keyboard("{Enter}");
+        await user.keyboard(" ");
+        fireEvent.click(button);
+        // Implicit submission from a text field.
+        await user.type(screen.getByRole("textbox"), "x{Enter}");
+
+        expect(onClick).not.toHaveBeenCalled();
+        expect(onMouseDown).not.toHaveBeenCalled();
+        expect(onPointerDown).not.toHaveBeenCalled();
+        expect(onKeyDown).not.toHaveBeenCalled();
+        expect(onKeyUp).not.toHaveBeenCalled();
+        expect(onSubmit).not.toHaveBeenCalled();
+      },
+    );
+
+    it("keeps an existing description", () => {
+      render(
+        <>
+          <span id="save-hint">Saves every project</span>
+          <Button aria-describedby="save-hint" disabled title={reason}>
+            Save
+          </Button>
+        </>,
+      );
+
+      expect(
+        screen.getByRole("button", {
+          name: "Save",
+          description: `Saves every project ${reason}`,
+        }),
+      ).toBeTruthy();
+    });
+
+    it("stays natively disabled without a title", () => {
+      render(<Button disabled>Save</Button>);
+
+      const button = screen.getByRole("button", { name: "Save" });
+      expect(button.hasAttribute("disabled")).toBe(true);
+      expect(button.hasAttribute("aria-disabled")).toBe(false);
+    });
+
+    it("styles aria-disabled buttons like disabled ones", () => {
+      for (const variant of [
+        "primary",
+        "secondary",
+        "destructive",
+        "secondary-destructive",
+      ] as const) {
+        const classes = buttonVariants({ variant }).split(" ");
+        const disabledClasses = classes.filter((cls) =>
+          cls.startsWith("disabled:"),
+        );
+
+        expect(disabledClasses.length).toBeGreaterThan(0);
+        for (const cls of disabledClasses) {
+          expect(classes).toContain(
+            cls.replace(/^disabled:/, "aria-disabled:"),
+          );
+        }
+      }
+    });
   });
 
-  it("uses an enabled tooltip trigger around a loading button", () => {
-    render(
-      <Button title="Saving changes" loading>
-        Save
-      </Button>,
-    );
+  describe("title description", () => {
+    it("does not describe an enabled button with its title", () => {
+      render(<Button title="Saves every project">Save</Button>);
 
-    const button = screen.getByRole("button");
-    const trigger = button.parentElement;
+      const button = screen.getByRole("button", { name: "Save" });
+      expect(button.hasAttribute("aria-describedby")).toBe(false);
+      expect(button.textContent).toBe("Save");
+    });
 
-    expect(button.hasAttribute("disabled")).toBe(true);
-    expect(trigger?.tagName).toBe("SPAN");
-    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
-    expect(trigger?.hasAttribute("disabled")).toBe(false);
+    it("does not describe an icon-only button named by its title", () => {
+      render(<Button shape="square" icon={Plus} title="Add" disabled />);
+
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.hasAttribute("aria-describedby")).toBe(false);
+    });
+
+    it("describes an icon-only button named by aria-label with its title", () => {
+      render(
+        <Button
+          shape="square"
+          icon={Plus}
+          aria-label="Add item"
+          title="You need edit access to add items"
+          disabled
+        />,
+      );
+
+      expect(
+        screen.getByRole("button", {
+          name: "Add item",
+          description: "You need edit access to add items",
+        }),
+      ).toBeTruthy();
+    });
   });
 
   it("keeps emphasized variant rings color-matched when pressed or focused", () => {
@@ -291,6 +486,7 @@ describe("LinkButton", () => {
     // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
     expect(link.getAttribute("title")).toBeNull();
     expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(link.hasAttribute("aria-describedby")).toBe(false);
   });
 
   describe("disabled", () => {
@@ -347,19 +543,32 @@ describe("LinkButton", () => {
       expect(button.classList.contains("select-none")).toBe(false);
     });
 
-    it("wraps a title in an enabled tooltip trigger around the disabled button", () => {
+    it("keeps a titled disabled link focusable without a live href", async () => {
+      const reason = "You need edit access to continue";
       render(
-        <LinkButton href="/home" disabled title="You need edit access">
-          Home
-        </LinkButton>,
+        <>
+          <button type="button">Before</button>
+          <LinkButton href="/settings" disabled title={reason}>
+            Settings
+          </LinkButton>
+        </>,
       );
-      const button = screen.getByRole("button", { name: "Home" });
-      const trigger = button.parentElement;
+      const user = userEvent.setup();
 
-      expect(button.hasAttribute("disabled")).toBe(true);
+      expect(screen.queryByRole("link")).toBeNull();
+      const button = screen.getByRole("button", {
+        name: "Settings",
+        description: reason,
+      });
+      expect(button.getAttribute("aria-disabled")).toBe("true");
+      expect(button.hasAttribute("disabled")).toBe(false);
+      expect(button.hasAttribute("href")).toBe(false);
       expect(button.getAttribute("title")).toBeNull();
-      expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
-      expect(trigger?.hasAttribute("disabled")).toBe(false);
+      expect(button.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+
+      await user.click(screen.getByRole("button", { name: "Before" }));
+      await user.tab();
+      expect(document.activeElement).toBe(button);
     });
   });
 });

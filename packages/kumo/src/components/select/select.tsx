@@ -98,7 +98,7 @@ export function selectVariants({
 }: KumoSelectVariantsProps = {}) {
   return cn(
     buttonVariants({ size }),
-    "bg-kumo-control disabled:bg-kumo-control/50 data-[state=open]:bg-kumo-control",
+    "bg-kumo-control disabled:bg-kumo-control/50 aria-disabled:bg-kumo-control/50 data-[state=open]:bg-kumo-control",
     "justify-between font-normal",
     "focus:opacity-100 focus:ring-kumo-focus/50 focus-visible:ring-inset *:in-focus:opacity-100",
   );

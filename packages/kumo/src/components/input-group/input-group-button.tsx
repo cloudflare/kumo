@@ -171,7 +171,7 @@ export const Button = forwardRef<
             // z-2 lifts above hovered siblings so focus border isn't clipped
             "focus:z-2",
             "focus-visible:border-kumo-focus/50",
-            "disabled:bg-kumo-overlay disabled:text-kumo-inactive!",
+            "disabled:bg-kumo-overlay disabled:text-kumo-inactive! aria-disabled:bg-kumo-overlay aria-disabled:text-kumo-inactive!",
           ],
           className,
         )}

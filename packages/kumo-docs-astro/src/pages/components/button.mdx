@@ -210,7 +210,16 @@ export default function Example() {
   <p>
     Use the `title` prop to wrap the button in a tooltip. This is useful for
     icon-only buttons, disabled buttons, or whenever additional context helps
-    the user understand the action.
+    the user understand the action. The tooltip opens on hover and keyboard
+    focus.
+  </p>
+  <p>
+    A disabled or loading button with a `title` stays in the tab order with
+    `aria-disabled` instead of native `disabled`, and ignores clicks and key
+    presses, so keyboard and screen reader users can reach the explanation.
+    Screen readers read the title as the button's description. When an
+    icon-only button's title explains why it's unavailable, name the
+    action with `aria-label`, or screen readers announce the reason instead.
   </p>
   <ComponentExample
     demo="ButtonTitleDemo"
