@@ -55,6 +55,7 @@ describe("Select", () => {
       const trigger = screen.getByRole("combobox");
       expect(trigger.className).toContain("data-[state=open]:bg-kumo-control");
       expect(trigger.className).toContain("disabled:bg-kumo-control/50");
+      expect(trigger.className).toContain("aria-disabled:bg-kumo-control/50");
       expect(trigger.className).not.toContain("data-[state=open]:bg-kumo-base");
       expect(trigger.className).not.toContain("disabled:bg-kumo-base/50");
     });
