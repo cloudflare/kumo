@@ -27,6 +27,7 @@ import {
   ClockCounterClockwiseIcon,
   FileMagnifyingGlassIcon,
   ChartPieIcon,
+  SparkleIcon,
 } from "@phosphor-icons/react";
 import { Fragment, useState } from "react";
 
@@ -534,6 +535,163 @@ export function SidebarPeekingDemo() {
         </Sidebar>
         <DemoMain>
           <PeekStateIndicator />
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Flyout — nested items on the collapsed rail open as hover menus
+// ---------------------------------------------------------------------------
+
+interface FlyoutItem {
+  label: string;
+  badge?: string;
+  items?: FlyoutItem[];
+}
+
+const FLYOUT_SECTIONS: {
+  label: string;
+  icon: typeof CodeIcon;
+  items: FlyoutItem[];
+}[] = [
+  {
+    label: "Compute",
+    icon: CodeIcon,
+    items: [
+      {
+        label: "Workers & Pages",
+        items: [
+          { label: "Overview" },
+          { label: "Workers" },
+          { label: "Pages" },
+        ],
+      },
+      { label: "Observability" },
+      { label: "Workers for Platforms" },
+      { label: "Containers" },
+      { label: "Durable Objects" },
+    ],
+  },
+  {
+    label: "AI",
+    icon: SparkleIcon,
+    items: [
+      { label: "Models" },
+      { label: "Workers AI" },
+      { label: "AI Gateway" },
+      { label: "MCP Portals" },
+      { label: "Vectorize" },
+      { label: "AI Search" },
+      { label: "Agent tracing" },
+    ],
+  },
+  {
+    label: "Storage & databases",
+    icon: DatabaseIcon,
+    items: [
+      { label: "R2 Object Storage" },
+      { label: "Postgres & MySQL (Hyperdrive)" },
+      { label: "Workers KV" },
+      { label: "D1 SQLite Database" },
+      { label: "Artifacts", badge: "Beta" },
+      { label: "Analytics Engine" },
+    ],
+  },
+];
+
+/** Collapsed rail where collapsible sections open as flyout menus. */
+export function SidebarFlyoutDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider
+        contained
+        defaultOpen={false}
+        flyout="collapsed"
+        className="h-full min-h-0!"
+      >
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <Sidebar.Group>
+              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+              <Sidebar.Menu>
+                {FLYOUT_SECTIONS.map((section) => (
+                  <Sidebar.MenuItem key={section.label}>
+                    <Sidebar.Collapsible>
+                      <Sidebar.CollapsibleTrigger
+                        render={
+                          <Sidebar.MenuButton
+                            icon={section.icon}
+                            tooltip={section.label}
+                          >
+                            {section.label}
+                            <Sidebar.MenuChevron />
+                          </Sidebar.MenuButton>
+                        }
+                      />
+                      <Sidebar.CollapsibleContent>
+                        <Sidebar.MenuSub>
+                          {section.items.map((item) =>
+                            item.items ? (
+                              <Sidebar.MenuSubItem key={item.label}>
+                                <Sidebar.Collapsible>
+                                  <Sidebar.CollapsibleTrigger
+                                    render={
+                                      <Sidebar.MenuSubButton>
+                                        {item.label}
+                                        <Sidebar.MenuChevron />
+                                      </Sidebar.MenuSubButton>
+                                    }
+                                  />
+                                  <Sidebar.CollapsibleContent>
+                                    <Sidebar.MenuSub>
+                                      {item.items.map((child) => (
+                                        <Sidebar.MenuSubButton
+                                          key={child.label}
+                                          href={`#${child.label}`}
+                                        >
+                                          {child.label}
+                                        </Sidebar.MenuSubButton>
+                                      ))}
+                                    </Sidebar.MenuSub>
+                                  </Sidebar.CollapsibleContent>
+                                </Sidebar.Collapsible>
+                              </Sidebar.MenuSubItem>
+                            ) : (
+                              <Sidebar.MenuSubButton
+                                key={item.label}
+                                href={`#${item.label}`}
+                              >
+                                {item.label}
+                                {item.badge ? (
+                                  <Sidebar.MenuBadge>
+                                    {item.badge}
+                                  </Sidebar.MenuBadge>
+                                ) : null}
+                              </Sidebar.MenuSubButton>
+                            ),
+                          )}
+                        </Sidebar.MenuSub>
+                      </Sidebar.CollapsibleContent>
+                    </Sidebar.Collapsible>
+                  </Sidebar.MenuItem>
+                ))}
+              </Sidebar.Menu>
+            </Sidebar.Group>
+          </Sidebar.Content>
+          <DemoSidebarFooter>
+            <Sidebar.Trigger />
+          </DemoSidebarFooter>
+        </Sidebar>
+        <DemoMain>
+          <p className="text-sm text-kumo-subtle">
+            Hover a section, or Tab to it and press Enter. Expand the sidebar to
+            get inline sections back.
+          </p>
         </DemoMain>
       </Sidebar.Provider>
     </DemoContainer>

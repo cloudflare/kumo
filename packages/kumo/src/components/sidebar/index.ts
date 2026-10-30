@@ -42,8 +42,10 @@ export {
   type SidebarMenuButtonProps,
   type SidebarMenuSubButtonProps,
   type SidebarState,
+  type SidebarFlyout,
   type SidebarCollapsibleProps,
   type SidebarCollapsibleTriggerProps,
+  type SidebarCollapsibleContentProps,
   type SidebarSlidingViewsProps,
   type SidebarSlidingViewProps,
 } from "./sidebar";

@@ -13,6 +13,7 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import { Menu as MenuBase } from "@base-ui/react/menu";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
@@ -21,6 +22,7 @@ import { useLinkComponent } from "../../utils/link-provider";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
 import { Button } from "../button";
+import { DropdownMenu } from "../dropdown";
 
 // ============================================================================
 // Variants (required by Kumo convention)
@@ -190,6 +192,9 @@ function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
 
 export type SidebarState = "expanded" | "collapsed" | "peeking";
 
+/** Where `Sidebar.Provider` shows flyout menus. */
+export type SidebarFlyout = "collapsed";
+
 export interface SidebarContextValue {
   state: SidebarState;
   open: boolean;
@@ -210,6 +215,7 @@ export interface SidebarContextValue {
   setWidth: (width: number) => void;
   isPeeking: boolean;
   peekable: boolean;
+  flyout: SidebarFlyout | undefined;
   startPeek: () => void;
   stopPeek: () => void;
   contained: boolean;
@@ -323,6 +329,17 @@ export interface SidebarProviderProps {
    */
   peekable?: boolean;
   /**
+   * Show nested sections in flyout menus beside the sidebar.
+   *
+   * - `"collapsed"`: on the collapsed icon rail, each collapsible section
+   *   opens a flyout menu on hover, click, or Enter / Space, so
+   *   nested items stay reachable. The expanded sidebar is unchanged.
+   *
+   * Off by default. Ignored when `peekable` is set, since peeking already
+   * reveals nested items.
+   */
+  flyout?: SidebarFlyout;
+  /**
    * Duration of sidebar expand/collapse animation in milliseconds.
    * @default 250
    */
@@ -372,6 +389,7 @@ function SidebarProvider({
   onWidthChange,
   contained = false,
   peekable = false,
+  flyout,
   animationDuration = SIDEBAR_ANIMATION_DURATION_MS,
   mobileBreakpoint,
   children,
@@ -561,6 +579,7 @@ function SidebarProvider({
       setWidth,
       isPeeking,
       peekable,
+      flyout,
       startPeek,
       stopPeek,
       contained,
@@ -569,7 +588,34 @@ function SidebarProvider({
       scrollToItem,
       scrollItemIntoView,
     }),
-    [state, open, openMobile, isMobile, width, isResizing, isPeeking],
+    [
+      state,
+      open,
+      setOpen,
+      openMobile,
+      setOpenMobile,
+      isMobile,
+      toggleSidebar,
+      variant,
+      side,
+      collapsible,
+      width,
+      resizable,
+      minWidth,
+      maxWidth,
+      isResizing,
+      setWidth,
+      isPeeking,
+      peekable,
+      flyout,
+      startPeek,
+      stopPeek,
+      contained,
+      animationDuration,
+      registerItem,
+      scrollToItem,
+      scrollItemIntoView,
+    ],
   );
 
   const completeDesktopOpenChange = useOpenChangeComplete(
@@ -1477,6 +1523,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     const { state, peekable, registerItem } = useSidebar();
     const LinkComponent = useLinkComponent();
     const isInsideMenuItem = useContext(MenuItemContext);
+    // A flyout trigger's menu already names the section.
+    const { flyout } = useContext(SidebarCollapseContext);
 
     const registerAutoWrap = useCallback(
       (node: HTMLLIElement | null) => {
@@ -1607,7 +1655,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     // remounting the button (which would kill CSS transitions).
     // The tooltip popup only shows when collapsed and peeking is disabled —
     // when peekable, hovering reveals the full sidebar so tooltips are redundant.
-    const showTooltip = state === "collapsed" && !peekable;
+    const showTooltip = state === "collapsed" && !peekable && !flyout;
     if (tooltip) {
       button = (
         <Tooltip
@@ -1696,23 +1744,31 @@ SidebarMenuBadge.displayName = "Sidebar.MenuBadge";
 const SidebarMenuSub = forwardRef<
   HTMLUListElement,
   ComponentPropsWithoutRef<"ul">
->(({ className, children, ...props }, ref) => (
-  <ul
-    ref={ref}
-    data-sidebar="menu-sub"
-    className={cn(
-      "relative m-0 flex min-w-0 list-none flex-col gap-y-px overflow-hidden p-0 pr-0 pl-7",
-      className,
-    )}
-    {...props}
-  >
-    <li
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-y-px left-[19px] z-10 block w-px bg-kumo-line"
-    />
-    {children}
-  </ul>
-));
+>(({ className, children, ...props }, ref) => {
+  const insideFlyout = useContext(SidebarFlyoutContext);
+
+  if (insideFlyout) {
+    return <DropdownMenu.Group>{children}</DropdownMenu.Group>;
+  }
+
+  return (
+    <ul
+      ref={ref}
+      data-sidebar="menu-sub"
+      className={cn(
+        "relative m-0 flex min-w-0 list-none flex-col gap-y-px overflow-hidden p-0 pr-0 pl-7",
+        className,
+      )}
+      {...props}
+    >
+      <li
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-px left-[19px] z-10 block w-px bg-kumo-line"
+      />
+      {children}
+    </ul>
+  );
+});
 
 SidebarMenuSub.displayName = "Sidebar.MenuSub";
 
@@ -1729,18 +1785,26 @@ SidebarMenuSub.displayName = "Sidebar.MenuSub";
 const SidebarMenuSubItem = forwardRef<
   HTMLLIElement,
   ComponentPropsWithoutRef<"li">
->(({ className, children, ...props }, ref) => (
-  <MenuSubItemContext.Provider value={true}>
-    <li
-      ref={ref}
-      data-sidebar="menu-sub-item"
-      className={cn("relative", className)}
-      {...props}
-    >
-      {children}
-    </li>
-  </MenuSubItemContext.Provider>
-));
+>(({ className, children, ...props }, ref) => {
+  const insideFlyout = useContext(SidebarFlyoutContext);
+
+  return (
+    <MenuSubItemContext.Provider value={true}>
+      {insideFlyout ? (
+        children
+      ) : (
+        <li
+          ref={ref}
+          data-sidebar="menu-sub-item"
+          className={cn("relative", className)}
+          {...props}
+        >
+          {children}
+        </li>
+      )}
+    </MenuSubItemContext.Provider>
+  );
+});
 
 SidebarMenuSubItem.displayName = "Sidebar.MenuSubItem";
 
@@ -1777,6 +1841,43 @@ const SidebarMenuSubButton = forwardRef<
 >(({ className, active = false, href, target, children, ...props }, ref) => {
   const LinkComponent = useLinkComponent();
   const isInsideMenuSubItem = useContext(MenuSubItemContext);
+  const insideFlyout = useContext(SidebarFlyoutContext);
+
+  if (insideFlyout) {
+    const flyoutClasses = cn(
+      SIDEBAR_FLYOUT_ROW_CLASSES,
+      active && "bg-(--sidebar-active-bg)",
+      className,
+    );
+
+    if (href) {
+      return (
+        <MenuBase.LinkItem
+          closeOnClick
+          className={flyoutClasses}
+          aria-current={active ? "page" : undefined}
+          render={<LinkComponent href={href} to={href} target={target} />}
+        >
+          {children}
+        </MenuBase.LinkItem>
+      );
+    }
+
+    return (
+      <MenuBase.Item
+        className={flyoutClasses}
+        // Menu items render a <div>; the handler only needs the event shape.
+        onClick={(event) =>
+          props.onClick?.(
+            event as unknown as React.MouseEvent<HTMLButtonElement>,
+          )
+        }
+        disabled={props.disabled}
+      >
+        {children}
+      </MenuBase.Item>
+    );
+  }
 
   const buttonClasses = cn(
     "group/menu-button relative flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 py-0 text-sm font-medium outline-none",
@@ -2202,9 +2303,40 @@ interface SidebarCollapseContextValue {
   isOpen: boolean;
   isCollapsible: boolean;
   autoScrollOnOpen: boolean;
+  /** This section renders as a flyout menu instead of an inline region. */
+  flyout: boolean;
+  /** Default flyout heading, from the trigger's tooltip or text. */
+  flyoutLabel: string | undefined;
+  setFlyoutLabel: (label: string | undefined) => void;
   toggle: () => void;
   completeOpenChange: () => void;
 }
+
+/**
+ * `true` inside a flyout menu popup. Sidebar parts read it to render as menu
+ * parts: nested collapsibles become submenus and sub-buttons become items.
+ */
+const SidebarFlyoutContext = createContext(false);
+
+/** Flyout popups portal out of the sidebar, so carry its active-bg token. */
+const SIDEBAR_FLYOUT_POPUP_CLASSES =
+  "w-56 [--sidebar-active-bg:var(--color-kumo-tint)]";
+
+/** Plain text of a trigger's children, e.g. "Compute" from `Compute<MenuChevron />`. */
+function getTextContent(children: ReactNode): string {
+  return React.Children.toArray(children)
+    .filter((child) => typeof child === "string" || typeof child === "number")
+    .join("")
+    .trim();
+}
+
+/** Flyout rows match sidebar rows instead of dropdown rows. */
+const SIDEBAR_FLYOUT_ROW_CLASSES = cn(
+  "flex min-h-8.5 w-full min-w-0 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium",
+  "text-kumo-default no-underline! outline-none select-none",
+  "data-highlighted:bg-(--sidebar-active-bg)",
+  "data-disabled:pointer-events-none data-disabled:opacity-50",
+);
 
 const isCollapsibleContentShown = (
   isOpen: boolean,
@@ -2216,6 +2348,9 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   isOpen: true,
   isCollapsible: false,
   autoScrollOnOpen: false,
+  flyout: false,
+  flyoutLabel: undefined,
+  setFlyoutLabel: () => {},
   toggle: () => {},
   completeOpenChange: () => {},
 });
@@ -2279,6 +2414,14 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
+    const [flyoutLabel, setFlyoutLabel] = useState<string | undefined>();
+    const insideFlyout = useContext(SidebarFlyoutContext);
+    const railFlyout =
+      sidebar.flyout === "collapsed" &&
+      !sidebar.peekable &&
+      !sidebar.isMobile &&
+      sidebar.state === "collapsed";
+    const flyout = insideFlyout || railFlyout;
 
     const toggle = useCallback(() => {
       const next = !isOpen;
@@ -2300,22 +2443,38 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
         isOpen,
         isCollapsible: true,
         autoScrollOnOpen,
+        flyout,
+        flyoutLabel,
+        setFlyoutLabel,
         toggle,
         completeOpenChange,
       }),
-      [contentId, isOpen, autoScrollOnOpen, toggle, completeOpenChange],
+      [
+        contentId,
+        isOpen,
+        autoScrollOnOpen,
+        flyout,
+        flyoutLabel,
+        toggle,
+        completeOpenChange,
+      ],
     );
 
     const handleFocusIn = useCallback(
       (e: React.FocusEvent<HTMLDivElement>) => {
-        // Auto-expand on keyboard focus (focus-visible) when collapsed
-        if (!isOpen && (e.target as HTMLElement).matches(":focus-visible")) {
+        // Auto-expand on keyboard focus (focus-visible) when collapsed.
+        // Flyouts open from the trigger instead (Enter / Space).
+        if (
+          !flyout &&
+          !isOpen &&
+          (e.target as HTMLElement).matches(":focus-visible")
+        ) {
           keyboardExpandedRef.current = true;
           setInternalOpen(true);
           onOpenChange?.(true);
         }
       },
-      [isOpen, onOpenChange],
+      [flyout, isOpen, onOpenChange],
     );
 
     const handleFocusOut = useCallback(
@@ -2335,6 +2494,15 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       [onOpenChange],
     );
 
+    // Inside a flyout, a nested section is a submenu of the parent menu.
+    if (insideFlyout) {
+      return (
+        <SidebarCollapseContext.Provider value={contextValue}>
+          <DropdownMenu.Sub>{children}</DropdownMenu.Sub>
+        </SidebarCollapseContext.Provider>
+      );
+    }
+
     return (
       <SidebarCollapseContext.Provider value={contextValue}>
         <div
@@ -2345,7 +2513,11 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
           onBlur={handleFocusOut}
           {...props}
         >
-          {children}
+          {railFlyout ? (
+            <DropdownMenu modal={false}>{children}</DropdownMenu>
+          ) : (
+            children
+          )}
         </div>
       </SidebarCollapseContext.Provider>
     );
@@ -2376,7 +2548,56 @@ export interface SidebarCollapsibleTriggerProps {
  * ```
  */
 function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
-  const { contentId, isOpen, toggle } = useContext(SidebarCollapseContext);
+  const { contentId, isOpen, flyout, setFlyoutLabel, toggle } = useContext(
+    SidebarCollapseContext,
+  );
+  const insideFlyout = useContext(SidebarFlyoutContext);
+  const renderProps = render.props as {
+    children?: ReactNode;
+    tooltip?: ReactNode;
+    href?: string;
+    onClick?: (e: React.MouseEvent) => void;
+  };
+
+  // The rail flyout's heading defaults to what the collapsed rail's tooltip
+  // would have said.
+  const label =
+    typeof renderProps.tooltip === "string"
+      ? renderProps.tooltip
+      : getTextContent(renderProps.children) || undefined;
+  useEffect(() => {
+    setFlyoutLabel(label);
+  }, [label, setFlyoutLabel]);
+
+  if (insideFlyout) {
+    // A submenu trigger is its own menu row; keep only the label.
+    const { children } = renderProps;
+    return (
+      <MenuBase.SubmenuTrigger
+        className={cn(
+          SIDEBAR_FLYOUT_ROW_CLASSES,
+          "data-popup-open:bg-(--sidebar-active-bg)",
+        )}
+      >
+        {children}
+        <CaretRightIcon
+          size={12}
+          weight="bold"
+          className="ml-auto shrink-0 opacity-40"
+        />
+      </MenuBase.SubmenuTrigger>
+    );
+  }
+
+  if (flyout) {
+    return (
+      <DropdownMenu.Trigger
+        openOnHover
+        nativeButton={!renderProps.href}
+        render={render}
+      />
+    );
+  }
 
   return React.cloneElement(render, {
     "aria-expanded": isOpen,
@@ -2384,10 +2605,7 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
     "data-open": isOpen || undefined,
     onClick: (e: React.MouseEvent) => {
       // Call any existing onClick on the render element
-      const existingOnClick = (
-        render.props as { onClick?: (e: React.MouseEvent) => void }
-      ).onClick;
-      existingOnClick?.(e);
+      renderProps.onClick?.(e);
       toggle();
     },
   } as Record<string, unknown>);
@@ -2400,17 +2618,31 @@ SidebarCollapsibleTrigger.displayName = "Sidebar.CollapsibleTrigger";
  * height transitions without measuring DOM height.
  *
  * Always mounted (no unmount on close) so exit animations play.
+ *
+ * With `flyout` on the Provider and the rail collapsed, renders as a menu
+ * popup beside the trigger instead.
  */
+export interface SidebarCollapsibleContentProps extends ComponentPropsWithoutRef<"div"> {
+  /**
+   * Heading at the top of the flyout menu on the collapsed rail. Defaults to
+   * the trigger's `tooltip`, or its text when there's no tooltip.
+   */
+  label?: string;
+}
+
 const SidebarCollapsibleContent = forwardRef<
   HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
->(({ className, children, onTransitionEnd, ...props }, ref) => {
+  SidebarCollapsibleContentProps
+>(({ className, children, label, onTransitionEnd, ...props }, ref) => {
   const {
     contentId,
     isOpen: isCollapsibleOpen,
     autoScrollOnOpen,
+    flyout,
+    flyoutLabel,
     completeOpenChange,
   } = useContext(SidebarCollapseContext);
+  const insideFlyout = useContext(SidebarFlyoutContext);
   const sidebar = useSidebar();
   const { animationDuration } = sidebar;
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -2474,6 +2706,49 @@ const SidebarCollapsibleContent = forwardRef<
     [completeOpenChange, onTransitionEnd],
   );
 
+  if (flyout) {
+    const items = (
+      <SidebarFlyoutContext.Provider value={true}>
+        {children}
+      </SidebarFlyoutContext.Provider>
+    );
+
+    // Nested flyouts omit the heading: their trigger is right beside them.
+    if (insideFlyout) {
+      return (
+        <DropdownMenu.SubContent className={SIDEBAR_FLYOUT_POPUP_CLASSES}>
+          {items}
+        </DropdownMenu.SubContent>
+      );
+    }
+
+    const heading = label ?? flyoutLabel;
+
+    return (
+      <DropdownMenu.Content
+        side={sidebar.side === "left" ? "right" : "left"}
+        align="start"
+        // Cancel the popup's `p-1.5` so its first row (the heading, when
+        // there is one) lines up with the trigger.
+        alignOffset={-6}
+        sideOffset={12}
+        className={SIDEBAR_FLYOUT_POPUP_CLASSES}
+      >
+        {heading ? (
+          <DropdownMenu.Group>
+            <MenuBase.GroupLabel className="flex min-h-8.5 items-center truncate px-3 text-sm font-semibold text-kumo-default">
+              {heading}
+            </MenuBase.GroupLabel>
+            <DropdownMenu.Separator className="-mx-1.5 my-1.5" />
+            {items}
+          </DropdownMenu.Group>
+        ) : (
+          items
+        )}
+      </DropdownMenu.Content>
+    );
+  }
+
   return (
     <div
       ref={mergedRef}
@@ -2514,6 +2789,10 @@ SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
  */
 function SidebarMenuChevron({ className }: { className?: string }) {
   const { isOpen, isCollapsible } = useContext(SidebarCollapseContext);
+  const insideFlyout = useContext(SidebarFlyoutContext);
+
+  // Submenu triggers draw their own caret.
+  if (insideFlyout) return null;
 
   return (
     <CaretRightIcon

@@ -44,6 +44,7 @@ import {
   KUMO_SIDEBAR_VARIANTS,
   KUMO_SIDEBAR_DEFAULT_VARIANTS,
   KUMO_SIDEBAR_STYLING,
+  type SidebarFlyout,
 } from "./sidebar";
 
 // ---------------------------------------------------------------------------
@@ -983,6 +984,173 @@ describe("Sidebar.ResizeHandle", () => {
 // ============================================================================
 // MenuButton
 // ============================================================================
+
+describe("Sidebar flyout", () => {
+  function FlyoutTest({
+    flyout = "collapsed",
+    open = false,
+    label,
+    tooltip = "Compute",
+  }: {
+    /** `null` turns flyouts off. */
+    flyout?: SidebarFlyout | null;
+    open?: boolean;
+    label?: string;
+    tooltip?: string;
+  }) {
+    return (
+      <TestSidebar defaultOpen={open} flyout={flyout ?? undefined}>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible>
+                <SidebarCollapsibleTrigger
+                  render={
+                    <SidebarMenuButton tooltip={tooltip}>
+                      Compute
+                      <SidebarMenuChevron />
+                    </SidebarMenuButton>
+                  }
+                />
+                <SidebarCollapsibleContent label={label}>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarCollapsible>
+                        <SidebarCollapsibleTrigger
+                          render={
+                            <SidebarMenuSubButton>
+                              Workers & Pages
+                              <SidebarMenuChevron />
+                            </SidebarMenuSubButton>
+                          }
+                        />
+                        <SidebarCollapsibleContent>
+                          <SidebarMenuSub>
+                            <SidebarMenuSubButton href="/overview">
+                              Overview
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSub>
+                        </SidebarCollapsibleContent>
+                      </SidebarCollapsible>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubButton href="/queues" active>
+                      Queues
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>
+    );
+  }
+
+  it("is a menu trigger on the collapsed rail", () => {
+    render(<FlyoutTest />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.getAttribute("aria-haspopup")).toBe("menu");
+  });
+
+  it("stays an inline disclosure when the rail is expanded", () => {
+    render(<FlyoutTest open />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+    expect(trigger.getAttribute("aria-controls")).toBeTruthy();
+  });
+
+  it("stays an inline disclosure without the flyout prop", () => {
+    render(<FlyoutTest flyout={null} />);
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+  });
+
+  it("renders nested content as menu items and submenus", async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest />);
+
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByText("Compute")).toBeTruthy();
+
+    const queues = within(menu).getByRole("menuitem", { name: "Queues" });
+    expect(queues.getAttribute("href")).toBe("/queues");
+    expect(queues.getAttribute("aria-current")).toBe("page");
+
+    const submenuTrigger = within(menu).getByRole("menuitem", {
+      name: /Workers & Pages/,
+    });
+    expect(submenuTrigger.getAttribute("aria-haspopup")).toBe("menu");
+  });
+
+  it("closes when a link is chosen", async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest />);
+
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+    const menu = await screen.findByRole("menu");
+    await user.click(within(menu).getByRole("menuitem", { name: "Queues" }));
+
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+  });
+
+  it("opens from the keyboard", async () => {
+    const user = userEvent.setup();
+    render(<FlyoutTest />);
+
+    await user.tab();
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: /Compute/ }),
+    );
+    await user.keyboard("{Enter}");
+
+    expect(await screen.findByRole("menu")).toBeTruthy();
+  });
+
+  it("titles the flyout from the trigger tooltip, then label", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<FlyoutTest tooltip="Compute (tooltip)" />);
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+    expect(
+      within(await screen.findByRole("menu")).getByText("Compute (tooltip)"),
+    ).toBeTruthy();
+    unmount();
+
+    render(<FlyoutTest label="Compute (label)" />);
+    await user.click(screen.getByRole("button", { name: /Compute/ }));
+    expect(
+      within(await screen.findByRole("menu")).getByText("Compute (label)"),
+    ).toBeTruthy();
+  });
+
+  it("is ignored when peekable", () => {
+    render(
+      <TestSidebar defaultOpen={false} flyout="collapsed" peekable>
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarCollapsible>
+                <SidebarCollapsibleTrigger
+                  render={<SidebarMenuButton>Compute</SidebarMenuButton>}
+                />
+                <SidebarCollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubButton href="/queues">
+                      Queues
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSub>
+                </SidebarCollapsibleContent>
+              </SidebarCollapsible>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </TestSidebar>,
+    );
+    const trigger = screen.getByRole("button", { name: /Compute/ });
+    expect(trigger.hasAttribute("aria-haspopup")).toBe(false);
+  });
+});
 
 describe("Sidebar.MenuButton", () => {
   it("should auto-wrap in <li> when not inside MenuItem", () => {

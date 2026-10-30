@@ -14,6 +14,7 @@ import {
   SidebarResizableDemo,
   SidebarRightDemo,
   SidebarPeekingDemo,
+  SidebarFlyoutDemo,
   SidebarAutoScrollDemo,
   SidebarTransitionCompleteDemo,
   SidebarSlidingViewsDemo,
@@ -231,6 +232,41 @@ const { toggleSidebar } = useSidebar();`}>
 const { state, isPeeking } = useSidebar();
 // state: "expanded" | "collapsed" | "peeking"`}>
           <SidebarPeekingDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Flyout</Heading>
+        <p>
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">flyout="collapsed"</code> on the Provider so each collapsible section on the collapsed rail
+          opens as a menu. It opens on hover, or by tabbing to the icon and pressing Enter or Space.
+          Nested collapsibles become submenus. The menu heading defaults to the trigger's <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code>; set
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">label</code> on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">CollapsibleContent</code> to override it. The expanded sidebar is unchanged,
+          and flyouts are ignored when <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">peekable</code> is set.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider defaultOpen={false} flyout="collapsed">
+  <Sidebar>
+    <Sidebar.Content>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          <Sidebar.Collapsible>
+            <Sidebar.CollapsibleTrigger
+              render={
+                <Sidebar.MenuButton icon={CodeIcon} tooltip="Compute">
+                  Compute <Sidebar.MenuChevron />
+                </Sidebar.MenuButton>
+              }
+            />
+            <Sidebar.CollapsibleContent>
+              <Sidebar.MenuSub>...</Sidebar.MenuSub>
+            </Sidebar.CollapsibleContent>
+          </Sidebar.Collapsible>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Content>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarFlyoutDemo client:load />
         </ComponentExample>
       </div>
 
