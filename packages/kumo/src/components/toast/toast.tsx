@@ -202,8 +202,7 @@ type KumoToastOptionsBase = {
 // Set by every `add()` and cleared by `update()` and promise results.
 // `ToastList` only bumps when this is set and `updateKey > 0`, because Base UI
 // increments `updateKey` for duplicate adds and explicit updates alike.
-// `Symbol.for` keeps this working across duplicate Kumo bundles.
-const KUMO_TOAST_AUTO_BUMP = Symbol.for("kumo-toast-auto-bump");
+const KUMO_TOAST_AUTO_BUMP = Symbol("kumo-toast-auto-bump");
 
 type KumoToastInternalOptions = {
   [KUMO_TOAST_AUTO_BUMP]?: boolean;
@@ -376,8 +375,9 @@ function getBumpAnimation(toast: KumoToastOptions<any>) {
       internalToast[KUMO_TOAST_AUTO_BUMP] === true &&
       updateKey > 0);
 
-  // Alternate between two identical animations so each bump replays
-  // without remounting the toast.
+  // Alternate between two identical animations so each bump replays.
+  // Unlike clipboard-text, don't remount with `key={updateKey}`: that would
+  // drop focus from a focused action or close button inside the toast.
   return (
     shouldBump &&
     (updateKey % 2 === 0 ? "animate-toast-bump-alternate" : "animate-toast-bump")
