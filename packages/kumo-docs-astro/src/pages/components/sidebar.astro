@@ -15,6 +15,7 @@ import {
   SidebarRightDemo,
   SidebarPeekingDemo,
   SidebarFlyoutDemo,
+  SidebarFlyoutAlwaysDemo,
   SidebarAutoScrollDemo,
   SidebarTransitionCompleteDemo,
   SidebarSlidingViewsDemo,
@@ -240,7 +241,7 @@ const { state, isPeeking } = useSidebar();
         <p>
           Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">flyout="collapsed"</code> on the Provider so each collapsible section on the collapsed rail
           opens as a menu. It opens on hover, or by tabbing to the icon and pressing Enter or Space.
-          Nested collapsibles become submenus. The menu heading defaults to the trigger's <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code>; set
+          Nested sections open as submenus beside it. The menu heading defaults to the trigger's <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">tooltip</code>; set
           <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">label</code> on <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">CollapsibleContent</code> to override it. The expanded sidebar is unchanged,
           and flyouts are ignored when <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">peekable</code> is set.
         </p>
@@ -267,6 +268,50 @@ const { state, isPeeking } = useSidebar();
   </Sidebar>
 </Sidebar.Provider>`}>
           <SidebarFlyoutDemo client:load />
+        </ComponentExample>
+      </div>
+
+      <div>
+        <Heading level={3}>Flyout on the expanded sidebar</Heading>
+        <p>
+          Set <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">flyout="always"</code> to also preview closed sections on the expanded sidebar when the pointer
+          rests on them, as GitLab does. Open sections don't preview, since their items are already visible.
+          Moving between sections moves the open preview instead of reopening it. Nested sections expand in
+          place inside the preview, as they do in the sidebar.
+        </p>
+        <p>
+          The preview is a mouse shortcut, not the only way in: clicking or the keyboard still expands the
+          section inline, so the trigger stays a disclosure button. On the collapsed rail it behaves like
+          <code class="rounded bg-kumo-control px-1 py-0.5 text-xs">"collapsed"</code>.
+        </p>
+        <p>
+          Use it for deep navigation where people often jump between sections, e.g. Radar or the dashboard.
+          Leave it off for short sidebars: every closed section becomes a hover target, which adds noise as the
+          pointer moves down the list.
+        </p>
+        <ComponentExample code={`<Sidebar.Provider flyout="always">
+  <Sidebar>
+    <Sidebar.Content>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
+          <Sidebar.Collapsible>
+            <Sidebar.CollapsibleTrigger
+              render={
+                <Sidebar.MenuButton icon={SparkleIcon}>
+                  AI <Sidebar.MenuChevron />
+                </Sidebar.MenuButton>
+              }
+            />
+            <Sidebar.CollapsibleContent>
+              <Sidebar.MenuSub>...</Sidebar.MenuSub>
+            </Sidebar.CollapsibleContent>
+          </Sidebar.Collapsible>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Content>
+  </Sidebar>
+</Sidebar.Provider>`}>
+          <SidebarFlyoutAlwaysDemo client:load />
         </ComponentExample>
       </div>
 

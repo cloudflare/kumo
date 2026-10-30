@@ -601,6 +601,82 @@ const FLYOUT_SECTIONS: {
   },
 ];
 
+/** The dashboard's Build nav, shared by the flyout demos. */
+function FlyoutBuildNav({
+  defaultOpenSection,
+}: {
+  defaultOpenSection?: string;
+}) {
+  return (
+    <Sidebar.Group>
+      <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
+      <Sidebar.Menu>
+        {FLYOUT_SECTIONS.map((section) => (
+          <Sidebar.MenuItem key={section.label}>
+            <Sidebar.Collapsible
+              defaultOpen={section.label === defaultOpenSection}
+            >
+              <Sidebar.CollapsibleTrigger
+                render={
+                  <Sidebar.MenuButton
+                    icon={section.icon}
+                    tooltip={section.label}
+                  >
+                    {section.label}
+                    <Sidebar.MenuChevron />
+                  </Sidebar.MenuButton>
+                }
+              />
+              <Sidebar.CollapsibleContent>
+                <Sidebar.MenuSub>
+                  {section.items.map((item) =>
+                    item.items ? (
+                      <Sidebar.MenuSubItem key={item.label}>
+                        <Sidebar.Collapsible>
+                          <Sidebar.CollapsibleTrigger
+                            render={
+                              <Sidebar.MenuSubButton>
+                                {item.label}
+                                <Sidebar.MenuChevron />
+                              </Sidebar.MenuSubButton>
+                            }
+                          />
+                          <Sidebar.CollapsibleContent>
+                            <Sidebar.MenuSub>
+                              {item.items.map((child) => (
+                                <Sidebar.MenuSubButton
+                                  key={child.label}
+                                  href={`#${child.label}`}
+                                >
+                                  {child.label}
+                                </Sidebar.MenuSubButton>
+                              ))}
+                            </Sidebar.MenuSub>
+                          </Sidebar.CollapsibleContent>
+                        </Sidebar.Collapsible>
+                      </Sidebar.MenuSubItem>
+                    ) : (
+                      <Sidebar.MenuSubButton
+                        key={item.label}
+                        href={`#${item.label}`}
+                      >
+                        {item.label}
+                        {item.badge ? (
+                          <Sidebar.MenuBadge>{item.badge}</Sidebar.MenuBadge>
+                        ) : null}
+                      </Sidebar.MenuSubButton>
+                    ),
+                  )}
+                </Sidebar.MenuSub>
+              </Sidebar.CollapsibleContent>
+            </Sidebar.Collapsible>
+          </Sidebar.MenuItem>
+        ))}
+      </Sidebar.Menu>
+    </Sidebar.Group>
+  );
+}
+
 /** Collapsed rail where collapsible sections open as flyout menus. */
 export function SidebarFlyoutDemo() {
   return (
@@ -616,72 +692,7 @@ export function SidebarFlyoutDemo() {
             <BrandLogo />
           </Sidebar.Header>
           <Sidebar.Content>
-            <Sidebar.Group>
-              <Sidebar.GroupLabel>Build</Sidebar.GroupLabel>
-              <Sidebar.Menu>
-                {FLYOUT_SECTIONS.map((section) => (
-                  <Sidebar.MenuItem key={section.label}>
-                    <Sidebar.Collapsible>
-                      <Sidebar.CollapsibleTrigger
-                        render={
-                          <Sidebar.MenuButton
-                            icon={section.icon}
-                            tooltip={section.label}
-                          >
-                            {section.label}
-                            <Sidebar.MenuChevron />
-                          </Sidebar.MenuButton>
-                        }
-                      />
-                      <Sidebar.CollapsibleContent>
-                        <Sidebar.MenuSub>
-                          {section.items.map((item) =>
-                            item.items ? (
-                              <Sidebar.MenuSubItem key={item.label}>
-                                <Sidebar.Collapsible>
-                                  <Sidebar.CollapsibleTrigger
-                                    render={
-                                      <Sidebar.MenuSubButton>
-                                        {item.label}
-                                        <Sidebar.MenuChevron />
-                                      </Sidebar.MenuSubButton>
-                                    }
-                                  />
-                                  <Sidebar.CollapsibleContent>
-                                    <Sidebar.MenuSub>
-                                      {item.items.map((child) => (
-                                        <Sidebar.MenuSubButton
-                                          key={child.label}
-                                          href={`#${child.label}`}
-                                        >
-                                          {child.label}
-                                        </Sidebar.MenuSubButton>
-                                      ))}
-                                    </Sidebar.MenuSub>
-                                  </Sidebar.CollapsibleContent>
-                                </Sidebar.Collapsible>
-                              </Sidebar.MenuSubItem>
-                            ) : (
-                              <Sidebar.MenuSubButton
-                                key={item.label}
-                                href={`#${item.label}`}
-                              >
-                                {item.label}
-                                {item.badge ? (
-                                  <Sidebar.MenuBadge>
-                                    {item.badge}
-                                  </Sidebar.MenuBadge>
-                                ) : null}
-                              </Sidebar.MenuSubButton>
-                            ),
-                          )}
-                        </Sidebar.MenuSub>
-                      </Sidebar.CollapsibleContent>
-                    </Sidebar.Collapsible>
-                  </Sidebar.MenuItem>
-                ))}
-              </Sidebar.Menu>
-            </Sidebar.Group>
+            <FlyoutBuildNav />
           </Sidebar.Content>
           <DemoSidebarFooter>
             <Sidebar.Trigger />
@@ -691,6 +702,38 @@ export function SidebarFlyoutDemo() {
           <p className="text-sm text-kumo-subtle">
             Hover a section, or Tab to it and press Enter. Expand the sidebar to
             get inline sections back.
+          </p>
+        </DemoMain>
+      </Sidebar.Provider>
+    </DemoContainer>
+  );
+}
+
+/** Expanded sidebar where hovering a closed section previews it. */
+export function SidebarFlyoutAlwaysDemo() {
+  return (
+    <DemoContainer>
+      <Sidebar.Provider
+        contained
+        defaultOpen
+        flyout="always"
+        className="h-full min-h-0!"
+      >
+        <Sidebar>
+          <Sidebar.Header>
+            <BrandLogo />
+          </Sidebar.Header>
+          <Sidebar.Content>
+            <FlyoutBuildNav defaultOpenSection="Compute" />
+          </Sidebar.Content>
+          <DemoSidebarFooter>
+            <Sidebar.Trigger />
+          </DemoSidebarFooter>
+        </Sidebar>
+        <DemoMain>
+          <p className="text-sm text-kumo-subtle">
+            Rest the pointer on AI or Storage &amp; databases to preview them.
+            Click to expand inline. Collapse the sidebar to get rail flyouts.
           </p>
         </DemoMain>
       </Sidebar.Provider>

@@ -14,15 +14,17 @@ import React, {
   useSyncExternalStore,
 } from "react";
 import { Menu as MenuBase } from "@base-ui/react/menu";
+import { PreviewCard as PreviewCardBase } from "@base-ui/react/preview-card";
 import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 
-import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
+import { CaretDownIcon, CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
 import { Button } from "../button";
 import { DropdownMenu } from "../dropdown";
+import { usePortalContainer } from "../../utils/portal-provider";
 
 // ============================================================================
 // Variants (required by Kumo convention)
@@ -193,7 +195,7 @@ function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT) {
 export type SidebarState = "expanded" | "collapsed" | "peeking";
 
 /** Where `Sidebar.Provider` shows flyout menus. */
-export type SidebarFlyout = "collapsed";
+export type SidebarFlyout = "collapsed" | "always";
 
 export interface SidebarContextValue {
   state: SidebarState;
@@ -216,6 +218,10 @@ export interface SidebarContextValue {
   isPeeking: boolean;
   peekable: boolean;
   flyout: SidebarFlyout | undefined;
+  /** Shared hover preview for `flyout="always"`; section triggers attach to it. */
+  previewHandle: SidebarPreviewHandle;
+  /** Shared rail flyout menu; collapsed-rail section triggers attach to it. */
+  railMenuHandle: SidebarRailMenuHandle;
   startPeek: () => void;
   stopPeek: () => void;
   contained: boolean;
@@ -334,9 +340,12 @@ export interface SidebarProviderProps {
    * - `"collapsed"`: on the collapsed icon rail, each collapsible section
    *   opens a flyout menu on hover, click, or Enter / Space, so
    *   nested items stay reachable. The expanded sidebar is unchanged.
+   * - `"always"`: also previews closed sections on the expanded sidebar when
+   *   the pointer rests on them. This is a mouse shortcut: clicking and the
+   *   keyboard still expand sections inline.
    *
-   * Off by default. Ignored when `peekable` is set, since peeking already
-   * reveals nested items.
+   * Off by default. Rail flyouts are ignored when `peekable` is set, since
+   * peeking already reveals nested items.
    */
   flyout?: SidebarFlyout;
   /**
@@ -401,6 +410,12 @@ function SidebarProvider({
   const [width, setWidthState] = useState(defaultWidth);
   const [isResizing, setIsResizing] = useState(false);
   const [isPeeking, setIsPeeking] = useState(false);
+  const [previewHandle] = useState(() =>
+    PreviewCardBase.createHandle<SidebarSectionPayload>(),
+  );
+  const [railMenuHandle] = useState(() =>
+    MenuBase.createHandle<SidebarSectionPayload>(),
+  );
 
   // When controlled (`openProp` provided), use it directly for mobile too.
   // When uncontrolled, use internal `_openMobile` state.
@@ -580,6 +595,8 @@ function SidebarProvider({
       isPeeking,
       peekable,
       flyout,
+      previewHandle,
+      railMenuHandle,
       startPeek,
       stopPeek,
       contained,
@@ -608,6 +625,8 @@ function SidebarProvider({
       isPeeking,
       peekable,
       flyout,
+      previewHandle,
+      railMenuHandle,
       startPeek,
       stopPeek,
       contained,
@@ -673,6 +692,16 @@ function SidebarProvider({
         )}
       >
         {children}
+        {flyout !== undefined && !isMobile && !peekable ? (
+          <SidebarRailFlyout handle={railMenuHandle} side={side} />
+        ) : null}
+        {flyout === "always" && !isMobile ? (
+          <SidebarHoverPreview
+            handle={previewHandle}
+            side={side}
+            animationDuration={animationDuration}
+          />
+        ) : null}
       </div>
     </SidebarContext.Provider>
   );
@@ -1600,6 +1629,8 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       active && "bg-(--sidebar-active-bg)",
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-(--sidebar-active-bg)",
+      // Stays highlighted while its flyout is open
+      "data-popup-open:bg-(--sidebar-active-bg)",
       // Focus
       "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
       className,
@@ -1746,9 +1777,27 @@ const SidebarMenuSub = forwardRef<
   ComponentPropsWithoutRef<"ul">
 >(({ className, children, ...props }, ref) => {
   const insideFlyout = useContext(SidebarFlyoutContext);
+  const insidePreview = useContext(SidebarPreviewContext);
 
   if (insideFlyout) {
     return <DropdownMenu.Group>{children}</DropdownMenu.Group>;
+  }
+
+  // A preview's own items sit flat, like a menu; deeper levels keep the tree.
+  if (insidePreview === "root") {
+    return (
+      <ul
+        ref={ref}
+        data-sidebar="menu-sub"
+        className={cn(
+          "m-0 flex min-w-0 list-none flex-col gap-y-px p-0",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </ul>
+    );
   }
 
   return (
@@ -1858,7 +1907,7 @@ const SidebarMenuSubButton = forwardRef<
           aria-current={active ? "page" : undefined}
           render={<LinkComponent href={href} to={href} target={target} />}
         >
-          {children}
+          {renderFlyoutRowChildren(children)}
         </MenuBase.LinkItem>
       );
     }
@@ -1874,7 +1923,7 @@ const SidebarMenuSubButton = forwardRef<
         }
         disabled={props.disabled}
       >
-        {children}
+        {renderFlyoutRowChildren(children)}
       </MenuBase.Item>
     );
   }
@@ -2305,9 +2354,11 @@ interface SidebarCollapseContextValue {
   autoScrollOnOpen: boolean;
   /** This section renders as a flyout menu instead of an inline region. */
   flyout: boolean;
-  /** Default flyout heading, from the trigger's tooltip or text. */
-  flyoutLabel: string | undefined;
-  setFlyoutLabel: (label: string | undefined) => void;
+  /** `flyout="always"` on the expanded sidebar: hovering previews the section. */
+  hoverPreview: boolean;
+  /** The section's items and heading, registered by `CollapsibleContent` for the shared flyout and preview. */
+  section: SidebarSectionContent;
+  setSection: (section: SidebarSectionContent) => void;
   toggle: () => void;
   completeOpenChange: () => void;
 }
@@ -2318,9 +2369,57 @@ interface SidebarCollapseContextValue {
  */
 const SidebarFlyoutContext = createContext(false);
 
-/** Flyout popups portal out of the sidebar, so carry its active-bg token. */
+/**
+ * Set inside a hover preview popup. `"root"` for the previewed section's own
+ * items (shown flat), `"nested"` below it. Sections inside a preview expand
+ * in place rather than opening previews of their own.
+ */
+const SidebarPreviewContext = createContext<"root" | "nested" | null>(null);
+
+/** Flyout heading and nested-section labels, styled like `Sidebar.GroupLabel`. */
+const SIDEBAR_FLYOUT_LABEL_CLASSES =
+  "flex min-h-8.5 items-center truncate px-3 text-sm font-medium text-kumo-subtle";
+
+interface SidebarSectionContent {
+  content: ReactNode;
+  /** `label` from `CollapsibleContent`, overriding the trigger's. */
+  label?: string;
+}
+interface SidebarSectionPayload {
+  content: ReactNode;
+  /** Rail flyout heading. */
+  label?: string;
+}
+type SidebarPreviewHandle = PreviewCardBase.Handle<SidebarSectionPayload>;
+type SidebarRailMenuHandle = MenuBase.Handle<SidebarSectionPayload>;
+
+/** Matches the menu popup used by rail flyouts. */
+const SIDEBAR_PREVIEW_POPUP_CLASSES = cn(
+  "overflow-hidden rounded-lg bg-kumo-control p-1.5 text-kumo-default shadow-lg ring ring-kumo-line outline-hidden",
+  "max-h-(--available-height) overflow-y-auto",
+  "origin-(--transform-origin) transition-[transform,scale,opacity] duration-150 motion-reduce:transition-none",
+  "data-starting-style:scale-95 data-starting-style:opacity-0",
+  "data-ending-style:scale-95 data-ending-style:opacity-0",
+);
+
+/**
+ * Flyouts grow to fit their labels (unlike the sidebar, they aren't bound to
+ * its width) and truncate only past the max. They portal out of the sidebar,
+ * so carry its active-bg token.
+ */
 const SIDEBAR_FLYOUT_POPUP_CLASSES =
-  "w-56 [--sidebar-active-bg:var(--color-kumo-tint)]";
+  "w-max min-w-48 max-w-80 [--sidebar-active-bg:var(--color-kumo-tint)]";
+
+/** Single-line row labels: text children truncate instead of wrapping. */
+function renderFlyoutRowChildren(children: ReactNode) {
+  return React.Children.map(children, (child) =>
+    typeof child === "string" || typeof child === "number" ? (
+      <span className="min-w-0 truncate">{child}</span>
+    ) : (
+      child
+    ),
+  );
+}
 
 /** Plain text of a trigger's children, e.g. "Compute" from `Compute<MenuChevron />`. */
 function getTextContent(children: ReactNode): string {
@@ -2349,8 +2448,9 @@ const SidebarCollapseContext = createContext<SidebarCollapseContextValue>({
   isCollapsible: false,
   autoScrollOnOpen: false,
   flyout: false,
-  flyoutLabel: undefined,
-  setFlyoutLabel: () => {},
+  hoverPreview: false,
+  section: { content: null },
+  setSection: () => {},
   toggle: () => {},
   completeOpenChange: () => {},
 });
@@ -2414,22 +2514,37 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
     const isContentShown = isCollapsibleContentShown(isOpen, sidebar);
     const contentId = useId();
     const keyboardExpandedRef = useRef(false);
-    const [flyoutLabel, setFlyoutLabel] = useState<string | undefined>();
     const insideFlyout = useContext(SidebarFlyoutContext);
+    const insidePreview = useContext(SidebarPreviewContext);
     const railFlyout =
-      sidebar.flyout === "collapsed" &&
+      sidebar.flyout !== undefined &&
       !sidebar.peekable &&
       !sidebar.isMobile &&
       sidebar.state === "collapsed";
     const flyout = insideFlyout || railFlyout;
+    // The shared preview only opens for closed sections (see
+    // `SidebarHoverPreview`); the trigger stays attached so it doesn't remount.
+    const hoverPreview =
+      sidebar.flyout === "always" &&
+      !sidebar.isMobile &&
+      sidebar.state === "expanded" &&
+      !insideFlyout &&
+      insidePreview === null;
+    const [section, setSection] = useState<SidebarSectionContent>({
+      content: null,
+    });
+    const { previewHandle } = sidebar;
 
     const toggle = useCallback(() => {
       const next = !isOpen;
       setInternalOpen(next);
+      // Expanding a previewed section inline replaces its preview. Sections
+      // inside the preview expand within it, so leave it open for them.
+      if (hoverPreview && previewHandle.isOpen) previewHandle.close();
       onOpenChange?.(next);
       // If user explicitly clicks, clear the keyboard-expanded flag
       keyboardExpandedRef.current = false;
-    }, [isOpen, onOpenChange]);
+    }, [isOpen, onOpenChange, hoverPreview, previewHandle]);
 
     const completeOpenChange = useOpenChangeComplete(
       isContentShown,
@@ -2444,8 +2559,9 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
         isCollapsible: true,
         autoScrollOnOpen,
         flyout,
-        flyoutLabel,
-        setFlyoutLabel,
+        hoverPreview,
+        section,
+        setSection,
         toggle,
         completeOpenChange,
       }),
@@ -2454,7 +2570,8 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
         isOpen,
         autoScrollOnOpen,
         flyout,
-        flyoutLabel,
+        hoverPreview,
+        section,
         toggle,
         completeOpenChange,
       ],
@@ -2494,7 +2611,8 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
       [onOpenChange],
     );
 
-    // Inside a flyout, a nested section is a submenu of the parent menu.
+    // Inside a rail flyout, a nested section is a submenu. (Inside a hover
+    // preview it expands in place, as in the sidebar.)
     if (insideFlyout) {
       return (
         <SidebarCollapseContext.Provider value={contextValue}>
@@ -2513,8 +2631,10 @@ const SidebarCollapsible = forwardRef<HTMLDivElement, SidebarCollapsibleProps>(
           onBlur={handleFocusOut}
           {...props}
         >
-          {railFlyout ? (
-            <DropdownMenu modal={false}>{children}</DropdownMenu>
+          {insidePreview ? (
+            <SidebarPreviewContext.Provider value="nested">
+              {children}
+            </SidebarPreviewContext.Provider>
           ) : (
             children
           )}
@@ -2548,9 +2668,9 @@ export interface SidebarCollapsibleTriggerProps {
  * ```
  */
 function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
-  const { contentId, isOpen, flyout, setFlyoutLabel, toggle } = useContext(
-    SidebarCollapseContext,
-  );
+  const { contentId, isOpen, flyout, hoverPreview, section, toggle } =
+    useContext(SidebarCollapseContext);
+  const { previewHandle, railMenuHandle } = useSidebar();
   const insideFlyout = useContext(SidebarFlyoutContext);
   const renderProps = render.props as {
     children?: ReactNode;
@@ -2560,18 +2680,14 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
   };
 
   // The rail flyout's heading defaults to what the collapsed rail's tooltip
-  // would have said.
+  // would have said. `label` on `CollapsibleContent` overrides it.
   const label =
     typeof renderProps.tooltip === "string"
       ? renderProps.tooltip
       : getTextContent(renderProps.children) || undefined;
-  useEffect(() => {
-    setFlyoutLabel(label);
-  }, [label, setFlyoutLabel]);
 
   if (insideFlyout) {
     // A submenu trigger is its own menu row; keep only the label.
-    const { children } = renderProps;
     return (
       <MenuBase.SubmenuTrigger
         className={cn(
@@ -2579,7 +2695,7 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
           "data-popup-open:bg-(--sidebar-active-bg)",
         )}
       >
-        {children}
+        {renderFlyoutRowChildren(renderProps.children)}
         <CaretRightIcon
           size={12}
           weight="bold"
@@ -2590,8 +2706,12 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
   }
 
   if (flyout) {
+    // All rail sections share one menu, so moving between icons moves the
+    // open menu instead of closing and reopening it.
     return (
-      <DropdownMenu.Trigger
+      <MenuBase.Trigger
+        handle={railMenuHandle}
+        payload={{ content: section.content, label: section.label ?? label }}
         openOnHover
         nativeButton={!renderProps.href}
         render={render}
@@ -2599,7 +2719,7 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
     );
   }
 
-  return React.cloneElement(render, {
+  const disclosure = React.cloneElement(render, {
     "aria-expanded": isOpen,
     "aria-controls": contentId,
     "data-open": isOpen || undefined,
@@ -2609,6 +2729,23 @@ function SidebarCollapsibleTrigger({ render }: SidebarCollapsibleTriggerProps) {
       toggle();
     },
   } as Record<string, unknown>);
+
+  if (hoverPreview) {
+    // All sections share one preview, so moving between them moves the open
+    // popup instead of closing and reopening it. The first open waits for the
+    // pointer to rest, so sweeping down the sidebar doesn't flash previews.
+    return (
+      <PreviewCardBase.Trigger
+        handle={previewHandle}
+        payload={{ content: section.content }}
+        delay={300}
+        closeDelay={150}
+        render={disclosure}
+      />
+    );
+  }
+
+  return disclosure;
 }
 
 SidebarCollapsibleTrigger.displayName = "Sidebar.CollapsibleTrigger";
@@ -2639,10 +2776,18 @@ const SidebarCollapsibleContent = forwardRef<
     isOpen: isCollapsibleOpen,
     autoScrollOnOpen,
     flyout,
-    flyoutLabel,
+    hoverPreview,
+    setSection,
     completeOpenChange,
   } = useContext(SidebarCollapseContext);
   const insideFlyout = useContext(SidebarFlyoutContext);
+  // The rail flyout and hover preview are shared popups rendered by the
+  // Provider; each section hands them its items when its trigger is active.
+  const sharedPopup = (flyout && !insideFlyout) || hoverPreview;
+
+  useEffect(() => {
+    if (sharedPopup) setSection({ content: children, label });
+  }, [sharedPopup, children, label, setSection]);
   const sidebar = useSidebar();
   const { animationDuration } = sidebar;
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -2706,50 +2851,19 @@ const SidebarCollapsibleContent = forwardRef<
     [completeOpenChange, onTransitionEnd],
   );
 
-  if (flyout) {
-    const items = (
-      <SidebarFlyoutContext.Provider value={true}>
-        {children}
-      </SidebarFlyoutContext.Provider>
-    );
-
-    // Nested flyouts omit the heading: their trigger is right beside them.
-    if (insideFlyout) {
-      return (
-        <DropdownMenu.SubContent className={SIDEBAR_FLYOUT_POPUP_CLASSES}>
-          {items}
-        </DropdownMenu.SubContent>
-      );
-    }
-
-    const heading = label ?? flyoutLabel;
-
+  // Inside a rail flyout, a nested section is a submenu. Submenus omit the
+  // heading: their trigger is right beside them.
+  if (insideFlyout) {
     return (
-      <DropdownMenu.Content
-        side={sidebar.side === "left" ? "right" : "left"}
-        align="start"
-        // Cancel the popup's `p-1.5` so its first row (the heading, when
-        // there is one) lines up with the trigger.
-        alignOffset={-6}
-        sideOffset={12}
-        className={SIDEBAR_FLYOUT_POPUP_CLASSES}
-      >
-        {heading ? (
-          <DropdownMenu.Group>
-            <MenuBase.GroupLabel className="flex min-h-8.5 items-center truncate px-3 text-sm font-semibold text-kumo-default">
-              {heading}
-            </MenuBase.GroupLabel>
-            <DropdownMenu.Separator className="-mx-1.5 my-1.5" />
-            {items}
-          </DropdownMenu.Group>
-        ) : (
-          items
-        )}
-      </DropdownMenu.Content>
+      <DropdownMenu.SubContent className={SIDEBAR_FLYOUT_POPUP_CLASSES}>
+        <SidebarFlyoutContext.Provider value={true}>
+          {children}
+        </SidebarFlyoutContext.Provider>
+      </DropdownMenu.SubContent>
     );
   }
 
-  return (
+  const inlineRegion = (
     <div
       ref={mergedRef}
       id={contentId}
@@ -2768,9 +2882,137 @@ const SidebarCollapsibleContent = forwardRef<
       <div className="overflow-hidden">{children}</div>
     </div>
   );
+
+  return inlineRegion;
 });
 
 SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
+
+/**
+ * The one flyout menu shared by every collapsed-rail section trigger when
+ * `flyout` is set. Rendered by `Sidebar.Provider`.
+ */
+function SidebarRailFlyout({
+  handle,
+  side,
+}: {
+  handle: SidebarRailMenuHandle;
+  side: "left" | "right";
+}) {
+  return (
+    <MenuBase.Root handle={handle} modal={false}>
+      {({ payload }) => (
+        <DropdownMenu.Portal>
+          <DropdownMenu.Positioner
+            side={side === "left" ? "right" : "left"}
+            align="start"
+            // Cancel the popup's `p-1.5` so its first row (the heading, when
+            // there is one) lines up with the trigger.
+            alignOffset={-6}
+            // Measured from the icon, so clear the rail's `px-[11px]` and
+            // border first, then leave the usual 8px gap from the sidebar's edge.
+            sideOffset={20}
+            // Glide between sections instead of jumping.
+            className="transition-[top,left,right,bottom,transform] duration-150 ease-out data-instant:transition-none motion-reduce:transition-none"
+          >
+            <DropdownMenu.Popup className={SIDEBAR_FLYOUT_POPUP_CLASSES}>
+              <SidebarFlyoutContext.Provider value={true}>
+                {payload?.label ? (
+                  <DropdownMenu.Group>
+                    <MenuBase.GroupLabel
+                      className={SIDEBAR_FLYOUT_LABEL_CLASSES}
+                    >
+                      {payload.label}
+                    </MenuBase.GroupLabel>
+                    {payload.content}
+                  </DropdownMenu.Group>
+                ) : (
+                  payload?.content
+                )}
+              </SidebarFlyoutContext.Provider>
+            </DropdownMenu.Popup>
+          </DropdownMenu.Positioner>
+        </DropdownMenu.Portal>
+      )}
+    </MenuBase.Root>
+  );
+}
+
+/**
+ * The one hover preview shared by every section trigger when
+ * `flyout="always"`. Rendered by `Sidebar.Provider`.
+ */
+function SidebarHoverPreview({
+  handle,
+  side,
+  animationDuration,
+}: {
+  handle: SidebarPreviewHandle;
+  side: "left" | "right";
+  animationDuration: number;
+}) {
+  const portalContainer = usePortalContainer();
+
+  return (
+    <PreviewCardBase.Root
+      handle={handle}
+      onOpenChange={(open, details) => {
+        // Hover only, and only for closed sections: keyboard focus and clicks
+        // expand sections inline instead.
+        if (
+          open &&
+          (details.reason !== "trigger-hover" ||
+            details.trigger?.getAttribute("aria-expanded") === "true")
+        ) {
+          details.cancel();
+        }
+      }}
+    >
+      {({ payload }) => (
+        <PreviewCardBase.Portal container={portalContainer ?? undefined}>
+          <PreviewCardBase.Positioner
+            side={side === "left" ? "right" : "left"}
+            align="start"
+            // Cancel the popup's `p-1.5` so its first row lines up with the trigger.
+            alignOffset={-6}
+            // Measured from the row, so clear the sidebar's `px-3.5` and border
+            // first, then leave the usual 8px gap from the sidebar's edge.
+            sideOffset={23}
+            // Glide between sections instead of jumping.
+            className="transition-[top,left,right,bottom,transform] duration-150 ease-out data-instant:transition-none motion-reduce:transition-none"
+          >
+            <PreviewCardBase.Popup
+              className={cn(
+                SIDEBAR_PREVIEW_POPUP_CLASSES,
+                SIDEBAR_FLYOUT_POPUP_CLASSES,
+              )}
+              // The popup portals out of the sidebar wrapper, so carry the
+              // timing nested sections use to expand.
+              style={
+                {
+                  "--sidebar-animation-duration": `${animationDuration}ms`,
+                  "--sidebar-easing": SIDEBAR_EASING,
+                } as CSSProperties
+              }
+              onClick={(event) => {
+                // Choosing a destination dismisses the preview; expanding a
+                // nested section inside it doesn't.
+                const target = event.target as Element;
+                if (target.closest("a[href], button:not([aria-expanded])")) {
+                  handle.close();
+                }
+              }}
+            >
+              <SidebarPreviewContext.Provider value="root">
+                {payload?.content}
+              </SidebarPreviewContext.Provider>
+            </PreviewCardBase.Popup>
+          </PreviewCardBase.Positioner>
+        </PreviewCardBase.Portal>
+      )}
+    </PreviewCardBase.Root>
+  );
+}
 
 // ============================================================================
 // Sidebar MenuChevron
@@ -2790,9 +3032,26 @@ SidebarCollapsibleContent.displayName = "Sidebar.CollapsibleContent";
 function SidebarMenuChevron({ className }: { className?: string }) {
   const { isOpen, isCollapsible } = useContext(SidebarCollapseContext);
   const insideFlyout = useContext(SidebarFlyoutContext);
+  const insidePreview = useContext(SidebarPreviewContext);
 
   // Submenu triggers draw their own caret.
   if (insideFlyout) return null;
+
+  // In a popup a right caret reads as "opens a submenu"; sections inside a
+  // preview expand in place, so point down and flip when open.
+  if (insidePreview) {
+    return (
+      <CaretDownIcon
+        size={12}
+        weight="bold"
+        className={cn(
+          "ml-auto shrink-0 opacity-40 transition-[transform,rotate,opacity] duration-200 group-hover/menu-button:opacity-100",
+          isCollapsible && isOpen && "rotate-180",
+          className,
+        )}
+      />
+    );
+  }
 
   return (
     <CaretRightIcon
