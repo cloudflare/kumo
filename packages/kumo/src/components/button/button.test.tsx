@@ -1,8 +1,16 @@
 import React from "react";
-import { describe, expect, it } from "vite-plus/test";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Plus, type Icon } from "@phosphor-icons/react";
-import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
+import {
+  Button,
+  KUMO_BUTTON_VARIANTS,
+  LinkButton,
+  RefreshButton,
+  buttonVariants,
+  type KumoButtonVariant,
+} from "./button";
 
 describe("Button", () => {
   describe("children wrapper", () => {
@@ -242,36 +250,145 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: "Archive" })).toBeTruthy();
   });
 
-  it("uses an enabled tooltip trigger around a disabled button", () => {
-    render(
-      <Button title="Saving is unavailable" disabled>
-        Save
-      </Button>,
+  describe("title while disabled or loading", () => {
+    const reason = "You need edit access to save";
+
+    it.each([
+      ["disabled", { disabled: true }],
+      ["loading", { loading: true }],
+    ] as const)(
+      "keeps a %s button focusable and describes it with the title",
+      async (_state, stateProps) => {
+        render(
+          <>
+            <button type="button">Before</button>
+            <Button title={reason} {...stateProps}>
+              Save
+            </Button>
+          </>,
+        );
+        const button = screen.getByRole("button", { description: reason });
+        expect(button.getAttribute("aria-disabled")).toBe("true");
+        expect(button.hasAttribute("disabled")).toBe(false);
+        expect(button.getAttribute("aria-busy")).toBe(
+          "loading" in stateProps ? "true" : null,
+        );
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole("button", { name: "Before" }));
+        await user.tab();
+        expect(document.activeElement).toBe(button);
+        // The tooltip popup, next to the hidden description.
+        await waitFor(() =>
+          expect(
+            screen.getAllByText(reason).filter((el) => !el.hidden),
+          ).toHaveLength(1),
+        );
+      },
     );
 
-    const button = screen.getByRole("button", { name: "Save" });
-    const trigger = button.parentElement;
+    it("keeps the same focused trigger when loading starts and ends", () => {
+      const { rerender } = render(<Button title={reason}>Save</Button>);
+      const button = screen.getByRole("button");
+      button.focus();
 
-    expect(button.hasAttribute("disabled")).toBe(true);
-    expect(trigger?.tagName).toBe("SPAN");
-    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
-    expect(trigger?.hasAttribute("disabled")).toBe(false);
-  });
+      rerender(
+        <Button title={reason} loading>
+          Save
+        </Button>,
+      );
+      expect(screen.getByRole("button")).toBe(button);
+      expect(document.activeElement).toBe(button);
 
-  it("uses an enabled tooltip trigger around a loading button", () => {
-    render(
-      <Button title="Saving changes" loading>
-        Save
-      </Button>,
+      rerender(<Button title={reason}>Save</Button>);
+      expect(screen.getByRole("button")).toBe(button);
+    });
+
+    it("ignores clicks, key presses, and form submission", async () => {
+      const handlers = {
+        onClick: vi.fn<() => void>(),
+        onMouseDown: vi.fn<() => void>(),
+        onPointerDown: vi.fn<() => void>(),
+        onKeyDown: vi.fn<() => void>(),
+        onKeyUp: vi.fn<() => void>(),
+      };
+      const onSubmit = vi.fn<(event: React.FormEvent) => void>((event) =>
+        event.preventDefault(),
+      );
+      render(
+        <form onSubmit={onSubmit}>
+          <input aria-label="Name" />
+          <Button type="submit" title={reason} disabled {...handlers}>
+            Save
+          </Button>
+        </form>,
+      );
+      const user = userEvent.setup();
+
+      await user.click(screen.getByRole("button"));
+      await user.keyboard("{Enter} ");
+      // Implicit submission from a text field.
+      await user.type(screen.getByRole("textbox"), "x{Enter}");
+
+      for (const handler of Object.values(handlers)) {
+        expect(handler).not.toHaveBeenCalled();
+      }
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it("keeps an existing description", () => {
+      render(
+        <>
+          <span id="save-hint">Saves every project</span>
+          <Button aria-describedby="save-hint" disabled title={reason}>
+            Save
+          </Button>
+        </>,
+      );
+
+      expect(
+        screen.getByRole("button", {
+          description: `Saves every project ${reason}`,
+        }),
+      ).toBeTruthy();
+    });
+
+    it("does not describe an icon-only button already named by its title", () => {
+      render(<Button shape="square" icon={Plus} title="Add" disabled />);
+
+      const button = screen.getByRole("button", { name: "Add" });
+      expect(button.hasAttribute("aria-describedby")).toBe(false);
+    });
+
+    it("does not describe an enabled button with its title", () => {
+      render(<Button title="Saves every project">Save</Button>);
+
+      const button = screen.getByRole("button", { name: "Save" });
+      expect(button.hasAttribute("aria-describedby")).toBe(false);
+      expect(button.textContent).toBe("Save");
+    });
+
+    it.each(Object.keys(KUMO_BUTTON_VARIANTS.variant) as KumoButtonVariant[])(
+      "gives a loading %s button its disabled styles and no hover styles",
+      (variant) => {
+        render(
+          <Button variant={variant} title={reason} loading>
+            Save
+          </Button>,
+        );
+        const classes = screen.getByRole("button").className.split(" ");
+        const variantClasses = buttonVariants({ variant }).split(" ");
+
+        for (const cls of variantClasses) {
+          if (cls.startsWith("disabled:")) {
+            expect(classes).toContain(cls.replace("disabled:", ""));
+          }
+          if (cls.startsWith("not-disabled:hover:")) {
+            expect(classes).not.toContain(cls);
+          }
+        }
+      },
     );
-
-    const button = screen.getByRole("button");
-    const trigger = button.parentElement;
-
-    expect(button.hasAttribute("disabled")).toBe(true);
-    expect(trigger?.tagName).toBe("SPAN");
-    expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
-    expect(trigger?.hasAttribute("disabled")).toBe(false);
   });
 
   it("keeps emphasized variant rings color-matched when pressed or focused", () => {
@@ -348,6 +465,7 @@ describe("LinkButton", () => {
     // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
     expect(link.getAttribute("title")).toBeNull();
     expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(link.hasAttribute("aria-describedby")).toBe(false);
   });
 
   describe("disabled", () => {
@@ -404,19 +522,18 @@ describe("LinkButton", () => {
       expect(button.classList.contains("select-none")).toBe(false);
     });
 
-    it("wraps a title in an enabled tooltip trigger around the disabled button", () => {
+    it("renders a titled disabled link as an aria-disabled button", () => {
+      const reason = "You need edit access to continue";
       render(
-        <LinkButton href="/home" disabled title="You need edit access">
-          Home
+        <LinkButton href="/settings" disabled title={reason}>
+          Settings
         </LinkButton>,
       );
-      const button = screen.getByRole("button", { name: "Home" });
-      const trigger = button.parentElement;
 
-      expect(button.hasAttribute("disabled")).toBe(true);
-      expect(button.getAttribute("title")).toBeNull();
-      expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
-      expect(trigger?.hasAttribute("disabled")).toBe(false);
+      expect(screen.queryByRole("link")).toBeNull();
+      const button = screen.getByRole("button", { description: reason });
+      expect(button.getAttribute("aria-disabled")).toBe("true");
+      expect(button.hasAttribute("href")).toBe(false);
     });
   });
 });
