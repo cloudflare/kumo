@@ -176,6 +176,34 @@ export function ToastMultipleDemo() {
   );
 }
 
+function ToastDeduplicatedButton() {
+  const toastManager = useKumoToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toastManager.add({
+          id: "deduplicated-toast",
+          title: "Connection lost",
+          description:
+            "Click again: this toast bumps instead of stacking a copy.",
+        })
+      }
+    >
+      Show same toast
+    </Button>
+  );
+}
+
+/** Reuses a stable ID so repeated triggers bump one toast instead of adding copies. */
+export function ToastDeduplicatedDemo() {
+  return (
+    <Toasty>
+      <ToastDeduplicatedButton />
+    </Toasty>
+  );
+}
+
 function ToastErrorButton() {
   const toastManager = useKumoToastManager();
 

@@ -14,6 +14,7 @@ import {
   ToastDescriptionOnlyDemo,
   ToastSuccessDemo,
   ToastMultipleDemo,
+  ToastDeduplicatedDemo,
   ToastErrorDemo,
   ToastWarningDemo,
   ToastInfoDemo,
@@ -156,6 +157,17 @@ export function Layout({ children }) {
 </p>
 <ComponentExample demo="ToastMultipleDemo">
   <ToastMultipleDemo client:visible />
+</ComponentExample>
+
+### Deduplicated Toast
+
+<p>
+  Give repeated notifications a stable <code>id</code> to keep one toast on
+  screen. Click quickly: each trigger bumps the current toast instead of
+  stacking another copy.
+</p>
+<ComponentExample demo="ToastDeduplicatedDemo">
+  <ToastDeduplicatedDemo client:visible />
 </ComponentExample>
 
 ### Functional Updates
