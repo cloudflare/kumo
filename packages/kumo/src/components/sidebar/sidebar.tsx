@@ -18,6 +18,7 @@ import { ScrollArea as ScrollAreaBase } from "@base-ui/react/scroll-area";
 import { CaretRightIcon, XIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { useLinkComponent } from "../../utils/link-provider";
+import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { SkeletonLine } from "../loader/skeleton-line";
 import { Tooltip, TooltipProvider } from "../tooltip";
 import { Button } from "../button";
@@ -1500,9 +1501,10 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
 
     // Render icon — supports both component types and React elements
     const iconNode = (() => {
-      if (!IconProp) return null;
-      if (React.isValidElement(IconProp)) return IconProp;
-      const Comp = IconProp as React.ComponentType<{ className?: string }>;
+      const icon = unwrapLazyElement(IconProp);
+      if (!icon) return null;
+      if (React.isValidElement(icon)) return icon;
+      const Comp = icon as React.ComponentType<{ className?: string }>;
       return (
         <Comp
           className={cn(

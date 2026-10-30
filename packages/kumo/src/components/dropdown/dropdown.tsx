@@ -3,6 +3,7 @@ import * as React from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
+import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -64,7 +65,8 @@ export function dropdownVariants({
  * identically. The slot also lets icon-less rows detect that a sibling has an
  * icon and inset themselves to keep the text aligned.
  */
-const renderIconNode = (IconComponent?: Icon | React.ReactNode) => {
+const renderIconNode = (iconProp?: Icon | React.ReactNode) => {
+  const IconComponent = unwrapLazyElement(iconProp);
   if (!IconComponent) return null;
   let icon: React.ReactNode;
   if (React.isValidElement<{ className?: string }>(IconComponent)) {

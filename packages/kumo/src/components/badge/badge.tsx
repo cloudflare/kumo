@@ -2,6 +2,7 @@ import React, { type ReactNode } from "react";
 import type { Icon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 
 /** Base styles applied to all badge variants. */
 export const KUMO_BADGE_BASE_STYLES =
@@ -163,7 +164,8 @@ export function badgeVariants({
 // Legacy type alias for backwards compatibility
 export type BadgeVariant = KumoBadgeVariant;
 
-const renderIconNode = (IconComponent?: Icon | ReactNode) => {
+const renderIconNode = (iconProp?: Icon | ReactNode) => {
+  const IconComponent = unwrapLazyElement(iconProp);
   if (!IconComponent) return null;
   const Component = IconComponent as React.ComponentType<
     Record<string, unknown>
