@@ -207,18 +207,19 @@ kbd,
   margin: 0.75rem 0;
 }
 
-/* Table styling */
-.kumo-prose :where(table) {
+/* Table styling — skips .not-prose so demos (DatePicker's weekday row, Table)
+   keep their own styles */
+.kumo-prose :where(table):not(:where(.not-prose, .not-prose *)) {
   width: 100%;
 }
 
 /* Table header border */
-.kumo-prose :where(thead) {
+.kumo-prose :where(thead):not(:where(.not-prose, .not-prose *)) {
   border-bottom-color: var(--color-kumo-hairline);
 }
 
 /* Table header cells */
-.kumo-prose :where(thead th) {
+.kumo-prose :where(thead th):not(:where(.not-prose, .not-prose *)) {
   color: var(--text-color-kumo-strong);
   font-weight: 600;
 }
