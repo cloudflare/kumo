@@ -131,6 +131,7 @@ export function migrate(args: string[]): void {
     print("\nYour codebase is up to date with the current Kumo version.");
     print("Token migrations are only needed when upgrading to versions");
     print("that include breaking changes to token names.");
+    // JSON mode falls through to the JSON output below; --classes stops here.
     if (outputClasses) return;
   }
 
