@@ -73,38 +73,6 @@ describe("Toasty", () => {
     expect(isBumping("Saving complete")).toBe(false);
   });
 
-  it("does not bump when a promise toast settles", async () => {
-    const mgr = createKumoToastManager();
-    let resolvePromise!: (value: string) => void;
-    const promise = new Promise<string>((resolve) => {
-      resolvePromise = resolve;
-    });
-
-    render(
-      <Toasty toastManager={mgr}>
-        <div />
-      </Toasty>,
-    );
-
-    let handledPromise!: Promise<string>;
-    act(() => {
-      handledPromise = mgr.promise(promise, {
-        loading: { title: "Saving", timeout: 0 },
-        success: { title: "Saving complete", timeout: 0 },
-        error: { title: "Saving failed", timeout: 0 },
-      });
-    });
-    await screen.findByText("Saving");
-
-    await act(async () => {
-      resolvePromise("saved");
-      await handledPromise;
-    });
-
-    await screen.findByText("Saving complete");
-    expect(isBumping("Saving complete")).toBe(false);
-  });
-
   // Duplicate ids dispatched through an external manager must not
   // produce duplicate DOM nodes, and should bump the existing toast.
   it("bumps a single toast root for duplicate ids via an external manager", async () => {

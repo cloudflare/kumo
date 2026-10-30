@@ -367,98 +367,97 @@ export function Toasty({
 /** Alias for Toasty — provided for discoverability when migrating from other libraries */
 export const ToastProvider = Toasty;
 
+function getBumpAnimation(toast: KumoToastOptions<any>) {
+  const updateKey = toast.updateKey ?? 0;
+  const internalToast: KumoToastOptions<any> & KumoToastInternalOptions = toast;
+  const shouldBump =
+    toast.bump === true ||
+    (toast.bump !== false &&
+      internalToast[KUMO_TOAST_AUTO_BUMP] === true &&
+      updateKey > 0);
+
+  // Alternate between two identical animations so each bump replays
+  // without remounting the toast.
+  return (
+    shouldBump &&
+    (updateKey % 2 === 0 ? "animate-toast-bump-alternate" : "animate-toast-bump")
+  );
+}
+
+// The root owns the slide transition and the inner surface owns the bump,
+// so a bump never cancels an in-progress slide-in.
 function ToastList() {
   const { toasts } = useKumoToastManager();
-  return toasts.map((toast) => {
-    const updateKey = toast.updateKey ?? 0;
-    const internalToast: KumoToastOptions<any> & KumoToastInternalOptions =
-      toast;
-    const shouldBump =
-      toast.bump === true ||
-      (toast.bump !== false &&
-        internalToast[KUMO_TOAST_AUTO_BUMP] === true &&
-        updateKey > 0);
-    // Alternate between two identical animations so each bump replays
-    // without remounting the toast.
-    const bumpAnimation =
-      shouldBump &&
-      (updateKey % 2 === 0
-        ? "animate-toast-bump-alternate"
-        : "animate-toast-bump");
-
-    // The root owns the slide transition and the inner surface owns the bump,
-    // so a bump never cancels an in-progress slide-in.
-    return (
-      <Toast.Root
-        key={toast.id}
-        toast={toast}
+  return toasts.map((toast) => (
+    <Toast.Root
+      key={toast.id}
+      toast={toast}
+      className={cn(
+        "absolute right-0 bottom-0 left-auto z-[calc(1000-var(--toast-index))] mr-0 h-[var(--height)] w-full origin-bottom rounded-xl select-none motion-reduce:[transition-property:opacity]",
+        "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
+        "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
+        "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
+        "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
+        "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
+        "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
+        "data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
+        "data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
+        "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
+      )}
+    >
+      <div
+        data-kumo-part="surface"
         className={cn(
-          "absolute right-0 bottom-0 left-auto z-[calc(1000-var(--toast-index))] mr-0 h-[var(--height)] w-full origin-bottom rounded-xl select-none motion-reduce:[transition-property:opacity]",
-          "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
-          "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_0.5s_cubic-bezier(0.22,1,0.36,1),opacity_0.5s,height_0.15s]",
-          "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
-          "data-[ending-style]:opacity-0 data-[expanded]:h-[var(--toast-height)] data-[expanded]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--offset-y)))] data-[limited]:opacity-0 data-[starting-style]:[transform:translateY(150%)]",
-          "data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
-          "data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))]",
-          "data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-[expanded]:data-[ending-style]:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]",
-          "data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-[expanded]:data-[ending-style]:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
-          "[&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)]",
+          "relative h-full w-full",
+          toastVariants({ variant: toast.variant }),
+          getBumpAnimation(toast),
         )}
       >
-        <div
-          data-kumo-part="surface"
-          className={cn(
-            "relative h-full w-full",
-            toastVariants({ variant: toast.variant }),
-            bumpAnimation,
-          )}
-        >
-          <ToastBackground variant={toast.variant} />
-          <Toast.Content className="isolate flex flex-col gap-1 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100">
-            {toast.content ?? (
-              <>
-                <div className="flex items-start gap-2">
-                  <ToastIcon variant={toast.variant} />
-                  <div className="flex flex-col gap-1 overflow-hidden">
-                    <Toast.Title
-                      data-toast-title
-                      className="text-[0.975rem] leading-5 font-medium text-kumo-default"
-                    />
-                    <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
+        <ToastBackground variant={toast.variant} />
+        <Toast.Content className="isolate flex flex-col gap-1 transition-opacity [transition-duration:250ms] data-[behind]:pointer-events-none data-[behind]:opacity-0 data-[expanded]:pointer-events-auto data-[expanded]:opacity-100">
+          {toast.content ?? (
+            <>
+              <div className="flex items-start gap-2">
+                <ToastIcon variant={toast.variant} />
+                <div className="flex flex-col gap-1 overflow-hidden">
+                  <Toast.Title
+                    data-toast-title
+                    className="text-[0.975rem] leading-5 font-medium text-kumo-default"
+                  />
+                  <Toast.Description className="text-[0.925rem] leading-5 text-kumo-default/70" />
 
-                    {!!toast.actions && (
-                      <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
-                        {toast.actions.map((actionProps, idx) => (
-                          <Button key={idx} {...actionProps} />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-            <Toast.Close
-              data-kumo-part="close"
-              aria-label="Close"
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  shape="square"
-                  aria-label="Close"
-                  className={cn(
-                    "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
-                    toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
+                  {!!toast.actions && (
+                    <div className="mt-2 flex min-w-0 flex-nowrap gap-2 overflow-x-auto p-px">
+                      {toast.actions.map((actionProps, idx) => (
+                        <Button key={idx} {...actionProps} />
+                      ))}
+                    </div>
                   )}
-                  icon={<XIcon className="h-3 w-3" />}
-                />
-              }
-            />
-          </Toast.Content>
-        </div>
-      </Toast.Root>
-    );
-  });
+                </div>
+              </div>
+            </>
+          )}
+          <Toast.Close
+            data-kumo-part="close"
+            aria-label="Close"
+            render={
+              <Button
+                variant="ghost"
+                size="sm"
+                shape="square"
+                aria-label="Close"
+                className={cn(
+                  "absolute top-2 right-2 size-5 rounded text-kumo-subtle hover:bg-current/15",
+                  toast.variant && TOAST_CLOSE_CLASSES[toast.variant],
+                )}
+                icon={<XIcon className="h-3 w-3" />}
+              />
+            }
+          />
+        </Toast.Content>
+      </div>
+    </Toast.Root>
+  ));
 }
 
 const TOAST_CLOSE_CLASSES: Record<string, string> = {
