@@ -1,5 +1,26 @@
 # @cloudflare/kumo
 
+## 2.17.0
+
+### Minor Changes
+
+- c2b2fc4: Add a `masked` option to `ClipboardText` for sensitive values that should be hidden initially and revealed on demand.
+- 7d1c776: Refresh DatePicker's styling. Days are 32px squares in 36px columns with 8px between weeks and 14px text, and the previous and next buttons are borderless squares that match the days. Two-month views sit side by side, range bands are rounded at their ends and where weeks wrap, and month and year dropdowns (`captionLayout="dropdown"`) are styled.
+
+  DatePicker now uses Kumo tokens instead of hard-coded colors, so it follows the active theme, and `@cloudflare/kumo/styles/standalone` now styles it too. Month-change animations respect `prefers-reduced-motion`.
+
+  The `.rdp-*` rules and `--rdp-*` variables in `kumo.css` are gone, apart from the month-change animations. If you customized DatePicker through them, use the `classNames` prop instead.
+
+- 40eaa25: Fix the toast bump animation cutting off a toast's slide-in when the same `id` is added again while the toast is still entering. Duplicate adds through `createKumoToastManager()` now bump too, and toast motion respects `prefers-reduced-motion`. Toast surface styles now live on an inner `[data-kumo-part="surface"]` element instead of the `role="dialog"` root.
+
+### Patch Changes
+
+- 06726b0: `Field` no longer renders a `<label>` when it would be empty: when `label` and `labelTooltip` are each `undefined`, `null`, a boolean or `""`, and there is no "(optional)" indicator. This fixes `Input`, `InputArea` and `TagInput` without a `label` but with a description or error: they no longer show an empty row above the control, and their `aria-label` is no longer replaced by an empty accessible name.
+- 595463b: Format generated primitive and theme files with Oxfmt so codegen does not create formatting-only changes.
+- 3aa0d59: Hide the native scrollbars of the LayerDialog body and Sidebar content with Kumo's own CSS. Base UI only hides them with a style element it injects into the document head, so client routers that swap the head (such as Astro's ClientRouter) or a Content Security Policy that blocks inline styles could leave empty scrollbar tracks along the dialog body.
+- 890a6ab: Add a full-width `LayerDialog.Separator` for dividing sections of dialog body content.
+- 4185bb1: `Tooltip` now keeps its own trigger out of the tab order while the tooltip is `disabled`. This applies only when Kumo renders the trigger (no `render` or `asChild`), for example around truncated `Text` that needs a tooltip only when it overflows. A disabled tooltip there has nothing to reveal, so keyboard users no longer stop on it. Custom triggers passed through `render` keep their own focus behavior.
+
 ## 2.16.0
 
 ### Minor Changes
