@@ -49,12 +49,12 @@ export const KUMO_BUTTON_VARIANTS = {
   variant: {
     primary: {
       classes:
-        "relative overflow-hidden bg-(--kumo-button-emphasis-bg) !text-white ring ring-(--kumo-button-emphasis-ring) focus:ring-(--kumo-button-emphasis-ring) focus-visible:ring-(--kumo-button-emphasis-ring) active:ring-(--kumo-button-emphasis-ring) disabled:opacity-50",
+        "relative overflow-hidden bg-(--kumo-button-emphasis-bg) !text-white ring ring-(--kumo-button-emphasis-ring) focus:ring-(--kumo-button-emphasis-ring) focus-visible:ring-(--kumo-button-emphasis-ring) active:ring-(--kumo-button-emphasis-ring) disabled:opacity-50 aria-disabled:opacity-50",
       description: "High-emphasis button for primary actions",
     },
     secondary: {
       classes:
-        "bg-kumo-base !text-kumo-default ring not-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-default ring not-disabled:not-aria-disabled:hover:bg-kumo-tint disabled:bg-kumo-base/50 disabled:!text-kumo-default/70 aria-disabled:bg-kumo-base/50 aria-disabled:!text-kumo-default/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description: "Default button style for most actions",
     },
     ghost: {
@@ -63,18 +63,18 @@ export const KUMO_BUTTON_VARIANTS = {
     },
     destructive: {
       classes:
-        "relative overflow-hidden bg-(--kumo-button-emphasis-bg) !text-white ring ring-(--kumo-button-emphasis-ring) focus:ring-(--kumo-button-emphasis-ring) focus-visible:ring-(--kumo-button-emphasis-ring) active:ring-(--kumo-button-emphasis-ring) disabled:opacity-50",
+        "relative overflow-hidden bg-(--kumo-button-emphasis-bg) !text-white ring ring-(--kumo-button-emphasis-ring) focus:ring-(--kumo-button-emphasis-ring) focus-visible:ring-(--kumo-button-emphasis-ring) active:ring-(--kumo-button-emphasis-ring) disabled:opacity-50 aria-disabled:opacity-50",
       description: "Danger button for destructive actions like delete",
     },
     "secondary-destructive": {
       classes:
-        "bg-kumo-base !text-kumo-danger ring not-disabled:hover:!text-kumo-danger not-disabled:hover:ring-kumo-danger/30 disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
+        "bg-kumo-base !text-kumo-danger ring not-disabled:not-aria-disabled:hover:!text-kumo-danger not-disabled:not-aria-disabled:hover:ring-kumo-danger/30 disabled:bg-kumo-base/50 disabled:!text-kumo-danger/70 aria-disabled:bg-kumo-base/50 aria-disabled:!text-kumo-danger/70 ring-kumo-line data-[state=open]:bg-kumo-base",
       description:
         "Secondary button with destructive text for less prominent dangerous actions",
     },
     outline: {
       classes:
-        "bg-transparent text-kumo-default ring ring-kumo-line transition-colors not-disabled:hover:text-kumo-strong not-disabled:hover:ring-kumo-focus/25",
+        "bg-transparent text-kumo-default ring ring-kumo-line transition-colors not-disabled:not-aria-disabled:hover:text-kumo-strong not-disabled:not-aria-disabled:hover:ring-kumo-focus/25",
       description: "Bordered button with transparent background",
     },
   },
@@ -135,8 +135,10 @@ export function buttonVariants({
     "border-0 shadow-xs",
     "focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
     "cursor-pointer",
-    // Disabled state
+    // Disabled state. `aria-disabled` covers titled buttons, which stay
+    // focusable while unavailable so their title can be reached.
     "disabled:cursor-not-allowed disabled:text-kumo-subtle",
+    "aria-disabled:cursor-not-allowed aria-disabled:text-kumo-subtle",
     resolveVariant(
       KUMO_BUTTON_VARIANTS.size,
       size,
@@ -285,6 +287,35 @@ const renderButtonContent = (
   );
 };
 
+// Handlers Base UI's `focusableWhenDisabled` also withholds from a button that
+// is unavailable but still focusable.
+const UNAVAILABLE_BLOCKED_HANDLERS = [
+  "onClick",
+  "onMouseDown",
+  "onPointerDown",
+  "onKeyDown",
+  "onKeyUp",
+] as const;
+
+const preventActivation = (event: React.MouseEvent<HTMLButtonElement>) => {
+  // Also stops a `type="submit"` button from submitting its form.
+  event.preventDefault();
+};
+
+const hasTitle = (title: React.ReactNode) =>
+  title != null && title !== false && title !== "";
+
+const joinIds = (...ids: Array<string | false | undefined>) =>
+  ids.filter(Boolean).join(" ") || undefined;
+
+// Hidden text is left out of the element's name but still provides its
+// aria-describedby description.
+const renderTitleDescription = (id: string, title: React.ReactNode) => (
+  <span id={id} hidden>
+    {title}
+  </span>
+);
+
 const getTitleLabel = (title: React.ReactNode) => {
   if (typeof title === "string") return title;
   if (typeof title === "number") return String(title);
@@ -313,7 +344,15 @@ type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: Icon | React.ReactNode;
   /** Shows a loading spinner and disables interaction. */
   loading?: boolean;
-  /** When set, wraps the button in a Tooltip with this content. */
+  /**
+   * Shows this content in a tooltip on hover and keyboard focus, and exposes it
+   * to screen readers as the button's description (or as its name, for an
+   * icon-only button without `aria-label`).
+   *
+   * While `disabled` or `loading`, a button with a title stays in the tab
+   * order with `aria-disabled` and ignores clicks and key presses, so the
+   * title can explain why it's unavailable.
+   */
   title?: React.ReactNode;
 };
 
@@ -408,12 +447,37 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const { type, ...restProps } = props;
     const emphasisStyle = getEmphasisStyle(variant);
     const titleLabel = getTitleLabel(title);
+    const titleDescriptionId = React.useId();
+    const titleIsName = Boolean(
+      !React.Children.count(children) &&
+      !restProps["aria-label"] &&
+      !restProps["aria-labelledby"] &&
+      titleLabel,
+    );
+    // A button with a title stays focusable while unavailable, so keyboard and
+    // screen reader users can reach the title that explains why.
+    const isUnavailable = hasTitle(title) && Boolean(disabled || loading);
+    // Screen readers don't announce the tooltip, so an unavailable button also
+    // uses its title as the description, unless Kumo already uses it as the name.
+    const describesTitle = isUnavailable && !titleIsName;
+
+    const unavailableProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {};
+    if (isUnavailable) {
+      for (const handler of UNAVAILABLE_BLOCKED_HANDLERS) {
+        unavailableProps[handler] = undefined;
+      }
+      unavailableProps.onClick = preventActivation;
+      unavailableProps["aria-disabled"] = true;
+    }
     const buttonProps = {
       ...restProps,
-      ...(!React.Children.count(children) &&
-        !restProps["aria-label"] &&
-        !restProps["aria-labelledby"] &&
-        titleLabel && { "aria-label": titleLabel }),
+      ...(titleIsName && { "aria-label": titleLabel }),
+      ...unavailableProps,
+      "aria-busy": loading || undefined,
+      "aria-describedby": joinIds(
+        restProps["aria-describedby"],
+        describesTitle && titleDescriptionId,
+      ),
     };
     const iconNode = loading ? (
       <Loader size={size === "lg" ? 16 : 14} />
@@ -431,24 +495,21 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           disabled && "cursor-not-allowed opacity-50",
           className,
         )}
-        disabled={loading || disabled}
+        disabled={(loading || disabled) && !isUnavailable}
         style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
         type={type ?? "button"}
         {...buttonProps}
       >
         {renderButtonContent(variant, iconNode, children)}
+        {describesTitle
+          ? renderTitleDescription(titleDescriptionId, title)
+          : null}
       </button>
     );
 
-    if (title && (disabled || loading)) {
-      return (
-        <Tooltip content={title} render={<span className="inline-flex" />}>
-          {button}
-        </Tooltip>
-      );
-    }
-
-    if (title) {
+    if (hasTitle(title)) {
+      // The button is the trigger in every state, so the tooltip opens on hover
+      // and keyboard focus and stays mounted when `disabled` or `loading` changes.
       return <Tooltip content={title} render={button} />;
     }
 
@@ -557,7 +618,7 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
       </LinkComponent>
     );
 
-    if (title) {
+    if (hasTitle(title)) {
       return <Tooltip content={title} render={link} />;
     }
 

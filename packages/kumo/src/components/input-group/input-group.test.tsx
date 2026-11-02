@@ -905,6 +905,27 @@ describe("InputGroup", () => {
       expect(screen.getByLabelText("Next")).toBeTruthy();
     });
 
+    it("styles a titled disabled button like a natively disabled one in individual focus mode", () => {
+      render(
+        <InputGroup>
+          <InputGroup.Button
+            variant="secondary"
+            aria-label="Previous"
+            title="No earlier pages"
+            disabled
+          >
+            Prev
+          </InputGroup.Button>
+          <InputGroup.Input style={{ width: 50 }} aria-label="Page" />
+        </InputGroup>,
+      );
+
+      const button = screen.getByRole("button", { name: "Previous" });
+      expect(button.getAttribute("aria-disabled")).toBe("true");
+      expect(button.className).toContain("aria-disabled:bg-kumo-overlay");
+      expect(button.className).toContain("aria-disabled:text-kumo-inactive!");
+    });
+
     it("forwards ref on InputGroup.Input", () => {
       const ref = React.createRef<HTMLInputElement>();
       render(
