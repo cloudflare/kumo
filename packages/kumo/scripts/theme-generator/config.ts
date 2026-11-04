@@ -80,7 +80,8 @@ export const THEME_CONFIG: ThemeConfig = {
       newName: "",
       theme: {
         kumo: {
-          light: "#f6821f",
+          // #f6821f is 2.58:1 on white; amber-700 is the closest-hue scale step that clears 4.5:1
+          light: "var(--color-amber-700, oklch(55.5% 0.163 48.998))",
           dark: "#f6821f",
         },
       },
