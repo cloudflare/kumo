@@ -157,3 +157,82 @@ describe("Keyboard focus in forced colors", () => {
     },
   );
 });
+
+describe("Tab focus outline clipping", () => {
+  test.each([
+    ["segmented", "base", 300],
+    ["segmented", "sm", 300],
+    ["underline", "base", 300],
+    ["underline", "sm", 300],
+    ["segmented", "base", 120],
+    ["segmented", "sm", 120],
+    ["underline", "base", 120],
+    ["underline", "sm", 120],
+  ] as const)(
+    "%s %s at %s px keeps every edge of the outline inside its scroll viewport",
+    async (variant, size, width) => {
+      await emulateForcedColors(true);
+      const { getByRole } = await render(
+        <div style={{ padding: 16, width }}>
+          <button>Start</button>
+          <Tabs
+            variant={variant}
+            size={size}
+            tabs={[
+              { value: "overview", label: "Overview" },
+              { value: "settings", label: "Settings" },
+            ]}
+          />
+        </div>,
+      );
+      await getByRole("button", { name: "Start" }).click();
+      await userEvent.tab();
+      for (const name of ["Overview", "Settings"]) {
+        if (name === "Settings") await userEvent.keyboard("{End}");
+        const tab = getByRole("tab", { name }).element();
+        await expect.element(getByRole("tab", { name })).toHaveFocus();
+        const style = getComputedStyle(tab);
+        expect(style.outlineStyle).toBe("solid");
+        expect(Number.parseFloat(style.outlineWidth)).toBeGreaterThanOrEqual(2);
+        const extent =
+          Number.parseFloat(style.outlineOffset) +
+          Number.parseFloat(style.outlineWidth);
+        // An outline can exist in computed styles and still be clipped by the
+        // tab list. Check its painted bounds after keyboard scrolling settles.
+        await expect
+          .poll(() => {
+            const rect = tab.getBoundingClientRect();
+            const clippedEdges: string[] = [];
+            // Scroll positions round to pixels while text widths can be fractional.
+            const tolerance = 0.5;
+            for (
+              let ancestor = tab.parentElement;
+              ancestor;
+              ancestor = ancestor.parentElement
+            ) {
+              const clipping = getComputedStyle(ancestor);
+              const bounds = ancestor.getBoundingClientRect();
+              if (
+                clipping.overflowX !== "visible" &&
+                (rect.left - extent < bounds.left - tolerance ||
+                  rect.right + extent > bounds.right + tolerance)
+              )
+                clippedEdges.push(
+                  `horizontal: ${rect.left - extent}..${rect.right + extent} outside ${bounds.left}..${bounds.right}`,
+                );
+              if (
+                clipping.overflowY !== "visible" &&
+                (rect.top - extent < bounds.top - tolerance ||
+                  rect.bottom + extent > bounds.bottom + tolerance)
+              )
+                clippedEdges.push(
+                  `vertical: ${rect.top - extent}..${rect.bottom + extent} outside ${bounds.top}..${bounds.bottom}`,
+                );
+            }
+            return clippedEdges;
+          })
+          .toEqual([]);
+      }
+    },
+  );
+});
