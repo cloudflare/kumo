@@ -118,6 +118,7 @@ export type BannerActionProps = WithBannerActionVariants<ButtonProps>;
  * @example
  * ```tsx
  * <Banner.Action onClick={retry}>Retry</Banner.Action>
+ * <Banner.Action render={<a href="/billing" />}>Manage payments</Banner.Action>
  * <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
  * ```
  */

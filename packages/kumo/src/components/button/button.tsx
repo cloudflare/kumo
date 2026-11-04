@@ -1,4 +1,5 @@
 import React from "react";
+import { useRender } from "@base-ui/react/use-render";
 import { ArrowsClockwise, type Icon } from "@phosphor-icons/react";
 import { Loader } from "../loader/loader";
 import { Tooltip } from "../tooltip/tooltip";
@@ -307,6 +308,12 @@ const getTitleLabel = (title: React.ReactNode) => {
  * ```
  */
 type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  /**
+   * Replace the button element with a link or custom component.
+   * Disabled or loading buttons render a disabled native button instead.
+   * Custom components must forward their props and ref to the rendered element.
+   */
+  render?: useRender.ComponentProps<"button">["render"];
   /** Content rendered inside the button. */
   children?: React.ReactNode;
   /** Additional CSS classes merged via `cn()`. */
@@ -403,6 +410,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon: IconComponent,
       style,
       title,
+      render,
       ...props
     },
     ref,
@@ -423,24 +431,26 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       renderIconNode(IconComponent)
     );
 
-    const button = (
-      <button
-        ref={ref}
-        data-kumo-component="Button"
-        className={cn(
+    const isDisabled = loading || disabled;
+    const button = useRender({
+      defaultTagName: "button",
+      render: isDisabled ? undefined : render,
+      ref,
+      props: {
+        "data-kumo-component": "Button",
+        className: cn(
           buttonVariants({ variant, size, shape }),
           getTextClasses(shape, size, iconNode, children),
           disabled && "cursor-not-allowed opacity-50",
           className,
-        )}
-        disabled={loading || disabled}
-        style={emphasisStyle ? { ...emphasisStyle, ...style } : style}
-        type={type ?? "button"}
-        {...buttonProps}
-      >
-        {renderButtonContent(variant, iconNode, children)}
-      </button>
-    );
+        ),
+        disabled: isDisabled,
+        style: emphasisStyle ? { ...emphasisStyle, ...style } : style,
+        type: type ?? (!render || isDisabled ? "button" : undefined),
+        ...buttonProps,
+        children: renderButtonContent(variant, iconNode, children),
+      },
+    });
 
     if (title && (disabled || loading)) {
       return (

@@ -1,7 +1,16 @@
-import { describe, expect, it } from "vite-plus/test";
+import { createRef, forwardRef, type ComponentPropsWithoutRef } from "react";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Banner, bannerVariants } from "./banner";
 import { Link } from "../link/link";
+
+const RouterLink = forwardRef<
+  HTMLAnchorElement,
+  Omit<ComponentPropsWithoutRef<"a">, "href"> & { to: string }
+>(function RouterLink({ to, ...props }, ref) {
+  return <a ref={ref} href={to} {...props} />;
+});
 
 describe("Banner", () => {
   it("supports secondary variant", () => {
@@ -67,6 +76,146 @@ describe("Banner", () => {
     expect(cta.className).toContain("fill-kumo-warning");
     expect(cta.className).toContain("hover:bg-kumo-warning/10");
   });
+
+  it("renders a link with banner styling, content, and merged props and refs", async () => {
+    const user = userEvent.setup();
+    const actionRef = vi.fn();
+    const linkRef = createRef<HTMLAnchorElement>();
+    const onActionClick = vi.fn();
+    const onLinkClick = vi.fn((event) => event.preventDefault());
+    render(
+      <Banner
+        variant="alert"
+        title="Review your payment method"
+        action={
+          <Banner.Action
+            ref={actionRef}
+            icon={<svg data-testid="payment-icon" />}
+            onClick={onActionClick}
+            className="action-class"
+            render={
+              <a
+                ref={linkRef}
+                href="/billing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-class"
+                onClick={onLinkClick}
+              />
+            }
+          >
+            Manage payments
+          </Banner.Action>
+        }
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: "Manage payments" });
+    expect(link.getAttribute("href")).toBe("/billing");
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.hasAttribute("type")).toBe(false);
+    expect(link.hasAttribute("disabled")).toBe(false);
+    expect(link.className).toContain("action-class");
+    expect(link.className).toContain("link-class");
+    expect(link.className).toContain("h-6.5");
+    expect(
+      link.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-warning)");
+    expect(link.contains(screen.getByTestId("payment-icon"))).toBe(true);
+    expect(actionRef).toHaveBeenLastCalledWith(link);
+    expect(linkRef.current).toBe(link);
+    expect(screen.queryByRole("button")).toBeNull();
+
+    await user.click(link);
+    expect(onActionClick).toHaveBeenCalledOnce();
+    expect(onLinkClick).toHaveBeenCalledOnce();
+
+    await user.tab();
+    await user.tab();
+    expect(document.activeElement).toBe(link);
+    await user.keyboard("{Enter}");
+    expect(onActionClick).toHaveBeenCalledTimes(2);
+    expect(onLinkClick).toHaveBeenCalledTimes(2);
+  });
+
+  it("preserves link semantics when the action has a tooltip", () => {
+    render(
+      <Banner.Action
+        title="Open billing settings"
+        render={<a href="/billing" />}
+      >
+        Manage payments
+      </Banner.Action>,
+    );
+
+    const link = screen.getByRole("link", { name: "Manage payments" });
+    expect(link.getAttribute("href")).toBe("/billing");
+    expect(link.hasAttribute("title")).toBe(false);
+    expect(link.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+
+  it("composes a router link through a render callback in a compact banner", () => {
+    const ref = createRef<HTMLAnchorElement>();
+    render(
+      <Banner
+        size="sm"
+        variant="error"
+        title="Payment overdue"
+        action={
+          <Banner.Action
+            variant="secondary"
+            render={(props) => (
+              <RouterLink {...props} ref={ref} to="/billing" />
+            )}
+          >
+            Go to billing
+          </Banner.Action>
+        }
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: "Go to billing" });
+    expect(link.getAttribute("href")).toBe("/billing");
+    expect(link.className).toContain("ring-kumo-danger/50");
+    expect(link.className).toContain("h-5");
+    expect(link.parentElement?.className).toContain("shrink-0");
+    expect(ref.current).toBe(link);
+  });
+
+  it.each(["disabled", "loading"] as const)(
+    "prevents navigation and activation when a composed action is %s",
+    async (state) => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onLinkClick = vi.fn();
+      const { rerender } = render(
+        <Banner.Action
+          {...{ [state]: true }}
+          onClick={onClick}
+          render={<a href="/billing" onClick={onLinkClick} />}
+        >
+          Manage payments
+        </Banner.Action>,
+      );
+
+      const button = screen.getByRole("button");
+      expect(button.hasAttribute("disabled")).toBe(true);
+      expect(button.hasAttribute("href")).toBe(false);
+      expect(screen.queryByRole("link")).toBeNull();
+      await user.click(button);
+      expect(onClick).not.toHaveBeenCalled();
+      expect(onLinkClick).not.toHaveBeenCalled();
+
+      rerender(
+        <Banner.Action render={<a href="/billing" />}>
+          Manage payments
+        </Banner.Action>,
+      );
+      expect(screen.getByRole("link").getAttribute("href")).toBe("/billing");
+    },
+  );
 
   it("styles a secondary Banner.Action as an accent-hued outline", () => {
     render(

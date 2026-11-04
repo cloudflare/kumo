@@ -191,6 +191,37 @@ export function BannerWithActionsDemo() {
   );
 }
 
+/** Banner actions rendered as links. */
+export function BannerWithLinksDemo() {
+  return (
+    <Banner
+      icon={<Warning weight="fill" />}
+      variant="alert"
+      title="Review your payment method"
+      description="Add a credit or debit card directly in Billing to continue."
+      action={
+        <>
+          <Banner.Action
+            variant="secondary"
+            render={
+              <a
+                href="https://developers.cloudflare.com/billing/"
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            }
+          >
+            View docs
+          </Banner.Action>
+          <Banner.Action render={<a href="https://dash.cloudflare.com/" />}>
+            Manage payments
+          </Banner.Action>
+        </>
+      }
+    />
+  );
+}
+
 /* Accent-aware CTAs via the `Banner.Action` compound. */
 export function BannerActionCompoundDemo() {
   return (

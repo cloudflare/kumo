@@ -18,6 +18,7 @@ import {
   BannerWithIconDemo,
   BannerWithActionDemo,
   BannerWithActionsDemo,
+  BannerWithLinksDemo,
   BannerCompactDemo,
   BannerCompactWithCtaDemo,
   BannerCompactWithoutActionDemo,
@@ -122,6 +123,18 @@ export default function Example() {
 <ComponentExample demo="BannerWithActionsDemo">
   <BannerWithActionsDemo client:visible />
 </ComponentExample>
+
+### With link actions
+
+Use `render` to render a `Banner.Action` as an anchor or your router's link component. Put navigation props such as `href`, `to`, `target`, and `rel` on that element. Keep the action label as children of `Banner.Action`.
+
+<ComponentExample demo="BannerWithLinksDemo">
+  <BannerWithLinksDemo client:visible />
+</ComponentExample>
+
+Custom link components must forward their props and ref to the underlying anchor. You can also pass a callback to `render`, such as `render={(props) => <RouterLink {...props} to="/billing" />}`.
+
+Disabled or loading actions render a disabled native button instead of the custom element, preventing navigation.
 
 ### Compact size
 
