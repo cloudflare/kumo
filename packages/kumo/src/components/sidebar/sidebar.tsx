@@ -1553,7 +1553,7 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
       // When a child sub-button is active, don't show active styling on the parent trigger
       "has-[[data-active]]:bg-transparent has-[[data-active]]:hover:bg-(--sidebar-active-bg)",
       // Focus
-      "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
+      "focus:outline-hidden focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
       className,
     );
 
@@ -1784,7 +1784,7 @@ const SidebarMenuSubButton = forwardRef<
     "text-kumo-default transition-[color] duration-150",
     !active && "hover:bg-(--sidebar-active-bg)",
     active && "bg-(--sidebar-active-bg)",
-    "focus:outline-none focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
+    "focus:outline-hidden focus-visible:bg-(--sidebar-active-bg) focus-visible:text-kumo-strong",
     className,
   );
 
@@ -1942,7 +1942,7 @@ const SidebarTrigger = forwardRef<
       className={cn(
         "flex size-8.5 shrink-0 cursor-pointer items-center justify-center rounded-lg",
         "text-kumo-subtle hover:bg-(--sidebar-active-bg) hover:text-kumo-default",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
+        "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
         className,
       )}
       onClick={(e) => {
@@ -2179,7 +2179,7 @@ const SidebarResizeHandle = forwardRef<
         "after:absolute after:inset-y-0 after:w-0.5",
         "after:bg-transparent after:transition-colors",
         "hover:after:bg-kumo-hairline focus-visible:after:bg-kumo-hairline active:after:bg-kumo-hairline",
-        "focus:outline-none",
+        "focus:outline-hidden",
         side === "left" && "right-0 after:right-0",
         side === "right" && "left-0 after:left-0",
         className,

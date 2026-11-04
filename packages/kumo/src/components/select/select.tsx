@@ -643,7 +643,7 @@ function Option<T>({ children, value, disabled, className }: OptionProps<T>) {
       value={value}
       disabled={disabled}
       className={cn(
-        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base outline-none",
+        "group mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded px-2 py-1.5 text-base outline-none focus-visible:outline-hidden",
         "focus-visible:z-50 focus-visible:ring-2 focus-visible:ring-kumo-brand focus-visible:ring-inset",
         "data-highlighted:bg-kumo-tint",
         "data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",

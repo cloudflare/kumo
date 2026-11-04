@@ -156,8 +156,7 @@ export const Button = forwardRef<
           // Suppress the base Button's non-visible focus ring in all modes
           "focus:ring-0",
           // Container-zone buttons: use a subtle ring as focus indicator
-          // (outline doesn't work because the base Button's `focus:outline-none`
-          // sets `outline-style: none` which our outline-width/color can't override)
+          // The base Button also retains a forced-colors outline.
           !isIndividual &&
             "focus-visible:ring-[1.5px] focus-visible:ring-kumo-focus/50",
           // Individual mode: each button owns its own border and focus indicator
