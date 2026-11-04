@@ -135,7 +135,8 @@ jobs:
 
   visual-contracts:
     timeout-minutes: 5
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.57 can't install deps on ubuntu-latest (26.04). Unpin after upgrading Playwright.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
