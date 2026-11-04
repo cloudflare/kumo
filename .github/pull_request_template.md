@@ -10,7 +10,7 @@ The following selections do not need to be completed if this PR only contains ch
 -->
 
 - Reviews
-  - [ ] bonk has reviewed the change
+  - [ ] clanky has reviewed the change
   - [ ] automated review not possible because: <!-- explain why -->
 - Tests
   - [ ] Tests included/updated

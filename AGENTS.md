@@ -81,7 +81,7 @@ PR descriptions are validated by CI. Include this checklist at the end of your P
 
 ```markdown
 - Reviews
-- [ ] bonk has reviewed the change
+- [ ] clanky has reviewed the change
 - [x] automated review not possible because: <your reason here>
 - Tests
 - [ ] Tests included/updated
@@ -168,4 +168,4 @@ The [global Vite+ CLI](https://viteplus.dev/) is optional but recommended for co
 - `src/catalog/` is a runtime JSON-UI rendering module (separate concern from component library)
 - Single linter: Oxlint via `vp lint` (custom kumo JS rules + native jsx-a11y rules; type-aware + type-checked)
 - `PLOP_INJECT_EXPORT` and `PLOP_INJECT_COMPONENT_ENTRY` markers in source for scaffolding
-- GitHub Actions workflows live in `.github/workflows/`, including release, PR validation, previews, Bonk, and automatic PR reviews
+- GitHub Actions workflows live in `.github/workflows/`, including release, PR validation, and previews. Automated PR review is handled by the Clanky GitHub App (configured outside this repo)
