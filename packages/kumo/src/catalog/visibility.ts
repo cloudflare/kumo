@@ -36,12 +36,30 @@ function isTruthy(value: unknown): boolean {
 }
 
 /**
+ * Evaluate an auth condition.
+ */
+function evaluateAuth(
+  auth: "signedIn" | "signedOut",
+  ctx: VisibilityContext,
+): boolean {
+  if (auth === "signedIn") return ctx.auth.isSignedIn;
+  if (auth === "signedOut") return !ctx.auth.isSignedIn;
+  // Unknown auth values (e.g. unvalidated input) hide the element
+  return false;
+}
+
+/**
  * Evaluate a logic expression.
  */
 function evaluateLogicExpression(
   expr: LogicExpression,
   ctx: VisibilityContext,
 ): boolean {
+  // Auth check
+  if ("auth" in expr) {
+    return evaluateAuth(expr.auth, ctx);
+  }
+
   // Path check - truthy test
   if ("path" in expr && !("eq" in expr) && !("neq" in expr)) {
     const value = getByPath(ctx.data, expr.path);
@@ -152,13 +170,7 @@ export function evaluateVisibility(
 
   // Auth check
   if ("auth" in condition) {
-    if (condition.auth === "signedIn") {
-      return ctx.auth.isSignedIn;
-    }
-    if (condition.auth === "signedOut") {
-      return !ctx.auth.isSignedIn;
-    }
-    return true;
+    return evaluateAuth(condition.auth, ctx);
   }
 
   // Path check (simple truthy test)

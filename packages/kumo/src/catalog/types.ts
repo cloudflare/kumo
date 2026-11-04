@@ -47,6 +47,7 @@ export type LogicExpression =
   | { or: LogicExpression[] }
   | { not: LogicExpression }
   | { path: string }
+  | { auth: "signedIn" | "signedOut" }
   | { eq: [DynamicValue, DynamicValue] }
   | { neq: [DynamicValue, DynamicValue] }
   | { gt: [DynamicValue<number>, DynamicValue<number>] }
