@@ -5,6 +5,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
+import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { type ButtonProps, Button as ButtonExternal } from "../button/button";
 import { Tooltip, type KumoTooltipSide } from "../tooltip/tooltip";
 import type { KumoInputSize } from "../input/input";
@@ -71,7 +72,7 @@ export const Button = forwardRef<
       disabled,
       tooltip,
       tooltipSide = "bottom",
-      icon,
+      icon: iconProp,
       ...props
     }: PropsWithChildren<InputGroupButtonProps>,
     ref: React.ForwardedRef<HTMLButtonElement>,
@@ -117,6 +118,7 @@ export const Button = forwardRef<
       ? INPUT_GROUP_SIZE[context.size ?? "base"].iconSize
       : undefined;
 
+    const icon = unwrapLazyElement(iconProp);
     const sizedIcon =
       icon &&
       contextIconSize &&
