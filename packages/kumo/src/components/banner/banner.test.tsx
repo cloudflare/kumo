@@ -190,11 +190,14 @@ describe("Banner", () => {
       const user = userEvent.setup();
       const onClick = vi.fn();
       const onLinkClick = vi.fn();
+      const actionRef = createRef<HTMLElement>();
+      const linkRef = createRef<HTMLAnchorElement>();
       const { rerender } = render(
         <Banner.Action
+          ref={actionRef}
           {...{ [state]: true }}
           onClick={onClick}
-          render={<a href="/billing" onClick={onLinkClick} />}
+          render={<a ref={linkRef} href="/billing" onClick={onLinkClick} />}
         >
           Manage payments
         </Banner.Action>,
@@ -204,16 +207,35 @@ describe("Banner", () => {
       expect(button.hasAttribute("disabled")).toBe(true);
       expect(button.hasAttribute("href")).toBe(false);
       expect(screen.queryByRole("link")).toBeNull();
+      expect(actionRef.current).toBe(button);
+      expect(linkRef.current).toBeNull();
       await user.click(button);
       expect(onClick).not.toHaveBeenCalled();
       expect(onLinkClick).not.toHaveBeenCalled();
 
       rerender(
-        <Banner.Action render={<a href="/billing" />}>
+        <Banner.Action
+          ref={actionRef}
+          render={<a ref={linkRef} href="/billing" />}
+        >
           Manage payments
         </Banner.Action>,
       );
       expect(screen.getByRole("link").getAttribute("href")).toBe("/billing");
+      expect(actionRef.current).toBe(screen.getByRole("link"));
+      expect(linkRef.current).toBe(actionRef.current);
+
+      rerender(
+        <Banner.Action
+          ref={actionRef}
+          {...{ [state]: true }}
+          render={<a ref={linkRef} href="/billing" />}
+        >
+          Manage payments
+        </Banner.Action>,
+      );
+      expect(actionRef.current).toBe(screen.getByRole("button"));
+      expect(linkRef.current).toBeNull();
     },
   );
 

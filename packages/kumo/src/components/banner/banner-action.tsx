@@ -1,5 +1,6 @@
 import {
   type CSSProperties,
+  type ReactNode,
   createContext,
   forwardRef,
   useContext,
@@ -7,6 +8,7 @@ import {
 import {
   Button,
   type ButtonProps,
+  type ButtonRenderProp,
   type KumoButtonSize,
   type KumoButtonVariant,
 } from "../button/button";
@@ -96,7 +98,7 @@ function bannerActionAccentVars(accent: string) {
 }
 
 /** Props for {@link BannerAction}. */
-type WithBannerActionVariants<Props> = Props extends ButtonProps
+type WithBannerActionVariants<Props> = Props extends unknown
   ? Omit<Props, "size" | "variant"> & {
       /**
        * Visual variant of the CTA, aligned with `Button`'s `variant` naming.
@@ -109,7 +111,19 @@ type WithBannerActionVariants<Props> = Props extends ButtonProps
     }
   : never;
 
-export type BannerActionProps = WithBannerActionVariants<ButtonProps>;
+export type BannerActionProps<
+  Render extends ButtonRenderProp | undefined = undefined,
+> = WithBannerActionVariants<ButtonProps<Render>>;
+
+type BannerActionComponent = {
+  (
+    props: BannerActionProps<ButtonRenderProp> & { render: ButtonRenderProp },
+  ): ReactNode;
+  <Render extends ButtonRenderProp | undefined = undefined>(
+    props: BannerActionProps<Render>,
+  ): ReactNode;
+  displayName?: string;
+};
 
 /**
  * A banner CTA built on Kumo's `Button`. It inherits Button's sizing, interaction,
@@ -122,30 +136,31 @@ export type BannerActionProps = WithBannerActionVariants<ButtonProps>;
  * <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
  * ```
  */
-export const BannerAction = forwardRef<HTMLButtonElement, BannerActionProps>(
-  function BannerAction(
-    { variant = "primary", className, style, ...props },
-    ref,
-  ) {
-    const banner = useContext(BannerActionContext);
-    const styles = BANNER_ACTION_ACCENTS[banner.variant];
-    const buttonVariant = variant === "secondary" ? "outline" : variant;
+export const BannerAction: BannerActionComponent = forwardRef<
+  HTMLElement,
+  BannerActionProps<ButtonRenderProp | undefined>
+>(function BannerAction(
+  { variant = "primary", className, style, ...props },
+  ref,
+) {
+  const banner = useContext(BannerActionContext);
+  const styles = BANNER_ACTION_ACCENTS[banner.variant];
+  const buttonVariant = variant === "secondary" ? "outline" : variant;
 
-    return (
-      <Button
-        ref={ref}
-        variant={buttonVariant}
-        size={banner.size}
-        className={cn(variant !== "primary" && styles[variant], className)}
-        style={
-          variant === "primary"
-            ? { ...bannerActionAccentVars(styles.accent), ...style }
-            : style
-        }
-        {...props}
-      />
-    );
-  },
-);
+  return (
+    <Button
+      ref={ref}
+      variant={buttonVariant}
+      size={banner.size}
+      className={cn(variant !== "primary" && styles[variant], className)}
+      style={
+        variant === "primary"
+          ? { ...bannerActionAccentVars(styles.accent), ...style }
+          : style
+      }
+      {...props}
+    />
+  );
+});
 
 BannerAction.displayName = "Banner.Action";

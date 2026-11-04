@@ -7,7 +7,39 @@
  */
 
 import { describe, it, expect } from "vite-plus/test";
-import { detectComponentExportsFromIndex } from "./discovery.js";
+import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import {
+  detectComponentExportsFromIndex,
+  extractDescription,
+} from "./discovery.js";
+import type { ComponentRegistry } from "./types.js";
+
+const testDir = dirname(fileURLToPath(import.meta.url));
+const registryPath = join(testDir, "../../ai/component-registry.json");
+
+describe.skipIf(!existsSync(registryPath))("generated Button registry", () => {
+  it("describes Kumo's generic props rather than Base UI's same-named type", () => {
+    const registry: ComponentRegistry = JSON.parse(
+      readFileSync(registryPath, "utf-8"),
+    );
+    const button = registry.components.Button;
+
+    expect(button.props).toHaveProperty("variant");
+    expect(button.props).toHaveProperty("loading");
+    expect(button.props).toHaveProperty("icon");
+    expect(button.props).not.toHaveProperty("nativeButton");
+    expect(button.description).toContain("Primary action trigger.");
+  });
+});
+
+it("extracts the description of a component with an explicit callable type", () => {
+  const sourcePath = join(testDir, "../../src/components/button/button.tsx");
+  expect(extractDescription(sourcePath, "Button")).toContain(
+    "Primary action trigger.",
+  );
+});
 
 // =============================================================================
 // Tests for string transformation utilities
@@ -732,7 +764,6 @@ describe("jsonSchemaTypeToString", () => {
 // Tests for sub-component detection utilities
 
 import { writeFileSync, unlinkSync, mkdtempSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
   detectSubComponents,

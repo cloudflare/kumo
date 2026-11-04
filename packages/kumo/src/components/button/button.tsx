@@ -294,43 +294,48 @@ const getTitleLabel = (title: React.ReactNode) => {
   return undefined;
 };
 
-/**
- * Button component props.
- *
- * Uses a discriminated union on `shape` so that icon-only buttons
- * (`shape="square"` or `shape="circle"`) require an accessible name.
- *
- * @example
- * ```tsx
- * <Button variant="primary">Save</Button>
- * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add" />
- * <Button variant="destructive" loading>Deleting...</Button>
- * ```
- */
-type ButtonBaseProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  /**
-   * Replace the button element with a link or custom component.
-   * Disabled or loading buttons render a disabled native button instead.
-   * Custom components must forward their props and ref to the rendered element.
-   */
-  render?: useRender.ComponentProps<"button">["render"];
-  /** Content rendered inside the button. */
-  children?: React.ReactNode;
-  /** Additional CSS classes merged via `cn()`. */
-  className?: string;
-  /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
-  icon?: Icon | React.ReactNode;
-  /** Shows a loading spinner and disables interaction. */
-  loading?: boolean;
-  /** When set, wraps the button in a Tooltip with this content. */
-  title?: React.ReactNode;
-};
+export type ButtonRenderProp = NonNullable<
+  useRender.ComponentProps<
+    "button",
+    {},
+    React.HTMLAttributes<HTMLElement> & { ref?: React.RefCallback<HTMLElement> }
+  >["render"]
+>;
 
-type ButtonWithTextProps = ButtonBaseProps & {
-  shape?: "base";
-  size?: KumoButtonSize;
-  variant?: KumoButtonVariant;
-};
+type ButtonElement<Render> = Render extends undefined
+  ? HTMLButtonElement
+  : HTMLElement;
+
+type ButtonBaseProps<Render extends ButtonRenderProp | undefined> =
+  React.ButtonHTMLAttributes<ButtonElement<Render>> &
+    React.RefAttributes<ButtonElement<Render>> & {
+      /**
+       * Replace the button element with a link or custom component.
+       * Disabled or loading buttons render a disabled native button instead.
+       * Custom components must forward their props and ref to the rendered element.
+       *
+       * Refs and event handlers use HTMLElement when `render` is provided. Put
+       * element-specific refs and handlers on the rendered element for narrower types.
+       */
+      render?: Render;
+      /** Content rendered inside the button. */
+      children?: React.ReactNode;
+      /** Additional CSS classes merged via `cn()`. */
+      className?: string;
+      /** Icon from `@phosphor-icons/react` or a React element. Rendered before children. */
+      icon?: Icon | React.ReactNode;
+      /** Shows a loading spinner and disables interaction. */
+      loading?: boolean;
+      /** When set, wraps the button in a Tooltip with this content. */
+      title?: React.ReactNode;
+    };
+
+type ButtonWithTextProps<Render extends ButtonRenderProp | undefined> =
+  ButtonBaseProps<Render> & {
+    shape?: "base";
+    size?: KumoButtonSize;
+    variant?: KumoButtonVariant;
+  };
 
 type IconOnlyButtonAccessibleNameProps =
   | {
@@ -350,17 +355,43 @@ type IconOnlyButtonAccessibleNameProps =
       "aria-labelledby"?: string;
     };
 
-type IconOnlyButtonProps = ButtonBaseProps &
-  IconOnlyButtonAccessibleNameProps & {
-    shape: "square" | "circle";
-    size?: KumoButtonSize;
-    variant?: KumoButtonVariant;
-  };
+type IconOnlyButtonProps<Render extends ButtonRenderProp | undefined> =
+  ButtonBaseProps<Render> &
+    IconOnlyButtonAccessibleNameProps & {
+      shape: "square" | "circle";
+      size?: KumoButtonSize;
+      variant?: KumoButtonVariant;
+    };
 
-export type ButtonProps = ButtonWithTextProps | IconOnlyButtonProps;
+/**
+ * Button component props.
+ *
+ * Uses a discriminated union on `shape` so that icon-only buttons
+ * (`shape="square"` or `shape="circle"`) require an accessible name.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary">Save</Button>
+ * <Button variant="secondary" shape="square" icon={PlusIcon} aria-label="Add" />
+ * <Button variant="destructive" loading>Deleting...</Button>
+ * ```
+ */
+export type ButtonProps<
+  Render extends ButtonRenderProp | undefined = undefined,
+> = ButtonWithTextProps<Render> | IconOnlyButtonProps<Render>;
+
+type ButtonComponent = {
+  (
+    props: ButtonProps<ButtonRenderProp> & { render: ButtonRenderProp },
+  ): React.ReactNode;
+  <Render extends ButtonRenderProp | undefined = undefined>(
+    props: ButtonProps<Render>,
+  ): React.ReactNode;
+  displayName?: string;
+};
 
 export type RefreshButtonProps = Omit<
-  IconOnlyButtonProps,
+  IconOnlyButtonProps<undefined>,
   "children" | "icon" | "shape"
 >;
 
@@ -397,7 +428,10 @@ export type LinkButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
  * <Button variant="secondary" icon={PlusIcon}>Create Worker</Button>
  * ```
  */
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button: ButtonComponent = React.forwardRef<
+  HTMLElement,
+  ButtonProps<ButtonRenderProp | undefined>
+>(
   (
     {
       children,

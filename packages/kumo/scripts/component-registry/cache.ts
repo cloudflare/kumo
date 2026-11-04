@@ -24,7 +24,7 @@ import type {
 // Changes to shared code in THIS file won't invalidate cache without a version bump.
 // Or use: pnpm codegen:registry --no-cache
 // =============================================================================
-export const CACHE_VERSION = 4;
+export const CACHE_VERSION = 5;
 
 /**
  * Compute SHA-256 hash of file content.

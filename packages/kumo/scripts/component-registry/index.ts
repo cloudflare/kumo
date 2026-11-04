@@ -22,6 +22,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as tsj from "ts-json-schema-generator";
 import type { Definition } from "ts-json-schema-generator";
+import ts from "typescript";
 
 // Internal module imports
 import type {
@@ -300,15 +301,35 @@ function generatePropsFromType(
   const sourcePath = join(config.sourceDir, sourceFile);
 
   try {
-    const tsjConfig: tsj.Config = {
+    const tsjConfig = {
+      ...tsj.DEFAULT_CONFIG,
       path: sourcePath,
       tsconfig: join(rootDir, "tsconfig.json"),
       type: propsType,
       skipTypeCheck: true,
       expose: "all",
-    };
+    } satisfies tsj.Config;
 
-    const schema = tsj.createGenerator(tsjConfig).createSchema(propsType);
+    const program = tsj.createProgram(tsjConfig);
+    const declaration = program
+      .getSourceFile(sourcePath)
+      ?.statements.find(
+        (node) =>
+          (ts.isTypeAliasDeclaration(node) ||
+            ts.isInterfaceDeclaration(node)) &&
+          node.name.text === propsType,
+      );
+    const generator = new tsj.SchemaGenerator(
+      program,
+      tsj.createParser(program, tsjConfig),
+      tsj.createFormatter(tsjConfig),
+      tsjConfig,
+    );
+    // Name lookup skips generic declarations, even those with defaults, and can
+    // silently select an unrelated dependency type with the same name.
+    const schema = declaration
+      ? generator.createSchemaFromNodes([declaration])
+      : generator.createSchema(propsType);
     const props: Record<string, PropSchema> = {};
 
     // Get the main type definition, following $ref if needed
