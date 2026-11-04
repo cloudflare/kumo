@@ -9,6 +9,9 @@ export interface KumoTranslations {
     close: string;
     cancel: string;
   };
+  link?: {
+    opensInNewTab: string;
+  };
 }
 
 export type KumoTranslationsPartial = {
@@ -27,6 +30,9 @@ const defaultTranslations: ResolvedKumoTranslations = {
   layerDialog: {
     close: "Close",
     cancel: "Cancel",
+  },
+  link: {
+    opensInNewTab: "(opens in a new tab)",
   },
 };
 
@@ -59,6 +65,10 @@ export function KumoLocaleProvider({
       layerDialog: {
         ...defaultTranslations.layerDialog,
         ...translations?.layerDialog,
+      },
+      link: {
+        ...defaultTranslations.link,
+        ...translations?.link,
       },
     }),
     [translations],

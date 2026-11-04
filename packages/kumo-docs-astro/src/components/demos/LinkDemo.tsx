@@ -1,4 +1,5 @@
 import { Link } from "@cloudflare/kumo";
+import { BookIcon } from "@phosphor-icons/react";
 
 export function LinkBasicDemo() {
   return (
@@ -26,13 +27,23 @@ export function LinkInParagraphDemo() {
 
 export function LinkExternalDemo() {
   return (
+    <Link href="https://cloudflare.com" external className="text-base">
+      Visit Cloudflare
+    </Link>
+  );
+}
+
+/** Icon-only links use explicit accessible names instead of a title fallback. */
+export function LinkIconOnlyDemo() {
+  return (
     <Link
-      href="https://cloudflare.com"
-      target="_blank"
-      rel="noopener noreferrer"
+      href="https://developers.cloudflare.com"
+      external
+      title="Documentation"
+      aria-label="Documentation (opens in a new tab)"
       className="text-base"
     >
-      Visit Cloudflare <Link.ExternalIcon />
+      <BookIcon aria-hidden="true" size={20} />
     </Link>
   );
 }

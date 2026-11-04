@@ -227,6 +227,12 @@ export default function Example() {
   like a button. Use `Button` for in-place actions like submitting, opening, or
   toggling UI.
 </p>
+<p>
+  `LinkButton external` adds a localized hidden warning that it opens in a new
+  tab. For icon-only links, provide `aria-label` or `aria-labelledby` rather
+  than relying on `title`. Explicit names are preserved; include the warning
+  in that name when needed.
+</p>
 <ComponentExample
   demo="ButtonLinkAsButtonDemo"
   vrSection="link-as-button"

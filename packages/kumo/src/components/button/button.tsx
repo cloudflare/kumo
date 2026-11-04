@@ -5,6 +5,7 @@ import { Tooltip } from "../tooltip/tooltip";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { useLinkComponent } from "../../utils/link-provider";
+import { useKumoLocale } from "../../utils/locale-provider";
 
 /** Button variant definitions mapping shape, size, and variant names to their Tailwind classes. */
 export const KUMO_BUTTON_VARIANTS = {
@@ -511,10 +512,12 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
     ref,
   ) => {
     const LinkComponent = useLinkComponent();
+    const { link: linkCopy } = useKumoLocale();
     const emphasisStyle = getEmphasisStyle(variant);
     const externalProps = external
       ? { target: "_blank", rel: "noopener noreferrer" }
       : {};
+    const announcesNewTab = external && (props.target ?? "_blank") === "_blank";
 
     if (disabled) {
       // ref is intentionally not forwarded: it's typed for the anchor, but the disabled state renders a button
@@ -554,6 +557,9 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
         {...props}
       >
         {renderButtonContent(variant, iconNode, children)}
+        {announcesNewTab ? (
+          <span className="sr-only"> {linkCopy.opensInNewTab}</span>
+        ) : null}
       </LinkComponent>
     );
 

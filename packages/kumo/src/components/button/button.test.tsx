@@ -266,9 +266,83 @@ describe("LinkButton", () => {
         Docs
       </LinkButton>,
     );
-    const link = screen.getByRole("link");
+    const link = screen.getByRole("link", {
+      name: "Docs (opens in a new tab)",
+    });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("does not announce a new tab when external is overridden to _self", () => {
+    render(
+      <LinkButton href="https://example.com" external target="_self">
+        Docs
+      </LinkButton>,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
+  });
+
+  it("does not announce a raw target='_blank' without external", () => {
+    render(
+      <LinkButton href="https://example.com" target="_blank">
+        Docs
+      </LinkButton>,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toBeTruthy();
+  });
+
+  it("keeps a title-bearing icon link named by its explicit aria-label", () => {
+    render(
+      <LinkButton
+        href="/docs"
+        external
+        shape="square"
+        icon={Plus}
+        title="Documentation"
+        aria-label="Documentation (opens in a new tab)"
+      />,
+    );
+    const link = screen.getByRole("link", {
+      name: "Documentation (opens in a new tab)",
+    });
+    expect(link.getAttribute("aria-label")).toBe(
+      "Documentation (opens in a new tab)",
+    );
+  });
+
+  it("preserves aria-labelledby when naming a title-bearing icon link", () => {
+    render(
+      <>
+        <span id="icon-link-name" className="sr-only">
+          Documentation (opens in a new tab)
+        </span>
+        <LinkButton
+          href="/docs"
+          external
+          shape="square"
+          icon={Plus}
+          title="Documentation"
+          aria-labelledby="icon-link-name"
+        />
+      </>,
+    );
+    expect(
+      screen
+        .getByRole("link", { name: "Documentation (opens in a new tab)" })
+        .getAttribute("aria-labelledby"),
+    ).toBe("icon-link-name");
+  });
+
+  it("does not announce new-tab navigation when the external LinkButton is disabled", () => {
+    render(
+      <LinkButton href="/docs" external disabled>
+        Docs
+      </LinkButton>,
+    );
+    const button = screen.getByRole("button", { name: "Docs" });
+    expect(button.hasAttribute("disabled")).toBe(true);
+    expect(button.querySelector(".sr-only")).toBeNull();
+    expect(screen.queryByRole("link")).toBeNull();
   });
 
   it("forwards ref to the <a> DOM node", () => {

@@ -11,6 +11,7 @@ import {
   LinkBasicDemo,
   LinkInParagraphDemo,
   LinkExternalDemo,
+  LinkIconOnlyDemo,
   LinkCurrentVariantDemo,
   LinkRenderDemo,
 } from "~/components/demos/LinkDemo";
@@ -70,8 +71,11 @@ export default function Example() {
 ### External Links
 
 <p>
-  Use the `Link.ExternalIcon` subcomponent to indicate links that open in a new
-  tab.
+  Use `external` to open a link in a new tab with `rel="noopener noreferrer"`,
+  a decorative indicator, and a localized visually hidden warning. Do not also
+  add `Link.ExternalIcon`: `external` already includes it. Explicit `target`
+  and `rel` props override the defaults; a same-tab target suppresses the
+  indicator and warning.
 </p>
 
 ```tsx
@@ -79,15 +83,39 @@ import { Link } from "@cloudflare/kumo";
 
 export default function Example() {
   return (
-    <Link
-      href="https://cloudflare.com"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Visit Cloudflare <Link.ExternalIcon />
+    <Link href="https://cloudflare.com" external>
+      Visit Cloudflare
     </Link>
   );
 }
+```
+
+### Icon-only links
+
+<p>
+  Give icon-only links an explicit `aria-label` or `aria-labelledby`, following
+  the same naming pattern as Kumo's icon-only buttons. Do not rely on `title`
+  alone: adding hidden warning text would make that warning the accessible name
+  instead of the destination. A `title` can still supply a tooltip.
+</p>
+<p>
+  Explicit accessible names take precedence over child content and are passed
+  through unchanged. Include the new-tab warning in your label or referenced
+  text when needed, and translate that consumer-owned text in your application.
+</p>
+
+```tsx
+import { Link } from "@cloudflare/kumo";
+import { BookIcon } from "@phosphor-icons/react";
+
+<Link
+  href="https://developers.cloudflare.com"
+  external
+  title="Documentation"
+  aria-label="Documentation (opens in a new tab)"
+>
+  <BookIcon aria-hidden="true" />
+</Link>
 ```
 
 ### Framework Integration (LinkProvider)
@@ -137,6 +165,18 @@ export function App() {
   props (`href`, `target`, `className`, etc.) are merged onto the provided element
   automatically.
 </p>
+<p>
+  Custom render elements and `LinkProvider` components must preserve the supplied
+  children and forward the standard anchor props. Base UI's normal prop-merging
+  rules still apply; Kumo does not inspect a render element's props or infer
+  the final DOM's target or accessible name.
+</p>
+<p>
+  When `target` or `rel` is unspecified, Link leaves it out so your provider can
+  supply its own navigation defaults. If the provider independently chooses to
+  open a new tab, Link does not automatically add an indicator or warning. Use
+  `external` or the manual `Link.ExternalIcon` pattern to opt into those cues.
+</p>
 
 ```tsx
 import { Link } from "@cloudflare/kumo";
@@ -151,8 +191,8 @@ export default function Example() {
       </Link>
 
       {/* Force a plain anchor (bypasses LinkProvider) */}
-      <Link render={<a />} href="https://example.com" target="_blank" rel="noopener noreferrer">
-        External Site <Link.ExternalIcon />
+      <Link render={<a />} href="https://example.com" external>
+        External Site
       </Link>
     </>
   );
@@ -177,11 +217,16 @@ export default function Example() {
 ### External Link with Icon
 
 <p>
-  Use `Link.ExternalIcon` to visually indicate links that navigate away from
-  your site.
+  Use `external` to include the new-tab indicator and localized warning.
 </p>
 <ComponentExample demo="LinkExternalDemo">
   <LinkExternalDemo client:visible />
+</ComponentExample>
+
+### Icon-only External Link
+
+<ComponentExample demo="LinkIconOnlyDemo" vrSection="icon-only-external" vrTitle="Icon-only External Link">
+  <LinkIconOnlyDemo client:visible />
 </ComponentExample>
 
 ### Current Variant (Color Inheritance)
@@ -226,6 +271,15 @@ export default function Example() {
       </tr>
     </thead>
     <tbody>
+      <tr class="border-b border-kumo-hairline">
+        <td class="px-4 py-3 font-mono text-xs">external</td>
+        <td class="px-4 py-3 font-mono text-xs">boolean</td>
+        <td class="px-4 py-3 font-mono text-xs">false</td>
+        <td class="px-4 py-3 text-xs">
+          Opens in a new tab with default target and rel, an indicator, and a
+          localized warning. Explicit accessible names remain unchanged.
+        </td>
+      </tr>
       <tr class="border-b border-kumo-hairline">
         <td class="px-4 py-3 font-mono text-xs">variant</td>
         <td class="px-4 py-3 font-mono text-xs">
@@ -315,14 +369,23 @@ export default function Example() {
 ### Link.ExternalIcon
 
 <p>
-  SVG icon component to indicate external links. Accepts all SVG element
-  attributes.
+  Icon that indicates a link opens in a new tab. It also renders visually
+  hidden text, localized through `KumoLocaleProvider` (`link.opensInNewTab`),
+  so screen-reader users get the same warning. Pass `label` to override the
+  text. Accepts all SVG element attributes.
+</p>
+<p>
+  Use this subcomponent when manually configuring a new-tab link instead of
+  using `external`. For icon-only links, supply an explicit accessible name
+  as shown above. The hidden text does not override `aria-label` or
+  `aria-labelledby`.
 </p>
 
 ```tsx
 <Link href="https://example.com" target="_blank" rel="noopener noreferrer">
   External Site <Link.ExternalIcon />
 </Link>
+// Accessible name: "External Site (opens in a new tab)"
 ```
 
 </ComponentSection>
@@ -357,12 +420,12 @@ export default function Example() {
       ### External Link Indicators
 
       <ul class="ml-4 list-disc space-y-1">
-        <li>Always use `Link.ExternalIcon` for links that open in new tabs</li>
+        <li>Use `external`, or manually configure a link with `Link.ExternalIcon`</li>
         <li>
           Set `target="_blank"` and `rel="noopener noreferrer"` for security
         </li>
         <li>
-          The icon provides a visual cue that users will leave the current site
+          The icon provides a visual cue that a new tab will open
         </li>
       </ul>
     </div>
@@ -399,8 +462,8 @@ export default function Example() {
       <ul class="ml-4 list-disc space-y-1">
         <li>Links are keyboard focusable by default</li>
         <li>
-          The external icon has `aria-hidden="true"` - add descriptive text for
-          screen readers
+          Icon-only links need `aria-label` or `aria-labelledby`; `title` alone
+          is not a substitute when hidden warning text is present
         </li>
         <li>Ensure sufficient color contrast for all variants</li>
         <li>Use descriptive link text (avoid "click here")</li>
