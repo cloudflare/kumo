@@ -21,6 +21,50 @@ export function SkeletonLineWidthDemo() {
   );
 }
 
+export function SkeletonLineSketchDemo() {
+  return (
+    <div className="flex w-64 flex-col gap-3">
+      <SkeletonLine variant="sketch" />
+      <SkeletonLine variant="sketch" />
+      <SkeletonLine variant="sketch" />
+    </div>
+  );
+}
+
+export function SkeletonLineSketchCardDemo() {
+  return (
+    <div className="w-64 rounded-lg p-4 ring ring-kumo-hairline">
+      <div className="mb-4">
+        <SkeletonLine
+          variant="sketch"
+          blockHeight={16}
+          minWidth={40}
+          maxWidth={60}
+        />
+      </div>
+      <div className="flex flex-col gap-3">
+        <SkeletonLine variant="sketch" />
+        <SkeletonLine variant="sketch" />
+        <SkeletonLine variant="sketch" minWidth={50} maxWidth={70} />
+      </div>
+      <div className="mt-6 flex gap-2">
+        <SkeletonLine
+          variant="sketch"
+          minWidth={100}
+          maxWidth={100}
+          className="h-9 w-24"
+        />
+        <SkeletonLine
+          variant="sketch"
+          minWidth={100}
+          maxWidth={100}
+          className="h-9 w-24"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function SkeletonLineHeightDemo() {
   return (
     <div className="flex w-64 flex-col gap-3">
