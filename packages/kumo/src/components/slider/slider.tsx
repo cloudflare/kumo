@@ -148,7 +148,7 @@ export function Slider<Value extends SliderValue = SliderValue>({
                 index={isRange ? index : undefined}
                 getAriaLabel={getAriaLabel}
                 className={cn(
-                  "group h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
+                  "group h-full w-4 cursor-grab outline-none has-focus-visible:ring-2 has-focus-visible:ring-kumo-focus has-focus-visible:outline-hidden data-disabled:cursor-not-allowed data-dragging:cursor-grabbing",
                   innerRadius,
                 )}
               >

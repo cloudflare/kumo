@@ -443,7 +443,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
             onKeyDown={(e) => e.stopPropagation()}
             aria-label={copied ? "Copied" : "Copy to clipboard"}
             className={cn(
-              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:ring-kumo-focus/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "absolute -top-px right-2 -translate-y-full cursor-pointer rounded-t-md bg-kumo-brand px-2 py-0.5 text-xs text-white opacity-0 transition-opacity group-focus-within/container:opacity-100 group-hover/container:opacity-100 hover:brightness-120 focus:ring-kumo-focus/50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand",
               // Defensive styles to prevent global CSS pollution
               "m-0 h-auto min-h-0 border-none shadow-none",
             )}

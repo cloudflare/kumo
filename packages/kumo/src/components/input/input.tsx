@@ -111,7 +111,7 @@ export function inputVariants({
 }: KumoInputVariantsProps = {}) {
   return cn(
     // Base styles
-    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line outline-none focus:outline-none",
+    "border-0 bg-kumo-control text-kumo-default ring ring-kumo-line outline-none focus:outline-hidden",
     // Disabled state and placeholder styles (using vanilla CSS class for Chrome compatibility)
     "kumo-input-placeholder disabled:text-kumo-inactive",
     // Apply size styles from KUMO_INPUT_VARIANTS
@@ -126,6 +126,8 @@ export function inputVariants({
       variant,
       KUMO_INPUT_DEFAULT_VARIANTS.variant,
     ).classes,
+    // Retain an outline when forced colors suppress the shared focus ring.
+    parentFocusIndicator && "has-focus-visible:outline-hidden",
     // Focus state handling
     parentFocusIndicator &&
       (variant === "error"

@@ -131,7 +131,7 @@ const Root = forwardRef<
         ? [
             "overflow-hidden",
             // Focus state must come AFTER inputVariants to override ring-kumo-line
-            "focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50",
+            "focus-within:ring-[1.5px] focus-within:ring-kumo-focus/50 has-focus-visible:outline-hidden",
           ]
         : // isolate creates a new stacking context so z-index in children doesn't leak out
           "isolate overflow-visible shadow-none ring-0",
@@ -198,7 +198,7 @@ const Root = forwardRef<
                 // so the zone matches adjacent individual-mode buttons exactly.
                 "shadow-none ring-0",
                 "border border-kumo-line",
-                "focus-within:border-kumo-focus/50",
+                "focus-within:border-kumo-focus/50 has-focus-visible:outline-hidden",
                 // z-[2] lifts above adjacent button's -ml-px overlap so focus border shows
                 "focus-within:z-2",
                 // Negative margin (not border-l-0) so the border is still paintable on focus

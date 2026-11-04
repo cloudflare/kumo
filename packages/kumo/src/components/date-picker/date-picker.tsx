@@ -71,7 +71,7 @@ const navButtonClassName = cn(
 // The button can sit anywhere inside the cell, so a custom DayButton that
 // wraps it keeps the styles.
 const dayButtonClassName = cn(
-  "flex size-(--cell-size) items-center justify-center rounded-md text-base text-kumo-default tabular-nums transition-colors outline-none",
+  "flex size-(--cell-size) items-center justify-center rounded-md text-base text-kumo-default tabular-nums transition-colors outline-none focus-visible:outline-hidden",
   "cursor-pointer hover:bg-kumo-tint",
   "focus-visible:relative focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-kumo-brand",
   "[td[data-day][data-disabled]_&]:cursor-not-allowed [td[data-day][data-disabled]_&]:text-kumo-inactive [td[data-day][data-disabled]_&]:hover:bg-transparent",
