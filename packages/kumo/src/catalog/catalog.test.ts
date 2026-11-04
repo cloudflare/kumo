@@ -11,6 +11,7 @@ import {
   resolveProps,
 } from "./data";
 import { evaluateVisibility, createVisibilityContext } from "./visibility";
+import type { LogicExpression } from "./types";
 
 describe("data utilities", () => {
   describe("getByPath", () => {
@@ -36,6 +37,12 @@ describe("data utilities", () => {
       const obj = { user: { name: "John" } };
       expect(getByPath(obj, "user/name")).toBe("John");
     });
+
+    it("decodes JSON Pointer escapes", () => {
+      expect(getByPath({ "a/b": 1 }, "/a~1b")).toBe(1);
+      expect(getByPath({ "m~n": 2 }, "/m~0n")).toBe(2);
+      expect(getByPath({ "~1": 3 }, "/~01")).toBe(3);
+    });
   });
 
   describe("setByPath", () => {
@@ -49,6 +56,27 @@ describe("data utilities", () => {
       const obj: Record<string, unknown> = { user: { name: "John" } };
       setByPath(obj, "/user/name", "Jane");
       expect(obj).toEqual({ user: { name: "Jane" } });
+    });
+
+    it("replaces null intermediate values with objects", () => {
+      const obj: Record<string, unknown> = { user: null };
+      setByPath(obj, "/user/name", "Alice");
+      expect(obj).toEqual({ user: { name: "Alice" } });
+    });
+
+    it("decodes JSON Pointer escapes", () => {
+      const obj: Record<string, unknown> = { "a/b": 1 };
+      setByPath(obj, "/a~1b", 2);
+      setByPath(obj, "/m~0n", 3);
+      expect(obj).toEqual({ "a/b": 2, "m~n": 3 });
+    });
+
+    it("ignores prototype-polluting paths", () => {
+      const obj: Record<string, unknown> = {};
+      setByPath(obj, "/__proto__/polluted", true);
+      setByPath(obj, "/constructor/prototype/polluted", true);
+      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+      expect(obj).toEqual({});
     });
   });
 
@@ -98,6 +126,21 @@ describe("data utilities", () => {
         title: "John",
         subtitle: "Static text",
         theme: "dark",
+      });
+    });
+
+    it("resolves dynamic values inside arrays", () => {
+      const data = { name: "Alice", role: "admin" };
+      const resolved = resolveProps(
+        {
+          items: [{ path: "/name" }, "literal", { label: { path: "/role" } }],
+          nested: [[{ path: "/name" }]],
+        },
+        data,
+      );
+      expect(resolved).toEqual({
+        items: ["Alice", "literal", { label: "admin" }],
+        nested: [["Alice"]],
       });
     });
   });
@@ -253,6 +296,43 @@ describe("visibility evaluation", () => {
       };
       expect(evaluateVisibility(condition, ctx)).toBe(true);
     });
+
+    it("evaluates auth conditions nested in logic expressions", () => {
+      const condition: LogicExpression = {
+        and: [{ path: "/isAdmin" }, { auth: "signedIn" }],
+      };
+      expect(
+        evaluateVisibility(condition, createCtx({ isAdmin: true }, false)),
+      ).toBe(false);
+      expect(
+        evaluateVisibility(condition, createCtx({ isAdmin: true }, true)),
+      ).toBe(true);
+      expect(
+        evaluateVisibility(
+          { or: [{ auth: "signedOut" }, { path: "/isAdmin" }] },
+          createCtx({ isAdmin: false }, false),
+        ),
+      ).toBe(true);
+      expect(
+        evaluateVisibility({ not: { auth: "signedIn" } }, createCtx({}, true)),
+      ).toBe(false);
+    });
+  });
+});
+
+describe("hasAction", () => {
+  it("only reports registered actions", async () => {
+    const { createKumoCatalog } = await import("./catalog");
+    const empty = createKumoCatalog();
+    expect(empty.actionNames).toEqual([]);
+    expect(empty.hasAction("toString")).toBe(false);
+    expect(empty.hasAction("constructor")).toBe(false);
+
+    const catalog = createKumoCatalog({
+      actions: { save: { description: "Save" } },
+    });
+    expect(catalog.hasAction("save")).toBe(true);
+    expect(catalog.hasAction("delete")).toBe(false);
   });
 });
 
@@ -269,6 +349,20 @@ describe("initCatalog", () => {
 
     expect(catalog.hasComponent("Button")).toBe(true);
     expect(catalog.componentNames.length).toBeGreaterThan(0);
+  });
+
+  it("accepts auth conditions nested in visibility logic", async () => {
+    const { createKumoCatalog, initCatalog } = await import("./catalog");
+    const catalog = createKumoCatalog();
+    await initCatalog(catalog);
+
+    const result = catalog.validateElement({
+      key: "admin-button",
+      type: "Button",
+      props: { children: "Admin" },
+      visible: { and: [{ path: "/isAdmin" }, { auth: "signedIn" }] },
+    });
+    expect(result.success).toBe(true);
   });
 
   it("retries schema loading after a failed load", async () => {

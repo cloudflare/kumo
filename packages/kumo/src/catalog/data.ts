@@ -6,6 +6,19 @@
 
 import type { DataModel, DynamicValue } from "./types";
 
+const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+/**
+ * Split a JSON Pointer into segments, decoding `~1` to `/` and `~0` to `~`
+ * (RFC 6901). A leading slash is optional.
+ */
+function parsePath(path: string): string[] {
+  const raw = path.startsWith("/") ? path.slice(1) : path;
+  return raw
+    .split("/")
+    .map((segment) => segment.replace(/~1/g, "/").replace(/~0/g, "~"));
+}
+
 /**
  * Get a value from an object by JSON Pointer path.
  *
@@ -20,9 +33,7 @@ export function getByPath(obj: unknown, path: string): unknown {
     return obj;
   }
 
-  const segments = path.startsWith("/")
-    ? path.slice(1).split("/")
-    : path.split("/");
+  const segments = parsePath(path);
 
   let current: unknown = obj;
 
@@ -55,17 +66,16 @@ export function setByPath(
   path: string,
   value: unknown,
 ): void {
-  const segments = path.startsWith("/")
-    ? path.slice(1).split("/")
-    : path.split("/");
+  const segments = parsePath(path);
 
-  if (segments.length === 0) return;
+  if (segments.some((segment) => FORBIDDEN_KEYS.has(segment))) return;
 
   let current: Record<string, unknown> = obj;
 
   for (let i = 0; i < segments.length - 1; i++) {
     const segment = segments[i]!;
-    if (!(segment in current) || typeof current[segment] !== "object") {
+    const next = Object.hasOwn(current, segment) ? current[segment] : undefined;
+    if (typeof next !== "object" || next === null) {
       current[segment] = {};
     }
     current = current[segment] as Record<string, unknown>;
@@ -112,9 +122,23 @@ export function resolveDynamicValue<T>(
   return value as T;
 }
 
+function resolveValue(value: unknown, dataModel: DataModel): unknown {
+  if (isDynamicPath(value)) {
+    return getByPath(dataModel, value.path);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => resolveValue(item, dataModel));
+  }
+  if (typeof value === "object" && value !== null) {
+    return resolveProps(value as Record<string, unknown>, dataModel);
+  }
+  return value;
+}
+
 /**
  * Resolve all dynamic values in an object.
- * Recursively resolves any { path: string } references.
+ * Recursively resolves any { path: string } references, including
+ * those nested inside arrays.
  */
 export function resolveProps(
   props: Record<string, unknown>,
@@ -123,18 +147,7 @@ export function resolveProps(
   const resolved: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(props)) {
-    if (isDynamicPath(value)) {
-      resolved[key] = getByPath(dataModel, value.path);
-    } else if (
-      typeof value === "object" &&
-      value !== null &&
-      !Array.isArray(value)
-    ) {
-      // Recursively resolve nested objects
-      resolved[key] = resolveProps(value as Record<string, unknown>, dataModel);
-    } else {
-      resolved[key] = value;
-    }
+    resolved[key] = resolveValue(value, dataModel);
   }
 
   return resolved;
