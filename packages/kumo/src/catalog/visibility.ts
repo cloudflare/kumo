@@ -44,7 +44,8 @@ function evaluateAuth(
 ): boolean {
   if (auth === "signedIn") return ctx.auth.isSignedIn;
   if (auth === "signedOut") return !ctx.auth.isSignedIn;
-  return true;
+  // Unknown auth values (e.g. unvalidated input) hide the element
+  return false;
 }
 
 /**

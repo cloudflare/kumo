@@ -222,6 +222,17 @@ describe("visibility evaluation", () => {
       const ctx = createCtx({}, true);
       expect(evaluateVisibility({ auth: "signedOut" }, ctx)).toBe(false);
     });
+
+    it("unknown auth values hide the element", () => {
+      const condition = { auth: "admin" } as unknown as LogicExpression;
+      expect(evaluateVisibility(condition, createCtx({}, true))).toBe(false);
+      expect(
+        evaluateVisibility(
+          { and: [{ path: "/a" }, condition] },
+          createCtx({ a: true }, true),
+        ),
+      ).toBe(false);
+    });
   });
 
   describe("logic expressions", () => {
