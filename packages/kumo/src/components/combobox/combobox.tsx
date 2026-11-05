@@ -292,7 +292,7 @@ function TriggerValue({
   render?: ComboboxBase.Trigger.Props["render"];
   /** Accessible name for the trigger when no visible label is provided */
   "aria-label"?: string;
-  /** ID of the element that labels the trigger */
+  /** ID of the element that labels the trigger. Replaces the root `label` when set. */
   "aria-labelledby"?: string;
 }) {
   const { size, hasError } = useContext(ComboboxContext);
@@ -303,8 +303,10 @@ function TriggerValue({
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
       render={render}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledby}
+      {...(ariaLabel !== undefined && { "aria-label": ariaLabel })}
+      {...(ariaLabelledby !== undefined && {
+        "aria-labelledby": ariaLabelledby,
+      })}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
