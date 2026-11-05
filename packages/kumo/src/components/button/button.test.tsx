@@ -109,7 +109,6 @@ describe("Button", () => {
       render(<Button icon={Plus}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
       expect(button.className).toContain("pl-2.5");
-      expect(button.className).toContain("pb-0.5");
     });
 
     it.each(["square", "circle"] as const)(
@@ -122,13 +121,26 @@ describe("Button", () => {
       },
     );
 
-    it("keeps symmetric padding without an icon but still lifts the text", () => {
+    it("keeps symmetric padding without an icon", () => {
       render(<Button>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
       expect(button.className).toContain("px-3");
-      expect(button.className).toContain("pb-0.5");
       expect(button.className).not.toContain("pl-2.5");
     });
+
+    it.each(["xs", "sm", "base", "lg"] as const)(
+      "does not shift %s text off the line box center",
+      (size) => {
+        render(
+          <Button size={size} icon={Plus}>
+            Add
+          </Button>,
+        );
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pb-");
+        expect(button.className).not.toContain("translate-y");
+      },
+    );
 
     it.each([false, "", [null, false]])(
       "keeps symmetric padding when children render nothing (%j)",
@@ -140,7 +152,6 @@ describe("Button", () => {
         );
         const button = screen.getByRole("button", { name: "Add" });
         expect(button.className).not.toContain("pl-2.5");
-        expect(button.className).not.toContain("pb-0.5");
       },
     );
 
