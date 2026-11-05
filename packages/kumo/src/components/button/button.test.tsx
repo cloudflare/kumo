@@ -142,6 +142,16 @@ describe("Button", () => {
       },
     );
 
+    it.each(["base", "lg"] as const)(
+      "uses a 20px line box at %s so the label gap is a whole pixel",
+      (size) => {
+        render(<Button size={size}>Add</Button>);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).toContain("text-base");
+        expect(button.className).toContain("leading-5");
+      },
+    );
+
     it.each([false, "", [null, false]])(
       "keeps symmetric padding when children render nothing (%j)",
       (children) => {

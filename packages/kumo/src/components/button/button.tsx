@@ -23,6 +23,10 @@ export const KUMO_BUTTON_VARIANTS = {
       description: "Circular button for icon-only actions",
     },
   },
+  // Each size leaves a whole-pixel gap between the label's line box and the
+  // button edge. text-base's 21px line box would leave 7.5px in h-9, and
+  // browsers round the text up or down depending on where the button lands
+  // on the page, so base and lg use a 20px line box instead.
   size: {
     xs: {
       classes: "h-5 gap-1 rounded-sm px-1.5 text-xs",
@@ -33,11 +37,11 @@ export const KUMO_BUTTON_VARIANTS = {
       description: "Small button for secondary actions",
     },
     base: {
-      classes: "h-9 gap-1.5 rounded-lg px-3 text-base",
+      classes: "h-9 gap-1.5 rounded-lg px-3 text-base leading-5",
       description: "Default button size",
     },
     lg: {
-      classes: "h-10 gap-2 rounded-lg px-4 text-base",
+      classes: "h-10 gap-2 rounded-lg px-4 text-base leading-5",
       description: "Large button for primary CTAs",
     },
   },
