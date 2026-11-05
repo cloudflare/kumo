@@ -1,14 +1,17 @@
 import {
   type CSSProperties,
+  type Ref,
   createContext,
   forwardRef,
   useContext,
 } from "react";
 import {
   Button,
+  LinkButton,
   type ButtonProps,
   type KumoButtonSize,
   type KumoButtonVariant,
+  type LinkButtonProps,
 } from "../button/button";
 import { cn } from "../../utils/cn";
 import type { KumoBannerVariant } from "./banner";
@@ -95,8 +98,7 @@ function bannerActionAccentVars(accent: string) {
   } satisfies CSSProperties & Record<`--${string}`, string>;
 }
 
-/** Props for {@link BannerAction}. */
-type WithBannerActionVariants<Props> = Props extends ButtonProps
+type WithBannerActionVariants<Props> = Props extends unknown
   ? Omit<Props, "size" | "variant"> & {
       /**
        * Visual variant of the CTA, aligned with `Button`'s `variant` naming.
@@ -109,42 +111,57 @@ type WithBannerActionVariants<Props> = Props extends ButtonProps
     }
   : never;
 
-export type BannerActionProps = WithBannerActionVariants<ButtonProps>;
+type BannerActionButtonProps = WithBannerActionVariants<ButtonProps> & {
+  href?: never;
+};
+
+type BannerActionLinkProps = WithBannerActionVariants<LinkButtonProps> & {
+  /**
+   * Renders the action as a link via `LinkButton`, so it uses the app's
+   * `LinkProvider` component for client-side routing.
+   */
+  href: string;
+};
+
+/** Props for {@link BannerAction}. Pass `href` to render a link. */
+export type BannerActionProps = BannerActionButtonProps | BannerActionLinkProps;
 
 /**
- * A banner CTA built on Kumo's `Button`. It inherits Button's sizing, interaction,
- * loading, and accessibility behavior while supplying banner-specific accent styles.
+ * A banner CTA built on Kumo's `Button`, or `LinkButton` when `href` is set. It
+ * inherits their sizing, interaction, and accessibility behavior while supplying
+ * banner-specific accent styles.
  *
  * @example
  * ```tsx
  * <Banner.Action onClick={retry}>Retry</Banner.Action>
+ * <Banner.Action href="/billing">Manage payments</Banner.Action>
  * <Banner.Action variant="ghost" icon={<X />} aria-label="Dismiss" />
  * ```
  */
-export const BannerAction = forwardRef<HTMLButtonElement, BannerActionProps>(
-  function BannerAction(
-    { variant = "primary", className, style, ...props },
-    ref,
-  ) {
-    const banner = useContext(BannerActionContext);
-    const styles = BANNER_ACTION_ACCENTS[banner.variant];
-    const buttonVariant = variant === "secondary" ? "outline" : variant;
+export const BannerAction = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  BannerActionProps
+>(function BannerAction(props, ref) {
+  const banner = useContext(BannerActionContext);
+  const variant = props.variant ?? "primary";
+  const styles = BANNER_ACTION_ACCENTS[banner.variant];
+  const shared = {
+    variant: variant === "secondary" ? "outline" : variant,
+    size: banner.size,
+    className: cn(variant !== "primary" && styles[variant], props.className),
+    style:
+      variant === "primary"
+        ? { ...bannerActionAccentVars(styles.accent), ...props.style }
+        : props.style,
+  } as const;
 
+  if (props.href !== undefined) {
     return (
-      <Button
-        ref={ref}
-        variant={buttonVariant}
-        size={banner.size}
-        className={cn(variant !== "primary" && styles[variant], className)}
-        style={
-          variant === "primary"
-            ? { ...bannerActionAccentVars(styles.accent), ...style }
-            : style
-        }
-        {...props}
-      />
+      <LinkButton ref={ref as Ref<HTMLAnchorElement>} {...props} {...shared} />
     );
-  },
-);
+  }
+
+  return <Button ref={ref as Ref<HTMLButtonElement>} {...props} {...shared} />;
+});
 
 BannerAction.displayName = "Banner.Action";
