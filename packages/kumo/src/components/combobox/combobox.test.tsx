@@ -1,10 +1,23 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
 import {
   Combobox,
   KUMO_COMBOBOX_VARIANTS,
   KUMO_COMBOBOX_DEFAULT_VARIANTS,
 } from "./combobox";
+
+// Pass-through spy on Base UI's Value so tests can see which props reach it.
+const valueSpy = vi.hoisted(() => vi.fn());
+vi.mock("@base-ui/react/combobox", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@base-ui/react/combobox")>();
+  const BaseValue = actual.Combobox.Value;
+  function Value(props: React.ComponentProps<typeof BaseValue>) {
+    valueSpy(props);
+    return <BaseValue {...props} />;
+  }
+  return { ...actual, Combobox: { ...actual.Combobox, Value } };
+});
 
 const fruits = ["Apple", "Banana", "Cherry"];
 
@@ -227,6 +240,56 @@ describe("Combobox", () => {
 
       const trigger = screen.getByRole("button", { name: "Show options" });
       expect(trigger).toBeTruthy();
+    });
+
+    it("names the TriggerValue trigger from aria-label", () => {
+      render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerValue
+            aria-label="Fruit"
+            placeholder="Select a fruit"
+          />
+        </Combobox>,
+      );
+
+      expect(screen.getByRole("combobox", { name: "Fruit" })).toBeTruthy();
+    });
+
+    it("names the TriggerValue trigger from aria-labelledby", () => {
+      render(
+        <>
+          <span id="fruit-label">Fruit</span>
+          <Combobox items={fruits}>
+            <Combobox.TriggerValue
+              aria-labelledby="fruit-label"
+              placeholder="Select a fruit"
+            />
+          </Combobox>
+        </>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Fruit" });
+      expect(trigger.getAttribute("aria-labelledby")).toBe("fruit-label");
+    });
+
+    it("does not pass naming props through to Value", () => {
+      valueSpy.mockClear();
+      render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerValue
+            aria-label="Fruit"
+            aria-labelledby="fruit-label"
+            placeholder="Select a fruit"
+          />
+        </Combobox>,
+      );
+
+      expect(valueSpy).toHaveBeenCalled();
+      for (const [props] of valueSpy.mock.calls) {
+        expect(props).not.toHaveProperty("aria-label");
+        expect(props).not.toHaveProperty("aria-labelledby");
+        expect(props).toHaveProperty("placeholder", "Select a fruit");
+      }
     });
   });
 });

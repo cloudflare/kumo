@@ -283,11 +283,17 @@ const triggerValueIconStyles: Record<
 function TriggerValue({
   className,
   render,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
   ...props
 }: ComboboxBase.Value.Props & {
   className?: string;
   /** Replaces the trigger element while preserving Combobox behavior. */
   render?: ComboboxBase.Trigger.Props["render"];
+  /** Accessible name for the trigger when no visible label is provided */
+  "aria-label"?: string;
+  /** ID of the element that labels the trigger */
+  "aria-labelledby"?: string;
 }) {
   const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
@@ -297,6 +303,8 @@ function TriggerValue({
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
       render={render}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledby}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",

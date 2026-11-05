@@ -1,4 +1,5 @@
 import { describe, test, expect } from "vite-plus/test";
+import { userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
 import { Combobox } from "./combobox";
 
@@ -270,6 +271,34 @@ describe("Combobox Playwright Interactions", () => {
       await trigger.click();
 
       // Listbox should be visible
+      await expect.element(getByRole("listbox")).toBeVisible();
+    });
+
+    test("aria-label names the trigger for keyboard users", async () => {
+      const { getByRole } = await render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerValue
+            aria-label="Fruit"
+            placeholder="Select a fruit"
+          />
+          <Combobox.Content>
+            <Combobox.List>
+              {(item: string) => (
+                <Combobox.Item key={item} value={item}>
+                  {item}
+                </Combobox.Item>
+              )}
+            </Combobox.List>
+          </Combobox.Content>
+        </Combobox>,
+      );
+
+      await userEvent.tab();
+      await expect
+        .element(getByRole("combobox", { name: "Fruit" }))
+        .toHaveFocus();
+
+      await userEvent.keyboard("{ArrowDown}");
       await expect.element(getByRole("listbox")).toBeVisible();
     });
   });
