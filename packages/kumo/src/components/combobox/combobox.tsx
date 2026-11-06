@@ -280,21 +280,33 @@ const triggerValueIconStyles: Record<
   lg: { padding: "pr-10", iconSize: 18, iconRight: "right-3" },
 };
 
+/**
+ * Drops keys whose value is `undefined`. Base UI's `mergeProps` lets an
+ * explicit `undefined` override internal props, so e.g.
+ * `aria-labelledby={undefined}` would erase the Field label's id.
+ */
+function omitUndefined<T extends object>(props: T): T {
+  return Object.fromEntries(
+    Object.entries(props).filter(([, value]) => value !== undefined),
+  ) as T;
+}
+
+type TriggerValueProps = Omit<
+  ComboboxBase.Trigger.Props,
+  "className" | "children"
+> &
+  ComboboxBase.Value.Props & {
+    className?: string;
+    /** Replaces the trigger element while preserving Combobox behavior. */
+    render?: ComboboxBase.Trigger.Props["render"];
+  };
+
 function TriggerValue({
   className,
-  render,
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledby,
-  ...props
-}: ComboboxBase.Value.Props & {
-  className?: string;
-  /** Replaces the trigger element while preserving Combobox behavior. */
-  render?: ComboboxBase.Trigger.Props["render"];
-  /** Accessible name for the trigger when no visible label is provided */
-  "aria-label"?: string;
-  /** ID of the element that labels the trigger. Replaces the root `label` when set. */
-  "aria-labelledby"?: string;
-}) {
+  children,
+  placeholder,
+  ...triggerProps
+}: TriggerValueProps) {
   const { size, hasError } = useContext(ComboboxContext);
   const iconStyles = triggerValueIconStyles[size];
 
@@ -302,11 +314,7 @@ function TriggerValue({
     <ComboboxBase.Trigger
       data-kumo-component="Combobox"
       data-kumo-part="trigger"
-      render={render}
-      {...(ariaLabel !== undefined && { "aria-label": ariaLabel })}
-      {...(ariaLabelledby !== undefined && {
-        "aria-labelledby": ariaLabelledby,
-      })}
+      {...omitUndefined(triggerProps)}
       className={cn(
         inputVariants({ size, variant: hasError ? "error" : "default" }),
         "relative flex items-center",
@@ -316,7 +324,9 @@ function TriggerValue({
         className,
       )}
     >
-      <ComboboxBase.Value {...props} />
+      <ComboboxBase.Value placeholder={placeholder}>
+        {children}
+      </ComboboxBase.Value>
       <ComboboxBase.Icon
         className={cn(
           "absolute top-1/2 flex -translate-y-1/2 items-center text-kumo-subtle",
@@ -568,7 +578,11 @@ function TriggerMultipleWithInput<ValueType>({
   className,
   inputSide = "right",
   value: controlledValue,
-}: {
+  ...inputProps
+}: Pick<
+  ComboboxBase.Input.Props,
+  "aria-label" | "aria-labelledby" | "aria-describedby"
+> & {
   placeholder?: string;
   renderItem: (value: ValueType) => React.ReactNode;
   className?: string;
@@ -580,7 +594,11 @@ function TriggerMultipleWithInput<ValueType>({
   // Determine which value to use for rendering chips
   const chipsToRender = controlledValue;
   const renderTriggerInput = (className: string) => (
-    <ComboboxBase.Input placeholder={placeholder} className={className} />
+    <ComboboxBase.Input
+      {...omitUndefined(inputProps)}
+      placeholder={placeholder}
+      className={className}
+    />
   );
 
   return (

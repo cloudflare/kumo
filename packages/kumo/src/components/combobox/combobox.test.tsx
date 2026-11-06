@@ -270,5 +270,86 @@ describe("Combobox", () => {
       const label = screen.getByText("Fruit").closest("label");
       expect(trigger.getAttribute("aria-labelledby")).toBe(label?.id);
     });
+
+    it("keeps the root label when aria-labelledby is explicitly undefined", () => {
+      render(
+        <Combobox items={fruits} label="Fruit">
+          <Combobox.TriggerValue
+            aria-labelledby={undefined}
+            placeholder="Select a fruit"
+          />
+        </Combobox>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Fruit" });
+      const label = screen.getByText("Fruit").closest("label");
+      expect(trigger.getAttribute("aria-labelledby")).toBe(label?.id);
+    });
+
+    it("lets an explicit aria-labelledby replace the root label", () => {
+      render(
+        <>
+          <span id="custom-label">Favorite fruit</span>
+          <Combobox items={fruits} label="Fruit">
+            <Combobox.TriggerValue
+              aria-labelledby="custom-label"
+              placeholder="Select a fruit"
+            />
+          </Combobox>
+        </>,
+      );
+
+      expect(
+        screen.getByRole("combobox", { name: "Favorite fruit" }),
+      ).toBeTruthy();
+    });
+
+    it("forwards other trigger props such as aria-describedby", () => {
+      render(
+        <>
+          <span id="fruit-hint">Pick one</span>
+          <Combobox items={fruits}>
+            <Combobox.TriggerValue
+              aria-label="Fruit"
+              aria-describedby="fruit-hint"
+              placeholder="Select a fruit"
+            />
+          </Combobox>
+        </>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Fruit" });
+      expect(trigger.getAttribute("aria-describedby")).toBe("fruit-hint");
+    });
+
+    it("still renders the placeholder and children through Value", () => {
+      render(
+        <Combobox items={fruits} defaultValue="Apple">
+          <Combobox.TriggerValue aria-label="Fruit">
+            {(value: string) => `Picked: ${value}`}
+          </Combobox.TriggerValue>
+        </Combobox>,
+      );
+
+      expect(
+        screen.getByRole("combobox", { name: "Fruit" }).textContent,
+      ).toContain("Picked: Apple");
+    });
+
+    it("names the TriggerMultipleWithInput input from aria-label", () => {
+      render(
+        <Combobox items={fruits} multiple>
+          <Combobox.TriggerMultipleWithInput
+            aria-label="Fruits"
+            placeholder="Add fruits"
+            renderItem={(item: string) => (
+              <Combobox.Chip key={item}>{item}</Combobox.Chip>
+            )}
+          />
+        </Combobox>,
+      );
+
+      expect(screen.getByRole("combobox", { name: "Fruits" })).toBeTruthy();
+    });
   });
 });
