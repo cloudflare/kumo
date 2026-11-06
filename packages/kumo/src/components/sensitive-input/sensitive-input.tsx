@@ -346,6 +346,7 @@ export const SensitiveInput = forwardRef<HTMLInputElement, SensitiveInputProps>(
           onKeyDown={handleInputKeyDown}
           disabled={disabled}
           readOnly={readOnly || isMaskedWithValue}
+          required={required}
           autoComplete={autoComplete}
           tabIndex={isMaskedWithValue ? -1 : 0}
           className={cn(
