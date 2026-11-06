@@ -416,7 +416,7 @@ function _RadioItem<T = string>(
             {label}
           </span>
           {description && (
-            <span className="text-sm text-pretty text-kumo-subtle">
+            <span className="text-sm leading-snug text-pretty text-kumo-subtle">
               {description}
             </span>
           )}
