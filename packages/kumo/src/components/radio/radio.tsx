@@ -416,7 +416,9 @@ function _RadioItem<T = string>(
             {label}
           </span>
           {description && (
-            <span className="text-sm text-kumo-subtle">{description}</span>
+            <span className="text-sm text-pretty text-kumo-subtle">
+              {description}
+            </span>
           )}
         </div>
         <BaseRadio.Root
