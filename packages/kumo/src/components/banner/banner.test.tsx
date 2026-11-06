@@ -1,7 +1,12 @@
+import { createRef, forwardRef } from "react";
 import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
 import { Banner, bannerVariants } from "./banner";
 import { Link } from "../link/link";
+import {
+  LinkProvider,
+  type LinkComponentProps,
+} from "../../utils/link-provider";
 
 describe("Banner", () => {
   it("supports secondary variant", () => {
@@ -66,6 +71,85 @@ describe("Banner", () => {
     const cta = screen.getByTestId("cta");
     expect(cta.className).toContain("fill-kumo-warning");
     expect(cta.className).toContain("hover:bg-kumo-warning/10");
+  });
+
+  it("renders a link Banner.Action with banner styling when href is set", () => {
+    const ref = createRef<HTMLAnchorElement>();
+    render(
+      <Banner
+        variant="alert"
+        title="Review your payment method"
+        action={
+          <Banner.Action ref={ref} href="/billing" className="extra">
+            Manage payments
+          </Banner.Action>
+        }
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: "Manage payments" });
+    expect(link.getAttribute("href")).toBe("/billing");
+    expect(link.getAttribute("data-kumo-component")).toBe("LinkButton");
+    expect(link.className).toContain("extra");
+    expect(link.className).toContain("h-6.5");
+    expect(
+      link.style.getPropertyValue("--kumo-button-emphasis-gradient-end"),
+    ).toBe("var(--color-kumo-warning)");
+    expect(ref.current).toBe(link);
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+
+  it("applies secondary accent styles and external props to a link action", () => {
+    render(
+      <Banner
+        size="sm"
+        variant="error"
+        title="Payment overdue"
+        action={
+          <Banner.Action
+            variant="secondary"
+            href="https://example.com"
+            external
+          >
+            View docs
+          </Banner.Action>
+        }
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: "View docs" });
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(link.className).toContain("ring-kumo-danger/50");
+    expect(link.className).toContain("h-5");
+  });
+
+  it("routes link actions through LinkProvider", () => {
+    const AppLink = forwardRef<HTMLAnchorElement, LinkComponentProps>(
+      function AppLink({ to: _to, ...props }, ref) {
+        return <a ref={ref} data-app-link="" {...props} />;
+      },
+    );
+    render(
+      <LinkProvider component={AppLink}>
+        <Banner.Action href="/billing">Manage payments</Banner.Action>
+      </LinkProvider>,
+    );
+
+    expect(screen.getByRole("link").hasAttribute("data-app-link")).toBe(true);
+  });
+
+  it("renders a disabled link action as a disabled button", () => {
+    render(
+      <Banner.Action href="/billing" disabled>
+        Manage payments
+      </Banner.Action>,
+    );
+
+    const button = screen.getByRole("button", { name: "Manage payments" });
+    expect(button.hasAttribute("disabled")).toBe(true);
+    expect(button.hasAttribute("href")).toBe(false);
+    expect(screen.queryByRole("link")).toBeNull();
   });
 
   it("styles a secondary Banner.Action as an accent-hued outline", () => {
