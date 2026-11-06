@@ -477,7 +477,9 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
               {label}
             </span>
             {description && (
-              <span className="text-sm text-kumo-subtle">{description}</span>
+              <span className="text-sm leading-snug text-pretty text-kumo-subtle">
+                {description}
+              </span>
             )}
           </div>
           <BaseCheckbox.Root
@@ -614,7 +616,9 @@ function CheckboxGroup({
           </div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
           {description && (
-            <p className="text-sm text-kumo-subtle">{description}</p>
+            <p className="text-sm leading-snug text-pretty text-kumo-subtle">
+              {description}
+            </p>
           )}
         </Fieldset.Root>
       </BaseCheckboxGroup>

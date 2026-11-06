@@ -531,7 +531,9 @@ function SwitchGroup({
         <div className="flex flex-col gap-2">{children}</div>
         {error && <p className="text-sm text-kumo-danger">{error}</p>}
         {description && (
-          <p className="text-sm text-kumo-subtle">{description}</p>
+          <p className="text-sm leading-snug text-pretty text-kumo-subtle">
+            {description}
+          </p>
         )}
       </Fieldset.Root>
     </SwitchGroupContext.Provider>
