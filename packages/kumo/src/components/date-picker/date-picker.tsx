@@ -71,6 +71,9 @@ const navButtonClassName = cn(
 // The button can sit anywhere inside the cell, so a custom DayButton that
 // wraps it keeps the styles.
 const dayButtonClassName = cn(
+  // Reset native button styles explicitly, so global button styles in the
+  // host app (e.g. a default background) don't leak into the days.
+  "m-0 border-0 bg-transparent p-0",
   "flex size-(--cell-size) items-center justify-center rounded-md text-base text-kumo-default tabular-nums transition-colors outline-none focus-visible:outline-hidden",
   "cursor-pointer hover:bg-kumo-tint",
   "focus-visible:relative focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-kumo-brand",
@@ -250,7 +253,12 @@ export function DatePicker({
           defaults.dropdown,
           "absolute inset-0 cursor-pointer opacity-0",
         ),
-        month_grid: cn(defaults.month_grid, "border-collapse"),
+        // Reset the weekday header background explicitly, so global table
+        // styles in the host app don't leak into the calendar.
+        month_grid: cn(
+          defaults.month_grid,
+          "border-collapse [&_thead]:bg-transparent",
+        ),
         weekdays: cn(defaults.weekdays, "flex"),
         weekday: cn(
           defaults.weekday,
