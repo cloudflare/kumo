@@ -6,7 +6,7 @@ import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 
 /** Base styles applied to all badge variants. */
 export const KUMO_BADGE_BASE_STYLES =
-  "inline-flex w-fit flex-none shrink-0 items-center justify-self-start gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap [a:hover_&]:ring [a:hover_&]:ring-current";
+  "inline-flex w-fit flex-none shrink-0 items-center justify-self-start gap-1 rounded-full px-2 py-0.5 text-xs/4 font-medium whitespace-nowrap [a:hover_&]:ring [a:hover_&]:ring-current";
 
 /** Badge variant definitions mapping variant names to their Tailwind classes and descriptions. */
 export const KUMO_BADGE_VARIANTS = {
