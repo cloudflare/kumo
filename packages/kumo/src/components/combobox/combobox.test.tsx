@@ -322,6 +322,21 @@ describe("Combobox", () => {
       expect(trigger.getAttribute("aria-describedby")).toBe("fruit-hint");
     });
 
+    it("accepts a ReactNode placeholder on TriggerValue", () => {
+      render(
+        <Combobox items={fruits}>
+          <Combobox.TriggerValue
+            aria-label="Fruit"
+            placeholder={<span data-testid="rich-placeholder">Pick one</span>}
+          />
+        </Combobox>,
+      );
+
+      expect(screen.getByTestId("rich-placeholder").textContent).toBe(
+        "Pick one",
+      );
+    });
+
     it("still renders the placeholder and children through Value", () => {
       render(
         <Combobox items={fruits} defaultValue="Apple">
