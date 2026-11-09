@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { useKumoLocale } from "../../utils/locale-provider";
 import { Button } from "../button";
-import { Tooltip } from "../tooltip";
+import { LazyTooltip } from "../tooltip/lazy-tooltip";
 
 /** Label variant definitions (currently empty, reserved for future additions). */
 export const KUMO_LABEL_VARIANTS = {
@@ -47,7 +47,11 @@ export interface LabelProps extends KumoLabelVariantsProps {
   showOptional?: boolean;
   /** Content shown when `showOptional` is `true`. @default "(optional)" */
   optionalLabel?: ReactNode;
-  /** Tooltip content displayed next to the label via an info icon. */
+  /**
+   * Tooltip content displayed next to the label via an info icon. The tooltip
+   * code loads when the first such label mounts; until then the icon renders
+   * without it.
+   */
   tooltip?: ReactNode;
   /** Accessible label for the tooltip button. @default "More information" */
   tooltipAriaLabel?: string;
@@ -113,7 +117,7 @@ export function Label({
         </span>
       )}
       {tooltip && (
-        <Tooltip
+        <LazyTooltip
           content={tooltip}
           render={
             <Button

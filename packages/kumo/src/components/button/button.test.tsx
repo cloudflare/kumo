@@ -1,8 +1,22 @@
 import React from "react";
-import { describe, expect, it } from "vite-plus/test";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
+import {
+  hydrateRoot,
+  type HydrationOptions,
+  type Root,
+} from "react-dom/client";
 import { Plus, type Icon } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
+
+// The tooltip code loads when the first titled button mounts.
+const waitForTooltipTrigger = () =>
+  waitFor(() => {
+    expect(
+      document.querySelector("[data-base-ui-tooltip-trigger]"),
+    ).not.toBeNull();
+  });
 
 describe("Button", () => {
   describe("children wrapper", () => {
@@ -70,6 +84,17 @@ describe("Button", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
     expect(ref.current).toBe(screen.getByRole("button"));
+  });
+
+  it("forwards ref to the button that becomes the tooltip trigger", async () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    render(
+      <Button ref={ref} title="Save changes">
+        Save
+      </Button>,
+    );
+    await waitForTooltipTrigger();
+    expect(ref.current).toBe(screen.getByRole("button", { name: "Save" }));
   });
 
   describe("icon rendering", () => {
@@ -235,12 +260,13 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: "Archive" })).toBeTruthy();
   });
 
-  it("uses an enabled tooltip trigger around a disabled button", () => {
+  it("uses an enabled tooltip trigger around a disabled button", async () => {
     render(
       <Button title="Saving is unavailable" disabled>
         Save
       </Button>,
     );
+    await waitForTooltipTrigger();
 
     const button = screen.getByRole("button", { name: "Save" });
     const trigger = button.parentElement;
@@ -251,12 +277,13 @@ describe("Button", () => {
     expect(trigger?.hasAttribute("disabled")).toBe(false);
   });
 
-  it("uses an enabled tooltip trigger around a loading button", () => {
+  it("uses an enabled tooltip trigger around a loading button", async () => {
     render(
       <Button title="Saving changes" loading>
         Save
       </Button>,
     );
+    await waitForTooltipTrigger();
 
     const button = screen.getByRole("button");
     const trigger = button.parentElement;
@@ -265,6 +292,94 @@ describe("Button", () => {
     expect(trigger?.tagName).toBe("SPAN");
     expect(trigger?.hasAttribute("data-base-ui-tooltip-trigger")).toBe(true);
     expect(trigger?.hasAttribute("disabled")).toBe(false);
+  });
+
+  it("sets displayName on Button and LinkButton", () => {
+    expect(Button.displayName).toBe("Button");
+    expect(LinkButton.displayName).toBe("LinkButton");
+  });
+
+  describe("title tooltip loading", () => {
+    const titled = <Button title="Save changes">Save</Button>;
+
+    // A server renders with its own module state, where the tooltip code has
+    // never loaded. The client below already has it, like a page that hydrates
+    // after another titled button mounted.
+    async function renderServerMarkup() {
+      vi.resetModules();
+      const { Button: ServerButton } = await import("./button");
+      const container = document.createElement("div");
+      container.innerHTML = renderToString(
+        <ServerButton title="Save changes">Save</ServerButton>,
+      );
+      document.body.append(container);
+      const serverButton = container.querySelector("button");
+      if (!serverButton) throw new Error("server markup has no button");
+      return { container, serverButton };
+    }
+
+    // The hydration render matches the server markup even when the tooltip
+    // code has already loaded, so every hydrated titled button swaps once.
+    function hydrate(container: HTMLElement, options?: HydrationOptions) {
+      let root: Root | undefined;
+      act(() => {
+        root = hydrateRoot(container, titled, options);
+      });
+      return () => {
+        act(() => root?.unmount());
+        container.remove();
+      };
+    }
+
+    it("renders the button alone on the server, even after the tooltip code loaded", async () => {
+      render(titled);
+      await waitForTooltipTrigger();
+
+      const html = renderToString(titled);
+
+      expect(html).toContain("<button");
+      expect(html).not.toContain("data-base-ui-tooltip-trigger");
+      expect(html).not.toContain("title=");
+    });
+
+    it("hydrates the server markup without a mismatch, then adds the tooltip", async () => {
+      const { container } = await renderServerMarkup();
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const recoverableErrors: unknown[] = [];
+      const cleanup = hydrate(container, {
+        onRecoverableError: (error) => recoverableErrors.push(error),
+      });
+
+      try {
+        // React keeps the server attributes on a mismatch, so a mismatched
+        // trigger would never get its tooltip.
+        const hydrationErrors = errorSpy.mock.calls.filter((args) =>
+          /hydrat|did not match/i.test(args.map(String).join(" ")),
+        );
+        expect(hydrationErrors).toEqual([]);
+        expect(recoverableErrors).toEqual([]);
+        await waitForTooltipTrigger();
+      } finally {
+        errorSpy.mockRestore();
+        cleanup();
+      }
+    });
+
+    it("keeps focus on the button when the tooltip trigger replaces it", async () => {
+      const { container, serverButton } = await renderServerMarkup();
+      serverButton.focus();
+      expect(document.activeElement).toBe(serverButton);
+      const cleanup = hydrate(container);
+
+      try {
+        await waitForTooltipTrigger();
+        const button = screen.getByRole("button", { name: "Save" });
+        expect(button).not.toBe(serverButton);
+        expect(document.activeElement).toBe(button);
+      } finally {
+        cleanup();
+      }
+    });
   });
 
   it("keeps emphasized variant rings color-matched when pressed or focused", () => {
@@ -331,12 +446,13 @@ describe("LinkButton", () => {
     expect(ref.current).toBe(screen.getByRole("link"));
   });
 
-  it("title prop wraps the anchor in a Tooltip and removes the native title attribute", () => {
+  it("title prop wraps the anchor in a Tooltip and removes the native title attribute", async () => {
     render(
       <LinkButton href="/home" title="Go to the home page">
         Home
       </LinkButton>,
     );
+    await waitForTooltipTrigger();
     const link = screen.getByRole("link", { name: "Home" });
     // title is intercepted by the Kumo Tooltip wrapper, not set as a native attribute
     expect(link.getAttribute("title")).toBeNull();
@@ -397,12 +513,13 @@ describe("LinkButton", () => {
       expect(button.classList.contains("select-none")).toBe(false);
     });
 
-    it("wraps a title in an enabled tooltip trigger around the disabled button", () => {
+    it("wraps a title in an enabled tooltip trigger around the disabled button", async () => {
       render(
         <LinkButton href="/home" disabled title="You need edit access">
           Home
         </LinkButton>,
       );
+      await waitForTooltipTrigger();
       const button = screen.getByRole("button", { name: "Home" });
       const trigger = button.parentElement;
 
