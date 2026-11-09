@@ -1,5 +1,31 @@
 # @cloudflare/kumo
 
+## 2.18.0
+
+### Minor Changes
+
+- 9d8b6e5: Add a `variant="sketch"` option to `SkeletonLine`: a wireframe-style placeholder with a rounded fill and sliding shimmer, a 1px outline, and construction strokes that overshoot each corner by 4px.
+- 085332b: Add `href` to `Banner.Action` so actions can render as links. Link actions use `LinkButton`, so they respect `LinkProvider` and support `external`.
+
+### Patch Changes
+
+- 39d33de: Keep keyboard focus visible in forced-colors mode when browsers suppress box-shadow rings. Controls retain a system-color outline, including the shared focus containers used by InputGroup, TagInput, and Slider. Keep tab outlines inside the scrolling tab list so all four edges remain visible.
+- 99e73d6: `Button` and `LinkButton` labels are now vertically centered regardless of where the button sits on the page. The bottom-padding text lift is removed, and `base` and `lg` buttons use a 20px line height (`leading-5`) so the gap between the label and the button edge is a whole pixel. With the old 21px line height that gap was 7.5px, and browsers rounded the text up or down depending on the button's position, so labels could render 1px high. `Select` triggers use the same size classes and get the same fix. The reduced leading padding for icon + text buttons is unchanged.
+- 12cd0fa: Fix several catalog runtime bugs:
+
+  - `setByPath` replaces `null` intermediate values instead of throwing, and ignores `__proto__`/`constructor`/`prototype` segments
+  - `getByPath` and `setByPath` decode JSON Pointer escapes (`~1` → `/`, `~0` → `~`)
+  - `{ auth }` conditions now work inside `and`/`or`/`not` visibility expressions (evaluator, `LogicExpression` type, and Zod schema). Unrecognised `auth` values now hide the element instead of showing it
+  - `resolveProps` resolves `{ path }` references inside arrays
+  - `hasAction` no longer reports `Object.prototype` names such as `toString` as registered actions
+
+- d8a668e: Loosen and balance choice descriptions: `Radio.Item` and `Checkbox.Item` card descriptions, and the `Radio.Group`, `Checkbox.Group`, and `Switch.Group` descriptions, now use `leading-snug` (matching `Field` and `Select` descriptions) and `text-pretty`, so multi-line descriptions are easier to read and don't end on a single orphaned word.
+- a813d01: Forward trigger props (`aria-label`, `aria-labelledby`, `aria-describedby`, `id`, handlers, etc.) from `Combobox.TriggerValue` to its trigger button instead of dropping them on `Value`, so comboboxes without a visible `label` can have an accessible name. `Combobox.TriggerMultipleWithInput` now accepts `aria-label`, `aria-labelledby` and `aria-describedby` for its input.
+- 3450917: Guard `Combobox.TriggerValue`'s `placeholder` prop type so it stays `ReactNode` and can't be narrowed to `string` by the forwarded trigger (button) props.
+- 1c85bb3: fix(date-picker): reset day button background, border, padding and margin, and the weekday header background, so host app button and table styles don't leak into the calendar
+- cbb7fe8: `Button`, `LinkButton`, `Badge`, `DropdownMenu` items, `Sidebar.MenuButton` and `InputGroup.Button` no longer crash with React error #306 when `icon` is an element passed from a React Server Component. React can deliver such an element as a lazy reference, which Kumo now unwraps before deciding whether to render `icon` as an element or a component (#891).
+- 33bdabd: Keep Dialog and alertdialog content within the dynamic viewport and allow tall content to scroll. Preserve the natural height of LayerCard sections so long forms and their final actions remain reachable on small screens.
+
 ## 2.17.0
 
 ### Minor Changes
