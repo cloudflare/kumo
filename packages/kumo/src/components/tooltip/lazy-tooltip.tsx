@@ -4,7 +4,7 @@ import type { Tooltip as TooltipComponent, TooltipProps } from "./tooltip";
 /*
  * `Tooltip` for components that need one only for an optional prop, such as
  * `Button`'s `title` and `Label`'s `tooltip`. A static import would put Base
- * UI's tooltip and floating-ui (about 129 KB minified) in every bundle that
+ * UI's tooltip and floating-ui (about 126 KB minified) in every bundle that
  * contains those components, so the tooltip code loads the first time a
  * trigger mounts instead. Until it arrives, the trigger renders alone.
  */
