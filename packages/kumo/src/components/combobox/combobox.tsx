@@ -291,9 +291,12 @@ function omitUndefined<T extends object>(props: T): T {
   ) as T;
 }
 
+// `placeholder` must be omitted from the trigger (button) props: the HTML
+// attribute is typed `string`, and intersecting it with `Value.Props`'s
+// `ReactNode` placeholder would narrow it to `string` (a breaking change).
 type TriggerValueProps = Omit<
   ComboboxBase.Trigger.Props,
-  "className" | "children"
+  "className" | "children" | "placeholder"
 > &
   ComboboxBase.Value.Props & {
     className?: string;
