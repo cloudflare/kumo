@@ -24,11 +24,13 @@ describe("Checkbox.Group", () => {
   });
 
   it("links its error and description to each checkbox", () => {
-    render(
+    const { container } = render(
       <Checkbox.Group legend="Channels" error="Pick one" description="Any">
         <Checkbox.Item label="Email" value="email" />
       </Checkbox.Group>,
     );
+    // No wrapper element: consumers reach siblings through the group's parent.
+    expect(container.firstElementChild?.getAttribute("role")).toBe("group");
     const checkbox = screen.getByRole("checkbox", { name: "Email" });
     expect(checkbox.getAttribute("aria-invalid")).toBe("true");
     expect(describedByText(checkbox)).toBe("Pick one Any");

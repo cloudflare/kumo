@@ -553,66 +553,71 @@ function RadioGroup<Value = string>({
       {/* Field.Root links the error and description to the group and each
           radio (aria-describedby), and marks them invalid. Each Radio.Item is
           a Field.Item so its radio keeps its own ids. */}
-      <FieldBase.Root invalid={Boolean(error)}>
-        <BaseRadioGroup<Value>
-          defaultValue={defaultValue}
-          value={value}
-          onValueChange={(newValue, eventDetails) =>
-            onValueChange?.(newValue, eventDetails)
-          }
-          disabled={disabled}
-          name={name}
-        >
-          <Fieldset.Root
+      <FieldBase.Root
+        invalid={Boolean(error)}
+        // Render as the group element itself; a wrapper <div> would change
+        // the group's parent for consumers.
+        render={
+          <BaseRadioGroup<Value>
+            defaultValue={defaultValue}
+            value={value}
+            onValueChange={(newValue, eventDetails) =>
+              onValueChange?.(newValue, eventDetails)
+            }
             disabled={disabled}
+            name={name}
+          />
+        }
+      >
+        <Fieldset.Root
+          disabled={disabled}
+          className={cn(
+            "flex flex-col p-0",
+            // Card and segmented groups match Field's label-to-control gap.
+            appearance === "card" || appearance === "segmented"
+              ? "gap-2"
+              : "gap-4",
+            className,
+          )}
+        >
+          {legend && (
+            <Fieldset.Legend className="text-base font-medium text-kumo-default">
+              {legend}
+            </Fieldset.Legend>
+          )}
+          {composableLegends}
+          <div
+            data-kumo-component="Radio"
+            data-kumo-part="items"
             className={cn(
-              "flex flex-col p-0",
-              // Card and segmented groups match Field's label-to-control gap.
-              appearance === "card" || appearance === "segmented"
-                ? "gap-2"
-                : "gap-4",
-              className,
+              appearance === "segmented"
+                ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
+                : orientation === "vertical"
+                  ? appearance === "card"
+                    ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
+                    : "flex flex-col gap-2"
+                  : appearance === "card"
+                    ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
+                    : "flex flex-row flex-wrap gap-2",
             )}
           >
-            {legend && (
-              <Fieldset.Legend className="text-base font-medium text-kumo-default">
-                {legend}
-              </Fieldset.Legend>
-            )}
-            {composableLegends}
-            <div
-              data-kumo-component="Radio"
-              data-kumo-part="items"
-              className={cn(
-                appearance === "segmented"
-                  ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
-                  : orientation === "vertical"
-                    ? appearance === "card"
-                      ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
-                      : "flex flex-col gap-2"
-                    : appearance === "card"
-                      ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
-                      : "flex flex-row flex-wrap gap-2",
-              )}
+            {itemChildren}
+          </div>
+          {error && (
+            <FieldBase.Error
+              match
+              render={<p />}
+              className="text-sm text-kumo-danger"
             >
-              {itemChildren}
-            </div>
-            {error && (
-              <FieldBase.Error
-                match
-                render={<p />}
-                className="text-sm text-kumo-danger"
-              >
-                {error}
-              </FieldBase.Error>
-            )}
-            {description && (
-              <FieldBase.Description className="text-sm leading-snug text-pretty text-kumo-subtle">
-                {description}
-              </FieldBase.Description>
-            )}
-          </Fieldset.Root>
-        </BaseRadioGroup>
+              {error}
+            </FieldBase.Error>
+          )}
+          {description && (
+            <FieldBase.Description className="text-sm leading-snug text-pretty text-kumo-subtle">
+              {description}
+            </FieldBase.Description>
+          )}
+        </Fieldset.Root>
       </FieldBase.Root>
     </RadioGroupContext.Provider>
   );

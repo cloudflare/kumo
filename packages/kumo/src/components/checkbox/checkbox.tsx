@@ -590,56 +590,61 @@ function CheckboxGroup({
       {/* Field.Root links the error and description to the group and each
           checkbox (aria-describedby), and marks the checkboxes invalid. Each
           Checkbox.Item is a Field.Item so its checkbox keeps its own ids. */}
-      <FieldBase.Root invalid={Boolean(error)}>
-        <BaseCheckboxGroup
-          defaultValue={defaultValue}
-          value={value}
-          onValueChange={onValueChange}
-          allValues={allValues}
-          disabled={disabled}
+      <FieldBase.Root
+        invalid={Boolean(error)}
+        // Render as the group element itself; a wrapper <div> would change
+        // the group's parent for consumers.
+        render={
+          <BaseCheckboxGroup
+            defaultValue={defaultValue}
+            value={value}
+            onValueChange={onValueChange}
+            allValues={allValues}
+            disabled={disabled}
+          />
+        }
+      >
+        <Fieldset.Root
+          className={cn(
+            "flex flex-col p-0",
+            // Card groups match Field's label-to-control gap.
+            appearance === "card" ? "gap-2" : "gap-4",
+            className,
+          )}
         >
-          <Fieldset.Root
+          {legend && (
+            <Fieldset.Legend className="text-base font-medium text-kumo-default">
+              {legend}
+            </Fieldset.Legend>
+          )}
+          <div
             className={cn(
-              "flex flex-col p-0",
-              // Card groups match Field's label-to-control gap.
-              appearance === "card" ? "gap-2" : "gap-4",
-              className,
+              orientation === "vertical"
+                ? appearance === "card"
+                  ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
+                  : "flex flex-col gap-2"
+                : appearance === "card"
+                  ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
+                  : "flex flex-row flex-wrap gap-2",
             )}
           >
-            {legend && (
-              <Fieldset.Legend className="text-base font-medium text-kumo-default">
-                {legend}
-              </Fieldset.Legend>
-            )}
-            <div
-              className={cn(
-                orientation === "vertical"
-                  ? appearance === "card"
-                    ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
-                    : "flex flex-col gap-2"
-                  : appearance === "card"
-                    ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
-                    : "flex flex-row flex-wrap gap-2",
-              )}
+            {children}
+          </div>
+          {error && (
+            <FieldBase.Error
+              match
+              render={<p />}
+              className="text-sm text-kumo-danger"
             >
-              {children}
-            </div>
-            {error && (
-              <FieldBase.Error
-                match
-                render={<p />}
-                className="text-sm text-kumo-danger"
-              >
-                {error}
-              </FieldBase.Error>
-            )}
-            {description && (
-              <FieldBase.Description className="text-sm leading-snug text-pretty text-kumo-subtle">
-                {description}
-              </FieldBase.Description>
-            )}
-          </Fieldset.Root>
-        </BaseCheckboxGroup>
+              {error}
+            </FieldBase.Error>
+          )}
+          {description && (
+            <FieldBase.Description className="text-sm leading-snug text-pretty text-kumo-subtle">
+              {description}
+            </FieldBase.Description>
+          )}
+        </Fieldset.Root>
       </FieldBase.Root>
     </CheckboxGroupContext.Provider>
   );

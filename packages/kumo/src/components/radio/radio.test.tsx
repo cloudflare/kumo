@@ -62,13 +62,15 @@ describe("Radio", () => {
   });
 
   it("links its error and description to the group and each radio", () => {
-    render(
+    const { container } = render(
       <Radio.Group legend="Choose" error="Required" description="Pick one">
         <Radio.Item label="A" value="a" />
       </Radio.Group>,
     );
 
     const group = screen.getByRole("radiogroup");
+    // No wrapper element: consumers reach siblings through the group's parent.
+    expect(group.parentElement).toBe(container);
     expect(group.getAttribute("aria-invalid")).toBe("true");
     expect(describedByText(group)).toBe("Required Pick one");
     expect(describedByText(screen.getByRole("radio", { name: "A" }))).toBe(
