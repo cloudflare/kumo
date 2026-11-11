@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  createContext,
-  useContext,
-  useId,
-  type ReactNode,
-} from "react";
+import { forwardRef, createContext, useContext, type ReactNode } from "react";
 import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
@@ -103,15 +97,10 @@ const CheckboxGroupContext = createContext<{
   controlFirst: boolean | undefined;
   appearance: KumoCheckboxAppearance;
   orientation: "vertical" | "horizontal" | null;
-  /** Ids of the group's error and description, for each checkbox. */
-  describedBy: string | undefined;
-  invalid: boolean;
 }>({
   controlFirst: undefined,
   appearance: "default",
   orientation: null,
-  describedBy: undefined,
-  invalid: false,
 });
 
 /**
@@ -423,8 +412,6 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
       controlFirst: groupControlFirst,
       appearance: groupAppearance,
       orientation,
-      describedBy,
-      invalid,
     } = useContext(CheckboxGroupContext);
     const appearance = appearanceProp ?? groupAppearance;
     const isCard = appearance === "card";
@@ -454,7 +441,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
 
     if (isCard) {
       return (
-        <label
+        <FieldBase.Item
+          render={<label />}
           data-kumo-component="Checkbox"
           data-kumo-part="item-label"
           className={cn(
@@ -503,8 +491,6 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             ref={ref}
             data-kumo-component="Checkbox"
             data-kumo-part="item"
-            aria-describedby={describedBy}
-            aria-invalid={invalid || undefined}
             value={value}
             name={name}
             checked={checked}
@@ -522,12 +508,13 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           >
             {indicator}
           </BaseCheckbox.Root>
-        </label>
+        </FieldBase.Item>
       );
     }
 
     return (
-      <label
+      <FieldBase.Item
+        render={<label />}
         data-kumo-component="Checkbox"
         data-kumo-part="item-label"
         className={cn(
@@ -543,8 +530,6 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           ref={ref}
           data-kumo-component="Checkbox"
           data-kumo-part="item"
-          aria-describedby={describedBy}
-          aria-invalid={invalid || undefined}
           value={value}
           name={name}
           checked={checked}
@@ -562,7 +547,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           {indicator}
         </BaseCheckbox.Root>
         <span className="text-base text-kumo-default">{label}</span>
-      </label>
+      </FieldBase.Item>
     );
   },
 );
@@ -598,73 +583,64 @@ function CheckboxGroup({
   controlFirst,
   className,
 }: CheckboxGroupProps) {
-  const id = useId();
-  const errorId = error ? `${id}-error` : undefined;
-  const descriptionId = description ? `${id}-description` : undefined;
-  const describedBy =
-    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
-
   return (
     <CheckboxGroupContext.Provider
-      value={{
-        controlFirst,
-        appearance,
-        orientation,
-        describedBy,
-        invalid: Boolean(error),
-      }}
+      value={{ controlFirst, appearance, orientation }}
     >
-      <BaseCheckboxGroup
-        // The `group` role doesn't support aria-invalid, so each checkbox
-        // carries it alongside the error and description ids.
-        aria-describedby={describedBy}
-        defaultValue={defaultValue}
-        value={value}
-        onValueChange={onValueChange}
-        allValues={allValues}
-        disabled={disabled}
-      >
-        <Fieldset.Root
-          className={cn(
-            "flex flex-col p-0",
-            // Card groups match Field's label-to-control gap.
-            appearance === "card" ? "gap-2" : "gap-4",
-            className,
-          )}
+      {/* Field.Root links the error and description to the group and each
+          checkbox (aria-describedby), and marks the checkboxes invalid. Each
+          Checkbox.Item is a Field.Item so its checkbox keeps its own ids. */}
+      <FieldBase.Root invalid={Boolean(error)}>
+        <BaseCheckboxGroup
+          defaultValue={defaultValue}
+          value={value}
+          onValueChange={onValueChange}
+          allValues={allValues}
+          disabled={disabled}
         >
-          {legend && (
-            <Fieldset.Legend className="text-base font-medium text-kumo-default">
-              {legend}
-            </Fieldset.Legend>
-          )}
-          <div
+          <Fieldset.Root
             className={cn(
-              orientation === "vertical"
-                ? appearance === "card"
-                  ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
-                  : "flex flex-col gap-2"
-                : appearance === "card"
-                  ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
-                  : "flex flex-row flex-wrap gap-2",
+              "flex flex-col p-0",
+              // Card groups match Field's label-to-control gap.
+              appearance === "card" ? "gap-2" : "gap-4",
+              className,
             )}
           >
-            {children}
-          </div>
-          {error && (
-            <p id={errorId} className="text-sm text-kumo-danger">
-              {error}
-            </p>
-          )}
-          {description && (
-            <p
-              id={descriptionId}
-              className="text-sm leading-snug text-pretty text-kumo-subtle"
+            {legend && (
+              <Fieldset.Legend className="text-base font-medium text-kumo-default">
+                {legend}
+              </Fieldset.Legend>
+            )}
+            <div
+              className={cn(
+                orientation === "vertical"
+                  ? appearance === "card"
+                    ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
+                    : "flex flex-col gap-2"
+                  : appearance === "card"
+                    ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
+                    : "flex flex-row flex-wrap gap-2",
+              )}
             >
-              {description}
-            </p>
-          )}
-        </Fieldset.Root>
-      </BaseCheckboxGroup>
+              {children}
+            </div>
+            {error && (
+              <FieldBase.Error
+                match
+                render={<p />}
+                className="text-sm text-kumo-danger"
+              >
+                {error}
+              </FieldBase.Error>
+            )}
+            {description && (
+              <FieldBase.Description className="text-sm leading-snug text-pretty text-kumo-subtle">
+                {description}
+              </FieldBase.Description>
+            )}
+          </Fieldset.Root>
+        </BaseCheckboxGroup>
+      </FieldBase.Root>
     </CheckboxGroupContext.Provider>
   );
 }

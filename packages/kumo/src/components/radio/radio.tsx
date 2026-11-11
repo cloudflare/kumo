@@ -4,13 +4,13 @@ import {
   createContext,
   isValidElement,
   useContext,
-  useId,
   type ReactNode,
   type ReactElement,
   type ForwardedRef,
 } from "react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
+import { Field as FieldBase } from "@base-ui/react/field";
 import { Fieldset } from "@base-ui/react/fieldset";
 import {
   RadioGroup as BaseRadioGroup,
@@ -109,21 +109,18 @@ export type RadioVariant = KumoRadioVariant;
 /** Position of the radio control relative to its label */
 export type RadioControlPosition = "start" | "end";
 
-// Context for passing controlPosition, appearance, orientation, and the
-// group's error/description ids from Group to Items. `controlPosition` may be
-// undefined so each item can fall back to an appearance-appropriate default
-// (start for default, end for card). `orientation` is null outside a
-// Radio.Group.
+// Context for passing controlPosition, appearance, and orientation from Group
+// to Items. `controlPosition` may be undefined so each item can fall back to an
+// appearance-appropriate default (start for default, end for card).
+// `orientation` is null outside a Radio.Group.
 const RadioGroupContext = createContext<{
   controlPosition: RadioControlPosition | undefined;
   appearance: KumoRadioAppearance;
   orientation: "vertical" | "horizontal" | null;
-  describedBy: string | undefined;
 }>({
   controlPosition: undefined,
   appearance: "default",
   orientation: null,
-  describedBy: undefined,
 });
 
 /**
@@ -333,7 +330,6 @@ function _RadioItem<T = string>(
     controlPosition,
     appearance: groupAppearance,
     orientation,
-    describedBy,
   } = useContext(RadioGroupContext);
   const appearance =
     groupAppearance === "segmented"
@@ -352,7 +348,8 @@ function _RadioItem<T = string>(
 
   if (appearance === "segmented") {
     return (
-      <label
+      <FieldBase.Item
+        render={<label />}
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
@@ -369,20 +366,20 @@ function _RadioItem<T = string>(
           ref={ref}
           data-kumo-component="Radio"
           data-kumo-part="item"
-          aria-describedby={describedBy}
           value={value}
           disabled={disabled}
           className="sr-only"
         />
         <span>{label}</span>
-      </label>
+      </FieldBase.Item>
     );
   }
 
   if (isCard) {
     const controlAtStart = effectiveControlPosition === "start";
     return (
-      <label
+      <FieldBase.Item
+        render={<label />}
         data-kumo-component="Radio"
         data-kumo-part="item-label"
         className={cn(
@@ -431,7 +428,6 @@ function _RadioItem<T = string>(
           ref={ref}
           data-kumo-component="Radio"
           data-kumo-part="item"
-          aria-describedby={describedBy}
           value={value}
           disabled={disabled}
           className={cn(
@@ -453,12 +449,13 @@ function _RadioItem<T = string>(
             <span className="h-2 w-2 rounded-full bg-kumo-base" />
           </BaseRadio.Indicator>
         </BaseRadio.Root>
-      </label>
+      </FieldBase.Item>
     );
   }
 
   return (
-    <label
+    <FieldBase.Item
+      render={<label />}
       data-kumo-component="Radio"
       data-kumo-part="item-label"
       className={cn(
@@ -474,7 +471,6 @@ function _RadioItem<T = string>(
         ref={ref}
         data-kumo-component="Radio"
         data-kumo-part="item"
-        aria-describedby={describedBy}
         value={value}
         disabled={disabled}
         className={cn(
@@ -497,7 +493,7 @@ function _RadioItem<T = string>(
         </BaseRadio.Indicator>
       </BaseRadio.Root>
       <span className="text-base text-kumo-default">{label}</span>
-    </label>
+    </FieldBase.Item>
   );
 }
 
@@ -550,78 +546,74 @@ function RadioGroup<Value = string>({
       )
     : children;
 
-  const id = useId();
-  const errorId = error ? `${id}-error` : undefined;
-  const descriptionId = description ? `${id}-description` : undefined;
-  const describedBy =
-    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
-
   return (
     <RadioGroupContext.Provider
-      value={{ controlPosition, appearance, orientation, describedBy }}
+      value={{ controlPosition, appearance, orientation }}
     >
-      <BaseRadioGroup<Value>
-        // Each radio also carries aria-describedby, since screen readers
-        // don't reliably announce a group's description on entry.
-        aria-describedby={describedBy}
-        aria-invalid={error ? true : undefined}
-        defaultValue={defaultValue}
-        value={value}
-        onValueChange={(newValue, eventDetails) =>
-          onValueChange?.(newValue, eventDetails)
-        }
-        disabled={disabled}
-        name={name}
-      >
-        <Fieldset.Root
+      {/* Field.Root links the error and description to the group and each
+          radio (aria-describedby), and marks them invalid. Each Radio.Item is
+          a Field.Item so its radio keeps its own ids. */}
+      <FieldBase.Root invalid={Boolean(error)}>
+        <BaseRadioGroup<Value>
+          defaultValue={defaultValue}
+          value={value}
+          onValueChange={(newValue, eventDetails) =>
+            onValueChange?.(newValue, eventDetails)
+          }
           disabled={disabled}
-          className={cn(
-            "flex flex-col p-0",
-            // Card and segmented groups match Field's label-to-control gap.
-            appearance === "card" || appearance === "segmented"
-              ? "gap-2"
-              : "gap-4",
-            className,
-          )}
+          name={name}
         >
-          {legend && (
-            <Fieldset.Legend className="text-base font-medium text-kumo-default">
-              {legend}
-            </Fieldset.Legend>
-          )}
-          {composableLegends}
-          <div
-            data-kumo-component="Radio"
-            data-kumo-part="items"
+          <Fieldset.Root
+            disabled={disabled}
             className={cn(
-              appearance === "segmented"
-                ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
-                : orientation === "vertical"
-                  ? appearance === "card"
-                    ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
-                    : "flex flex-col gap-2"
-                  : appearance === "card"
-                    ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
-                    : "flex flex-row flex-wrap gap-2",
+              "flex flex-col p-0",
+              // Card and segmented groups match Field's label-to-control gap.
+              appearance === "card" || appearance === "segmented"
+                ? "gap-2"
+                : "gap-4",
+              className,
             )}
           >
-            {itemChildren}
-          </div>
-          {error && (
-            <p id={errorId} className="text-sm text-kumo-danger">
-              {error}
-            </p>
-          )}
-          {description && (
-            <p
-              id={descriptionId}
-              className="text-sm leading-snug text-pretty text-kumo-subtle"
+            {legend && (
+              <Fieldset.Legend className="text-base font-medium text-kumo-default">
+                {legend}
+              </Fieldset.Legend>
+            )}
+            {composableLegends}
+            <div
+              data-kumo-component="Radio"
+              data-kumo-part="items"
+              className={cn(
+                appearance === "segmented"
+                  ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
+                  : orientation === "vertical"
+                    ? appearance === "card"
+                      ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
+                      : "flex flex-col gap-2"
+                    : appearance === "card"
+                      ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
+                      : "flex flex-row flex-wrap gap-2",
+              )}
             >
-              {description}
-            </p>
-          )}
-        </Fieldset.Root>
-      </BaseRadioGroup>
+              {itemChildren}
+            </div>
+            {error && (
+              <FieldBase.Error
+                match
+                render={<p />}
+                className="text-sm text-kumo-danger"
+              >
+                {error}
+              </FieldBase.Error>
+            )}
+            {description && (
+              <FieldBase.Description className="text-sm leading-snug text-pretty text-kumo-subtle">
+                {description}
+              </FieldBase.Description>
+            )}
+          </Fieldset.Root>
+        </BaseRadioGroup>
+      </FieldBase.Root>
     </RadioGroupContext.Provider>
   );
 }
