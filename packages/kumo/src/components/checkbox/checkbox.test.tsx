@@ -3,6 +3,14 @@ import { render, screen } from "@testing-library/react";
 import { KumoLocaleProvider } from "../../utils/locale-provider";
 import { Checkbox } from "./checkbox";
 
+/** Text of the elements an element's aria-describedby points at. */
+function describedByText(element: Element) {
+  return (element.getAttribute("aria-describedby") ?? "")
+    .split(" ")
+    .map((id) => document.getElementById(id)?.textContent)
+    .join(" ");
+}
+
 describe("Checkbox.Group", () => {
   it("resets inherited fieldset padding", () => {
     const { container } = render(
@@ -13,6 +21,17 @@ describe("Checkbox.Group", () => {
 
     expect(screen.getByText("Preferences")).toBeTruthy();
     expect(container.querySelector("fieldset")?.className).toContain("p-0");
+  });
+
+  it("links its error and description to each checkbox", () => {
+    render(
+      <Checkbox.Group legend="Channels" error="Pick one" description="Any">
+        <Checkbox.Item label="Email" value="email" />
+      </Checkbox.Group>,
+    );
+    const checkbox = screen.getByRole("checkbox", { name: "Email" });
+    expect(checkbox.getAttribute("aria-invalid")).toBe("true");
+    expect(describedByText(checkbox)).toBe("Pick one Any");
   });
 
   it("joins vertical card items into one card with dividers", () => {

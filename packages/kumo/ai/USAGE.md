@@ -61,7 +61,7 @@ import { Button, Input, Dialog } from "@cloudflare/kumo";
 | `Pagination`       | Navigation | Page navigation controls              | `page`, `setPage`, `perPage`, `totalCount`; `controls`: full, simple                                                           |
 | `Popover`          | Overlay    | Popup content anchored to trigger     | `.Trigger`, `.Content`, `.Title`, `.Description`, `.Close`; `side`, `align`                                                    |
 | `Radio`            | Input      | Single-select radio group             | `.Group` with `legend`, `.Item` with `label`, `value`                                                                          |
-| `Select`           | Input      | Dropdown select menu                  | `value`, `onValueChange`, `label`, `hideLabel` (default: true); children: `<Select.Option value="…">`                          |
+| `Select`           | Input      | Dropdown select menu                  | `value`, `onValueChange`, `label` (visible), `aria-label` (hidden label); children: `<Select.Option value="…">`                |
 | `SensitiveInput`   | Input      | Input with show/hide toggle           | `label`, `size`, `variant`                                                                                                     |
 | `Surface`          | Layout     | Themed container panel                | `variant`: flat, raised; `as` for polymorphic rendering                                                                        |
 | `Switch`           | Input      | Toggle switch control                 | `checked`, `onCheckedChange`, `label`, `size`                                                                                  |
@@ -162,15 +162,15 @@ import { PlusIcon, TrashIcon, GearIcon } from "@phosphor-icons/react";
 Most input components accept `label`, `description`, and `error` props that automatically wrap the input in a `<Field>`:
 
 ```tsx
-<Input label="Email" description="We'll never share your email" error="Required" variant="error" />
-<Select label="Region" hideLabel={false} error="Please select a region">
+<Input label="Email" description="We'll never share your email" error="Required" />
+<Select label="Region" error="Please select a region">
   <Select.Option value="us">US East</Select.Option>
   <Select.Option value="eu">EU West</Select.Option>
 </Select>
 <Combobox label="Tags" items={tags} multiple />
 ```
 
-> **Note:** `Select` defaults to `hideLabel={true}` (label is screen-reader only). Pass `hideLabel={false}` for a visible label.
+`error` turns the control's ring red, links the message with `aria-describedby`, and sets `aria-invalid`. Don't add `variant="error"` (deprecated on Input, InputArea, and SensitiveInput). For a label that only screen readers hear, pass `aria-label` instead of `label` (Select's `hideLabel` is deprecated).
 
 ### Compound Components
 

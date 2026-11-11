@@ -192,7 +192,10 @@ export default function Example() {
 
 <p>
   Pass the `error` prop to display a validation error. When an error is present,
-  it replaces the description in the UI.
+  it replaces the description in the UI. The trigger is marked `aria-invalid`
+  and described by the error, with or without a visible label. Other `aria-*`
+  and `data-*` props (such as `aria-describedby` or `data-testid`) are passed to
+  the trigger.
 </p>
 
   <ComponentExample demo="SelectWithErrorDemo">

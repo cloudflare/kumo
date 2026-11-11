@@ -7,6 +7,14 @@ import {
   KUMO_RADIO_DEFAULT_VARIANTS,
 } from "./radio";
 
+/** Text of the elements an element's aria-describedby points at. */
+function describedByText(element: Element) {
+  return (element.getAttribute("aria-describedby") ?? "")
+    .split(" ")
+    .map((id) => document.getElementById(id)?.textContent)
+    .join(" ");
+}
+
 describe("Radio", () => {
   it("renders a radio group with legend and items", () => {
     const { container } = render(
@@ -53,15 +61,19 @@ describe("Radio", () => {
     expect(screen.queryByText("Hidden")).toBeNull();
   });
 
-  it("renders error and description on the group", () => {
+  it("links its error and description to the group and each radio", () => {
     render(
       <Radio.Group legend="Choose" error="Required" description="Pick one">
         <Radio.Item label="A" value="a" />
       </Radio.Group>,
     );
 
-    expect(screen.getByText("Required")).toBeTruthy();
-    expect(screen.getByText("Pick one")).toBeTruthy();
+    const group = screen.getByRole("radiogroup");
+    expect(group.getAttribute("aria-invalid")).toBe("true");
+    expect(describedByText(group)).toBe("Required Pick one");
+    expect(describedByText(screen.getByRole("radio", { name: "A" }))).toBe(
+      "Required Pick one",
+    );
   });
 
   it("accepts ReactNode content for Radio.Item label", () => {

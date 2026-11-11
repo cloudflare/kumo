@@ -1,8 +1,15 @@
-import { forwardRef, createContext, useContext, type ReactNode } from "react";
+import {
+  forwardRef,
+  createContext,
+  useContext,
+  useId,
+  type ReactNode,
+} from "react";
 import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
 import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import { Label } from "../label";
+import { FieldHasLabelContext } from "../field/field";
 import { Fieldset } from "@base-ui/react/fieldset";
 import { Field as FieldBase } from "@base-ui/react/field";
 import { CheckboxGroup as BaseCheckboxGroup } from "@base-ui/react/checkbox-group";
@@ -96,10 +103,15 @@ const CheckboxGroupContext = createContext<{
   controlFirst: boolean | undefined;
   appearance: KumoCheckboxAppearance;
   orientation: "vertical" | "horizontal" | null;
+  /** Ids of the group's error and description, for each checkbox. */
+  describedBy: string | undefined;
+  invalid: boolean;
 }>({
   controlFirst: undefined,
   appearance: "default",
   orientation: null,
+  describedBy: undefined,
+  invalid: false,
 });
 
 /**
@@ -300,9 +312,12 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
     },
     ref,
   ) => {
+    // An enclosing labelled <Field> names the checkbox.
+    const namedByField = useContext(FieldHasLabelContext);
+
     // A11y enforcement: warn in dev if no accessible name provided
     if (process.env.NODE_ENV !== "production") {
-      const hasLabel = Boolean(label);
+      const hasLabel = Boolean(label) || namedByField;
       const hasAriaLabel = Boolean(props["aria-label"]);
       const hasAriaLabelledBy = Boolean(props["aria-labelledby"]);
 
@@ -408,6 +423,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
       controlFirst: groupControlFirst,
       appearance: groupAppearance,
       orientation,
+      describedBy,
+      invalid,
     } = useContext(CheckboxGroupContext);
     const appearance = appearanceProp ?? groupAppearance;
     const isCard = appearance === "card";
@@ -486,6 +503,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             ref={ref}
             data-kumo-component="Checkbox"
             data-kumo-part="item"
+            aria-describedby={describedBy}
+            aria-invalid={invalid || undefined}
             value={value}
             name={name}
             checked={checked}
@@ -524,6 +543,8 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
           ref={ref}
           data-kumo-component="Checkbox"
           data-kumo-part="item"
+          aria-describedby={describedBy}
+          aria-invalid={invalid || undefined}
           value={value}
           name={name}
           checked={checked}
@@ -577,11 +598,26 @@ function CheckboxGroup({
   controlFirst,
   className,
 }: CheckboxGroupProps) {
+  const id = useId();
+  const errorId = error ? `${id}-error` : undefined;
+  const descriptionId = description ? `${id}-description` : undefined;
+  const describedBy =
+    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
+
   return (
     <CheckboxGroupContext.Provider
-      value={{ controlFirst, appearance, orientation }}
+      value={{
+        controlFirst,
+        appearance,
+        orientation,
+        describedBy,
+        invalid: Boolean(error),
+      }}
     >
       <BaseCheckboxGroup
+        // The `group` role doesn't support aria-invalid, so each checkbox
+        // carries it alongside the error and description ids.
+        aria-describedby={describedBy}
         defaultValue={defaultValue}
         value={value}
         onValueChange={onValueChange}
@@ -614,9 +650,16 @@ function CheckboxGroup({
           >
             {children}
           </div>
-          {error && <p className="text-sm text-kumo-danger">{error}</p>}
+          {error && (
+            <p id={errorId} className="text-sm text-kumo-danger">
+              {error}
+            </p>
+          )}
           {description && (
-            <p className="text-sm leading-snug text-pretty text-kumo-subtle">
+            <p
+              id={descriptionId}
+              className="text-sm leading-snug text-pretty text-kumo-subtle"
+            >
               {description}
             </p>
           )}

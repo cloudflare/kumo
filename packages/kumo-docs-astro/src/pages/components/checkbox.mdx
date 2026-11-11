@@ -253,7 +253,9 @@ export default function Example() {
 
       <p>
         Checkbox.Group uses semantic `<fieldset>` and `<legend>` elements for
-        proper grouping announcement.
+        proper grouping announcement. The group's `error` and `description`
+        are linked to each checkbox with `aria-describedby`, and an `error`
+        sets `aria-invalid` on each checkbox.
       </p>
     </div>
 

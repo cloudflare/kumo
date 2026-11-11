@@ -4,6 +4,7 @@ import {
   createContext,
   isValidElement,
   useContext,
+  useId,
   type ReactNode,
   type ReactElement,
   type ForwardedRef,
@@ -108,18 +109,21 @@ export type RadioVariant = KumoRadioVariant;
 /** Position of the radio control relative to its label */
 export type RadioControlPosition = "start" | "end";
 
-// Context for passing controlPosition, appearance, and orientation from Group
-// to Items. `controlPosition` may be undefined so each item can fall back to an
-// appearance-appropriate default (start for default, end for card).
-// `orientation` is null outside a Radio.Group.
+// Context for passing controlPosition, appearance, orientation, and the
+// group's error/description ids from Group to Items. `controlPosition` may be
+// undefined so each item can fall back to an appearance-appropriate default
+// (start for default, end for card). `orientation` is null outside a
+// Radio.Group.
 const RadioGroupContext = createContext<{
   controlPosition: RadioControlPosition | undefined;
   appearance: KumoRadioAppearance;
   orientation: "vertical" | "horizontal" | null;
+  describedBy: string | undefined;
 }>({
   controlPosition: undefined,
   appearance: "default",
   orientation: null,
+  describedBy: undefined,
 });
 
 /**
@@ -329,6 +333,7 @@ function _RadioItem<T = string>(
     controlPosition,
     appearance: groupAppearance,
     orientation,
+    describedBy,
   } = useContext(RadioGroupContext);
   const appearance =
     groupAppearance === "segmented"
@@ -364,6 +369,7 @@ function _RadioItem<T = string>(
           ref={ref}
           data-kumo-component="Radio"
           data-kumo-part="item"
+          aria-describedby={describedBy}
           value={value}
           disabled={disabled}
           className="sr-only"
@@ -425,6 +431,7 @@ function _RadioItem<T = string>(
           ref={ref}
           data-kumo-component="Radio"
           data-kumo-part="item"
+          aria-describedby={describedBy}
           value={value}
           disabled={disabled}
           className={cn(
@@ -467,6 +474,7 @@ function _RadioItem<T = string>(
         ref={ref}
         data-kumo-component="Radio"
         data-kumo-part="item"
+        aria-describedby={describedBy}
         value={value}
         disabled={disabled}
         className={cn(
@@ -542,11 +550,21 @@ function RadioGroup<Value = string>({
       )
     : children;
 
+  const id = useId();
+  const errorId = error ? `${id}-error` : undefined;
+  const descriptionId = description ? `${id}-description` : undefined;
+  const describedBy =
+    [errorId, descriptionId].filter(Boolean).join(" ") || undefined;
+
   return (
     <RadioGroupContext.Provider
-      value={{ controlPosition, appearance, orientation }}
+      value={{ controlPosition, appearance, orientation, describedBy }}
     >
       <BaseRadioGroup<Value>
+        // Each radio also carries aria-describedby, since screen readers
+        // don't reliably announce a group's description on entry.
+        aria-describedby={describedBy}
+        aria-invalid={error ? true : undefined}
         defaultValue={defaultValue}
         value={value}
         onValueChange={(newValue, eventDetails) =>
@@ -589,9 +607,16 @@ function RadioGroup<Value = string>({
           >
             {itemChildren}
           </div>
-          {error && <p className="text-sm text-kumo-danger">{error}</p>}
+          {error && (
+            <p id={errorId} className="text-sm text-kumo-danger">
+              {error}
+            </p>
+          )}
           {description && (
-            <p className="text-sm leading-snug text-pretty text-kumo-subtle">
+            <p
+              id={descriptionId}
+              className="text-sm leading-snug text-pretty text-kumo-subtle"
+            >
               {description}
             </p>
           )}

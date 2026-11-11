@@ -1,5 +1,5 @@
 import { Field as FieldBase } from "@base-ui/react/field";
-import type { ReactNode } from "react";
+import { createContext, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { Label } from "../label";
 
@@ -120,6 +120,12 @@ export interface FieldProps extends KumoFieldVariantsProps {
   hideLabel?: boolean;
 }
 
+/**
+ * `true` inside a `<Field>` that renders a visible label. Controls read it to
+ * skip their missing-accessible-name warning, since Field's label names them.
+ */
+export const FieldHasLabelContext = createContext(false);
+
 /** Values React renders as nothing. */
 function rendersNothing(node: ReactNode) {
   return node == null || typeof node === "boolean" || node === "";
@@ -152,17 +158,26 @@ export function Field({
   // overrides the control's own aria-label with an empty name.
   const hasLabelContent =
     !rendersNothing(label) || showOptional || !rendersNothing(labelTooltip);
+  const rendersLabel = !hideLabel && hasLabelContent;
 
   return (
-    <FieldBase.Root className={fieldVariants({ controlFirst })}>
-      {!hideLabel && hasLabelContent && (
+    <FieldBase.Root
+      className={fieldVariants({ controlFirst })}
+      // An always-shown error (`match: true`) means the value is invalid, so
+      // Base UI sets `aria-invalid` on the control. Validity-keyed errors
+      // (`match: "valueMissing"`, …) keep Base UI's own validity tracking.
+      invalid={error?.match === true}
+    >
+      {rendersLabel && (
         <FieldBase.Label className="m-0 text-base font-medium text-kumo-default select-none">
           <Label showOptional={showOptional} tooltip={labelTooltip} asContent>
             {label}
           </Label>
         </FieldBase.Label>
       )}
-      {children}
+      <FieldHasLabelContext.Provider value={rendersLabel}>
+        {children}
+      </FieldHasLabelContext.Provider>
       {error ? (
         <FieldBase.Error
           className={cn(

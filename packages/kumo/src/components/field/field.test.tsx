@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import { KumoLocaleProvider } from "../../utils/locale-provider";
+import { Input } from "../input/input";
 import { Field } from "./field";
 
 describe("Field", () => {
@@ -24,6 +25,20 @@ describe("Field", () => {
     expect(
       screen.getByRole("button", { name: "Mais informações" }),
     ).toBeTruthy();
+  });
+
+  it("leaves validity-keyed errors to Base UI's validity tracking", () => {
+    render(
+      <Field
+        label="Email"
+        error={{ message: "Enter an email", match: "valueMissing" }}
+      >
+        <Input required />
+      </Field>,
+    );
+    expect(screen.getByRole("textbox").hasAttribute("aria-invalid")).toBe(
+      false,
+    );
   });
 
   it.each([

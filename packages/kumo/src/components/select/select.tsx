@@ -7,7 +7,11 @@ import { buttonVariants } from "../button";
 import { KUMO_INPUT_VARIANTS, type KumoInputSize } from "../input/input";
 import { SkeletonLine } from "../loader";
 import { Label } from "../label";
-import { Field, type FieldErrorMatch } from "../field/field";
+import {
+  Field,
+  normalizeFieldError,
+  type FieldErrorMatch,
+} from "../field/field";
 import {
   usePortalContainer,
   type PortalContainer,
@@ -463,7 +467,19 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     : undefined;
 
   // Exclude Kumo-extended `items` from Base UI spread — we pass `normalizedItems` instead
-  const { items: _items, ...baseProps } = props;
+  const { items: _items, ...rootAndTriggerProps } = props;
+  // Select.Root renders no element and drops unknown props, so ARIA and data
+  // attributes (aria-describedby, aria-invalid, data-testid, …) go to the
+  // trigger, the element that takes focus.
+  const baseProps: Record<string, unknown> = {};
+  const triggerAttributes: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(rootAndTriggerProps)) {
+    if (key.startsWith("aria-") || key.startsWith("data-")) {
+      triggerAttributes[key] = value;
+    } else {
+      baseProps[key] = value;
+    }
+  }
 
   // Use Base UI's Select.Label for accessible naming — avoids the
   // hover/focus coupling that a native <label> (from Field) would cause.
@@ -482,6 +498,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
 
   const selectTrigger = (
     <SelectBase.Trigger
+      {...triggerAttributes}
       data-kumo-component="Select"
       data-kumo-part="trigger"
       render={render}
@@ -521,7 +538,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
 
   const selectControl = (
     <SelectBase.Root
-      {...baseProps}
+      {...(baseProps as typeof rootAndTriggerProps)}
       items={normalizedItems}
       disabled={loading || props.disabled}
       required={required}
@@ -573,56 +590,42 @@ export function Select<T, Multiple extends boolean | undefined = false>({
     </SelectBase.Root>
   );
 
-  // Use Field wrapper when label is provided and not hidden
-  if (useFieldWrapper) {
+  const fieldError = normalizeFieldError(error);
+  // Hidden labels (`aria-label`, or the deprecated `hideLabel`) render no
+  // visible label, but the sr-only span still names the trigger.
+  const hiddenLabelNode =
+    !useFieldWrapper && label ? (
+      <span id={labelId} className="sr-only">
+        {label}
+      </span>
+    ) : null;
+
+  // Without a visible label, description, or error there is nothing for
+  // Field to wire up.
+  if (!useFieldWrapper && !fieldError && !description) {
     return (
-      <Field
-        label={label}
-        required={required}
-        labelTooltip={labelTooltip}
-        description={description}
-        error={
-          error
-            ? typeof error === "string"
-              ? { message: error, match: true }
-              : error
-            : undefined
-        }
-        hideLabel
-      >
+      <div className="grid gap-2">
+        {hiddenLabelNode}
         {selectControl}
-      </Field>
+      </div>
     );
   }
 
-  // Render with standalone label when label is hidden (sr-only)
-  // Still show description/error for accessibility and UX
-  const normalizedError = error
-    ? typeof error === "string"
-      ? { message: error, match: true as const }
-      : error
-    : undefined;
-
+  // Field links the description and error to the trigger with
+  // aria-describedby and marks it invalid. `hideLabel` because Select renders
+  // its own Select.Label (a native <label> would couple hover and focus).
   return (
-    <div className="grid gap-2">
-      {label && (
-        <span id={labelId} className="sr-only">
-          {label}
-        </span>
-      )}
+    <Field
+      label={label}
+      required={required}
+      labelTooltip={labelTooltip}
+      description={description}
+      error={fieldError}
+      hideLabel
+    >
+      {hiddenLabelNode}
       {selectControl}
-      {normalizedError ? (
-        <span className="text-sm text-kumo-danger">
-          {normalizedError.message}
-        </span>
-      ) : (
-        description && (
-          <span className="text-sm leading-snug text-kumo-subtle">
-            {description}
-          </span>
-        )
-      )}
-    </div>
+    </Field>
   );
 }
 

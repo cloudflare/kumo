@@ -2,12 +2,14 @@ import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 import {
   forwardRef,
+  useContext,
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
 import {
   Field,
+  FieldHasLabelContext,
   normalizeFieldError,
   type FieldErrorMatch,
 } from "../field/field";
@@ -169,9 +171,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   // Extract required from inputProps to pass to Field for label decoration
   const { required } = inputProps;
 
+  // An enclosing labelled <Field> (or InputGroup with `label`) names the input.
+  const namedByField = useContext(FieldHasLabelContext);
+
   // A11y enforcement: warn in dev if no accessible name provided
   if (process.env.NODE_ENV !== "production") {
-    const hasLabel = Boolean(label);
+    const hasLabel = Boolean(label) || namedByField;
     const hasAriaLabel = Boolean(inputProps["aria-label"]);
     const hasAriaLabelledBy = Boolean(inputProps["aria-labelledby"]);
 

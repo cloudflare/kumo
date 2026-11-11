@@ -5,6 +5,14 @@ import { KumoLocaleProvider } from "../../utils/locale-provider";
 import { Input } from "../input/input";
 import { Select } from "./select";
 
+/** Text of the elements an element's aria-describedby points at. */
+function describedByText(element: Element) {
+  return (element.getAttribute("aria-describedby") ?? "")
+    .split(" ")
+    .map((id) => document.getElementById(id)?.textContent)
+    .join(" ");
+}
+
 describe("Select", () => {
   describe("size", () => {
     it("applies size classes to the trigger", () => {
@@ -189,6 +197,40 @@ describe("Select", () => {
 
       expect(screen.getByText("Please select a database")).toBeTruthy();
       expect(screen.queryByText("Select your preferred database")).toBeNull();
+    });
+
+    it("links the error to the trigger and marks it invalid without a visible label", () => {
+      render(
+        <Select aria-label="Database" error="Please select a database">
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Database" });
+      expect(trigger.getAttribute("aria-invalid")).toBe("true");
+      expect(describedByText(trigger)).toBe("Please select a database");
+    });
+  });
+
+  describe("ARIA and data attributes", () => {
+    it("forwards them to the trigger, merging aria-describedby with the error", () => {
+      render(
+        <>
+          <p id="db-hint">Hint</p>
+          <Select
+            label="Database"
+            error="Required"
+            aria-describedby="db-hint"
+            data-testid="db-select"
+          >
+            <Select.Option value="postgres">PostgreSQL</Select.Option>
+          </Select>
+        </>,
+      );
+
+      const trigger = screen.getByTestId("db-select");
+      expect(trigger.getAttribute("role")).toBe("combobox");
+      expect(describedByText(trigger)).toBe("Hint Required");
     });
   });
 

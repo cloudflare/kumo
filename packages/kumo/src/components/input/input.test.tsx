@@ -8,6 +8,15 @@ import {
   KUMO_INPUT_DEFAULT_VARIANTS,
 } from "./input";
 import { InputArea } from "./input-area";
+import { Field } from "../field/field";
+
+/** Text of the elements an element's aria-describedby points at. */
+function describedByText(element: Element) {
+  return (element.getAttribute("aria-describedby") ?? "")
+    .split(" ")
+    .map((id) => document.getElementById(id)?.textContent)
+    .join(" ");
+}
 
 describe("Input", () => {
   // Rendering
@@ -128,6 +137,13 @@ describe("Input", () => {
   });
 
   // Error without label
+  it("marks the input invalid while an error shows", () => {
+    render(<Input label="Email" error="Enter an email" />);
+    const input = screen.getByRole("textbox", { name: "Email" });
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(describedByText(input)).toBe("Enter an email");
+  });
+
   it("renders error message without label when error is a string", () => {
     render(<Input aria-label="Email" error="Invalid email" />);
     expect(screen.getByText("Invalid email")).toBeTruthy();
@@ -173,6 +189,18 @@ describe("Input", () => {
   it("does not warn when placeholder + aria-label are set", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     render(<Input placeholder="Search" aria-label="Search" />);
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it("does not warn when an enclosing Field labels the input", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <Field label="Email">
+        <Input />
+      </Field>,
+    );
+    expect(screen.getByRole("textbox", { name: "Email" })).toBeTruthy();
     expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
   });
