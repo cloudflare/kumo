@@ -143,8 +143,10 @@ export function dialogVariants({
 }: KumoDialogVariantsProps = {}) {
   return cn(
     // Bound the panel to the dynamic viewport and scroll tall content.
-    // LayerCard sections must retain their height instead of shrinking and clipping.
-    "shadow-m ring ring-kumo-line fixed top-8 left-1/2 sm:top-16 w-full max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-6rem)] -translate-x-1/2 overflow-x-hidden overflow-y-auto overscroll-contain *:shrink-0 rounded-xl bg-kumo-base text-kumo-default duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
+    // Don't set flex-shrink on children here: a consumer flex column with a
+    // scrollable body needs that body to shrink. LayerCard sections opt out of
+    // shrinking themselves.
+    "shadow-m ring ring-kumo-line fixed top-8 left-1/2 sm:top-16 w-full max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-6rem)] -translate-x-1/2 overflow-x-hidden overflow-y-auto overscroll-contain rounded-xl bg-kumo-base text-kumo-default duration-150 data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
     // Apply size from KUMO_DIALOG_VARIANTS
     resolveVariant(
       KUMO_DIALOG_VARIANTS.size,

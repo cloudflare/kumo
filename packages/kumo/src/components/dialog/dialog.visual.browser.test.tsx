@@ -85,6 +85,70 @@ describe("Dialog viewport bounds", () => {
     await expect.element(getByRole("button", { name: "Open" })).toHaveFocus();
   });
 
+  test("lets a flex column dialog shrink its scrollable body to keep the footer visible", async () => {
+    await page.viewport(800, 400);
+    const { getByRole, getByTestId } = await render(
+      <Dialog.Root>
+        <Dialog.Trigger render={<Button />}>Open</Dialog.Trigger>
+        <Dialog className="flex max-h-[calc(100dvh-4rem)] flex-col overflow-hidden">
+          <div className="p-6">
+            <Dialog.Title>Update payment method</Dialog.Title>
+          </div>
+          <div
+            data-testid="body"
+            className="min-h-0 flex-1 overflow-y-auto p-6"
+          >
+            <div style={{ height: 900 }}>Long form content</div>
+          </div>
+          <div className="p-6">
+            <Dialog.Close render={<Button />}>Save settings</Dialog.Close>
+          </div>
+        </Dialog>
+      </Dialog.Root>,
+    );
+    await getByRole("button", { name: "Open" }).click();
+    const popup = getByRole("dialog").element();
+    await expect.poll(() => getComputedStyle(popup).opacity).toBe("1");
+    const body = getByTestId("body").element();
+    expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+    const save = getByRole("button", { name: "Save settings" });
+    expect(save.element().getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      popup.getBoundingClientRect().bottom,
+    );
+  });
+
+  test("lets a LayerCard.Primary body opt back into shrinking and scroll", async () => {
+    await page.viewport(800, 400);
+    const { getByRole, getByTestId } = await render(
+      <Dialog.Root>
+        <Dialog.Trigger render={<Button />}>Open</Dialog.Trigger>
+        <Dialog className="overflow-hidden">
+          <LayerCard.Secondary>
+            <Dialog.Title>Layered settings</Dialog.Title>
+          </LayerCard.Secondary>
+          <LayerCard.Primary
+            data-testid="body"
+            className="min-h-0 flex-1 overflow-y-auto"
+          >
+            <div style={{ height: 900, flexShrink: 0 }}>Long form content</div>
+          </LayerCard.Primary>
+          <LayerCard.Secondary>
+            <Dialog.Close render={<Button />}>Save settings</Dialog.Close>
+          </LayerCard.Secondary>
+        </Dialog>
+      </Dialog.Root>,
+    );
+    await getByRole("button", { name: "Open" }).click();
+    const popup = getByRole("dialog").element();
+    await expect.poll(() => getComputedStyle(popup).opacity).toBe("1");
+    const body = getByTestId("body").element();
+    expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+    const save = getByRole("button", { name: "Save settings" });
+    expect(save.element().getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      popup.getBoundingClientRect().bottom,
+    );
+  });
+
   test("keeps short content at its natural height and responds to viewport changes", async () => {
     await page.viewport(800, 700);
     const { getByRole } = await render(
