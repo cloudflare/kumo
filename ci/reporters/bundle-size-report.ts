@@ -14,6 +14,7 @@ export const BUNDLE_SIZE_SCHEMA_VERSION = 1;
 export const BUNDLE_SIZE_FIXTURES = [
   { id: "root-button", label: "Button (root)" },
   { id: "subpath-button", label: "Button (components/button)" },
+  { id: "root-tooltip", label: "Tooltip (root)" },
   { id: "root-trio", label: "Button + Dialog + Select (root)" },
   {
     id: "subpath-trio",

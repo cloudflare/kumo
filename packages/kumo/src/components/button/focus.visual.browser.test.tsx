@@ -1,6 +1,8 @@
 import type { CDPSession } from "vite-plus/test/browser-playwright";
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import { cdp, userEvent } from "vite-plus/test/browser";
+import { cdp, page, userEvent } from "vite-plus/test/browser";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
 import { render } from "vitest-browser-react";
 import { Button, LinkButton } from "./button";
 import { Input } from "../input/input";
@@ -235,4 +237,39 @@ describe("Tab focus outline clipping", () => {
       }
     },
   );
+});
+
+describe("Titled Button", () => {
+  test("keeps keyboard focus and opens its tooltip when the trigger replaces the button", async () => {
+    const ui = (
+      <>
+        <button>Start</button>
+        <Button title="Save changes">Save</Button>
+      </>
+    );
+    // Hydrated server markup always renders the button alone first, then
+    // swaps in the tooltip trigger, whether or not the tooltip code loaded.
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(ui);
+    document.body.append(container);
+    await page.getByRole("button", { name: "Start" }).click();
+    await userEvent.tab();
+    const serverButton = document.activeElement;
+    expect(serverButton?.textContent).toBe("Save");
+
+    const root = hydrateRoot(container, ui);
+    try {
+      await expect
+        .poll(() =>
+          document.activeElement?.hasAttribute("data-base-ui-tooltip-trigger"),
+        )
+        .toBe(true);
+      expect(document.activeElement).not.toBe(serverButton);
+      expect(document.activeElement?.matches(":focus-visible")).toBe(true);
+      await expect.element(page.getByText("Save changes")).toBeVisible();
+    } finally {
+      root.unmount();
+      container.remove();
+    }
+  });
 });
