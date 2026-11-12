@@ -226,7 +226,11 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
      * ```
      */
     renderValue?: (value: Multiple extends true ? T[] : T) => ReactNode;
-    /** Replaces the trigger element while preserving Select behavior. */
+    /**
+     * Replaces the trigger element while preserving Select behavior.
+     * Set the trigger's `id` with Select's `id` prop: Base UI does not see an
+     * `id` set here, so clicking the label would not focus the trigger.
+     */
     render?: SelectBase.Trigger.Props["render"];
     className?: string;
     /**
@@ -299,7 +303,11 @@ type SelectPropsGeneric<T, Multiple extends boolean | undefined = false> = Omit<
 export interface SelectProps extends SelectPositionerProps {
   /** Additional CSS classes merged via `cn()`. */
   className?: string;
-  /** Replaces the trigger element while preserving Select behavior. */
+  /**
+   * Replaces the trigger element while preserving Select behavior.
+   * Set the trigger's `id` with Select's `id` prop: Base UI does not see an
+   * `id` set here, so clicking the label would not focus the trigger.
+   */
   render?: SelectBase.Trigger.Props["render"];
   /** Size of the select trigger. Matches Input component sizes. */
   size?: KumoSelectSize;
@@ -403,8 +411,6 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   const propLookup = props as Record<string, unknown>;
   const ariaLabel = propLookup["aria-label"] as string | undefined;
   const ariaLabelledby = propLookup["aria-labelledby"] as string | undefined;
-  // For aria-label, use string label or placeholder (ReactNode labels can't be used for aria-label)
-  const fallbackLabel = typeof label === "string" ? label : placeholder;
 
   // Deprecation warning for hideLabel
   if (process.env.NODE_ENV !== "production" && hideLabel !== undefined) {
@@ -419,11 +425,17 @@ export function Select<T, Multiple extends boolean | undefined = false>({
   // New behavior: label presence determines Field wrapper visibility (like Input)
   // hideLabel is only respected for backward compatibility when explicitly set to true
   const useFieldWrapper = label && hideLabel !== true;
-  const triggerLabelledBy = useFieldWrapper
-    ? undefined
-    : (ariaLabelledby ?? (label ? labelId : undefined));
+  const triggerLabelledBy =
+    ariaLabelledby ?? (label && !useFieldWrapper ? labelId : undefined);
   const triggerAriaLabel =
-    ariaLabel ?? (!triggerLabelledBy ? fallbackLabel : undefined);
+    ariaLabel ?? (!label && !triggerLabelledBy ? placeholder : undefined);
+  // Base UI points the trigger's aria-labelledby at Select.Label. Passing the
+  // attribute, even as undefined, replaces that link, so pass it only when
+  // the consumer names the trigger or the label is the hidden span.
+  const triggerLabelledByProps =
+    useFieldWrapper && ariaLabel === undefined && ariaLabelledby === undefined
+      ? {}
+      : { "aria-labelledby": triggerLabelledBy };
 
   // Normalize items to array format for Base UI compatibility
   // This fixes placeholder not showing with object map items
@@ -493,7 +505,7 @@ export function Select<T, Multiple extends boolean | undefined = false>({
         className,
       )}
       aria-label={triggerAriaLabel}
-      aria-labelledby={triggerLabelledBy}
+      {...triggerLabelledByProps}
     >
       {loading ? (
         <SkeletonLine className="w-32" />
