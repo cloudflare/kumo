@@ -3,7 +3,11 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { useKumoLocale } from "../../utils/locale-provider";
 import { Button } from "../button";
-import { Tooltip } from "../tooltip";
+import { Popover } from "../popover";
+
+// Match Base UI Tooltip's default open delay, so hover feels the same.
+const HOVER_OPEN_DELAY_MS = 600;
+const HOVER_CLOSE_DELAY_MS = 200;
 
 /** Label variant definitions (currently empty, reserved for future additions). */
 export const KUMO_LABEL_VARIANTS = {
@@ -113,19 +117,29 @@ export function Label({
         </span>
       )}
       {tooltip && (
-        <Tooltip
-          content={tooltip}
-          render={
-            <Button
-              variant="ghost"
-              size="xs"
-              shape="square"
-              aria-label={resolvedTooltipLabel}
-            >
-              <Info className="size-4" />
-            </Button>
-          }
-        />
+        // A popover, not a tooltip: tap and Enter/Space open it, and screen
+        // readers reach its content. Base UI recommends popovers for info icons
+        // (base-ui.com/react/components/popover#opening-on-hover).
+        <Popover.Root>
+          <Popover.Trigger
+            openOnHover
+            delay={HOVER_OPEN_DELAY_MS}
+            closeDelay={HOVER_CLOSE_DELAY_MS}
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                shape="square"
+                aria-label={resolvedTooltipLabel}
+              />
+            }
+          >
+            <Info className="size-4" />
+          </Popover.Trigger>
+          <Popover.Content side="top" className="max-w-xs">
+            {tooltip}
+          </Popover.Content>
+        </Popover.Root>
       )}
     </>
   );

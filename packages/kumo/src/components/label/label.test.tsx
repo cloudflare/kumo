@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vite-plus/test";
 import {
   KumoLocaleProvider,
@@ -65,6 +66,18 @@ describe("Label", () => {
 
     expect(screen.getByText("(opcional)").tagName).toBe("STRONG");
     expect(screen.queryByText("(optional)")).toBeNull();
+  });
+
+  it("opens the info popover on click, so touch and keyboard users reach it", async () => {
+    const user = userEvent.setup();
+    render(<Label tooltip="Billed per request">Plan</Label>);
+
+    const trigger = screen.getByRole("button", { name: "More information" });
+    expect(trigger.getAttribute("aria-haspopup")).toBe("dialog");
+    await user.click(trigger);
+    expect((await screen.findByRole("dialog")).textContent).toContain(
+      "Billed per request",
+    );
   });
 
   it("uses a custom accessible label for the tooltip button", () => {
