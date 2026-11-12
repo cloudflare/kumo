@@ -401,6 +401,42 @@ describe("InputGroup", () => {
   });
 
   describe("accessibility", () => {
+    it("does not warn when the parent InputGroup provides the input label", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const { container } = render(
+        <InputGroup label="Search">
+          <InputGroup.Input placeholder="Search..." />
+        </InputGroup>,
+      );
+
+      const input = screen.getByRole("textbox", { name: "Search" });
+      const labelledBy = input.getAttribute("aria-labelledby");
+
+      expect(input.getAttribute("aria-label")).toBeNull();
+      expect(labelledBy).toBeTruthy();
+      expect(document.getElementById(labelledBy!)?.textContent).toBe("Search");
+      expect(container.querySelectorAll("label label")).toHaveLength(0);
+      expect(warnSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining("[Kumo Input]"),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it("warns when InputGroup.Input has no accessible name", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      render(
+        <InputGroup>
+          <InputGroup.Input />
+        </InputGroup>,
+      );
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("[Kumo Input]"),
+      );
+      warnSpy.mockRestore();
+    });
+
     it("input has accessible name via aria-label", () => {
       render(
         <InputGroup>

@@ -51,6 +51,9 @@ export const Input = forwardRef<HTMLInputElement, InputGroupInputProps>(
     // Use explicit id if provided, otherwise fall back to context id
     // (links the input to the invisible label overlay for click-to-focus).
     const inputId = props.id ?? context?.inputId;
+    const ariaLabelledBy =
+      props["aria-labelledby"] ??
+      (props["aria-label"] ? undefined : context?.labelId);
 
     return (
       <InputExternal
@@ -59,6 +62,7 @@ export const Input = forwardRef<HTMLInputElement, InputGroupInputProps>(
         disabled={context?.disabled || (props as any).disabled}
         aria-invalid={hasError || props["aria-invalid"]}
         {...props}
+        aria-labelledby={ariaLabelledBy}
         id={inputId}
         className={cn(
           // Base input layout: fill height, allow shrinking, strip native border/radius
