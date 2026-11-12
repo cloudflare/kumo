@@ -651,7 +651,7 @@ const LayerDialogActions = Object.assign(
       <div
         className={cn(
           "flex w-full items-center justify-between gap-2",
-          isDesktop && "shrink-0 pt-1.75",
+          isDesktop && "shrink-0 px-4.5 pt-3 pb-1.5",
         )}
       >
         <LayerDialogDismiss disabled={dismissDisabled} label={label} />
