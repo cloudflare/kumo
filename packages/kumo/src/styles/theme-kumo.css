@@ -37,7 +37,10 @@
     var(--color-neutral-500, oklch(55.6% 0 0))
   );
 
-  --text-color-kumo-brand: light-dark(#f6821f, #f6821f);
+  --text-color-kumo-brand: light-dark(
+    var(--color-amber-700, oklch(55.5% 0.163 48.998)),
+    #f6821f
+  );
 
   --text-color-kumo-link: light-dark(
     var(--color-blue-800, oklch(42.4% 0.199 265.638)),
@@ -298,7 +301,7 @@
     --text-color-kumo-subtle: var(--color-neutral-500, oklch(55.6% 0 0));
     --text-color-kumo-inactive: var(--color-neutral-300, oklch(87% 0 0));
     --text-color-kumo-placeholder: var(--color-neutral-400, oklch(70.8% 0 0));
-    --text-color-kumo-brand: #f6821f;
+    --text-color-kumo-brand: var(--color-amber-700, oklch(55.5% 0.163 48.998));
     --text-color-kumo-link: var(--color-blue-800, oklch(42.4% 0.199 265.638));
     --text-color-kumo-info: var(--color-blue-800, oklch(42.4% 0.199 265.638));
     --text-color-kumo-success: var(
