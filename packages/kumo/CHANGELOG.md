@@ -1,5 +1,11 @@
 # @cloudflare/kumo
 
+## 2.18.2
+
+### Patch Changes
+
+- eaa9e17: fix(flow): disable panning, drag cursors, and text-selection blocking when `canvas={false}`
+
 ## 2.18.1
 
 ### Patch Changes
