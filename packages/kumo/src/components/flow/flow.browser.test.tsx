@@ -1,4 +1,6 @@
-import { describe, test, expect } from "vite-plus/test";
+import { afterEach, describe, test, expect } from "vite-plus/test";
+import { cdp } from "vite-plus/test/browser";
+import type { CDPSession } from "vite-plus/test/browser-playwright";
 import { render } from "vitest-browser-react";
 import { parseSVG, makeAbsolute } from "svg-path-parser";
 import { forwardRef, useState, type ReactNode } from "react";
@@ -507,6 +509,92 @@ describe("Flow Integration", () => {
       assertNoPathStartingWith(container, "branch-b");
     });
   });
+
+  describe("canvas={false}", () => {
+    afterEach(() => {
+      window.getSelection()?.removeAllRanges();
+    });
+
+    const renderSelectableFlow = (canvas: boolean) =>
+      render(
+        <div style={{ width: 600 }}>
+          <Flow canvas={canvas}>
+            <Flow.Node>Selectable node text</Flow.Node>
+            <Flow.Node>End</Flow.Node>
+          </Flow>
+        </div>,
+      );
+
+    /**
+     * Drags from the diagram's empty padding (outside any node) across the
+     * node's text, recording the body styles the pan gesture would set.
+     */
+    async function dragFromPaddingAcrossNode(
+      getByText: Awaited<ReturnType<typeof renderSelectableFlow>>["getByText"],
+    ) {
+      const node = getByText("Selectable node text").element();
+      await expect.element(node).toBeVisible();
+      const nodeRect = node.getBoundingClientRect();
+      const diagramRect = node
+        .closest("[data-node-id]")!
+        .parentElement!.closest(".group")!
+        .getBoundingClientRect();
+
+      const start: [number, number] = [nodeRect.left + 2, diagramRect.top + 2];
+      const end: [number, number] = [
+        nodeRect.right - 2,
+        nodeRect.top + nodeRect.height / 2,
+      ];
+      expect(start[1]).toBeLessThan(nodeRect.top);
+
+      let duringDrag = { userSelect: "", cursor: "" };
+      await mouseDrag(start, end, () => {
+        duringDrag = {
+          userSelect: document.body.style.userSelect,
+          cursor: document.body.style.cursor,
+        };
+      });
+      return duringDrag;
+    }
+
+    test("does not block text selection when a drag starts outside a node", async () => {
+      const { getByText } = await renderSelectableFlow(false);
+
+      const duringDrag = await dragFromPaddingAcrossNode(getByText);
+
+      expect(duringDrag).toEqual({ userSelect: "", cursor: "" });
+      expect(window.getSelection()?.toString()).toContain(
+        "Selectable node text",
+      );
+    });
+
+    test("does not show a grab cursor", async () => {
+      const { container, getByText } = await render(
+        <div style={{ width: 120 }}>
+          <Flow canvas={false}>
+            <Flow.Node>A very wide node that overflows</Flow.Node>
+            <Flow.Node>End</Flow.Node>
+          </Flow>
+        </div>,
+      );
+      await expect
+        .element(getByText("A very wide node that overflows"))
+        .toBeVisible();
+
+      const wrapper = container.querySelector<HTMLElement>(".group")!;
+      expect(wrapper.style.cursor).not.toBe("grab");
+    });
+
+    test("canvas={true} still starts a pan from outside a node", async () => {
+      const { getByText } = await renderSelectableFlow(true);
+
+      const duringDrag = await dragFromPaddingAcrossNode(getByText);
+
+      expect(duringDrag).toEqual({ userSelect: "none", cursor: "grabbing" });
+      expect(document.body.style.userSelect).toBe("");
+      expect(document.body.style.cursor).toBe("");
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -733,4 +821,51 @@ function assertPathConnects({
     isCloseTo(end, leftCenter(localTo)),
     `path end ${JSON.stringify(end)} should be close to left-center of toNode ${JSON.stringify(leftCenter(localTo))}`,
   ).toBe(true);
+}
+
+/**
+ * Performs a real left-button mouse drag via CDP so the browser runs native
+ * text selection. Coordinates are relative to the test iframe's viewport.
+ */
+async function mouseDrag(
+  from: [number, number],
+  to: [number, number],
+  beforeRelease?: () => void,
+) {
+  // Vite+ re-exports cdp() without the Playwright provider's type augmentation.
+  const session = cdp() as CDPSession;
+  const frame = (
+    window.frameElement as HTMLElement | null
+  )?.getBoundingClientRect();
+  const scale = frame ? frame.width / window.innerWidth : 1;
+  const toPage = ([x, y]: [number, number]) => ({
+    x: (frame?.left ?? 0) + x * scale,
+    y: (frame?.top ?? 0) + y * scale,
+  });
+
+  await session.send("Input.dispatchMouseEvent", {
+    type: "mousePressed",
+    ...toPage(from),
+    button: "left",
+    clickCount: 1,
+  });
+  const steps = 10;
+  for (let i = 1; i <= steps; i++) {
+    await session.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      ...toPage([
+        from[0] + ((to[0] - from[0]) * i) / steps,
+        from[1] + ((to[1] - from[1]) * i) / steps,
+      ]),
+      button: "left",
+      buttons: 1,
+    });
+  }
+  beforeRelease?.();
+  await session.send("Input.dispatchMouseEvent", {
+    type: "mouseReleased",
+    ...toPage(to),
+    button: "left",
+    clickCount: 1,
+  });
 }

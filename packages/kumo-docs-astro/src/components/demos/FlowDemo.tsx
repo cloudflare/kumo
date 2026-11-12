@@ -1,5 +1,6 @@
 import { forwardRef, useState } from "react";
 import { Flow } from "@cloudflare/kumo";
+import { ShikiProvider, CodeHighlighted } from "@cloudflare/kumo/code";
 import { CaretDownIcon } from "@phosphor-icons/react";
 
 const ExpandableNode = forwardRef<
@@ -286,6 +287,35 @@ export function FlowDynamicNodeDemo() {
         <Flow.Node>End</Flow.Node>
       </Flow>
     </div>
+  );
+}
+
+/** Flow diagram with a code block node to verify syntax highlighting works */
+export function FlowWithCodeBlockDemo() {
+  return (
+    <ShikiProvider engine="javascript" languages={["typescript", "bash"]}>
+      <Flow canvas={false}>
+        <Flow.Node>Receive Request</Flow.Node>
+        <Flow.Node
+          render={
+            <li className="min-w-64 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line">
+              <div className="border-b border-kumo-line px-3 py-2 text-sm font-medium text-kumo-default">
+                Handler
+              </div>
+              <CodeHighlighted
+                code={`export default {
+  async fetch(req: Request) {
+    return new Response("ok");
+  },
+}`}
+                lang="typescript"
+              />
+            </li>
+          }
+        />
+        <Flow.Node>Return Response</Flow.Node>
+      </Flow>
+    </ShikiProvider>
   );
 }
 
