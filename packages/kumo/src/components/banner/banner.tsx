@@ -1,6 +1,8 @@
 import {
   type HTMLAttributes,
+  type ReactElement,
   type ReactNode,
+  cloneElement,
   forwardRef,
   isValidElement,
 } from "react";
@@ -46,7 +48,7 @@ export const KUMO_BANNER_VARIANTS = {
       description: "Default banner size",
     },
     sm: {
-      classes: "items-center gap-2 rounded-md px-3 py-2 text-sm",
+      classes: "items-start gap-2 rounded-md px-3 py-2 text-sm",
       description: "Compact banner for dialogs and tight spaces",
     },
   },
@@ -63,26 +65,49 @@ export type KumoBannerSize = keyof typeof KUMO_BANNER_VARIANTS.size;
 
 /**
  * Per-size render-site classes not carried by `bannerVariants` (which only emits
- * the container classes). `row` is the title↔action flex gap, `icon` the icon
- * wrapper height, `description` the description text size, and `action` the size
+ * the container classes). `row` is the title↔action flex gap,
+ * `description` the description text size, and `action` the size
  * that child `Banner.Action`s inherit via {@link BannerActionContext}.
  */
 const BANNER_SIZE_PARTS: Record<
   KumoBannerSize,
-  { row: string; icon: string; description: string; action: BannerActionSize }
+  { row: string; description: string; action: BannerActionSize }
 > = {
   base: {
     row: "gap-3",
-    icon: "h-[1.375em]",
     description: "text-sm",
     action: "sm",
   },
   sm: {
     row: "gap-2",
-    icon: "h-[1.25em]",
     description: "text-sm",
     action: "xs",
   },
+};
+
+const renderBannerIcon = (icon: ReactNode, className?: string) => {
+  const iconElement = isValidElement(icon)
+    ? (icon as ReactElement<{ className?: string }>)
+    : null;
+  const alignedIcon = iconElement
+    ? cloneElement(iconElement, {
+        className: cn(
+          iconElement.props.className,
+          "size-[1em] flex-none leading-snug",
+        ),
+      })
+    : icon;
+
+  return (
+    <span
+      className={cn(
+        "flex h-[1lh] flex-none items-center leading-snug",
+        className,
+      )}
+    >
+      {alignedIcon}
+    </span>
+  );
 };
 
 // The `Banner.Action` CTA compound lives in ./banner-action
@@ -253,17 +278,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
           className={cn(bannerVariants({ variant, size }), className)}
           {...props}
         >
-          {icon && (
-            <span
-              className={cn(
-                "flex shrink-0 items-center",
-                sizeParts.icon,
-                variantConfig.iconClasses,
-              )}
-            >
-              {icon}
-            </span>
-          )}
+          {icon && renderBannerIcon(icon, variantConfig.iconClasses)}
           <div
             className={cn(
               "flex min-w-0 flex-1 items-center justify-between",
@@ -328,11 +343,7 @@ const BannerRoot = forwardRef<HTMLDivElement, BannerProps>(function BannerRoot(
         className={cn(bannerVariants({ variant, size }), className)}
         {...props}
       >
-        {icon && (
-          <span className={cn("shrink-0", variantConfig.iconClasses)}>
-            {icon}
-          </span>
-        )}
+        {icon && renderBannerIcon(icon, variantConfig.iconClasses)}
         {content}
       </div>
     </BannerActionContext.Provider>
