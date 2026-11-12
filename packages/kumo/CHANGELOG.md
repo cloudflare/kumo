@@ -1,5 +1,25 @@
 # @cloudflare/kumo
 
+## 2.18.1
+
+### Patch Changes
+
+- 8729c71: fix(dialog): let flex column dialogs shrink a scrollable body again
+
+  2.18.0 added `*:shrink-0` to every `Dialog`, which stopped dialogs built as `flex flex-col max-h-[…] overflow-hidden` with a `flex-1 min-h-0 overflow-y-auto` body from scrolling: the body kept its full height and the footer was clipped out of reach. `Dialog` no longer sets `flex-shrink` on its children. `LayerCard.Primary` and `LayerCard.Secondary` now carry `shrink-0` themselves, so layered dialogs still keep their sections from being squashed, and a section can opt back into shrinking with `className="min-h-0 flex-1"`.
+
+  If you added `*:shrink` to a `Dialog` to work around 2.18.0, it is no longer needed and can be removed.
+
+- 63d0398: Fix `kumo migrate` so that stdout stays valid JSON when no token migrations are pending. The "No pending token migrations." text now goes to stderr, and stdout is a JSON object with an empty `classes` map. `--classes` output is unchanged.
+- aede2c3: Remove the inherited resting background from ghost buttons so translucent parent surfaces do not appear darker beneath them.
+- 68ead88: Name `Radio.Group`'s radiogroup with its legend.
+
+  `Radio.Group` rendered an unnamed `role="radiogroup"` element around a `<fieldset>` that the legend named, so assistive technology announced a radiogroup with no name. The radiogroup now renders as the fieldset itself, so there is one element, `<fieldset role="radiogroup">`, named by its `legend` or `Radio.Legend`. Queries like `getByRole("group", { name })` for a radio group's legend become `getByRole("radiogroup", { name })`.
+
+- 27f8615: Select: a visible `label` now names the trigger whatever its type. A ReactNode label, such as a translated `<Trans>` element, used to leave the trigger unnamed or named by its placeholder. The trigger now points `aria-labelledby` at the rendered label, which also keeps the name when `render` sets the trigger's `id`. A consumer `aria-labelledby` next to a visible label is now honored.
+- ac1cbbf: Fix `SensitiveInput` not forwarding `required` to the native input. The prop only decorated the label, so an empty required field did not block form submission.
+- 8c058ff: Fix Badge height inconsistencies by setting an explicit line-height instead of relying on the parent or consumer typography theme.
+
 ## 2.18.0
 
 ### Minor Changes
