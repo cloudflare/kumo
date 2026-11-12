@@ -176,15 +176,12 @@ describe("RefreshButton Generator - Icon Size Configuration", () => {
       lg: 20,
     };
 
-    const COMPACT_SIZE_MAP: Record<string, number> = {
-      xs: 14,
-      sm: 26,
-      base: 36,
-      lg: 40,
-    };
+    const COMPACT_SIZE_MAP = FALLBACK_VALUES.buttonCompactSize;
 
     for (const size of sizeProp.values) {
-      expect(REFRESH_ICON_SIZE[size]).toBeLessThan(COMPACT_SIZE_MAP[size]);
+      expect(REFRESH_ICON_SIZE[size]).toBeLessThan(
+        COMPACT_SIZE_MAP[size as keyof typeof COMPACT_SIZE_MAP],
+      );
     }
   });
 
@@ -318,12 +315,7 @@ describe("RefreshButton Generator - Complete Variant Data", () => {
   });
 
   it("should have all required configuration maps", () => {
-    const COMPACT_SIZE_MAP: Record<string, number> = {
-      xs: 14,
-      sm: 26,
-      base: 36,
-      lg: 40,
-    };
+    const COMPACT_SIZE_MAP = FALLBACK_VALUES.buttonCompactSize;
 
     const REFRESH_ICON_SIZE: Record<string, number> = {
       xs: 12,
@@ -337,7 +329,9 @@ describe("RefreshButton Generator - Complete Variant Data", () => {
 
     // Verify all size values have mappings
     for (const size of sizeProp.values) {
-      expect(COMPACT_SIZE_MAP[size]).toBeDefined();
+      expect(
+        COMPACT_SIZE_MAP[size as keyof typeof COMPACT_SIZE_MAP],
+      ).toBeDefined();
       expect(REFRESH_ICON_SIZE[size]).toBeDefined();
     }
   });

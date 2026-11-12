@@ -69,7 +69,10 @@ describe("Input", () => {
 
   it("renders with size 'sm'", () => {
     render(<Input aria-label="Test" size="sm" />);
-    expect(screen.getByRole("textbox").className).toContain("h-6.5");
+    const input = screen.getByRole("textbox");
+
+    expect(input.className).toContain("h-7.5");
+    expect(input.className).toContain("text-base");
   });
 
   it("renders with size 'lg'", () => {

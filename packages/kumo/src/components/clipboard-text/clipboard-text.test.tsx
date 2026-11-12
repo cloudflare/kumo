@@ -46,6 +46,14 @@ describe("ClipboardText", () => {
     ).toBeTruthy();
   });
 
+  it("uses the standardized small control size", () => {
+    render(<ClipboardText text="sk_live_abc123" size="sm" />);
+    const clipboardText = screen.getByText("sk_live_abc123").parentElement;
+
+    expect(clipboardText?.className).toContain("h-7.5");
+    expect(clipboardText?.className).toContain("text-base");
+  });
+
   it("copies text and announces copied state without tooltip", async () => {
     render(<ClipboardText text="token-value" />);
 
