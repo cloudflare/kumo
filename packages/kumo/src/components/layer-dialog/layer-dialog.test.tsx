@@ -522,19 +522,10 @@ describe("LayerDialog.Body edge clipping", () => {
     },
   );
 
-  it("does not fade the top of the body before Base UI measures overflow", () => {
-    // Safari skips Base UI's registered 0px initial value for the overflow
-    // vars, so the mask fallback is what renders until the first measurement.
-    // The body always opens scrolled to the top, so the top fade must fall
-    // back to 0px rather than masking out the first 24px of content.
+  it("does not mask the top or bottom edges of the body", () => {
     const { viewport, cleanup } = renderBodyWithLeadingInput(true);
 
-    expect(viewport.className).toContain(
-      "var(--scroll-area-overflow-y-start,0px)",
-    );
-    expect(viewport.className).not.toContain(
-      "var(--scroll-area-overflow-y-start,24px)",
-    );
+    expect(viewport.className).not.toContain("mask-image");
 
     cleanup();
   });
