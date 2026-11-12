@@ -66,6 +66,13 @@ describe("Button", () => {
     expect(button.classList.contains("select-text")).toBe(false);
   });
 
+  it("does not paint a resting background for ghost buttons", () => {
+    const className = buttonVariants({ variant: "ghost" });
+
+    expect(className).toContain("hover:bg-kumo-tint");
+    expect(className).not.toContain("bg-inherit");
+  });
+
   it("forwards ref to the <button> DOM node", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
