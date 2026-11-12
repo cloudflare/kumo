@@ -1,3 +1,4 @@
+import { cn } from "../../utils/cn";
 import { resolveVariant } from "../../utils/resolve-variant";
 
 /** Loader size variant definitions mapping sizes to their pixel values. */
@@ -77,7 +78,8 @@ export interface LoaderProps {
 }
 
 /**
- * Animated circular spinner for indicating loading states.
+ * Animated circular spinner for indicating loading states. The arc turns once
+ * every 2s, and stands still when the user prefers reduced motion.
  *
  * @example
  * ```tsx
@@ -90,6 +92,10 @@ export const Loader = ({
   "aria-label": ariaLabel = "Loading",
 }: LoaderProps) => {
   const sizeValue = loaderVariants({ size });
+  // The turn is a CSS transform animation, not SVG SMIL: WebKit pauses SMIL
+  // when macOS "Auto-play animated images" is off and repaints it on every
+  // frame where it runs, but hands a transform animation to the compositor.
+  // Keep the timing `linear` (never `steps()`) so WebKit can do that.
   return (
     <svg
       width={sizeValue}
@@ -97,7 +103,7 @@ export const Loader = ({
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       stroke="currentColor"
-      className={className}
+      className={cn("motion-safe:animate-[spin_2s_linear_infinite]", className)}
       role="status"
       aria-label={ariaLabel}
     >
@@ -108,30 +114,8 @@ export const Loader = ({
         fill="none"
         strokeWidth="2"
         strokeLinecap="round"
-      >
-        <animateTransform
-          attributeName="transform"
-          type="rotate"
-          from="0 12 12"
-          to="360 12 12"
-          dur="2s"
-          repeatCount="indefinite"
-        />
-        <animate
-          attributeName="stroke-dasharray"
-          values="0 150;42 150;42 150"
-          keyTimes="0;0.5;1"
-          dur="1.5s"
-          repeatCount="indefinite"
-        />
-        <animate
-          attributeName="stroke-dashoffset"
-          values="0;-16;-59"
-          keyTimes="0;0.5;1"
-          dur="1.5s"
-          repeatCount="indefinite"
-        />
-      </circle>
+        strokeDasharray="42 150"
+      />
       <circle
         cx="12"
         cy="12"

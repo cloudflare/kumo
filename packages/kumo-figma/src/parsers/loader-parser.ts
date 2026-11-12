@@ -36,9 +36,8 @@ export type CircleData = {
   strokeWidth: number;
   strokeLinecap: string;
   opacity?: number;
-  /** Animation values at midpoint (for static representation) */
+  /** Dash pattern of the foreground arc */
   strokeDasharray?: string;
-  strokeDashoffset?: string;
 };
 
 /**
@@ -105,22 +104,12 @@ export function parseLoaderSvg(): LoaderData {
   // Extract circle elements
   const circles: CircleData[] = [];
 
-  // First circle (animated foreground)
+  // First circle (foreground arc, a fixed dash that CSS turns)
   const circle1Match = content.match(
-    /<circle[\s\S]*?cx="(\d+)"[\s\S]*?cy="(\d+)"[\s\S]*?r="([\d.]+)"[\s\S]*?strokeWidth="(\d+)"[\s\S]*?strokeLinecap="(\w+)"[\s\S]*?>[\s\S]*?<animate[\s\S]*?attributeName="stroke-dasharray"[\s\S]*?values="([^"]+)"[\s\S]*?<animate[\s\S]*?attributeName="stroke-dashoffset"[\s\S]*?values="([^"]+)"/,
+    /<circle[^>]*?cx="(\d+)"[^>]*?cy="(\d+)"[^>]*?r="([\d.]+)"[^>]*?strokeWidth="(\d+)"[^>]*?strokeLinecap="(\w+)"[^>]*?strokeDasharray="([^"]+)"/,
   );
 
   if (circle1Match) {
-    // Parse animation values to get midpoint
-    const dashArrayValues = circle1Match[6].split(";");
-    const dashOffsetValues = circle1Match[7].split(";");
-
-    // Use midpoint values (index 1 for keyTimes="0;0.5;1")
-    const midpointDashArray =
-      dashArrayValues.length > 1 ? dashArrayValues[1] : dashArrayValues[0];
-    const midpointDashOffset =
-      dashOffsetValues.length > 1 ? dashOffsetValues[1] : dashOffsetValues[0];
-
     circles.push({
       cx: parseInt(circle1Match[1], 10),
       cy: parseInt(circle1Match[2], 10),
@@ -128,8 +117,7 @@ export function parseLoaderSvg(): LoaderData {
       fill: "none",
       strokeWidth: parseInt(circle1Match[4], 10),
       strokeLinecap: circle1Match[5],
-      strokeDasharray: midpointDashArray,
-      strokeDashoffset: midpointDashOffset,
+      strokeDasharray: circle1Match[6],
     });
   }
 
@@ -172,9 +160,9 @@ export function parseLoaderSvg(): LoaderData {
   />`;
   }
 
-  // Foreground arc (the animated spinner, shown at midpoint)
+  // Foreground arc (the spinner's fixed arc; the turn is CSS, not drawn)
   // Instead of stroke-dasharray (which Figma renders as dashes), use an actual arc path
-  // The animation shows ~70% of the circle at midpoint (42/60 ≈ 0.7)
+  // The arc covers ~70% of the circle (dash 42 of a 59.7 circumference)
   if (fgCircle) {
     // Create an arc path that represents ~70% of the circle
     // Starting from top (-90°), going clockwise for about 250° (70% of 360°)
