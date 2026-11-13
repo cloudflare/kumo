@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TagInput } from "@cloudflare/kumo";
+import { Button, TagInput } from "@cloudflare/kumo";
 
 export function TagInputDemo() {
   const [recipients, setRecipients] = useState(["ava@cloudflare.com"]);
@@ -35,6 +35,51 @@ export function TagInputLimitedDemo() {
       maxValues={3}
       description="A maximum of three groups."
       placeholder="Type a group name"
+    />
+  );
+}
+
+/** Each tag is submitted as its own form value, and `required` follows the tags. */
+export function TagInputFormDemo() {
+  const [submitted, setSubmitted] = useState<string[] | null>(null);
+
+  return (
+    <form
+      className="flex w-full max-w-md flex-col gap-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        setSubmitted(data.getAll("topics").map(String));
+      }}
+    >
+      <TagInput
+        name="topics"
+        required
+        label="Topics"
+        description="Add at least one topic, then submit."
+        placeholder="Add a topic"
+      />
+      <div className="flex items-center gap-3">
+        <Button type="submit" variant="primary">
+          Submit
+        </Button>
+        {submitted ? (
+          <code className="text-sm text-kumo-subtle">
+            topics: {JSON.stringify(submitted)}
+          </code>
+        ) : null}
+      </div>
+    </form>
+  );
+}
+
+export function TagInputReadOnlyDemo() {
+  return (
+    <TagInput
+      readOnly
+      defaultValue={["billing", "dns", "workers"]}
+      label="Assigned teams"
+      description="Managed by your organization's administrator."
     />
   );
 }

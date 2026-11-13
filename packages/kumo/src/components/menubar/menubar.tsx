@@ -48,7 +48,7 @@ const MenuOption = ({
       data-kumo-part="option"
       aria-label={tooltip}
       className={cn(
-        "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed transition-colors first:rounded-l-lg last:rounded-r-lg focus:z-3 focus:ring-kumo-focus/50 focus:outline-none focus-visible:z-3 focus-visible:ring-2 focus-visible:ring-kumo-brand",
+        "relative -ml-px flex h-full w-11 cursor-pointer items-center justify-center rounded-md border-none bg-kumo-recessed transition-colors first:rounded-l-lg last:rounded-r-lg focus:z-3 focus:ring-kumo-focus/50 focus:outline-hidden focus-visible:z-3 focus-visible:ring-2 focus-visible:ring-kumo-brand",
         {
           "z-2 bg-kumo-base shadow-xs transition-colors": isActive === id,
         },

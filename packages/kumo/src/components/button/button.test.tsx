@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vite-plus/test";
 import { render, screen } from "@testing-library/react";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, type Icon } from "@phosphor-icons/react";
 import { Button, RefreshButton, LinkButton, buttonVariants } from "./button";
 
 describe("Button", () => {
@@ -66,6 +66,13 @@ describe("Button", () => {
     expect(button.classList.contains("select-text")).toBe(false);
   });
 
+  it("does not paint a resting background for ghost buttons", () => {
+    const className = buttonVariants({ variant: "ghost" });
+
+    expect(className).toContain("hover:bg-kumo-tint");
+    expect(className).not.toContain("bg-inherit");
+  });
+
   it("forwards ref to the <button> DOM node", () => {
     const ref = React.createRef<HTMLButtonElement>();
     render(<Button ref={ref}>Click</Button>);
@@ -109,7 +116,6 @@ describe("Button", () => {
       render(<Button icon={Plus}>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
       expect(button.className).toContain("pl-2.5");
-      expect(button.className).toContain("pb-0.5");
     });
 
     it.each(["square", "circle"] as const)(
@@ -122,13 +128,36 @@ describe("Button", () => {
       },
     );
 
-    it("keeps symmetric padding without an icon but still lifts the text", () => {
+    it("keeps symmetric padding without an icon", () => {
       render(<Button>Add</Button>);
       const button = screen.getByRole("button", { name: "Add" });
       expect(button.className).toContain("px-3");
-      expect(button.className).toContain("pb-0.5");
       expect(button.className).not.toContain("pl-2.5");
     });
+
+    it.each(["xs", "sm", "base", "lg"] as const)(
+      "does not shift %s text off the line box center",
+      (size) => {
+        render(
+          <Button size={size} icon={Plus}>
+            Add
+          </Button>,
+        );
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).not.toContain("pb-");
+        expect(button.className).not.toContain("translate-y");
+      },
+    );
+
+    it.each(["base", "lg"] as const)(
+      "uses a 20px line box at %s so the label gap is a whole pixel",
+      (size) => {
+        render(<Button size={size}>Add</Button>);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.className).toContain("text-base");
+        expect(button.className).toContain("leading-5");
+      },
+    );
 
     it.each([false, "", [null, false]])(
       "keeps symmetric padding when children render nothing (%j)",
@@ -140,7 +169,6 @@ describe("Button", () => {
         );
         const button = screen.getByRole("button", { name: "Add" });
         expect(button.className).not.toContain("pl-2.5");
-        expect(button.className).not.toContain("pb-0.5");
       },
     );
 
@@ -149,6 +177,35 @@ describe("Button", () => {
       const button = screen.getByRole("button", { name: "Add" });
       const svg = button.querySelector("svg");
       expect(svg).toBeTruthy();
+    });
+
+    // React Flight (RSC) can deliver an element prop as a lazy reference whose
+    // resolved value is an element, not a component (#891).
+    it.skipIf(React.version.startsWith("18."))(
+      "accepts an element delivered as an RSC lazy reference",
+      () => {
+        const lazyElement = {
+          $$typeof: Symbol.for("react.lazy"),
+          _payload: <Plus data-testid="plus-icon" />,
+          _init: (payload: React.ReactElement) => payload,
+        } as unknown as React.ReactNode;
+
+        render(<Button icon={lazyElement}>Add</Button>);
+        const button = screen.getByRole("button", { name: "Add" });
+        expect(button.querySelector("svg")).toBeTruthy();
+      },
+    );
+
+    it("accepts a React.lazy icon component", async () => {
+      const LazyPlus = React.lazy(() => Promise.resolve({ default: Plus }));
+
+      render(
+        <React.Suspense fallback={null}>
+          <Button icon={LazyPlus as unknown as Icon}>Add</Button>
+        </React.Suspense>,
+      );
+      const button = await screen.findByRole("button", { name: "Add" });
+      expect(button.querySelector("svg")).toBeTruthy();
     });
   });
 

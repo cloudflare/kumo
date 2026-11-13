@@ -327,7 +327,7 @@ const CheckboxBase = forwardRef<HTMLButtonElement, CheckboxProps>(
         disabled={disabled}
         onCheckedChange={onCheckedChange}
         className={cn(
-          "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-none",
+          "relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-hidden",
           label && "mt-0.5",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-hairline",
           !disabled &&
@@ -477,7 +477,9 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
               {label}
             </span>
             {description && (
-              <span className="text-sm text-kumo-subtle">{description}</span>
+              <span className="text-sm leading-snug text-pretty text-kumo-subtle">
+                {description}
+              </span>
             )}
           </div>
           <BaseCheckbox.Root
@@ -491,7 +493,7 @@ const CheckboxItem = forwardRef<HTMLButtonElement, CheckboxItemProps>(
             disabled={disabled}
             onCheckedChange={onCheckedChange}
             className={cn(
-              "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring focus:ring-kumo-focus focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+              "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-0 bg-kumo-base ring focus:ring-kumo-focus focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand",
               variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
               !disabled &&
                 variant !== "error" &&
@@ -614,7 +616,9 @@ function CheckboxGroup({
           </div>
           {error && <p className="text-sm text-kumo-danger">{error}</p>}
           {description && (
-            <p className="text-sm text-kumo-subtle">{description}</p>
+            <p className="text-sm leading-snug text-pretty text-kumo-subtle">
+              {description}
+            </p>
           )}
         </Fieldset.Root>
       </BaseCheckboxGroup>

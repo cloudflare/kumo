@@ -139,6 +139,30 @@ describe("Select", () => {
       const trigger = document.querySelector('[role="combobox"]');
       expect(trigger?.getAttribute("aria-label")).toBe("Select a database");
     });
+
+    it("names the trigger from a ReactNode label", () => {
+      render(
+        <Select label={<span>Database</span>} placeholder="Choose one">
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      expect(screen.getByRole("combobox", { name: "Database" })).toBeTruthy();
+    });
+
+    it("keeps the label name when the consumer sets the trigger id", () => {
+      render(
+        <Select
+          label={<span>Database</span>}
+          render={(props) => <button {...props} id="database-trigger" />}
+        >
+          <Select.Option value="postgres">PostgreSQL</Select.Option>
+        </Select>,
+      );
+
+      const trigger = screen.getByRole("combobox", { name: "Database" });
+      expect(trigger.id).toBe("database-trigger");
+    });
   });
 
   describe("description and error", () => {

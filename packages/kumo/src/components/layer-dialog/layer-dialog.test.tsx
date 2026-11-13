@@ -29,8 +29,29 @@ describe("LayerDialog", () => {
     expect(LayerDialog.Title).toBeDefined();
     expect(LayerDialog.Description).toBeDefined();
     expect(LayerDialog.Body).toBeDefined();
+    expect(LayerDialog.Separator).toBeDefined();
     expect(LayerDialog.Action).toBeDefined();
     expect(LayerDialog.Actions).toBeDefined();
+  });
+
+  it("renders a full-width body separator", () => {
+    const { getByRole } = render(
+      <LayerDialog.Root open>
+        <LayerDialog.Content>
+          <LayerDialog.Title>Sections</LayerDialog.Title>
+          <LayerDialog.Body>
+            <span>First</span>
+            <LayerDialog.Separator />
+            <span>Second</span>
+          </LayerDialog.Body>
+        </LayerDialog.Content>
+      </LayerDialog.Root>,
+    );
+
+    const separator = getByRole("separator");
+    expect(separator.className).toContain("-mx-4");
+    expect(separator.className).toContain("sm:-mx-4.5");
+    expect(separator.className).toContain("bg-kumo-hairline");
   });
 
   it("uses a larger constrained desktop width by default", () => {
@@ -514,6 +535,20 @@ describe("LayerDialog.Body edge clipping", () => {
     expect(viewport.className).not.toContain(
       "var(--scroll-area-overflow-y-start,24px)",
     );
+
+    cleanup();
+  });
+
+  it("hides native scrollbars without Base UI's injected style", () => {
+    // Base UI forces `overflow: scroll` on the viewport and hides the native
+    // scrollbars only through a <style> it adds to <head> once per document.
+    // Head-swapping client routers (Astro's ClientRouter) remove that style,
+    // which shows empty scrollbar tracks wherever scrollbars are always
+    // visible, so the viewport must carry Kumo's own rule.
+    const { viewport, cleanup } = renderBodyWithLeadingInput(true);
+
+    expect(viewport.style.overflow).toBe("scroll");
+    expect(viewport.className).toMatch(/(^|\s)no-scrollbar(\s|$)/);
 
     cleanup();
   });

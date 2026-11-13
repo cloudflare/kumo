@@ -183,6 +183,45 @@ describe("TimeseriesChart", () => {
     );
   });
 
+  it("hides overlapping x-axis labels by default and supports disabling it", async () => {
+    const mockChart = createMockChart();
+    const mockEcharts = createMockEcharts(mockChart);
+
+    const { rerender } = render(
+      <TimeseriesChart echarts={mockEcharts as any} data={[]} />,
+    );
+
+    await waitFor(() =>
+      expect(mockChart.setOption).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          xAxis: expect.objectContaining({
+            axisLabel: expect.objectContaining({ hideOverlap: true }),
+          }),
+        }),
+        expect.anything(),
+      ),
+    );
+
+    rerender(
+      <TimeseriesChart
+        echarts={mockEcharts as any}
+        data={[]}
+        xAxisHideLabelOverlap={false}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(mockChart.setOption).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          xAxis: expect.objectContaining({
+            axisLabel: expect.objectContaining({ hideOverlap: false }),
+          }),
+        }),
+        expect.anything(),
+      ),
+    );
+  });
+
   it("does not reserve footer space for an empty string", () => {
     const { container } = render(
       <TooltipContent
@@ -385,5 +424,29 @@ describe("TimeseriesChart", () => {
         },
       }),
     );
+  });
+
+  it.each([
+    ["without markers", undefined],
+    ["with markers", [{ timestamp: 1, label: "Deployment" }]],
+  ])("renders large multi-series datasets %s", async (_, markers) => {
+    const mockChart = createMockChart();
+    const points = Array.from(
+      { length: 150_000 },
+      (_, i) => [i, i] as [number, number],
+    );
+
+    render(
+      <TimeseriesChart
+        echarts={createMockEcharts(mockChart) as any}
+        data={[
+          { name: "Requests", color: "#4290F0", data: points },
+          { name: "Errors", color: "#F04242", data: points },
+        ]}
+        markers={markers}
+      />,
+    );
+
+    await waitFor(() => expect(mockChart.setOption).toHaveBeenCalled());
   });
 });

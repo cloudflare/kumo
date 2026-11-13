@@ -1,5 +1,100 @@
 # @cloudflare/kumo-docs-astro
 
+## 1.5.27
+
+### Patch Changes
+
+- Updated dependencies [8729c71]
+- Updated dependencies [63d0398]
+- Updated dependencies [aede2c3]
+- Updated dependencies [68ead88]
+- Updated dependencies [27f8615]
+- Updated dependencies [ac1cbbf]
+- Updated dependencies [8c058ff]
+  - @cloudflare/kumo@2.18.1
+
+## 1.5.26
+
+### Patch Changes
+
+- Updated dependencies [39d33de]
+- Updated dependencies [99e73d6]
+- Updated dependencies [12cd0fa]
+- Updated dependencies [d8a668e]
+- Updated dependencies [a813d01]
+- Updated dependencies [3450917]
+- Updated dependencies [1c85bb3]
+- Updated dependencies [cbb7fe8]
+- Updated dependencies [9d8b6e5]
+- Updated dependencies [33bdabd]
+- Updated dependencies [085332b]
+  - @cloudflare/kumo@2.18.0
+
+## 1.5.25
+
+### Patch Changes
+
+- Updated dependencies [c2b2fc4]
+- Updated dependencies [7d1c776]
+- Updated dependencies [06726b0]
+- Updated dependencies [595463b]
+- Updated dependencies [40eaa25]
+- Updated dependencies [3aa0d59]
+- Updated dependencies [890a6ab]
+- Updated dependencies [4185bb1]
+  - @cloudflare/kumo@2.17.0
+
+## 1.5.24
+
+### Patch Changes
+
+- Updated dependencies [99b17fb]
+- Updated dependencies [6a093a5]
+- Updated dependencies [e16f41f]
+- Updated dependencies [fedc8a7]
+- Updated dependencies [947065a]
+- Updated dependencies [810d820]
+  - @cloudflare/kumo@2.16.0
+
+## 1.5.23
+
+### Patch Changes
+
+- Updated dependencies [2c53422]
+- Updated dependencies [09a9dae]
+- Updated dependencies [df14b5d]
+- Updated dependencies [cdb7e0f]
+- Updated dependencies [88850d5]
+- Updated dependencies [dc7c513]
+- Updated dependencies [5282710]
+- Updated dependencies [3d93312]
+- Updated dependencies [f7d6829]
+- Updated dependencies [03aa5ae]
+- Updated dependencies [dae9cdd]
+- Updated dependencies [1846759]
+- Updated dependencies [7e0ff40]
+- Updated dependencies [81b0ef4]
+- Updated dependencies [a8c946a]
+- Updated dependencies [c3b0294]
+- Updated dependencies [49317c6]
+- Updated dependencies [86af1a1]
+- Updated dependencies [d97d751]
+- Updated dependencies [bfb4140]
+- Updated dependencies [1cb4773]
+- Updated dependencies [aef723c]
+- Updated dependencies [6701f40]
+- Updated dependencies [462516f]
+- Updated dependencies [17d094e]
+- Updated dependencies [85afbd0]
+- Updated dependencies [543dc8a]
+- Updated dependencies [2f9b17f]
+- Updated dependencies [72b3346]
+- Updated dependencies [5ee4a03]
+- Updated dependencies [7d91721]
+- Updated dependencies [828866a]
+- Updated dependencies [f46e8bc]
+  - @cloudflare/kumo@2.15.0
+
 ## 1.5.22
 
 ### Patch Changes

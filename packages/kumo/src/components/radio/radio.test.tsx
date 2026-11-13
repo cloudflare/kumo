@@ -22,6 +22,25 @@ describe("Radio", () => {
     expect(container.querySelector("fieldset")?.className).toContain("p-0");
   });
 
+  it("names the radiogroup with its legend", () => {
+    render(
+      <>
+        <Radio.Group legend="Plan" defaultValue="a">
+          <Radio.Item label="Free" value="a" />
+        </Radio.Group>
+        <Radio.Group defaultValue="a">
+          <Radio.Legend>Region</Radio.Legend>
+          <Radio.Item label="EU" value="a" />
+        </Radio.Group>
+      </>,
+    );
+
+    expect(screen.getByRole("radiogroup", { name: "Plan" })).toBeTruthy();
+    expect(screen.getByRole("radiogroup", { name: "Region" })).toBeTruthy();
+    // One labelled group, not a nameless radiogroup around a named fieldset.
+    expect(screen.queryAllByRole("group")).toHaveLength(0);
+  });
+
   it("renders card items with description", () => {
     render(
       <Radio.Group legend="Plan" appearance="card" defaultValue="free">
@@ -172,7 +191,9 @@ describe("Radio", () => {
       </Radio.Group>,
     );
 
-    expect(screen.getByRole("group", { name: "Duration preset" })).toBeTruthy();
+    expect(
+      screen.getByRole("radiogroup", { name: "Duration preset" }),
+    ).toBeTruthy();
     expect(screen.getAllByRole("radio")).toHaveLength(3);
 
     const items = container.querySelector('[data-kumo-part="items"]');
@@ -340,7 +361,9 @@ describe("Radio", () => {
     const legend = screen.getByText("Duration preset");
     const items = container.querySelector('[data-kumo-part="items"]');
 
-    expect(screen.getByRole("group", { name: "Duration preset" })).toBeTruthy();
+    expect(
+      screen.getByRole("radiogroup", { name: "Duration preset" }),
+    ).toBeTruthy();
     expect(items?.contains(legend)).toBe(false);
     expect(items?.querySelectorAll('[data-kumo-part="item"]')).toHaveLength(2);
   });

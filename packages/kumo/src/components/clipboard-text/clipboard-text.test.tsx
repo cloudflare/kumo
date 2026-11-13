@@ -95,6 +95,27 @@ describe("ClipboardText", () => {
     expect(writeText).toHaveBeenCalledWith("hidden-secret-value");
   });
 
+  it("masks the text initially and allows toggling its visibility", () => {
+    render(<ClipboardText text="sk_live_abc123" masked />);
+
+    expect(screen.getByText("••••••••")).toBeTruthy();
+    expect(screen.queryByText("sk_live_abc123")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Reveal value" }));
+    expect(screen.getByText("sk_live_abc123")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide value" }));
+    expect(screen.getByText("••••••••")).toBeTruthy();
+  });
+
+  it("copies the original text while it is masked", async () => {
+    render(<ClipboardText text="sk_live_abc123" masked />);
+
+    await clickCopyButton();
+
+    expect(writeText).toHaveBeenCalledWith("sk_live_abc123");
+  });
+
   it("shows a single anchored copied toast and bumps it on re-click", async () => {
     vi.useFakeTimers();
     const { container } = render(

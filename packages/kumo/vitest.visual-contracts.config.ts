@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: { include: ["@base-ui/react/slider"] },
   test: {
     include: ["**/*.visual.browser.test.tsx"],
     setupFiles: ["./tests/setup-browser.css"],

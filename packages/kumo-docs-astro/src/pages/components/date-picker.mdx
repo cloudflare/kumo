@@ -13,6 +13,7 @@ import {
   DatePickerMultipleDemo,
   DatePickerRangeDemo,
   DatePickerRangeMinMaxDemo,
+  DatePickerDropdownCaptionDemo,
   DatePickerPopoverDemo,
   DatePickerRangePopoverDemo,
   DatePickerRangeWithPresetsDemo,
@@ -111,6 +112,16 @@ export default function Example() {
 <p>Constrain the range length using `min` and `max` props (in days/nights).</p>
 <ComponentExample demo="DatePickerRangeMinMaxDemo">
   <DatePickerRangeMinMaxDemo client:load />
+</ComponentExample>
+
+### Month and Year Dropdowns
+
+<p>
+  Set `captionLayout="dropdown"` to jump straight to a month and year. Use
+  `startMonth` and `endMonth` to bound the years.
+</p>
+<ComponentExample demo="DatePickerDropdownCaptionDemo">
+  <DatePickerDropdownCaptionDemo client:load />
 </ComponentExample>
 
 ### With Popover

@@ -168,9 +168,36 @@
   }
 }
 
+/* Identical to toast-bump: switching names lets repeated bumps replay */
+@keyframes toast-bump-alternate {
+  0% {
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 .animate-toast-bump {
   animation: toast-bump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center;
+}
+
+.animate-toast-bump-alternate {
+  animation: toast-bump-alternate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-toast-bump,
+  .animate-toast-bump-alternate {
+    animation: none;
+  }
 }
 
 /* Subtle bump for small anchored clipboard "Copied" toasts */
@@ -325,4 +352,136 @@
 /* Input placeholder color - vanilla CSS to avoid Tailwind parsing issues */
 .kumo-input-placeholder::placeholder {
   color: var(--text-color-kumo-placeholder);
+}
+
+/* DatePicker month-change animations (react-day-picker). Layout, colors and
+   states live in date-picker.tsx as Kumo token classes. */
+
+.rdp-root {
+  --rdp-animation_duration: 0.2s;
+  --rdp-animation_timing: ease-out;
+}
+
+/* ANIMATIONS */
+
+@keyframes rdp-slide_in_left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes rdp-slide_in_right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes rdp-slide_out_left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes rdp-slide_out_right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.rdp-weeks_before_enter {
+  animation: rdp-slide_in_left var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-weeks_before_exit {
+  animation: rdp-slide_out_left var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-weeks_after_enter {
+  animation: rdp-slide_in_right var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-weeks_after_exit {
+  animation: rdp-slide_out_right var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-root[dir="rtl"] .rdp-weeks_after_enter {
+  animation: rdp-slide_in_left var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-root[dir="rtl"] .rdp-weeks_before_exit {
+  animation: rdp-slide_out_right var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-root[dir="rtl"] .rdp-weeks_before_enter {
+  animation: rdp-slide_in_right var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-root[dir="rtl"] .rdp-weeks_after_exit {
+  animation: rdp-slide_out_left var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+@keyframes rdp-fade_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rdp-fade_out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.rdp-caption_after_enter {
+  animation: rdp-fade_in var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-caption_after_exit {
+  animation: rdp-fade_out var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-caption_before_enter {
+  animation: rdp-fade_in var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+.rdp-caption_before_exit {
+  animation: rdp-fade_out var(--rdp-animation_duration)
+    var(--rdp-animation_timing) forwards;
+}
+
+/* Shorten rather than remove the animation: react-day-picker removes the
+   outgoing month only when its animationend event fires. */
+@media (prefers-reduced-motion: reduce) {
+  .rdp-root {
+    --rdp-animation_duration: 0.01ms;
+  }
 }

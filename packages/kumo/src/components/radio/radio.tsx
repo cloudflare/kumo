@@ -416,7 +416,9 @@ function _RadioItem<T = string>(
             {label}
           </span>
           {description && (
-            <span className="text-sm text-kumo-subtle">{description}</span>
+            <span className="text-sm leading-snug text-pretty text-kumo-subtle">
+              {description}
+            </span>
           )}
         </div>
         <BaseRadio.Root
@@ -426,7 +428,7 @@ function _RadioItem<T = string>(
           value={value}
           disabled={disabled}
           className={cn(
-            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:ring-kumo-focus focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-brand",
+            "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring focus:ring-kumo-focus focus:outline-hidden focus-visible:ring-2 focus-visible:ring-kumo-brand",
             variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
             !disabled &&
               variant !== "error" &&
@@ -468,7 +470,7 @@ function _RadioItem<T = string>(
         value={value}
         disabled={disabled}
         className={cn(
-          "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-none",
+          "relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-0 bg-kumo-base ring after:absolute after:-inset-x-3 after:-inset-y-2 focus:outline-hidden",
           variant === "error" ? "ring-kumo-danger" : "ring-kumo-line",
           !disabled &&
             variant !== "error" &&
@@ -544,55 +546,62 @@ function RadioGroup<Value = string>({
     <RadioGroupContext.Provider
       value={{ controlPosition, appearance, orientation }}
     >
-      <BaseRadioGroup<Value>
-        defaultValue={defaultValue}
-        value={value}
-        onValueChange={(newValue, eventDetails) =>
-          onValueChange?.(newValue, eventDetails)
+      {/* The radiogroup renders as the fieldset, so Base UI names it with the
+          legend (Fieldset.Root's legendId) instead of nesting a nameless
+          radiogroup around a named fieldset. */}
+      <Fieldset.Root
+        render={
+          <BaseRadioGroup<Value>
+            render={<fieldset />}
+            defaultValue={defaultValue}
+            value={value}
+            onValueChange={(newValue, eventDetails) =>
+              onValueChange?.(newValue, eventDetails)
+            }
+            disabled={disabled}
+            name={name}
+          />
         }
         disabled={disabled}
-        name={name}
+        className={cn(
+          "flex flex-col p-0",
+          // Card and segmented groups match Field's label-to-control gap.
+          appearance === "card" || appearance === "segmented"
+            ? "gap-2"
+            : "gap-4",
+          className,
+        )}
       >
-        <Fieldset.Root
-          disabled={disabled}
+        {legend && (
+          <Fieldset.Legend className="text-base font-medium text-kumo-default">
+            {legend}
+          </Fieldset.Legend>
+        )}
+        {composableLegends}
+        <div
+          data-kumo-component="Radio"
+          data-kumo-part="items"
           className={cn(
-            "flex flex-col p-0",
-            // Card and segmented groups match Field's label-to-control gap.
-            appearance === "card" || appearance === "segmented"
-              ? "gap-2"
-              : "gap-4",
-            className,
+            appearance === "segmented"
+              ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
+              : orientation === "vertical"
+                ? appearance === "card"
+                  ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
+                  : "flex flex-col gap-2"
+                : appearance === "card"
+                  ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
+                  : "flex flex-row flex-wrap gap-2",
           )}
         >
-          {legend && (
-            <Fieldset.Legend className="text-base font-medium text-kumo-default">
-              {legend}
-            </Fieldset.Legend>
-          )}
-          {composableLegends}
-          <div
-            data-kumo-component="Radio"
-            data-kumo-part="items"
-            className={cn(
-              appearance === "segmented"
-                ? "inline-flex w-max flex-row flex-nowrap items-center self-start rounded-lg bg-kumo-control shadow-xs ring ring-kumo-line"
-                : orientation === "vertical"
-                  ? appearance === "card"
-                    ? "flex flex-col overflow-hidden rounded-lg ring ring-kumo-line"
-                    : "flex flex-col gap-2"
-                  : appearance === "card"
-                    ? "grid grid-cols-2 overflow-hidden rounded-lg bg-kumo-base ring ring-kumo-line"
-                    : "flex flex-row flex-wrap gap-2",
-            )}
-          >
-            {itemChildren}
-          </div>
-          {error && <p className="text-sm text-kumo-danger">{error}</p>}
-          {description && (
-            <p className="text-sm text-kumo-subtle">{description}</p>
-          )}
-        </Fieldset.Root>
-      </BaseRadioGroup>
+          {itemChildren}
+        </div>
+        {error && <p className="text-sm text-kumo-danger">{error}</p>}
+        {description && (
+          <p className="text-sm leading-snug text-pretty text-kumo-subtle">
+            {description}
+          </p>
+        )}
+      </Fieldset.Root>
     </RadioGroupContext.Provider>
   );
 }

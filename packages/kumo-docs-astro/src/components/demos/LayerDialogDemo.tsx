@@ -180,6 +180,34 @@ export function LayerDialogSearchDemo() {
   );
 }
 
+export function LayerDialogSeparatorDemo() {
+  return (
+    <LayerDialog.Root>
+      <LayerDialog.Trigger
+        render={(props) => <Button {...props}>Review deployment</Button>}
+      />
+      <LayerDialog.Content>
+        <LayerDialog.Title>Deployment summary</LayerDialog.Title>
+        <LayerDialog.Description>
+          Review the configuration before deploying.
+        </LayerDialog.Description>
+        <LayerDialog.Body>
+          <Text variant="secondary">
+            production-api will deploy to the global network.
+          </Text>
+          <LayerDialog.Separator />
+          <Text variant="secondary">
+            The deployment uses compatibility date 2026-10-26.
+          </Text>
+        </LayerDialog.Body>
+        <LayerDialog.Actions>
+          <LayerDialog.Action>Deploy</LayerDialog.Action>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
+  );
+}
+
 export function LayerDialogSplitActionDemo() {
   return (
     <div className="flex flex-wrap justify-center gap-3">

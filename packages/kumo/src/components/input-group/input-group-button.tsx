@@ -5,6 +5,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { cn } from "../../utils/cn";
+import { unwrapLazyElement } from "../../utils/unwrap-lazy-element";
 import { type ButtonProps, Button as ButtonExternal } from "../button/button";
 import { Tooltip, type KumoTooltipSide } from "../tooltip/tooltip";
 import type { KumoInputSize } from "../input/input";
@@ -71,7 +72,7 @@ export const Button = forwardRef<
       disabled,
       tooltip,
       tooltipSide = "bottom",
-      icon,
+      icon: iconProp,
       ...props
     }: PropsWithChildren<InputGroupButtonProps>,
     ref: React.ForwardedRef<HTMLButtonElement>,
@@ -117,6 +118,7 @@ export const Button = forwardRef<
       ? INPUT_GROUP_SIZE[context.size ?? "base"].iconSize
       : undefined;
 
+    const icon = unwrapLazyElement(iconProp);
     const sizedIcon =
       icon &&
       contextIconSize &&
@@ -156,8 +158,7 @@ export const Button = forwardRef<
           // Suppress the base Button's non-visible focus ring in all modes
           "focus:ring-0",
           // Container-zone buttons: use a subtle ring as focus indicator
-          // (outline doesn't work because the base Button's `focus:outline-none`
-          // sets `outline-style: none` which our outline-width/color can't override)
+          // The base Button also retains a forced-colors outline.
           !isIndividual &&
             "focus-visible:ring-[1.5px] focus-visible:ring-kumo-focus/50",
           // Individual mode: each button owns its own border and focus indicator

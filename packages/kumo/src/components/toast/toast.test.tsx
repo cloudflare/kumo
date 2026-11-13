@@ -1,7 +1,16 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vite-plus/test";
 import { useEffect } from "react";
 import { Toasty, createKumoToastManager, useKumoToastManager } from "./toast";
+
+const surfaceOf = (text: string) =>
+  screen
+    .getByText(text)
+    .closest('[role="dialog"]')
+    ?.querySelector('[data-kumo-part="surface"]');
+
+const isBumping = (text: string) =>
+  /animate-toast-bump/.test(surfaceOf(text)?.className ?? "");
 
 describe("Toasty", () => {
   // Regression guard: existing callers that don't pass `toastManager`
@@ -60,15 +69,13 @@ describe("Toasty", () => {
       });
     });
 
-    expect(await screen.findByText("Saving complete")).toBeTruthy();
+    await screen.findByText("Saving complete");
+    expect(isBumping("Saving complete")).toBe(false);
   });
 
   // Duplicate ids dispatched through an external manager must not
-  // produce duplicate DOM nodes. (The exact merge semantics — replace vs
-  // bump — are owned by `wrapManagerMethods` / base-ui and tested
-  // elsewhere; this test only guards against the regression of two
-  // toast roots rendering for the same id.)
-  it("does not render duplicate toast roots for the same id via an external manager", async () => {
+  // produce duplicate DOM nodes, and should bump the existing toast.
+  it("bumps a single toast root for duplicate ids via an external manager", async () => {
     const mgr = createKumoToastManager();
 
     render(
@@ -82,10 +89,50 @@ describe("Toasty", () => {
       mgr.add({ id: "dupe", title: "second" });
     });
 
-    // Exactly one toast title rendered — not two.
     await screen.findByText("second");
-    const titles = document.querySelectorAll("[data-toast-title]");
-    expect(titles).toHaveLength(1);
+    expect(document.querySelectorAll("[data-toast-title]")).toHaveLength(1);
+    expect(isBumping("second")).toBe(true);
+  });
+
+  // Regression: the bump must run on the inner surface, so it never cancels
+  // the root's slide-in, and repeated bumps must replay.
+  it("bumps the surface, not the sliding root, on repeated in-tree adds", async () => {
+    function DuplicateToastTrigger() {
+      const toasts = useKumoToastManager();
+      return (
+        <button
+          onClick={() =>
+            toasts.add({ id: "rapid-dupe", title: "Repeated toast" })
+          }
+        >
+          Show repeated toast
+        </button>
+      );
+    }
+
+    render(
+      <Toasty>
+        <DuplicateToastTrigger />
+      </Toasty>,
+    );
+
+    const button = screen.getByRole("button", { name: "Show repeated toast" });
+    fireEvent.click(button);
+    const root = (await screen.findByText("Repeated toast")).closest(
+      '[role="dialog"]',
+    );
+
+    fireEvent.click(button);
+    const firstBump = surfaceOf("Repeated toast")?.className;
+    fireEvent.click(button);
+
+    expect(screen.getAllByText("Repeated toast")).toHaveLength(1);
+    expect(screen.getByText("Repeated toast").closest('[role="dialog"]')).toBe(
+      root,
+    );
+    expect(root?.className).not.toMatch(/animate-toast-bump/);
+    expect(isBumping("Repeated toast")).toBe(true);
+    expect(surfaceOf("Repeated toast")?.className).not.toBe(firstBump);
   });
 
   // `useKumoToastManager()` inside a tree wrapped with an external manager

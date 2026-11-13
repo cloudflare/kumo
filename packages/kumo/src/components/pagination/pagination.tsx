@@ -114,8 +114,8 @@ interface PaginationContextValue {
   maxPage: number;
   pageShowingRange: string;
   setPage: (page: number) => void;
-  editingPage: number;
-  setEditingPage: (page: number) => void;
+  editingPage: string;
+  setEditingPage: (page: string) => void;
   labels: Required<PaginationLabels>;
 }
 
@@ -261,9 +261,18 @@ function PaginationControls({
   const hasKnownTotal = totalCount != null;
   const isUnknownTotal = !hasKnownTotal && hasNextPage !== undefined;
   const showFullControls = controls === "full" && !isUnknownTotal;
-  const isNextDisabled = hasKnownTotal
-    ? page === maxPage
-    : hasNextPage !== true;
+  const isNextDisabled = hasKnownTotal ? page >= maxPage : hasNextPage !== true;
+
+  const commitEditingPage = () => {
+    const value = editingPage.trim();
+    if (!/^\d+$/.test(value)) {
+      setEditingPage(String(page));
+      return;
+    }
+    const clamped = clamp(Number(value), 1, maxPage);
+    setPage(clamped);
+    setEditingPage(String(clamped));
+  };
 
   return (
     <div
@@ -279,7 +288,7 @@ function PaginationControls({
               disabled={page <= 1}
               onClick={() => {
                 setPage(1);
-                setEditingPage(1);
+                setEditingPage("1");
               }}
             >
               <CaretDoubleLeftIcon size={16} />
@@ -292,7 +301,7 @@ function PaginationControls({
             onClick={() => {
               const previousPage = Math.max(page - 1, 1);
               setPage(previousPage);
-              setEditingPage(previousPage);
+              setEditingPage(String(previousPage));
             }}
           >
             <CaretLeftIcon size={16} />
@@ -306,7 +315,7 @@ function PaginationControls({
                 onValueChange={(value) => {
                   const num = value as number;
                   setPage(num);
-                  setEditingPage(num);
+                  setEditingPage(String(num));
                 }}
               >
                 {Array.from({ length: maxPage }, (_, i) => i + 1).map((p) => (
@@ -322,18 +331,12 @@ function PaginationControls({
                 aria-label={labels.pageNumber}
                 value={editingPage}
                 onValueChange={(value: string) => {
-                  setEditingPage(Number(value));
+                  setEditingPage(value);
                 }}
-                onBlur={() => {
-                  const clamped = clamp(editingPage, 1, maxPage);
-                  setPage(clamped);
-                  setEditingPage(clamped);
-                }}
+                onBlur={commitEditingPage}
                 onKeyDown={(e: KeyboardEvent) => {
                   if (e.key === "Enter") {
-                    const clamped = clamp(editingPage, 1, maxPage);
-                    setPage(clamped);
-                    setEditingPage(clamped);
+                    commitEditingPage();
                   }
                 }}
                 // Prevent password managers from auto-filling
@@ -352,7 +355,7 @@ function PaginationControls({
                 ? Math.min(page + 1, maxPage)
                 : page + 1;
               setPage(nextPage);
-              setEditingPage(nextPage);
+              setEditingPage(String(nextPage));
             }}
           >
             <CaretRightIcon size={16} />
@@ -361,10 +364,10 @@ function PaginationControls({
             <InputGroup.Button
               variant="secondary"
               aria-label={labels.lastPage}
-              disabled={page === maxPage}
+              disabled={page >= maxPage}
               onClick={() => {
                 setPage(maxPage);
-                setEditingPage(maxPage);
+                setEditingPage(String(maxPage));
               }}
             >
               <CaretDoubleRightIcon size={16} />
@@ -553,7 +556,7 @@ function PaginationRoot(props: PaginationProps) {
     "controls" in props
       ? (props.controls ?? KUMO_PAGINATION_DEFAULT_VARIANTS.controls)
       : KUMO_PAGINATION_DEFAULT_VARIANTS.controls;
-  const [editingPage, setEditingPage] = useState<number>(1);
+  const [editingPage, setEditingPage] = useState<string>(String(page));
 
   // Merge provided labels with defaults
   const labels = useMemo<Required<PaginationLabels>>(
@@ -562,7 +565,7 @@ function PaginationRoot(props: PaginationProps) {
   );
 
   useEffect(() => {
-    setEditingPage(page);
+    setEditingPage(String(page));
   }, [page]);
 
   const pageShowingRange = useMemo(() => {
@@ -576,7 +579,8 @@ function PaginationRoot(props: PaginationProps) {
   }, [page, perPage, totalCount]);
 
   const maxPage = useMemo(() => {
-    return Math.ceil((totalCount ?? 1) / (perPage ?? 1));
+    // An empty result set still has a single (empty) page
+    return Math.max(Math.ceil((totalCount ?? 1) / (perPage ?? 1)), 1);
   }, [totalCount, perPage]);
 
   const contextValue: PaginationContextValue = {
